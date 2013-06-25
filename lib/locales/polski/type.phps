@@ -1,0 +1,1 @@
+a:4:{s:4:"bool";s:8:"logiczny";s:6:"string";s:5:"tekst";s:5:"array";s:7:"tablica";s:3:"int";s:6:"liczba";}

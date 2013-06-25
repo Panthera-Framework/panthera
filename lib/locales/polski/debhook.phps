@@ -1,0 +1,1 @@
+a:3:{s:16:"Plugins debugger";s:17:"Debuger pluginów";s:78:"Internal Panthera Plugins debugger, you can see all hooked functions list here";s:94:"Wewnętrzny debugger wtyczek systemu Panthera, wszystkie zaczepione funkcje są tutaj widoczne";s:16:"Hooked functions";s:18:"Zaczepione funkcje";}

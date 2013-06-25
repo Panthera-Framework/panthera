@@ -1,0 +1,1 @@
+a:2:{s:20:"Configuration editor";s:19:"Edytor konfiguracji";s:54:"Administration tool for developers and administrators.";s:63:"Narzędzie administracyjne dla deweloperów i administratorów.";}

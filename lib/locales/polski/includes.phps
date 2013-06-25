@@ -1,0 +1,1 @@
+a:4:{s:14:"Included files";s:17:"Dołączone pliki";s:52:"List of all included files in current code execution";s:81:"Lista wszystkich plików przyłączonych w aktualnym wykonaniu kodu źródłowego";s:5:"Files";s:5:"Pliki";s:8:"includes";s:12:"dołączenia";}

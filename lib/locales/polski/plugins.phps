@@ -1,0 +1,1 @@
+a:6:{s:7:"Plugins";s:7:"Wtyczki";s:14:"Manage plugins";s:20:"Zarządzaj wtyczkami";s:6:"plugin";s:7:"wtyczka";s:11:"Description";s:4:"Opis";s:6:"author";s:5:"autor";s:7:"version";s:6:"wersja";}

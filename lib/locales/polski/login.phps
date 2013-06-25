@@ -1,0 +1,1 @@
+a:5:{s:7:"Sign in";s:7:"Zaloguj";s:8:"Password";s:6:"Hasło";s:5:"Login";s:18:"Nazwa użytkownika";s:15:"Back to website";s:16:"Wróć do strony";s:16:"Recover password";s:17:"Przywróć hasło";}

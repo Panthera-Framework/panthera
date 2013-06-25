@@ -1,0 +1,778 @@
+#!/usr/bin/env php
+<?php
+set_time_limit(0); // never stop executing the script
+
+//define('DEBUG', True);
+
+// include lib
+define('SITE_DIR', getcwd());
+
+if(!is_file(SITE_DIR. '/content/config.php'))
+    die("Please run this tool from the root directory of your website\n");
+
+include(str_ireplace('/tools', '/', dirname(__FILE__)). '/boot.php');
+
+class fwconsole extends cliApp
+{
+    //protected $loopType = 'readline';
+    protected $sleepTime = 9999;
+    protected $_waitAfterHelp = False;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->registerCommand('version', 'version', 'Show version');
+        $this->registerCommand('users', 'users', 'List users');
+        $this->registerCommand('clear', 'clear', 'Clear the screen');
+        $this->registerCommand('cronjobs', 'crontab', 'Browse cronjobs');
+        $this->registerCommand('date', 'date', 'Convert unix timestamp to formatted date');
+        $this->registerCommand('time', 'time', 'Show current time');
+        $this->registerCommand('checkproxy', 'proxyChecker', 'Check proxy servers avaliability');
+        $this->registerCommand('crontop', 'crontop', 'Realtime cronjobs monitoring application');
+        $this->registerCommand('debugger', 'debugger', 'Show debugger messages');
+        $this->registerCommand('plugins', 'pluginsManager', 'Manage plugins');
+        $this->registerCommand('ptop', 'pantheraTop', 'Panthera top');
+        $this->registerCommand('devel', 'fwconsoleDevel', 'Developer tests of fwconsole');
+        $this->registerCommand('useradd', 'userAdd', 'Add user to Panthera');
+        $this->registerCommand('userdel', 'userDelete', 'Delete user from Panthera');
+        $this->registerCommand('passwd', 'userPassword', 'Change users password in Panthera');
+        $this->registerCommand('locale', 'pageLocale', 'Manage page locales');
+        $this->registerCommand('usermod', 'userModifications', 'Manage user information');
+        $this->registerCommand('mail', 'sendMail', 'Send mailing from setted user to given recipients');
+        $this->registerCommand('conftool', 'manageConfigOverlay', 'Manage values in config overlay');
+        $this->registerCommand('crontestrun', 'crontabRun', 'Refresh crontab');
+        $this->registerCommand('plugin', 'managePlugins', 'Manage plugins');
+        $this->clear(True);
+    }
+
+    protected function managePlugins($input)
+    {
+        $args = CommandLine::parseArgs($input);
+
+        if (array_key_exists('name', $args['long']))
+            $name = $args['long']['name'];
+
+        if (array_key_exists('n', $args['short']))
+            $name = $args['short']['n'];
+
+        if (array_key_exists('value', $args['long']))
+            $value = $args['long']['value'];
+
+        if (array_key_exists('v', $args['short']))
+            $value = $args['short']['v'];
+
+        if (array_key_exists('l', $args['short']))
+        {
+            $plugins = $this -> panthera -> getPlugins();
+            foreach ($plugins as $name => $info)
+            {
+                print($name . "\n");
+            }
+            return False;
+        }
+
+        if (array_key_exists('list-plugins', $args['long']))
+        {
+            $plugins = $this -> panthera -> getPlugins();
+            foreach ($plugins as $name => $info)
+            {
+                print($name . "\n");
+            }
+            return False;
+        }
+
+        if (isset($name) && isset($value))
+        {
+            if ($this -> panthera -> switchPlugin($name, (bool)$value))
+            {
+                $this -> panthera -> config -> save();
+                print("Plugin '" . $name . "' has been changed!\n");
+            } else
+                print("Error! Probably plugin does not exist.\n");
+        } else
+        {
+            print("Arguments:\n-l --list-plugins (plugins list)\n-n --name (name of plugin)\n-v --value (bool value of plugin 'enabled')\n");
+        }
+    }
+
+    protected function sendMail($input)
+    {
+        $args = CommandLine::parseArgs($input);
+
+        if (array_key_exists('subject', $args['long']))
+            $subject = $args['long']['subject'];
+
+        if (array_key_exists('s', $args['short']))
+            $subject = $args['short']['s'];
+
+        if (array_key_exists('recipient', $args['long']))
+            $recipient = $args['long']['recipient'];
+
+        if (array_key_exists('r', $args['short']))
+            $recipient = $args['short']['r'];
+
+        if (array_key_exists('from', $args['long']))
+            $from = $args['long']['from'];
+
+        if (array_key_exists('f', $args['short']))
+            $from = $args['short']['f'];
+
+        if (isset($subject) and isset($recipient)) {
+            $this-> panthera -> importModule("mailing");
+
+            $mail = new mailMessage();
+
+            if (isset($from)) {
+                  print("Setting sender e-mail: '" . $from . "'.\n" );
+                  $mail -> setFrom($from);
+            }
+
+            print("Setting subject: '" . $subject . "'.\n" );
+            $mail -> setSubject($subject);
+
+            // check number of recipients | not tested if array
+            if (strpos($recipient, ',')) {
+                  $recipients = explode(",", $recipient);
+                  foreach ($recipients as $recipient) {
+                        print("Adding recipients: '" . $recipient . "'.\n" );
+                        $mail -> addRecipient($recipient);
+                  }
+            } else {
+                  print("Adding recipient: '" . $recipient . "'.\n" );
+                  $mail -> addRecipient($recipient);
+            }
+
+            print("Type message to send: ");
+            $message = $this->screen->readline(9999);
+
+            // send mail to recipent/s
+            $mail -> send($message, 'html');
+            print("Sent!\n");
+        } else {
+            print("Sending mails from console.\nArguments:\n-s --subject (mail topic)\n-r --recipient (mail recipient, can be multiple, separated by ',')\n-f --from (sender e-mail, optional, default: system default specified in config)\n");
+        }
+    }
+
+    protected function manageConfigOverlay($input)
+    {
+ /* conftool
+
+    This should list all avaliable values from config_overlay:
+
+            panthera > conftool
+            Example of modifing data:
+
+            panthera > conftool -k test -v test_value -t string
+  *         "conftool
+            Arguments:
+            -k --key (key name)
+            -v --value (value)
+            -t --type (type of variable, optional, default: string)" */
+
+        $args = CommandLine::parseArgs($input);
+
+        if (array_key_exists('key', $args['long']))
+            $key = $args['long']['key'];
+
+        if (array_key_exists('k', $args['short']))
+            $key = $args['short']['k'];
+
+        if (array_key_exists('value', $args['long']))
+            $value = $args['long']['value'];
+
+        if (array_key_exists('v', $args['short']))
+            $value = $args['short']['v'];
+
+        if (array_key_exists('type', $args['long']))
+            $type = $args['long']['type'];
+
+        if (array_key_exists('t', $args['short']))
+            $type = $args['short']['t'];
+
+        if (array_key_exists('help', $args['long']))
+        {
+            print("Arguments:\n-k --key (key name)\n-v --value (value)\n-t --type (type of variable, optional, default: string)\n");
+            return False;
+        }
+
+        if (array_key_exists('h', $args['short']))
+        {
+            print("Arguments:\n-k --key (key name)\n-v --value (value)\n-t --type (type of variable, optional, default: string)\n");
+            return False;
+        }
+
+        if (isset($key) and isset($value)) {
+            if (isset($type)) {
+                  if ($this->panthera->config->setKey($key, $value, $type))
+                  {
+                      print("Successfully changed value!\n");
+                  } else {
+                      print("Something went wrong!\n");
+                  }
+            } else {
+                  if ($this->panthera->config->setKey($key, $value))
+                  {
+                      print("Successfully changed value!\n");
+                  } else {
+                      print("Something went wrong!\n");
+                  }
+            }
+        } else {
+            // copied from conftool_ajaxpage
+            $overlay = $this -> panthera -> config -> getOverlay();
+            $array = array();
+
+            foreach ($overlay as $key => $value)
+            {
+                if (is_array($value[1]))
+                    $value[1] = serialize($value[1]);
+
+                $array[$key] = array($value[0], $value[1]);
+            }
+
+            $array = $this -> panthera -> get_filters('conftool_array', $array);
+
+            foreach ($array as $key => $value)
+            {
+                   // Name    : (      type       )      value
+                print($key . ": (" . $value[0] . ") " . $value[1] . "\n--------------------------------------------------------------\n");
+            }
+        }
+    }
+
+    protected function userModifications($input)
+    {
+        $args = CommandLine::parseArgs($input);
+        $help = "Arguments:\n--jabber (setting jabber)\n--email (setting email)\n--locale | -l (setting locale)\n--group | -G (setting user group)\n--full-name | -n (setting user full_name)\n--avatar | -a (setting user avatar)\n";
+
+        if (array_key_exists('jabber', $args['long']))
+            $jabber = $args['long']['jabber'];
+
+        if (array_key_exists('email', $args['long']))
+            $email = $args['long']['email'];
+
+        if (array_key_exists('locale', $args['long']))
+            $locale = $args['long']['locale'];
+
+        if (array_key_exists('l', $args['short']))
+            $locale = $args['short']['l'];
+
+        if (array_key_exists('group', $args['long']))
+            $group = $args['long']['group'];
+
+        if (array_key_exists('G', $args['short']))
+            $group = $args['short']['G'];
+
+        if (array_key_exists('full-name', $args['long']))
+            $fullName = $args['long']['full-name'];
+
+        if (array_key_exists('n', $args['short']))
+            $fullName = $args['short']['n'];
+
+        if (array_key_exists('avatar', $args['long']))
+            $avatar = $args['long']['avatar'];
+
+        if (array_key_exists('a', $args['short']))
+            $avatar = $args['short']['a'];
+
+        if (isset($args['opts'][0]))
+            $login = $args['opts'][0];
+
+        if (array_key_exists('h', $args['short'])) {
+            print($help);
+            return True;
+        }
+
+        if (array_key_exists('help', $args['long'])) {
+            print($help);
+            return True;
+        }
+
+        if (isset($login))
+        {
+            $u = new pantheraUser('login', $login);
+
+            if ($u -> exists()) {
+                if (isset($jabber)) {
+                    $u -> jabber = $jabber;
+                    print("Setting jabber: '" . $jabber . "'\n");
+                }
+                if (isset($email)) {
+                    $u -> mail = $email;
+                    print("Setting email: '" . $email . "'\n");
+                }
+                if (isset($locale)) {
+                    $locales = $this->panthera->locale->getLocales();
+                    if (array_key_exists($locale, $locales))
+                    {
+                         $u -> language = $locale;
+                         print("Setting locale: '" . $locale . "'\n");
+                    } else {
+                         print("Error! Locale does not exist!\n");;
+                    }
+                }
+                if (isset($group)) {
+                    $u -> primary_group = $group;
+                    print("Setting group: '" . $group . "'\n");
+                }
+                if (isset($fullName)) {
+                    $u -> full_name = $fullName;
+                    print("Setting full_name: '" . $fullName . "'\n");
+                }
+                if (isset($avatar)) {
+                    $u -> profile_picture = $avatar;
+                    print("Setting avatar: '" . $avatar . "'\n");
+                }
+                $u -> save();
+                print("Saving information about " . $login . ".\n");
+            } else {
+                print("User does not exists!\n");
+            }
+        } else {
+            print("You must give an username!\nSee -h / --help\n");
+        }
+    }
+
+    protected function pageLocale($input)
+    {
+        $args = CommandLine::parseArgs($input);
+
+        if (array_key_exists('a', $args['short']))
+        {
+            $locales = $this->panthera->locale->getLocales();
+            $default_locale = $this->panthera->locale->getSystemDefault();
+
+            foreach ($locales as $locale => $value)
+            {
+                  if ($value == 1 and $locale == $default_locale)
+                        print($locale . " (enabled) (default)\n");
+                  elseif ($value == 1)
+                        print($locale . " (enabled)\n");
+                  else
+                        print($locale . " (disabled)\n");
+            }
+        } elseif (array_key_exists('get-active', $args['long'])) {
+            print($this->panthera->locale->getActive() . "\n");
+
+        } elseif (array_key_exists('s', $args['short'])) {
+            $locale = $args['short']['s'];
+            $languages = $this->panthera->locale->getLocales();
+            if (array_key_exists($locale, $languages) and $languages[$locale] == 1)
+            {
+                  $this->panthera->locale->setLocale($locale);
+                  print("Language set to '" . $locale . "'\n");
+            } else {
+                  print("Locale does not exists or is disabled!\n");
+            }
+        } elseif (array_key_exists('set', $args['long'])) {
+            $locale = $args['long']['set'];
+            $languages = $this->panthera->locale->getLocales();
+            if (array_key_exists($locale, $languages) and $languages[$locale] == 1)
+            {
+                  $this->panthera->locale->setLocale($locale);
+                  print("Language set to '" . $locale . "'\n");
+            } else {
+                  print("Locale does not exists or is disabled!\n");
+            }
+        } elseif (array_key_exists('get-default', $args['long'])) {
+            print($this->panthera->locale->getSystemDefault() . "\n");
+
+        } elseif (array_key_exists('d', $args['short'])) {
+            print($this->panthera->locale->getSystemDefault() . "\n");
+
+        } else {
+            print("Examples:\n1. locale -a\n2. locale -s='english'\n\nArguments:\n-a (list all locales with information about status and default)\n--get-active (get active locale)\n-s= --set= (set locale)\n-d --get-default (get default locale)\n");
+        }
+    }
+
+    protected function fwconsoleDevel($input)
+    {
+        unset($input[0]);
+
+        switch ($input[1])
+        {
+            case 'argstest':
+                print("var_dump(CommandLine::parseArgs(\$input));\n\n");
+                var_dump(CommandLine::parseArgs($input));
+            break;
+
+            default:
+                print("Avaliable tests: argstest\n");
+            break;
+        }
+    }
+
+    protected function userDelete($input)
+    {
+        $username = $input[1];
+
+        $u = new pantheraUser('login', $username);
+
+        if ($u -> exists())
+        {
+            print("Are you sure? Y/N :");
+            $decision = $this->screen->readline(9999);
+            if ($decision == 'Y' or $decision == 'y')
+            {
+               if (removeUser($username))
+                     print($username . " has been deleted!\n");
+               else
+                     print("Error with deleting existing user!\n");
+            }
+        } else {
+            print("User does not exist!\n");
+        }
+    }
+
+    protected function userPassword($input)
+    {
+        $username = $input[1];
+
+        $u = new pantheraUser('login', $username);
+
+        if ($u -> exists())
+        {
+            print("New password for " . $username . ": ");
+            $password = $this->screen->readline(9999);
+            print("Confirm new password: ");
+            $password2 = $this->screen->readline(9999);
+
+            if ($password == $password2)
+            {
+               if(strlen($password) > 6)
+               {
+                  $u -> passwd = md5($this->panthera->config->getKey('salt').$password);
+                  $u -> save();
+                  print($username . "'s password has been successfully changed!\n");
+               } else {
+                  print("Password is too short!\n");
+               }
+            } else {
+              print("Error! Password are not identical!\n");
+            }
+        } else {
+            print("User does not exists!\n");
+        }
+    }
+
+    protected function userAdd($input)
+    {
+        $args = CommandLine::parseArgs($input);
+        $data = array();
+        $data['root'] = False;
+        $data['admin'] = False;
+        $data['group'] = "users";
+        $data['language'] = $this->panthera->locale->getSystemDefault();
+
+
+        /* Parsing long and short arguments */
+        if (array_key_exists('G', $args['short']))
+            $data['group'] = $args['short']['G'];
+
+        if (array_key_exists('group', $args['long']))
+            $data['group'] = $args['long']['group'];
+
+        if (array_key_exists('r', $args['short']) or array_key_exists('system', $args['long']))
+            $data['root'] = True;
+
+        if (array_key_exists('admin', $args['long'] or array_key_exists('a', $args['short'])))
+            $data['admin'] = True;
+
+        if (array_key_exists('p', $args['short']))
+            $data['password'] = $args['short']['p'];
+
+        if (array_key_exists('password', $args['long']))
+            $data['password'] = $args['long']['password'];
+
+        if (array_key_exists('n', $args['short']))
+            $data['fullName'] = $args['short']['n'];
+
+        if (array_key_exists('full-name', $args['long']))
+            $data['fullName'] = $args['long']['full-name'];
+
+        if (isset($args['opts'][0]))
+            $data['login'] = $args['opts'][0];
+
+        if (array_key_exists('l', $args['short']))
+            $data['lang'] = $args['short']['l'];
+
+        if (array_key_exists('language', $args['long']))
+            $data['lang'] = $args['long']['language'];
+
+        if (array_key_exists('help', $args['long']) or array_key_exists('h', $args['short']))
+        {
+            print_r("Examples of working:\n1. useradd -G=users -p=test123 jan\n2. useradd -p=qwerty jan --admin\n\nArgs:\n-G --group (if not specified use 'users')\n-r --system (set root attribute to true in default)\n--admin (set admin attribute by default and put in admin group)\n-p --password (set password)\n-n --full-name (full user name)\n-l --language (set user's language)\n");
+        }
+
+        if (isset($data['login']))
+        {
+            // get mix from password and salt
+            $data['password'] = md5($this->panthera->config->getKey('salt').$data['password']);
+
+            // check if language given by user exists in locales
+            if (isset($data['lang']))
+            {
+                  $languages = $this->panthera->locale->getLocales();
+                  if (array_key_exists($data['lang'], $languages) and $languages[$data['lang']] == 1)
+                        $data['language'] = $data['lang'];
+            }
+
+            if (!isset($data['fullName']))
+                  $data['fullName'] = $data['login'];
+
+            if (createNewUser($data['login'], $data['password'], $data['fullName'], $data['group'], serialize(array()), $data['language'], '', ''))
+                  print($data['fullName'] . " has been successfully added!\n");
+            else
+                  print("Error with adding user!\n");
+
+            if ($data['root'] == True)
+            {
+                  $u = new pantheraUser('login', $data['login']);
+                  if ($u -> exists())
+                  {
+                        $u -> attributes -> root = True;
+                        $u -> save();
+                        print("Setting user '" . $data['login'] . "' as root.\n");
+                  }
+            }
+
+            if ($data['admin'] == True)
+            {
+                  $u = new pantheraUser('login', $data['login']);
+                  if ($u -> exists())
+                  {
+                        $u -> attributes -> admin = True;
+                        $u -> save();
+                        print("Setting user '" . $data['login'] . "' as admin.\n");
+                  }
+            }
+
+        } else {
+            print("You must give an username!\n");
+        }
+
+        // clean RAM! ;D
+        $data = "";
+    }
+
+    protected function pantheraTop($input)
+    {
+        unset($input[0]);
+        system(dirname(__FILE__). '/ptop ' .escapeshellcmd($input));
+    }
+
+    protected function pluginsManager($input)
+    {
+        $plugins = $this->panthera->getPlugins();
+
+        foreach ($plugins as $key => $value)
+        {
+            $enabled = 'No';
+
+            if ($value['enabled'] == True)
+                $enabled = 'Yes';
+
+            $tpl[] = array('name' => $key, 'enabled' => $enabled);
+        }
+
+        $renderer = new ArrayToTextTable($tpl);
+        $renderer->showHeaders(true);
+        $renderer->render();
+
+        print("\n");
+
+    }
+
+    protected function crontabRun($input)
+    {
+        $appKey = $this->panthera->config->getKey('crontab_key');
+        $PANTHERA_URL = pantheraUrl('{$PANTHERA_URL}');
+
+        while (True)
+        {
+            $this->clear(True);
+            echo file_get_contents($PANTHERA_URL. '/_crontab.php?debug=True&_appkey=' .$appKey);
+            if ($this->screen->readline(60) == 'q')
+                break;
+        }
+    }
+
+    protected function debugger($input)
+    {
+        while (True)
+        {
+            echo file_get_contents(SITE_DIR. '/content/tmp/debug.log');
+            if ($this->screen->readline(3) == 'q')
+                break;
+        }
+    }
+
+    protected function catchUserInput($input)
+    {
+        // set error reporting to debugging mode
+        $err = error_reporting();
+        error_reporting(E_ALL);
+
+        // add support for eval code execution
+        if (substr($input, 0, 1) == '`' and substr($input, (strlen($input)-1), strlen($input)) == '`')
+        {
+            try {
+                $code = substr($input, 1, (strlen($input)-2));
+                print(eval($code));
+            } catch (Exception $e) {
+                print("Unhandled exception while executing code:\n");
+                var_dump($e);
+            }
+
+            // restore old error reporting
+            error_reporting($err);
+
+            return True;
+        }
+
+
+        // call parent method
+        parent::catchUserInput($input);
+    }
+
+
+    protected function crontop($args)
+    {
+        system(dirname(__FILE__). '/crontop');
+    }
+
+    protected function proxyChecker($args)
+    {
+        unset($args[0]);
+
+        if (count($args) < 1)
+            return False;
+
+        foreach ($args as $key => $value)
+        {
+            print("Checking " .$value. " ");
+            $ch = curl_init("http://google.com");
+            curl_setopt($ch,CURLOPT_PROXY, $value);
+            curl_setopt($ch,CURLOPT_CONNECTTIMEOUT, 5);
+            curl_setopt($ch,CURLOPT_HTTPTUNNELPROXY, $value);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $page = curl_exec($ch);
+            curl_close($ch);
+            $check = stripos($page,'</html>');
+
+            // if </html> tag found inside of body
+            if ($check > 0)
+                print("[Online]\n");
+            else
+                print("[Offline]\n");
+        }
+    }
+
+    protected function date($args)
+    {
+        unset($args[0]);
+        $dateKeys = array();
+
+        foreach ($args as $key => $value)
+        {
+            if (is_numeric($value) and strlen($value) > 5)
+            {
+                $dateKeys[] = $value;
+                unset($args[$key]);
+            }
+        }
+
+        $format = implode(' ', $args);
+
+        foreach ($dateKeys as $timestamp)
+        {
+            print($timestamp. " => " .date($format, $timestamp). "\n");
+        }
+    }
+
+    protected function time($args)
+    {
+        print("Timestamp: " .time(). "\nDate: ".date('G:i:s d.m.Y'). "\n");
+    }
+
+    protected function crontab($args)
+    {
+        unset($args[0]);
+        $this->panthera-> importModule('crontab');
+
+        $by = cliApp::syntaxBy($args);
+        if (count($by) > 0)
+            $jobs = crontab::getJobs($by);
+        else
+            $jobs = crontab::getJobs();
+
+
+        $data = array();
+
+        foreach ($jobs as $key => $value)
+        {
+            // check if job will expire or is infinite
+            if ($value->count_left == -1)
+                $left = "infinite";
+            elseif ($value->count_left == 0)
+                $left = "expired";
+            else
+                $left = $value->count_left;
+
+            // compare dates and create "time left" counter
+            $current = new DateTime();
+            $next = new DateTime(date('G:i:s d.m.Y', $value->next_interation));
+            $interval = $current->diff($next);
+            $leftInterval = "(".$interval->format('%R%i min'). ")";
+
+            // show job status
+            if (intval($interval->format('%i')) < 1)
+                $leftInterval = "(waiting)";
+
+            $data[] = array('jobid' => $value->jobid, 'Name' => $value->jobname, 'Next interation' => date('G:i:s d.m.Y', $value->next_interation). " ".$leftInterval, 'Created' => $value->created, 'Executed' => $value->count_executed. ' times', 'Left' => $left, 'Minute' => $value->minute, 'Hour' => $value->hour, 'Day' => $value->hour, 'Month' => $value->month, 'Day of week' => $value->weekday, 'Year' => $value->year);
+         }
+
+        $renderer = new ArrayToTextTable($data);
+        $renderer->showHeaders(true);
+        $renderer->render();
+        echo "\n";
+    }
+
+    protected function users($args)
+    {
+        unset($args[0]);
+        $by = cliApp::syntaxBy($args);
+
+        if (count($by) > 0)
+            $users = getUsers($by);
+        else
+            $users = getUsers();
+
+        $usersList = array();
+
+        foreach ($users as $user)
+        {
+            $usersList[] = array('id' => $user->id, 'login' => $user->login, 'full name' => $user->full_name, 'default language' => $user->language, 'joined' => $user->joined, 'group' => $user->primary_group);
+        }
+
+        $renderer = new ArrayToTextTable($usersList);
+        $renderer->showHeaders(true);
+        $renderer->render();
+
+        print("\n");
+    }
+
+    protected function version($command)
+    {
+        print("Panthera version ".PANTHERA_VERSION."\n");
+    }
+
+    protected function main()
+    {
+        echo "panthera > ";
+    }
+}
+
+$app = new fwconsole();
+$app -> run();
+
