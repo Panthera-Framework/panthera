@@ -139,6 +139,10 @@ class pantheraTemplate extends pantheraClass
             $this->cacheConfig = True;
         }
         //$this->tpl->plugins_dir = array(PANTHERA_DIR.'/smarty/sysplugins/', PANTHERA_DIR.'/share/smarty/plugins/', SITE_DIR.'/content/smartyplugins/', PANTHERA_DIR.'/share/smartyplugins/');
+        
+        // automatic webroot merge (for debugging purposes)
+        if ($this->debugging)
+            $this->webrootMerge();
     }
 
     /**

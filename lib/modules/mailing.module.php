@@ -69,6 +69,15 @@ class mailMessage
         if ($panthera->config->getKey('mailing_use_php', True, 'bool'))
         {
             $this->mailer->Mailer = 'mail';
+            
+            /*if ($panthera -> config -> getKey('mailing_server_port'))
+                ini_set('smtp_port', $panthera -> config -> getKey('mailing_server_port'));
+                
+            if ($panthera -> config -> getKey('mailing_from', 'email'))
+                ini_set('sendmail_from', $panthera -> config -> getKey('mailing_from', 'email'));
+                
+            if ($panthera -> config -> getKey('mailing_server'))
+                ini_set('SMTP', $panthera -> config -> getKey('mailing_server'));*/
         }
     }
 

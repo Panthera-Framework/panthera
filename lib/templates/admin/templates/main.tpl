@@ -8,6 +8,7 @@
         <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/admin.css" />
         <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/w2ui-1.2.min.css" />
         <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+        <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/msgBoxLight.css">
 
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
         <script type="text/javascript" src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
@@ -17,6 +18,9 @@
         <script type="text/javascript" src="{$PANTHERA_URL}/js/tiny_mce/tiny_mce.js"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/w2ui-1.2.min.js"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/jquery.form.js"></script>
+        <script type="text/javascript" src="{$PANTHERA_URL}/js/jquery.tinycarousel.js"></script>
+        <script type="text/javascript" src="{$PANTHERA_URL}/js/jquery.msgBox.js"></script>
+        
         <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/map.js"></script>
 
@@ -57,7 +61,7 @@
 		</div>
 
 		<aside class="leftBar" style="display:block;">
-		    <div id="menuLayer" class="menuLayer">
+		    <div id="menuLayer" class="menuLayer" style="background-color:#4d565c;">
 			 <span class="category upperCategory">{"Admin panel"|localize}</span>
                <ul class="menu">
 		            <li class="menuLong" style="display:block;">

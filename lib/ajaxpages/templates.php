@@ -84,6 +84,15 @@ if ($_GET['action'] == 'webrootMerge')
 
             ajax_exit(array('status' => 'success'));
         break;
+        
+        /*case 'tpl_auto_webroot':
+            if ($_GET['value'] == "true")
+                $panthera -> config -> setKey('tpl_auto_webroot', True, 'bool');
+            else
+                $panthera -> config -> setKey('tpl_auto_webroot', False, 'bool');
+
+            ajax_exit(array('status' => 'success'));
+        break;*/
 
         case 'template_cache_lifetime':
             $value = intval($_GET['value']);
@@ -121,6 +130,7 @@ if ($_GET['action'] == 'webrootMerge')
 $config = array ('template_caching' => $panthera -> config -> getKey('template_caching'),
                  'template_cache_lifetime' => $panthera -> config -> getKey('template_cache_lifetime'),
                  'template_debugging' => $panthera -> config -> getKey('template_debugging')
+                 /*'tpl_auto_webroot' => $panthera -> config -> getKey('tpl_auto_webroot')*/
                 );
 
 $panthera -> template -> push ('config', $config);

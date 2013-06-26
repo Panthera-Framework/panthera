@@ -1,14 +1,6 @@
-        <div class="titlebar">{"Gallery"|localize} - {"Site without gallery, is like man without d..."|localize}</div><br>
-
-        <div class="msgSuccess" id="userinfoBox_success"></div>
-        <div class="msgError" id="userinfoBox_failed"></div>
-
-        <div class="grid-1">
-            <h1>Not implemented yet!</h1>
-        </div>
-
-<!--
 <script type="text/javascript">
+$('#sliderCode').tinycarousel({ controls: true, pager: true, animation: true });
+
 function editGallery(id, titleOfCategory)
 {
     checkbox = { header: "{"Visibility"|localize}", type: "checkbox", name: "visibility", value: "visibility"}
@@ -138,37 +130,32 @@ function addGallery()
 
 </script>
 
-<div class="paHeader">
-      <div class="paTitle">{"Gallery"|localize:gallery}</div>
-</div>
+        <div class="titlebar">{"Gallery"|localize:gallery}</div><br>
 
-<div class="paLine"></div>
+        <div class="msgSuccess" id="userinfoBox_success"></div>
+        <div class="msgError" id="userinfoBox_failed"></div>
 
-<article>
-    <div class="text-section">
-        <ul class="states">
-            <li class="succes" style="display: none;" id="change_category_success">{"Category has been successfully changed!"|localize:gallery}</li>
-            <li class="error" style="display: none;" id="change_category_error"></li>
-        </ul>
+        <div class="grid-1">
+        <div class="msgSuccess" style="display: none;" id="change_category_success">{"Category has been successfully changed"|localize:gallery}</div>
+        <div class="msgError" style="display: none;" id="change_category_error"></div>
 
         <div id="all_categories_window">
-            <table id="rounded-corner" summary="" style="width: 95%;">
+            <table class="gridTable">
             <thead>
                 <tr>
-            	<th scope="col" class="rounded-q1">{"Thumbnail"|localize:gallery}</th>
-                  <th scope="col" class="rounded-company">{"Title"|localize:gallery}</th>
-                  <th scope="col" class="rounded-q1">{"Author full name"|localize:gallery}</th>
-                  <th scope="col" class="rounded-q1">{"Author login"|localize:gallery}</th>
-                  <th scope="col" class="rounded-q1">{"Language"|localize:gallery}</th>
-                  <th scope="col" class="rounded-q1">{"Created"|localize:gallery}</th>
-                  <th scope="col" class="rounded-q1">{"Visibility"|localize:gallery}</th>
-                  <th scope="col" class="rounded-q1">{"Options"|localize:gallery}</th>
+            	<th>&nbsp;</th>
+                  <th>{"Title"|localize:gallery}</th>
+                  <th>{"Created by"|localize:gallery}</th>
+                  <th>{"Language"|localize:gallery}</th>
+                  <th>{"Created"|localize:gallery}</th>
+                  <th>{"Visibility"|localize:gallery}</th>
+                  <th>{"Options"|localize:gallery}</th>
                 </tr>
             </thead>
 
             <tfoot>
             	<tr>
-                	<td colspan="8" class="rounded-foot-left"><em>{"Gallery categories"|localize:gallery}<input type="button" value="{"Add category"|localize:gallery}" style="float: right;" onclick="addGallery();" >
+                	<td colspan="8"><em>{"Gallery categories"|localize:gallery}<input type="button" value="{"Add category"|localize:gallery}" style="float: right;" onclick="addGallery();" >
                     <input type="button" value="{"View permissions"|localize:gallery}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_view_galleryItem', 1024, 'upload_popup');" style="float: right;">
                     <input type="button" value="{"Edit permissions"|localize:gallery}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_edit_galleryItem', 1024, 'upload_popup');" style="float: right;"></em></td>
                 </tr>
@@ -178,22 +165,21 @@ function addGallery()
                 <tr id="galleryCategory_row_{$i->id}" {if $i->visibility eq 0} style="background: rgba(172, 172, 172, 0.5);"{/if}>
                   <td><img src="{$i->thumb_url|pantheraUrl}" width="50" height="50"></td>
                   <td><a href="?display=gallery&action=display_category&ctgid={$i->id}" class="ajax_link" id="gallery_title_{$i->id}">{$i->title}</a></td>
-                  <td>{$i->author_full_name}</td>
                   <td>{$i->author_login}</td>
                   <td>{$i->language}</td>
                   <td>{$i->created}</td>
 
-                  {if $i->visibility eq 1}
-                  <td><span id="visibility_{$i->id}">{"Visible"|localize:gallery}</span></td>
-                  <td><input type="button" value="{"Hide"|localize:gallery}" onclick="toggleGalleryVisibility({$i->id});" id="hide_btn_{$i->id}">
-
-                  {elseif $i->visibility eq 0}
-                  <td><span id="visibility_{$i->id}">{"Hidden"|localize:gallery}</span></td>
-                  <td><input type="button" value="{"Show"|localize:gallery}" onclick="toggleGalleryVisibility({$i->id});" id="hide_btn_{$i->id}">
-                  {/if}
-                  <input type="button" value="{"Edit"|localize:gallery}" onclick="editGallery({$i->id}, '{$i->title|addslashes}');">
-                  <input type="button" value="{"Delete"|localize:gallery}" onclick="removeGalleryCategory({$i->id}); return false;">
-                  <input type="button" value="{"Manage permissions"|localize:messages}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=gallery_manage_cat_{$i->id}', 1024, 'upload_popup');"></td>
+                  <td>
+                      {if $i->visibility eq 1}
+                      <input type="button" value="{"Hide"|localize:gallery}" onclick="toggleGalleryVisibility({$i->id});" id="hide_btn_{$i->id}">
+                      {elseif $i->visibility eq 0}
+                      <input type="button" value="{"Show"|localize:gallery}" onclick="toggleGalleryVisibility({$i->id});" id="hide_btn_{$i->id}">
+                      {/if}
+                  </td>
+                  <td>
+                      <input type="button" value="{"Edit"|localize:gallery}" onclick="editGallery({$i->id}, '{$i->title|addslashes}');">
+                      <input type="button" value="{"Delete"|localize:gallery}" onclick="removeGalleryCategory({$i->id}); return false;">
+                      <input type="button" value="{"Manage permissions"|localize:messages}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=gallery_manage_cat_{$i->id}', 1024, 'upload_popup');"></td>
                 </tr>
                 {/foreach}
             </tbody>
@@ -201,11 +187,10 @@ function addGallery()
         </div>
 
     </div>
-</article> -->
+</article>
 
 
 
-<!--
 <script>
 $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
 
@@ -234,38 +219,6 @@ function toggleGalleryVisibility(id)
             },
             dataType: 'json'
            });
-}
-
-function removeGalleryItem(id)
-{
-    $.msgBox({
-        title: "{"Are you sure?"|localize}",
-        content: "{"Do you really want to delete this item?"|localize}",
-        type: "confirm",
-        autoClose: true,
-        opacity: 0.6,
-        buttons: [{ value: "{"Yes"|localize:messages}" }, { value: "{"No"|localize:messages}" }, { value: "{"Cancel"|localize:messages}"}],
-        success: function (result) {
-            if (result == "{"Yes"|localize:messages}") {
-                $.ajax({
-                    url: '{$AJAX_URL}?display=gallery&action=delete_item&image_id='+id,
-                    data: '',
-                    async: false,
-                    success: function (response) {
-
-                        if (response.status == "success")
-                        {
-                            jQuery('#item_row_'+id).remove();
-                        }
-
-                    },
-                    dataType: 'json'
-                   });
-            }
-        }
-    });
-
-
 }
 
 function removeGalleryCategory(id)
@@ -300,4 +253,3 @@ function removeGalleryCategory(id)
 
 }
 </script>
--->

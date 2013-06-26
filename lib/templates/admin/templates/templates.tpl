@@ -205,6 +205,9 @@ toolsLoader = new panthera.ajaxLoader($('#templatesTools'));
 
 function templateTool(toolName, value)
 {
+    if (typeof value === "object")
+        value = value.val()
+        
     panthera.jsonPOST({ url: '?display=templates&action=exec&name='+toolName+'&value='+value, spinner: toolsLoader, messageBox: 'messageBox', async: true});
 }
 
