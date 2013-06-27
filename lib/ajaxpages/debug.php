@@ -58,6 +58,7 @@ $tools[] = array('link' => '?display=shellutils', 'name' => localize('Shell util
 $tools[] = array('link' => '?display=phpinfo', 'name' => localize('phpinfo'));
 $tools[] = array('link' => '?display=database', 'name' => localize('Database management'));
 $tools[] = array('link' => '?display=dumpinput', 'name' => localize('DumpInput'));
+$tools[] = array('link' => '?display=mergephps', 'name' => ucfirst(localize('merge phps and json arrays', 'dash')));
 $tools = $panthera -> get_filters('ajaxpages.debug.tools', $tools);
 
 // Displaying main debug site

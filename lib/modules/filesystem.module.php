@@ -87,12 +87,54 @@ class uploadedFile extends pantheraFetchDB
 
         if ($fileType == 'image')
             return $this->__get('location');
+            
+        $mimesURL = pantheraUrl('{$PANTHERA_URL}/images/admin/mimes/');
 
-        if (is_file(SITE_DIR. '/images/mimes/' .$fileType. '.png'))
-            return $url. '/images/mimes/' .$fileType. '.png';
+        if (is_file(SITE_DIR. '/images/admin/mimes/' .$fileType. '.png'))
+            return $mimesURL.$fileType. '.png';
 
-        return $url. '/images/mimes/unknown.png';
+        return $mimesURL. 'unknown.png';
     }
+}
+
+/**
+  * Create a fake uploaded file
+  *
+  * @param string $formName
+  * @param string $content Content encoded in base64 (without HTML data header)
+  * @param string $fileName
+  * @param string $type Mime type
+  * @return bool 
+  * @author Damian Kęska
+  */
+
+function makeFakeUpload($formName, $content, $fileName, $type='text/plain')
+{
+    $_FILES[$formName] = array('tmp_name' => '/tmp/' .md5($content), 'name' => $fileName, 'type' => $type, 'error' => 0, 'size' => strlen($content));
+    $fp = fopen($_FILES[$formName]['tmp_name'], 'w');
+    fwrite($fp, base64_decode($content));
+    fclose($fp);
+    return is_file($_FILES[$formName]['tmp_name']);
+}
+
+/**
+  * Parse base64 uploaded file, decode header and return base64 encoded content
+  *
+  * @param string $data Data encoded in base64 with HTML data header
+  * @param bool $decode Decode base64 content (optional)
+  * @return array of two elements - mime and content (encoded in base64)
+  * @author Damian Kęska
+  */
+
+function parseEncodedUpload($data, $decode=False)
+{
+    $tmp = explode(';base64,', $data);
+    $data = $tmp[1];
+    
+    if ($decode == True)
+        $data = base64_decode($data);
+    
+    return array('mime' => str_ireplace('data:', '', $tmp[0]), 'content' => $data);
 }
 
 /**
@@ -268,7 +310,7 @@ function handleUpload($file, $category, $uploaderID, $uploaderLogin, $protected,
     }
 
     $panthera -> logging -> output('upload.module::Moving uploaded file from ' .$file['tmp_name']. ' to ' .$uploadDir. '/' .$name);
-    move_uploaded_file($file['tmp_name'], $uploadDir. '/' .$name);
+    rename($file['tmp_name'], $uploadDir. '/' .$name);
 
     if (is_file($uploadDir. '/' .$name))
     {
@@ -302,7 +344,8 @@ function handleUpload($file, $category, $uploaderID, $uploaderLogin, $protected,
         }
 
         $panthera -> db -> query('INSERT INTO `{$db_prefix}uploads` (`id`, `category`, `location`, `description`, `icon`, `mime`, `uploader_id`, `uploader_login`, `protected`, `public`) VALUES (NULL, :category, :location, :description, :icon, :mime, :uploader_id, :uploader_login, :protected, :public);', $values);
-        return True;
+        
+        return $panthera -> db -> sql -> lastInsertId();
     } else
         $panthera -> logging -> output('upload.module::Cannot save file "' .$name. '", directory "' .$uploadDir. '" is not writable');
 

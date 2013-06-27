@@ -1,23 +1,21 @@
-{elseif $action eq 'add_item'}
 <script type="text/javascript">
+/**
+  * Add new item to gallery
+  *
+  * @author Damian Kęska
+  */
 
-jQuery("#add_item_form").ajaxForm({
-    url: '{$AJAX_URL}?display=gallery&action=add_item&subaction=add', type: 'post', dataType: 'json', success: function (response) {
+$(document).ready(function () {
+    var progress = new panthera.ajaxLoader($('#add_item_form'));
 
-        // alert(response);
-
-        if (response.status == "success")
-            {
-                jQuery('#add_item_error').hide();
-                navigateTo('_ajax.php?display=gallery&action=display_category&ctgid='+response.ctgid);
-            } else {
-                jQuery('#add_item_success').hide();
-                jQuery('#add_item_error').slideDown();
-                jQuery('#add_item_error').html(response.error);
-        }
-    }
-});
-
+    $('#add_item_form').submit(function () {
+        panthera.jsonPOST({ url: '{$AJAX_URL}?display=gallery&action=add_item&subaction=add', spinner: progress, async: true, messageBox: userinfoBox, success: function (response) {
+                if (response.status == "success")
+                    navigateTo('_ajax.php?display=gallery&action=display_category&ctgid='+response.ctgid);
+            }
+        });
+    });
+}
 
 function sliderChangeImage(src)
 {
@@ -43,57 +41,41 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
     sliderChangeImage(link);
 }
 
-jQuery('#image_slider').click(function () {
-    jQuery('#image_slider_box').slideUp();
+$('#image_slider').click(function () {
+    $('#image_slider_box').slideUp();
 });
 
 </script>
 
 <style type="text/css">
+    #box {
+        text-align: left;
+        width: 700px;
+        margin: 30px auto 0 auto;
+        margin-top: 0px;
+        background: #edfbff;
+        overflow: hidden;
+        -webkit-box-shadow: #191919 0px 2px 10px;
+        -moz-box-shadow: #191919 0px 3px 10px;
+        box-shadow: #191919 0px 3px 10px;
+    }
 
-#box {
-    text-align: left;
-    width: 700px;
-    margin: 30px auto 0 auto;
-    margin-top: 0px;
-    background: #edfbff;
-    overflow: hidden;
-    -webkit-box-shadow: #191919 0px 2px 10px;
-    -moz-box-shadow: #191919 0px 3px 10px;
-    box-shadow: #191919 0px 3px 10px;
-}
+    #image_slider_box {
+        margin-top: 50px;
+    }
 
-#image_slider_box {
-    background: rgba(210, 227, 255, 0.37);
-}
-
-.buttons_right {
-    float: right;
-}
+    .buttons_right {
+        float: right;
+    }
 </style>
 
-<div class="paHeader">
-      <div class="paTitle">{"Adding gallery image"|localize:gallery}</div>
-      <div class="paDescription">{$gallery_name}</div>
-</div>
-
-<div class="paLine"></div>
-
-<article>
- <div class="text-section">
-  <ul class="states">
-       <li class="succes" style="display: none;" id="add_item_success"></li>
-       <li class="error" style="display: none;" id="add_item_error"></li>
-  </ul>
+  <div class="titlebar">{"Adding gallery image"|localize:gallery}{include file="_navigation_panel.tpl"}</div>
+  <br>
+  <div class="msgSuccess" id="userinfoBox_success"></div>
+  <div class="msgError" id="userinfoBox_failed"></div>
 
  <form action="?display=gallery&action=add_item&subaction=add" method="POST" id="add_item_form">
-  <table id="rounded-corner" summary="" style="width: 100%; padding: 0px; margin: 0px;">
-
-    <thead>
-        <tr>
-            <th scope="col" class="rounded-company" style="width: 250px;" colspan="2">&nbsp;</th>
-        </tr>
-    </thead>
+  <table class="gridTable">
 
     <tfoot>
         <tr>
@@ -114,7 +96,7 @@ jQuery('#image_slider').click(function () {
 
         <tr>
             <td>{"File"|localize:gallery}</td>
-            <td><input type="text" name="link" style="width: 500px;" id="upload_file" disabled> <input type="button" value="{"Upload file"|localize}" onclick="createPopup('_ajax.php?display=upload&popup=true&callback=upload_file_callback', 1024, 'upload_popup');"><input type="hidden" name="upload_id" id="upload_id"></td>
+            <td><input type="text" name="link" style="width: 500px;" id="upload_file" disabled> <input type="button" value="{"Upload file"|localize}" onclick="createPopup('_ajax.php?display=upload&popup=true&callback=upload_file_callback', 1300, 550);"><input type="hidden" name="upload_id" id="upload_id"></td>
         </tr>
 
         <tr>
@@ -142,6 +124,3 @@ jQuery('#image_slider').click(function () {
   <div style="text-align: center; display: none;" id="image_slider_box">
         <img id="image_slider" style="max-width: 800px; max-height: 600px; min-height: 12em;   display: table-cell;   vertical-align: middle; display: block;   margin-left: auto;   margin-right: auto; ">
   </div>
-
- </div>
-</article>

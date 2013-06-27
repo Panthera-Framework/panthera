@@ -21,6 +21,8 @@ initUploadBox();
         {/foreach}
 {else}
 <script type="text/javascript">
+jQuery.event.props.push('dataTransfer');
+
 function selectFile()
 {
     callback = eval("{$callback_name}");
@@ -55,30 +57,78 @@ function selectFile()
 
     });
     }
+    
+var uploadProgress = new panthera.ajaxLoader($('#upload_list_window'));
 
 $(document).ready(function(){
     initUploadBox();
+    
+    $('#upload_list_window').bind('dragenter', function() {
+        $(this).css( { 'box-shadow' : '10px 10px 5px red;' });
+    });
+        
+   /* $('#upload_list_window').bind('drop', function(e) {
+        var files = e.dataTransfer.files;
+        
+        uploadProgress = new panthera.ajaxLoader($('#upload_list_window'));
+        
+        $.each(files, function(index, file) {
+            var fileReader = new FileReader();
+            var fileName = file;
+            
+            fileReader.onload = (function(file) {
+                // upload a single file
+                panthera.jsonPOST({ url: '?display=upload&action=handle_file&popup=true', spinner: uploadProgress, data: { 'image': this.result, 'fileName': fileName.name}});
+                
+            });
+            
+            fileReader.readAsDataURL(file);
+            
+            if (panthera.logging )
+            
+            // finished
+            if (index == (files.length-1))
+                getUploadsPage('page=0');
+        });
+        
+        
+        
+        return false;
+    });*/
+    
+    /**
+      * Upload multiple files
+      *
+      * @author Damian Kęska
+      */
+    
+    panthera.multiuploadArea({ id: '#upload_list_window', callback: function (content, fileName, fileNum, fileCount) {
+            panthera.jsonPOST({ url: '?display=upload&action=handle_file&popup=true', spinner: uploadProgress, data: { 'image': content, 'fileName': fileName}});
+            
+            // finished
+            if (fileNum == fileCount)
+                getUploadsPage('page=0');
+        }
+    });
+    
+    
 
 
     $('#file_delete').click(function () {
         id = $('#file_id').val();
         k = $('#file_k').val();
-
-        $.ajax({
-          type: "POST",
-          url: '{$AJAX_URL}?display=upload&popup=true&action=delete',
-          data: 'id='+id,
-          success: function (response) {
-              if (response.status == "success")
-              {
-                  $('#box_'+k).remove();
-                  $('#upload_error').hide();
-              } else {
-                  $('#upload_error').html(response.message);
-                  $('#upload_error').slideDown();
-              }
-          },
-          dataType: 'json'
+        
+        panthera.jsonPOST({ url: '{$AJAX_URL}?display=upload&popup=true&action=delete', data: 'id='+id, spinner: uploadProgress, success:
+            function (response) {
+                  if (response.status == "success")
+                  {
+                      $('#box_'+k).remove();
+                      $('#upload_error').hide();
+                  } else {
+                      $('#upload_error').html(response.message);
+                      $('#upload_error').slideDown();
+                  }
+            }
         });
     });
 
@@ -86,6 +136,8 @@ $(document).ready(function(){
     $('#_upl_add_file').click(function () {
         $('#upload_list_window').slideUp();
         $('#upload_box_window').slideDown();
+        
+        jQuery.event.props.push('dataTransfer');
     });
 
     $('#_upl_back_btn').click(function () {
@@ -94,42 +146,42 @@ $(document).ready(function(){
     });
 
     // AJAX UPLOAD FORM
-
-    $('#upload_form').ajaxForm({ dataType: 'json', 
-        beforeSend: function () {
-            $('#upload_box_window').css({ opacity: 1 });
-        }, 
-
-        uploadProgress: function (event, position, total, percentComplete) {
-            $('#upload_box_window').css({ opacity: (1-(percentComplete/100)) });
-        },
- 
-        success: function(response) {
-            if (response.status == "success")
-            {
-                $('#upload_error').hide();
-                $('#upload_box_window').slideUp(function() { $('#upload_box_window').css({ opacity: 1 }); }); // restore opacity after hiding element
-                $('#upload_list_window').slideDown();
-                getUploadsPage('');
-            } else {
+    $('#upload_form').submit(function () {
+        panthera.jsonPOST({ data: '#upload_form', async: true,
+            before: function () {
                 $('#upload_box_window').css({ opacity: 1 });
-                $('#upload_error').html(response.message);
-                $('#upload_error').slideDown();
-            }
-        } });
-});
+            
+            }, progress: function (precent, start, end) {
+            
+                console.log("Percent: "+precent);
+                console.log("Start: "+start);
+                console.log("End: "+end);
+            
+                $('#upload_box_window').css({ opacity: (1-(precent/100)) });
+            },
+     
+            success: function(response) {
+                if (response.status == "success")
+                {
+                    $('#upload_error').hide();
+                    $('#upload_box_window').slideUp(function() { $('#upload_box_window').css({ opacity: 1 }); }); // restore opacity after hiding element
+                    $('#upload_list_window').slideDown();
+                    getUploadsPage('page=0');
+                } else {
+                    $('#upload_box_window').css({ opacity: 1 });
+                    $('#upload_error').html(response.message);
+                    $('#upload_error').slideDown();
+                }
+            } 
+        });
+        
+        return false;
+      });
+    });
 
 function getUploadsPage(data)
 {
-    $.ajax({
-          type: "POST",
-          url: '{$AJAX_URL}?display=upload&popup=true&action=display_list',
-          data: data,
-          success: function (response) {
-              $('#upload_list').html(response);
-          },
-          dataType: 'html'
-        });
+    panthera.htmlPOST({ url: '{$AJAX_URL}?display=upload&popup=true&action=display_list', data: data, spinner: uploadProgress, 'success': '#upload_list'});
 }
 </script>
 
@@ -251,22 +303,12 @@ function getUploadsPage(data)
        margin-bottom: 0;
     }
 </style>
+    <h2 class="popupHeading">{"Files upload"|localize} - {"Add files from your computer"|localize}</h2>
 
-    <div class="text-section">
-        <div class="paHeader">
-          <div class="paTitle">{"Files upload"|localize}</div>
-          <div class="paDescription">{"Add files from your computer"|localize}</div>
-    </div>
+    <div class="msgError" id="uploadBox_failed"></div>
+    <div class="msgSuccess" id="uploadBox_success"></div>
 
-    <div class="paLine"></div>
-        <br><br>
-
-        <ul class="states">
-            <li class="error" style="display: none; width: 90%; margin-left: 20px;" id="upload_error"></li>
-            <li class="succes" style="display: none; width: 90%; margin-left: 20px;" id="upload_success"></li>
-        </ul>
-
-    <div id="upload_list_window">
+    <div id="upload_list_window" ondragover="return false;">
         <div class="wrap" id="upload_list">
         {foreach from=$files key=k item=i}
             <div class="uploadBox" id="box_{$k}" rel="{$k}">
@@ -315,12 +357,11 @@ function getUploadsPage(data)
 
   <!-- UPLOAD BOX -->
   <div id="upload_box_window" style="display: none;">
-        <ul class="states">
-            <li class="error" style="display: none; width: 90%; margin-left: 20px;" id="upload_error"></li>
-        </ul>
+        <div class="msgError" id="uploadSingleFile_failed"></div>
+        <div class="msgSuccess" id="uploadSingleFile_success"></div>
 
         <form action="?display=upload&action=handle_file&popup=true" method="POST" enctype="multipart/form-data" id="upload_form">
-            <table id="rounded-corner" summary="" style="padding: 0px; margin: 20px; width: 90%;">
+            <table class="gridTable">
                 <thead>
                     <tr><th colspan="5">{"Upload a new file"|localize}</th></tr>
                 </thead>

@@ -3,7 +3,7 @@ $('#sliderCode').tinycarousel({ controls: true, pager: true, animation: true });
 
 function editGallery(id, titleOfCategory)
 {
-    checkbox = { header: "{"Visibility"|localize}", type: "checkbox", name: "visibility", value: "visibility"}
+    checkbox = { header: "{"Visibility"|localize:gallery}", type: "checkbox", name: "visibility", value: "visibility"}
 
     if ($('#visibility_'+id).html() == "{"Visible"|localize:gallery}")
         checkbox.checked = "checked"
@@ -11,7 +11,7 @@ function editGallery(id, titleOfCategory)
     $.msgBox({ type: "prompt", opacity: 0.6,
       title: "{"Editing category"|localize}",
       inputs: [
-      { header: "{"Editing category"|localize}", type: "text", name: "new_title", value: titleOfCategory}, checkbox],
+      { header: "{"Editing category"|localize:gallery}", type: "text", name: "new_title", value: titleOfCategory}, checkbox],
       buttons: [
       { value: "{"Save"|localize:messages}" }, { value:"{"Cancel"|localize:messages}" }],
       success: function (result, values) {
@@ -83,8 +83,8 @@ function addGallery()
     $.msgBox({ type: "prompt", opacity: 0.6,
       title: "{"Adding category"|localize}",
       inputs: [
-      { header: "{"Title"|localize}", type: "text", name: "new_title"},
-      { header: "{"Visibility"|localize}", type: "checkbox", name: "visibility", value: "visibility"}],
+      { header: "{"Title"|localize:messages}", type: "text", name: "new_title"},
+      { header: "{"Visibility"|localize:messages}", type: "checkbox", name: "visibility", value: "visibility"}],
       buttons: [
       { value: "{"Save"|localize:messages}" }, { value:"{"Cancel"|localize:messages}" }],
       success: function (result, values) {
@@ -130,7 +130,7 @@ function addGallery()
 
 </script>
 
-        <div class="titlebar">{"Gallery"|localize:gallery}</div><br>
+        <div class="titlebar">{"Gallery"|localize:messages}</div><br>
 
         <div class="msgSuccess" id="userinfoBox_success"></div>
         <div class="msgError" id="userinfoBox_failed"></div>
@@ -144,12 +144,12 @@ function addGallery()
             <thead>
                 <tr>
             	<th>&nbsp;</th>
-                  <th>{"Title"|localize:gallery}</th>
+                  <th>{"Title"|localize:messages}</th>
                   <th>{"Created by"|localize:gallery}</th>
                   <th>{"Language"|localize:gallery}</th>
                   <th>{"Created"|localize:gallery}</th>
                   <th>{"Visibility"|localize:gallery}</th>
-                  <th>{"Options"|localize:gallery}</th>
+                  <th>{"Options"|localize:messages}</th>
                 </tr>
             </thead>
 
@@ -171,14 +171,14 @@ function addGallery()
 
                   <td>
                       {if $i->visibility eq 1}
-                      <input type="button" value="{"Hide"|localize:gallery}" onclick="toggleGalleryVisibility({$i->id});" id="hide_btn_{$i->id}">
+                      <input type="button" value="{"Hide"|localize:messages}" onclick="toggleGalleryVisibility({$i->id});" id="hide_btn_{$i->id}">
                       {elseif $i->visibility eq 0}
-                      <input type="button" value="{"Show"|localize:gallery}" onclick="toggleGalleryVisibility({$i->id});" id="hide_btn_{$i->id}">
+                      <input type="button" value="{"Show"|localize:messages}" onclick="toggleGalleryVisibility({$i->id});" id="hide_btn_{$i->id}">
                       {/if}
                   </td>
                   <td>
-                      <input type="button" value="{"Edit"|localize:gallery}" onclick="editGallery({$i->id}, '{$i->title|addslashes}');">
-                      <input type="button" value="{"Delete"|localize:gallery}" onclick="removeGalleryCategory({$i->id}); return false;">
+                      <input type="button" value="{"Edit"|localize:messages}" onclick="editGallery({$i->id}, '{$i->title|addslashes}');">
+                      <input type="button" value="{"Delete"|localize:messages}" onclick="removeGalleryCategory({$i->id}); return false;">
                       <input type="button" value="{"Manage permissions"|localize:messages}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=gallery_manage_cat_{$i->id}', 1024, 'upload_popup');"></td>
                 </tr>
                 {/foreach}

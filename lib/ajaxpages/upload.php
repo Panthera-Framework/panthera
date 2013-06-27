@@ -13,6 +13,7 @@ if (!defined('IN_PANTHERA'))
 
 $panthera -> importModule('filesystem');
 $panthera -> importModule('simpleImage');
+$panthera -> locale -> loadDomain('files');
 
 if (isset($_GET['popup']))
 {
@@ -33,15 +34,15 @@ if (isset($_GET['popup']))
 
         // check if file exists
         if (!$file -> exists())
-            ajax_exit(array('status' => 'failed', 'message' => localize('File does not exists')));
+            ajax_exit(array('status' => 'failed', 'message' => localize('File does not exists', 'files')));
 
         // check if user is author or just can manage all uploads
         if ($file -> author_id != $user -> id and !getUserRightAttribute($user, 'can_manage_all_uploads'))
-            ajax_exit(array('status' => 'failed', 'message' => localize('You are not allowed to manage other users uploads')));
+            ajax_exit(array('status' => 'failed', 'message' => localize('You are not allowed to manage other users uploads', 'files')));
 
         // check if user can delete own uploads
         if (!getUserRightAttribute($user, 'can_delete_own_uploads'))
-            ajax_exit(array('status' => 'failed', 'message' => localize('You dont have permissions to delete your own uploads')));
+            ajax_exit(array('status' => 'failed', 'message' => localize('You dont have permissions to delete your own uploads', 'files')));
 
         if (deleteUpload($id, $file->location))
             ajax_exit(array('status' => 'success'));
@@ -58,7 +59,21 @@ if (isset($_GET['popup']))
     if ($_GET['action'] == 'handle_file')
     {
         if (!getUserRightAttribute($user, 'can_upload_files'))
-            ajax_exit(array('status' => 'failed', 'message' => localize('You are not allowed to upload files')));
+            ajax_exit(array('status' => 'failed', 'message' => localize('You are not allowed to upload files', 'files')));
+            
+        // handle base64 encoded upload in post field "image"
+        if (isset($_POST['image']))
+        {
+            $upload = parseEncodedUpload($_POST['image']);
+            makeFakeUpload('input_file', $upload['content'], $_POST['fileName'], $upload['mime']);
+
+            //$_FILES['input_file'] = array('tmp_name' => '/tmp/' .md5($_POST['image']), 'name' => $_POST['fileName'], 'type' => $upload['mime'], 'error' => 0, 'size' => strlen($upload['content']));
+            //$fp = fopen($_FILES['input_file']['tmp_name'], 'w');
+            //fwrite($fp, base64_decode($_POST['image']));
+            //fclose($fp);
+            unset($_POST['image']);
+            unset($upload);
+        }
 
         if ($_FILES['input_file']['size'] > $panthera -> config -> getKey('upload_max_size') or filesize($_FILES['input_file']['tmp_name']) > $panthera -> config -> getKey('upload_max_size'))
             ajax_exit(array('status' => 'failed', 'message' => localize('File is too big, allowed maximum size is:'). ' ' .bytesToSize($panthera -> config -> getKey('upload_max_size'))));
@@ -88,8 +103,10 @@ if (isset($_GET['popup']))
         if (strlen($description) > 511)
             ajax_exit(array('status' => 'failed', 'message' => localize('Description is too long, out of 512 characters range')));
 
-        if (handleUpload($_FILES['input_file'], $directory, $user->id, $user->login, $protected, $public, $mime, $description))
-            ajax_exit(array('status' => 'success'));
+        $uploadID = handleUpload($_FILES['input_file'], $directory, $user->id, $user->login, $protected, $public, $mime, $description);
+
+        if ($uploadID)
+            ajax_exit(array('status' => 'success', 'upload_id' => $uploadID));
 
         ajax_exit(array('status' => 'failed', 'message' => localize('Unknown error')));
     }
@@ -111,10 +128,10 @@ if (isset($_GET['popup']))
         $page = 0;
 
     $count = getUploadedFiles('', False);
-    $pager = new Pager($count, $panthera->config->getKey('uploads_per_page', 10, 'int'));
+    $pager = new Pager($count, $panthera->config->getKey('uploads_per_page', 12, 'int'));
     $pager -> maxLinks = $panthera->config->getKey('uploads_pager_links', 6, 'int');
     $limit = $pager -> getPageLimit($page);
-
+    
     // pager display
     $template -> push('pager', $pager->getPages($page));
     $template -> push('page_from', $limit[0]);
@@ -139,7 +156,7 @@ if (isset($_GET['popup']))
         $fileType = fileTypeByMime($value->mime);
         $icon = $value->getThumbnail('200');
         $panthera -> logging -> output ('upload::Checking for icon: ' .$icon. ' for type ' .$fileType);
-
+        
         // give user rights to delete file, create the button
         if (($user->id == $value->uploader_id and getUserRightAttribute($user, 'can_delete_own_uploads')) or getUserRightAttribute($user, 'can_manage_all_uploads'))
             $ableToDelete = True;

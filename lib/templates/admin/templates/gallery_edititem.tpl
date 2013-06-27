@@ -1,22 +1,17 @@
-{elseif $action eq 'edit_item'}
 <script type="text/javascript">
-jQuery("#change_item_form").ajaxForm({
-    url: '{$AJAX_URL}?display=gallery&action=edit_item_form&subaction=edit_item&id={$id}', type: 'post', dataType: 'json', success: function (response) {
+var progress = new panthera.ajaxLoader($('#change_item_form'));
 
-        // alert(response);
-
-        if (response.status == "success")
-        {
-                navigateTo('{$AJAX_URL}?display=gallery&action=display_category&ctgid='+response.ctgid);
-                jQuery('#change_item_error').hide();
-                jQuery('#change_item_success').slideDown();
-                setTimeout('jQuery(\'#change_item_success\').slideUp();', 5000);
-        } else {
-                jQuery('#change_item_success').hide();
-                jQuery('#change_item_error').slideDown();
-                jQuery('#change_item_error').html(response.message);
-        }
-    }
+$(document).ready(function () {
+    $("#change_item_form").submit(function () {
+        panthera.jsonPOST({ data: '#change_item_form', async: true, url: '{$AJAX_URL}?display=gallery&action=edit_item_form&subaction=edit_item&id={$id}', messageBox: 'userinfoBox', spinner: progress, 
+            success: function (response) {
+                if (response.status == "success")
+                    navigateTo('{$AJAX_URL}?display=gallery&action=display_category&ctgid='+response.ctgid);
+            }
+        });
+        
+        return false;
+    });
 });
 
 function sliderChangeImage(src)
@@ -64,7 +59,7 @@ sliderChangeImage('{$link}');
 }
 
 #image_slider_box {
-    background: rgba(210, 227, 255, 0.37);
+    margin-top: 20px;
 }
 
 .buttons_right {
@@ -73,30 +68,23 @@ sliderChangeImage('{$link}');
 </style>
 
 <article>
-<div class="paHeader">
-      <div class="paTitle">{"Editing gallery image"|localize:gallery}</div>
-</div>
-
-<div class="paLine"></div>
-
- <div class="text-section">
-  <ul class="states">
-       <li class="succes" style="display: none;" id="change_item_success">{"Item has been successfully changed!"|localize:gallery}</li>
-       <li class="error" style="display: none;" id="change_item_error"></li>
-  </ul><br>
+  <div class="titlebar">{"Editing gallery image"|localize:gallery}{include file="_navigation_panel.tpl"}</div>
+  <br>
+  <div class="msgSuccess" id="userinfoBox_success"></div>
+  <div class="msgError" id="userinfoBox_failed"></div>
 
  <form action="?display=gallery&action=edit_item_form&subaction=edit_item&id={$id}" method="POST" id="change_item_form">
-  <table id="rounded-corner" summary="" style="width: 100%; padding: 0px; margin: 0px;">
+  <table class="gridTable">
 
     <thead>
         <tr>
-            <th scope="col" class="rounded-company" style="width: 250px;" colspan="2">&nbsp;</th>
+            <th style="width: 250px;" colspan="2">&nbsp;</th>
         </tr>
     </thead>
 
     <tfoot>
         <tr>
-            <td colspan="2" class="rounded-foot-left"><em><input type="button" value="{"Back"|localize:gallery}" onclick="navigateTo('?display=gallery&action=display_category&ctgid={$gallery_id}'); return false;"/> <input type="submit" value="{"Save"|localize:messages}"></em></td>
+            <td colspan="2"><em><input type="button" value="{"Back"|localize:gallery}" onclick="navigateTo('?display=gallery&action=display_category&ctgid={$gallery_id}'); return false;"/> <input type="submit" value="{"Save"|localize:messages}"></em></td>
         </tr>
     </tfoot>
 
@@ -113,7 +101,7 @@ sliderChangeImage('{$link}');
 
         <tr>
             <td>{"File"|localize:gallery}</td>
-            <td><input type="text" name="link" value="{$link}" style="width: 500px;" id="upload_file" disabled> <input type="button" value="{"Upload file"|localize}" onclick="createPopup('_ajax.php?display=upload&popup=true&callback=upload_file_callback', 1024, 'upload_popup');"><input type="hidden" name="upload_id" id="upload_id" value="{$upload_id}"></td>
+            <td><input type="text" name="link" value="{$link}" style="width: 500px;" id="upload_file" disabled> <input type="button" value="{"Upload file"|localize}" onclick="createPopup('_ajax.php?display=upload&popup=true&callback=upload_file_callback', 1300, 550);"><input type="hidden" name="upload_id" id="upload_id" value="{$upload_id}"></td>
         </tr>
 
         <tr>

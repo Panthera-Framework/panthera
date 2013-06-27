@@ -1,4 +1,6 @@
 <script type="text/javascript">
+    var uploadProgress = new panthera.ajaxLoader($('#addNewImage'));
+
     function removeGalleryItem(id)
     {
         $.msgBox({
@@ -48,18 +50,40 @@
     {
         panthera.jsonGET({ 'url': '{$AJAX_URL}?display=gallery&action=set_category_thumb&itid='+id+'&ctgid='+ctgid});
     }
+    
+    $(document).ready(function () {
+        var multiuploadFiles = new Array();
+    
+        panthera.multiuploadArea({ id: '#addNewImage', start: function () {
+            uploadProgress.ajaxLoaderInit();
+
+        }, callback: function (content, fileName, fileNum, fileCount) {
+                panthera.jsonPOST({ url: '?display=upload&action=handle_file&popup=true', data: { 'image': content, 'fileName': fileName}, success: function (response) {
+                        if (response.status == "success")
+                        {
+                            multiuploadFiles.push(response.upload_id);
+                        }
+                
+                    }
+                });
+                
+                // finished
+                if (fileNum == fileCount)
+                {
+                    panthera.jsonPOST({ url: '?display=gallery&action=adduploads&gid={$category_id}', data: { 'ids': JSON.stringify(multiuploadFiles) }});
+                    uploadProgress.stop();
+                    navigateTo(window.location);
+                }
+            }
+        });
+    
+    });
 </script>
 
 <div class="titlebar">{"Gallery"|localize:gallery}: &nbsp;{$category_title}{include file="_navigation_panel.tpl"}</div>
 <div class="grid-1">
 
-    <table>{$inRow=2}{$i=0}
     {foreach from=$item_list key=k item=i}
-    {$i++}
-    {if $i == $inRow}
-    <tr>
-    {/if}
-    <td>
     <div class="galleryItem{if $i->visibility eq 1} galleryItemHidden{/if}" id="gallery_item_{$i->id}">
         <div class="galleryImageFrame">
             <div class="paGalleryFrameContent">
@@ -90,23 +114,12 @@
             </div>
         </div>
     </div>
-    </td>
-    {if $i == $inRow}
-    </tr>
-        {$i=0}
-    {/if}
-    {/foreach}
     
-    <tr>
-        <td>
-            <div class="galleryItem" style="height: 100px; width: 100px; position: relative; border-radius: 2px;">
+    {/foreach}
+            <div class="galleryItem" style="height: 100px; width: 100px; position: relative; border-radius: 2px;" id="addNewImage" ondragover="return false;">
                 <div class="paGalleryFrameOverlay" style="display: block; border-radius: 2px; opacity: 0.4; -moz-opacity: 0.4; -khtml-opacity: 0.4;">
-                    <a href="#" onclick="navigateTo('?display=gallery&action=add_item&ctgid={$category_id}');"><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: absolute; top: 30px; left: 30px; opacity: 0.8;"></a>
+                    <a href="#" onclick="navigateTo('?display=gallery&action=add_item&ctgid={$category_id}');"><span class="tooltip">{"Drag and drop files to this area to start uploading"|localize:gallery}</span><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: absolute; top: 30px; left: 30px; opacity: 0.8;"></a>
                 </div>
             </div>
-        </td>
-    </tr>
-    
-    </table>
 </div>
 

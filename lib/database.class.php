@@ -247,10 +247,10 @@ class pantheraDB
         {
             if (intval($limit) > 0)
             {
-                $sqlLimit = ' LIMIT ' .intval($limitFrom). ',' .intval($limit);
+                $sqlLimit = ' LIMIT ' .intval($offset). ',' .intval($limit);
             }
         }
-
+        
         $whereClause = '';
 
         if(is_array($by))

@@ -912,7 +912,7 @@ h1, h2, h3, h4, h5, h6 {
 .galleryItem div.galleryImageFrame {
     width: 100%;
     background: white;
-    min-height: 200px;
+    height: 200px;
     text-align: center;
     position: relative;
 }
@@ -947,6 +947,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .galleryImage {
+    max-height: 200px;
     max-width: 300px;
 }
 

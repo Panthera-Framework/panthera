@@ -18,12 +18,42 @@ if ($_GET['display'] == 'gallery')
 
     $tpl = 'gallery.tpl';
 
-    $panthera->locale->setDomain('gallery');
+    $panthera -> locale -> loadDomain('gallery');
 
     if (!getUserRightAttribute($user, 'can_view_galleryItem'))
     {
           $template->display('no_access.tpl');
           pa_exit();
+    }
+    
+    /**
+      * Add uploads to gallery
+      *
+      * @author Damian Kęska
+      */
+    
+    if ($_GET['action'] == 'adduploads')
+    {
+        $panthera -> importModule('filesystem');
+        
+        $files = json_decode($_POST['ids']);
+        $added = 0;
+        
+        foreach ($files as $id)
+        {
+            $file = new uploadedFile('id', $id);
+            
+            if ($file->exists())
+            {
+                createGalleryItem(basename($file->location), $file->description, pantheraUrl($file->getLink(), True), intval($_GET['gid']), True, $file);
+                $added++;
+            }
+        }
+        
+        if ($added > 0)
+            ajax_exit(array('status' => 'success', 'count' => $added));
+    
+        ajax_exit(array('status' => 'failed'));    
     }
 
     if (@$_GET['action'] == 'delete_item')
@@ -200,7 +230,7 @@ if ($_GET['display'] == 'gallery')
               $c = getGalleryCategories(array('language' => $user->language), $count, 0);
               $template -> push('category_list', $c);
 
-              $template -> display($tpl);
+              $template -> display('gallery_edititem.tpl');
               pa_exit();
         } else {
               pa_exit();
@@ -259,7 +289,7 @@ if ($_GET['display'] == 'gallery')
             $template -> push('category_list', $c);
             $template -> push('category_id', $_GET['ctgid']);
             $template -> push('gallery_name', $category->title);
-            $template -> display($tpl);
+            $template -> display('gallery_additem.tpl');
             pa_exit();
         }
 
