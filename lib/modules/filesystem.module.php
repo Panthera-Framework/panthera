@@ -177,6 +177,14 @@ function deleteUpload($id, $location)
         $fileInfo = pathinfo($location);
 
         @unlink($fileInfo['dirname']. '/../_thumbnails/200px_' .$fileInfo['filename']. '.' .$fileInfo['extension']);
+        
+        $thumbs = glob($fileInfo['dirname']. '/../_thumbnails/*_' .$fileInfo['filename']. '.' .$fileInfo['extension']);
+        
+        foreach ($thumbs as $thumb)
+        {
+            @unlink($thumb);
+        }
+        
         @unlink($location);
         if (!is_file($location))
             return True;
