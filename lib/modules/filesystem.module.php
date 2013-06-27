@@ -45,12 +45,14 @@ class uploadedFile extends pantheraFetchDB
     /**
       * Get thumbnail and create it if does not exists
       *
-      * @param mixed $size Optional size eg. 100x100 or 200
-      * @return mixed 
+      * @param string|int $size Optional size eg. 100x100 or 200
+      * @param bool $create Create thumbnail if does not exists (optional, False by default)
+      * @param bool $leaveSmaller Leave smaller thumbnail if its too small to resize (optiona, True by default)
+      * @return string Link to thumbnail 
       * @author Damian Kęska
       */
 
-    public function getThumbnail($size='', $create=False)
+    public function getThumbnail($size='', $create=False, $leaveSmaller=True)
     {
         global $panthera;
 
@@ -75,8 +77,17 @@ class uploadedFile extends pantheraFetchDB
 
                 if (count($exp) > 1)
                     $simpleImage -> resize($exp[0], $exp[1]); // resize to WIDTHxHEIGHT
-                else
-                    $simpleImage -> resizeToWidth($size); // resize to width
+                else {
+                    // resize smaller images
+                    if ($simpleImage -> getWidth() <= $size)
+                    {
+                        if ($leaveSmaller == False)
+                            $simpleImage -> resizeToWidth($size); // resize to width
+                    } else {
+                        // resize images bigger than $size
+                        $simpleImage -> resizeToWidth($size);
+                    }
+                }
 
                 $simpleImage -> save($thumb, IMAGETYPE_JPEG, 85);        
 

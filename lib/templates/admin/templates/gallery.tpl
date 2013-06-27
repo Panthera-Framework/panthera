@@ -144,7 +144,7 @@ function addGallery()
             <thead>
                 <tr>
             	<th>&nbsp;</th>
-                  <th>{"Title"|localize:messages}</th>
+                  <th>{"Title"|localize:gallery}</th>
                   <th>{"Created by"|localize:gallery}</th>
                   <th>{"Language"|localize:gallery}</th>
                   <th>{"Created"|localize:gallery}</th>
