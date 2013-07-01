@@ -15,7 +15,7 @@ $(document).ready(function(){
         <table class="gridTable">
             <thead>
                 <tr>
-                    <th scope="col" class="rounded-company" style="width: 250px;">{"Name"|localize:qmessages}</th>
+                    <th scope="col" class="rounded-company" style="width: 250px;">{"Category name"|localize:qmessages}</th>
                 </tr>
             </thead>
 

@@ -31,7 +31,7 @@ function renameDomain(name, locale, n)
     panthera.jsonPOST({ url: '{$AJAX_URL}?display=langtool&action=domains&subaction=rename_domain&domain_name='+name+'&locale='+locale+'&new_domain_name='+newname, data: '', spinner: spinner, success: function (response) {
             if (response.status == "success")
                 $("#domain_name_"+n).html('<a href="?display=langtool&action=view_domain&locale='+locale+'&domain='+newname+'.phps">'+newname+'.phps</a>');
-                $("#domain_new_name_"+n).val('');
+                $("#domain_new_name_"+n).val(newname);
         }
     });
 
@@ -64,7 +64,7 @@ function removeDomain(name, locale, n)
 
         <div class="grid-1" id="langtoolWindow" style="position: relative;">
 
-          <h1><a onclick="navigateTo('?display=langtool');">{"Back"|localize}</a></h1> <br>
+          <h1><a onclick="navigateTo('?display=langtool');" href="#">{"Back"|localize}</a></h1> <br>
 
           <table class="gridTable">
 
@@ -93,13 +93,17 @@ function removeDomain(name, locale, n)
               {$j=$j+1}
                 <tr id="domain_row_{$j}">
                     <td style="width: 1%;"><img src="{$PANTHERA_URL}/images/admin/flags/{$locale}.png"></td>
-                    <td id="domain_name_{$j}"><a href="?display=langtool&action=view_domain&locale={$locale}&domain={$i}">{$i}</a></td>
-                    <td style="width: 350px;">
-                        <input type="button" value="{"Remove"|localize}" onclick="removeDomain('{$i}', '{$locale}', '{$j}');">
-                        <input type="button" value="{"Rename"|localize:langtool}" onclick="renameDomain('{$i}', '{$locale}', '{$j}')" style="float: right; margin-right: 3px;">
-                        <input type="text" name="domain_new_name" id="domain_new_name_{$j}" style="float: right; margin-right: 10px;">
+                    <td id="domain_name_{$j}"><a href="#" onclick="navigateTo('?display=langtool&action=view_domain&locale={$locale}&domain={$i}');">{$i}</a></td>
+                    <td style="width: 230px;">
+                        <input type="text" name="domain_new_name" value="{$i}" id="domain_new_name_{$j}" style="margin-right: 5px;"><input type="button" value="{"Remove"|localize}" onclick="removeDomain('{$i}', '{$locale}', '{$j}');">
                     </td>
                 </tr>
+                
+                <script type="text/javascript">
+                    $(document).ready(function () { 
+                        panthera.inputTimeout({ element: '#domain_new_name_{$j}', interval: 1200, callback: function () { renameDomain('{$i}', '{$locale}', '{$j}'); }});
+                    });
+                </script>
               {/foreach}
             </tbody>
           </table>

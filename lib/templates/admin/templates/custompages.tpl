@@ -9,7 +9,7 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
   */
 
 $('#add_page').submit(function () {
-    panthera.jsonPOST({ data: '#add_page', messageBox: 'userinfoBox', success: function (response) {
+    panthera.jsonPOST({ data: '#add_page', messageBox: 'userinfoBox', mce: 'tinymce_all', success: function (response) {
             if (response.status == "success")
                 navigateTo("?display=custom");
         }
@@ -80,7 +80,7 @@ function getOtherCustomPages()
             <tbody>
               {foreach from=$pages_list key=k item=i}
                 <tr id="custompage_row_{$i.id}">
-                    <td><a href="{$AJAX_URL}?display=custom&action=edit_page&uid={$i.url_id}" class="ajax_link">{$i.title|localize}</a></td>
+                    <td><a href="{$AJAX_URL}?display=custom&action=edit_page&uid={$i.unique}" class="ajax_link">{$i.title|localize}</a></td>
                     <td>{$i.created}</td>
                     <td>{$i.modified}</td>
                     <td>{$i.author_name}</td>
@@ -103,8 +103,8 @@ function getOtherCustomPages()
             <form action="{$AJAX_URL}?display=custom&action=add_page" method="POST" id="add_page">
             <tbody>
                 <tr id="custompage_row_{$i.id}">
-                    <td><input name="title" value='{"Title of new custom page"|localize:custompages}' onfocus="this.value = ''" style="margin-right: 15px; width: 290px;"></td>
-                    <td>
+                    <td style="width: 300px;"><input name="title" type="text" value='{"Title of new custom page"|localize:custompages}' onfocus="this.value = ''" style="margin-right: 15px; width: 290px;"></td>
+                    <td style="width: 80px;">
                         <select name="language" style="margin-right: 16px;">
                         {foreach from=$locales key=k item=i}
                             <option value="{$k}">{$k}</option>

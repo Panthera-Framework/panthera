@@ -68,6 +68,16 @@ class pantheraLocale
      */
 
     public function getSystemDefault() { return $this->defaultLocale; }
+    
+    /**
+      * Check if locale exists
+      *
+      * @param string $localeName
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public function exists($localeName) { return array_key_exists($localeName, $this->getLocales()); }
 
     /**
      * Set system default locale

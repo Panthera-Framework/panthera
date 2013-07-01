@@ -1,3 +1,18 @@
+<script type="text/javascript">
+$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
+
+/**
+  * Jump to other page in a table
+  *
+  * @author Damian Kęska
+  */
+
+function jumpToAjaxPage(id)
+{
+    panthera.htmlGET({ url: '?display=settings&action=users&subaction=show_table&usersPage='+id, success: '#all_users_window' });
+}
+</script>
+
 <table class="gridTable">
                   <thead>
                       <tr>

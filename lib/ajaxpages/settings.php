@@ -28,6 +28,8 @@ if (!defined('IN_PANTHERA'))
             pa_exit();
         }
 
+        $tpl = "settings_systeminfo.tpl";
+
         $yn = array(0 => localize('False'), 1 => localize('True'));
 
         $options = array ('template' => $config['template'],
@@ -72,7 +74,12 @@ if (!defined('IN_PANTHERA'))
         $options['varCache'] = $panthera->config->getKey('varcache_type', 'db', 'string');
         $options['cache'] = $panthera->config->getKey('cache_type', 'db', 'string');
 
+        /** Constants **/
+        $const = get_defined_constants(true);
+        $template -> push('const', $const['user']);
+
         $options = $panthera->get_filters('_ajax_settings', $options);
+        $template -> push('constants', $const['user']);
         $template -> push('settings_list', $options);
         $template -> push('acl_list', $user->acl->listAll());
         $template -> push('action', 'system_info');
@@ -85,6 +92,8 @@ if (!defined('IN_PANTHERA'))
       */
 
     } elseif (@$_GET['action'] == 'my_account') {
+        $tpl = "myaccount.tpl";
+
         if (isset($_GET['uid']) AND ($user->attributes->admin OR $user->attributes->superuser))
         {
             $u = getUserById($_GET['uid']);
@@ -234,11 +243,10 @@ if (!defined('IN_PANTHERA'))
             pa_exit();
         }
 
-
         if (@$_GET['subaction'] == 'show_table')
-            $template -> push('action', 'show_table');
+            $tpl = "settings_showtable.tpl";
         else
-            $template -> push('action', 'users');
+            $tpl = "users.tpl";
 
         /*
             // count pages

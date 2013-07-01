@@ -177,20 +177,7 @@ $(document).ready(function () {
       * @author Damian Kęska
       */
     
-    
-    var typingTimer; 
-    var doneTypingInterval = 1200; // 5 seconds
-    
-    $('#template_cache_lifetime').keyup(function(){
-        typingTimer = setTimeout(template_cache_lifetime_save, doneTypingInterval);
-    });
-    
-    $('#template_cache_lifetime').keydown(function(){
-        clearTimeout(typingTimer);
-    });
-    
-    
-
+    panthera.inputTimeout({ element: '#template_cache_lifetime', interval: 1200, callback: template_cache_lifetime_save });
 });
 
 toolsLoader = new panthera.ajaxLoader($('#templatesTools'));

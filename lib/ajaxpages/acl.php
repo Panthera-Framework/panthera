@@ -32,7 +32,7 @@ if ($_GET['action'] == 'delete')
     if ($_POST['type'] == 'group')
         $group = True;
 
-    if (meta::remove(trim($_POST['id']), trim($_POST['login']), $group))
+    if (meta::removeAcl(trim($_POST['id']), trim($_POST['login']), $group))
     {
         ajax_exit(array('status' => 'success'));
     } else

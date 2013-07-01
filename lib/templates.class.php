@@ -20,7 +20,7 @@ include PANTHERA_DIR. '/share/dwoo/dwooAutoload.php';
 class pantheraTemplate extends pantheraClass
 {
     protected $template, $name, $attributes = array('title' => '', 'keywords' => array(), 'metas' => array(), 'scripts' => array()), $panthera, $vars = array(), $cacheConfig = False;
-    public $tpl, $generateScripts = True, $generateHeader = True, $generateMeta = True, $generateKeywords = True, $generateLinks = True, $header = '';
+    public $tpl, $generateScripts = True, $generateHeader = True, $generateMeta = True, $generateKeywords = True, $generateLinks = True, $header = '', $deviceType = 'desktop', $forceKeepTemplate = False;
     
     // configurable options
     protected $debugging, $caching, $cache_lifetime;
@@ -37,6 +37,17 @@ class pantheraTemplate extends pantheraClass
     {
         $templatesDir = array();
         $tpl = null;
+
+        if ($this->deviceType == 'mobile' and $this->forceKeepTemplate == False)
+        {        
+            if (strpos($template, '_mobile') === False)
+            {
+                $this->panthera->logging->output('Checking for mobile template ' .$template. '_mobile', 'pantheraTemplate');
+            
+                if (is_dir(SITE_DIR.'/content/templates/'.$template. '_mobile/') or is_dir(SITE_DIR.'/content/templates/' .$template. '_mobile/'))
+                    $template = $template. '_mobile';
+            }
+        }
         
         if ($this->cacheConfig == True)
         {
@@ -90,6 +101,30 @@ class pantheraTemplate extends pantheraClass
         $this->template = $tpl;
         $this->name = $template;
     }
+    
+    /**
+      * Detect device type
+      *
+      * @return string with type {mobile, bot, desktop} 
+      * @author Damian Kęska
+      */
+    
+    public function detectDeviceType()
+    {
+        $UA = strtolower ($_SERVER['HTTP_USER_AGENT']);
+        
+        if ( preg_match ("/phone|iphone|itouch|ipod|symbian|android|htc_|htc-|palmos|blackberry|opera mini|iemobile|windows ce|nokia|fennec|hiptop|kindle|mot |mot-|webos\/|samsung|sonyericsson|^sie-|nintendo/", $user_agent))
+            return 'mobile';
+        
+        if (preg_match ("/mobile|pda;|avantgo|eudoraweb|minimo|netfront|brew|teleca|lg;|lge |wap;| wap /", $user_agent))
+            return 'mobile';
+        
+        if (preg_match("/googlebot|adsbot|yahooseeker|yahoobot|msnbot|watchmouse|pingdom\.com|feedfetcher-google/", $user_agent))
+            return 'bot';
+            
+        if (preg_match ("/mozilla\/|opera\//", $user_agent))
+            return 'desktop';
+    }
 
     /**
 	 * Initialize template system, configuration etc.
@@ -108,6 +143,19 @@ class pantheraTemplate extends pantheraClass
         $this->debugging = (bool)$this->panthera->config->getKey('template_debugging', False, 'bool'); // TODO: A template that displays Panthera environment
         $this->caching = (bool)$this->panthera->config->getKey('template_caching', False, 'bool');
         $this->cache_lifetime = intval($this->panthera->config->getKey('template_cache_lifetime', 120, 'int'));
+        
+        // Device type detection
+        if (!$panthera->session->exists('device_type'))
+        {
+            $panthera->session->set('device_type', $this->detectDeviceType());
+            $this->deviceType = $panthera->session->get('device_type');
+        }
+        
+        // Force keep default template
+        if ($panthera->session->get('tpl_forceKeepTemplate'))
+        {
+            $this->forceKeepTemplate = True;
+        }
         
         /*if ($this->caching == True)
         {
@@ -138,6 +186,15 @@ class pantheraTemplate extends pantheraClass
             // cache configuration files?
             $this->cacheConfig = True;
         }
+        
+        // automatic generate site header from config informations
+        if (!defined('TPL_NO_AUTO_HEADER'))
+        {
+            $this -> setTitle($this->panthera->config->getKey('site_title'));
+            $this -> addMetaTag('description', $this->panthera->config->getKey('site_description'));
+            $this -> putKeywords(explode(',', $this->panthera->config->getKey('site_meta')));
+        }
+        
         //$this->tpl->plugins_dir = array(PANTHERA_DIR.'/smarty/sysplugins/', PANTHERA_DIR.'/share/smarty/plugins/', SITE_DIR.'/content/smartyplugins/', PANTHERA_DIR.'/share/smartyplugins/');
         
         // automatic webroot merge (for debugging purposes)

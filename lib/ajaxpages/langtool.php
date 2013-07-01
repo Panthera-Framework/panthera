@@ -51,7 +51,7 @@ if (@$_GET['display'] == 'langtool') {
                 if (strlen($_GET['domain_name']) < 3)
                     ajax_exit(array('status' => 'failed', 'message' => localize('Name of created domain is too short!')));
                 else
-                    $domain_name = substr($_GET['domain_name'], 0, strlen($_GET['domain_name'])-5);
+                    $domain_name = str_ireplace('.phps', '', $_GET['domain_name']);
 
                 if (localesManagement::removeDomain($locale, $domain_name))
                     ajax_exit(array('status' => 'success', 'message' => localize('Domain has been successfully removed!')));
@@ -64,7 +64,7 @@ if (@$_GET['display'] == 'langtool') {
 
                 // public static function renameDomain($locale, $domain, $newName)
 
-                $name = substr($_GET['domain_name'], 0, strlen($_GET['domain_name'])-5);
+                $name = str_ireplace('.phps', '', $_GET['domain_name']);
                 $newName = $_GET['new_domain_name'];
 
                 // check if new name of domain is not empty and has at least 3 letters
@@ -81,9 +81,25 @@ if (@$_GET['display'] == 'langtool') {
                    ajax_exit(array('status' => 'failed', 'message' => localize('New name of domain is too short or empty!')));
                 }
             }
+            
+            $domains = localesManagement::getDomains($_GET['locale']);
+            
+            foreach ($domains as $key => $domain)
+            {
+                $dir = localesManagement::getDomainDir($_GET['locale'], $domain);
+                
+                if (substr($dir, 0, strlen(PANTHERA_DIR)) == PANTHERA_DIR and defined('LANGTOOL_DISABLE_LIB'))
+                {
+                    unset($domains[$key]);
+                    continue;
+                }
+                    
+                $domains[$key] = str_ireplace('.phps', '', $domain);
+            }
+            
 
             $template -> push('locale', $_GET['locale']);
-            $template -> push('domains', localesManagement::getDomains($_GET['locale']));
+            $template -> push('domains', $domains);
         }
     }
 
@@ -101,7 +117,7 @@ if (@$_GET['display'] == 'langtool') {
 
         // check if locale exists
         if (localesManagement::getLocaleDir($locale) == FALSE)
-                ajax_exit(array('status' => 'failed', 'message' => localize('Locale does not exist')));
+            ajax_exit(array('status' => 'failed', 'message' => localize('Locale does not exist')));
 
         // get domain name
         $name = str_replace('.phps', '', $_GET['domain']);
@@ -143,8 +159,6 @@ if (@$_GET['display'] == 'langtool') {
         // remove translation from domain
         if ($_GET['subaction'] == 'remove_string')
         {
-
-
             if (!$domain->stringExists($_GET['id']))
                 ajax_exit(array('status' => 'failed', 'message' => localize("String does not exist!")));
 

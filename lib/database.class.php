@@ -198,6 +198,47 @@ class pantheraDB
     }
     
     /**
+      * Duplicate a row in a table
+      *
+      * @param string $table Table name
+      * @param int $idField Table's id field
+      * @param int $idValue ID value of a record
+      * @param array $newValues Optional values override
+      * @return int 
+      * @author Damian Kęska
+      */
+    
+    public function duplicateRow($table, $idField, $idValue, $newValues = '')
+    {
+        $result = $this->query('SELECT * FROM `{$db_prefix}' .$table. '` WHERE `' .$idField. '` = :id', array('id' => $idValue));
+        $array = $result->fetch();
+        
+        if (is_array($newValues))
+            $array = array_merge($array, $newValues);
+        
+        unset($array[$idField]);
+
+        $list = '';
+        $values = '';
+        $valuesArray = array();
+        
+        foreach ($array as $key => $value)
+        {
+            if (is_numeric($key))
+                continue;
+                
+            $list .= '`' .$key. '`, ';
+            $values .= ':' .$key. ', ';
+            $valuesArray[$key] = $value;
+        }
+        
+        $query = $this->query('INSERT INTO `{$db_prefix}' .$table. '` (`' .$idField. '`, ' .trim($list, ' ,'). ') VALUES (NULL, ' .trim($values, ' ,'). ')', $valuesArray);
+        $newID = $this->sql->lastInsertId();
+        return $newID;
+        
+    }
+    
+    /**
       * Generate list of fields for SQL "UPDATE" query
       *
       * @param string name
@@ -205,7 +246,7 @@ class pantheraDB
       * @author Damian Kęska
       */
 
-    function dbSet($fields) 
+    function dbSet($fields, $sep=', ') 
     {
         $set = '';
         $values = array();
@@ -219,12 +260,12 @@ class pantheraDB
 
             if ((string)$value == "NOW()")
             {
-                $set .= "`".$field."` = NOW(), ";        
+                $set .= "`".$field."` = NOW()".$sep;        
             } else
-                $set .= "`".$field."` = :".$field.", ";
+                $set .= "`".$field."` = :".$field.$sep;
         }
-
-        return array(rtrim($set, ', '), $values);
+        
+        return array(substr($set, 0, strlen($set)-strlen($sep)), $values);
     }
     
     /**
@@ -356,11 +397,6 @@ class whereClause
 {
 	protected $SQL=NuLL, $vals = array();
 
-	public function escapeString($String)
-	{
-		return str_ireplace('ALTER TABLE', '', addslashes($String));
-	}
-
 	public function add ( $Statement, $Column, $Equals, $Value )
 	{
         $this->Values = array();
@@ -382,15 +418,6 @@ class whereClause
 			$Statement = '';	
 		}
 
-		/*// PATH ALLOWING OPERATIONS LIKE column=column+1
-		if ( $Value[0] == '+' AND $Value[1] == '_' )
-		{
-			$Value = $this->escapeString($Value);
-			$Value = substr($Value, 2, strlen ( $Value ) );
-		} else
-			$Value = '"' .$this->escapeString($Value). '"';*/
-
-		//          AND                     id           ==            1
 		$this->SQL .= $Statement. ' `' .$Column. '` ' .$Equals. ' :' .$Column. ' ';
         $this->vals[(string)$Column] = $Value;
 		return true;
@@ -403,10 +430,11 @@ class whereClause
 }
 
 /**
-   pantheraFetchDB usage is very simplearray(2) { [0]=> string(27) " `id`=:id AND `data`=:data " [1]=> array(1) { ["data"]=> string(6) ""test"" } }
-   other class can be extended with it fuctions which allows
-   accessing database keys using "->" operator
-**/
+  * Panthera Fetch DB - Turning database results into object, a data model
+  *
+  * @package Panthera\core\database
+  * @author Damian Kęska
+  */
 
 abstract class pantheraFetchDB
 {
@@ -419,11 +447,25 @@ abstract class pantheraFetchDB
     protected $panthera;
     protected $cache = 0;
     protected $cacheID = "";
+    
+    /**
+      * Constructor, here are logics that parses and loads all data, cache management etc.
+      *
+      * @param mixed $by
+      * @param mixed $value
+      * @return void 
+      * @author Damian Kęska
+      */
 
     public function __construct($by, $value)
     {
         global $panthera;
         $this->panthera = $panthera;
+        
+        /**
+          * Cache
+          *
+          */
 
         // in case when we have other column identificator but want to use `id` to construct object
         if ($by == 'id' and $this->_idColumn != 'id')
@@ -450,6 +492,11 @@ abstract class pantheraFetchDB
         
         if ($this->_tableName == NuLL)
             throw new Exception('$this->_tableName was not specified, cannot construct object of ' .get_class($this). ' extended by pantheraFetchDB');
+            
+        /**
+          * Constructing object by array
+          *
+          */
 
         // construct object using existing data, so we dont have to make a SQL query again
         if ($by == 'array' and in_array('array', $this->_constructBy))
@@ -480,6 +527,25 @@ abstract class pantheraFetchDB
                 } else
                     $SQL = $panthera->db->query('SELECT * FROM `{$db_prefix}' .$this->_tableName. '` ORDER BY `id`');
             }
+            
+            /**
+              * Constructing by multiple columns
+              *
+              */
+            
+            if ($SQL == NULL and is_object($by))
+            {
+                if (get_class($by) != "whereClause")
+                    throw new Exception('Input $by must be a whereClause object or a string with column name');
+            
+                $clause = $by->show();
+                $SQL = $panthera->db->query('SELECT * FROM `{$db_prefix}' .$this->_tableName. '` WHERE ' .$clause[0], $clause[1]);
+            }
+            
+            /**
+              * Constructing by column
+              *
+              */
 
             // if we dont have array to take fetched data we must fetch it by our own
             if (in_array($by, $this->_constructBy) and $SQL == NULL)
@@ -509,6 +575,13 @@ abstract class pantheraFetchDB
             }
         }
     }
+    
+    /**
+      * Check if object exists
+      *
+      * @return bool 
+      * @author Damian Kęska
+      */
 
     public function exists()
     {
@@ -517,6 +590,14 @@ abstract class pantheraFetchDB
 
         return False;
     }
+    
+    /**
+      * Get data from column
+      *
+      * @param string $var Column name
+      * @return mixed 
+      * @author Damian Kęska
+      */
 
     // Fast columns access from DB
     public function __get($var)
@@ -526,6 +607,15 @@ abstract class pantheraFetchDB
 
         return False;
     }
+    
+    /**
+      * Set column data
+      *
+      * @param string $var Colum name
+      * @param string $value Value
+      * @return bool 
+      * @author Damian Kęska
+      */
 
     public function __set($var, $value)
     {
@@ -540,6 +630,13 @@ abstract class pantheraFetchDB
         $this->_dataModified = True;        
         $this->_data[$var] = $value;
     }
+    
+    /**
+      * Save all changes to database
+      *
+      * @return void 
+      * @author Damian Kęska
+      */
 
     public function save()
     {

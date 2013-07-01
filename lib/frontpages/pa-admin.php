@@ -42,6 +42,20 @@ $panthera -> get_options('admin_menu', $menu);
 // set current active menu (optional)
 $menu -> setActive(@$_GET['display']);
 
+// langauges list
+$locales = $panthera -> locale -> getLocales();
+$localesTpl = array();
+
+foreach ($locales as $lang => $enabled)
+{
+    if ($enabled == True)
+    {
+        if (is_file(SITE_DIR. '/images/admin/flags/' .$lang. '.png'))
+            $localesTpl[] = $lang;
+    } 
+}
+
+$panthera -> template -> push('flags', $localesTpl);
 $panthera -> template -> push('admin_menu', $menu->show());
 $panthera -> template -> push('display_page', $_GET['display']);
 $panthera -> template -> push('query_string', $_SERVER['QUERY_STRING']);

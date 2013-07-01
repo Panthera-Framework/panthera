@@ -25,35 +25,42 @@ if ($_GET['display'] == 'gallery')
           $template->display('no_access.tpl');
           pa_exit();
     }
-    
+
     /**
-      * Add uploads to gallery
+      * Add selected uploads to gallery
       *
+      * @input json {1, 2, 3, 4, 10, 50, 60} - upload id's
       * @author Damian Kęska
       */
-    
+
     if ($_GET['action'] == 'adduploads')
     {
+        // here are all files-related functions
         $panthera -> importModule('filesystem');
-        
+
+        // see @input
         $files = json_decode($_POST['ids']);
         $added = 0;
-        
+
         foreach ($files as $id)
         {
+            // get uploaded file
             $file = new uploadedFile('id', $id);
-            
+
+            // validate
             if ($file->exists())
             {
+                // add to gallery
                 createGalleryItem(basename($file->location), $file->description, pantheraUrl($file->getLink(), True), intval($_GET['gid']), True, $file);
                 $added++;
             }
         }
-        
+
+        // return success and simple result
         if ($added > 0)
             ajax_exit(array('status' => 'success', 'count' => $added));
-    
-        ajax_exit(array('status' => 'failed'));    
+
+        ajax_exit(array('status' => 'failed'));
     }
 
     if (@$_GET['action'] == 'delete_item')
@@ -119,7 +126,7 @@ if ($_GET['display'] == 'gallery')
     if (@$_GET['action'] == 'display_category') {
           if (!isset($_GET['ctgid']))
           {
-        pa_exit();
+              pa_exit();
           }
 
           $template -> push('action', 'display_category');
@@ -131,6 +138,12 @@ if ($_GET['display'] == 'gallery')
           $template -> push('category_title', $category->title);
           $template -> push('category_id', $category->id);
           $template -> push('item_list', $i);
+
+          $count = getGalleryCategories(array('language' => $user->language), False);
+          $c = getGalleryCategories(array('language' => $user->language), $count, 0);
+
+          $template -> push('category_list', $c);
+
           $template -> display('gallery_displaycategory.tpl');
           pa_exit();
 
@@ -188,9 +201,9 @@ if ($_GET['display'] == 'gallery')
             ajax_exit(array('status' => 'failed', 'message' => localize('Selected file doesnt exists in upload list')));
 
               if ($_POST['visibility'] == '1')
-              $item -> visibility = '1';
+                $item -> visibility = 0;
               else
-              $item -> visibility = '0';
+                $item -> visibility = 1;
 
               $item -> title = filterInput($_POST['title'], 'quotehtml');
               $item -> description = filterInput($_POST['description'], 'quotehtml');
@@ -223,7 +236,7 @@ if ($_GET['display'] == 'gallery')
               $template -> push('link', pantheraUrl($item -> link));
               $template -> push('thumbnail', pantheraUrl($item -> thumbnail)); // We haven't script to make thumbnails yet. Later we'll delete this line. /M.
               $template -> push('gallery_id', $item -> gallery_id);
-              $template -> push('visibility', $item -> visibility);
+              $template -> push('visibility', !$item -> visibility);
               $template -> push('upload_id', $item -> upload_id);
 
               $count = getGalleryCategories(array('language' => $user->language), False);
@@ -294,25 +307,41 @@ if ($_GET['display'] == 'gallery')
         }
 
     }
+    
+    /**
+      * Creating new category
+      *
+      * @author Mateusz Warzyński
+      */
 
-    if (@$_GET['action'] == 'add_category') {
-
+    if ($_GET['action'] == 'add_category') 
+    {
+        // check user rights
         if (!getUserRightAttribute($user, 'manage_gallery_categ') and !getUserRightAttribute($user, 'gallery_manage_cat_' .$id))
         {
-              print(json_encode(array('status' => 'failed', 'error' => localize('Permission denied. You dont have access to this action', 'messages'))));
-              pa_exit();
+            print(json_encode(array('status' => 'failed', 'error' => localize('Permission denied. You dont have access to this action', 'messages'))));
+            pa_exit();
         }
 
-        if ($_GET['new_title'] != '' and $_GET['visibility'] != '') {
-             createGalleryCategory($_GET['new_title'], $user->login, $user->id, $user->language, $_GET['visibility'], $user->full_name);
-             print(json_encode(array('status' => 'success')));
+        if ($_GET['new_title'] != '') 
+        {
+            createGalleryCategory($_GET['filter'].$_GET['new_title'], $user->login, $user->id, $user->language, intval($_GET['visibility']), $user->full_name);
+            print(json_encode(array('status' => 'success')));
         } else {
-             print(json_encode(array('status' => 'failed', 'error' => localize('Error with adding category!', 'gallery'))));
+            print(json_encode(array('status' => 'failed', 'error' => localize('Title cannot be empty', 'gallery'))));
         }
+        
         pa_exit();
     }
+    
+    /**
+      * Setting gallery thumbnail from gallery image
+      *
+      * @author Mateusz Warzyński
+      */
 
-    if (@$_GET['action'] == 'set_category_thumb') {
+    if ($_GET['action'] == 'set_category_thumb') 
+    {
         if (!getUserRightAttribute($user, 'manage_gallery_categ') and !getUserRightAttribute($user, 'gallery_manage_cat_' .$id))
         {
               print(json_encode(array('status' => 'failed', 'error' => localize('Permission denied. You dont have access to this action', 'gallery'))));
@@ -325,7 +354,8 @@ if ($_GET['display'] == 'gallery')
         $item = new galleryItem('id', $id);
         $category = new galleryCategory('id', $ctgid);
 
-        if ($item -> exists() and $category -> exists()) {
+        if ($item -> exists() and $category -> exists()) 
+        {
              $category -> thumb_id = $item -> id;
              $category -> thumb_url = $item -> link;
              print(json_encode(array('status' => 'success')));
@@ -335,8 +365,15 @@ if ($_GET['display'] == 'gallery')
         }
         pa_exit();
     }
+    
+    /**
+      * Editing category title and visibility
+      *
+      * @author Mateusz Warzyński
+      */
 
-    if (@$_GET['action'] == 'edit_category') {
+    if ($_GET['action'] == 'edit_category') 
+    {
 
         if (!getUserRightAttribute($user, 'manage_gallery_categ') and !getUserRightAttribute($user, 'gallery_manage_cat_' .$id))
         {
@@ -348,46 +385,89 @@ if ($_GET['display'] == 'gallery')
 
         $item = new galleryCategory('id', $id);
 
-        if ($item -> exists()) {
+        if ($item -> exists()) 
+        {
+            $response = array('status' => 'success');
 
+            if (isset($_GET['new_title']) and $_GET['new_title'] != '') {
+                $item -> title = filterInput($_GET['new_title'], 'quotehtml');
+                $response['title'] = filterInput($_GET['new_title'], 'quotehtml');
+            } else {
+                print(json_encode(array('status' => 'failed', 'error' => localize("Title can't be empty", 'gallery'))));
+                pa_exit();
+            }
 
-              $response = array('status' => 'success');
+            if (isset($_GET['visibility']))
+            {
 
-              if (isset($_GET['new_title']) and $_GET['new_title'] != '') {
-              $item -> title = filterInput($_GET['new_title'], 'quotehtml');
-              $response['title'] = filterInput($_GET['new_title'], 'quotehtml');
-              } else {
-              print(json_encode(array('status' => 'failed', 'error' => localize("Title can't be empty", 'gallery'))));
-              pa_exit();
-              }
+                if ($_GET['visibility'] == 'show')
+                {
+                    $item -> visibility = True;
+                    $response['visibility'] = 'show';
+                }
 
-              if (isset($_GET['visibility'])) {
+                if ($_GET['visibility'] == 'hide') 
+                {
+                    $item -> visibility = False;
+                    $response['visibility'] = 'hide';
+                }
+            }
 
-              if ($_GET['visibility'] == 'show') {
-            $item -> visibility = True;
-            $response['visibility'] = 'show';
-              }
-
-              if ($_GET['visibility'] == 'hide') {
-            $item -> visibility = False;
-            $response['visibility'] = 'hide';
-              }
-              }
-
-              print(json_encode($response));
+            ajax_exit($response);
 
         } else {
-              print(json_encode(array('status' => 'failed', 'error' => localize('Category does not exists'))));
+              ajax_exit(array('status' => 'failed', 'error' => localize('Category does not exists')));
               pa_exit();
         }
         pa_exit();
     }
+    
+    $conditions = '';
 
-    // normally we will display categories here
-    $count = getGalleryCategories(array('language' => $user->language), False);
-    $c = getGalleryCategories(array('language' => $user->language), $count, 0);
+    if (isset($_GET['language']))
+    {
+        if ($_GET['language'] == '' or $_GET['language'] == 'all')
+            $panthera -> session -> set('admin_gallery_locale', '');
+        elseif (array_key_exists($_GET['language'], $panthera -> locale -> getLocales()))
+            $panthera -> session -> set('admin_gallery_locale', $_GET['language']);
+    }
+    
+    if ($panthera->session->exists('admin_gallery_locale'))
+    {
+        if ($panthera -> session -> get('admin_gallery_locale') != '')
+            $conditions = array('language' => $panthera -> session -> get('admin_gallery_locale'));
+    }
+    
+    // display categories
+    $count = getGalleryCategories($conditions, False);
+    $categories = getGalleryCategories($conditions, $count, 0);
+    
+    if (isset($_GET['filter']))
+    {
+        // with title filter
+        $categoriesFiltered = array();
+        
+        foreach ($categories as $category)
+        {
+            if (!stristr($category->title, $_GET['filter']))
+            {
+                continue;
+            }
+            
+            $categoriesFiltered[] = $category;
+        }
 
-    $template -> push('category_list', $c);
+        $template -> push('category_list', $categoriesFiltered);
+        
+        if (defined('GALLERY_FILTER'))
+            $template -> push('category_filter', $_GET['filter'].GALLERY_FILTER);
+        else
+            $template -> push('category_filter', $_GET['filter']);
+    } else {
+        // without filter
+        $template -> push('category_list', $categories);
+    }
+    
     $template -> display($tpl);
     pa_exit();
 }

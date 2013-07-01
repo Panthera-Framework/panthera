@@ -22,47 +22,50 @@ jQuery(document).ready(function($) {
 
     //setTimeout(initEditor, 500);
 
-    {if !isset($map_zoom)}
-    {$map_zoom = 10}
-    {$map_x = 0}
-    {$map_y = 0}
-    {/if}
+    if ($('#map').length > 0)
+    {
+        {if !isset($map_zoom)}
+        {$map_zoom = 10}
+        {$map_x = 0}
+        {$map_y = 0}
+        {/if}
 
-    var mapOptions = {
-       zoom: {$map_zoom},
-       mapTypeId: google.maps.MapTypeId.ROADMAP,
-       center: new google.maps.LatLng({$map_x}, {$map_y})
-     };
+        var mapOptions = {
+           zoom: {$map_zoom},
+           mapTypeId: google.maps.MapTypeId.ROADMAP,
+           center: new google.maps.LatLng({$map_x}, {$map_y})
+         };
 
-    createMap("map", mapOptions);
+        createMap("map", mapOptions);
 
-    /**
-      * Find place from input
-      *
-      * @author Mateusz Warzyński
-      */
+        /**
+          * Find place from input
+          *
+          * @author Mateusz Warzyński
+          */
 
-    jQuery('#map_form').submit(function () {
-        place = jQuery('#map_searchbox').val();
+        $('#map_form').submit(function () {
+            place = $('#map_searchbox').val();
 
-        if (place != "")
-        {
-            getLocation(place);
-            jQuery('#map_bounds').val(JSON.stringify({ "bounds":map.getBounds(), "zoom": map.getZoom(), "center": map.getCenter() }));
-        }
+            if (place != "")
+            {
+                getLocation(place);
+                $('#map_bounds').val(JSON.stringify({ "bounds":map.getBounds(), "zoom": map.getZoom(), "center": map.getCenter() }));
+            }
 
-        return false;
-    });
+            return false;
+        });
+        
+         /**
+          * Save map bounds
+          *
+          * @author Mateusz Warzyński
+          */
 
-    /**
-      * Save map bounds
-      *
-      * @author Mateusz Warzyński
-      */
-
-    jQuery('#contact_form').submit(function () {
-        jQuery('#map_bounds').val(JSON.stringify({ "bounds":map.getBounds(), "zoom": map.getZoom(), "center": map.getCenter() }));
-    });
+        $('#contact_form').submit(function () {
+            $('#map_bounds').val(JSON.stringify({ "bounds":map.getBounds(), "zoom": map.getZoom(), "center": map.getCenter() }));
+        });
+    }
 
     /**
       * Save contact information
@@ -71,11 +74,13 @@ jQuery(document).ready(function($) {
       */
 
     $('#contact_form').submit(function () {
-        panthera.jsonPOST({ data: '#contact_form', messageBox: 'userinfoBox'});
+        panthera.jsonPOST({ data: '#contact_form', mce: 'tinymce_all', messageBox: 'userinfoBox'});
 
         return false;
 
     });
+    
+    panthera.forms.checkboxToggleLayer({ input: '#oneContactCheckbox', layer: '#oneContactPage', reversed: true });
 });
 </script>
 
@@ -83,7 +88,30 @@ jQuery(document).ready(function($) {
 
         <div class="msgSuccess" id="userinfoBox_success"></div>
         <div class="msgError" id="userinfoBox_failed"></div>
+        
+        <div class="grid-1" id="languagesList" style="position: relative;">
+          <div class="title-grid">{"Contact in other languages"|localize:contactpage}<span></span></div>
+          <div class="content-table-grid">
+              <table class="insideGridTable">
+                <tfoot>
+                    <tr>
+                        <td colspan="3"><small>{"Contact informations can be provided in many diffirent site localisations"|localize:contactpage}</small></td>
+                    </tr>
+                </tfoot>
+            
+                <tbody>
+                    {foreach from=$languages key=k item=i}
+                        <tr>
+                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$k}" onclick="navigateTo('?display=contact&language={$k}');">{$k}</a></td>
+                            <td style="width: 60px; padding: 10px; border-right: 0px;"></td>
+                        </tr>
+                    {/foreach}
+                </tbody>
+            </table>
+         </div>
+       </div>
 
+        {if !$skip_map}
         <div class="grid-1">
                <div class="title-grid">{"Map"|localize:contactpage}</div>
 
@@ -92,53 +120,52 @@ jQuery(document).ready(function($) {
                     <div id="map" style="width: 100%; height: 300px; margin-top: 10px;"></div>
                </div>
        </div>
+       {/if}
 
        <br>
 
         <form action="?display=contact&action=save" method="GET" id="contact_form">
          <div class="grid-1">
-	      	 <div class="title-grid">{"Content"|localize}</div>
-	      	 <div class="content-gird">
-                 <textarea id="address_text" name="address_text" style="width: 100%;"></textarea><br><br>
+	      	 <div class="title-grid">{"Contact page text"|localize:contactpage}</div>
+	      	 <div class="content-gird" style="padding: 0px;">
+                 <textarea id="address_text" name="address_text" style="width: 100%; height: 550px;"></textarea><br><br>
             </div>
 		 </div>
 
 		 <input type="hidden" name="map_bounds" id="map_bounds">
 
-         <div class="grid-2">
-               <div class="title-grid">{"Insert max. 3 e-mail adresses"|localize:contactpage}</div>
-
-               <div class="content-gird">
-                    <table class="gridTable" style="border: 0px">
-                        <tbody>
-                            <tr>
-                                <td>1.</td>
-                                <td><input type="text" name="email_first" value="{$email_first}"><br></td>
-                            </tr>
-                            <tr>
-                                <td>2.</td>
-                                <td><input type="text" name="email_second" value="{$email_second}"><br></td>
-                            </tr>
-                            <tr>
-                                <td>3.</td>
-                                <td><input type="text" name="email_third" value="{$email_third}"><br></td>
-                            </tr>
-                        </tbody>
-                    </table>
-               </div>
-         </div>
-
-         <div class="grid-2">
+         <div class="grid-1">
                <div class="title-grid">{"Options"|localize:messages}</div>
 
                <div class="content-gird">
                     <table class="gridTable" style="border: 0px">
                         <tbody>
                             <tr>
-                                <td><input type="submit" value="{"Save"|localize}"></td>
+                                <td style="border-right: 0px; width: 20%;">{"E-mail address where all messages from form will to"|localize:contactpage}: </td>
+                                <td style="border-right: 0px;"><input type="text" name="contact_email" value="{$contact_mail}"></td>
                             </tr>
+                            
                             <tr>
-                                <td><input type="button" value="{"Manage permissions"|localize:messages}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_manage_custompage_{$custompage_id}', 1024, 'upload_popup');"></td>
+                                <td style="border-right: 0px;">{"One contact page for all languages"|localize:contactpage}: </td>
+                                <td style="border-right: 0px;"><input type="checkbox" value="1" name="all_langs"{if $oneContactPage == True} checked{/if} id="oneContactCheckbox"></td>
+                            </tr>
+                            
+                            <tr{if $oneContactPage == True} style="display: none;"{/if} id="oneContactPage">
+                                <td style="border-right: 0px; border-bottom: 0px;">{"Save this contact page in"|localize:contactpage}: </td>
+                                <td style="border-right: 0px; border-bottom: 0px;">
+                                    <select name="save_as_language">
+                                        {foreach from=$languages key=k item=i}
+                                            <option value="{$k}"{if $k == $selected_language} selected{/if}>{$k}</option>
+                                        {/foreach}
+                                    </select>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td style="border-bottom: 0px; border-right: 0px;">&nbsp;</td>
+                                <td style="border-bottom: 0px; border-right: 0px;">
+                                    <div style="float: right;"><input type="button" value="{"Manage permissions"|localize:messages}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_edit_contact', 1024, 'upload_popup');"> <input type="submit" value="{"Save"|localize}"></div>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

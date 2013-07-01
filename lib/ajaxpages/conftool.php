@@ -61,10 +61,15 @@ if (@$_GET['display'] == 'conftool') {
 
       foreach ($overlay as $key => $value)
       {
+          $value[3] = '';
+      
           if (is_array($value[1]))
+          {
               $value[1] = serialize($value[1]);
+              $value[3] = base64_encode($value[1]);
+          }
 
-          $array[$key] = array($value[0], $value[1]);
+          $array[$key] = array($value[0], $value[1], 'b64' => $value[3]);
       }
 
       $array = $panthera -> get_filters('conftool_array', $array);

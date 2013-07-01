@@ -1,4 +1,59 @@
-<div class="titlebar">{"My account"|localize:settings} - {"Panel with informations about current user."|localize:settings}</div>
+<script type="text/javascript">
+$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
+
+/**
+  * Submit language form
+  *
+  * @author Damian Kęska
+  */
+
+$('#changelanguage_form').submit(function () {
+    panthera.jsonPOST({ data: '#changelanguage_form', messageBox: 'userinfoBox', success: function (response) {
+            if (response.status == "success")
+                navigateTo('?display=settings&action=my_account');
+        }
+    });
+
+    return false;
+
+});
+
+/**
+  * Submit change password form
+  *
+  * @author Damian Kęska
+  */
+
+$('#changepasswd_form').submit(function () {
+    panthera.jsonPOST({ data: '#changepasswd_form', messageBox: 'userinfoBox', success: function (response) {
+            if (response.status == "success")
+            {
+                jQuery('#change_success').slideDown();
+                setTimeout('jQuery(\'#change_success\').slideUp();', 5000);
+                jQuery('#password_window').hide();
+            }
+        }
+    });
+
+    return false;
+
+});
+
+function aclModify(id, name)
+{
+    panthera.jsonPOST({ url: '?display=settings&action=my_account{$user_uid}', data: 'aclname='+name+'&value='+$('#'+id).val(), success: function (response) {
+          if (response.status == "success")
+          {
+          } else {
+              jQuery('#change_error').slideDown();
+              jQuery('#change_error').html(response.message);
+          }
+        }
+    });
+}
+</script>
+
+<div class="titlebar">{"Panel with informations about user."|localize:settings}</div>
 
             <br>
 
@@ -9,12 +64,12 @@
 
              <thead>
                 <tr>
-                    <th scope="col" style="width: 300px;">{"My account"|localize:settings}</th>
+                    <th scope="col" style="width: 300px;">{"User"|localize:settings}</th>
                     <th scope="col"> </th>
                 </tr>
-
              </thead>
-                <tfoot>
+
+             <tfoot>
                 <tr>
                     <td colspan="2" class="rounded-foot-left"><em>{"Informations about user"|localize:settings}</em></td>
                 </tr>
@@ -63,7 +118,7 @@
 
                 <tr>
                   <td>{"Avatar"|localize:settings}</td>
-                  <td><img src="{$profile_picture}" height="{$avatar_dimensions[0]}" width="{$avatar_dimensions[1]}"><br><br><input type="button" value="{"Change avatar"|localize} !IMPLEMENT ME!" style="float:left;"><br><br></td>
+                  <td><img src="{$profile_picture}" height="{$avatar_dimensions[0]}" width="{$avatar_dimensions[1]}"><br><br><!--<input type="button" value="{"Change avatar"|localize} !IMPLEMENT ME!" style="float:left;">--><br><br></td>
                 </tr>
 
                 <tr>

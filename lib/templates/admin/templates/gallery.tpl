@@ -16,16 +16,9 @@ function editGallery(id, titleOfCategory)
       { value: "{"Save"|localize:messages}" }, { value:"{"Cancel"|localize:messages}" }],
       success: function (result, values) {
         if (result == "{"Cancel"|localize:messages}")
-            return false; // kurcze nie działa, jakoś trzeba inaczej zatrzymać to okienko przed zamykaniem, sam się tym zajmę
-                        // Jak zatrzymać okienko przed zamykaniem? ;c /M.
-
-        // var v = result + " has been clicked\n";
+            return false;
 
         $(values).each(function (index, input) {
-            /*
-            v += input.name + " : " + input.value +
-            (input.checked != null ? ("  checked: " + input.checked) : "") + "\n"; // tu sprawdź wartośći i wywołaj ajax, potem podmień dane w tabelce według tego co zwróci serwer z jsonu
-            */
 
             if (input.name == 'new_title') {
                   v = input.name + "=" + input.value;
@@ -89,16 +82,9 @@ function addGallery()
       { value: "{"Save"|localize:messages}" }, { value:"{"Cancel"|localize:messages}" }],
       success: function (result, values) {
         if (result == "{"Cancel"|localize}")
-            return false; // kurcze nie działa, jakoś trzeba inaczej zatrzymać to okienko przed zamykaniem, sam się tym zajmę
-                        // Jak zatrzymać okienko przed zamykaniem? ;c /M.
-
-        // var v = result + " has been clicked\n";
+            return false; 
 
         $(values).each(function (index, input) {
-            /*
-            v += input.name + " : " + input.value +
-            (input.checked != null ? ("  checked: " + input.checked) : "") + "\n"; // tu sprawdź wartośći i wywołaj ajax, potem podmień dane w tabelce według tego co zwróci serwer z jsonu
-            */
 
             if (input.name == 'new_title') {
                   v = input.name + "=" + input.value;
@@ -113,13 +99,13 @@ function addGallery()
 
 
         $.ajax({
-             url: '{$AJAX_URL}?display=gallery&action=add_category&'+v,
+             url: '{$AJAX_URL}?display=gallery&action=add_category&filter={$category_filter}&'+v,
              data: '',
              async: false,
              success: function (response) {
 
                   if (response.status == "success") {
-                        navigateTo('?display=gallery');
+                        navigateTo('?display=gallery&filter={$category_filter}');
                   }
              },
             dataType: 'json'
@@ -130,7 +116,7 @@ function addGallery()
 
 </script>
 
-        <div class="titlebar">{"Gallery"|localize:messages}</div><br>
+        <div class="titlebar">{"Gallery"|localize:messages}{include file="_navigation_panel.tpl"}</div><br>
 
         <div class="msgSuccess" id="userinfoBox_success"></div>
         <div class="msgError" id="userinfoBox_failed"></div>
@@ -240,7 +226,7 @@ function removeGalleryCategory(id)
 
                         if (response.status == "success")
                         {
-                            navigateTo('?display=gallery');
+                            navigateTo('?display=gallery&filter={$category_filter}');
                         }
 
                     },

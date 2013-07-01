@@ -12,7 +12,7 @@ require_once(PANTHERA_DIR. '/share/phpmailer/class.phpmailer.php');
 
 class mailMessage
 {
-    private $mailer, $panthera;
+    public $mailer, $panthera;
 
     /**
 	 * Pre-configuration of mailing system
@@ -131,7 +131,7 @@ class mailMessage
         else
             $this->mailer->AddAddress($address);
 
-        $this->panthera->logging->output('mailMessage::Setting from:' .$address, 'mailing');
+        $this->panthera->logging->output('mailMessage::Setting to:' .$address, 'mailing');
 
         return True;
     }
@@ -144,10 +144,14 @@ class mailMessage
 	 * @author Damian Kęska
 	 */
 
-    public function addAttachment ($file)
+    public function addAttachment ($file, $newName='')
     {
-        $this->panthera->logging->output('mailMessage::Adding attachment ' .$file, 'mailing');
-        return $this->mailer->AddAttachment($file);
+        if ($newName == '')
+            $newName = basename($file);
+    
+        $this->panthera->logging->output('mailMessage::Adding attachment ' .$file. ' as ' .$newName, 'mailing');
+        
+        return $this->mailer->AddAttachment($file, $newName);
     }
 
     /**

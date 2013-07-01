@@ -58,7 +58,7 @@
             uploadProgress.ajaxLoaderInit();
 
         }, callback: function (content, fileName, fileNum, fileCount) {
-                panthera.jsonPOST({ url: '?display=upload&action=handle_file&popup=true', data: { 'image': content, 'fileName': fileName}, success: function (response) {
+                panthera.jsonPOST({ url: '?display=upload&action=handle_file&popup=true', isUploading: true, data: { 'image': content, 'fileName': fileName}, success: function (response) {
                         if (response.status == "success")
                         {
                             multiuploadFiles.push(response.upload_id);
@@ -70,21 +70,34 @@
                 // finished
                 if (fileNum == fileCount)
                 {
-                    panthera.jsonPOST({ url: '?display=gallery&action=adduploads&gid={$category_id}', data: { 'ids': JSON.stringify(multiuploadFiles) }});
+                    panthera.jsonPOST({ url: '?display=gallery&action=adduploads&gid={$category_id}', isUploading: true, data: { 'ids': JSON.stringify(multiuploadFiles) }});
                     uploadProgress.stop();
                     navigateTo(window.location);
                 }
             }
         });
+        
+        /*$('#removeImage').bind('drop', function (e) {
+                console.log("Drop event");
+        });
+        
+        $('.draggableGalleryItem').draggable({ addClasses: false, drag: function (event, ui) {
+                if (panthera.inDropRange('#removeImage', 'cursor', event))
+                {
+                    console.log('In drop range of trash');
+                }
+        
+            } 
+        });*/
 
     });
 </script>
 
 <div class="titlebar">{"Gallery"|localize:messages}: &nbsp;{$category_title}{include file="_navigation_panel.tpl"}</div>
-<div class="grid-1">
+<div class="grid-2" style="width: 100%;">
 
     {foreach from=$item_list key=k item=i}
-    <div class="galleryItem{if $i->visibility eq 1} galleryItemHidden{/if}" id="gallery_item_{$i->id}">
+    <div class="galleryItem{if $i->visibility eq 1} galleryItemHidden{/if} draggableGalleryItem" id="gallery_item_{$i->id}">
         <div class="galleryImageFrame">
             <div class="paGalleryFrameContent">
                 <img src="{$i->getThumbnail(300, True, True)}" class="galleryImage">
@@ -121,5 +134,24 @@
                     <a href="#" onclick="navigateTo('?display=gallery&action=add_item&ctgid={$category_id}');"><span class="tooltip">{"Drag and drop files to this area to start uploading"|localize:gallery}</span><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: absolute; top: 30px; left: 30px; opacity: 0.8;"></a>
                 </div>
             </div>
+            
+            <!--<div class="galleryItem" style="height: 100px; width: 100px; position: relative; border-radius: 2px; margin-right: 100px; margin-bottom: 160px;" id="removeImage" ondragover="return false;">
+                <div class="paGalleryFrameOverlay" style="display: block; border-radius: 2px; opacity: 0.4; -moz-opacity: 0.4; -khtml-opacity: 0.4;">
+                    <a href="#"><span class="tooltip">{"To remove files, drag and drop them here"|localize:gallery}</span><img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/120px-Icon-trash.png" style="width: 70px; position: absolute; top: 17px; left: 15px; opacity: 0.8;"></a>
+                </div>
+            </div>
+            
+            <div class="galleryItem" style="height: 200px; width: 300px; position: relative; border-radius: 2px;" id="moveGalleryItem" ondragover="return false;">
+                <div style="margin: 5px; text-align: center;"><small><b>{"Move to other category"|localize:gallery}</b></small></div>
+                
+                <div style="overflow-y: auto; overflow-x: hidden; height: 165px;">
+                <table class="gridTable" style="margin-left: -1px; margin-top: 15px; width: 302px;">
+                {foreach from=$category_list key=k item=i }
+                    <tr>
+                        <td style="height: 25px;">{$i->title}</td>
+                    </tr>
+                {/foreach}
+                </table>
+                </div>
+            </div>-->
 </div>
-

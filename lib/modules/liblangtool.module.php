@@ -66,6 +66,28 @@ class localesManagement
 
         return False;
     }
+    
+    /**
+      * Get domain directory
+      *
+      * @param string $language Language name
+      * @param string $domain Domain name
+      * @return string|bool 
+      * @author Damian Kęska
+      */
+    
+    public static function getDomainDir($language, $domain)
+    {
+        $dirs = array(SITE_DIR. '/content/locales/' .$language. '/' .$domain, PANTHERA_DIR. '/locales/' .$language. '/' .$domain);
+        
+        foreach ($dirs as $dir)
+        {
+            if (is_file($dir))
+                return $dir;
+        }
+        
+        return False;
+    }
 
     /**
       * Get list of domains avaliable in selected $language

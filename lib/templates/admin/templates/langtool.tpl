@@ -23,7 +23,7 @@
               {foreach from=$locales key=k item=i}
                 <tr>
                     <td style="width: 30px;"><img src="{$PANTHERA_URL}/images/admin/flags/{$k}.png"></td>
-                    <td><a href="?display=langtool&action=domains&locale={$k}">{$k}</a></td>
+                    <td><a href="#" onclick="navigateTo('?display=langtool&action=domains&locale={$k}');">{$k}</a></td>
                     <td>{$i}/{$k}</td>
                 </tr>
               {/foreach}

@@ -103,7 +103,7 @@ $(document).ready(function(){
       */
     
     panthera.multiuploadArea({ id: '#upload_list_window', callback: function (content, fileName, fileNum, fileCount) {
-            panthera.jsonPOST({ url: '?display=upload&action=handle_file&popup=true', spinner: uploadProgress, data: { 'image': content, 'fileName': fileName}});
+            panthera.jsonPOST({ url: '?display=upload&action=handle_file&popup=true', isUploading: true, spinner: uploadProgress, data: { 'image': content, 'fileName': fileName}});
             
             // finished
             if (fileNum == fileCount)
@@ -152,11 +152,6 @@ $(document).ready(function(){
                 $('#upload_box_window').css({ opacity: 1 });
             
             }, progress: function (precent, start, end) {
-            
-                console.log("Percent: "+precent);
-                console.log("Start: "+start);
-                console.log("End: "+end);
-            
                 $('#upload_box_window').css({ opacity: (1-(precent/100)) });
             },
      

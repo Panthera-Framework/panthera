@@ -108,24 +108,18 @@ $mailAttributes = array();
 $mailAttributes[] = array('name' => localize('Use PHP mail() function'), 'record_name' => 'mailing_use_php', 'value' => (bool)$panthera -> config -> getKey('mailing_use_php', True, 'bool'));
 
 // mailing server
-if ($panthera -> config -> getKey('mailing_server') and $panthera -> config -> getKey('mailing_server_port'))
-    $mailAttributes[] = array('name' => localize('Server'), 'record_name' => 'mailing_server', 'value' => $panthera -> config -> getKey('mailing_server'));
-    $mailAttributes[] = array('name' => localize('Port'), 'record_name' => 'mailing_server_port', 'value' => $panthera -> config -> getKey('mailing_server_port'));
+$mailAttributes[] = array('name' => localize('Server'), 'record_name' => 'mailing_server', 'value' => $panthera -> config -> getKey('mailing_server'));
+$mailAttributes[] = array('name' => localize('Port'), 'record_name' => 'mailing_server_port', 'value' => $panthera -> config -> getKey('mailing_server_port'));
 
 // auth data
-if ($panthera -> config -> getKey('mailing_user', 'bool') and $panthera -> config -> getKey('mailing_password', 'bool'))
-{
-    $mailAttributes[] = array('name' => localize('Login'), 'record_name' => 'mailing_user', 'value' => $panthera -> config -> getKey('mailing_user', 'email'));
-    $mailAttributes[] = array('name' => localize('Password'), 'record_name' => 'mailing_password', 'value' => '******');
-}
+$mailAttributes[] = array('name' => localize('Login'), 'record_name' => 'mailing_user', 'value' => $panthera -> config -> getKey('mailing_user', 'email'));
+$mailAttributes[] = array('name' => localize('Password'), 'record_name' => 'mailing_password', 'value' => '******');
 
 // From header
-if ($panthera -> config -> getKey('mailing_smtp_ssl', 'bool'))
-    $mailAttributes[] = array('name' => 'SSL', 'record_name' => 'mailing_smtp_ssl', 'value' => (bool)$panthera -> config -> getKey('mailing_smtp_ssl', True, 'bool'));
+$mailAttributes[] = array('name' => 'SSL', 'record_name' => 'mailing_smtp_ssl', 'value' => (bool)$panthera -> config -> getKey('mailing_smtp_ssl', True, 'bool'));
 
 // From header
-if ($panthera -> config -> getKey('mailing_from', 'email'))
-    $mailAttributes[] = array('name' => localize('Default sender'), 'record_name' => 'mailing_from', 'value' => $panthera -> config -> getKey('mailing_from', 'email'));
+$mailAttributes[] = array('name' => localize('Default sender'), 'record_name' => 'mailing_from', 'value' => $panthera -> config -> getKey('mailing_from', 'email'));
 
 if (!$panthera->session->exists('mailing_last_from'))
     $panthera -> session -> set('mailing_last_from', $panthera -> config -> getKey('mailing_from', 'email'));

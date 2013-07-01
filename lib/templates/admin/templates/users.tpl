@@ -1,3 +1,10 @@
+<script type="text/javascript">
+function jumpToAjaxPage(id)
+{
+    panthera.htmlGET({ url: '?display=settings&action=users&subaction=show_table&usersPage='+id, success: '#all_users_window' });
+}
+</script>
+
 <div class="titlebar">{"Users"|localize} - {"All registered users on this website"|localize:settings}</div>
 
         <div class="grid-1">
@@ -37,7 +44,6 @@
                               <td>{$v.joined}</td>
                               <td>{$v.language|ucfirst}</td>
                         </tr>
-
                         {/foreach}
                   </tbody>
              </table>

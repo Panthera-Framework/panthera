@@ -4,7 +4,7 @@
 	    <title>{$site_title}</title>
 	    {$site_header}
 
-        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Cuprum" />
+        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Cuprum" /> <!-- font to replace -->
         <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/admin.css" />
         <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/w2ui-1.2.min.css" />
         <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
@@ -17,12 +17,12 @@
         <script type="text/javascript" src="{$PANTHERA_URL}/js/admin.js"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/tiny_mce/tiny_mce.js"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/w2ui-1.2.min.js"></script>
-        <script type="text/javascript" src="{$PANTHERA_URL}/js/jquery.form.js"></script>
+        <script type="text/javascript" src="{$PANTHERA_URL}/js/jquery.form.js"></script> <!-- deprecated -->
         <script type="text/javascript" src="{$PANTHERA_URL}/js/jquery.tinycarousel.js"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/jquery.msgBox.js"></script>
         
-        <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false"></script>
-        <script type="text/javascript" src="{$PANTHERA_URL}/js/map.js"></script>
+        <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false"></script> <!-- add dynamicaly by Panthera lib -->
+        <script type="text/javascript" src="{$PANTHERA_URL}/js/map.js"></script> <!-- move to Panthera lib panthera.googleMap -->
 
 
         <script>
@@ -43,7 +43,12 @@
 
     <header id="siteHeader">
         <input type="button" onclick="navigateTo('pa-login.php?logout=True')" value="{"Logout"|localize}" style="float: right; margin-right: 20px; margin-top: 10px;">
-        <div class="siteLogo"><h1><a href="{$PANTHERA_URL}/pa-admin.php">Panthera</a></h1> <span class="userHeader">{slocalize("Welcome %s, what would you like to do?", "messages", "admin")}</span></div>
+        <div class="siteLogo"><h1><a href="{$PANTHERA_URL}/pa-admin.php">Panthera</a></h1> 
+        <span class="userHeader">
+            {foreach from=$flags key=k item=i}
+                <a href="?display=dash&_locale={$i}"><img src="{$PANTHERA_URL}/images/admin/flags/{$i}.png" style="height: 12px; margin: 1px;"></a>
+            {/foreach}
+        </span></div>
     </header>
 
 

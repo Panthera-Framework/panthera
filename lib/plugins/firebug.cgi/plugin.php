@@ -30,7 +30,7 @@ function firebugStop()
     $firephp -> fb($panthera->session->getAll(), 'Panthera session');
     $firephp -> fb($panthera->session->cookies->getAll(), 'Panthera cookies');
 
-    ob_end_flush();
+    @ob_end_flush();
 }
 
 /**
@@ -44,7 +44,11 @@ function firebugStop()
 function firebugLog($msg)
 {
     $firephp = FirePHP::getInstance(true);
-    $firephp->fb($msg);
+    try {
+        $firephp->fb($msg);
+    } catch (Exception $e) {
+        // pass
+    }
 }
 
 /**

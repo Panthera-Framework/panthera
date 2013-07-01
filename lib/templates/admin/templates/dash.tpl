@@ -24,9 +24,9 @@
         <div class="grid-1">
                <ul class="picturesBox">
                    {foreach from=$dash_menu key=k item=v}
-            	   <li><a class="{if $v.linkType == "ajax"}ajax_link{/if}" href="{$v.link|pantheraUrl}">  <img src="{$v.icon|pantheraUrl}" alt=""></a>
+            	   <li><a style="cursor: pointer;" class="{if $v.linkType == "ajax"}ajax_link{/if}"{if $v.linkType == "onclick"} onclick="{$v.link}"{else} href="{$v.link|pantheraUrl}"{/if}>  <img src="{$v.icon|pantheraUrl}" alt=""></a>
             	         <ul class="picturesBoxItem">
-                         		<a class="{if $v.linkType == "ajax"}ajax_link{/if}" href="{$v.link|pantheraUrl}">{$v.name}</a>
+                         		<a style="cursor: pointer;" class="{if $v.linkType == "ajax"}ajax_link{/if}"{if $v.linkType == "onclick"} onclick="{$v.link}"{else} href="{$v.link|pantheraUrl}"{/if}>{$v.name}</a>
                          </ul>
                    </li>
                    {/foreach}
@@ -46,7 +46,7 @@
                          </ul>
                    </li>
                    {/foreach}
-				</ul>
+		   </ul>
                 <div class="clear"></div>
            </div>
         </div>

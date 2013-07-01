@@ -62,7 +62,7 @@ class meta
      * @return string
      */
 
-    public static function remove($name, $user, $group=False)
+    public static function removeAcl($name, $user, $group=False)
     {
         global $panthera;
 
@@ -73,6 +73,64 @@ class meta
 
         $SQL = $panthera -> db -> query ('DELETE FROM `{$db_prefix}metas` WHERE `name` = :name AND `userid` = :userid AND `type` = :type', array('name' => $name, 'userid' => $user, 'type' => $type));
 
+        return (bool)$SQL->rowCount();
+    }
+    
+    /**
+      * Adding new meta attribute
+      *
+      * @param string $name Key
+      * @param string $value Value 
+      * @param string $type Type
+      * @param int $objectid ID (optional)
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public static function create($name, $value, $type, $objectid=null)
+    {
+        global $panthera;
+        $values = array('name' => $name, 'value' => serialize($value), 'type' => $type, 'userid' => $objectid);
+        $SQL = $panthera -> db -> query ('INSERT INTO `{$db_prefix}metas` (`metaid`, `name`, `value`, `type`, `userid`) VALUES (NULL, :name, :value, :type, :userid);', $values);
+        return (bool)$SQL->rowCount();
+    }
+
+    /**
+      * Simply get one record from meta tags table
+      *
+      * @param string $type
+      * @param srting $name
+      * @return array 
+      * @author Damian Kęska
+      */
+    
+    public function get($type, $name)
+    {
+        global $panthera;
+        $values = array('name' => $name, 'type' => $type);
+        $SQL = $panthera -> db -> query ('SELECT `value` FROM `{$db_prefix}metas` WHERE `name` = :name AND `type` = :type', $values);
+        
+        $result = $SQL->fetch();
+        
+        if ($SQL->rowCount() > 0)
+            return unserialize($result['value']);
+            
+        return false;
+    }
+    
+    /**
+      * Remove record from meta table
+      *
+      * @param string $type
+      * @param string $name
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public function remove($type, $name)
+    {
+        global $panthera;
+        $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}metas` WHERE `name` = :name AND `type` = :type', array('name' => $name, 'type' => $type));
         return (bool)$SQL->rowCount();
     }
 }

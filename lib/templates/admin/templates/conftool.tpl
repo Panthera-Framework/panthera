@@ -27,6 +27,11 @@ function saveVariable(id)
 
 }
 
+function conftool_array(k, value)
+{
+    $('#value_'+k).val(value);
+}
+
 </script>
 
         <div class="titlebar">{"Configuration editor"|localize:conftool} - {"Administration tool for developers and administrators."|localize:conftool}{include file="_navigation_panel.tpl"}</div><br>
@@ -69,7 +74,12 @@ function saveVariable(id)
                                 {$type = "text"}
                             {/if}
                             
+                            {if $i[0] == "array"}
+                            <input type="{$type}" value='{$i[1]}' id="value_{$k}" readonly style="width: 450px;">
+                            <input type="button" value="{"Edit"|localize}" style="width: 49px;" onclick="createPopup('?display=_popup_jsonedit&input={$i['b64']}&output=serialize&callback=conftool_array&callback_arg={$k}', 1024, 550);">
+                            {else}
                             <input type="{$type}" value='{$i[1]}' id="value_{$k}" style="width: 500px;">
+                            {/if}
                         {/if}
                         <input type="button" value="{"Save"|localize:messages}" id="button_{$k}" onclick="saveVariable('{$k}');">
                         <span style="font-color: red;"><div id="errmsg_{$k}" style="display: none;"></div></span>
