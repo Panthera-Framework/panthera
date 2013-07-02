@@ -12,6 +12,14 @@ global $panthera;
 $panthera -> addPermission('can_view_galleryItem', localize('Can view gallery items', 'messages'));
 $panthera -> addPermission('can_edit_galleryItem', localize('Can edit gallery items', 'messages'));
 
+/**
+  * Gallery item class - allows view and edit of single items
+  *
+  * @implements pantheraFetchDB
+  * @package Panthera\modules\gallery
+  * @author Damian Kęska
+  */
+
 class galleryItem extends pantheraFetchDB
 {
     protected $_tableName = 'gallery_items';
@@ -27,12 +35,20 @@ class galleryItem extends pantheraFetchDB
     {
         return parent::__set($var, pantheraUrl($value, True));
     }
+    
+    /**
+      * Get thumbnail path, generate new if it does not exists yet
+      *
+      * @param string $size of thumbnail eg. 200 (width) or 200x100 (width: 200px, height: 100px)
+      * @param bool $create new thumbnail if it does not exists
+      * @return string with url 
+      * @author Damian Kęska
+      */
 
     public function getThumbnail($size='', $create=False)
     {
         $this -> panthera -> importModule('simpleImage');
         $this -> panthera -> importModule('filesystem');
-
 
         $link = pantheraUrl($this->__get('link'));
         $filePath = pantheraUrl(str_replace('{$PANTHERA_URL}/', '', pantheraUrl($link, True)));
@@ -82,7 +98,31 @@ class galleryCategory extends pantheraFetchDB
 {
     protected $_tableName = 'gallery_categories';
     protected $_idColumn = 'id';
-    protected $_constructBy = array('id', 'array');
+    protected $_constructBy = array('id', 'array', 'unique');
+    protected $_meta = array();
+
+    /**
+      * Get meta tags of this gallery category
+      *
+      * @param string $meta Type of meta, by `id` or `unique`
+      * @return object|null 
+      * @author Damian Kęska
+      */
+
+    public function meta($meta='id')
+    {
+        if ($meta == 'unique')
+            $data = $this->unique;
+        elseif ($meta == 'id')
+            $data = $this->id;    
+        else
+            return False;
+    
+        if (!isset($this->_meta[$meta]))
+            $this->_meta[$meta] = new metaAttributes($this->panthera, 'gallery_c_' .$meta, $this->unique);
+
+        return $this->_meta[$meta];
+    }
 }
 
 class gallery
@@ -125,6 +165,75 @@ class gallery
             return $oArray;
         }
     }
+    
+    /**
+      * Remove image from gallery
+      *
+      * @param int $id
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public static function removeImage($id)
+    {
+        global $panthera;
+        $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}gallery_items` WHERE `id` = :id', array('id' => $id));
+        return (bool)$SQL->rowCount();
+    }
+    
+    /**
+      * Create new category
+      *
+      * @param string $title
+      * @param string $login
+      * @param int $user_id
+      * @param string $language
+      * @param int $visibility
+      * @param string $user_full_name
+      * @param string $unique
+      * @return mixed 
+      * @author Damian Kęska
+      */
+    
+    public static function createCategory($title, $login, $user_id, $language, $visibility, $user_full_name, $unique)
+    {
+        global $panthera;
+        $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}gallery_categories` (`id`, `title`, `author_login`, `author_id`, `language`, `created`, `modified`, `visibility`, `author_full_name`, `thumb_id`, `thumb_url`, `unique`) VALUES (NULL, :title, :author_login, :author_id, :language, NOW(), NOW(), :visibility, :author_full_name, "", "", :unique);', array('title' => $title, 'author_login' => $login, 'language' => $language, 'author_id' => $user_id, 'visibility' => $visibility, 'author_full_name' => $user_full_name, 'unique' => $unique));
+        
+        return (bool)$SQL->rowCount();
+    }
+    
+    /**
+      * Get category by `unique` and `language` and return in selected locale, if not found return in other language
+      *
+      * @param string name
+      * @return mixed 
+      * @author Damian Kęska
+      */
+    
+    public static function getCategory($unique, $language)
+    {
+        $statement = new whereClause();
+        $statement -> add('', 'unique', '=', $unique);
+        $statement -> add('AND', 'language', '=', $language);
+        $category = new galleryCategory($statement, null);
+        
+        // in other, alternative language
+        if (!$category->exists())
+            $category = new galleryCategory('unique', $unique);
+            
+        if ($category->exists())
+        {
+            // if any gallery is in set to be in all languages
+            if ($category->meta()->get('all_langs') != intval($category->id))
+            {
+                $newID = $category->meta()->get('all_langs');
+                $category = new galleryCategory('id', $newID);
+            }
+        }
+        
+        return $category;
+    }
 }
 
 function getGalleryItems($by, $limit=0, $limitFrom=0)
@@ -139,24 +248,10 @@ function getGalleryCategories($by, $limit=0, $limitFrom=0)
       return $panthera->db->getRows('gallery_categories', $by, $limit, $limitFrom, 'galleryCategory', 'id', 'DESC');
 }
 
-function removeGalleryItem($id)
-{
-    global $panthera;
-    $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}gallery_items` WHERE `id` = :id', array('id' => $id));
-    return (bool)$SQL->rowCount();
-}
-
 function removeGalleryCategory($id)
 {
     global $panthera;
     $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}gallery_categories` WHERE `id` = :id', array('id' => $id));
-    return (bool)$SQL->rowCount();
-}
-
-function createGalleryCategory($title, $login, $user_id, $language, $visibility, $user_full_name)
-{
-    global $panthera;
-    $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}gallery_categories` (`id`, `title`, `author_login`, `author_id`, `language`, `created`, `modified`, `visibility`, `author_full_name`, `thumb_id`, `thumb_url`) VALUES (NULL, :title, :author_login, :author_id, :language, NOW(), NOW(), :visibility, :author_full_name, "", "");', array('title' => $title, 'author_login' => $login, 'language' => $language, 'author_id' => $user_id, 'visibility' => $visibility, 'author_full_name' => $user_full_name));
     return (bool)$SQL->rowCount();
 }
 

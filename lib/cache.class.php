@@ -259,8 +259,6 @@ if(!function_exists('apc_exists') and function_exists('apc_fetch'))
 }
 
 
-
-
 /**
   * varCache stored in xdebug PHP cache
   *
@@ -318,7 +316,7 @@ class varCache_xcache extends pantheraClass
     
     public function remove($var)
     {
-        return xcache_unset($var);
+        return xcache_unset($this->prefix.'.vc.' .$var);
     }
     
 
@@ -355,6 +353,123 @@ class varCache_xcache extends pantheraClass
             xcache_set($this->prefix.'.vc.' .$var, $value, $expire);
         else
             xcache_set($this->prefix.'.vc.' .$var, $value);
+            
+        return True;
+    }
+}
+
+/**
+  * varCache stored by memcached servers
+  *
+  * @package Panthera\core\cache
+  * @author Damian Kęska
+  */
+
+class varCache_memcached extends pantheraClass
+{
+    public $name = 'memcached';
+    public $type = 'memory';
+    public $m = null;
+
+    public function __construct ($panthera)
+    {
+        parent::__construct($panthera);
+        $this->prefix = $panthera -> config -> getKey('session_key');
+        
+        if (!class_exists('Memcached'))
+            throw new Exception('Memcached support is not installed in PHP, cache will be disabled');
+        
+        $servers = $panthera -> config -> getKey('memcached_servers', array('default' => array('localhost', 11211, 50)), 'array');
+        $this->m = new Memcached();
+        
+        foreach ($servers as $server)
+        {
+            if (!is_array($server))
+                continue;
+                
+            // host, port, weight
+            $this -> m -> addServer($server[0], intval($server[1]), intval($server[2]));
+        }
+    }
+    
+    /**
+      * Check if variable exists in the cache
+      *
+      * @param string $var Variable
+      * @return bool 
+      * @author Damian Kęska
+      */
+
+    public function exists($var)
+    {
+        $this->m->get($var);
+        
+        if ($this->m->getResultCode() == Memcached::RES_NOTFOUND)
+            return False;
+        
+        return True;
+    }
+    
+    /**
+      * Clear entire cache
+      *
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public function clear()
+    {
+        $this->m->flush();
+        return True;
+    }
+    
+    /**
+      * Remove variable from cache
+      *
+      * @param string $var Variable name
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public function remove($var)
+    {
+        return $this->m->delete($this->prefix.'.vc.' .$var);
+    }
+    
+
+    /**
+      * Get entry from APC cache
+      *
+      * @param string $var Cache variable
+      * @return mixed 
+      * @author Damian Kęska
+      */
+
+    public function get($var)
+    {
+        if (!$this->exists($var))
+            return null;
+            
+        return unserialize($this->m->get($this->prefix.'.vc.' .$var));
+    }
+    
+    /**
+      * Set variable value
+      *
+      * @param string $var Variable name
+      * @param string $value Value
+      * @return mixed 
+      * @author Damian Kęska
+      */
+    
+    public function set($var, $value, $expire=-1)
+    {
+        $value = serialize($value);
+    
+        if ($expire > -1)
+            $this->m->set($this->prefix.'.vc.' .$var, $value, $expire);
+        else
+            $this->m->get($this->prefix.'.vc.' .$var, $value);
             
         return True;
     }

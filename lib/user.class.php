@@ -121,8 +121,7 @@ class pantheraUser extends pantheraFetchDB
 
         $salt = md5($this->panthera->config->getKey('salt').$passwd);
         $this->__set('passwd', $salt);
-        $this->panthera->logging->output('pantheraUser::Changing password for user ' .$this->__get('login'). ', passwd=' .$salt, 'pantheraUser');
-
+        $this->panthera->logging->output('Changing password for user ' .$this->__get('login'). ', passwd=' .$salt, 'pantheraUser');
         return True;
     }
 
@@ -162,18 +161,7 @@ class pantheraUser extends pantheraFetchDB
         if ($var == 'id')
             return False;
 
-        // we cant create new variables because we are operating on a SQL table
-        if (array_key_exists($var, $this->_data))
-        {
-
-            // check if new value is not same as original
-            if ($this->_data[$var] != $value)
-            {
-                //$this->panthera->logging->output('pantheraUser::__set (' .$var. ', ' .$value. ' ) for login=' .$this->__get('login'). ', old=' .$this->_data[$var], 'pantheraUser');
-                $this->changed = True;
-                $this->_data[$var] = $value;
-            }
-        }
+        return parent::__set($var, $value);
     }
 
     /**
@@ -632,4 +620,148 @@ function userLoggedIn()
     
     return $panthera -> user -> exists();
 }
-?>
+
+/**
+  * Meta tags management class
+  *
+  * @package Panthera\modules\core
+  * @author Damian Kęska
+  */
+
+class metaAttributes
+{
+    protected $_metas = array(), $_changed = array(), $_objectID, $_panthera, $_type, $_cache, $panthera;
+
+    public function __construct($panthera, $type, $objectID)
+    {
+        $this->panthera = $panthera;
+        $this->_type = $type;
+        $this->_objectID = $objectID;
+        
+        $SQL = $panthera -> db -> query ('SELECT * FROM `{$db_prefix}metas` WHERE `userid` = :objectID AND `type` = :type', array('objectID' => $objectID, 'type' => $type));
+        
+        if ($SQL -> rowCount() > 0)
+        {
+            $fetch = $SQL -> fetchAll(PDO::FETCH_ASSOC);
+            
+            foreach ($fetch as $meta)
+            {
+                unset($meta['userid']);
+                unset($meta['type']);
+                $this->_metas[$meta['name']] = $meta;
+                unset($this->_metas[$meta['name']]['name']);
+                $this->_metas[$meta['name']]['value'] = unserialize($meta['value']);
+            }
+        } else
+            $panthera -> logging -> output('No any meta tags found for search: objectid=' .$objectid. ', type=' .$type, 'meta');
+    }
+    
+    /**
+      * List all loaded tags
+      *
+      * @return array 
+      * @author Damian Kęska
+      */
+
+    public function listAll()
+    {
+        $array = array();
+
+        foreach ($this->_metas as $key => $value)
+            $array[$key] = $value['value'];
+
+        return $array;
+    }
+
+    /**
+     * Get meta value
+     *
+     * @param string $meta Key name
+     * @return mixed
+     * @author Damian Kęska
+     */
+
+    public function __get($meta)
+    {
+        if (array_key_exists((string)$meta, $this->_metas))
+            return $this->_metas[$meta]['value'];
+
+        return NuLL;
+    }
+
+    /**
+     * Set user meta value
+     *
+     * @param meta key and meta value
+     * @return void
+     * @author Damian Kęska
+     */
+
+    public function __set($meta, $value)
+    {
+        // creating new keys
+        if (!array_key_exists($meta, $this->_metas))
+        {
+            $this->_metas[$meta] = array('value' => $value);
+            $this->_changed[$meta] = 'create';
+            return True;
+        }
+
+        $this->_metas[$meta]['value'] = $value;
+        $this->_changed[$meta] = True;
+    }
+
+    public function set($meta, $value) { return $this->__set($meta, $value); }
+    public function get($meta) { return $this->__get($meta); }
+
+    /**
+     * Check if any modification was done on user meta values
+     *
+     * @param optional takes meta name as parametr, if not parameter given will return status of modification of all records
+     * @return true
+     * @author Damian Kęska
+     */
+
+    public function modified($meta='')
+    {
+        if ($meta != '')
+            return (bool)$this->_changed[$meta];
+
+        return (bool)count($this->_changed);
+    }
+
+    public function save()
+    {
+        global $panthera;
+
+        if ($this->modified())
+        {
+            foreach ($this->_changed as $key => $value)
+            {
+                $meta = $this->_metas[$key];
+
+                if ((string)$value == "create")
+                {
+                    // create new meta key in database
+                    $metaValues = array('name' => $key, 'value' => serialize($meta['value']), 'type' => $this->_type, 'userid' => $this->_objectID);
+                    try {$panthera->db->query('INSERT INTO `{$db_prefix}metas` (`metaid`, `name`, `value`, `type`, `userid`) VALUES (NULL, :name, :value, :type, :userid)', $metaValues);} catch (Exception $e) {}
+                } else {
+                    // update existing meta
+                    $metaValues = array('value' => serialize($meta['value']), 'metaid' => $meta['metaid']);
+                    try {$panthera->db->query('UPDATE `{$db_prefix}metas` SET `value` = :value WHERE `metaid` = :metaid', $metaValues);} catch (Exception $e) {}
+                }
+            }
+
+            // reset array because we already saved all values to database
+            $this -> _changed = array();
+            
+            // write to cache
+            /*if ($this->cache > 0)
+            {
+                $this->panthera->cache->set('um.'.$this->_user, $this->_input, $this->cache);
+                $this->panthera->logging->output('Wrote usermeta to cache id=um.'.$this->__get('id'), 'pantheraUser');
+            }*/
+        }
+    }
+
+}

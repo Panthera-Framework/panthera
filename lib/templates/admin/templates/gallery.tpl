@@ -74,12 +74,12 @@ function editGallery(id, titleOfCategory)
 function addGallery()
 {
     $.msgBox({ type: "prompt", opacity: 0.6,
-      title: "{"Adding category"|localize}",
+      title: "{"Adding category"|localize:gallery}",
       inputs: [
-      { header: "{"Title"|localize:messages}", type: "text", name: "new_title"},
-      { header: "{"Visibility"|localize:messages}", type: "checkbox", name: "visibility", value: "visibility"}],
+      { header: "{"Title"|localize:gallery}", type: "text", name: "new_title"},
+      { header: "{"Publish"|localize:gallery}", type: "checkbox", name: "visibility", value: "visibility"}],
       buttons: [
-      { value: "{"Save"|localize:messages}" }, { value:"{"Cancel"|localize:messages}" }],
+      { value: "{"Add category"|localize:gallery}" }, { value:"{"Cancel"|localize:messages}" }],
       success: function (result, values) {
         if (result == "{"Cancel"|localize}")
             return false; 
@@ -150,7 +150,7 @@ function addGallery()
                 {foreach from=$category_list key=k item=i}
                 <tr id="galleryCategory_row_{$i->id}" {if $i->visibility eq 0} style="background: rgba(172, 172, 172, 0.5);"{/if}>
                   <td><img src="{$i->thumb_url|pantheraUrl}" width="50" height="50"></td>
-                  <td><a href="?display=gallery&action=display_category&ctgid={$i->id}" class="ajax_link" id="gallery_title_{$i->id}">{$i->title}</a></td>
+                  <td><a href="?display=gallery&action=display_category&unique={$i->unique}{if $category_filter_complete}&filter={$category_filter_complete}{/if}" class="ajax_link" id="gallery_title_{$i->id}">{$i->title}</a></td>
                   <td>{$i->author_login}</td>
                   <td>{$i->language}</td>
                   <td>{$i->created}</td>

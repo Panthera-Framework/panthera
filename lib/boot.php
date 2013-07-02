@@ -60,9 +60,8 @@ if (PHP_OS == "WINNT")
     define('PANTHERA_DIR', str_ireplace('/boot.php', '', __FILE__));
 }
 
-define('PANTHERA_VERSION', '1.2.3-DEV');
+define('PANTHERA_VERSION', '1.3.4-DEV');
 define('IN_PANTHERA', True);
-
 // include core functions
 include(PANTHERA_DIR. '/panthera.php');
 include(PANTHERA_DIR. '/database.class.php');
@@ -85,6 +84,7 @@ if (!defined('SKIP_SESSION'))
 
 // core elements
 $panthera = new pantheraCore($config);
+define('PANTHERA_FRONTCONTROLLER', '/' .str_replace(SITE_DIR, '', $_SERVER['DOCUMENT_ROOT'].$_SERVER['PHP_SELF'])); // detect front controller
 define('PANTHERA_WEBROOT', $config['webroot']);
 
 // for cli we have set of functions for managing application behavor
@@ -162,7 +162,7 @@ if (!defined('SKIP_LOCALE'))
 
 // customized startup for each website (config.php)
 if (function_exists('userStartup'))
-    userStartup();
+    userStartup($panthera);
 
 // load plugins after all core elements
 $plugins = $panthera -> loadPlugins();

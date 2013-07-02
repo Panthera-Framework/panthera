@@ -77,14 +77,14 @@
 			            </ul>
 		            </li>
 	            </ul>
-	         <span class="category downCategory">{"Bookmarks"|localize}</span>
+	         <!--<span class="category downCategory">{"Bookmarks"|localize}</span>
 	         <ul class="menu" style="display:block;">
 		            <li class="menuLong">
 			            <ul>
 				            <li><a href="#" onclick="navigateTo('?display=settings');"><span class="menuItem">{"Settings"|localize}</span></a></li>
 			            </ul>
 		            </li>
-	            </ul>
+	            </ul>-->
 	    </aside>
 	    </div>
 
@@ -93,7 +93,7 @@
 
         <footer>
             <div class="footer">
-                <p>Powered by Panthera Framework {$PANTHERA_VERSION}</p>
+                <p>Powered by <a href="http://github.com/webnull/panthera" target="_blank">Panthera Framework</a> {$PANTHERA_VERSION}</p>
             </div>
       </footer>
     </body>

@@ -629,6 +629,7 @@ abstract class pantheraFetchDB
 
         $this->_dataModified = True;        
         $this->_data[$var] = $value;
+        $this->panthera->logging->output(get_class($this). '::set ' .$var. ' to ' .$value, 'pantheraFetchDB');
     }
     
     /**
@@ -644,12 +645,15 @@ abstract class pantheraFetchDB
 
         if ($panthera == NuLL)
             $panthera = $this->panthera;
+            
+        if ($panthera->logging->debug == True)
+            $panthera -> logging -> output ('Panthera Fetch DB class=' .get_class($this). ', changed data=' .print_r($this->_dataModified, True), 'pantheraFetchDB');
 
         if($this->_dataModified == True and $this->_tableName != NuLL)
         {
             $id = (integer)$this->_data[$this->_idColumn];
 
-            $panthera->logging->output(get_class($this). '::Saving modified data ' .$this->_idColumn. '=' .$id);
+            $panthera->logging->output(get_class($this). '::Saving modified data ' .$this->_idColumn. '=' .$id, 'pantheraFetchDB');
             $copied = $this->_data;
             unset($copied[$this->_idColumn]);
 

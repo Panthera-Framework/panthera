@@ -13,13 +13,9 @@ if (!defined('IN_PANTHERA'))
 
 $panthera -> importModule('quickmessages');
 $panthera -> locale -> loadDomain('qmessages');
-$language = $panthera -> locale -> getActive();
 
-if (isset($_GET['language']))
-{
-    if ($panthera->locale->exists($_GET['language']))
-        $language = $_GET['language'];
-}
+// get active locale with override if avaliable
+$language = $panthera -> locale -> getFromOverride($_GET['language']);
 
 $panthera -> template -> push ('language', $language);
 
@@ -38,7 +34,6 @@ if ($_GET['action'] == 'new_msg')
     $categoryName = $_GET['cat'];
     $category = new quickCategory('category_name', $categoryName);
     $icon = filterInput($_POST['message_icon'], 'quotehtml');
-    $language = $panthera -> locale -> getActive();
     
     // set other language than active
     if ($_POST['language'] != $language)
@@ -180,7 +175,7 @@ if ($_GET['action'] == 'get_msg')
 
     if ($m -> exists())
     {
-        ajax_exit(array('status' => 'success', 'title' => $m->title, 'message' => $m->message, 'id' => $m->id, 'visibility' => $m->visibility, 'icon' => $m->icon, 'language' => $m->language));
+        ajax_exit(array('status' => 'success', 'title' => $m->title, 'message' => $m->message, 'id' => $m->id, 'visibility' => $m->visibility, 'icon' => $m->icon, 'language' => $m->language, 'url_id' => $m->url_id));
     } else {
         ajax_exit(array('status' => 'failed'));
     }

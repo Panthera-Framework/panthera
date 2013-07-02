@@ -35,6 +35,19 @@ if ($_GET['action'] == 'save_order')
     ajax_exit(array('status' => 'success', 'message' => localize('Order has been successfully saved!')));
 }
 
+if ($_GET['action'] == 'quickAddFromPopup')
+{
+    $language = $panthera -> locale -> getFromOverride($_GET['language']);
+    $categories = simpleMenu::getCategories('');
+    $panthera -> template -> push ('link', $_GET['link']);
+    $panthera -> template -> push ('title', $_GET['title']);
+    $panthera -> template -> push ('currentLanguage', $language);
+    $panthera -> template -> push ('categories', $categories);
+    $panthera -> template -> push ('languages', $panthera -> locale -> getLocales());
+    $panthera -> template -> display ('menuedit_quickaddfrompopup.tpl');
+    pa_exit();
+}
+
 /**
  *
  * Saving menu elements
@@ -47,7 +60,7 @@ if ($_GET['action'] == 'save_item')
 {
     // check if areas are empty
     if ($_POST['cat_type'] == '' or $_POST['item_title'] == '')
-            ajax_exit(array('status' => 'failed', 'message' => localize('Some areas are empty!')));
+        ajax_exit(array('status' => 'failed', 'message' => localize('Some areas are empty!')));
 
     $id = intval($_POST['item_id']);
 
@@ -96,7 +109,7 @@ if ($_GET['action'] == 'save_item')
 if ($_GET['action'] == 'add_item')
 {
     if ($_POST['cat_type'] == '' or $_POST['item_title'] == '')
-            ajax_exit(array('status' => 'failed', 'message' => localize('Some areas are empty!')));
+        ajax_exit(array('status' => 'failed', 'message' => localize('Some areas are empty!')));
 
     $lastItem = simpleMenu::getItems($_POST['cat_type'], 0, 1, 'order', 'desc');
 
@@ -184,6 +197,7 @@ if ($_GET['action'] == 'add_category')
     if (simpleMenu::createCategory($type_name, $title, $description, intval($parent), intval($elements))) {
           ajax_exit(array('status' => 'success', 'message' => localize('Category has been successfully added!')));
     }
+    
     ajax_exit(array('status' => 'failed', 'message' => 'Unhandled error!'));
 }
 
@@ -262,7 +276,8 @@ if ($_GET['action'] == 'item')
     }
 }
 
-if (@$_GET['action'] == 'new_category') {
+if ($_GET['action'] == 'new_category') 
+{
     $template -> push('action', 'new_category');
     $template -> display($tpl);
     pa_exit();

@@ -55,6 +55,7 @@ function getOtherCustomPages()
          {/foreach}
            <option value="all" {if $current_lang eq 'all'} selected {/if} >{"all"|localize:messages}</option>
         </select>
+        {include file="_navigation_panel.tpl"}
     </div>
 
     <div class="grid-1">

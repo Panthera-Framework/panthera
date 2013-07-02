@@ -18,7 +18,7 @@ html, body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Cuprum', sans-serif;
+    font-family: Bookman, serif;
     font-weight:100;
 	color: white;
 	text-decoration: none;
@@ -33,7 +33,7 @@ h1, h2, h3, h4, h5, h6 {
     color: #55585d;
     font-size: 12px;
     position: relative;
-    font-family: sans-serif;
+    font-family: Bookman, serif;
     border-bottom: 1px solid #888888;
 }
 
@@ -85,7 +85,7 @@ h1, h2, h3, h4, h5, h6 {
     color: black;
 
     font-size: 12px;
-    font-family: 'helvetica', Georgia, arial, sans-serif;
+    font-family: Impact, fantasy;
     display: none;
 }
 
@@ -187,7 +187,7 @@ h1, h2, h3, h4, h5, h6 {
 		background: -ms-linear-gradient(top, #f8faf9 0%,#d1d2d5 100%);
 		background: linear-gradient(top, #f8faf9 0%,#d1d2d5 100%);
 		border-bottom:1px solid #afb1b9;
-		font: 16px "Cuprum", Helvetica, Arial, sans-serif;
+		font: 16px "Times New Roman", Helvetica, Arial, sans-serif;
 		color:#55585d;
 		width:auto;
 	}
@@ -258,7 +258,7 @@ h1, h2, h3, h4, h5, h6 {
     .blueLog, .greenLog {
           width: 95%;
           padding: 5px;
-          font-family: "courier new";
+          font-family: Helvetica, Arial, sans-serif;
           font-size: 11px;
           padding: 20px;
           margin: 20px;
@@ -551,7 +551,7 @@ h1, h2, h3, h4, h5, h6 {
 		filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#4d565c", endColorStr="#323b41");
 
 		color:#fff;
-		font: 16px "Cuprum", Helvetica, Arial, sans-serif;
+		font: 16px Bookman, serif;
 		display: block;
 		position: relative; /*To help in the anchoring of the ".statusicon" icon image*/
 		width: auto;
@@ -710,7 +710,7 @@ h1, h2, h3, h4, h5, h6 {
 		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fdfdfd', endColorstr='#e3e3e3',GradientType=0 );
 		border:1px solid #e3e3e3;
 		border-bottom:0;
-		font: 16px "Cuprum", Helvetica, Arial, sans-serif;
+		font: 16px Bookman, serif, bold;
 		color:#55585d;
 		display: block;
 		padding-left: 10px;
@@ -840,7 +840,7 @@ h1, h2, h3, h4, h5, h6 {
 
 	position: absolute;
 
-	font-family: Arial;
+	font-family: Helvetica, Arial, sans-serif;
 	font-size: 12px; 
 	text-decoration: none;
 	font-style: normal;

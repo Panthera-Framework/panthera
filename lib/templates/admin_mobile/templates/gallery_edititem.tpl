@@ -18,7 +18,7 @@
                     
                     <li class="list-divider">{"Visibility"|localize:gallery}</li>
                     <li class="list-item-single-line selectable">
-                        <a id="visibility_text" onclick="toggleItemVisibility({$id});">
+                        <a id="visibility_text" onclick="toggleItemVisibility();">
                             {if $visibility eq "1"} {"True"|localize} {else} {"False"|localize} {/if}
                         </a>
                             <input type="hidden" name="visibility" id="visibility_value" {if $visibility eq "1"} value="1" {else} value="0" {/if}>
@@ -43,6 +43,13 @@
     
     <script type="text/javascript">
     $(document).ready(function () {
+        /**
+          * Save mail form
+          *
+          * @author Mateusz Warzyński
+          */
+        
+        
         $("#change_item_form").submit(function () {
             panthera.jsonPOST({ data: '#change_item_form', async: true, url: '{$AJAX_URL}?display=gallery&action=edit_item_form&subaction=edit_item&id={$id}',
                 success: function (response) {
@@ -62,7 +69,7 @@
       * @author Mateusz Warzyński
       */
     
-    function toggleItemVisibility(id)
+    function toggleItemVisibility()
     {
         value = $('#visibility_value').val();
         

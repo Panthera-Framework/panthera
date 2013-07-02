@@ -147,23 +147,49 @@ class customPage extends pantheraFetchDB
         $statement = new whereClause();
         $statement -> add('', $field, '=', $value);
         $statement -> add('AND', 'language', '=', $language);
-
-        $cpage = new customPage($statement, '');
-
-        if (!$cpage -> exists() and $languageFallback == 'fallback')
-        {
-            // try to get page in other language
-            if (!$cpage -> exists())
-                $cpage = new customPage($field, $value);
-        }
         
-        // force native language
-        if($cpage->language != $language and $languageFallback == 'forceNative')
+        $cpage = new customPage($statement, '');
+        $panthera -> logging -> output ('Trying to get customPage by field=' .$field. ', language=' .$language, 'customPages');
+
+        // the simplest way is to find page by `unique`        
+        if ($field == 'unique')
         {
-            $statement = new whereClause();
-            $statement -> add('', 'unique', '=', $cpage->unique);
-            $statement -> add('AND', 'language', '=', $language);
-            $cpage = new customPage($statement, '');
+            if (!$cpage->exists())
+            {
+                // fallback to other language
+                if ($languageFallback == 'fallback')
+                    $cpage = new customPage('unique', $value);
+            }
+        } else {
+            // no `unique` given but `id` or `url_id`
+        
+            // if page with `url_id` or `id` does not exists in current language
+            if (!$cpage->exists())
+            {
+                // try to find page in other language to get `unique`
+                $cpage = new customPage($field, $value);
+                $panthera -> logging -> output ('customPage search by field=' .$field. ', value=' .$value, 'customPages');
+                
+                // if we found page by `unique` we can now search for page with that in unique in selected `langauge`
+                if ($cpage->exists())
+                {
+                    $panthera -> logging -> output('And the result is positive, unique=' .$cpage->unique. ', now searching in language=' .$language, 'customPages');
+                    
+                    $statement = new whereClause();
+                    $statement -> add('', 'unique', '=', $cpage->unique);
+                    $statement -> add('AND', 'language', '=', $language);
+                
+                    $ppage = new customPage($statement, '');
+                    
+                    // if found, replace cpage with ppage
+                    if ($ppage -> exists())
+                        $cpage = $ppage;
+                    else {
+                        if ($languageFallback == 'forceNative')
+                            $cpage = new customPage('array', array());                        
+                    }
+                }
+            }
         }
         
         return $cpage;

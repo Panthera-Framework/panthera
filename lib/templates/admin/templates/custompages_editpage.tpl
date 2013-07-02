@@ -50,7 +50,7 @@ jQuery(document).ready(function($) {
 
     $('#new_tag').click(function () {
           tagID = Math.round((new Date()).getTime() / 1000);
-          $('#tags').append('<tr id="tag_p_'+tagID+'"><td><input type="text" value="'+$('#new_tag_text').val()+'" name="tag_'+tagID+'"></td><td><input type="button" value="Usuń" onclick="deleteTag(\'tag_p_'+tagID+'\'); return false;"></td></tr>');
+          $('#tags').append('<tr id="tag_p_'+tagID+'"><td><input type="text" value="'+$('#new_tag_text').val()+'" name="tag_'+tagID+'"></td><td style="border-right: 0px;"><input type="button" value="Usuń" onclick="deleteTag(\'tag_p_'+tagID+'\'); return false;"></td></tr>');
     });
 
     /**
@@ -75,7 +75,7 @@ jQuery(document).ready(function($) {
 </script>
     <div id="edit_window">
         <form action="{$AJAX_URL}?id={$custompage_unique}&lang={$custompage_language}&display=custom&action=post_form&pid={$custompage_id}" method="POST" id="save_form">
-        <div class="titlebar">{"Editing page"|localize:custompages} - <span id="page_title_editor" style="color: black;">"{$custompage_title}"</span> ({$custompage_language})</div>
+        <div class="titlebar">{"Editing page"|localize:custompages} - <span id="page_title_editor" style="color: black;">"{$custompage_title}"</span> ({$custompage_language}){include file="_navigation_panel.tpl"}</div>
 
         <br>
          <div class="msgSuccess" id="userinfoBox_success"></div>
@@ -106,7 +106,7 @@ jQuery(document).ready(function($) {
        <!-- end of edit in other languages -->
        
        <!-- tags -->
-       <div class="grid-2" style="float: left;">
+       <div class="grid-2" style="float: left; margin-bottom: 100px;">
             <div class="title-grid">{"Tags"|localize:custompages}<span></span></div>
             <div class="content-table-grid">
                 <table class="insideGridTable">
@@ -169,6 +169,11 @@ jQuery(document).ready(function($) {
                        </tr>
                        
                        <tr>
+                           <td>{"Menu"|localize}:</td>
+                           <td style="border-right: 0px;"><input type="button" value="{"Add to menu"|localize:menuedit}" onclick="createPopup('_ajax.php?display=menuedit&popup=true&action=quickAddFromPopup&link={$custompage_url_id_address}&title={$custompage_title}&language={$custompage_language}', 1024, 550);"></td>
+                       </tr>
+                       
+                       <tr>
                            <td style="border-bottom: 0px;"></td>
                            <td style="border-bottom: 0px; border-right: 0px;"><input type="submit" value="{"Save page"|localize:custompages}"></td>
                        </tr>
@@ -179,7 +184,7 @@ jQuery(document).ready(function($) {
         </div>
 
         <!-- content -->
-        <div class="grid-1" style="margin-top: 300px;">
+        <div class="grid-1" style="margin-top: 350px;">
         <div class="title-grid">{"Content"|localize:custompages}<span></span></div>
             <div class="content-gird" style="padding: 0px;">
                <textarea name="page_content_custom" id="page_content" style="width: 100%; height: 350px;"></textarea><br>

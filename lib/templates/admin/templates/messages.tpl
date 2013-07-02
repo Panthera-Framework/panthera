@@ -5,7 +5,7 @@ $(document).ready(function(){
 });
 </script>
 
-    <div class="titlebar">{"Message categories"|localize:qmessages} - {"Articles, quick messages, news etc."|localize:qmessages}</div>
+    <div class="titlebar">{"Message categories"|localize:qmessages} - {"Articles, quick messages, news etc."|localize:qmessages}{include file="_navigation_panel.tpl"}</div>
 
     <br>
     <div class="msgSuccess" id="userinfoBox_success"></div>

@@ -61,7 +61,7 @@ function saveMenuOrder(id)
 
 {if $action eq 'plugin_disabled'}
 
-    <div class="titlebar">{"Error"|localize}</div><br>
+    <div class="titlebar">{"Error"|localize}{include file="_navigation_panel.tpl"}</div><br>
 
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>
@@ -95,7 +95,7 @@ function removeMenuCategory(id)
 
 </script>
 
-    <div class="titlebar">{"Menu editor"|localize:menuedit} - {"Menu management for site and administration panel"|localize:menuedit}.</div><br>
+    <div class="titlebar">{"Menu editor"|localize:menuedit} - {"Menu management for site and administration panel"|localize:menuedit}.{include file="_navigation_panel.tpl"}</div><br>
 
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>

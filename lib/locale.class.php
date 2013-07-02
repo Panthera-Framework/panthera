@@ -325,6 +325,25 @@ class pantheraLocale
         $this->setLocale($this->panthera->session->get('language'));
         return True;
     }
+    
+    /**
+      * Get locale name with override function
+      *
+      * @param string $override Locale name
+      * @return string 
+      * @author Damian Kęska
+      */
+    
+    public static function getFromOverride($override)
+    {
+        global $panthera;
+        $language = $panthera -> locale -> getActive();
+        
+        if ($panthera->locale->exists($override))
+            $language = $override;
+            
+        return $language;
+    }
 }
 
 /**

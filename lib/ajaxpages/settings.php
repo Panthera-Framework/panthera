@@ -137,11 +137,12 @@ if (!defined('IN_PANTHERA'))
                   {
                         if ($u->changePassword($_POST['new_passwd']))
                         {
-                              ajax_exit(array('status' => 'success', 'message' => localize('Password has been successfully changed')));
-                              pa_exit();
+                            $u->save();
+                            ajax_exit(array('status' => 'success', 'message' => localize('Password has been successfully changed')));
+                            pa_exit();
                         } else {
-                              print(json_encode(array('status' => 'failed', 'message' => localize('Error with changing password'))));
-                              pa_exit();
+                            print(json_encode(array('status' => 'failed', 'message' => localize('Error with changing password'))));
+                            pa_exit();
                         }
                   } else {
                         print(json_encode(array('status' => 'failed', 'message' => localize('Passwords are not identical'))));

@@ -6,7 +6,7 @@ $(document).ready(function () {
         panthera.jsonPOST({ data: '#change_item_form', async: true, url: '{$AJAX_URL}?display=gallery&action=edit_item_form&subaction=edit_item&id={$id}', messageBox: 'userinfoBox', spinner: progress,
             success: function (response) {
                 if (response.status == "success")
-                    navigateTo('{$AJAX_URL}?display=gallery&action=display_category&ctgid='+response.ctgid);
+                    navigateTo('{$AJAX_URL}?display=gallery&action=display_category&unique={$unique}&language={$language}');
             }
         });
 
@@ -84,7 +84,7 @@ sliderChangeImage('{$link}');
 
     <tfoot>
         <tr>
-            <td colspan="2"><em><input type="button" value="{"Back"|localize:messages}" onclick="navigateTo('?display=gallery&action=display_category&ctgid={$gallery_id}'); return false;"/> <input type="submit" value="{"Save"|localize:messages}"></em></td>
+            <td colspan="2"><em><input type="button" value="{"Back"|localize:messages}" onclick="navigateTo('?display=gallery&action=display_category&unique={$unique}'); return false;"/> <input type="submit" value="{"Save"|localize:messages}"></em></td>
         </tr>
     </tfoot>
 
@@ -116,7 +116,7 @@ sliderChangeImage('{$link}');
             <td>
                   <select name="gallery_id">
                    {foreach from=$category_list key=k item=i}
-                        <option value="{$i->id}" {if $i->id eq $gallery_id} selected="selected"{/if}>{$i->title}</option>
+                        <option value="{$i->id}" {if $i->id eq $gallery_id} selected="selected"{/if}>{$i->title} ({$i->language})</option>
                    {/foreach}
                   </select>
             </td>

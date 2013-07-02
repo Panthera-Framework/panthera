@@ -6,16 +6,22 @@
   */
 
 $(document).ready(function () {
-    var progress = new panthera.ajaxLoader($('#add_item_form'));
+    var progress = new panthera.ajaxLoader($('#add_item_form_table'));
 
     $('#add_item_form').submit(function () {
-        panthera.jsonPOST({ url: '{$AJAX_URL}?display=gallery&action=add_item&subaction=add', spinner: progress, async: true, messageBox: userinfoBox, success: function (response) {
+        panthera.jsonPOST({ data: '#add_item_form', spinner: progress, async: true, messageBox: 'userinfoBox', success: function (response) {
                 if (response.status == "success")
-                    navigateTo('_ajax.php?display=gallery&action=display_category&ctgid='+response.ctgid);
+                    navigateTo('_ajax.php?display=gallery&action=display_category&unique={$unique}&language={$language}');
             }
         });
+        
+        return false;
     });
-}
+    
+    $('#image_slider').click(function () {
+        $('#image_slider_box').slideUp();
+    });
+});
 
 function sliderChangeImage(src)
 {
@@ -41,9 +47,6 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
     sliderChangeImage(link);
 }
 
-$('#image_slider').click(function () {
-    $('#image_slider_box').slideUp();
-});
 
 </script>
 
@@ -75,11 +78,11 @@ $('#image_slider').click(function () {
   <div class="msgError" id="userinfoBox_failed"></div>
 
  <form action="?display=gallery&action=add_item&subaction=add" method="POST" id="add_item_form">
-  <table class="gridTable">
+  <table class="gridTable" style="position: relative;" id="add_item_form_table">
 
     <tfoot>
         <tr>
-            <td colspan="2" class="rounded-foot-left"><em><input type="button" value="{"Back"|localize:messages}" onclick="navigateTo('?display=gallery&action=display_category&ctgid={$category_id}'); return false;"/> <input type="submit" value="{"Add"|localize:messages}"></em></td>
+            <td colspan="2" class="rounded-foot-left"><em><input type="button" value="{"Back"|localize:messages}" onclick="navigateTo('?display=gallery&action=display_category&unique={$unique}'); return false;"/> <input type="submit" value="{"Add"|localize:messages}"></em></td>
         </tr>
     </tfoot>
 
@@ -111,7 +114,7 @@ $('#image_slider').click(function () {
             <td>
                   <select name="gallery_id">
                    {foreach from=$category_list key=k item=i}
-                        <option value="{$i->id}" {if $i->id eq $category_id} selected="selected"{/if}>{$i->title}</option>
+                        <option value="{$i->id}" {if $i->id eq $category_id} selected="selected"{/if}>{$i->title} ({$i->language})</option>
                    {/foreach}
                   </select>
             </td>

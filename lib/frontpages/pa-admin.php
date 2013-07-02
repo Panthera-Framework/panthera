@@ -15,6 +15,7 @@ if (!checkUserPermissions($user))
 $panthera -> template -> setTemplate('admin');
 $panthera -> template -> setTitle($panthera -> config -> getKey('site_title', 'Panthera', 'string'));
 
+
 if (!isset($_GET['display']))
     $_GET['display'] = 'dash';
 
@@ -59,6 +60,7 @@ $panthera -> template -> push('flags', $localesTpl);
 $panthera -> template -> push('admin_menu', $menu->show());
 $panthera -> template -> push('display_page', $_GET['display']);
 $panthera -> template -> push('query_string', $_SERVER['QUERY_STRING']);
+$panthera -> template -> push('PANTHERA_VERSION', PANTHERA_VERSION);
 $panthera -> template -> display();
 $panthera -> finish();
 ?>

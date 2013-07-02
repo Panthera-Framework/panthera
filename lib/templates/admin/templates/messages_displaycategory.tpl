@@ -44,6 +44,7 @@ function editMessage(id)
                 $('#edit_msg_id').val(response.id);
                 $('#edit_msg_icon').val(response.icon);
                 $('#edit_language').val(response.language);
+                $('#edit_url_id').val(response.url_id);
 
                 if (response.visibility == 0)
                     $('#edit_msg_hidden').attr('checked', false);
@@ -113,7 +114,7 @@ jQuery(document).ready(function($) {
     
     $("#edit_msg_form").submit(function () {
        
-       panthera.jsonPOST({ url: '{$AJAX_URL}?display=messages&action=edit_msg&cat={$category_name}&language={$language}', messageBox: 'userinfoBox', success: function (response) {
+       panthera.jsonPOST({ data: '#edit_msg_form', messageBox: 'userinfoBox', mce: 'tinymce_all', success: function (response) {
                 if (response.status == "success")
                 {
                     jumpToAjaxPage(0);
@@ -163,7 +164,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
     height: 50px;
 }
 </style>
-    <div class="titlebar">{$category_title|localize} - {$category_description|localize}</div><br>
+    <div class="titlebar">{$category_title|localize} ({$language}){include file="_navigation_panel.tpl"}</div><br>
 
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>
@@ -192,7 +193,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
        <br>
     
     <div id="message_window">
-       <form action="{$AJAX_URL}?display=messages&action=new_msg&cat={$category_id}" method="POST" id="post_new">
+       <form action="{$AJAX_URL}?display=messages&action=new_msg&cat={$category_id}&language={$language}" method="POST" id="post_new">
         <div class="grid-1">
             <div class="title-grid" style="height: 30px;">{"Title of a new message"|localize:qmessages}: &nbsp;<input type="text" name="message_title" style="height: 20px; width: 250px; margin-top: 3px;"></div>
             <div class="content-table-grid" style="padding: 0px;">
@@ -255,7 +256,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
                             </tr>
                             <tr>
                                 <td>{"SEO name"|localize:qmessages}<br><small>{"A name friendly to remember, and friendly for search engines"|localize:qmessages}</small></td>
-                                <td style="border-right: 0px;"><input type="text" name="edit_url_id" style="width: 300px;"></td>
+                                <td style="border-right: 0px;"><input type="text" name="edit_url_id" id="edit_url_id" style="width: 300px;"></td>
                             </tr>
                             <tr>
                                 <td>{"Language"|localize:qmessages}<br><small>{"Save this message in selected language"|localize:qmessages}</small></td>

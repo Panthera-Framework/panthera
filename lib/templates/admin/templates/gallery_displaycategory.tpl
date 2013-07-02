@@ -77,6 +77,26 @@
             }
         });
         
+        var saveCategoryDetailsDiv = new panthera.ajaxLoader($('#saveCategoryDetailsDiv'));
+        
+        /**
+          * Save category details
+          *
+          * @author Damian Kęska
+          */
+        
+        $('#saveCategoryDetails').submit(function () {
+            panthera.jsonPOST({ data: '#saveCategoryDetails', messageBox: 'userinfoBox', spinner: saveCategoryDetailsDiv, success: function (response) {
+                
+                    // refresh the page
+                    if (response.status == "success")
+                        setTimeout("navigateTo('?display=gallery&action=display_category&unique="+response.unique+"&language="+response.language+"');", 800);
+
+                } 
+            });
+            return false;
+        });
+        
         /*$('#removeImage').bind('drop', function (e) {
                 console.log("Drop event");
         });
@@ -89,12 +109,86 @@
         
             } 
         });*/
+        
+        panthera.forms.checkboxToggleLayer({ input: '#all_langs_checkbox', layer: '#language_input', reversed: true });
 
     });
 </script>
 
-<div class="titlebar">{"Gallery"|localize:messages}: &nbsp;{$category_title}{include file="_navigation_panel.tpl"}</div>
-<div class="grid-2" style="width: 100%;">
+<div class="titlebar">{"Gallery"|localize:messages}: &nbsp;{$category_title} ({$langauge}){include file="_navigation_panel.tpl"}</div>
+
+    <div class="msgSuccess" id="userinfoBox_success"></div>
+    <div class="msgError" id="userinfoBox_failed"></div>
+
+    {if !$all_langs}
+    <div class="grid-2" style="position: relative;">
+          <div class="title-grid">{"Gallery in other languages"|localize:gallery}<span></span></div>
+          <div class="content-table-grid">
+              <table class="insideGridTable">
+                <tfoot>
+                    <tr>
+                        <td colspan="3"><small>{"Select langauge name to edit or create this gallery in other language"|localize:gallery}</small></td>
+                    </tr>
+                </tfoot>
+            
+                <tbody>
+                    {foreach from=$languages key=k item=i}
+                        <tr>
+                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$k}" onclick="navigateTo('?display=gallery&action=display_category&unique={$unique}&language={$k}');">{$k}</a></td>
+                            <td style="width: 60px; padding: 10px; border-right: 0px;"></td>
+                        </tr>
+                    {/foreach}
+                </tbody>
+            </table>
+         </div>
+    </div>
+    {/if}
+    
+    <!-- settings -->
+    <form action="?display=gallery&action=saveCategoryDetails&id={$galleryObject->id}" method="POST" id="saveCategoryDetails">
+    <div class="grid-{if $all_langs}1{else}2{/if}" style="position: relative; margin-bottom: 50px;" id="saveCategoryDetailsDiv">
+          <div class="title-grid">{"Settings"|localize}<span></span></div>
+          <div class="content-table-grid">
+              <table class="insideGridTable">
+                <tbody>
+                        <tr>
+                            <td style="width: 120px;">{"Title"|localize:gallery}:</td>
+                            <td style="border-right: 0px;"><input type="text" style="width: 98%;" name="title" value="{$galleryObject->title}"></td>
+                        </tr>
+                        
+                        <tr>
+                            <td>{"Created"|localize:gallery}:</td>
+                            <td style="border-right: 0px;">{$galleryObject->created} ({$galleryObject->author_login})</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>{"Make this gallery same for all languages"|localize:gallery}:</td>
+                            <td style="border-right: 0px;"><input type="checkbox" name="all_langs" value="1"{if $all_langs} checked{/if} id="all_langs_checkbox"></td>
+                        </tr>
+                        
+                        <tr {if $all_langs}style="display: none;"{/if} id="language_input">
+                            <td>{"Save this gallery in"|localize:gallery}:</td>
+                            <td style="border-right: 0px;">
+                            <select name="language">
+                            {foreach from=$languages key=k item=i}
+                                <option value="{$k}"{if $galleryObject->language == $k} selected{/if}>{$k}</option>
+                            {/foreach}
+                            </select>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="padding: 10px; border-right: 0px; border-bottom: 0px;">&nbsp;</td>
+                            <td style="width: 60px; padding: 10px; border-right: 0px; border-bottom: 0px;"><input type="submit" value="{"Save"|localize}" style="float: right;"></td>
+                        </tr>
+                </tbody>
+            </table>
+         </div>
+    </div>
+    </form>
+    <!-- end of settings -->
+
+<div class="grid-1" style="width: 100%;">
 
     {foreach from=$item_list key=k item=i}
     <div class="galleryItem{if $i->visibility eq 1} galleryItemHidden{/if} draggableGalleryItem" id="gallery_item_{$i->id}">

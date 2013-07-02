@@ -19,6 +19,7 @@ if (!getUserRightAttribute($user, 'can_customPages') and !getUserRightAttribute(
 $tpl = 'custompages.tpl';
 
 $panthera -> locale -> loadDomain('custompages');
+$panthera -> locale -> loadDomain('menuedit');
 $panthera -> importModule('custompages');
 $panthera -> importModule('meta');
 

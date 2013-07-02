@@ -115,4 +115,6 @@ function addGroup(acl)
 
     </tbody>
 </table>
+{elseif $action == "disabled"}
+<h2>{"Permissions management is currently disabled in website settings"|localize}</h2>
 {/if}

@@ -1,5 +1,4 @@
 <?php
-
 /**
   * Access control list
   *

@@ -13,6 +13,7 @@
   *
   * @param object $exception
   * @return void 
+  * @Package Panthera\core
   * @author Damian Kęska
   */
   
@@ -66,6 +67,7 @@ function pantheraExceptionHandler($exception)
   * @param string $errfile
   * @param string $errline
   * @return mixed 
+  * @Package Panthera\core
   * @author Damian Kęska
   */
 
@@ -163,7 +165,7 @@ class pantheraLogging
 
     public function getOutput()
     {
-        if (MODE == 'CLI')
+        if (PANTHERA_MODE == 'CLI')
         {
             $defaults = "Client addr(".$_SERVER['SSH_CLIENT'].") => CLI ".$_SERVER['SCRIPT_NAME']."\n";
         } else
@@ -478,6 +480,7 @@ class pantheraCore
                 try {
                     $n = 'varCache_' .$varCacheType;
                     $this->varCache = new $n($this);
+                    $this->logging->output('varCache initialized, using ' .$cacheType, 'pantheraCore');
                 } catch (Exception $e) {
                     $this->logging->output('Disabling varCache due to exception: ' .$e->getMessage(), 'pantheraCore');
                     $this->varCache = false;
@@ -497,6 +500,7 @@ class pantheraCore
                         try {
                             $n = 'varCache_' .$cacheType;
                             $this->cache = new $n($this);
+                            $this->logging->output('Cache initialized, using ' .$cacheType, 'pantheraCore');
                         } catch (Exception $e) {
                             $this->logging->output('Disabling cache due to exception: ' .$e->getMessage(), 'pantheraCore');
                             $this->cache = false;
@@ -1725,8 +1729,8 @@ function pantheraUrl($url, $reverse=False)
 
     $var = array('{$AJAX_URL}' => $panthera->config->getKey('ajax_url'), '{$PANTHERA_DIR}' => PANTHERA_DIR, '{$SITE_DIR}' => SITE_DIR, '{$PANTHERA_URL}' => $panthera->config->getKey('url'), '{$upload_dir}' => $panthera->config->getKey('upload_dir'));
     
-    if (!defined('SKIP_LOCALE'))
-        $var['{$language}'] = $panthera->locale->getActive();
+    //if (!defined('SKIP_LOCALE'))
+    //    $var['{$language}'] = $panthera->locale->getActive();
 
     if ($reverse == True)
     {
