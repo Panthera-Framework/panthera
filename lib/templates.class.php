@@ -398,9 +398,9 @@ class pantheraTemplate extends pantheraClass
 	 * @author Damian Kęska
 	 */
 
-    public function addStyle($href, $rel='', $title='')
+    public function addStyle($href, $title='')
     {
-        $this->addLink($href, 'text/css', $rel, $title='');
+        $this->addLink($href, 'text/css', 'stylesheet', $title='');
         return True;
     }
 
@@ -554,7 +554,7 @@ class pantheraTemplate extends pantheraClass
 
             // parse Panthera internal urls
             $header = pantheraUrl($header);
-
+            
             // allow plugis modify header variables
             $this->attributes['title'] = $this->panthera->get_filters('site_title', $this->attributes['title']);
             $header = $this->panthera->get_filters('site_header', $header);

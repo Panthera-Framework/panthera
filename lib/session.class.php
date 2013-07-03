@@ -11,6 +11,7 @@
 /**
   * User session management class
   *
+  * @package Panthera\core\session
   * @author Damian Kęska
   */
     
@@ -251,6 +252,7 @@ class pantheraSession
 /**
   * Cookie support extension for session management
   *
+  * @package Panthera\core\session
   * @author Damian Kęska
   */
 
@@ -424,6 +426,7 @@ class pantheraCookie
   * Tool for benchmarking, monitoring activity on website
   * In UNIX systems we would call it /var/run where are stored pids/sockets
   *
+  * @package Panthera\core\session
   * @author Damian Kęska
   */
 
@@ -432,13 +435,25 @@ class run extends pantheraFetchDB
     protected $_tableName = 'run';
     protected $_idColumn = 'rid';
     protected $_constructBy = array('rid', 'array');
+    protected $_unsetColumns = array('rid', 'started', 'name', 'expired');
 
     public function __get($var)
     {
         if ($var == 'data')
-            return unserialize($this->__data['var']);
+            return unserialize(parent::__get('storage'));
 
         return parent::__get($var);
+    }
+    
+    public function __set($var, $value)
+    {
+        if ($var == 'data')
+        {
+            $var = 'storage';
+            $value = serialize($value);
+        }   
+        
+        return parent::__set($var, $value);
     }
 
     /**
@@ -447,7 +462,7 @@ class run extends pantheraFetchDB
      * @param string $name Socket name
      * @param int $pid Process id or content id
      * @param mixed $data Data to be stored in database
-     * @return string
+     * @return bool|int
      * @author Damian Kęska
      */
 
@@ -460,6 +475,7 @@ class run extends pantheraFetchDB
 
         $values = array('pid' => intval($pid), 'name' => $name, 'data' => serialize($data), 'started' => microtime(true), 'expired' => 0);
         $panthera -> db -> query('INSERT INTO `{$db_prefix}run` (`pid`, `name`, `storage`, `started`, `expired`) VALUES (:pid, :name, :data, :started, :expired);', $values);
+        return $panthera -> db -> sql -> lastInsertId();
     }
 
     /**
@@ -467,16 +483,21 @@ class run extends pantheraFetchDB
      *
      * @param int $pid Process id or content id
      * @param string $name Socket name
-     * @return string
+     * @param int $rid Process run id
+     * @return bool
      * @author Damian Kęska
      */
 
-    public static function closeSocket($name, $pid)
+    public static function closeSocket($name, $pid, $rid='')
     {
         global $panthera;
 
         try {
-            $panthera -> db -> query('UPDATE `{$db_prefix}run` SET `expired` = :expired WHERE `pid` = :pid AND `name` = :name', array('expired' => microtime(true), 'pid' => intval($pid), 'name' => $name));
+            if (is_int($rid))
+                $panthera -> db -> query('UPDATE `{$db_prefix}run` SET `expired` = :expired WHERE `rid` = :rid', array('expired' => microtime(true), 'rid' => $rid));
+            else
+                $panthera -> db -> query('UPDATE `{$db_prefix}run` SET `expired` = :expired WHERE `pid` = :pid AND `name` = :name', array('expired' => microtime(true), 'pid' => intval($pid), 'name' => $name));
+                
             return True;        
         } catch (Exception $e) { return False; }    
     }
@@ -495,7 +516,7 @@ class run extends pantheraFetchDB
         global $panthera;
 
         try {
-            $panthera -> db -> query('DELETE FROM `{$db_prefix}run` WHERE `pid` = :pid AND `name` = :name', array('expired' => time(), 'pid' => intval($pid), 'name' => $name));
+            //$panthera -> db -> query('DELETE FROM `{$db_prefix}run` WHERE `pid` = :pid AND `name` = :name', array('expired' => time(), 'pid' => intval($pid), 'name' => $name));
             return True;        
         } catch (Exception $e) { return False; }    
     }
@@ -523,6 +544,7 @@ class run extends pantheraFetchDB
 /**
   * Website navigation based on user session storage
   *
+  * @package Panthera\core\session
   * @author Damian Kęska
   */
 
@@ -606,5 +628,24 @@ class navigation
     {
         global $panthera;
         $panthera->session->set('navigation_history', self::$history);
+    }
+    
+    /**
+      * Appends current page to history
+      *
+      * @param bool $ajaxExit Are we in ajax mode or not
+      * @return mixed 
+      * @author Damian Kęska
+      */
+    
+    public static function appendCurrentPage($ajaxExit)
+    {
+        if ($ajaxExit == False and PANTHERA_MODE == "CGI")
+        {
+            $url = parse_url($_SERVER['REQUEST_URI']);
+            $pathinfo = pathinfo($url['path']);
+            navigation::appendHistory($pathinfo['filename']. '?' .$url['query']);
+            navigation::save();
+        }
     }
 }

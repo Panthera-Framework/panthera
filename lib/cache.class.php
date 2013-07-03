@@ -159,6 +159,9 @@ class varCache_apc extends pantheraClass
     {
         parent::__construct($panthera);
         $this->prefix = $panthera -> config -> getKey('session_key');
+        
+        if (!function_exists('apc_fetch'))
+            throw new Exception('Cannot find APC module in PHP');
     }
     
     /**
@@ -278,6 +281,9 @@ class varCache_xcache extends pantheraClass
         
         if (PANTHERA_MODE == 'CLI')
             throw new Exception('Xcache will not work in CLI mode.');
+            
+        if (!function_exists('xcache_isset'))
+            throw new Exception('Cannot find XCache PHP extension');
     }
     
     /**

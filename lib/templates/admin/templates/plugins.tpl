@@ -28,7 +28,7 @@ function togglePlugin(name, value)
 }
 </style>
 
-	 	<div class="titlebar">{"Plugins"|localize:plugins} - {"Manage plugins"|localize:plugins}</div><br>
+	 	<div class="titlebar">{"Plugins"|localize:plugins} - {"Manage plugins"|localize:plugins}{include file="_navigation_panel.tpl"}</div><br>
 
         <div class="msgSuccess" id="userinfoBox_success"></div>
         <div class="msgError" id="userinfoBox_failed"></div>

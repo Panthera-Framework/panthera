@@ -4,13 +4,10 @@ set_time_limit(0); // never stop executing the script
 
 //define('DEBUG', True);
 
-// include lib
-define('SITE_DIR', getcwd());
-
-if(!is_file(SITE_DIR. '/content/config.php'))
+if(!is_file('content/app.php'))
     die("Please run this tool from the root directory of your website\n");
 
-include(str_ireplace('/tools', '/', dirname(__FILE__)). '/boot.php');
+include('content/app.php');
 
 error_reporting(E_ALL);
 
@@ -26,6 +23,9 @@ class ptop extends cliApp
         $this->clear(True);
 
         $this->panthera->importModule('crontab');
+        
+        $this->panthera->switchPlugin('ptopUpdater', True);
+        $this->panthera->config->save(); // save changes to database
     }
 
     public function freeze($args='')
@@ -38,6 +38,15 @@ class ptop extends cliApp
     {
         // call parent method
         parent::catchUserInput($input);
+    }
+    
+    public function signalHandler($signal)
+    {
+        print("Cleaning up...\n");
+        $this->panthera->switchPlugin('ptopUpdater', False);
+        $this->panthera->config->save();
+        sleep(0.5);
+        parent::signalHandler($signal);
     }
 
     protected function main()
@@ -64,15 +73,23 @@ class ptop extends cliApp
 
             // unpack data            
             $data = unserialize($socket->storage);
+            $time = '?';
+            
+            if (isset($data['time']))
+                $time = 'page: ' .substr($data['time']['page'], 0, 5). ', overall: ' .substr($data['time']['overall'], 0, 5);
+                
+            if (!isset($data['method']))
+                $data['method'] = 'GET';
 
-            $list[] = array('pid' => $socket->pid, 'user' => $data['user'], 'name' => $socket->name, 'execution time' => $executionTime. ' ms', 'triggered by' => $data['client'], 'url' => $data['url']);
+            $list[] = array('pid' => $socket->pid, 'user' => $data['user'], 'name' => $socket->name, 'execution time' => $executionTime. ' ms', 'triggered by' => $data['client'], 'request method' => $data['method'], 'url' => $data['url'], 'time' => $time);
         }
 
         if (count($list) == 0)
-            $list[] = array('pid' => 'no', 'name' => 'active', 'execution time' => 'processes', 'triggered by' => 'working', 'url' => 'in background');
+            $list[] = array('pid' => 'no', 'name' => 'active', 'execution time' => 'processes', 'triggered by' => 'working', 'request method' => 'in background', 'url' => '', 'time' => '');
 
         $renderer = new ArrayToTextTable($list);
         $renderer->showHeaders(true);
+        //$renderer->setMaxWidth(64);
         $renderer->render();
 
         $processes = 0;

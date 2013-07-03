@@ -1,3 +1,4 @@
+{$site_header}
 <script type="text/javascript">
     var uploadProgress = new panthera.ajaxLoader($('#addNewImage'));
 
@@ -121,7 +122,7 @@
     <div class="msgError" id="userinfoBox_failed"></div>
 
     {if !$all_langs}
-    <div class="grid-2" style="position: relative;">
+    <div class="grid-2" style="position: relative;" id="languagesGrid">
           <div class="title-grid">{"Gallery in other languages"|localize:gallery}<span></span></div>
           <div class="content-table-grid">
               <table class="insideGridTable">
@@ -151,17 +152,17 @@
           <div class="content-table-grid">
               <table class="insideGridTable">
                 <tbody>
-                        <tr>
+                        <tr id="title_tr">
                             <td style="width: 120px;">{"Title"|localize:gallery}:</td>
                             <td style="border-right: 0px;"><input type="text" style="width: 98%;" name="title" value="{$galleryObject->title}"></td>
                         </tr>
                         
-                        <tr>
+                        <tr id="created_tr">
                             <td>{"Created"|localize:gallery}:</td>
                             <td style="border-right: 0px;">{$galleryObject->created} ({$galleryObject->author_login})</td>
                         </tr>
                         
-                        <tr>
+                        <tr id="all_langs_tr">
                             <td>{"Make this gallery same for all languages"|localize:gallery}:</td>
                             <td style="border-right: 0px;"><input type="checkbox" name="all_langs" value="1"{if $all_langs} checked{/if} id="all_langs_checkbox"></td>
                         </tr>
@@ -177,7 +178,7 @@
                             </td>
                         </tr>
                         
-                        <tr>
+                        <tr id="save_tr">
                             <td style="padding: 10px; border-right: 0px; border-bottom: 0px;">&nbsp;</td>
                             <td style="width: 60px; padding: 10px; border-right: 0px; border-bottom: 0px;"><input type="submit" value="{"Save"|localize}" style="float: right;"></td>
                         </tr>
@@ -216,7 +217,7 @@
                 <a href="#edit" onclick="navigateTo('?display=gallery&action=edit_item_form&itid={$i->id}');"><img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/Text-x-generic_with_pencil.svg" class="galleryIcon" title="{"Edit"|localize:messages}"></a>
                 <a href="#delete" onclick="removeGalleryItem({$i->id});"><img src="{$PANTHERA_URL}/images/admin/menu/Actions-process-stop-icon.png" class="galleryIcon" title="{"Delete"|localize:messages}"></a>
                 <a href="#toggle-visibility" onclick="toggleItemVisibility({$i->id});"><img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/System-search.svg" class="galleryIcon" title="{"Toggle visibility"|localize:gallery}"></a>
-                <a href="#rights" onclick="createPopup('_ajax.php?display=acl&popup=true&name=gallery_manage_img_{$i->id}', 1024, 'upload_popup');"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" class="galleryIcon" title="{"Manage permissions"|localize:messages}"></a>
+                <a href="#rights" onclick="createPopup('_ajax.php?display=acl&popup=true&name=gallery_manage_img_{$i->id}', 1024, 550);"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" class="galleryIcon" title="{"Manage permissions"|localize:messages}" id="permissionsButton"></a>
                 <a href="#thumbnail" onclick="setAsCategoryThumb({$i->id}, {$category_id});"><img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/Image-x-generic.svg" class="galleryIcon" title="{"Set as thumbnail"|localize:gallery}"></a>
             </div>
         </div>

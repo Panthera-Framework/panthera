@@ -23,6 +23,7 @@ if (PANTHERA_MODE == 'CLI') {
         error_reporting(E_ALL);
     else
         error_reporting(E_ERROR | E_WARNING | E_PARSE);
+        
 } else {
     // CGI mode
 
@@ -84,7 +85,12 @@ if (!defined('SKIP_SESSION'))
 
 // core elements
 $panthera = new pantheraCore($config);
-define('PANTHERA_FRONTCONTROLLER', '/' .str_replace(SITE_DIR, '', $_SERVER['DOCUMENT_ROOT'].$_SERVER['PHP_SELF'])); // detect front controller
+$t = str_replace(SITE_DIR, '', $_SERVER['DOCUMENT_ROOT'].$_SERVER['PHP_SELF']);
+
+if ($t[0] == "/")
+    $t = substr($t, 1, strlen($t));
+
+define('PANTHERA_FRONTCONTROLLER', '/' .$t); // detect front controller
 define('PANTHERA_WEBROOT', $config['webroot']);
 
 // for cli we have set of functions for managing application behavor
@@ -176,9 +182,3 @@ $plugins = $panthera -> loadPlugins();
 }*/
 
 $panthera -> get_options('page_load_starts');
-
-if ($panthera -> quitAfterPlugins == True)
-{
-    $panthera -> get_options('quitAfterPlugins');
-    pa_exit();
-}

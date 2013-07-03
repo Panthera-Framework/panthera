@@ -112,7 +112,7 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
 
 class pantheraLogging
 {
-    public $debug = False, $tofile = True, $printOutput = False;
+    public $debug = False, $tofile = True, $printOutput = False, $filterMode = '', $filter = array();
     private $_output = "", $panthera;
     
     /**
@@ -145,6 +145,18 @@ class pantheraLogging
         if($this->debug == False)
             return False;
             
+        // filter
+        if ($this->filterMode == 'whitelist')
+        {
+            if (!in_array($type, $this->filter))
+                return False;
+        } else if ($this->filterMode == 'blacklist') {
+        
+            if (in_array($type, $this->filter))
+                return False;
+        }
+        
+            
         if ($this->printOutput == True)
             print($msg. "\n");
             
@@ -154,6 +166,18 @@ class pantheraLogging
         $this->_output .= $msg. "\n";
 
         return True;
+    }
+    
+    /**
+      * Clear output string
+      *
+      * @return void 
+      * @author Damian Kęska
+      */
+    
+    public function clear()
+    {
+        $this->_output = '';
     }
     
     /**
@@ -213,6 +237,16 @@ class pantheraConfig
         // add option to save configuration on exit
         $panthera -> add_option('session_save', array($this, 'save'));
     }
+    
+    /**
+      * Get configuration key and create it if does not exists if provided default values and type
+      *
+      * @param string $key name
+      * @param mixed $default value
+      * @param string $type Data type
+      * @return mixed 
+      * @author Damian Kęska
+      */
 
     public function getKey($key, $default='__none', $type='__none')
     {
@@ -244,6 +278,16 @@ class pantheraConfig
     {
         return $this->getKey($var);
     }
+    
+    /**
+      * Set configuration key
+      *
+      * @param string $key
+      * @param mixed $value
+      * @param string $type
+      * @return mixed 
+      * @author Damian Kęska
+      */
 
     public function setKey($key, $value='__none', $type='__none')
     {
@@ -253,12 +297,15 @@ class pantheraConfig
         if (array_key_exists((string)$key, $this->overlay))
         {
             if ($this -> getKey($key) != $value)
+            {
+                $this->overlay_modified[(string)$key] = True;
                 $this->overlayChanged = True;
-            else
+            } else
                 return True;
         } else {
             $this->overlayChanged = True;
             $this->overlay[(string)$key] = array(0 => 'string'); // default type
+            $this->overlay_modified[(string)$key] = 'created';
         }
 
         if($type != '__none')
@@ -273,12 +320,19 @@ class pantheraConfig
         if ($this->panthera->types->validate($value, $this->overlay[(string)$key][0]))
         {
             $this->overlay[(string)$key][1] = $value;
-            $this->overlay_modified[(string)$key] = True;
             return True;
         }
 
         return False;
     }
+    
+    /**
+      * Get key type
+      *
+      * @param string $type
+      * @return string 
+      * @author Damian Kęska
+      */
 
     public function getKeyType($key)
     {
@@ -289,7 +343,13 @@ class pantheraConfig
             return 'string';
     }
 
-    // SQL Based Overlay
+    /**
+      * Load configuration overlay from database
+      *
+      * @return void 
+      * @author Damian Kęska
+      */
+    
     public function loadOverlay()
     {
         $SQL = $this->panthera->db->query('SELECT `key`, `value`, `type` FROM `{$db_prefix}config_overlay`');
@@ -309,11 +369,11 @@ class pantheraConfig
                 $this->overlay[$value['key']] = array($value['type'], $value['value']);
             }
         }
-
+        
         if (!array_key_exists('debug', $this->overlay))
         {
             $this->overlay['debug'] = array('bool', False);
-            $this->overlay_modified['debug'] = True;
+            $this->overlay_modified['debug'] = 'created';
         }
     }
 
@@ -342,6 +402,12 @@ class pantheraConfig
     }*/
 
     
+    /**
+      * Save cached changes to database
+      *
+      * @return void 
+      * @author Damian Kęska
+      */    
 
     public function save()
     {
@@ -362,11 +428,9 @@ class pantheraConfig
                     if(is_array($value[1]))
                         $value[1] = serialize($value[1]);
                 }
-
-                $this->panthera->logging->output('pantheraConfig::Update attempt of ' .$key. ' variable');
-                $q = $this->panthera->db->query('UPDATE `{$db_prefix}config_overlay` SET `value` = :value, `type` = :type WHERE `key` = :key ', array('value' => $value[1], 'key' => $key, 'type' => $value[0]));
-
-                if ($q -> rowCount() == 0)
+                
+                // creating new record in database
+                if ($this->overlay_modified[$key] == 'created' and is_string($this->overlay_modified[$key]))
                 {
                     $this->panthera->logging->output('pantheraConfig::Inserting ' .$key. ' variable (' .$value[0]. ')');
 
@@ -375,6 +439,11 @@ class pantheraConfig
                     } catch (Exception $e) { 
                         $this->panthera->logging->output('Cannot insert new key, SQL error: ' .print_r($e->getMessage()), 'pantheraConfig');
                     }
+                    
+                // updating existing
+                } else {
+                    $this->panthera->logging->output('pantheraConfig::Update attempt of ' .$key. ' variable');
+                    $this->panthera->db->query('UPDATE `{$db_prefix}config_overlay` SET `value` = :value, `type` = :type WHERE `key` = :key ', array('value' => $value[1], 'key' => $key, 'type' => $value[0]));
                 }
             }
             
@@ -386,11 +455,25 @@ class pantheraConfig
             @fclose($fp);*/
         }
     }
+    
+    /**
+      * Get all configuration variables from app.php
+      *
+      * @return array 
+      * @author Damian Kęska
+      */
 
     public function getConfig()
     {
         return $this->config;
     }
+    
+    /**
+      * Get all configuration variables from overlay in database
+      *
+      * @return array 
+      * @author Damian Kęska
+      */
 
     public function getOverlay()
     {
@@ -572,17 +655,17 @@ class pantheraCore
 
         if(is_file(PANTHERA_DIR. '/modules/' .$module. '.module.php'))
         {
-            $this->logging->output('pantheraCore::Importing "' .$module. '" from /lib/modules');
+            $this->logging->output('Importing "' .$module. '" from /lib/modules', 'pantheraCore');
             include_once(PANTHERA_DIR. '/modules/' .$module. '.module.php');
 
             $this->modules[$module] = True;
         } elseif (is_file(SITE_DIR. '/content/modules/' .$module. '.module.php')) {
-            $this->logging->output('pantheraCore::Importing "' .$module. '" from /content/modules');
+            $this->logging->output('Importing "' .$module. '" from /content/modules', 'pantheraCore');
             include_once(SITE_DIR. '/content/modules/' .$module. '.module.php');
 
             $this->modules[$module] = True;
         } else {
-            $this->logging->output('pantheraCore::Cannot import "' .$module. '" module');
+            $this->logging->output('Cannot import "' .$module. '" module', 'pantheraCore');
         }
     }
 
@@ -735,7 +818,8 @@ class pantheraCore
                 return False; 
             }
 
-            if (!is_object($function[0]) and !class_exists($function[0]))
+            // this is also checked when hooks are executed
+            /*if (is_object($function[0]) and !class_exists($function[0]))
             {
                 $this->logging->output("panthera::add_option::Class '".$function[0]."' does not exists");
                 return False; 
@@ -745,7 +829,7 @@ class pantheraCore
             {
                 $this->logging->output("panthera::add_option::Method '".$function[1]."' of '".$function[0]."' class does not exists");
                 return False; 
-            }
+            }*/
 
         } else { // and here is just a simple function
             if(!function_exists($function))
@@ -756,36 +840,12 @@ class pantheraCore
         }
         
         $this->hooks[$hookName][] = $function;
+        return True;
     }
 
     public function get_options($hookName, $args='')
     {
-        if(!array_key_exists($hookName, $this->hooks))
-            return False;
-
-        foreach ($this->hooks[$hookName] as $key => $hook)
-        {
-            if (gettype($hook) == "array")
-            {
-                if(!is_object($hook[0]) and !class_exists($hook[0]))
-                    continue;
-
-                if (!method_exists($hook[0], $hook[1]))
-                    continue;      
-
-                if (is_object($hook[0]))
-                    $hook[0]->$hook[1]($args);
-                else
-                    $hook[0]::$hook[1]($args);
-                    
-            } else {
-                if (!function_exists($hook))
-                    continue;
-
-                $hook($args);
-            }
-        }
-
+        $this->get_filters($hookName, $args);
         return False;
     }
 
@@ -793,17 +853,20 @@ class pantheraCore
     {
         if(!array_key_exists($hookName, $this->hooks))
             return $args;
+     
+        //if ($hookName == "page_load_ends")
+        //    var_dump($this->hooks['page_load_ends']);
             
         foreach ($this->hooks[$hookName] as $key => $hook)
         {
             if (gettype($hook) == "array")
             {
-                if(!is_object($hook[0]) and !class_exists($hook[0]))
-                    continue;
+                //if(!is_object($hook[0]) and !class_exists($hook[0]))
+                //    continue;
 
                 if (!method_exists($hook[0], $hook[1]))
-                    continue;                
-
+                    continue;
+                    
                 if (is_object($hook[0]))
                     $args = $hook[0]->$hook[1]($args);
                 else
@@ -1512,20 +1575,12 @@ function ajax_exit($array)
 function pa_exit($string='', $ajaxExit=False)
 {
     global $panthera;
-    
-    if ($ajaxExit == False and PANTHERA_MODE == "CGI")
-    {
-        $url = parse_url($_SERVER['REQUEST_URI']);
-        $pathinfo = pathinfo($url['path']);
-        navigation::appendHistory($pathinfo['filename']. '?' .$url['query']);
-        navigation::save();
-    }
 
     // just to be sure in logs
     $panthera -> logging -> output('Called pa_exit, goodbye.', 'pantheraCore');
 
     // execute all hooks to save data
-    $panthera -> get_options('page_load_ends');
+    $panthera -> get_options('page_load_ends', $ajaxExit);
     $panthera->finish();
 
     die($string);
@@ -2088,4 +2143,3 @@ function object_dump($obj)
     else    
         return unserialize($data);
 }*/
-?>

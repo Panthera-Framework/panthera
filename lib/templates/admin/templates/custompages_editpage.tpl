@@ -1,3 +1,4 @@
+{$site_header}
 {"cpages"|localizeDomain}
 <script type="text/javascript">
 
@@ -70,9 +71,8 @@ jQuery(document).ready(function($) {
     });
 
 });
-
-
 </script>
+
     <div id="edit_window">
         <form action="{$AJAX_URL}?id={$custompage_unique}&lang={$custompage_language}&display=custom&action=post_form&pid={$custompage_id}" method="POST" id="save_form">
         <div class="titlebar">{"Editing page"|localize:custompages} - <span id="page_title_editor" style="color: black;">"{$custompage_title}"</span> ({$custompage_language}){include file="_navigation_panel.tpl"}</div>
@@ -106,7 +106,7 @@ jQuery(document).ready(function($) {
        <!-- end of edit in other languages -->
        
        <!-- tags -->
-       <div class="grid-2" style="float: left; margin-bottom: 100px;">
+       <div class="grid-2" style="float: left; margin-bottom: 100px;" id="customTagsWindow">
             <div class="title-grid">{"Tags"|localize:custompages}<span></span></div>
             <div class="content-table-grid">
                 <table class="insideGridTable">
@@ -137,17 +137,17 @@ jQuery(document).ready(function($) {
         </div>
         <!-- end of tags -->
        
-        <div class="grid-2" style="float: right; margin-right: 25px;">
+        <div class="grid-2" style="float: right; margin-right: 25px;" id="customOptionsWindow">
              <div class="title-grid">{"Options"|localize:custompages}<span></span></div>
              <div class="content-table-grid">
                 <table class="insideGridTable">
                     <tbody>
-                       <tr>
+                       <tr id="tr_for_all_languages">
                            <td>{"Set this page for all languages"|localize:custompages}:<br><small>{"Content of this static page will be visibile in all languages"|localize:custompages}</td>
                            <td style="border-right: 0px;"><input type="checkbox" name="for_all_languages" value="1" {if $allPages == True}checked{/if}></td>
                        </tr>
                        
-                       <tr>
+                       <tr id="tr_save_language">
                          <td style="width: 150px;">{"Save this page in"|localize:custompages}:</td>
                          <td style="border-right: 0px;">
                              <select name="new_language">
@@ -158,22 +158,22 @@ jQuery(document).ready(function($) {
                          </td>
                        </tr>
                        
-                       <tr>
+                       <tr id="try_url_id">
                            <td style="width: 60%;">{"SEO name"|localize:custompages}:<br><small>{"Must be unique"|localize:custompages}, (A-Z, a-z, 0-9, -, _, ., ,, +, %)</small></td>
                            <td style="border-right: 0px;"><input type="text" name="url_id" value="{$custompage_url_id}" style="width: 99%;"></td>
                        </tr>
                        
-                       <tr>
+                       <tr id="tr_permissions">
                            <td>{"Permissions"|localize:custompages}:</td>
-                           <td style="border-right: 0px;"><input type="button" value="{"Manage permissions"|localize:messages}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_manage_custompage_{$custompage_id}', 1024, 'upload_popup');"></td>
+                           <td style="border-right: 0px;"><input type="button" value="{"Manage permissions"|localize:messages}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_manage_custompage_{$custompage_id}', 1024, 'upload_popup');"></td>
                        </tr>
                        
-                       <tr>
+                       <tr id="tr_menu">
                            <td>{"Menu"|localize}:</td>
                            <td style="border-right: 0px;"><input type="button" value="{"Add to menu"|localize:menuedit}" onclick="createPopup('_ajax.php?display=menuedit&popup=true&action=quickAddFromPopup&link={$custompage_url_id_address}&title={$custompage_title}&language={$custompage_language}', 1024, 550);"></td>
                        </tr>
                        
-                       <tr>
+                       <tr id="tr_save">
                            <td style="border-bottom: 0px;"></td>
                            <td style="border-bottom: 0px; border-right: 0px;"><input type="submit" value="{"Save page"|localize:custompages}"></td>
                        </tr>
@@ -197,26 +197,26 @@ jQuery(document).ready(function($) {
             <div class="title-grid">{"Informations"|localize:custompages}<span></span></div>
             <div class="content-table-grid">
                  <table class="insideGridTable">
-                    <tr>
+                    <tr id="tr_informations_id">
                         <td>id</td>
                         <td style="border-right: 0px;">{$custompage_id}</td>
                     </tr>
-                    <tr>
+                    <tr id="tr_informations_unique">
                         <td>unique</td>
                         <td style="border-right: 0px;">{$custompage_unique}</td>
                     </tr>
                     
-                    <tr>
+                    <tr id="tr_informations_language">
                         <td>language</td>
                         <td style="border-right: 0px;">{$custompage_language}</td>
                     </tr>
                     
-                    <tr>
+                    <tr id="tr_informations_url">
                         <td>URL</td>
                         <td style="border-right: 0px;"><a href="{$custompage_url_id_address}" target="_blank">{$custompage_url_id_address}</a><br><a href="{$custompage_unique_address}" target="_blank">{$custompage_unique_address}</a><br><a href="{$custompage_id_address}" target="_blank">{$custompage_id_address}</a></td>
                     </tr>
                     
-                    <tr>
+                    <tr id="tr_informations_url_id">
                         <td style="border-bottom: 0px;">url_id</td>
                         <td style="border-bottom: 0px; border-right: 0px;">{$custompage_url_id}</td>
                     </tr>

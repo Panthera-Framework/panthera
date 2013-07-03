@@ -161,19 +161,22 @@ abstract class cliApp
         global $panthera;
         $this->panthera = $panthera;
 
-        if (function_exists('pcntl_signal'))
+        /*if (function_exists('pcntl_signal'))
         {
             declare(ticks = 1);
             pcntl_signal(SIGTERM, 'pa_exit');
             pcntl_signal(SIGINT, 'pa_exit');
             @pcntl_signal(SIGKILL, 'pa_exit');
-        }
+        }*/
 
         // window utils eg. colors, printing text, clearing the screen
         $this->screen = $this->panthera->cli;
 
         // dont mess logs when in cli mode
         $panthera -> logging -> tofile = False;
+        
+        // signal handler
+        $panthera->add_option('cliSignal', array($this, 'signalHandler'));
 
         // automaticaly include selected toolkit
         if ($this->toolkit == 'texttable')
@@ -195,6 +198,19 @@ abstract class cliApp
 
             newt_init();
         }
+    }
+    
+    /**
+      * Simple signal handler
+      *
+      * @param int $signal
+      * @return void 
+      * @author Damian Kęska
+      */
+    
+    public function signalHandler($signal)
+    {
+        pa_exit();
     }
 
     /**
@@ -460,3 +476,29 @@ class cliColor {
     }
 }
 
+/**
+  * Handles a signal
+  *
+  * @param string $signal
+  * @return void 
+  * @author Damian Kęska
+  */
+
+function cliSignal($signal)
+{
+    global $panthera;
+    $panthera -> get_options('cliSignal', $signal);
+    pa_exit();
+}
+
+if (function_exists('pcntl_signal'))
+{
+    declare(ticks = 1);
+    pcntl_signal(SIGTERM, 'cliSignal');
+    pcntl_signal(SIGHUP,  'cliSignal');
+    pcntl_signal(SIGUSR1, 'cliSignal');
+    pcntl_signal(SIGINT, 'cliSignal');
+    pcntl_signal(SIG_IGN, 'cliSignal');
+    pcntl_signal(SIGABRT, 'cliSignal');
+    pcntl_signal(SIGQUIT, 'cliSignal');
+}

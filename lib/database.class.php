@@ -602,7 +602,7 @@ abstract class pantheraFetchDB
     // Fast columns access from DB
     public function __get($var)
     {
-        if(array_key_exists($var, $this->_data))
+        if(@array_key_exists($var, $this->_data))
             return $this->_data[$var];
 
         return False;
@@ -620,7 +620,7 @@ abstract class pantheraFetchDB
     public function __set($var, $value)
     {
         // dont allow create new keys (because we will save those keys in database and we cant create new columns)
-        if (!array_key_exists($var, $this->_data))
+        if (@!array_key_exists($var, $this->_data))
             return False;
 
         // if the variable already have save value as we are trying to set

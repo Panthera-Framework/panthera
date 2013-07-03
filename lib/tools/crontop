@@ -2,14 +2,11 @@
 <?php
 set_time_limit(0); // never stop executing the script
 
-// include lib
-define('SITE_DIR', getcwd());
-
-if(!is_file(SITE_DIR. '/content/config.php'))
+if(!is_file('content/app.php'))
     die("Please run this tool from the root directory of your website\n");
 
-include(str_ireplace('/tools', '/', dirname(__FILE__)). '/boot.php');
-include(PANTHERA_DIR. '/share/texttable.class.php');
+require 'content/app.php';
+require PANTHERA_DIR. '/share/texttable.class.php';
 
 // dont mess logs when in cli mode
 $panthera -> logging -> tofile = False;

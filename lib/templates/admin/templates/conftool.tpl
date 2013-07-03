@@ -1,18 +1,19 @@
 <script>
 $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
 
+var spinner = new panthera.ajaxLoader($('#conftoolTable'));
+
 /**
   * Save variable to database
   *
   * @author Mateusz Warzyński
   */
 
-
 function saveVariable(id)
 {
     value = jQuery('#value_'+id).val();
 
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&action=change', data: 'id='+id+'&value='+value, messageBox: 'userinfoBox', success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&action=change', data: 'id='+id+'&value='+value, messageBox: 'userinfoBox', spinner: spinner, success: function (response) {
             if (response.status == "success")
             {
                jQuery('#button_'+id).attr("disabled", "disabled");
@@ -27,6 +28,15 @@ function saveVariable(id)
 
 }
 
+/**
+  * Callback function for array edition
+  *
+  * @param string k
+  * @param string value
+  * @return void 
+  * @author Damian Kęska
+  */
+
 function conftool_array(k, value)
 {
     $('#value_'+k).val(value);
@@ -39,7 +49,7 @@ function conftool_array(k, value)
         <div class="msgSuccess" id="userinfoBox_success"></div>
         <div class="msgError" id="userinfoBox_failed"></div>
 
-        <div class="grid-1">
+        <div class="grid-1" style="position: relative;" id="conftoolTable">
          <table class="gridTable">
 
             <thead>

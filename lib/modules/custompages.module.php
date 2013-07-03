@@ -19,6 +19,30 @@ class customPage extends pantheraFetchDB
     protected $_tableName = 'custom_pages';
     protected $_idColumn = 'id';
     protected $_constructBy = array('id', 'url_id', 'unique', 'array');
+    protected $_meta;
+    
+    /**
+      * Get custompage's meta attributes
+      *
+      * @param string $meta Type of meta, by `id` or `unique`
+      * @return object|null 
+      * @author Damian Kęska
+      */
+
+    public function meta($meta='id')
+    {
+        if ($meta == 'unique')
+            $data = $this->unique;
+        elseif ($meta == 'id')
+            $data = $this->id;    
+        else
+            return False;
+    
+        if (!isset($this->_meta[$meta]))
+            $this->_meta[$meta] = new metaAttributes($this->panthera, 'cpages_' .$meta, $this->unique);
+
+        return $this->_meta[$meta];
+    }
 
     /**
       * Return columns from database with parsed Panthera URLS

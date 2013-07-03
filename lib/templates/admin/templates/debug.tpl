@@ -1,12 +1,14 @@
 <script type="text/javascript">
-jQuery(document).ready(function($) {
-    jQuery('#debug_log_trigger').click(function () {
-        jQuery('#debug_log_window').slideToggle('slow');
+$(document).ready(function() {
+    $('#debug_log_trigger').click(function () {
+        $('#debug_log_window').slideToggle('slow');
     });
 
-    jQuery('#current_log_trigger').click(function () {
-        jQuery('#current_log_window').slideToggle('slow');
+    $('#current_log_trigger').click(function () {
+        $('#current_log_window').slideToggle('slow');
     });
+    
+    panthera.inputTimeout({ element: '#messagesFilter', interval: 1200, callback: messagesFilterSave });
 });
 
 function toggleDebugValue()
@@ -16,6 +18,25 @@ function toggleDebugValue()
                 navigateTo('?display=debug');
         }
     });
+}
+
+function messagesFilterSave()
+{
+    saveVariable('debug.msgfilter', $('#messagesFilter').val());
+}
+
+/**
+  * Save configuration variable to database
+  *
+  * @author Mateusz Warzyński
+  */
+
+function saveVariable(id, value)
+{
+    spinner = new panthera.ajaxLoader($('#optionsTable'));
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&action=change', data: 'id='+id+'&value='+value, spinner: spinner});
+    return false;
+
 }
 </script>
 
@@ -49,7 +70,7 @@ function toggleDebugValue()
 
     <br>
 
-    <table class="gridTable">
+    <table class="gridTable" id="optionsTable" style="position: relative;">
         <thead>
             <tr>
                 <th>{"Key"|localize}</th>
@@ -59,7 +80,12 @@ function toggleDebugValue()
         </thead>
             <tr>
                 <td>{"Debugger state"|localize:debug}</td>
-                <td><a id='debug_value' onclick="toggleDebugValue();"  style="cursor: pointer;"> {if $debug eq true} {"True"|localize} {else} {"False"|localize} {/if} </a></td>
+                <td><a id='debug_value' onclick="toggleDebugValue();"  style="cursor: pointer;"> {if $debug eq true} {"On"|localize} {else} {"Off"|localize} {/if} </a></td>
+            </tr>
+            
+            <tr>
+                <td>{"Messages filter"|localize:debug}</td>
+                <td><select id="messagesFilter"><option value="">all messages</option><option value="blacklist">blacklist</option><option value="whitelist">whitelist</option></select></td>
             </tr>
         </tbody>
       </table>

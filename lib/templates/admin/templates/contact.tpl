@@ -1,5 +1,5 @@
+{$site_header}
 
-<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript">
 
 jQuery(document).ready(function($) {
@@ -80,7 +80,7 @@ jQuery(document).ready(function($) {
 
     });
     
-    panthera.forms.checkboxToggleLayer({ input: '#oneContactCheckbox', layer: '#oneContactPage', reversed: true });
+    panthera.forms.checkboxToggleLayer({ input: '#oneContactCheckbox', layer: '#contactLanguage', reversed: true });
 });
 </script>
 
@@ -137,8 +137,8 @@ jQuery(document).ready(function($) {
          <div class="grid-1">
                <div class="title-grid">{"Options"|localize:messages}</div>
 
-               <div class="content-gird">
-                    <table class="gridTable" style="border: 0px">
+               <div class="content-gird" style="padding: 0px;">
+                    <table class="gridTable" style="border: 0px;">
                         <tbody>
                             <tr>
                                 <td style="border-right: 0px; width: 20%;">{"E-mail address where all messages from form will to"|localize:contactpage}: </td>
@@ -150,7 +150,7 @@ jQuery(document).ready(function($) {
                                 <td style="border-right: 0px;"><input type="checkbox" value="1" name="all_langs"{if $oneContactPage == True} checked{/if} id="oneContactCheckbox"></td>
                             </tr>
                             
-                            <tr{if $oneContactPage == True} style="display: none;"{/if} id="oneContactPage">
+                            <tr{if $oneContactPage == True} style="display: none;"{/if} id="contactLanguage">
                                 <td style="border-right: 0px; border-bottom: 0px;">{"Save this contact page in"|localize:contactpage}: </td>
                                 <td style="border-right: 0px; border-bottom: 0px;">
                                     <select name="save_as_language">
@@ -164,7 +164,7 @@ jQuery(document).ready(function($) {
                             <tr>
                                 <td style="border-bottom: 0px; border-right: 0px;">&nbsp;</td>
                                 <td style="border-bottom: 0px; border-right: 0px;">
-                                    <div style="float: right;"><input type="button" value="{"Manage permissions"|localize:messages}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_edit_contact', 1024, 'upload_popup');"> <input type="submit" value="{"Save"|localize}"></div>
+                                    <div style="float: right;"><input type="button" value="{"Manage permissions"|localize:messages}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_edit_contact', 1024, 'upload_popup');"> <input type="submit" value="{"Save"|localize}"></div>
                                 </td>
                             </tr>
                         </tbody>

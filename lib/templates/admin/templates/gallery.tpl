@@ -1,3 +1,5 @@
+{$site_header}
+
 <script type="text/javascript">
 $('#sliderCode').tinycarousel({ controls: true, pager: true, animation: true });
 
@@ -142,8 +144,8 @@ function addGallery()
             <tfoot>
             	<tr>
                 	<td colspan="8"><em>{"Gallery categories"|localize:gallery}<input type="button" value="{"Add category"|localize:gallery}" style="float: right;" onclick="addGallery();" >
-                    <input type="button" value="{"View permissions"|localize:gallery}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_view_galleryItem', 1024, 'upload_popup');" style="float: right;">
-                    <input type="button" value="{"Edit permissions"|localize:gallery}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_edit_galleryItem', 1024, 'upload_popup');" style="float: right;"></em></td>
+                    <input type="button" value="{"View permissions"|localize:gallery}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_view_galleryItem', 1024, 'upload_popup');" style="float: right;">
+                    <input type="button" value="{"Edit permissions"|localize:gallery}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_edit_galleryItem', 1024, 'upload_popup');" style="float: right;"></em></td>
                 </tr>
             </tfoot>
             <tbody>
@@ -165,7 +167,7 @@ function addGallery()
                   <td>
                       <input type="button" value="{"Edit"|localize:messages}" onclick="editGallery({$i->id}, '{$i->title|addslashes}');">
                       <input type="button" value="{"Delete"|localize:messages}" onclick="removeGalleryCategory({$i->id}); return false;">
-                      <input type="button" value="{"Manage permissions"|localize:messages}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=gallery_manage_cat_{$i->id}', 1024, 'upload_popup');"></td>
+                      <input type="button" value="{"Manage permissions"|localize:messages}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=gallery_manage_cat_{$i->id}', 1024, 'upload_popup');"></td>
                 </tr>
                 {/foreach}
             </tbody>

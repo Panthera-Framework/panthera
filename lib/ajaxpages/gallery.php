@@ -277,6 +277,32 @@ if ($_GET['action'] == 'display_category')
     if (intval($category->meta('unique')->get('all_langs')) > 0)
         $template -> push('all_langs', True);
 
+    // get custom styles for gallery in both languages and for gallery in single language
+    $header = $category->meta('unique')->get('site_header');
+    
+    if ($category->meta('id')->get('site_header') != null)
+        $header = array_merge($header, $category->meta('unique')->get('site_header'));
+
+    //$header = unserialize('a:2:{s:7:"scripts";a:0:{}s:6:"styles";a:1:{i:0;s:49:"{$PANTHERA_URL}/css/admin/gallery_no_settings.css";}}');
+    //$category->meta('unique')->set('site_header', $header);
+    //$category->meta('unique')->save();
+    
+    // add custom styles and scripts
+    if (count($header) > 0)
+    {
+        if (count($header['scripts']) > 0)
+        {
+            foreach ($header['scripts'] as $key => $value)
+                $panthera -> template -> addScript($value);
+        }
+        
+        if (count($header['styles']) > 0)
+        {
+            foreach ($header['styles'] as $key => $value)
+                $panthera -> template -> addStyle($value);
+        }
+    }
+
     /*$count = getGalleryCategories(array('language' => $user->language), False);
     $c = getGalleryCategories(array('language' => $user->language), $count, 0);
 
