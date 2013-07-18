@@ -5,20 +5,18 @@ $('#sliderCode').tinycarousel({ controls: true, pager: true, animation: true });
 
 function editGallery(id, titleOfCategory)
 {
-    checkbox = { header: "{"Visibility"|localize:gallery}", type: "checkbox", name: "visibility", value: "visibility"}
+    checkbox = { header: "{function="localize('Visibility', 'gallery')"}", type: "checkbox", name: "visibility", value: "visibility"}
 
-    if ($('#visibility_'+id).html() == "{"Visible"|localize:gallery}")
+    if ($('#visibility_'+id).html() == "{function="localize('Visible', 'gallery')"}")
         checkbox.checked = "checked"
 
     $.msgBox({ type: "prompt", opacity: 0.6,
-      title: "{"Editing category"|localize}",
+      title: "{function="localize('Editing category')"}",
       inputs: [
-      { header: "{"Editing category"|localize:gallery}", type: "text", name: "new_title", value: titleOfCategory}, checkbox],
+      { header: "{function="localize('Editing category', 'gallery')"}", type: "text", name: "new_title", value: titleOfCategory}, checkbox],
       buttons: [
-      { value: "{"Save"|localize:messages}" }, { value:"{"Cancel"|localize:messages}" }],
-      success: function (result, values) {
-        if (result == "{"Cancel"|localize:messages}")
-            return false;
+      { value: "{function="localize('Save', 'messages')"}" }, { value:"{function="localize('Cancel', 'messages')"}" }],
+      success: function (result, values) { if (result == '{function="localize('Cancel', 'messages')"}') { return false; }
 
         $(values).each(function (index, input) {
 
@@ -45,15 +43,15 @@ function editGallery(id, titleOfCategory)
                       jQuery('#gallery_title_'+id).html(response.title);
 
                       if (response.visibility == 'show') {
-                              $('#hide_btn_'+id).val('{"Hide"|localize:gallery}');
+                              $('#hide_btn_'+id).val('{function="localize('Hide', 'gallery')"}');
                               $('#galleryCategory_row_'+id).css("background", "");
-                              $('#visibility_'+id).html('{"Visible"|localize:gallery}');
+                              $('#visibility_'+id).html('{function="localize('Visible', 'gallery')"}');
                       }
 
                       if (response.visibility == 'hide') {
                               $('#galleryCategory_row_'+id).css("background", "rgba(172, 172, 172, 0.5)");
-                              $('#visibility_'+id).html('{"Hidden"|localize:gallery}');
-                              $('#hide_btn_'+id).val('{"Show"|localize:gallery}');
+                              $('#visibility_'+id).html('{function="localize('Hidden', 'gallery')"}');
+                              $('#hide_btn_'+id).val('{function="localize('Show', 'gallery')"}');
                       }
 
                       jQuery('#change_category_error').hide();
@@ -76,15 +74,13 @@ function editGallery(id, titleOfCategory)
 function addGallery()
 {
     $.msgBox({ type: "prompt", opacity: 0.6,
-      title: "{"Adding category"|localize:gallery}",
+      title: "{function="localize('Adding category', 'gallery')"}",
       inputs: [
-      { header: "{"Title"|localize:gallery}", type: "text", name: "new_title"},
-      { header: "{"Publish"|localize:gallery}", type: "checkbox", name: "visibility", value: "visibility"}],
+      { header: "{function="localize('Title', 'gallery')"}", type: "text", name: "new_title"},
+      { header: "{function="localize('Publish', 'gallery')"}", type: "checkbox", name: "visibility", value: "visibility"}],
       buttons: [
-      { value: "{"Add category"|localize:gallery}" }, { value:"{"Cancel"|localize:messages}" }],
-      success: function (result, values) {
-        if (result == "{"Cancel"|localize}")
-            return false; 
+      { value: "{function="localize('Add category', 'gallery')"}" }, { value:"{function="localize('Cancel', 'messages')"}" }],
+      success: function (result, values) { if (result == '{function="localize('Cancel', 'messages')"}') { return false; }
 
         $(values).each(function (index, input) {
 
@@ -118,13 +114,13 @@ function addGallery()
 
 </script>
 
-        <div class="titlebar">{"Gallery"|localize:messages}{include file="_navigation_panel.tpl"}</div><br>
+        <div class="titlebar">{function="localize('Gallery', 'messages')"}{include="_navigation_panel.tpl"}</div><br>
 
         <div class="msgSuccess" id="userinfoBox_success"></div>
         <div class="msgError" id="userinfoBox_failed"></div>
 
         <div class="grid-1">
-        <div class="msgSuccess" style="display: none;" id="change_category_success">{"Category has been successfully changed"|localize:gallery}</div>
+        <div class="msgSuccess" style="display: none;" id="change_category_success">{function="localize('Category has been successfully changed', 'gallery')"}</div>
         <div class="msgError" style="display: none;" id="change_category_error"></div>
 
         <div id="all_categories_window">
@@ -132,44 +128,46 @@ function addGallery()
             <thead>
                 <tr>
             	<th>&nbsp;</th>
-                  <th>{"Title"|localize:gallery}</th>
-                  <th>{"Created by"|localize:gallery}</th>
-                  <th>{"Language"|localize:gallery}</th>
-                  <th>{"Created"|localize:gallery}</th>
-                  <th>{"Visibility"|localize:gallery}</th>
-                  <th>{"Options"|localize:messages}</th>
+                  <th>{function="localize('Title', 'gallery')"}</th>
+                  <th>{function="localize('Created by', 'gallery')"}</th>
+                  <th>{function="localize('Language', 'gallery')"}</th>
+                  <th>{function="localize('Created', 'gallery')"}</th>
+                  <th>{function="localize('Visibility', 'gallery')"}</th>
+                  <th>{function="localize('Options', 'messages')"}</th>
                 </tr>
             </thead>
 
             <tfoot>
             	<tr>
-                	<td colspan="8"><em>{"Gallery categories"|localize:gallery}<input type="button" value="{"Add category"|localize:gallery}" style="float: right;" onclick="addGallery();" >
-                    <input type="button" value="{"View permissions"|localize:gallery}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_view_galleryItem', 1024, 'upload_popup');" style="float: right;">
-                    <input type="button" value="{"Edit permissions"|localize:gallery}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_edit_galleryItem', 1024, 'upload_popup');" style="float: right;"></em></td>
+                	<td colspan="8"><em>{function="localize('Gallery categories', 'gallery')"}<input type="button" value="{function="localize('Add category', 'gallery')"}" style="float: right;" onclick="addGallery();" >
+                    <input type="button" value="{function="localize('View permissions', 'gallery')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_view_galleryItem', 1024, 'upload_popup');" style="float: right;">
+                    <input type="button" value="{function="localize('Edit permissions', 'gallery')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_edit_galleryItem', 1024, 'upload_popup');" style="float: right;"></em></td>
                 </tr>
             </tfoot>
             <tbody>
-                {foreach from=$category_list key=k item=i}
-                <tr id="galleryCategory_row_{$i->id}" {if $i->visibility eq 0} style="background: rgba(172, 172, 172, 0.5);"{/if}>
-                  <td><img src="{$i->thumb_url|pantheraUrl}" width="50" height="50"></td>
-                  <td><a href="?display=gallery&action=display_category&unique={$i->unique}{if $category_filter_complete}&filter={$category_filter_complete}{/if}" class="ajax_link" id="gallery_title_{$i->id}">{$i->title}</a></td>
-                  <td>{$i->author_login}</td>
-                  <td>{$i->language}</td>
-                  <td>{$i->created}</td>
+                {loop="$category_list"}
+                <tr id="galleryCategory_row_{$value->id}" {if="$value>visibility == 0"} style="background: rgba(172, 172, 172, 0.5);"{/if}>
+                  <td><img src="{$value->thumb_url|pantheraUrl}" width="50" height="50"></td>
+                  <td><a href="?display=gallery&action=display_category&unique={$value->unique}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value->id}'>
+                        {$value->title}
+                      </a></td>
+                  <td>{$value->author_login}</td>
+                  <td>{$value->language}</td>
+                  <td>{$value->created}</td>
 
                   <td>
-                      {if $i->visibility eq 1}
-                      <input type="button" value="{"Hide"|localize:messages}" onclick="toggleGalleryVisibility({$i->id});" id="hide_btn_{$i->id}">
-                      {elseif $i->visibility eq 0}
-                      <input type="button" value="{"Show"|localize:messages}" onclick="toggleGalleryVisibility({$i->id});" id="hide_btn_{$i->id}">
+                      {if="$value->visibility == 1"}
+                      <input type="button" value="{function="localize('Hide', 'messages')"}" onclick="toggleGalleryVisibility({$value->id});" id="hide_btn_{$value->id}">
+                      {elseif="$value->visibility == 0"}
+                      <input type="button" value="{function="localize('Show', 'messages')"}" onclick="toggleGalleryVisibility({$value->id});" id="hide_btn_{$value->id}">
                       {/if}
                   </td>
                   <td>
-                      <input type="button" value="{"Edit"|localize:messages}" onclick="editGallery({$i->id}, '{$i->title|addslashes}');">
-                      <input type="button" value="{"Delete"|localize:messages}" onclick="removeGalleryCategory({$i->id}); return false;">
-                      <input type="button" value="{"Manage permissions"|localize:messages}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=gallery_manage_cat_{$i->id}', 1024, 'upload_popup');"></td>
+                      <input type="button" value="{function="localize('Edit', 'messages')"}" onclick="editGallery({$value->id}, '{$value->title|addslashes}');">
+                      <input type="button" value="{function="localize('Delete', 'messages')"}" onclick="removeGalleryCategory({$value->id}); return false;">
+                      <input type="button" value="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=gallery_manage_cat_{$value->id}', 1024, 'upload_popup');"></td>
                 </tr>
-                {/foreach}
+                {/loop}
             </tbody>
         </table>
         </div>
@@ -194,13 +192,13 @@ function toggleGalleryVisibility(id)
                 {
                     if (response.visible == true)
                     {
-                        $('#hide_btn_'+id).val('{"Hide"|localize:gallery}');
+                        $('#hide_btn_'+id).val('{function="localize('Hide', 'gallery')"}');
                         $('#galleryCategory_row_'+id).css("background", "");
-                        $('#visibility_'+id).html('{"Visible"|localize:gallery}');
+                        $('#visibility_'+id).html('{function="localize('Visible', 'gallery')"}');
                     } else {
                         $('#galleryCategory_row_'+id).css("background", "rgba(172, 172, 172, 0.5)");
-                        $('#visibility_'+id).html('{"Hidden"|localize:gallery}');
-                        $('#hide_btn_'+id).val('{"Show"|localize:gallery}');
+                        $('#visibility_'+id).html('{function="localize('Hidden', 'gallery')"}');
+                        $('#hide_btn_'+id).val('{function="localize('Show', 'gallery')"}');
                     }
                 }
 
@@ -212,14 +210,13 @@ function toggleGalleryVisibility(id)
 function removeGalleryCategory(id)
 {
     $.msgBox({
-        title: "{"Are you sure?"|localize}",
-        content: "{"Do you really want to delete this category?"|localize}",
+        title: "{function="localize('Are you sure?')"}",
+        content: "{function="localize('Do you really want to delete this category?')"}",
         type: "confirm",
         autoClose: true,
         opacity: 0.6,
-        buttons: [{ value: "{"Yes"|localize:messages}" }, { value: "{"No"|localize:messages}" }, { value: "{"Cancel"|localize:messages}"}],
-        success: function (result) {
-            if (result == "{"Yes"|localize:messages}") {
+        buttons: [{ value: "{function="localize('Yes', 'messages')"}" }, { value: "{function="localize('No', 'messages')"}" }, { value: "{function="localize('Cancel', 'messages')"}"}],
+        success: function (result) { if (result == '{function="localize('Yes', 'messages')"}') {
                 $.ajax({
                     url: '{$AJAX_URL}?display=gallery&action=delete_category&id='+id,
                     data: '',

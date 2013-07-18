@@ -1,4 +1,4 @@
-<h2 class="popupHeading">{"Navigation history"|localize:ajaxpages}</h2>
+<h2 class="popupHeading">{function="localize('Navigation history', 'ajaxpages')"}</h2>
 
 <table class="gridTable">
     <tfoot>
@@ -10,11 +10,11 @@
     </tfoot>
             
     <tbody id="_popup_navigation_history">
-    {foreach from=$navigation_history key=k item=i}
+    {loop="$navigation_history"}
     <tr>
-        <td><a href="#" onclick="navigateTo('{$i}');"> {$i} </a></td>
+        <td><a href="#" onclick="navigateTo('{$value}');"> {$value} </a></td>
     </tr>
-    {/foreach}
+    {/loop}
 
     </tbody>
 </table>

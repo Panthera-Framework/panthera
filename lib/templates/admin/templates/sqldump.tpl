@@ -18,7 +18,7 @@ function makeDump()
 
 </script>
 
-    <div class="titlebar">{"Database backup"|localize:database} - {"Backup your database to prevent data loss"|localize:database}{include file="_navigation_panel.tpl"}</div>
+    <div class="titlebar">{function="localize('Database backup', 'database')"} - {function="localize('Backup your database to prevent data loss', 'database')"}{include="_navigation_panel.tpl"}</div>
 
     <br>
     <div class="msgSuccess" id="userinfoBox_success"></div>
@@ -28,20 +28,20 @@ function makeDump()
          <table class="gridTable">
 
             <thead>
-                <tr><th colspan="5"><b>{"Avaliable dumps"|localize:database}:</b></th></tr>
+                <tr><th colspan="5"><b>{function="localize('Avaliable dumps', 'database')"}:</b></th></tr>
              </thead>
 
             <tfoot>
                 <tr>
-                    <td colspan="5" class="rounded-foot-left"><em>Panthera - sqldump <input type="button" value="{"Create backup"|localize:database}" onclick="makeDump();" style="float: right;">  <input type="button" value="{"Manage permissions"|localize:messages}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_manage_sql_dumps', 1024, 'upload_popup');" style="float: right;">
+                    <td colspan="5" class="rounded-foot-left"><em>Panthera - sqldump <input type="button" value="{function="localize('Create backup', 'database')"}" onclick="makeDump();" style="float: right;">  <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_manage_sql_dumps', 1024, 'upload_popup');" style="float: right;">
                     </em></td>
                 </tr>
             </tfoot>
 
             <tbody>
-                {foreach from=$dumps key=k item=v}
-                <tr><td><a href="{$AJAX_URL}?display=sqldump&get={$v.name}&_bypass_x_requested_with">{$v.name}</a></td><td>{$v.size}</td><td>{$v.date}</td></tr>
-                {/foreach}
+                {loop="$dumps"}
+                <tr><td><a href="{$AJAX_URL}?display=sqldump&get={$value.name}&_bypass_x_requested_with">{$value.name}</a></td><td>{$value.size}</td><td>{$value.date}</td></tr>
+                {/loop}
             </tbody>
          </table>
 

@@ -1,54 +1,66 @@
 <script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
-
-
-<div class="titlebar">{"Dash"|localize} - {"Everything is here."|localize:dash}{include file="_navigation_panel.tpl"}</div>
-
-        {foreach from=$dash_messages key=k item=v}
-            {if $v.type == "warning"}
-                <div class="msgWarning" style="display: block;">{$v.message}</div>
+<div class="titlebar">{function="localize('Dash')"} - {function="localize('Everything is here', 'dash')"}{include="_navigation_panel.tpl"}</div>
+        {loop="$dash_messages"}
+            {if="$value.type == 'warning'"}
+                <div class="msgWarning" style="display: block;">{$value.message}</div>
             {/if}
 
-            {if $v.type == "error"}
-                <div class="msgError" style="display: block;">{$v.message}</div>
+            {if="$value.type == 'error'"}
+                <div class="msgError" style="display: block;">{$value.message}</div>
             {/if}
 
-            {if $v.type == "info"}
-                <div class="msgInfo" style="display: block;">{$v.message}</div>
+            {if="$value.type == 'info'"}
+                <div class="msgInfo" style="display: block;">{$value.message}</div>
             {/if}
 
-            {if $v.type == "success"}
-                <div class="msgSuccess" style="display: block;">{$v.message}</div>
+            {if="$value.type == 'success'"}
+                <div class="msgSuccess" style="display: block;">{$value.message}</div>
             {/if}
-        {/foreach}
+        {/loop}
 
         <div class="grid-1">
                <ul class="picturesBox">
-                   {foreach from=$dash_menu key=k item=v}
-            	   <li><a style="cursor: pointer;" class="{if $v.linkType == "ajax"}ajax_link{/if}"{if $v.linkType == "onclick"} onclick="{$v.link}"{else} href="{$v.link|pantheraUrl}"{/if}>  <img src="{$v.icon|pantheraUrl}" alt=""></a>
+                   {loop="$dash_menu"}
+            	   <li><a style="cursor: pointer;" class="{if="$value.linkType == 'ajax'"}ajax_link{/if}"{if="$value.linkType == 'onclick'"} onclick="{$value.link}"{else} href="{$value.link|pantheraUrl}"{/if}>  <img src="{$value.icon|pantheraUrl}" alt=""></a>
             	         <ul class="picturesBoxItem">
-                         		<a style="cursor: pointer;" class="{if $v.linkType == "ajax"}ajax_link{/if}"{if $v.linkType == "onclick"} onclick="{$v.link}"{else} href="{$v.link|pantheraUrl}"{/if}>{$v.name}</a>
+                         		<a style="cursor: pointer;" class="{if="$value.linkType == 'ajax'"}ajax_link{/if}"{if="$value.linkType == 'onclick'"} onclick="{$value.link}"{else} href="{$value.link|pantheraUrl}"{/if}>{$value.name}</a>
                          </ul>
                    </li>
-                   {/foreach}
+                   {/loop}
 				</ul>
 				 <div class="clear"></div>
         </div>
 
-        {if isset($galleryItems) and count($galleryItems) > 0}
-        <div class="grid-1">
-           <div class="title-grid">{"Gallery"|localize}<span></span></div>
+        {if="isset($galleryItems) and count($galleryItems) > 0"}
+        <div class="grid-2">
+           <div class="title-grid">{function="localize('Gallery')"}<span></span></div>
            <div class="content-gird">
            <ul class="picturesBox">
-                   {foreach from=$galleryItems key=k item=v}
-            	   <li><a href="{$v->link|pantheraUrl}">  <img src="{$v->thumbnail|pantheraUrl}" alt="" style="max-width: 110px;"></a>
+                   {loop="$galleryItems"}
+            	   <li><a href="{$value->link|pantheraUrl}">  <img src="{$value->thumbnail|pantheraUrl}" alt="" style="max-width: 110px;"></a>
             	         <ul class="picturesBoxItem">
-                         		<a href="{$v->link|pantheraUrl}">{$v->title}</a>
+                         		<a href="{$value->link|pantheraUrl}">{$value->title}</a>
                          </ul>
                    </li>
-                   {/foreach}
+                   {/loop}
 		   </ul>
                 <div class="clear"></div>
            </div>
         </div>
         {/if}
-
+        
+        {if="isset($lastLogged) and count($lastLogged) > 0"}
+        <div class="grid-2">
+           <div class="title-grid">{function="localize('Recently logged in users')"}<span></span></div>
+           <div class="content-table-grid">
+              <table class="insideGridTable">
+                   {loop="$lastLogged"}
+                   <tr>
+            	        <td><a href="?display=settings&action=my_account&uid={$value.uid}" class="ajax_link"><img src="{$value.avatar}" style="width: 20px"></a></td><td><a href="?display=settings&action=my_account&uid={$value.uid}" class="ajax_link">{$value.login}</a></td><td> {$value.time} {function="localize('ago')"}</td>
+            	   </tr>
+                   {/loop}
+               </table>
+                <div class="clear"></div>
+           </div>
+        </div>
+        {/if}

@@ -37,7 +37,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
 {
     if(type != 'image')
     {
-        alert('{"Selected file is not a image"|localize}');
+        alert('{function="localize('Selected file is not a image')"}');
         return false;
     }
 
@@ -72,7 +72,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
     }
 </style>
 
-  <div class="titlebar">{"Adding gallery image"|localize:gallery}{include file="_navigation_panel.tpl"}</div>
+  <div class="titlebar">{function="localize('Adding gallery image', 'gallery')"}{include="_navigation_panel.tpl"}</div>
   <br>
   <div class="msgSuccess" id="userinfoBox_success"></div>
   <div class="msgError" id="userinfoBox_failed"></div>
@@ -82,40 +82,40 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
 
     <tfoot>
         <tr>
-            <td colspan="2" class="rounded-foot-left"><em><input type="button" value="{"Back"|localize:messages}" onclick="navigateTo('?display=gallery&action=display_category&unique={$unique}'); return false;"/> <input type="submit" value="{"Add"|localize:messages}"></em></td>
+            <td colspan="2" class="rounded-foot-left"><em><input type="button" value="{function="localize('Back', 'messages')"}" onclick="navigateTo('?display=gallery&action=display_category&unique={$unique}'); return false;"/> <input type="submit" value="{function="localize('Add', 'messages')"}"></em></td>
         </tr>
     </tfoot>
 
     <tbody>
         <tr>
-            <td>{"Title"|localize:gallery}</td>
+            <td>{function="localize('Title', 'gallery')"}</td>
             <td><input type="text" name="title" style="width: 500px;"></td>
         </tr>
 
         <tr>
-            <td>{"Description"|localize:gallery}</td>
+            <td>{function="localize('Description', 'gallery')"}</td>
             <td><input type="text" name="description" id="description" style="width: 500px;"></td>
         </tr>
 
         <tr>
-            <td>{"File"|localize:gallery}</td>
-            <td><input type="text" name="link" style="width: 500px;" id="upload_file" disabled> <input type="button" value="{"Upload file"|localize:gallery}" onclick="createPopup('_ajax.php?display=upload&popup=true&callback=upload_file_callback', 1300, 550);"><input type="hidden" name="upload_id" id="upload_id"></td>
+            <td>{function="localize('File', 'gallery')"}</td>
+            <td><input type="text" name="link" style="width: 500px;" id="upload_file" disabled> <input type="button" value="{function="localize('Upload file', 'gallery')"}" onclick="createPopup('_ajax.php?display=upload&popup=true&callback=upload_file_callback', 1300, 550);"><input type="hidden" name="upload_id" id="upload_id"></td>
         </tr>
 
         <tr>
-            <td>{"Visibility"|localize:gallery}</td>
+            <td>{function="localize('Visibility', 'gallery')"}</td>
             <td>
                   <input type="checkbox" name="visibility" value="1">
             </td>
         </tr>
 
         <tr>
-            <td>{"Category"|localize:gallery}</td>
+            <td>{function="localize('Category', 'gallery')"}</td>
             <td>
                   <select name="gallery_id">
-                   {foreach from=$category_list key=k item=i}
-                        <option value="{$i->id}" {if $i->id eq $category_id} selected="selected"{/if}>{$i->title} ({$i->language})</option>
-                   {/foreach}
+                   {loop="$category_list"}
+                        <option value="{$value->id}" {if="$value->id == $category_id"} selected="selected"{/if}>{$value->title} ({$value->language})</option>
+                   {/loop}
                   </select>
             </td>
         </tr>

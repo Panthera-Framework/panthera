@@ -19,7 +19,7 @@ $('#add_category_form').submit(function () {
 
 </script>
 
-    <div class="titlebar">{"Menu editor"|localize:menuedit} - {"Adding category"|localize:menuedit}</div><br>
+    <div class="titlebar">{function="localize('Menu editor', 'menuedit')"} - {function="localize('Adding category', 'menuedit')"}</div><br>
 
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>
@@ -36,22 +36,22 @@ $('#add_category_form').submit(function () {
 
             <tfoot>
                   <tr>
-                      <td colspan="7" class="rounded-foot-left"><em>Panthera menuedit - {"Adding category"|localize:menuedit}</em><span>
-                      <input type="submit" value="{"Add"|localize}" style="float: right;">
+                      <td colspan="7" class="rounded-foot-left"><em>Panthera menuedit - {function="localize('Adding category', 'menuedit')"}</em><span>
+                      <input type="submit" value="{function="localize('Add')"}" style="float: right;">
                   </tr>
             </tfoot>
 
             <tbody>
                   <tr>
-                      <td>{"Type name"|localize:menuedit}</td>
+                      <td>{function="localize('Type name', 'menuedit')"}</td>
                       <td><input type="text" name="category_type_name" style="width: 99%;"></td>
                   </tr>
                   <tr>
-                      <td>{"Title"|localize:menuedit}</td>
+                      <td>{function="localize('Title', 'menuedit')"}</td>
                       <td><input type="text" name="category_title" style="width: 99%;"></td>
                   </tr>
                   <tr>
-                      <td>{"Description"|localize:menuedit}</td>
+                      <td>{function="localize('Description', 'menuedit')"}</td>
                       <td><input type="text" name="category_description" style="width: 99%;"></td>
                   </tr>
               </tbody>

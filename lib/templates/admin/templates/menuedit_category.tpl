@@ -36,7 +36,7 @@ function removeItem(id)
 }
 </script>
 
-    <div class="titlebar">{"Menu editor"|localize:menuedit} - {"Edit menu"|localize:menuedit} ({"To change sequence of items in the category, you can drag & drop them"|localize:menuedit}).</div><br>
+    <div class="titlebar">{function="localize('Menu editor', 'menuedit')"} - {function="localize('Edit menu', 'menuedit')"} ({function="localize('To change sequence of items in the category, you can drag & drop them', 'menuedit')"}).</div><br>
 
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>
@@ -45,42 +45,42 @@ function removeItem(id)
       <table class="gridTable">
             <thead>
                   <tr>
-                      <th scope="col" class="rounded-company" style="width: 250px;">{"Title"|localize:menuedit}</th>
-                      <th>{"Link"|localize:menuedit}</th>
-                      <th>{"Language"|localize:menuedit}</th>
-                      <th>{"SEO friendly name"|localize:menuedit}</th>
-                      <th>{"Tooltip"|localize:menuedit}</th>
-                      <th>{"Icon"|localize:menuedit}</th>
-                      <th>{"Attributes"|localize:menuedit}</th>
-                      <th>{"Options"|localize:messages}</th>
+                      <th scope="col" class="rounded-company" style="width: 250px;">{function="localize('Title', 'menuedit')"}</th>
+                      <th>{function="localize('Link', 'menuedit')"}</th>
+                      <th>{function="localize('Language', 'menuedit')"}</th>
+                      <th>{function="localize('SEO friendly name', 'menuedit')"}</th>
+                      <th>{function="localize('Tooltip', 'menuedit')"}</th>
+                      <th>{function="localize('Icon', 'menuedit')"}</th>
+                      <th>{function="localize('Attributes', 'menuedit')"}</th>
+                      <th>{function="localize('Options', 'messages')"}</th>
                   </tr>
             </thead>
 
             <tfoot>
                   <tr>
-                      <td colspan="8" class="rounded-foot-left"><em>Panthera menuedit - {"List of items"|localize:menuedit}</em><span>
-                        <input type="button" value="{"Add new link"|localize:menuedit}" style="float: right;" onclick="navigateTo('_ajax.php?display=menuedit&action=new_item&cat={$category}');">
-                        <input type="button" value="{"Save order"|localize:menuedit}" style="float: right;" onclick="saveMenuOrder('{$category}');">
-                        <input type="button" value="{"Back"|localize:messages}" onclick="navigateTo('{navigation::getBackButton()}');" style="float: right;"></td>
+                      <td colspan="8" class="rounded-foot-left"><em>Panthera menuedit - {function="localize('List of items', 'menuedit')"}</em><span>
+                        <input type="button" value="{function="localize('Add new link', 'menuedit')"}" style="float: right;" onclick="navigateTo('_ajax.php?display=menuedit&action=new_item&cat={$category}');">
+                        <input type="button" value="{function="localize('Save order', 'menuedit')"}" style="float: right;" onclick="saveMenuOrder('{$category}');">
+                        <input type="button" value="{function="localize('Back', 'messages')"}" onclick="navigateTo('?display=menuedit');" style="float: right;"></td>
                       </td>
                   </tr>
             </tfoot>
 
             <tbody>
-                {foreach from=$menus key=k item=i}
-                  <tr id="item_{$i.id}">
-                      <td><a href="{$AJAX_URL}?display=menuedit&action=item&id={$i.id}" class="ajax_link">{$i.title}</a><input type="hidden" id="sortable_{$i.id}" class="sortable_hidden" value="{$i.id}"></td>
-                      <td><a href="{$i.link}" target="_blank">{$i.link_original}</a></td>
-                      <td>{$i.language}</td>
-                      <td>{$i.url_id}</td>
-                      <td>{$i.tooltip}</td>
-                      <td>{$i.icon}</td>
-                      <td>{$i.attributes}</td>
+                {loop="$menus"}
+                  <tr id="item_{$value.id}">
+                      <td><a href="{$AJAX_URL}?display=menuedit&action=item&id={$value.id}" class="ajax_link">{$value.title}</a><input type="hidden" id="sortable_{$value.id}" class="sortable_hidden" value="{$value.id}"></td>
+                      <td><a href="{$value.link}" target="_blank">{$value.link_original}</a></td>
+                      <td>{$value.language}</td>
+                      <td>{$value.url_id}</td>
+                      <td>{$value.tooltip}</td>
+                      <td>{$value.icon}</td>
+                      <td>{$value.attributes}</td>
                       <td>
-                        <input type="button" value="{"Delete"|localize}" onclick="removeItem({$i.id})">
+                        <input type="button" value="{function="localize('Delete')"}" onclick="removeItem({$value.id})">
                       </td>
                   </tr>
-                {/foreach}
+                {/loop}
             </tbody>
       </table>
     </div>

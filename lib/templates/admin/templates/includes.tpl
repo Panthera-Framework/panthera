@@ -1,26 +1,27 @@
 <script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
 
 
-        <div class="titlebar">{"Included files"|localize:includes} - {"List of all included files in current code execution"|localize:includes}</div>
+        <div class="titlebar">{function="localize('Included files', 'includes')"} - {function="localize('List of all included files in current code execution', 'includes')"}</div>
 
         <br>
 
           <table class="gridTable">
 
             <thead>
-                <tr><th colspan="5"><b>{"Files"|localize:includes}:</b></th></tr>
+                <tr><th colspan="5"><b>{function="localize('Files', 'includes')"}:</b></th></tr>
              </thead>
 
             <tfoot>
                 <tr>
-                    <td colspan="2" class="rounded-foot-left"><em>Panthera - {"includes"|localize:includes}
-                    <input type="button" value="{"Manage permissions"|localize:messages}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_see_debug');" style="float: right;"></em></td>
+                    <td colspan="2" class="rounded-foot-left"><em>Panthera - {function="localize('includes', 'includes')"}
+                    <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_see_debug');" style="float: right;"></em></td>
                 </tr>
             </tfoot>
 
             <tbody>
-                {foreach from=$files key=k item=v}
-                <tr><td><a href="#" onclick="navigateTo('?display=browsefile&path={$v}&back_btn={"?display=includes"|base64_encode}'); return false;">{$v}</a></td></tr>
-                {/foreach}
+                {$back_btn=base64_encode('?display=includes')}
+                {loop="$files"}
+                <tr><td><a href="#" onclick="navigateTo('?display=browsefile&path={$value}&back_btn={$back_btn}'); return false;">{$value}</a></td></tr>
+                {/loop}
             </tbody>
            </table>

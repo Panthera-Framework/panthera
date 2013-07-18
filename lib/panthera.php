@@ -2143,3 +2143,72 @@ function object_dump($obj)
     else    
         return unserialize($data);
 }*/
+
+/**
+  * Splits seconds with microseconds from microtime() output
+  *
+  * @param string $time Optional input time, if not specified it will be generated with microtime()
+  * @return float 
+  * @author http://php.net
+  */
+
+function microtime_float($time='')
+{
+    if ($time == '')
+        $time = microtime();
+
+    list($usec, $sec) = explode(" ", $time);
+    return ((float)$usec + (float)$sec);
+}
+
+/**
+  * Calculate diffirences between dates and show in user friendly format
+  *
+  * @param int $timestamp_past
+  * @param int $timestamp_future
+  * @param bool $years
+  * @param bool $months
+  * @param bool $days
+  * @param bool $hours
+  * @param bool $mins
+  * @param bool $secs
+  * @param bool $display_output
+  * @return string|array 
+  * @author Chris <http://stackoverflow.com/questions/5010016/php-time-since-function>
+  */
+
+function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $months = true, $days = true, $hours = true, $mins = true, $secs = true, $display_output = true)
+{
+    $diff = $timestamp_future - $timestamp_past;
+    $calc_times = array();
+    $timeleft   = array();
+
+    // Prepare array, depending on the output we want to get.
+    if ($years)  $calc_times[] = array(localize('Year'),   localize('Years'),   31104000);
+    if ($months) $calc_times[] = array(localize('Month'),  localize('Months'),  2592000);
+    if ($days)   $calc_times[] = array(localize('Day'),    localize('Days'),    86400);
+    if ($hours)  $calc_times[] = array(localize('Hour'),   localize('Hours'),   3600);
+    if ($mins)   $calc_times[] = array(localize('Minute'), localize('Minutes'), 60);
+    if ($secs)   $calc_times[] = array(localize('Second'), localize('Seconds'), 1);
+
+    foreach ($calc_times AS $timedata)
+    {
+        list($time_sing, $time_plur, $offset) = $timedata;
+
+        if ($diff >= $offset)
+        {
+            $left = floor($diff / $offset);
+            $diff -= ($left * $offset);
+            if ($display_output === true) {
+                $timeleft[] = "{$left} " . ($left == 1 ? $time_sing : $time_plur);
+            } else {
+                if (!isset($timeleft[strtolower($time_sing)]))
+                    $timeleft[strtolower($time_sing)] = 0;
+                $timeleft[strtolower($time_sing)] += $left;
+            }
+        }
+    }
+    if ($display_output === false)
+        return $timeleft;
+    return $timeleft ? ($timestamp_future > $timestamp_past ? null : '-') . implode(', ', $timeleft) : 0;
+}  

@@ -28,7 +28,7 @@ function togglePlugin(name, value)
 }
 </style>
 
-	 	<div class="titlebar">{"Plugins"|localize:plugins} - {"Manage plugins"|localize:plugins}{include file="_navigation_panel.tpl"}</div><br>
+	 	<div class="titlebar">{function="localize('Plugins', 'plugins')"} - {function="localize('Manage plugins', 'plugins')"}{include="_navigation_panel.tpl"}</div><br>
 
         <div class="msgSuccess" id="userinfoBox_success"></div>
         <div class="msgError" id="userinfoBox_failed"></div>
@@ -37,29 +37,29 @@ function togglePlugin(name, value)
           <table class="gridTable">
             <thead>
             	<tr>
-                	<th colspan="3">{"plugin"|localize:plugins|ucfirst}</th>
-                	<th style="width: 40%;">{"Description"|localize:plugins}</th>
-                	<th>{"author"|localize:plugins|ucfirst}</th>
-                	<th>{"version"|localize:plugins|ucfirst}</th>
+                	<th colspan="3">{function="ucfirst(localize('plugin', 'plugins'))"}</th>
+                	<th style="width: 40%;">{function="localize('Description', 'plugins')"}</th>
+                	<th>{function="ucfirst(localize('author', 'plugins'))"}</th>
+                	<th>{function="ucfirst(localize('version', 'plugins'))"}</th>
             </thead>
                 <tfoot>
             	<tr>
-                	<td class="rounded-foot-left" colspan="6"><em>Panthera - {"Plugins"|localize:plugins}</em></td>
+                	<td class="rounded-foot-left" colspan="6"><em>Panthera - {function="localize('Plugins', 'plugins')"}</em></td>
                 </tr>
             </tfoot>
             <tbody>
-              {foreach from=$plugins key=k item=plugin}
+              {loop="$plugins"}
                 <tr>
                     <td style="width: 1%; border-right: 0px;">
-                    {if $plugin.configuration != ''}<a href="{$plugin.configuration}" class="ajax_link"><img src="{$PANTHERA_URL}/images/admin/menu/settings.png" style="width: 16px;"></a>{else}{/if}</td>
-                    <td style="width: 1%; border-right: 0px;"><a href="#" onclick="togglePlugin('{$plugin.name}', {if $plugin.enabled == True}0{else}1{/if});">
-                    {if $plugin.enabled eq 1} <img src="{$PANTHERA_URL}/images/plugin-enabled.png"> {else} <img src="{$PANTHERA_URL}/images/plugin-disabled.png"> {/if}</a></td>
-                	<td><a href="#" onclick="togglePlugin('{$plugin.name}', {if $plugin.enabled == True}0{else}1{/if});">{$plugin.title} <span class="tooltip">{"directory"|localize|ucfirst}: {$plugin.path}<br>{"version"|localize|ucfirst}: {$plugin.version}<br>{"author"|localize|ucfirst}: {$plugin.author}<br>{"Description"|localize}: {$plugin.description}</span></a></td>
-                	<td>{$plugin.description}</td>
-                	<td>{$plugin.author}</td>
-                	<td>{$plugin.version}</td>
+                    {if="$value.configuration != ''"}<a href='{$value.configuration}' class='ajax_link'><img src='{$PANTHERA_URL}/images/admin/menu/settings.png' style='width: 16px;'></a>{/if}</td>
+                    <td style="width: 1%; border-right: 0px;"><a href="#" onclick="togglePlugin('{$value.name}', {if="$value.enabled == True"}0{else}1{/if});">
+                    {if="$value.enabled == 1"} <img src='{$PANTHERA_URL}/images/plugin-enabled.png'> {else} <img src='{$PANTHERA_URL}/images/plugin-disabled.png'> {/if}</a></td>
+                	<td><a href="#" onclick="togglePlugin('{$value.name}', {if="$value.enabled == True"}0{else}1{/if});">{$value.title} <span class='tooltip'>{function="ucfirst(localize('directory'))"}: {$value.path}<br>{function="ucfirst(localize('version'))"}: {$value.version}<br>{function="ucfirst(localize('author'))"}: {$value.author}<br>{function="localize('Description')"}: {$value.description}</span></a></td>
+                	<td>{$value.description}</td>
+                	<td>{$value.author}</td>
+                	<td>{$value.version}</td>
                 </tr>
-              {/foreach}
+              {/loop}
             </tbody>
           </table>
         </div>

@@ -1,17 +1,17 @@
 <script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
 
-{if $action eq 'list'}
+{if="$action == 'list'"}
 <table class="gridTable">
 <tbody>
-{foreach from=$functions key=k item=v}
-    {if $v.type eq 'method'}
-        <tr><td>{"method"|localize}</td><td>&nbsp; &rarr; {$v.name}( {$v.params} )</td><td><a href="#" onclick="navigateTo('?display=browsefile&path={$v.filename}&start={$v.startline}&end={$v.endline}&back_btn={"?display=debhook"|base64_encode}'); return false;">{$v.declaration}</a></td></tr>
-    {elseif $v.type eq 'class'}
-        <tr class="roundedTdHiglighted"><td><b>{"class"|localize}</b></td><td colspan="2">class <b>{$v.name}</b><!-- (<a href="?display=debhook&view={$v.name}">{"Details"|localize}</a>)--></td></tr>
-    {elseif $v.type eq 'function'}
-        <tr><td>{"function"|localize}</td><td><b>function</b> {$v.name}( {$v.params} )</td><td><a href="#" onclick="navigateTo('?display=browsefile&path={$v.filename}&start={$v.startline}&end={$v.endline}&back_btn={"?display=debhook"|base64_encode}'); return false;">{$v.declaration}</a></td></tr>
+{loop="$functions"}
+    {if="$value.type == 'method'"}
+        <tr><td>{function="localize('method')"}</td><td>&nbsp; &rarr; {$value.name}( {$value.params} )</td><td><a href="#" onclick="navigateTo('?display=browsefile&path={$value.filename}&start={$value.startline}&end={$value.endline}&back_btn={"?display=debhook"|base64_encode}'); return false;">{$value.declaration}</a></td></tr>
+    {elseif="$value.type == 'class'"}
+        <tr class="roundedTdHiglighted"><td><b>{function="localize('class')"}</b></td><td colspan="2">class <b>{$value.name}</b><!-- (<a href="?display=debhook&view={$value.name}">{function="localize('Details')"}</a>)--></td></tr>
+    {elseif="$value.type == 'function'"}
+        <tr><td>{function="localize('function')"}</td><td><b>function</b> {$value.name}( {$value.params} )</td><td><a href="#" onclick="navigateTo('?display=browsefile&path={$value.filename}&start={$value.startline}&end={$value.endline}&back_btn={"?display=debhook"|base64_encode}'); return false;">{$value.declaration}</a></td></tr>
     {/if}
-{/foreach}
+{/loop}
 </tbody>
 </table>
 {else}
@@ -48,7 +48,7 @@ jQuery('#functions_window_trigger').click(function () {
 });
 </script>
 
-    <div class="titlebar">{"Plugins debugger"|localize:debhook} - {"Internal Panthera Plugins debugger, you can see all hooked functions list here"|localize:debhook}</div>
+    <div class="titlebar">{function="localize('Plugins debugger', 'debhook')"} - {function="localize('Internal Panthera Plugins debugger, you can see all hooked functions list here', 'debhook')"}</div>
 
     <br>
     <div class="msgSuccess" id="userinfoBox_success"></div>
@@ -58,23 +58,24 @@ jQuery('#functions_window_trigger').click(function () {
       <table class="gridTable">
 
         <thead>
-            <tr><th colspan="3"><b>{"Hooked functions"|localize:debhook}</b></th></tr>
+            <tr><th colspan="3"><b>{function="localize('Hooked functions', 'debhook')"}</b></th></tr>
          </thead>
 
          <tfoot>
             <tr>
-                <td colspan="3" class="rounded-foot-left"><em>Panthera - debhook <input type="button" value="{"Manage permissions"|localize:messages}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_see_debhook', 1024, 'upload_popup');" style="float: right;">&nbsp;<input type="button" value="{"Back"|localize}" onclick="navigateTo('{navigation::getBackButton()}');" style="float: right; margin-right: 7px;"> </em></td>
+                <td colspan="3" class="rounded-foot-left"><em>Panthera - debhook <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_see_debhook', 1024, 'upload_popup');" style="float: right;">&nbsp;<input type="button" value="{function="localize('Back')"}" onclick="navigateTo('{navigation::getBackButton()}');" style="float: right; margin-right: 7px;"> </em></td>
             </tr>
         </tfoot>
 
         <tbody>
-            {foreach from=$hooks key=k item=v}
-            <tr><td>{$v.hook}</td><td>{$v.function}( {$v.params} )</td><td><a href="#" onclick="navigateTo('{$AJAX_URL}?display=browsefile&path={$v.filename}&start={$v.startline}&end={$v.endline}&back_btn={"?display=debhook"|base64_encode}'); return false;">{$v.declaration}</a></td></tr>
-            {/foreach}
+            {$where="?display=debhook"}
+            {loop="$hooks"}
+            <tr><td>{$value.hook}</td><td>{$value.function}( {$value.params} )</td><td><a href="#" onclick="navigateTo('{$AJAX_URL}?display=browsefile&path={$value.filename}&start={$value.startline}&end={$value.endline}&back_btn={$where|base64_encode}'); return false;">{$value.declaration}</a></td></tr>
+            {/loop}
 
             <!--<tr>
               <th colspan="3"><a href="#" id="functions_window_trigger" class="tableTitleA">
-                 <b>{"Declared functions and classes"|localize}</b></a> <!--<input type="text" value="" id="function_search_box" style="float: right;"> ->
+                 <b>{function="localize('Declared functions and classes')"}</b></a> <!--<input type="text" value="" id="function_search_box" style="float: right;"> ->
               </th>
             </tr>-->
         </tbody>

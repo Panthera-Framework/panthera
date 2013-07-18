@@ -19,8 +19,6 @@ if (!checkUserPermissions($user))
     pa_exit();
 }
 
-$display = addslashes($_GET['display']);
-
 // cosmetics, so here are permissions
 $panthera -> addPermission('can_see_users_table', localize('Can see other profiles (admin panel)'));
 $panthera -> addPermission('can_see_system_info', localize('Can view system informations (admin panel)'));
@@ -54,16 +52,17 @@ $panthera -> template -> generateMeta = False;
 $panthera -> template -> generateKeywords = False;
 $template -> push ('username', $user->login);
 $tpl = 'no_page.tpl';
+    
+
+// execute plugins
+$panthera -> get_options('ajax_page');
+$display = addslashes($_GET['display']);
 
 if (is_file(SITE_DIR. '/css/admin/custom/' .$display. '.css'))
     $panthera -> template -> addStyle('{$PANTHERA_URL}/css/admin/custom/' .$display. '.css');
     
 if (is_file(SITE_DIR. '/js/admin/custom/' .$display. '.js'))
     $panthera -> template -> addStyle('{$PANTHERA_URL}/js/admin/custom/' .$display. '.js');
-    
-
-// execute plugins
-$panthera -> get_options('ajax_page');
 
 if (is_file(PANTHERA_DIR. '/ajaxpages/' .$display. '.php'))
 {

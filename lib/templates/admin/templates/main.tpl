@@ -4,7 +4,6 @@
 	    <title>{$site_title}</title>
 	    {$site_header}
 
-        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Cuprum" /> <!-- font to replace -->
         <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/admin.css" />
         <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/w2ui-1.2.min.css" />
         <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
@@ -20,34 +19,61 @@
         <script type="text/javascript" src="{$PANTHERA_URL}/js/jquery.form.js"></script> <!-- deprecated -->
         <script type="text/javascript" src="{$PANTHERA_URL}/js/jquery.tinycarousel.js"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/jquery.msgBox.js"></script>
-        
-        <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false"></script> <!-- add dynamicaly by Panthera lib -->
-        <script type="text/javascript" src="{$PANTHERA_URL}/js/map.js"></script> <!-- move to Panthera lib panthera.googleMap -->
-
-
-        <script>
+        <script type="text/javascript">
             $(document).ready(function() {
-                    {if isset($navigateTo)}
+                    {if="isset($navigateTo)"}
                         navigateTo('{$AJAX_URL}?{$navigateTo}');
                     {else}
                         navigateTo('{$AJAX_URL}?display=dash');
                     {/if}
             });
 
-            $(window).resize(function () {
-                $('#menuLayer').height($('#container-main').height());
-            });
+            function DropDown(el) {
+				    this.dd = el;
+				    this.initEvents();
+			}
+			
+			    DropDown.prototype = {
+				    initEvents : function() {
+					    var obj = this;
+
+					    obj.dd.on('click', function(event){
+						    $(this).toggleClass('active');
+						    event.stopPropagation();
+					    });	
+				    }
+			    }
+
+			    $(function() {
+				    var dd = new DropDown( $('#dd') );
+
+				    $(document).click(function() {
+					    // all dropdowns
+					    $('.wrapper-dropdown-5').removeClass('active');
+				    });
+
+			    });
         </script>
     </head>
 <body>
 
     <header id="siteHeader">
-        <input type="button" onclick="navigateTo('pa-login.php?logout=True')" value="{"Logout"|localize}" style="float: right; margin-right: 20px; margin-top: 10px;">
+        <input type="button" onclick="navigateTo('pa-login.php?logout=True')" value="{function="localize('Logout')"}" style="float: right; margin-right: 20px; margin-top: 10px;">
         <div class="siteLogo"><h1><a href="{$PANTHERA_URL}/pa-admin.php">Panthera</a></h1> 
         <span class="userHeader">
-            {foreach from=$flags key=k item=i}
-                <a href="?display=dash&_locale={$i}"><img src="{$PANTHERA_URL}/images/admin/flags/{$i}.png" style="height: 12px; margin: 1px;"></a>
-            {/foreach}
+            <div class="wrapper-demo">
+					<div id="dd" class="wrapper-dropdown-5" tabindex="1">John Doe
+						<ul class="dropdown">
+							<li><a href="#"><i class="icon-user"></i>Profile</a></li>
+							<li><a href="#"><i class="icon-cog"></i>Settings</a></li>
+							<li><a href="#"><i class="icon-remove"></i>Log out</a></li>
+						</ul>
+					</div>
+		    ​</div>
+		    
+            {loop="$flags"}
+                <a href="?display=dash&_locale={$value}"><img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 12px; margin: 1px;"></a>
+            {/loop}
         </span></div>
     </header>
 
@@ -67,13 +93,13 @@
 
 		<aside class="leftBar" style="display:block;">
 		    <div id="menuLayer" class="menuLayer" style="background-color:#4d565c;">
-			 <span class="category upperCategory">{"Admin panel"|localize}</span>
+			 <span class="category upperCategory">{function="localize('Admin panel')"}</span>
                <ul class="menu">
 		            <li class="menuLong" style="display:block;">
 			            <ul>
-				            {foreach from=$admin_menu key=k item=i}
-				            <li class="menuItemLi"><a href="#" onclick="navigateTo('{$i.link}');"><span class="menuItem">{$i.title}</span></a></li>
-                            {/foreach}
+			                {loop="$admin_menu"}
+				            <li class="menuItemLi"><a href="#" onclick="navigateTo('{$value.link}');"><span class="menuItem">{$value.title}</span></a></li>
+                            {/loop}
 			            </ul>
 		            </li>
 	            </ul>

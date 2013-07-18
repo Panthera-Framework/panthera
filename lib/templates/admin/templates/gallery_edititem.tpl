@@ -16,11 +16,11 @@ $(document).ready(function () {
 
 function sliderChangeImage(src)
 {
-    jQuery('#image_slider_box').slideDown();
+    $('#image_slider_box').slideDown();
 
-    jQuery('#image_slider').fadeOut('slow', function () {
-        jQuery('#image_slider').attr('src', src);
-        jQuery('#image_slider').fadeIn();
+    $('#image_slider').fadeOut('slow', function () {
+        $('#image_slider').attr('src', src);
+        $('#image_slider').fadeIn();
     });
 }
 
@@ -28,7 +28,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
 {
     if(type != 'image')
     {
-        alert('{"Selected file is not a image"|localize}');
+        alert('{function="localize('Selected file is not a image')"}');
         return false;
     }
 
@@ -38,8 +38,8 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
     sliderChangeImage(link);
 }
 
-jQuery('#image_slider').click(function () {
-    jQuery('#image_slider_box').slideUp();
+$('#image_slider').click(function () {
+    $('#image_slider_box').slideUp();
 });
 
 sliderChangeImage('{$link}');
@@ -68,7 +68,7 @@ sliderChangeImage('{$link}');
 </style>
 
 <article>
-  <div class="titlebar">{"Editing gallery image"|localize:gallery}{include file="_navigation_panel.tpl"}</div>
+  <div class="titlebar">{function="localize('Editing gallery image', 'gallery')"}{include="_navigation_panel.tpl"}</div>
   <br>
   <div class="msgSuccess" id="userinfoBox_success"></div>
   <div class="msgError" id="userinfoBox_failed"></div>
@@ -84,40 +84,40 @@ sliderChangeImage('{$link}');
 
     <tfoot>
         <tr>
-            <td colspan="2"><em><input type="button" value="{"Back"|localize:messages}" onclick="navigateTo('?display=gallery&action=display_category&unique={$unique}'); return false;"/> <input type="submit" value="{"Save"|localize:messages}"></em></td>
+            <td colspan="2"><em><input type="button" value="{function="localize('Back', 'messages')"}" onclick="navigateTo('?display=gallery&action=display_category&unique={$unique}'); return false;"/> <input type="submit" value="{function="localize('Save', 'messages')"}"></em></td>
         </tr>
     </tfoot>
 
     <tbody>
         <tr>
-            <td>{"Title"|localize:gallery}</td>
+            <td>{function="localize('Title', 'gallery')"}</td>
             <td><input type="text" name="title" style="width: 500px;" value="{$title}"></td>
         </tr>
 
         <tr>
-            <td>{"Description"|localize:gallery}</td>
+            <td>{function="localize('Description', 'gallery')"}</td>
             <td><input type="text" name="description" id="description" style="width: 500px;" value="{$description}"></td>
         </tr>
 
         <tr>
-            <td>{"File"|localize:gallery}</td>
-            <td><input type="text" name="link" value="{$link}" style="width: 500px;" id="upload_file" disabled> <input type="button" value="{"Upload file"|localize:gallery}" onclick="createPopup('_ajax.php?display=upload&popup=true&callback=upload_file_callback', 1300, 550);"><input type="hidden" name="upload_id" id="upload_id" value="{$upload_id}"></td>
+            <td>{function="localize('File', 'gallery')"}</td>
+            <td><input type="text" name="link" value="{$link}" style="width: 500px;" id="upload_file" disabled> <input type="button" value="{function="localize('Upload file', 'gallery')"}" onclick="createPopup('_ajax.php?display=upload&popup=true&callback=upload_file_callback', 1300, 550);"><input type="hidden" name="upload_id" id="upload_id" value="{$upload_id}"></td>
         </tr>
 
         <tr>
-            <td>{"Visibility"|localize:gallery}</td>
+            <td>{function="localize('Visibility', 'gallery')"}</td>
             <td>
-                  <input type="checkbox" name="visibility" {if $visibility eq '1'}checked="checked" {/if}value="1">
+                  <input type="checkbox" name="visibility" {if="$visibility == '1'}checked='checked' {/if"}value="1">
             </td>
         </tr>
 
         <tr>
-            <td>{"Category"|localize:gallery}</td>
+            <td>{function="localize('Category', 'gallery')"}</td>
             <td>
                   <select name="gallery_id">
-                   {foreach from=$category_list key=k item=i}
-                        <option value="{$i->id}" {if $i->id eq $gallery_id} selected="selected"{/if}>{$i->title} ({$i->language})</option>
-                   {/foreach}
+                   {loop="$category_list"}
+                        <option value="{$i->id}" {if="$i->id == $gallery_id} selected='selected'{/if}>{$i->title} ({$i->language"})</option>
+                   {/loop}
                   </select>
             </td>
         </tr>

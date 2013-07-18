@@ -102,6 +102,28 @@ if (@$_GET['display'] == 'langtool') {
             $template -> push('domains', $domains);
         }
     }
+    
+    /**
+      * Creating a new language
+      *
+      * @author Damian Kęska
+      */
+    
+    if ($_GET['action'] == 'createNewLanguage')
+    {
+        if (strlen($_POST['languageName']) < 3)
+            ajax_exit(array('status' => 'failed', 'message' => localize('Name is too short', 'langtool')));
+    
+        if (!preg_match("/^([a-z]+)$/u", $_POST['languageName']))
+            ajax_exit(array('status' => 'failed', 'message' => localize('Name must be only single word from a-z characters range', 'langtool')));
+    
+        if (localesManagement::getLocaleDir($_POST['languageName']) == True)
+            ajax_exit(array('status' => 'failed', 'message' => localize('Langauge already exists', 'langtool')));
+            
+        localesManagement::create($_POST['languageName'], $panthera->locale->getActive());
+        ajax_exit(array('status' => 'success'));
+    } 
+   
 
     /**
       * Domain view

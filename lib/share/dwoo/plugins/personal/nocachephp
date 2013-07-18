@@ -1,5 +1,0 @@
-<?php
-function Dwoo_Plugin_nocache_compile(Dwoo_Compiler $dwoo)
-{
-	return '';
-}

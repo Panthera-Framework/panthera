@@ -59,22 +59,22 @@ function saveMenuOrder(id)
 </script>
 
 
-{if $action eq 'plugin_disabled'}
+{if="$action == 'plugin_disabled'"}
 
-    <div class="titlebar">{"Error"|localize}{include file="_navigation_panel.tpl"}</div><br>
+    <div class="titlebar">{function="localize('Error')"}{include="_navigation_panel.tpl"}</div><br>
 
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>
 
 
-{elseif $action eq 'item'}
-    {include 'menuedit_item.tpl'}
-{elseif $action eq 'category'}
-    {include 'menuedit_category.tpl'}
-{elseif $action eq 'new_category'}
-    {include 'menuedit_newcategory.tpl'}
-{elseif $action eq 'new_item'}
-    {include 'menuedit_newitem.tpl'}
+{elseif="$action == 'item'"}
+    {include="menuedit_item.tpl"}
+{elseif="$action == 'category'"}
+    {include="menuedit_category.tpl"}
+{elseif="$action == 'new_category'"}
+    {include="menuedit_newcategory.tpl"}
+{elseif="$action == 'new_item'"}
+    {include="menuedit_newitem.tpl"}
 {else}
 <script type="text/javascript">
 /**
@@ -95,7 +95,7 @@ function removeMenuCategory(id)
 
 </script>
 
-    <div class="titlebar">{"Menu editor"|localize:menuedit} - {"Menu management for site and administration panel"|localize:menuedit}.{include file="_navigation_panel.tpl"}</div><br>
+    <div class="titlebar">{function="localize('Menu editor', 'menuedit')"} - {function="localize('Menu management for site and administration panel', 'menuedit')"}.{include="_navigation_panel.tpl"}</div><br>
 
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>
@@ -104,32 +104,32 @@ function removeMenuCategory(id)
       <table class="gridTable">
           <thead>
               <tr>
-                  <th scope="col" class="rounded-company" style="width: 250px;">{"Name"|localize:menuedit}</th>
-                  <th>{"Title"|localize:menuedit}</th>
-                  <th>{"Description"|localize:menuedit}</th>
-                  <th>{"Elements"|localize:menuedit}</th>
-                  <th>{"Options"|localize:messages}</th>
+                  <th scope="col" class="rounded-company" style="width: 250px;">{function="localize('Name', 'menuedit')"}</th>
+                  <th>{function="localize('Title', 'menuedit')"}</th>
+                  <th>{function="localize('Description', 'menuedit')"}</th>
+                  <th>{function="localize('Elements', 'menuedit')"}</th>
+                  <th>{function="localize('Options', 'messages')"}</th>
               </tr>
           </thead>
 
           <tfoot>
               <tr>
-                  <td colspan="5" class="rounded-foot-left"><em>Panthera menuedit - {"List of categories"|localize:menuedit}</em>
-                       <input type="button" value="{"Add new menu category"|localize:menuedit}" style="float: right;" onclick="navigateTo('?display=menuedit&action=new_category')">
+                  <td colspan="5" class="rounded-foot-left"><em>Panthera menuedit - {function="localize('List of categories', 'menuedit')"}</em>
+                       <input type="button" value="{function="localize('Add new menu category', 'menuedit')"}" style="float: right;" onclick="navigateTo('?display=menuedit&action=new_category')">
                   </td>
               </tr>
           </tfoot>
 
           <tbody>
-            {foreach from=$menu_categories key=k item=i}
-              <tr id="category_{$i.id}">
-                  <td><a href="{$AJAX_URL}?display=menuedit&action=category&cat={$i.name}" class="ajax_link">{$i.name}</a></td>
-                  <td>{$i.title}</td>
-                  <td>{$i.description}</td>
-                  <td>{$i.elements}</td>
-                  <td><input type="button" value="{"Delete"|localize}" onclick="removeMenuCategory({$i.id});"></td>
+            {loop="$menu_categories"}
+              <tr id="category_{$value.id}">
+                  <td><a href="{$AJAX_URL}?display=menuedit&action=category&cat={$value.name}" class="ajax_link">{$value.name}</a></td>
+                  <td>{$value.title}</td>
+                  <td>{$value.description}</td>
+                  <td>{$value.elements}</td>
+                  <td><input type="button" value="{function="localize('Delete')"}" onclick="removeMenuCategory({$value.id});"></td>
               </tr>
-            {/foreach}
+            {/loop}
           </tbody>
       </table>
     </div>

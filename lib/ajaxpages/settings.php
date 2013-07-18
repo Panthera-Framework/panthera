@@ -52,6 +52,7 @@ if (!defined('IN_PANTHERA'))
                             'display_errors' => $yn[ini_get('display_errors')],
                             'post_max_size' => ini_get('post_max_size'),
                             'PDO Drivers' => implode(', ', PDO::getAvailableDrivers()),
+                            'Template engine' => $panthera->template->engine,
                             'System' => @php_uname());
 
         /** PHP APC **/

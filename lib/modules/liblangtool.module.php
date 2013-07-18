@@ -68,6 +68,40 @@ class localesManagement
     }
     
     /**
+      * Create a new locale
+      *
+      * @param string $locale
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public static function create($locale, $copy='')
+    {
+        global $panthera;
+        
+        if ($locale == '')
+            return False;
+    
+        mkdir(SITE_DIR. '/content/locales/' .$locale);
+        
+        if (is_dir(SITE_DIR. '/content/locales/' .$locale))
+        {
+            if ($copy != '')
+            {
+                $panthera -> importModule('filesystem');
+                
+                if (is_dir(SITE_DIR. '/content/locales/' .$copy))   
+                    recurse_copy(SITE_DIR. '/content/locales/' .$copy, SITE_DIR. '/content/locales/' .$locale);
+                    
+            }
+            
+            return True;
+        }
+           
+        return False;
+    }
+    
+    /**
       * Get domain directory
       *
       * @param string $language Language name

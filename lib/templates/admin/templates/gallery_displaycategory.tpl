@@ -5,14 +5,13 @@
     function removeGalleryItem(id)
     {
         $.msgBox({
-            title: "{"Are you sure?"|localize:messages}",
-            content: "{"Do you really want to delete this item?"|localize}",
+            title: "{function="localize('Are you sure?', 'messages')"}",
+            content: "{function="localize('Do you really want to delete this item?')"}",
             type: "confirm",
             autoClose: true,
             opacity: 0.6,
-            buttons: [{ value: "{"Yes"|localize:messages}" }, { value: "{"No"|localize:messages}" }, { value: "{"Cancel"|localize:messages}"}],
-            success: function (result) {
-                if (result == "{"Yes"|localize:messages}") {
+            buttons: [{ value: "{function="localize('Yes', 'messages')"}" }, { value: "{function="localize('No', 'messages')"}" }, { value: "{function="localize('Cancel', 'messages')"}"}],
+            success: function (result) { if (result == '{function="localize('Yes')"}') {
 
                     panthera.jsonGET({ url: '{$AJAX_URL}?display=gallery&action=delete_item&image_id='+id, success: function (response) {
                             if (response.status == "success")
@@ -31,7 +30,7 @@
 
     function toggleItemVisibility(id)
     {
-        panthera.jsonGET({ url: '{$AJAX_URL}?display=gallery&action=toggle_item_visibility&itid='+id, success: function (response) {
+        panthera.jsonGET({ url: '?display=gallery&action=toggle_item_visibility&itid='+id, success: function (response) {
 
                     if (response.status == "success")
                     {
@@ -49,7 +48,7 @@
 
     function setAsCategoryThumb(id, ctgid)
     {
-        panthera.jsonGET({ 'url': '{$AJAX_URL}?display=gallery&action=set_category_thumb&itid='+id+'&ctgid='+ctgid});
+        panthera.jsonGET({ 'url': '?display=gallery&action=set_category_thumb&itid='+id+'&ctgid='+ctgid});
     }
 
     $(document).ready(function () {
@@ -116,29 +115,29 @@
     });
 </script>
 
-<div class="titlebar">{"Gallery"|localize:messages}: &nbsp;{$category_title} ({$langauge}){include file="_navigation_panel.tpl"}</div>
+<div class="titlebar">{function="localize('Gallery', 'messages')"}: &nbsp;{$category_title} ({$langauge}){include="_navigation_panel.tpl"}</div>
 
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>
 
-    {if !$all_langs}
+    {if="!$all_langs"}
     <div class="grid-2" style="position: relative;" id="languagesGrid">
-          <div class="title-grid">{"Gallery in other languages"|localize:gallery}<span></span></div>
+          <div class="title-grid">{function="localize('Gallery in other languages', 'gallery')"}<span></span></div>
           <div class="content-table-grid">
               <table class="insideGridTable">
                 <tfoot>
                     <tr>
-                        <td colspan="3"><small>{"Select langauge name to edit or create this gallery in other language"|localize:gallery}</small></td>
+                        <td colspan="3"><small>{function="localize('Select langauge name to edit or create this gallery in other language', 'gallery')"}</small></td>
                     </tr>
                 </tfoot>
             
                 <tbody>
-                    {foreach from=$languages key=k item=i}
+                    {loop="$languages"}
                         <tr>
-                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$k}" onclick="navigateTo('?display=gallery&action=display_category&unique={$unique}&language={$k}');">{$k}</a></td>
+                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$key}" onclick="navigateTo('?display=gallery&action=display_category&unique={$unique}&language={$key}');">{$key}</a></td>
                             <td style="width: 60px; padding: 10px; border-right: 0px;"></td>
                         </tr>
-                    {/foreach}
+                    {/loop}
                 </tbody>
             </table>
          </div>
@@ -147,40 +146,40 @@
     
     <!-- settings -->
     <form action="?display=gallery&action=saveCategoryDetails&id={$galleryObject->id}" method="POST" id="saveCategoryDetails">
-    <div class="grid-{if $all_langs}1{else}2{/if}" style="position: relative; margin-bottom: 50px;" id="saveCategoryDetailsDiv">
-          <div class="title-grid">{"Settings"|localize}<span></span></div>
+    <div class="grid-{if="$all_langs"}1{else}2{/if}" style="position: relative; margin-bottom: 50px;" id="saveCategoryDetailsDiv">
+          <div class="title-grid">{function="localize('Settings')"}<span></span></div>
           <div class="content-table-grid">
               <table class="insideGridTable">
                 <tbody>
                         <tr id="title_tr">
-                            <td style="width: 120px;">{"Title"|localize:gallery}:</td>
+                            <td style="width: 120px;">{function="localize('Title', 'gallery')"}:</td>
                             <td style="border-right: 0px;"><input type="text" style="width: 98%;" name="title" value="{$galleryObject->title}"></td>
                         </tr>
                         
                         <tr id="created_tr">
-                            <td>{"Created"|localize:gallery}:</td>
+                            <td>{function="localize('Created', 'gallery')"}:</td>
                             <td style="border-right: 0px;">{$galleryObject->created} ({$galleryObject->author_login})</td>
                         </tr>
                         
                         <tr id="all_langs_tr">
-                            <td>{"Make this gallery same for all languages"|localize:gallery}:</td>
-                            <td style="border-right: 0px;"><input type="checkbox" name="all_langs" value="1"{if $all_langs} checked{/if} id="all_langs_checkbox"></td>
+                            <td>{function="localize('Make this gallery same for all languages', 'gallery')"}:</td>
+                            <td style="border-right: 0px;"><input type="checkbox" name="all_langs" value="1"{if="$all_langs"} checked{/if} id="all_langs_checkbox"></td>
                         </tr>
                         
-                        <tr {if $all_langs}style="display: none;"{/if} id="language_input">
-                            <td>{"Save this gallery in"|localize:gallery}:</td>
+                        <tr {if="$all_langs"}style='display: none;'{/if} id="language_input">
+                            <td>{function="localize('Save this gallery in', 'gallery')"}:</td>
                             <td style="border-right: 0px;">
                             <select name="language">
-                            {foreach from=$languages key=k item=i}
-                                <option value="{$k}"{if $galleryObject->language == $k} selected{/if}>{$k}</option>
-                            {/foreach}
+                            {loop="$languages"}
+                                <option value="{$key}"{if="$value->language == $key"} selected{/if}>{$key}</option>
+                            {/loop}
                             </select>
                             </td>
                         </tr>
                         
                         <tr id="save_tr">
                             <td style="padding: 10px; border-right: 0px; border-bottom: 0px;">&nbsp;</td>
-                            <td style="width: 60px; padding: 10px; border-right: 0px; border-bottom: 0px;"><input type="submit" value="{"Save"|localize}" style="float: right;"></td>
+                            <td style="width: 60px; padding: 10px; border-right: 0px; border-bottom: 0px;"><input type="submit" value="{function="localize('Save')"}" style="float: right;"></td>
                         </tr>
                 </tbody>
             </table>
@@ -191,53 +190,53 @@
 
 <div class="grid-1" style="width: 100%;">
 
-    {foreach from=$item_list key=k item=i}
-    <div class="galleryItem{if $i->visibility eq 1} galleryItemHidden{/if} draggableGalleryItem" id="gallery_item_{$i->id}">
+    {loop="$item_list"}
+    <div class="galleryItem{if="$value->visibility == 1"} galleryItemHidden{/if} draggableGalleryItem" id="gallery_item_{$value->id}">
         <div class="galleryImageFrame">
             <div class="paGalleryFrameContent">
-                <img src="{$i->getThumbnail(300, True, True)}" class="galleryImage">
+                <img src="{$value->getThumbnail(300, True, True)}" class="galleryImage">
             </div>
 
             <div class="paGalleryFrameOverlay">
                 <small>
                     <br>
-                    <b>{$i->title}</b>
+                    <b>{$value->title}</b>
                     <br><br>
-                    <i>{$i->description}</i>
-                    <br><br>{"Created"|localize:gallery}: {$i->created}
+                    <i>{$value->description}</i>
+                    <br><br>{function="localize('Created', 'gallery')"}: {$value->created}
                 </small>
 
                 <br><br>
-                {"url"|localize:gallery}: <input type="text" value="{$i->link}" style="width: 200px; height: 20px;">
+                {function="localize('url', 'gallery')"}: <input type="text" value="{$value->link}" style="width: 200px; height: 20px;">
             </div>
         </div>
 
         <div class="galleryItemDetails">
             <div style="text-align: center;">
-                <a href="#edit" onclick="navigateTo('?display=gallery&action=edit_item_form&itid={$i->id}');"><img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/Text-x-generic_with_pencil.svg" class="galleryIcon" title="{"Edit"|localize:messages}"></a>
-                <a href="#delete" onclick="removeGalleryItem({$i->id});"><img src="{$PANTHERA_URL}/images/admin/menu/Actions-process-stop-icon.png" class="galleryIcon" title="{"Delete"|localize:messages}"></a>
-                <a href="#toggle-visibility" onclick="toggleItemVisibility({$i->id});"><img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/System-search.svg" class="galleryIcon" title="{"Toggle visibility"|localize:gallery}"></a>
-                <a href="#rights" onclick="createPopup('_ajax.php?display=acl&popup=true&name=gallery_manage_img_{$i->id}', 1024, 550);"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" class="galleryIcon" title="{"Manage permissions"|localize:messages}" id="permissionsButton"></a>
-                <a href="#thumbnail" onclick="setAsCategoryThumb({$i->id}, {$category_id});"><img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/Image-x-generic.svg" class="galleryIcon" title="{"Set as thumbnail"|localize:gallery}"></a>
+                <a href="#edit" onclick="navigateTo('?display=gallery&action=edit_item_form&itid={$value->id}');"><img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/Text-x-generic_with_pencil.svg" class="galleryIcon" title="{function="localize('Edit', 'messages')"}"></a>
+                <a href="#delete" onclick="removeGalleryItem({$i->id});"><img src="{$PANTHERA_URL}/images/admin/menu/Actions-process-stop-icon.png" class="galleryIcon" title="{function="localize('Delete', 'messages')"}"></a>
+                <a href="#toggle-visibility" onclick="toggleItemVisibility({$value->id});"><img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/System-search.svg" class="galleryIcon" title="{function="localize('Toggle visibility', 'gallery')"}"></a>
+                <a href="#rights" onclick="createPopup('_ajax.php?display=acl&popup=true&name=gallery_manage_img_{$i->id}', 1024, 550);"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" class="galleryIcon" title="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton"></a>
+                <a href="#thumbnail" onclick="setAsCategoryThumb({$i->id}, {$category_id});"><img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/Image-x-generic.svg" class="galleryIcon" title="{function="localize('Set as thumbnail', 'gallery')"}"></a>
             </div>
         </div>
     </div>
 
-    {/foreach}
+    {/loop}
             <div class="galleryItem" style="height: 100px; width: 100px; position: relative; border-radius: 2px;" id="addNewImage" ondragover="return false;">
                 <div class="paGalleryFrameOverlay" style="display: block; border-radius: 2px; opacity: 0.4; -moz-opacity: 0.4; -khtml-opacity: 0.4;">
-                    <a href="#" onclick="navigateTo('?display=gallery&action=add_item&ctgid={$category_id}');"><span class="tooltip">{"Drag and drop files to this area to start uploading"|localize:gallery}</span><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: absolute; top: 30px; left: 30px; opacity: 0.8;"></a>
+                    <a href="#" onclick="navigateTo('?display=gallery&action=add_item&ctgid={$category_id}');"><span class="tooltip">{function="localize('Drag and drop files to this area to start uploading', 'gallery')"}</span><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: absolute; top: 30px; left: 30px; opacity: 0.8;"></a>
                 </div>
             </div>
-            
+            {*}            
             <!--<div class="galleryItem" style="height: 100px; width: 100px; position: relative; border-radius: 2px; margin-right: 100px; margin-bottom: 160px;" id="removeImage" ondragover="return false;">
                 <div class="paGalleryFrameOverlay" style="display: block; border-radius: 2px; opacity: 0.4; -moz-opacity: 0.4; -khtml-opacity: 0.4;">
-                    <a href="#"><span class="tooltip">{"To remove files, drag and drop them here"|localize:gallery}</span><img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/120px-Icon-trash.png" style="width: 70px; position: absolute; top: 17px; left: 15px; opacity: 0.8;"></a>
+                    <a href="#"><span class="tooltip">{function="localize('To remove files, drag and drop them here', 'gallery')"}</span><img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/120px-Icon-trash.png" style="width: 70px; position: absolute; top: 17px; left: 15px; opacity: 0.8;"></a>
                 </div>
             </div>
             
             <div class="galleryItem" style="height: 200px; width: 300px; position: relative; border-radius: 2px;" id="moveGalleryItem" ondragover="return false;">
-                <div style="margin: 5px; text-align: center;"><small><b>{"Move to other category"|localize:gallery}</b></small></div>
+                <div style="margin: 5px; text-align: center;"><small><b>{function="localize('Move to other category', 'gallery')"}</b></small></div>
                 
                 <div style="overflow-y: auto; overflow-x: hidden; height: 165px;">
                 <table class="gridTable" style="margin-left: -1px; margin-top: 15px; width: 302px;">
@@ -245,8 +244,9 @@
                     <tr>
                         <td style="height: 25px;">{$i->title}</td>
                     </tr>
-                {/foreach}
+                {/loop}
                 </table>
                 </div>
             </div>-->
+            {/*}
 </div>

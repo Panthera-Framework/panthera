@@ -115,6 +115,6 @@ if (!defined('CONTACT_SKIP_MAP'))
     $template -> push ('skip_map', True);
 
 $template -> push ('contact_mail', $contactData['mail']);
-$template -> push ('adress_text', htmlspecialchars($contactData['text']));
+$template -> push ('adress_text', htmlspecialchars(str_replace("\n", ' ', $contactData['text'])));
 $template -> display('contact.tpl');
 pa_exit();

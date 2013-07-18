@@ -18,7 +18,7 @@ $('#add_item_form').submit(function () {
 });
 </script>
 
-    <div class="titlebar">{"Menu editor"|localize:menuedit} - {"Adding item"|localize:menuedit}</div><br>
+    <div class="titlebar">{function="localize('Menu editor', 'menuedit')"} - {function="localize('Adding item', 'menuedit')"}</div><br>
 
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>
@@ -35,47 +35,47 @@ $('#add_item_form').submit(function () {
 
         <tfoot>
             <tr>
-                <td colspan="7" class="rounded-foot-left"><em>Panthera menuedit - {"Adding item"|localize:menuedit}</em><span>
+                <td colspan="7" class="rounded-foot-left"><em>Panthera menuedit - {function="localize('Adding item', 'menuedit')"}</em><span>
                 <div style="float: right;">
-                    <input type="submit" value="{"Save"|localize:messages}" style="float: right;"> <input type="button" value="{"Back"|localize}" onclick="navigateTo('{navigation::getBackButton()}');">
+                    <input type="submit" value="{function="localize('Save', 'messages')"}" style="float: right;"> <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=menuedit&action=category&cat={$cat_type}');">
                 </div>
             </tr>
         </tfoot>
 
         <tbody>
             <tr>
-                <td>{"Title"|localize:menuedit}</td>
+                <td>{function="localize('Title', 'menuedit')"}</td>
                 <td><input type="text" name="item_title" style="width: 99%;"></td>
             </tr>
             <tr>
-                <td>{"Link"|localize:menuedit}</td>
+                <td>{function="localize('Link', 'menuedit')"}</td>
                 <td><input type="text" name="item_link" style="width: 99%;"></td>
             </tr>
             <tr>
-                <td>{"Language"|localize:menuedit}</td>
+                <td>{function="localize('Language', 'menuedit')"}</td>
                 <td>
                 <select name="item_language">
-                {foreach from=$item_language key=k item=i}
-                    <option value="{$k}">{$k}</option>
-                {/foreach}
+                {loop="$item_language"}
+                    <option value="{$key}">{$key}</option>
+                {/loop}
                 </select>
 
                 </td>
             </tr>
             <tr>
-                <td>{"SEO friendly name"|localize:menuedit} <small>({"Optional"|localize:menuedit})</small></td>
+                <td>{function="localize('SEO friendly name', 'menuedit')"} <small>({function="localize('Optional', 'menuedit')"})</small></td>
                 <td><input type="text" name="item_url_id" style="width: 99%;"></td>
             </tr>
             <tr>
-                <td>{"Tooltip"|localize:menuedit} <small>({"Optional"|localize:menuedit})</small></td>
+                <td>{function="localize('Tooltip', 'menuedit')"} <small>({function="localize('Optional', 'menuedit')"})</small></td>
                 <td><input type="text" name="item_tooltip" style="width: 99%;"></td>
             </tr>
             <tr>
-                <td>{"Icon"|localize:menuedit} <small>({"Optional"|localize:menuedit})</small></td>
+                <td>{function="localize('Icon', 'menuedit')"} <small>({function="localize('Optional', 'menuedit')"})</small></td>
                 <td><input type="text" name="item_icon" style="width: 99%;"></td>
             </tr>
             <tr>
-                <td>{"Attributes"|localize:menuedit} <small>({"Optional"|localize:menuedit})</small></td>
+                <td>{function="localize('Attributes', 'menuedit')"} <small>({function="localize('Optional', 'menuedit')"})</small></td>
                 <td><input type="text" name="item_attributes" style="width: 99%;"></td>
             </tr>
         </tbody>

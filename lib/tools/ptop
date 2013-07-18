@@ -76,7 +76,7 @@ class ptop extends cliApp
             $time = '?';
             
             if (isset($data['time']))
-                $time = 'page: ' .substr($data['time']['page'], 0, 5). ', overall: ' .substr($data['time']['overall'], 0, 5);
+                $time = "page: " .substr($data['time']['page'], 0, 5). ", tpl: " .substr($data['time']['template'], 0, 5). ", overall: " .substr($data['time']['overall'], 0, 5);
                 
             if (!isset($data['method']))
                 $data['method'] = 'GET';

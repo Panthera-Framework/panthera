@@ -1,4 +1,6 @@
 <script type="text/javascript">
+$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
+
 $(document).ready(function() {
     $('#debug_log_trigger').click(function () {
         $('#debug_log_window').slideToggle('slow');
@@ -40,7 +42,7 @@ function saveVariable(id, value)
 }
 </script>
 
-<div class="titlebar">{"Debugging center"|localize}{include file="_navigation_panel.tpl"}</div>
+<div class="titlebar">{function="localize('Debugging center')"}{include="_navigation_panel.tpl"}</div>
 
       <table class="gridTable">
         <tfoot>
@@ -55,16 +57,16 @@ function saveVariable(id, value)
 
         <thead>
             <tr>
-                <th colspan="2">{"Debugging center"|localize}</th>
+                <th colspan="2">{function="localize('Debugging center')"}</th>
             </tr>
         </thead>
 
         <tbody>
-            {foreach from=$tools item=i key=k}
+            {loop="$tools"}
             <tr>
-                <td colspan="2"><a href="{$i.link}" class="ajax_link">{"$i.name"|localize:debug}</a></td>
+                <td colspan="2"><a href="{$value.link}" class="ajax_link">{function="localize($value.name, 'debug')"}</a></td>
             </tr>
-            {/foreach}
+            {/loop}
         </tbody>
     </table>
 
@@ -73,45 +75,45 @@ function saveVariable(id, value)
     <table class="gridTable" id="optionsTable" style="position: relative;">
         <thead>
             <tr>
-                <th>{"Key"|localize}</th>
-                <th>{"Value"|localize}</th>
+                <th>{function="localize('Key')"}</th>
+                <th>{function="localize('Value')"}</th>
             </tr>
 
         </thead>
             <tr>
-                <td>{"Debugger state"|localize:debug}</td>
-                <td><a id='debug_value' onclick="toggleDebugValue();"  style="cursor: pointer;"> {if $debug eq true} {"On"|localize} {else} {"Off"|localize} {/if} </a></td>
+                <td>{function="localize('Debugger state', 'debug')"}</td>
+                <td><a id='debug_value' onclick="toggleDebugValue();"  style="cursor: pointer;"> {if="$debug == true"} {function="localize('On')"} {else} {function="localize('Off')"} {/if} </a></td>
             </tr>
             
             <tr>
-                <td>{"Messages filter"|localize:debug}</td>
+                <td>{function="localize('Messages filter', 'debug')"}</td>
                 <td><select id="messagesFilter"><option value="">all messages</option><option value="blacklist">blacklist</option><option value="whitelist">whitelist</option></select></td>
             </tr>
         </tbody>
       </table>
 
-   {if $debug eq true}
-   <h1 id="current_log_trigger" style="cursor: hand; cursor: pointer; margin: 15px;">{"Show current log"|localize:debug}</h1>
+   {if="$debug == true"}
+   <h1 id="current_log_trigger" style="cursor: hand; cursor: pointer; margin: 15px;">{function="localize('Show current log', 'debug')"}</h1>
    <div id="current_log_window" style="display: none;">
      <table class="greenLog">
-        {foreach from=$current_log item=i key=k}
+        {loop="$current_log"}
         <tr>
-              <td><strong>{$k+1}.</strong></td>
-              <td>{$i}</td>
+              <td><strong>{$key+1}.</strong></td>
+              <td>{$value}</td>
         </tr>
-      {/foreach}
+      {/loop}
      </table>
    </div>
 
-   <h1 id="debug_log_trigger" style="cursor: hand; cursor: pointer; margin: 15px;">{"Show debug.log content"|localize:debug}</h1>
+   <h1 id="debug_log_trigger" style="cursor: hand; cursor: pointer; margin: 15px;">{function="localize('Show debug.log content', 'debug')"}</h1>
    <div id="debug_log_window" style="display: none;">
      <table class="blueLog">
-        {foreach from=$debug_log item=i key=k}
+        {loop="$debug_log"}
         <tr>
-              <td><strong>{$k+1}.</strong></td>
-              <td>{$i}</td>
+              <td><strong>{$key+1}.</strong></td>
+              <td>{$value}</td>
         </tr>
-      {/foreach}
+      {/loop}
      </table>
    </div>
    {/if}

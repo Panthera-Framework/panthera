@@ -5,46 +5,46 @@ function jumpToAjaxPage(id)
 }
 </script>
 
-<div class="titlebar">{"Users"|localize} - {"All registered users on this website"|localize:settings}</div>
+<div class="titlebar">{function="localize('Users')"} - {function="localize('All registered users on this website', 'settings')"}{include="_navigation_panel.tpl"}</div>
 
         <div class="grid-1">
             <div id="all_users_window">
             <table class="gridTable">
                   <thead>
                       <tr>
-                              <th scope="col">{"Login"|localize:settings}</th>
-                              <th scope="col">{"Full name"|localize:settings}</th>
-                              <th scope="col">{"Primary group"|localize:settings}</th>
-                              <th scope="col">{"Joined"|localize:settings}</th>
-                              <th scope="col">{"Default language"|localize:settings}</th>
+                              <th scope="col">{function="localize('Login', 'settings')"}</th>
+                              <th scope="col">{function="localize('Full name', 'settings')"}</th>
+                              <th scope="col">{function="localize('Primary group', 'settings')"}</th>
+                              <th scope="col">{function="localize('Joined', 'settings')"}</th>
+                              <th scope="col">{function="localize('Default language', 'settings')"}</th>
                         </tr>
                   </thead>
                   <tfoot>
-                      <td colspan="6"><em>{"Users"|localize} {$users_from}-{$users_to},
-                        {foreach from=$pager key=user item=active}
+                      <td colspan="6"><em>{function="localize('Users')"} {$users_from}-{$users_to},
+                        {loop="$pager"}
 
-                            {if $active == true}
-                            <a href="#" onclick="jumpToAjaxPage({$user}); return false;"><b>{$user+1}</b></a>
+                            {if="$value == true"}
+                            <a href="#" onclick="jumpToAjaxPage({$key}); return false;"><b>{$key+1}</b></a>
 
                             {else}
-                            <a href="#" onclick="jumpToAjaxPage({$user}); return false;">{$user+1}</a>
+                            <a href="#" onclick="jumpToAjaxPage({$key}); return false;">{$key+1}</a>
                             {/if}
 
-                        {/foreach}
+                        {/loop}
                         </em></td>
                   </tfoot>
 
                   <tbody>
 
-                        {foreach from=$users_list key=k item=v}
+                        {loop="$users_list"}
                         <tr>
-                              <td>{if $view_users == True}<a href="?display=settings&action=my_account&uid={$v.id}" class="ajax_link">{$v.login}</a>{else}{$v.login}{/if}</td>
-                              <td>{$v.full_name}</td>
-                              <td>{$v.primary_group}</td>
-                              <td>{$v.joined}</td>
-                              <td>{$v.language|ucfirst}</td>
+                              <td>{if="$view_users == True"}<a href='?display=settings&action=my_account&uid={$value.id}' class='ajax_link'>{$value.login}</a>{else}{$value.login}{/if}</td>
+                              <td>{$value.full_name}</td>
+                              <td>{$value.primary_group}</td>
+                              <td>{$value.joined}</td>
+                              <td>{$value.language|ucfirst}</td>
                         </tr>
-                        {/foreach}
+                        {/loop}
                   </tbody>
              </table>
              </div>

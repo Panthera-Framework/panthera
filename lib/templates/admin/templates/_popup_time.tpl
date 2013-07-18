@@ -1,6 +1,6 @@
-<h2 class="popupHeading">{"Pick a time"|localize:popups}</h2>
+<h2 class="popupHeading">{function="localize('Pick a time', 'popups')"}</h2>
 
-{if $type == "countSeconds"}
+{if="$type == 'countSeconds'"}
 <script type="text/javascript">
 function _popup_pickDate()
 {
@@ -8,7 +8,7 @@ function _popup_pickDate()
     
     if (n < 1)
     {
-        $('#_popup_time_failed').html('{"Input must be higher than zero"|localize:popups}');
+        $('#_popup_time_failed').html('{function="localize('Input must be higher than zero', 'popups')"}');
         $('#_popup_time_failed').show('slow');
         return false;
     }
@@ -77,16 +77,16 @@ function _popup_pickDate()
         
         <td>
             <select id="_popup_time_type">
-                <option value="y">{"years"|localize:popups}</option>
-                <option value="m">{"months"|localize:popups}</option>
-                <option value="w">{"weeks"|localize:popups}</option>
-                <option value="d">{"days"|localize:popups}</option>
-                <option value="g">{"hours"|localize:popups}</option>
-                <option value="i" selected>{"minutes"|localize:popups}</option>
-                <option value="s">{"seconds"|localize:popups}</option>
+                <option value="y">{function="localize('years', 'popups')"}</option>
+                <option value="m">{function="localize('months', 'popups')"}</option>
+                <option value="w">{function="localize('weeks', 'popups')"}</option>
+                <option value="d">{function="localize('days', 'popups')"}</option>
+                <option value="g">{function="localize('hours', 'popups')"}</option>
+                <option value="i" selected>{function="localize('minutes', 'popups')"}</option>
+                <option value="s">{function="localize('seconds', 'popups')"}</option>
             </select>
             
-            <input type="button" value="{"Pick"|localize:popups}" onclick="_popup_pickDate();">
+            <input type="button" value="{function="localize('Pick', 'popups')"}" onclick="_popup_pickDate();">
         </td>
     </tr>
 

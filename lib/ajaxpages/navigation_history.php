@@ -9,10 +9,6 @@
   */
   
 $history = array();
-
-foreach (navigation::getHistory() as $key => $value)
-    $history[$key] = str_ireplace('_ajax', $panthera->config->getKey('ajax_url'), $value);
-  
-$panthera -> template -> push('navigation_history', $history);
+$panthera -> template -> push('navigation_history', navigation::getHistory());
 $panthera -> template -> display('navigation_history.tpl');
 pa_exit();

@@ -256,13 +256,13 @@ class pantheraDB
             if(is_numeric($field))
                 continue;
 
-            $values[$field] = $value;
-
-            if ((string)$value == "NOW()")
+            if (strtolower($value) == "now()")
             {
                 $set .= "`".$field."` = NOW()".$sep;        
-            } else
+            } else {
+                $values[$field] = $value;
                 $set .= "`".$field."` = :".$field.$sep;
+            }
         }
         
         return array(substr($set, 0, strlen($set)-strlen($sep)), $values);

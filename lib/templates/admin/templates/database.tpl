@@ -1,7 +1,7 @@
 <script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
 
 
-    <div class="titlebar">{"Database management"|localize:database}</div>
+    <div class="titlebar">{function="localize('Database management', 'database')"}</div>
 
     <br>
     <div class="msgSuccess" id="userinfoBox_success"></div>
@@ -11,20 +11,20 @@
        <table class="gridTable">
 
             <thead>
-                <tr><th colspan="5"><b>{"Connection informations"|localize:database}:</b></th></tr>
+                <tr><th colspan="5"><b>{function="localize('Connection informations', 'database')"}:</b></th></tr>
              </thead>
 
             <tfoot>
                 <tr>
-                    <td colspan="5" class="rounded-foot-left"><em>Panthera - {"Connection informations"|localize:database} <input type="button" value="{"Manage backups"|localize:database}" onclick="navigateTo('?display=sqldump');" style="float: right;">  <input type="button" value="{"Manage permissions"|localize:messages}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_manage_databases', 1024, 'upload_popup');" style="float: right; margin-right: 7px;"> <input type="button" value="{"Back"|localize}" onclick="navigateTo('?display=settings&action=system_info');" style="float: right; margin-right: 7px;">
+                    <td colspan="5" class="rounded-foot-left"><em>Panthera - {function="localize('Connection informations', 'database')"} <input type="button" value="{function="localize('Manage backups', 'database')"}" onclick="navigateTo('?display=sqldump');" style="float: right;">  <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_manage_databases', 1024, 'upload_popup');" style="float: right; margin-right: 7px;">
                     </em></td>
                 </tr>
             </tfoot>
 
             <tbody>
-                {foreach from=$sql_attributes key=k item=v}
-                <tr><td>{$v.name}<td>{$v.value}</td></tr>
-                {/foreach}
+                {loop="$sql_attributes"}
+                <tr><td>{$value.name}<td>{$value.value}</td></tr>
+                {/loop}
             </tbody>
        </table>
 
@@ -33,19 +33,19 @@
        <table class="gridTable">
 
             <thead>
-                <tr><th colspan="2"><b>Panthera - {"database driver configuration"|localize:database}:</b></th></tr>
+                <tr><th colspan="2"><b>Panthera - {function="localize('database driver configuration', 'database')"}:</b></th></tr>
              </thead>
 
             <tfoot>
                 <tr>
-                    <td colspan="2" class="rounded-foot-left"><em>Panthera - {"database driver configuration"|localize:database}</em></td>
+                    <td colspan="2" class="rounded-foot-left"><em>Panthera - {function="localize('database driver configuration', 'database')"}</em></td>
                 </tr>
             </tfoot>
 
             <tbody>
-                {foreach from=$panthera_attributes key=k item=v}
-                <tr><td>{$v.name}<td>{$v.value}</td></tr>
-                {/foreach}
+                {loop="$panthera_attributes"}
+                <tr><td>{$value.name}<td>{$value.value}</td></tr>
+                {/loop}
             </tbody>
        </table>
     </div>

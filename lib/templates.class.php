@@ -8,7 +8,10 @@
   */
 
 //include(PANTHERA_DIR. '/share/smarty/Smarty.class.php');
-include PANTHERA_DIR. '/share/dwoo/dwooAutoload.php'; 
+//include PANTHERA_DIR. '/share/dwoo/dwooAutoload.php'; 
+//require PANTHERA_DIR. '/share/Twig/lib/Twig/Autoloader.php';
+//Twig_Autoloader::register();
+require PANTHERA_DIR. '/share/raintpl3/library/Rain/autoload.php';
 
 /**
  * Panthera template wrapper
@@ -20,7 +23,7 @@ include PANTHERA_DIR. '/share/dwoo/dwooAutoload.php';
 class pantheraTemplate extends pantheraClass
 {
     protected $template, $name, $attributes = array('title' => '', 'keywords' => array(), 'metas' => array(), 'scripts' => array()), $panthera, $vars = array(), $cacheConfig = False;
-    public $tpl, $generateScripts = True, $generateHeader = True, $generateMeta = True, $generateKeywords = True, $generateLinks = True, $header = '', $deviceType = 'desktop', $forceKeepTemplate = False;
+    public $tpl, $generateScripts = True, $generateHeader = True, $generateMeta = True, $generateKeywords = True, $generateLinks = True, $header = '', $deviceType = 'desktop', $forceKeepTemplate = False, $timer = 0, $engine = 'raintpl3';
     
     // configurable options
     protected $debugging, $caching, $cache_lifetime;
@@ -37,17 +40,17 @@ class pantheraTemplate extends pantheraClass
     {
         $templatesDir = array();
         $tpl = null;
-
-        if ($this->deviceType == 'mobile' and $this->forceKeepTemplate == False)
+        
+        /*if ($this->deviceType == 'mobile' and $this->forceKeepTemplate == False)
         {        
             if (strpos($template, '_mobile') === False)
             {
                 $this->panthera->logging->output('Checking for mobile template ' .$template. '_mobile', 'pantheraTemplate');
             
-                if (is_dir(SITE_DIR.'/content/templates/'.$template. '_mobile/') or is_dir(SITE_DIR.'/content/templates/' .$template. '_mobile/'))
+                if (is_dir(SITE_DIR.'/content/templates/'.$template. '_mobile/') or is_dir(PANTHERA_DIR.'/templates/' .$template. '_mobile/'))
                     $template = $template. '_mobile';
             }
-        }
+        }*/
         
         if ($this->cacheConfig == True)
         {
@@ -113,16 +116,16 @@ class pantheraTemplate extends pantheraClass
     {
         $UA = strtolower ($_SERVER['HTTP_USER_AGENT']);
         
-        if ( preg_match ("/phone|iphone|itouch|ipod|symbian|android|htc_|htc-|palmos|blackberry|opera mini|iemobile|windows ce|nokia|fennec|hiptop|kindle|mot |mot-|webos\/|samsung|sonyericsson|^sie-|nintendo/", $user_agent))
+        if ( preg_match ("/phone|iphone|itouch|ipod|symbian|android|htc_|htc-|palmos|blackberry|opera mini|iemobile|windows ce|nokia|fennec|hiptop|kindle|mot |mot-|webos\/|samsung|sonyericsson|^sie-|nintendo/", $UA))
             return 'mobile';
         
-        if (preg_match ("/mobile|pda;|avantgo|eudoraweb|minimo|netfront|brew|teleca|lg;|lge |wap;| wap /", $user_agent))
+        if (preg_match ("/mobile|pda;|avantgo|eudoraweb|minimo|netfront|brew|teleca|lg;|lge |wap;| wap /", $UA))
             return 'mobile';
         
-        if (preg_match("/googlebot|adsbot|yahooseeker|yahoobot|msnbot|watchmouse|pingdom\.com|feedfetcher-google/", $user_agent))
+        if (preg_match("/googlebot|adsbot|yahooseeker|yahoobot|msnbot|watchmouse|pingdom\.com|feedfetcher-google/", $UA))
             return 'bot';
             
-        if (preg_match ("/mozilla\/|opera\//", $user_agent))
+        if (preg_match ("/mozilla\/|opera\//", $UA))
             return 'desktop';
     }
 
@@ -137,12 +140,33 @@ class pantheraTemplate extends pantheraClass
     function __construct($panthera)
     {
         parent::__construct($panthera);
-        $this->tpl = new Dwoo();
-        
+    
         // some configuration variables
         $this->debugging = (bool)$this->panthera->config->getKey('template_debugging', False, 'bool'); // TODO: A template that displays Panthera environment
         $this->caching = (bool)$this->panthera->config->getKey('template_caching', False, 'bool');
         $this->cache_lifetime = intval($this->panthera->config->getKey('template_cache_lifetime', 120, 'int'));
+        
+        $cacheDir = False;
+        if ($this->caching == True)
+            $cacheDir = SITE_DIR. '/content/tmp/templates_c/';
+        
+        // configure RainTPL engine
+        Rain\Tpl::configure(array("base_url" => null, "tpl_dir"	=> '/', "cache_dir"	=> $cacheDir, "debug" => $this->debugging, 'auto_escape' => false, 'php_enabled' => true, 'sandbox' => false));
+        $this->tpl = new Rain\Tpl;
+        #\Rain\Tpl::registerTag('stringModifier', '{"([^}"]+)"|([a-zA-Z\"]+):?([A-Za-z0-9\"]+)?:?([A-Za-z0-9\"]+)?:?([A-Za-z0-9\"]+)?}', function( $params, $b ){ var_dump($params); } );
+                
+        /*
+        // functions
+        $this->tpl->addFunction(new Twig_SimpleFunction('localize', 'localize'));
+        $this->tpl->addFunction(new Twig_SimpleFunction('isset', 'isset'));
+        $this->tpl->addFunction(new Twig_SimpleFunction('count', 'count'));
+        $this->tpl->addFunction(new Twig_SimpleFunction('pantheraUrl', 'pantheraUrl'));
+        
+        // filters
+        $this->tpl->addFilter(new Twig_SimpleFilter('pantheraUrl', 'pantheraUrl'));
+        $this->tpl->addFilter(new Twig_SimpleFilter('ucfirst', 'ucfirst'));
+        $this->tpl->addFilter(new Twig_SimpleFilter('localize', 'localize'));
+        */
         
         // Device type detection
         if (!$panthera->session->exists('device_type'))
@@ -172,15 +196,13 @@ class pantheraTemplate extends pantheraClass
             }
         }*/
 
-        // compile and cache directories
-        $this->tpl->setCompileDir(SITE_DIR.'/content/tmp/templates_c/');
-        
         if ($this->panthera->cacheType('cache') == 'memory' and $this->caching == True)
         {
             if ($this->cache_lifetime > 0)
             {
-                $this->tpl->setCacheDir(SITE_DIR.'/content/tmp/cache/');
-                $this->tpl->setCacheTime($this->cache_lifetime);
+                // dwoo
+                //$this->tpl->setCacheDir(SITE_DIR.'/content/tmp/cache/');
+                //$this->tpl->setCacheTime($this->cache_lifetime);
             }
             
             // cache configuration files?
@@ -194,7 +216,6 @@ class pantheraTemplate extends pantheraClass
             $this -> addMetaTag('description', $this->panthera->config->getKey('site_description'));
             $this -> putKeywords(explode(',', $this->panthera->config->getKey('site_meta')));
         }
-        
         //$this->tpl->plugins_dir = array(PANTHERA_DIR.'/smarty/sysplugins/', PANTHERA_DIR.'/share/smarty/plugins/', SITE_DIR.'/content/smartyplugins/', PANTHERA_DIR.'/share/smartyplugins/');
         
         // automatic webroot merge (for debugging purposes)
@@ -486,6 +507,8 @@ class pantheraTemplate extends pantheraClass
 
     function display($template=NuLL)
     {
+        $this->timer = microtime_float();
+        
         #foreach ($this->vars as $key => $value)
             #$this->tpl->assign($key, $value);
 
@@ -576,8 +599,14 @@ class pantheraTemplate extends pantheraClass
         $file = getContentDir('/templates/' .$this->name. '/templates/' .$template);
         $this->panthera->logging->output('Displaying ' .$file, 'pantheraTemplate');
 
-        $tpl = new Dwoo_Template_File($file);
-        print($this->tpl->get($tpl, $this->vars));
+        // assign all variables        
+        foreach ($this->vars as $var => $value)
+            $this -> tpl -> assign($var, $value);
+            
+        print($this -> tpl -> draw($file, True, True));
+        
+        // generate template execution time
+        $this -> timer = (microtime_float() - $this -> timer);
     }
     
     /**
@@ -605,8 +634,7 @@ class pantheraTemplate extends pantheraClass
     
     public function compile($template)
     {
-        $tpl = new Dwoo_Template_File(getContentDir('/templates/' .$this->name. '/templates/' .$template));
-        return $this->tpl->get($tpl, $this->vars);
+        return $this->tpl->render($template, $this->vars);
     }
     
     /**
@@ -845,5 +873,11 @@ class pantheraTemplate extends pantheraClass
     }
 }
 */
+
+function rainStringTag($input)
+{
+    echo 'this is a test';
+    var_dump($input);
+}
 
 

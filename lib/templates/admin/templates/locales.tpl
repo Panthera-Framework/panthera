@@ -1,5 +1,5 @@
-
-{if $action eq ''}
+{$site_header}
+{if="$action == ''"}
 <script type="text/javascript">
 function localeAction(action, id)
 {
@@ -9,42 +9,58 @@ function localeAction(action, id)
     panthera.htmlPOST({ url: '{$AJAX_URL}?display=locales&action='+action, data: 'id='+id, success: '#locale_window' });
 }
 
-function executeShellCommand(command)
-{
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=shellutils&exec='+command, success: '#command_output_window'});
-    $('#command_output_window').slideDown();
-}
+$(document).ready(function () {
+    /**
+      * Adding new language
+      *
+      * @author Damian Kęska
+      */
+
+    $('#newLanguageGrid').submit(function () {
+        spinner = new panthera.ajaxLoader($('#newLanguageGrid'));
+    
+        panthera.jsonPOST({ data: '#createNewLanguage', spinner: spinner, async: true, messageBox: 'userinfoBox', success: function (response) {
+                if (response.status == "success")
+                    navigateTo('?display=langtool');    
+            }
+        });
+        
+        return false;
+    })
+});
 
 </script>
 {/if}
 
 <script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
 <div id="locale_window">
-    <div class="titlebar">{"Language settings"|localize:locales} - {"Manage site localization"|localize:locales}</div>
+    <div class="titlebar">{function="localize('Language settings', 'locales')"} - {function="localize('Manage site localization', 'locales')"}{include="_navigation_panel.tpl"}</div>
+    <div class="msgSuccess" id="userinfoBox_success"></div>
+    <div class="msgError" id="userinfoBox_failed"></div>
 
     <!-- Table #1: languages list -->
     <table class="gridTable">
         <thead>
-            <tr><th colspan="3"><b>{"Languages"|localize:locales}:</b></th></tr>
+            <tr><th colspan="3"><b>{function="localize('Languages', 'locales')"}:</b></th></tr>
          </thead>
 
         <br>
 
         <tbody>
-            {foreach from=$locales_added key=k item=v}
+            {loop="$locales_added"}
                 <tr>
-                    {if $v.flag == True}<td style="width: 30px;"><img src="{$PANTHERA_URL}/images/admin/flags/{$k}.png"></td>{/if}
-                    <td>{$k}</td>
-                    <td><input type="button" value="{"Delete"|localize}" onclick="localeAction('delete', '{$k}'); return false;">
+                    {if="$value.flag == True"}<td style='width: 30px;'><img src='{$PANTHERA_URL}/images/admin/flags/{$key}.png'></td>{/if}
+                    <td>{$key}</td>
+                    <td><input type="button" value="{function="localize('Delete')"}" onclick="localeAction('delete', '{$k}'); return false;">
 
-                    {if $v.visibility == True}
-                    <input type="button" value="{"Hide"|localize}" onclick="localeAction('toggle_visibility', '{$k}');">
+                    {if="$value.visibility == True"}
+                    <input type="button" value="{function="localize('Hide')"}" onclick="localeAction('toggle_visibility', '{$k}');">
                     {else}
-                    <input type="button" value="{"Show"|localize}" onclick="localeAction('toggle_visibility', '{$k}');">
+                    <input type="button" value="{function="localize('Show')"}" onclick="localeAction('toggle_visibility', '{$k}');">
                     {/if}
 
-                <input type="button" value="{"Set as default"|localize}" onclick="localeAction('set_as_default', '{$k}');"></td></tr>
-            {/foreach}
+                <input type="button" value="{function="localize('Set as default')"}" onclick="localeAction('set_as_default', '{$k}');"></td></tr>
+            {/loop}
 
         </tbody>
 
@@ -55,21 +71,23 @@ function executeShellCommand(command)
     <!-- Table #2: language settongs -->
     <table class="gridTable">
         <thead>
-            <tr><th colspan="2"><b>{"Settings"|localize}:</b></th></tr>
+            <tr><th colspan="2"><b>{function="localize('Settings')"}:</b></th></tr>
         </thead>
 
         <tbody>
-            <tr><td>{"Website default language"|localize:locales}:</td><td>{$locale_system_default}</td></tr>
+            <tr><td>{function="localize('Website default language', 'locales')"}:</td><td>{$locale_system_default}</td></tr>
             <tr>
-                <td>{"Add new language"|localize:locales}:</td><td>
+                <td>{function="localize('Add new language', 'locales')"}:</td><td>
                 <select id="locales_dir">
-                    {foreach from=$locales_dir key=k item=v}
-                    <option value="{$v}">{$v}</option>
-                    {/foreach}
+                    {loop="$locales_dir"}
+                    <option value="{$value}">{$value}</option>
+                    {/loop}
                 </select>
 
-                <input type="button" value="{"Add"|localize}" onclick="localeAction('add', ''); return false;"></td></tr>
+                <input type="button" value="{function="localize('Add')"}" onclick="localeAction('add', ''); return false;"></td></tr>
             </tr>
+            
+            <tr><td>{function="localize('Tools', 'locales')"}:</td><td><input type="button" value="{function="localize('Translations editor', 'langtool')"}" onclick="navigateTo('?display=langtool');"></td></tr>
         </tbody>
         </table>
 
@@ -77,23 +95,35 @@ function executeShellCommand(command)
 
     <table class="gridTable">
         <thead>
-            <tr><th colspan="2"><b>{"Loaded language domains"|localize:locales}:</b></th></tr>
+            <tr><th colspan="2"><b>{function="localize('Loaded language domains', 'locales')"}:</b></th></tr>
         </thead>
         <tbody>
-            {foreach from=$loaded_domains key=k item=v}
-                <tr><td><b>{$v}</b></td><td>{$k}</td></tr>
-            {/foreach}
+            {loop="$loaded_domains"}
+                <tr><td><b>{$value}</b></td><td>{$key}</td></tr>
+            {/loop}
         </tbody>
 
          <tfoot>
             <tr>
                 <td colspan="2" class="rounded-foot-left">
-                    <em>Panthera - {"Languages"|localize:locales}
-                        <input type="button" value="{"Compile locales"|localize:locales}" onclick="executeShellCommand('build-locales.py');" style="float: right;">&nbsp;&nbsp;
-                    </em>
+                    <em>Panthera - {function="localize('Languages', 'locales')"}</em>
                 </td>
             </tr>
         </tfoot>
     </table>
-
-       <div id="command_output_window" class="blueLog" style="display: none;"></div>
+    
+    <div class="grid-2" id="newLanguageGrid" style="position: relative;">
+          <div class="title-grid">{function="localize('Add new language', 'langtool')"}<span></span></div>
+          <div class="content-table-grid">
+              <table class="insideGridTable">
+                <tbody>
+                    <tr>
+                        <form action="?display=langtool&action=createNewLanguage" method="POST" id="createNewLanguage">
+                            <td style="border-bottom: 0px;">{function="localize('Language name', 'langtool')"}<br><small>{function="localize('Single word, eg. polski, english, deutsh', 'langtool')"}</small></td>
+                            <td style="border-bottom: 0px; border-right: 0px;"><input type="text" name="languageName"> <input type="submit" value=" {function="localize('Add', 'langtool')"} "></td>
+                        </form>
+                    </tr>
+                </tbody>
+            </table>
+         </div>
+       </div>

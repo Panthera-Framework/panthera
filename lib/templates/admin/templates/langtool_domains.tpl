@@ -57,30 +57,30 @@ function removeDomain(name, locale, n)
 }
 </script>
 
-        <div class="titlebar">{"Languages"|localize:langtool} - {"Manage domains"|localize:langtool}{include file="_navigation_panel.tpl"}</div><br>
+        <div class="titlebar">{function="localize('Languages', 'langtool')"} - {function="localize('Manage domains', 'langtool')"}{include="_navigation_panel.tpl"}</div><br>
 
         <div class="msgSuccess" id="userinfoBox_success"></div>
         <div class="msgError" id="userinfoBox_failed"></div>
 
         <div class="grid-1" id="langtoolWindow" style="position: relative;">
 
-          <h1><a onclick="navigateTo('?display=langtool');" href="#">{"Back"|localize}</a></h1> <br>
+          <h1><a onclick="navigateTo('?display=langtool');" href="#">{function="localize('Back')"}</a></h1> <br>
 
           <table class="gridTable">
 
             <thead>
                 <tr>
-                    <th>{"Locale"|localize:langtool}</th>
-                    <th>{"Domain"|localize:langtool}</th>
-                    <th>{"Options"|localize}</th>
+                    <th>{function="localize('Locale', 'langtool')"}</th>
+                    <th>{function="localize('Domain', 'langtool')"}</th>
+                    <th>{function="localize('Options')"}</th>
                 </tr>
             </thead>
 
             <tfoot>
                 <tr>
                     <td colspan="3" class="rounded-foot-left">
-                      <em> Panthera - {"List of available domains"|localize:langtool}
-                        <input type="button" value="{"Add domain"|localize:langtool}" onclick="createDomain('{$locale}');" style="float: right;">
+                      <em> Panthera - {function="localize('List of available domains', 'langtool')"}
+                        <input type="button" value="{function="localize('Add domain', 'langtool')"}" onclick="createDomain('{$locale}');" style="float: right;">
                         <input type="text" name="domain_name" id="domain_name" style="float: right; margin-right: 7px;">
                       </em>
                     </td>
@@ -89,22 +89,22 @@ function removeDomain(name, locale, n)
 
             <tbody>
               {$j=0}
-              {foreach from=$domains key=k item=i}
+              {loop="$domains"}
               {$j=$j+1}
                 <tr id="domain_row_{$j}">
                     <td style="width: 1%;"><img src="{$PANTHERA_URL}/images/admin/flags/{$locale}.png"></td>
-                    <td id="domain_name_{$j}"><a href="#" onclick="navigateTo('?display=langtool&action=view_domain&locale={$locale}&domain={$i}');">{$i}</a></td>
+                    <td id="domain_name_{$j}"><a href="#" onclick="navigateTo('?display=langtool&action=view_domain&locale={$locale}&domain={$value}');">{$value}</a></td>
                     <td style="width: 230px;">
-                        <input type="text" name="domain_new_name" value="{$i}" id="domain_new_name_{$j}" style="margin-right: 5px;"><input type="button" value="{"Remove"|localize}" onclick="removeDomain('{$i}', '{$locale}', '{$j}');">
+                        <input type="text" name="domain_new_name" value="{$value}" id="domain_new_name_{$j}" style="margin-right: 5px;"><input type="button" value="{function="localize('Remove')"}" onclick="removeDomain('{$value}', '{$locale}', '{$j}');">
                     </td>
                 </tr>
                 
                 <script type="text/javascript">
                     $(document).ready(function () { 
-                        panthera.inputTimeout({ element: '#domain_new_name_{$j}', interval: 1200, callback: function () { renameDomain('{$i}', '{$locale}', '{$j}'); }});
+                        panthera.inputTimeout({ element: '#domain_new_name_{$j}', interval: 1200, callback: function () { renameDomain('{$value}', '{$locale}', '{$j}'); }});
                     });
                 </script>
-              {/foreach}
+              {/loop}
             </tbody>
           </table>
         </div>

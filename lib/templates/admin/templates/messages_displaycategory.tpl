@@ -1,5 +1,5 @@
 <script type="text/javascript">
-{include file="mce.tpl"}
+{include="mce.tpl"}
 
 /**
   * Jump to ajax page
@@ -21,7 +21,7 @@ function jumpToAjaxPage(id)
                 if (i.icon != undefined && i.icon != "")
                     icon = '<img src="'+i.icon+'" class="quickMsgIcon">';
                
-                $('#all_messages_window').append('<tr><tr id="msg_'+i.id+'_row"><td style="width: 28px;">'+i.id+'</td><td style="width: 60px;">'+icon+'</td><td id="msg_'+i.id+'_title"><a href="#" onclick="editMessage('+i.id+'); return false;">'+i.title+'</a></td><td>'+i.author_login+'</td><td id="msg_'+i.id+'_mod_time">'+i.mod_time+'</td><td id="msg_'+i.id+'_visibility">'+i.visibility+'</td><td><input type="button" value="{"Delete"|localize:messages}" onclick="deleteMessage('+i.id+'); return false;"> <input type="button" value="{"Edit"|localize:qmessages}" onclick="editMessage('+i.id+'); return false;"> <input type="button" value="{"Manage permissions"|localize:messages}" onclick="createPopup(\'_ajax.php?display=acl&popup=true&name=can_qmsg_edit_'+i.id+'\', 1024, 550);"></td></tr>');
+                $('#all_messages_window').append('<tr><tr id="msg_'+i.id+'_row"><td style="width: 28px;">'+i.id+'</td><td style="width: 60px;">'+icon+'</td><td id="msg_'+i.id+'_title"><a href="#" onclick="editMessage('+i.id+'); return false;">'+i.title+'</a></td><td>'+i.author_login+'</td><td id="msg_'+i.id+'_mod_time">'+i.mod_time+'</td><td id="msg_'+i.id+'_visibility">'+i.visibility+'</td><td><input type="button" value="{function="localize('Delete', 'messages')"}" onclick="deleteMessage('+i.id+'); return false;"> <input type="button" value="{function="localize('Edit', 'qmessages')"}" onclick="editMessage('+i.id+'); return false;"> <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup(\'_ajax.php?display=acl&popup=true&name=can_qmsg_edit_'+i.id+'\', 1024, 550);"></td></tr>');
             }
         }
     });
@@ -138,7 +138,7 @@ function upload_file_callback_edit(link, mime, type, directory, id, description,
 {
     if(type != 'image')
     {
-        alert('{"Selected file is not a image"|localize:gallery}');
+        alert('{function="localize('Selected file is not a image', 'gallery')"}');
         return false;
     }
 
@@ -149,7 +149,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
 {
     if(type != 'image')
     {
-        alert('{"Selected file is not a image"|localize:gallery}');
+        alert('{function="localize('Selected file is not a image', 'gallery')"}');
         return false;
     }
 
@@ -164,28 +164,28 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
     height: 50px;
 }
 </style>
-    <div class="titlebar">{$category_title|localize} ({$language}){include file="_navigation_panel.tpl"}</div><br>
+    <div class="titlebar">{$category_title|localize} ({$language}){include="_navigation_panel.tpl"}</div><br>
 
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>
     
     <div class="grid-1" id="languagesList" style="position: relative;">
-          <div class="title-grid">{"Messages in other languages in this category"|localize:qmessages}<span></span></div>
+          <div class="title-grid">{function="localize('Messages in other languages in this category', 'qmessages')"}<span></span></div>
           <div class="content-table-grid">
               <table class="insideGridTable">
                 <tfoot>
                     <tr>
-                        <td colspan="3"><small>{"Select language from above list to get list of messages in other language"|localize:qmessages}</small></td>
+                        <td colspan="3"><small>{function="localize('Select language from above list to get list of messages in other language', 'qmessages')"}</small></td>
                     </tr>
                 </tfoot>
             
                 <tbody>
-                    {foreach from=$languages key=k item=i}
+                    {loop="$languages"}
                         <tr>
-                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$k}" onclick="navigateTo('?display=messages&action=display_category&cat={$category_name}&language={$k}');">{$k}</a></td>
+                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$key}" onclick="navigateTo('?display=messages&action=display_category&cat={$category_name}&language={$key}');">{$key}</a></td>
                             <td style="width: 60px; padding: 10px; border-right: 0px;"></td>
                         </tr>
-                    {/foreach}
+                    {/loop}
                 </tbody>
             </table>
          </div>
@@ -195,33 +195,33 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
     <div id="message_window">
        <form action="{$AJAX_URL}?display=messages&action=new_msg&cat={$category_id}&language={$language}" method="POST" id="post_new">
         <div class="grid-1">
-            <div class="title-grid" style="height: 30px;">{"Title of a new message"|localize:qmessages}: &nbsp;<input type="text" name="message_title" style="height: 20px; width: 250px; margin-top: 3px;"></div>
+            <div class="title-grid" style="height: 30px;">{function="localize('Title of a new message', 'qmessages')"}: &nbsp;<input type="text" name="message_title" style="height: 20px; width: 250px; margin-top: 3px;"></div>
             <div class="content-table-grid" style="padding: 0px;">
                 <textarea name="message_content" id="message_content" style="width: 100%; height: 450px;"></textarea>
             </div>
         </div>
         
         <div class="grid-1" style="height: 160px; margin-bottom: 40px;">
-               <div class="title-grid">{"Options"|localize:messages}</div>
+               <div class="title-grid">{function="localize('Options', 'messages')"}</div>
 
                <div class="content-table-grid">
                     <table class="insideGridTable" style="border: 0px">
                         <tbody>
                             <tr>
-                                <td>{"Icon"|localize:qmessages}<br><small>{"Optional icon, depends on if your website module support this function"|localize:qmessages}</small></td>
-                                <td style="border-right: 0px;"><input type="text" name="message_icon" id="message_icon" style="width: 300px;"> &nbsp;<input type="button" value="{"Upload file"|localize:qmessages}" onclick="createPopup('_ajax.php?display=upload&popup=true&callback=upload_file_callback_new', 1024, 550);"></td>
+                                <td>{function="localize('Icon', 'qmessages')"}<br><small>{function="localize('Optional icon, depends on if your website module support this function', 'qmessages')"}</small></td>
+                                <td style="border-right: 0px;"><input type="text" name="message_icon" id="message_icon" style="width: 300px;"> &nbsp;<input type="button" value="{function="localize('Upload file', 'qmessages')"}" onclick="createPopup('_ajax.php?display=upload&popup=true&callback=upload_file_callback_new', 1024, 550);"></td>
                             </tr>
                             <tr>
-                                <td>{"Is not hidden"|localize:qmessages}<br><small>{"If checked, this message will not be published on your website"|localize:qmessages}</small></td>
+                                <td>{function="localize('Is not hidden', 'qmessages')"}<br><small>{function="localize('If checked, this message will not be published on your website', 'qmessages')"}</small></td>
                                 <td style="border-right: 0px;"><input type="checkbox" name="message_hidden" value="1"></td>
                             </tr>
                             <tr>
-                                <td>{"SEO name"|localize:qmessages}<br><small>{"A name friendly to remember, and friendly for search engines"|localize:qmessages}</small></td>
+                                <td>{function="localize('SEO name', 'qmessages')"}<br><small>{function="localize('A name friendly to remember, and friendly for search engines', 'qmessages')"}</small></td>
                                 <td style="border-right: 0px;"><input type="text" name="url_id" style="width: 300px;"></td>
                             </tr>
                             <tr>
                                 <td style="border-bottom: 0px;">&nbsp;</td>
-                                <td style="border-right: 0px; border-bottom: 0px;"><input type="submit" value="{"Add as"|localize:qmessages} {$username}"></td>
+                                <td style="border-right: 0px; border-bottom: 0px;"><input type="submit" value="{function="localize('Add as', 'qmessages')"} {$username}"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -234,7 +234,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
     <div id="edit_window" style="display: none;">
        <form action="{$AJAX_URL}?display=messages&action=edit_msg&cat={$category_id}" method="POST" id="edit_msg_form">
         <div class="grid-1">
-            <div class="title-grid" style="height: 30px;">{"Edit a message"|localize:qmessages}: <input type="text" name="edit_msg_title" id="edit_msg_title" value="" style="width: 300px; height: 20px; margin-top: 3px;"></div>
+            <div class="title-grid" style="height: 30px;">{function="localize('Edit a message', 'qmessages')"}: <input type="text" name="edit_msg_title" id="edit_msg_title" value="" style="width: 300px; height: 20px; margin-top: 3px;"></div>
             <div class="content-gird" style="padding: 0px;">
                 <textarea name="edit_msg_content" id="edit_msg_content" style="width: 100%; height: 350px;"></textarea>
                 <input type="hidden" id="edit_msg_id" name="edit_msg_id"><br>
@@ -242,35 +242,35 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
         </div>
 
        <div class="grid-1" style="height: 160px; margin-bottom: 40px;">
-               <div class="title-grid">{"Options"|localize:messages}</div>
+               <div class="title-grid">{function="localize('Options', 'messages')"}</div>
                <div class="content-table-grid">
                     <table class="insideGridTable" style="border: 0px">
                         <tbody>
                             <tr>
-                                <td>{"Icon"|localize:qmessages}<br><small>{"Optional icon, depends on if your website module support this function"|localize:qmessages}</small></td>
-                                <td style="border-right: 0px;"><input type="text" name="message_icon" id="message_icon" style="width: 300px;"> &nbsp;<input type="button" value="{"Upload file"|localize:qmessages}" onclick="createPopup('_ajax.php?display=upload&popup=true&callback=upload_file_callback_new', 1024, 550);"></td>
+                                <td>{function="localize('Icon', 'qmessages')"}<br><small>{function="localize('Optional icon, depends on if your website module support this function', 'qmessages')"}</small></td>
+                                <td style="border-right: 0px;"><input type="text" name="message_icon" id="message_icon" style="width: 300px;"> &nbsp;<input type="button" value="{function="localize('Upload file', 'qmessages')"}" onclick="createPopup('_ajax.php?display=upload&popup=true&callback=upload_file_callback_new', 1024, 550);"></td>
                             </tr>
                             <tr>
-                                <td>{"Is not hidden"|localize:qmessages}<br><small>{"If checked, this message will not be published on your website"|localize:qmessages}</small></td>
+                                <td>{function="localize('Is not hidden', 'qmessages')"}<br><small>{function="localize('If checked, this message will not be published on your website', 'qmessages')"}</small></td>
                                 <td style="border-right: 0px;"><input type="checkbox" name="edit_msg_hidden" id="edit_msg_hidden" value="1"></td>
                             </tr>
                             <tr>
-                                <td>{"SEO name"|localize:qmessages}<br><small>{"A name friendly to remember, and friendly for search engines"|localize:qmessages}</small></td>
+                                <td>{function="localize('SEO name', 'qmessages')"}<br><small>{function="localize('A name friendly to remember, and friendly for search engines', 'qmessages')"}</small></td>
                                 <td style="border-right: 0px;"><input type="text" name="edit_url_id" id="edit_url_id" style="width: 300px;"></td>
                             </tr>
                             <tr>
-                                <td>{"Language"|localize:qmessages}<br><small>{"Save this message in selected language"|localize:qmessages}</small></td>
+                                <td>{function="localize('Language', 'qmessages')"}<br><small>{function="localize('Save this message in selected language', 'qmessages')"}</small></td>
                                 <td style="border-right: 0px;">
                                     <select name="edit_language" id="edit_language"">
-                                    {foreach from=$languages key=k item=i}
-                                        <option value="{$k}">{$k}</option>
-                                    {/foreach}
+                                    {loop="$languages"}
+                                        <option value="{$key}">{$key}</option>
+                                    {/loop}
                                     </select>
                                 </td>
                             </tr>
                             <tr>
                                 <td style="border-bottom: 0px;">&nbsp;</td>
-                                <td style="border-right: 0px; border-bottom: 0px;"><input type="submit" value="{"Edit as"|localize:qmessages} {$username}"> <input type="button" value="{"Cancel"|localize:qmessages}" id="edit_msg_cancel"></td>
+                                <td style="border-right: 0px; border-bottom: 0px;"><input type="submit" value="{function="localize('Edit as', 'qmessages')"} {$username}"> <input type="button" value="{function="localize('Cancel', 'qmessages')"}" id="edit_msg_cancel"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -286,42 +286,42 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>{"Thumbnail"|localize:qmessages}</td>
-                    <th>{"Title"|localize:qmessages}</th>
-                    <th>{"Author"|localize:qmessages}</th>
-                    <th>{"Last modification"|localize:qmessages}</th>
-                    <th>{"Visibility"|localize:qmessages}</th>
-                    <th>{"Options"|localize:messages}</th>
+                    <th>{function="localize('Thumbnail', 'qmessages')"}</td>
+                    <th>{function="localize('Title', 'qmessages')"}</th>
+                    <th>{function="localize('Author', 'qmessages')"}</th>
+                    <th>{function="localize('Last modification', 'qmessages')"}</th>
+                    <th>{function="localize('Visibility', 'qmessages')"}</th>
+                    <th>{function="localize('Options', 'messages')"}</th>
                 </tr>
             </thead>
                 <tfoot>
                 <tr>
-                    <td colspan="8" class="rounded-foot-left"><em>{"Messages"|localize:qmessages} <span id="page_from">{$page_from}</span>-<span id="page_to">{$page_to}</span>,
-                        {foreach from=$pager key=page item=active}
-                            {if $active == true}
-                            <a href="#" onclick="jumpToAjaxPage({$page}); return false;" id="page_{$page+1}"><b>{$page+1}</b></a>
+                    <td colspan="8" class="rounded-foot-left"><em>{function="localize('Messages', 'qmessages')"} <span id="page_from">{$page_from}</span>-<span id="page_to">{$page_to}</span>,
+                        {loop="$pager"}
+                            {if="$value == true"}
+                            <a href="#" onclick="jumpToAjaxPage({$key}); return false;" id="page_{$key+1}"><b>{$key+1}</b></a>
                             {else}
-                            <a href="#" onclick="jumpToAjaxPage({$page}); return false;" id="page_{$page+1}">{$page+1}</a>
+                            <a href="#" onclick="jumpToAjaxPage({$key}); return false;" id="page_{$key+1}">{$key+1}</a>
                             {/if}
-                        {/foreach}
+                        {/loop}
 
-                    <input type="button" value="{"Manage permissions"|localize:messages}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_qmsg_manage_{$category_name}', 1024, 550);" style="float: right;">
+                    <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_qmsg_manage_{$category_name}', 1024, 550);" style="float: right;">
 
                     </em></td>
                 </tr>
             </tfoot>
             <tbody id="all_messages_window">
-                {foreach from=$messages_list key=k item=i}
-                <tr id="msg_{$i.id}_row"{if $i.special == True} class="message_special"{/if}>
-                    <td style="width: 28px;">{$i.id}</td>
-                    <td style="width: 60px;">{if !empty($i.icon)}<img src="{$i.icon}" class="quickMsgIcon">{/if}</td>
-                    <td id="msg_{$i.id}_title"><a href="#" onclick="editMessage({$i.id}); return false;">{$i.title}</a></td>
-                    <td>{$i.author_login}</td>
-                    <td id="msg_{$i.id}_mod_time">{$i.mod_time}</td>
-                    <td id="msg_{$i.id}_visibility">{$i.visibility}</td>
-                    <td><input type="button" value="{"Delete"|localize:messages}" onclick="deleteMessage({$i.id}); return false;"> <input type="button" value="{"Edit"|localize:qmessages}" onclick="editMessage({$i.id}); return false;"> <input type="button" value="{"Manage permissions"|localize:messages}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_qmsg_edit_{$i.id}', 1024, 'upload_popup');"></td>
+                {loop="$messages_list"}
+                <tr id="msg_{$value.id}_row"{if="$value.special == True} class='message_special'{/if"}>
+                    <td style="width: 28px;">{$value.id}</td>
+                    <td style="width: 60px;">{if="!empty($value.icon)"}<img src='{$value.icon}' class='quickMsgIcon'>{/if}</td>
+                    <td id="msg_{$value.id}_title"><a href="#" onclick="editMessage({$value.id}); return false;">{$value.title}</a></td>
+                    <td>{$value.author_login}</td>
+                    <td id="msg_{$value.id}_mod_time">{$value.mod_time}</td>
+                    <td id="msg_{$value.id}_visibility">{$value.visibility}</td>
+                    <td><input type="button" value="{function="localize('Delete', 'messages')"}" onclick="deleteMessage({$value.id}); return false;"> <input type="button" value="{function="localize('Edit', 'qmessages')"}" onclick="editMessage({$value.id}); return false;"> <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_qmsg_edit_{$value.id}', 1024, 'upload_popup');"></td>
                 </tr>
-                {/foreach}
+                {/loop}
             </tbody>
         </table>
       </div>

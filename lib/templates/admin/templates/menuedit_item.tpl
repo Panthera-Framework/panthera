@@ -1,4 +1,4 @@
-<div class="titlebar">{"Menu editor"|localize:menuedit} - {"Editing item"|localize:menuedit}: {$item_title}</div><br>
+<div class="titlebar">{function="localize('Menu editor', 'menuedit')"} - {function="localize('Editing item', 'menuedit')"}: {$item_title}</div><br>
 
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>
@@ -14,44 +14,44 @@
               </thead>
               <tfoot>
                   <tr>
-                      <td colspan="7" class="rounded-foot-left"><em>Panthera menuedit - {"Editing item"|localize:menuedit}</em><span>
-                      <input type="submit" value="{"Save"|localize}" style="float: right;"> <input type="button" value="{"Back"|localize}" onclick="navigateTo('{navigation::getBackButton()}');" style="float: right;">
+                      <td colspan="7" class="rounded-foot-left"><em>Panthera menuedit - {function="localize('Editing item', 'menuedit')"}</em><span>
+                      <input type="submit" value="{function="localize('Save')"}" style="float: right;"> <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=menuedit&action=category&cat={$cat_type}');" style="float: right;">
                   </tr>
               </tfoot>
               <tbody>
                   <tr>
-                      <td>{"Title"|localize:menuedit}</td>
+                      <td>{function="localize('Title', 'menuedit')"}</td>
                       <td><input type="text" name="item_title" value="{$item_title}" style="width: 99%;"></td>
                   </tr>
                   <tr>
-                      <td>{"Link"|localize:messages}</td>
+                      <td>{function="localize('Link', 'messages')"}</td>
                       <td><input type="text" name="item_link" value="{$item_link}" style="width: 99%;"></td>
                   </tr>
                   <tr>
-                      <td>{"Language"|localize:menuedit}</td>
+                      <td>{function="localize('Language', 'menuedit')"}</td>
                       <td>
                       <select name="item_language">
-                      {foreach from=$item_language key=k item=i}
-                          <option value="{$k}"{if $i == True} selected{/if}>{$k}</option>
-                      {/foreach}
+                      {loop="$item_language"}
+                          <option value="{$key}"{if="$value == True"} selected{/if}>{$key}</option>
+                      {/loop}
                       </select>
 
                       </td>
                   </tr>
                   <tr>
-                      <td>{"SEO friendly name"|localize:menuedit} <small>({"Optional"|localize:menuedit})</small></td>
+                      <td>{function="localize('SEO friendly name', 'menuedit')"} <small>({function="localize('Optional', 'menuedit')"})</small></td>
                       <td><input type="text" name="item_url_id" value="{$item_url_id}" style="width: 99%;"></td>
                   </tr>
                   <tr>
-                      <td>{"Tooltip"|localize:menuedit} <small>({"Optional"|localize:menuedit})</small></td>
+                      <td>{function="localize('Tooltip', 'menuedit')"} <small>({function="localize('Optional', 'menuedit')"})</small></td>
                       <td><input type="text" name="item_tooltip" value="{$item_tooltip}" style="width: 99%;"></td>
                   </tr>
                   <tr>
-                      <td>{"Icon"|localize:menuedit} <small>({"Optional"|localize:menuedit})</small></td>
+                      <td>{function="localize('Icon', 'menuedit')"} <small>({function="localize('Optional', 'menuedit')"})</small></td>
                       <td><input type="text" name="item_icon" value="{$item_icon}" style="width: 99%;"></td>
                   </tr>
                   <tr>
-                      <td>{"Attributes"|localize:menuedit} <small>({"Optional"|localize:menuedit})</small></td>
+                      <td>{function="localize('Attributes', 'menuedit')"} <small>({function="localize('Optional', 'menuedit')"})</small></td>
                       <td><input type="text" name="item_attributes" value='{$item_attributes}' style="width: 99%;"></td>
                   </tr>
               </tbody>

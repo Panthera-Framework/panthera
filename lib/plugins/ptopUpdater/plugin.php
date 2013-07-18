@@ -9,15 +9,6 @@
 // register plugin
 $pluginInfo = array('name' => 'ptop traffic updater', 'author' => 'Damian Kęska', 'description' => 'This plugin should not be enabled manually', 'version' => PANTHERA_VERSION);
 
-function microtime_float($time='')
-{
-    if ($time == '')
-        $time = microtime();
-
-    list($usec, $sec) = explode(" ", $time);
-    return ((float)$usec + (float)$sec);
-}
-
 /**
   * Main functions
   *
@@ -38,8 +29,15 @@ class ptopUpdater
     
     public static function startDigging()
     {
+        global $panthera;
+        
+        $user = 'guest';
+        
+        if ($panthera -> user)
+            $user = $panthera -> user -> login;
+    
         self::$time = microtime_float();
-        self::$rid = run::openSocket('page', intval(getmypid()), array('client' => $_SERVER['REMOTE_ADDR'], 'method' => $_SERVER['REQUEST_METHOD'], 'url' => $_SERVER['REQUEST_URI'], 'user' => 'system'));
+        self::$rid = run::openSocket('page', intval(getmypid()), array('client' => $_SERVER['REMOTE_ADDR'], 'method' => $_SERVER['REQUEST_METHOD'], 'url' => $_SERVER['REQUEST_URI'], 'user' => $user));
     }
     
     /**
@@ -51,6 +49,7 @@ class ptopUpdater
     
     public static function finish()
     {
+        global $panthera;
         $page = microtime_float()-self::$time;
         $overall = microtime_float()-$_SERVER['REQUEST_TIME_FLOAT'];
 
@@ -58,7 +57,7 @@ class ptopUpdater
         {
             $run = new run('rid', self::$rid);
             $t = $run -> data;
-            $t['time'] = array('overall' => $overall, 'page' => $page);
+            $t['time'] = array('overall' => $overall, 'page' => $page, 'template' => $panthera->template->timer);
             $run -> data = $t;
             
             // close socket using `rid`

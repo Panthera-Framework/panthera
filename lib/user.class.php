@@ -492,12 +492,19 @@ function userCreateSession($user, $passwd)
     global $panthera;
 
     $hash = md5($panthera->config->getKey('salt').$passwd);
-    $SQL = $panthera->db->query('SELECT `id` FROM `{$db_prefix}users` WHERE `login` = :login AND `passwd` = :passwd', array('login' => $user, 'passwd' => $hash));
-
-    if ($SQL->rowCount())
+    
+    $whereClause = new whereClause();
+    $whereClause -> add('', 'login', '=', $user);
+    $whereClause -> add('AND', 'passwd', '=', $hash);
+    
+    $usr = new pantheraUser($whereClause);
+    
+    if ($usr->exists())
     {
-        $fetch = $SQL->fetch();
-        $panthera -> session -> uid = $fetch['id'];
+        $panthera -> user = $usr;
+        $panthera -> session -> uid = $usr->id;
+        $usr -> lastlogin = 'NOW()';
+        $usr -> save();
         return True;
     }
 

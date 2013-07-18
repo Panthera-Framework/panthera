@@ -1,24 +1,24 @@
-{"files"|localizeDomain}
-{if $action == "display_list"}
+{function="localizeDomain('files')"}
+{if="$action == 'display_list'"}
 <script type="text/javascript">
 initUploadBox();
 </script>
-{foreach from=$files key=k item=i}
-            <div class="uploadBox" id="box_{$k}" rel="{$k}">
+{loop="$files"}
+            <div class="uploadBox" id="box_{$key}" rel="{$key}">
               <div class="boxInner">
-                <div class="boxImg"><img src="{$i.icon}" id="box_img_{$k}"></div>
-                <div class="titleBox" id="box_title_{$k}">{$i.name}</div>
-                <input type="hidden" id="box_delete_{$k}" value="{if $i.ableToDelete == True}1{else}0{/if}">
-                <input type="hidden" id="box_description_{$k}" value="{$i.description}">
-                <input type="hidden" id="box_id_{$k}" value="{$i.id}">
-                <input type="hidden" id="box_author_{$k}" value="{$i.author}">
-                <input type="hidden" id="box_mime_{$k}" value="{$i.mime}">
-                <input type="hidden" id="box_type_{$k}" value="{$i.type}">
-                <input type="hidden" id="box_link_{$k}" value="{$i.link}">
-                <input type="hidden" id="box_directory_{$k}" value="{$i.directory}">
+                <div class="boxImg"><img src="{$value.icon}" id="box_img_{$key}"></div>
+                <div class="titleBox" id="box_title_{$key}">{$value.name}</div>
+                <input type="hidden" id="box_delete_{$key}" value="{if="$value.ableToDelete == True"}1{else}0{/if}">
+                <input type="hidden" id="box_description_{$key}" value="{$value.description}">
+                <input type="hidden" id="box_id_{$key}" value="{$value.id}">
+                <input type="hidden" id="box_author_{$key}" value="{$value.author}">
+                <input type="hidden" id="box_mime_{$key}" value="{$value.mime}">
+                <input type="hidden" id="box_type_{$key}" value="{$value.type}">
+                <input type="hidden" id="box_link_{$key}" value="{$value.link}">
+                <input type="hidden" id="box_directory_{$key}" value="{$value.directory}">
               </div>
             </div>
-        {/foreach}
+        {/loop}
 {else}
 <script type="text/javascript">
 jQuery.event.props.push('dataTransfer');
@@ -118,7 +118,7 @@ $(document).ready(function(){
         id = $('#file_id').val();
         k = $('#file_k').val();
         
-        panthera.jsonPOST({ url: '{$AJAX_URL}?display=upload&popup=true&action=delete', data: 'id='+id, spinner: uploadProgress, success:
+        panthera.jsonPOST({ url: '?display=upload&popup=true&action=delete', data: 'id='+id, spinner: uploadProgress, success:
             function (response) {
                   if (response.status == "success")
                   {
@@ -176,7 +176,7 @@ $(document).ready(function(){
 
 function getUploadsPage(data)
 {
-    panthera.htmlPOST({ url: '{$AJAX_URL}?display=upload&popup=true&action=display_list', data: data, spinner: uploadProgress, 'success': '#upload_list'});
+    panthera.htmlPOST({ url: '?display=upload&popup=true&action=display_list', data: data, spinner: uploadProgress, 'success': '#upload_list'});
 }
 </script>
 
@@ -298,56 +298,56 @@ function getUploadsPage(data)
        margin-bottom: 0;
     }
 </style>
-    <h2 class="popupHeading">{"Files upload"|localize} - {"Add files from your computer"|localize}</h2>
+    <h2 class="popupHeading">{function="localize('Files upload')"} - {function="localize('Add files from your computer')"}</h2>
 
     <div class="msgError" id="uploadBox_failed"></div>
     <div class="msgSuccess" id="uploadBox_success"></div>
 
     <div id="upload_list_window" ondragover="return false;">
         <div class="wrap" id="upload_list">
-        {foreach from=$files key=k item=i}
-            <div class="uploadBox" id="box_{$k}" rel="{$k}">
+        {loop="$files"}
+            <div class="uploadBox" id="box_{$key}" rel="{$key}">
               <div class="boxInner">
-                <div class="boxImg"><img src="{$i.icon}" id="box_img_{$k}"></div>
-                <div class="titleBox" id="box_title_{$k}">{$i.name}</div>
-                <input type="hidden" id="box_delete_{$k}" value="{if $i.ableToDelete == True}1{else}0{/if}">
-                <input type="hidden" id="box_description_{$k}" value="{$i.description}">
-                <input type="hidden" id="box_id_{$k}" value="{$i.id}">
-                <input type="hidden" id="box_author_{$k}" value="{$i.author}">
-                <input type="hidden" id="box_mime_{$k}" value="{$i.mime}">
-                <input type="hidden" id="box_type_{$k}" value="{$i.type}">
-                <input type="hidden" id="box_link_{$k}" value="{$i.link}">
-                <input type="hidden" id="box_directory_{$k}" value="{$i.directory}">
+                <div class="boxImg"><img src="{$value.icon}" id="box_img_{$key}"></div>
+                <div class="titleBox" id="box_title_{$key}">{$value.name}</div>
+                <input type="hidden" id="box_delete_{$key}" value="{if="$value.ableToDelete == True"}1{else}0{/if}">
+                <input type="hidden" id="box_description_{$key}" value="{$value.description}">
+                <input type="hidden" id="box_id_{$key}" value="{$value.id}">
+                <input type="hidden" id="box_author_{$key}" value="{$value.author}">
+                <input type="hidden" id="box_mime_{$key}" value="{$value.mime}">
+                <input type="hidden" id="box_type_{$key}" value="{$value.type}">
+                <input type="hidden" id="box_link_{$key}" value="{$value.link}">
+                <input type="hidden" id="box_directory_{$key}" value="{$value.directory}">
               </div>
             </div>
-        {/foreach}
+        {/loop}
         
       </div>
 
       <div class="uploadToolbox" id="file_informations_window" style="display: none;">
         <div class="uploadToolBoxInner">
             <h3 id="file_name">test.odf</h3>
-            <b>{"Author"|localize}:</b> <i id="file_author">admin</i><br>
-            <b>{"Type"|localize}:</b> <i id="file_type">document</i><br>
-            <b>{"Mime-type"|localize}:</b> <i id="file_mime">document/odf</i><br>
-            <b>{"Directory"|localize}:</b> <i id="file_directory">default</i><br>
-            <b>{"Description"|localize}:</b> <i id="file_description">This is just a test. File was added from phpMyAdmin but displayed here.</i><br><br>
-            <b>{"Link"|localize}:</b> <input type="text" id="file_link" value=""><br>
+            <b>{function="localize('Author')"}:</b> <i id="file_author">admin</i><br>
+            <b>{function="localize('Type')"}:</b> <i id="file_type">document</i><br>
+            <b>{function="localize('Mime-type')"}:</b> <i id="file_mime">document/odf</i><br>
+            <b>{function="localize('Directory')"}:</b> <i id="file_directory">default</i><br>
+            <b>{function="localize('Description')"}:</b> <i id="file_description">This is just a test. File was added from phpMyAdmin but displayed here.</i><br><br>
+            <b>{function="localize('Link')"}:</b> <input type="text" id="file_link" value=""><br>
             <input type="hidden" id="file_id"><input type="hidden" id="file_k">
-            <b>{"Options"|localize}:</b> <input type="button" value="{"Select"|localize}" onclick="selectFile();"> <input type="button" value="{"Remove"|localize}" id="file_delete" disabled>
+            <b>{function="localize('Options')"}:</b> <input type="button" value="{function="localize('Select')"}" onclick="selectFile();"> <input type="button" value="{function="localize('Remove')"}" id="file_delete" disabled>
         </div>
       </div>
 
       <div style="clear:both;"></div>
 
       <div class="optionsBox">&lsaquo;
-                        {foreach from=$pager key=page item=active}
-                            {if $active == true}
-                            <a href="#" onclick="getUploadsPage('page={$page}'); return false;"><b>{$page+1}</b></a>
+                        {loop="$pager"}
+                            {if="$value == true"}
+                            <a href="#" onclick="getUploadsPage('page={$key}'); return false;"><b>{$key+1}</b></a>
                             {else}
-                            <a href="#" onclick="getUploadsPage('page={$page}'); return false;">{$page+1}</a>
+                            <a href="#" onclick="getUploadsPage('page={$key}'); return false;">{$key+1}</a>
                             {/if}
-                        {/foreach}&rsaquo; {if $upload_files == True}<input type="button" value="{"Add new file"|localize}" style="float: right;" id="_upl_add_file">{/if}</div>
+                        {/loop}&rsaquo; {if="$upload_files == True"}<input type='button' value='{function="localize('Add new file')"}' style='float: right;' id='_upl_add_file'>{/if}</div>
   </div>
 
   <!-- UPLOAD BOX -->
@@ -358,21 +358,21 @@ function getUploadsPage(data)
         <form action="?display=upload&action=handle_file&popup=true" method="POST" enctype="multipart/form-data" id="upload_form">
             <table class="gridTable">
                 <thead>
-                    <tr><th colspan="5">{"Upload a new file"|localize}</th></tr>
+                    <tr><th colspan="5">{function="localize('Upload a new file')"}</th></tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>{"Select a file"|localize}</td><td><input type="file" name="input_file"> <input type="hidden" name="MAX_FILE_SIZE" value="{$max_file_size}" /></td>
+                        <td>{function="localize('Select a file')"}</td><td><input type="file" name="input_file"> <input type="hidden" name="MAX_FILE_SIZE" value="{$max_file_size}" /></td>
                     </tr>
 
                     <tr>
-                        <td>{"Description"|localize}</td><td><input type="text" name="input_description" style="width: 95%;"></td>
+                        <td>{function="localize('Description')"}</td><td><input type="text" name="input_description" style="width: 95%;"></td>
                     </tr>
                 </tbody>
 
                 <tfoot>
                     <tr>
-                        <td colspan="5" class="rounded-foot-left"><em>Panthera - upload <input type="submit" value="{"Send"|localize}" style="float: right;"> <input type="button" id="_upl_back_btn" value="{"Back"|localize}" style="float: right;"></em></td>
+                        <td colspan="5" class="rounded-foot-left"><em>Panthera - upload <input type="submit" value="{function="localize('Send')"}" style="float: right;"> <input type="button" id="_upl_back_btn" value="{function="localize('Back')"}" style="float: right;"></em></td>
                     </tr>
                 </tfoot>
             </table>

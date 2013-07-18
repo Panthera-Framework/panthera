@@ -1,4 +1,4 @@
-{"facebook"|localizeDomain}
+{function="localizeDomain('facebook')"}
 <script type="text/javascript">
 
 /**
@@ -14,7 +14,7 @@ function synchronizeData()
 }
 </script>
 
-    <div class="titlebar">{"Facebook"|localize:facebook} - {"Facebook integration."|localize:facebook}</div>
+    <div class="titlebar">{function="localize('Facebook', 'facebook')"} - {function="localize('Facebook integration.', 'facebook')"}</div>
 
     <br>
     <div class="msgSuccess" id="userinfoBox_success"></div>
@@ -24,8 +24,8 @@ function synchronizeData()
         <table class="gridTable">
             <thead>
                 <tr>
-                    <th scope="col" class="rounded-company">{"Key"|localize:facebook}</th>
-                    <th>{"Value"|localize:facebook}</th>
+                    <th scope="col" class="rounded-company">{function="localize('Key', 'facebook')"}</th>
+                    <th>{function="localize('Value', 'facebook')"}</th>
                 </tr>
             </thead>
 
@@ -33,40 +33,40 @@ function synchronizeData()
                 <tr>
                     <td colspan="2" class="rounded-foot-left"><em>
                         <div class="buttons_right">
-                              <input type="button" value="{"Synchronize"|localize:facebook}" onclick="synchronizeData();" style="float: right;">
+                              <input type="button" value="{function="localize('Synchronize', 'facebook')"}" onclick="synchronizeData();" style="float: right;">
                         </div>
-                        faceIntegration - {"Information from Facebook"|localize:facebook}
+                        faceIntegration - {function="localize('Information from Facebook', 'facebook')"}
                     </em></td>
                 </tr>
             </tfoot>
 
             <tbody>
                 <tr>
-                    <td>{"ID"|localize:facebook}</td>
+                    <td>{function="localize('ID', 'facebook')"}</td>
                     <td>{$user.id}</td>
                 </tr>
                 <tr>
-                    <td>{"Name"|localize:facebook}</td>
+                    <td>{function="localize('Name', 'facebook')"}</td>
                     <td>{$user.name}</td>
                 </tr>
                 <tr>
-                    <td>{"Avatar"|localize:facebook}</td>
+                    <td>{function="localize('Avatar', 'facebook')"}</td>
                     <td><img src="http://graph.facebook.com/{$user.id}/picture?width=200&height=200"></td>
                 </tr>
                 <tr>
-                    <td>{"Link"|localize:facebook}</td>
+                    <td>{function="localize('Link', 'facebook')"}</td>
                     <td><a href="{$user.link}">{$user.link}</a></td>
                 </tr>
                 <tr>
-                    <td>{"Gender"|localize:facebook}</td>
-                    <td>{"$user.gender"|localize:facebook}</td>
+                    <td>{function="localize('Gender', 'facebook')"}</td>
+                    <td>{function="localize('$user.gender', 'facebook')"}</td>
                 </tr>
                 <tr>
-                    <td>{"Timezone"|localize:facebook}</td>
+                    <td>{function="localize('Timezone', 'facebook')"}</td>
                     <td>{$user.timezone}</td>
                 </tr>
                 <tr>
-                    <td>{"Locale"|localize:facebook}</td>
+                    <td>{function="localize('Locale', 'facebook')"}</td>
                     <td>{$user.locale}</td>
                 </tr>
             </tbody>

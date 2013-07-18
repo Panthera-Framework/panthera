@@ -1,4 +1,4 @@
-{if $action eq ''}
+{if="$action == ''"}
 <script>
 
 /**
@@ -34,7 +34,7 @@ function executeShellCommand()
 
 <script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
 
-    <div class="titlebar">{"Shell utils"|localize:debug} - {"Developer tools"|localize:debug}</div>
+    <div class="titlebar">{function="localize('Shell utils', 'debug')"} - {function="localize('Developer tools', 'debug')"}{include="_navigation_panel.tpl"}</div>
 
     <br>
     <div class="msgSuccess" id="userinfoBox_success"></div>
@@ -45,23 +45,23 @@ function executeShellCommand()
       <table class="gridTable">
 
         <thead>
-            <tr><th colspan="4"><b>{"Execute command"|localize:debug}</b></th></tr>
+            <tr><th colspan="4"><b>{function="localize('Execute command', 'debug')"}</b></th></tr>
          </thead>
 
         <tfoot>
             <tr>
-                <td colspan="4" class="rounded-foot-left"><em>Panthera - {"shellutils"|localize:debug} <input type="button" value="{"Back"|localize}" onclick="navigateTo('{navigation::getBackButton()}');" style="float: right;"></em></td>
+                <td colspan="4" class="rounded-foot-left"><em>Panthera - {function="localize('shellutils', 'debug')"}</em></td>
             </tr>
         </tfoot>
 
         <tbody>
-            <tr><td style="width: 100px;">{"Server command"|localize:debug}:</td><td style="width: 80px;">
+            <tr><td style="width: 100px;">{function="localize('Server command', 'debug')"}:</td><td style="width: 80px;">
             <select id="command_selection">
-            {foreach from=$commands key=k item=v}
-                <option value="{$k}">{$k}</option>
-            {/foreach}
+            {loop="$commands"}
+                <option value="{$key}">{$key}</option>
+            {/loop}
             </select>
-            </td> <td><input type="button" value="{"Execute"|localize:debug}" onclick="executeShellCommand();"></td></tr>
+            </td> <td><input type="button" value="{function="localize('Execute', 'debug')"}" onclick="executeShellCommand();"></td></tr>
         </tbody>
       </table>
 

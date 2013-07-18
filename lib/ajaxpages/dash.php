@@ -68,8 +68,31 @@ $template -> push ('dash_messages', $panthera -> get_filters('ajaxpages.dash.msg
 
 if ($category == 'main')
 {
-    $panthera -> importModule('gallery');
-    $panthera -> template -> push ('galleryItems', gallery::getRecentPicture('', 9));
+    $settings = $panthera -> config -> getKey('dash_widgets', array('gallery' => True, 'lastLogged' => True), 'array');
+    
+    // recent gallery items
+    if ($settings['gallery'])
+    {
+        $panthera -> importModule('gallery');
+        $panthera -> template -> push ('galleryItems', gallery::getRecentPicture('', 9));
+    }
+
+    // last logged in users    
+    if ($settings['lastLogged'])
+    {
+        $u = getUsers('', 10, 0, 'lastlogin', 'DESC');
+        $users = array();
+        
+        foreach ($u as $key => $value)
+        {
+            //if ($value->attributes->superuser)
+                //continue;
+
+            $users[] = array('login' => $value->login, 'time' => date_calc_diff(strtotime($value->lastlogin), time()), 'avatar' => pantheraUrl($value->profile_picture), 'uid' => $value->id);
+        }
+        
+        $panthera -> template -> push ('lastLogged', $users);
+    }
 }
 /** END OF Ajax-HTML PAGES **/
 

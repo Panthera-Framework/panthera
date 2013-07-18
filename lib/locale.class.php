@@ -280,6 +280,7 @@ class pantheraLocale
                         $this->panthera->logging->output('Wrote id=locale.' .$this->locale. '.' .$domain. ' to cache', 'pantheraLocale');
 
                 }
+                
                 return True;
             }
         }

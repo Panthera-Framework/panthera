@@ -19,6 +19,7 @@ if (!getUserRightAttribute($user, 'can_update_locales')) {
 }
 
 $panthera -> locale -> loadDomain('locales');
+$panthera -> locale -> loadDomain('langtool');
 
 $locales = $panthera->locale->getLocales();
 $systemDefault = $panthera->locale->getSystemDefault();
@@ -35,6 +36,7 @@ switch ($_GET['action'])
     break;
 
     case 'add':
+        if(is_dir(SITE_DIR. '/content/locales/' .$_POST['id']) or is_dir(PANTHERA_DIR. '/locales/' .$_POST['id']))
         $panthera -> locale -> addLocale($_POST['id']);
     break;
 
@@ -47,6 +49,9 @@ switch ($_GET['action'])
 $template -> push('locale_system_default', $systemDefault);
 
 $tmp = scandir(SITE_DIR. '/content/locales/');
+$tmpLib = scandir(PANTHERA_DIR. '/locales/');
+$tmp = array_merge($tmp, $tmpLib);
+
 $avaliableLocales = array();
 $avaliableLocales[] = 'english';
 
@@ -54,8 +59,11 @@ foreach ($tmp as $value)
 {
     if (array_key_exists($value, $locales))
         continue;
+        
+    if ($value == ".." or $value == "." or $value == "nocache")
+        continue;
 
-    if(is_dir(SITE_DIR. '/content/locales/' .$value. '/C/LC_MESSAGES'))
+    if(is_dir(SITE_DIR. '/content/locales/' .$value) or is_dir(PANTHERA_DIR. '/locales/' .$value))
         $avaliableLocales[] = $value;
 }
 

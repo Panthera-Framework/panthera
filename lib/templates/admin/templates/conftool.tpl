@@ -1,3 +1,4 @@
+{$site_header}
 <script>
 $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
 
@@ -44,7 +45,7 @@ function conftool_array(k, value)
 
 </script>
 
-        <div class="titlebar">{"Configuration editor"|localize:conftool} - {"Administration tool for developers and administrators."|localize:conftool}{include file="_navigation_panel.tpl"}</div><br>
+        <div class="titlebar">{function="localize('Configuration editor', 'conftool')"} - {function="localize('Administration tool for developers and administrators.', 'conftool')"}{include="_navigation_panel.tpl"}</div><br>
 
         <div class="msgSuccess" id="userinfoBox_success"></div>
         <div class="msgError" id="userinfoBox_failed"></div>
@@ -54,48 +55,48 @@ function conftool_array(k, value)
 
             <thead>
                 <tr>
-                    <th scope="col" class="rounded-company" style="width: 250px;">{"Key"|localize}</th>
-                    <th colspan="2">{"Value"|localize}</th>
+                    <th scope="col" class="rounded-company" style="width: 250px;">{function="localize('Key')"}</th>
+                    <th colspan="2">{function="localize('Value')"}</th>
                 </tr>
             </thead>
 
             <tfoot>
                 <tr>
-                    <td colspan="2" class="rounded-foot-left"><em>Panthera - {"Configuration editor"|localize:conftool} <input type="button" value="{"Back"|localize}" onclick="navigateTo('{navigation::getBackButton()}');" style="float: right;"> <input type="button" value="{"Manage permissions"|localize}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_update_config_overlay', 1024, 'upload_popup');" style="float: right; margin-right: 7px;"></em></td>
+                    <td colspan="2" class="rounded-foot-left"><em>Panthera - {function="localize('Configuration editor', 'conftool')"} <input type="button" value="{function="localize('Manage permissions')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_update_config_overlay', 1024, 'upload_popup');" style="float: right; margin-right: 7px;"></em></td>
                 </tr>
             </tfoot>
 
             <tbody>
-              {foreach from=$a key=k item=i}
+              {loop="$a"}
                 <tr>
                     <td>
 
-                        <small>{$i[0]|localize:type}</small> &nbsp;<b>{if isset($i[2])}{$i[2]}{else}{$k}{/if}</b>
+                        <small>{$value[0]|localize:type}</small> &nbsp;<b>{if="isset($value[2])"}{$value[2]}{else}{$key}{/if}</b>
 
                     </td>
                     <td>
-                        {if $i[0] == 'bool'}
-                            <select id="value_{$k}" style="width: 500px;"><option value="0">{"No"|localize}</option><option value="1"{if $i[1] eq "1"} selected{/if}>{"Yes"|localize}</option></select>
+                        {if="$value[0] == 'bool'"}
+                            <select id="value_{$key}" style="width: 500px;"><option value="0">{function="localize('No')"}</option><option value="1"{if="$value[1] == '1'"} selected{/if}>{function="localize('Yes')"}</option></select>
                         {else}
                         
-                            {if $i[0] == 'int'}
+                            {if="$value[0] == 'int'"}
                                 {$type = "number"}
                             {else}
                                 {$type = "text"}
                             {/if}
                             
-                            {if $i[0] == "array"}
-                            <input type="{$type}" value='{$i[1]}' id="value_{$k}" readonly style="width: 450px;">
-                            <input type="button" value="{"Edit"|localize}" style="width: 49px;" onclick="createPopup('?display=_popup_jsonedit&input={$i['b64']}&output=serialize&callback=conftool_array&callback_arg={$k}', 1024, 550);">
+                            {if="$value[0] == 'array'"}
+                            <input type="{$type}" value='{$value[1]}' id="value_{$key}" readonly style="width: 450px;">
+                            <input type="button" value="{function="localize('Edit')"}" style="width: 49px;" onclick="createPopup('?display=_popup_jsonedit&popup=True&input={$value['b64']}&output=serialize&callback=conftool_array&callback_arg={$key}', 1024, 550);">
                             {else}
-                            <input type="{$type}" value='{$i[1]}' id="value_{$k}" style="width: 500px;">
+                            <input type="{$type}" value='{$value[1]}' id="value_{$key}" style="width: 500px;">
                             {/if}
                         {/if}
-                        <input type="button" value="{"Save"|localize:messages}" id="button_{$k}" onclick="saveVariable('{$k}');">
-                        <span style="font-color: red;"><div id="errmsg_{$k}" style="display: none;"></div></span>
+                        <input type="button" value="{function="localize('Save', 'messages')"}" id="button_{$key}" onclick="saveVariable('{$key}');">
+                        <span style="font-color: red;"><div id="errmsg_{$key}" style="display: none;"></div></span>
                     </td>
                 </tr>
-              {/foreach}
+              {/loop}
             </tbody>
            </table>
 

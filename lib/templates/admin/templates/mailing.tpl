@@ -50,7 +50,7 @@ function saveVariable(id)
 
 </script>
 
-    <div class="titlebar">{"Mail management"|localize:mailing} - {"Mail server settings, mass mailing, single mail sending"|localize:mailing}</div>
+    <div class="titlebar">{function="localize('Mail management', 'mailing')"} - {function="localize('Mail server settings, mass mailing, single mail sending', 'mailing')"}</div>
 
     <br>
     <div class="msgSuccess" id="userinfoBox_success"></div>
@@ -61,39 +61,39 @@ function saveVariable(id)
           <table class="gridTable">
 
             <thead>
-                <tr><th colspan="5"><b>{"Mailing settings"|localize:mailing}:</b></th></tr>
+                <tr><th colspan="5"><b>{function="localize('Mailing settings', 'mailing')"}:</b></th></tr>
              </thead>
 
             <tfoot>
                 <tr>
-                    <td colspan="5" class="rounded-foot-left"><em>Panthera - {"mailing"|localize:mailing} <input type="button" value="{"Manage permissions"|localize:messages}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_view_mailing', 1024, 'upload_popup');" style="float: right;">
+                    <td colspan="5" class="rounded-foot-left"><em>Panthera - {function="localize('mailing', 'mailing')"} <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_view_mailing', 1024, 'upload_popup');" style="float: right;">
                     </em></td>
                 </tr>
             </tfoot>
 
             <tbody>
-                {foreach from=$mail_attributes key=k item=v}
+                {loop="$mail_attributes"}
                 <tr>
-                  <td>{"$v.name"|localize:mailing}</td>
+                  <td>{function="localize($value.name, 'mailing')"}</td>
 
                   <td>
-                    {if is_bool($v.value)}
-                     <select id="value_{$v.record_name}" style="width: 500px;">
-                        <option value="0">{"No"|localize}</option>
-                        <option value="1"{if $v.value eq "1"} selected{/if}>
-                        {"Yes"|localize}</option>
+                    {if="is_bool($value.value)"}
+                     <select id="value_{$value.record_name}" style="width: 500px;">
+                        <option value="0">{function="localize('No')"}</option>
+                        <option value="1"{if="$value.value == '1'} selected{/if"}>
+                        {function="localize('Yes')"}</option>
                      </select>
-                    {elseif $v.record_name eq "mailing_password"}
-                     <input type="password" value='{$v.value}' id="value_{$v.record_name}" onfocus="this.value = ''" style="width: 500px;">
+                    {elseif="$value.record_name == 'mailing_password'"}
+                     <input type="password" value='{$value.value}' id="value_{$value.record_name}" onfocus="this.value = ''" style="width: 500px;">
                     {else}
-                     <input type="text" value='{$v.value}' id="value_{$v.record_name}" style="width: 500px;">
+                     <input type="text" value='{$value.value}' id="value_{$value.record_name}" style="width: 500px;">
                     {/if}
-                     <input type="button" value="{"Save"|localize:messages}" id="button_{$v.record_name}" onclick="saveVariable('{$v.record_name}');">
-                     <span style="font-color: red;"><div id="errmsg_{$v.record_name}" style="display: none;"></div></span>
+                     <input type="button" value="{function="localize('Save', 'messages')"}" id="button_{$value.record_name}" onclick="saveVariable('{$value.record_name}');">
+                     <span style="font-color: red;"><div id="errmsg_{$value.record_name}" style="display: none;"></div></span>
                   </td>
 
                 </tr>
-                {/foreach}
+                {/loop}
             </tbody>
            </table>
 
@@ -102,22 +102,22 @@ function saveVariable(id)
         <table class="gridTable">
 
             <thead>
-                <tr><th colspan="5"><b>{"Send an e-mail"|localize:mailing}:</b></th></tr>
+                <tr><th colspan="5"><b>{function="localize('Send an e-mail', 'mailing')"}:</b></th></tr>
              </thead>
 
             <form action="{$AJAX_URL}?display=mailing&action=send" method="POST" id="mail_form">
             <tfoot>
                 <tr>
-                    <td colspan="5" class="rounded-foot-left"><em>Panthera - {"mailing"|localize:mailing} <input type="submit" value="{"Send"|localize:mailing}" style="float: right;">&nbsp;<input type="button" value="{"Manage permissions"|localize:messages}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_send_mails', 1024, 'upload_popup');" style="float: right; margin-right: 7px;">
+                    <td colspan="5" class="rounded-foot-left"><em>Panthera - {function="localize('mailing', 'mailing')"} <input type="submit" value="{function="localize('Send', 'mailing')"}" style="float: right;">&nbsp;<input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_send_mails', 1024, 'upload_popup');" style="float: right; margin-right: 7px;">
                     </em></td>
                 </tr>
             </tfoot>
 
             <tbody>
-               <tr><td>{"Subject"|localize:mailing}:</td><td colspan="2"><input type="text" style="width: 98%;" name="subject" value="{$last_subject}"></td></tr>
-               <tr><td>{"Recipients"|localize:mailing}:</td><td><input type="text" style="width: 100%;" name="recipients" value="{$last_recipients}"></td><td style="width: 30px;"> <input type="button" value="{"Select"|localize:messages}" onclick="createPopup('_ajax.php?display=mailing&action=select', 1024, 'upload_popup');"></td></tr>
-               <tr><td>{"From"|localize:mailing}:</td><td colspan="2"><input type="text" style="width: 98%;" name="from" value="{$last_from}"></td></tr>
-               <tr><td>{"Content"|localize:mailing}:</td><td colspan="2"><textarea style="width: 98%;" name="body">{$last_body}</textarea></td></tr>
+               <tr><td>{function="localize('Subject', 'mailing')"}:</td><td colspan="2"><input type="text" style="width: 98%;" name="subject" value="{$last_subject}"></td></tr>
+               <tr><td>{function="localize('Recipients', 'mailing')"}:</td><td><input type="text" style="width: 100%;" name="recipients" value="{$last_recipients}"></td><td style="width: 30px;"> <input type="button" value="{function="localize('Select', 'messages')"}" onclick="createPopup('_ajax.php?display=mailing&action=select', 1024, 'upload_popup');"></td></tr>
+               <tr><td>{function="localize('From', 'mailing')"}:</td><td colspan="2"><input type="text" style="width: 98%;" name="from" value="{$last_from}"></td></tr>
+               <tr><td>{function="localize('Content', 'mailing')"}:</td><td colspan="2"><textarea style="width: 98%;" name="body">{$last_body}</textarea></td></tr>
                </form>
             </tbody>
            </table>

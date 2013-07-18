@@ -643,8 +643,7 @@ class navigation
         if ($ajaxExit == False and PANTHERA_MODE == "CGI")
         {
             $url = parse_url($_SERVER['REQUEST_URI']);
-            $pathinfo = pathinfo($url['path']);
-            navigation::appendHistory($pathinfo['filename']. '?' .$url['query']);
+            navigation::appendHistory(substr(PANTHERA_FRONTCONTROLLER, 1, strlen(PANTHERA_FRONTCONTROLLER)). '?' .$url['query']);
             navigation::save();
         }
     }

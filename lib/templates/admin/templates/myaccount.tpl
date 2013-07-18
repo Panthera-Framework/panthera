@@ -53,7 +53,7 @@ function aclModify(id, name)
 }
 </script>
 
-<div class="titlebar">{"Panel with informations about user."|localize:settings}</div>
+<div class="titlebar">{function="localize('Panel with informations about user.', 'settings')"}</div>
 
             <br>
 
@@ -64,50 +64,50 @@ function aclModify(id, name)
 
              <thead>
                 <tr>
-                    <th scope="col" style="width: 300px;">{"User"|localize:settings}</th>
+                    <th scope="col" style="width: 300px;">{function="localize('User', 'settings')"}</th>
                     <th scope="col"> </th>
                 </tr>
              </thead>
 
              <tfoot>
                 <tr>
-                    <td colspan="2" class="rounded-foot-left"><em>{"Informations about user"|localize:settings}</em></td>
+                    <td colspan="2" class="rounded-foot-left"><em>{function="localize('Informations about user', 'settings')"}</em></td>
                 </tr>
              </tfoot>
 
              <tbody>
                 <tr>
-                    <td>{"Login"|localize:settings}</td>
+                    <td>{function="localize('Login', 'settings')"}</td>
                     <td>{$user_login}</td>
                 </tr>
 
                 <tr>
-                  <td>{"Password"|localize:settings}</td>
-                  <td><a href="#" onclick="jQuery('#password_window').slideToggle(); return false;">{"Change password"|localize:settings}</a> <div id="password_window" style="display: none;">
+                  <td>{function="localize('Password', 'settings')"}</td>
+                  <td><a href="#" onclick="jQuery('#password_window').slideToggle(); return false;">{function="localize('Change password', 'settings')"}</a> <div id="password_window" style="display: none;">
 
                 <form action="?display=settings&action=my_account&changepassword{$user_uid}" method="POST" id="changepasswd_form">
                  <table style="width: 400px; border: 0px; font-size: 12px;">
                     <tfoot>
                         <tr>
-                            <td colspan="2" class="rounded-foot-left"><em><input type="submit" value="{"Change password"|localize}"></em></td>
+                            <td colspan="2" class="rounded-foot-left"><em><input type="submit" value="{function="localize('Change password')"}"></em></td>
                         </tr>
                     </tfoot>
                     <thead>
-                        {if !isset($dontRequireOld)}
+                        {if="!isset($dontRequireOld)"}
                         <tr>
                             <td><input type="password" name="old_passwd"> </td>
-                            <td>{"Old password"|localize:settings}</td>
+                            <td>{function="localize('Old password', 'settings')"}</td>
                         </tr>
                         {/if}
 
                         <tr>
                             <td><input type="password" name="new_passwd"> </td>
-                            <td>{"New password"|localize:settings}</td>
+                            <td>{function="localize('New password', 'settings')"}</td>
                         </tr>
 
                         <tr>
                             <td><input type="password" name="retyped_newpasswd"></td>
-                            <td>{"Retype new password"|localize:settings}</td>
+                            <td>{function="localize('Retype new password', 'settings')"}</td>
                         </tr>
                     </thead>
                  </table>
@@ -117,27 +117,27 @@ function aclModify(id, name)
                 </tr>
 
                 <tr>
-                  <td>{"Avatar"|localize:settings}</td>
-                  <td><img src="{$profile_picture}" height="{$avatar_dimensions[0]}" width="{$avatar_dimensions[1]}"><br><br><!--<input type="button" value="{"Change avatar"|localize} !IMPLEMENT ME!" style="float:left;">--><br><br></td>
+                  <td>{function="localize('Avatar', 'settings')"}</td>
+                  <td><img src="{$profile_picture}" height="{$avatar_dimensions[0]}" width="{$avatar_dimensions[1]}"><br><br><!--<input type="button" value="{function="localize('Change avatar')"} !IMPLEMENT ME!" style="float:left;">--><br><br></td>
                 </tr>
 
                 <tr>
-                  <td>{"Full name"|localize:settings}</td>
+                  <td>{function="localize('Full name', 'settings')"}</td>
                   <td>{$full_name|ucfirst}</td>
                 </tr>
 
                 <tr>
-                  <td>{"Primary group"|localize:settings}</td>
+                  <td>{function="localize('Primary group', 'settings')"}</td>
                   <td>{$primary_group}</td>
                 </tr>
 
                 <tr>
-                  <td>{"Joined"|localize:settings}</td>
+                  <td>{function="localize('Joined', 'settings')"}</td>
                   <td>{$joined}</td>
                 </tr>
 
                 <tr>
-                  <td>{"Language"|localize:settings}</td>
+                  <td>{function="localize('Language', 'settings')"}</td>
                   <td>
                     <a href="#" onclick="jQuery('#localize_window').slideToggle(); return false;" id="default_language">{$language|ucfirst}</a>
                     <div id="localize_window" style="display: none;">
@@ -146,19 +146,19 @@ function aclModify(id, name)
                        <table style="width: 400px;">
                           <tfoot>
                             <tr>
-                                <td colspan="2" class="rounded-foot-left"><em><input type="submit" value="{"Change language"|localize}"></em></td>
+                                <td colspan="2" class="rounded-foot-left"><em><input type="submit" value="{function="localize('Change language')"}"></em></td>
                               </tr>
                           </tfoot>
                           <tbody>
                               <tr>
                                   <td>
                                     <select name="language">
-                                     {foreach from=$locales_added key=k item=i}
+                                     {loop="$locales_added"}
                                           <option value="{$k}">{$k}</option>
-                                     {/foreach}
+                                     {/loop}
                                     </select>
                                   </td>
-                                  <td>{"Set language"|localize:settings}</td>
+                                  <td>{function="localize('Set language', 'settings')"}</td>
                               </tr>
                           </tbody>
                        </table>
@@ -168,12 +168,12 @@ function aclModify(id, name)
                   </td>
                 </tr>
 
-                {foreach from=$user_fields key=k item=i}
+                {loop="$user_fields"}
                 <tr>
                   <td>{$k}</td>
                   <td>{$i}</td>
                 </tr>
-                {/foreach}
+                {/loop}
 
              </tbody>
 
@@ -183,27 +183,27 @@ function aclModify(id, name)
             <table class="gridTable">
             <thead>
                 <tr>
-                    <th scope="col">{"Permission name"|localize:settings}</th>
+                    <th scope="col">{function="localize('Permission name', 'settings')"}</th>
                     <th scope="col">&nbsp;</th>
                 </tr>
             </thead>
                 <tfoot>
                 <tr>
-                    <td colspan="2" class="rounded-foot-left"><em>{"Access control list for current user"|localize:settings}</em></td>
+                    <td colspan="2" class="rounded-foot-left"><em>{function="localize('Access control list for current user', 'settings')"}</em></td>
                 </tr>
             </tfoot>
             <tbody>
-                {foreach from=$aclList key=k item=v}
+                {loop="$aclList"}
                 <tr>
-                    <td style="border-right: 0px;">{$v.name}</td>
+                    <td style="border-right: 0px;">{$value.name}</td>
 
-                    {if $allow_edit_acl == True}
-                    <td style="border-left: 0px;"><select id="acl_{$k}" onChange="aclModify('acl_{$k}', '{$k}');" style="float: right; margin: 4px;"><option value="1" {if $v.active == 1}selected{/if}>{"Yes"|localize:messages}</option><option value="0" {if $v.active == 0}selected{/if}>{"No"|localize:messages}</option></td>
+                    {if="$allow_edit_acl == True"}
+                    <td style="border-left: 0px;"><select id="acl_{$k}" onChange="aclModify('acl_{$k}', '{$k}');" style="float: right; margin: 4px;"><option value="1" {if="$value.active == 1"}selected{/if}>{function="localize('Yes', 'messages')"}}</option><option value='0' {if="$value.active == 0"}selected{/if}>{function="localize('No', 'messages')"}</option></td>
                     {else}
-                    <td style="border-left: 0px;">{$v.value}</td>
+                    <td style="border-left: 0px;">{$value.value}</td>
                     {/if}
                 </tr>
 
-                {/foreach}
+                {/loop}
             </tbody>
         </table>

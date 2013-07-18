@@ -1,6 +1,6 @@
 <script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
 
-    <div class="titlebar">Dump input - {"Get all input variables listed"|localize:debug}{include file="_navigation_panel.tpl"}</div>
+    <div class="titlebar">Dump input - {function="localize('Get all input variables listed', 'debug')"}{include="_navigation_panel.tpl"}</div>
 
     <div class="grid-1">
         <h2>$_COOKIE</h2>
@@ -12,7 +12,7 @@
         <div class="blueLog">
             {$pantheraCookie}<br>
 
-            <b>{"Examples of usage"|localize:debug}:</b>
+            <b>{function="localize('Examples of usage', 'debug')"}:</b>
             <i>
             <br>&nbsp;$panthera -> session -> cookies -> exists('Created');
             <br>&nbsp;$panthera -> session -> cookies -> set('Name', 'Damien', time()+60);
@@ -25,7 +25,7 @@
         <div class="blueLog">
             {$pantheraSession}<br>
 
-            <b>{"Examples of usage"|localize:debug}:</b>
+            <b>{function="localize('Examples of usage', 'debug')"}:</b>
             <i>
             <br>&nbsp;$panthera -> session -> exists('Name');
             <br>&nbsp;$panthera -> session -> set('Name', 'Damien');

@@ -72,10 +72,10 @@ function changeOutputType(name)
 }
 </script>
 
-{if $popup == True}
-<h2 class="popupHeading">{"Merge serialized arrays and json files"|localize:debug}</h2>
+{if="$popup == True"}
+<h2 class="popupHeading">{function="localize('Merge serialized arrays and json files', 'debug')"}</h2>
 {else}
-<div class="titlebar">{"Merge serialized arrays and json files"|localize:debug}{include file="_navigation_panel.tpl"}</div>
+<div class="titlebar">{function="localize('Merge serialized arrays and json files', 'debug')"}{include="_navigation_panel.tpl"}</div>
 {/if}
 
         <div class="msgError" id="messageBox_failed"></div>
@@ -84,32 +84,28 @@ function changeOutputType(name)
         <!-- webrootMerge -->
    
         <div class="grid-2" style="position: relative;" id="resultWindow" ondragover="return false;">
-           <div class="title-grid">{"Result"|localize:debug}<a href="#" onclick="changeOutputType('json');" style="float: right;"><img src="{$PANTHERA_URL}/images/admin/mimes/javascript.png" style="width: 30px;"></a> <a href="#" onclick="changeOutputType('serialize');" style="float: right;"><img src="{$PANTHERA_URL}/images/admin/mimes/php.png" style="width: 30px;"></a></div>
+           <div class="title-grid">{function="localize('Result', 'debug')"}<a href="#" onclick="changeOutputType('json');" style="float: right;"><img src="{$PANTHERA_URL}/images/admin/mimes/javascript.png" style="width: 30px;"></a> <a href="#" onclick="changeOutputType('serialize');" style="float: right;"><img src="{$PANTHERA_URL}/images/admin/mimes/php.png" style="width: 30px;"></a></div>
            <div class="content-gird">
-               <textarea style="width: 100%; height: 100%; min-height: 600px;" id="resultGrid">{if strlen($result) > 0}{$result}
-               {else}
-                 {"Please upload some files to get result"|localize:debug}
-               {/if}
-               </textarea>
+               <textarea style="width: 100%; height: 100%; min-height: 600px;" id="resultGrid"><?php if (strlen($result) > 0) {?>{$result}{else}{function="localize('Please upload some files to get result', 'debug')"}{/if}</textarea>
            </div>
         </div>
         
         <div class="grid-2" style="position: relative;" id="dragDropHere" ondragover="return false;">
-           <div class="title-grid">{"Files"|localize:debug}<span></span></div>
+           <div class="title-grid">{function="localize('Files', 'debug')"}<span></span></div>
            <div class="content-table-grid">
               <table class="insideGridTable">
                 <tfoot>
                     <tr>
-                        <td colspan="3"><small>{"Drag and drop files here"|localize:debug}</small></td>
+                        <td colspan="3"><small>{function="localize('Drag and drop files here', 'debug')"}</small></td>
                     </tr>
                 </tfoot>
             
                 <tbody id="filesList">
-                    {foreach from=$files key=k item=i}
-                    <tr id="file_{$k}">
-                        <td style="border-right: 0px;">{$k}</td><td style="border-right: 0px;"><a href="#" onclick="removePHPSFile('{$k}');"><img src="{$PANTHERA_URL}/images/admin/menu/Actions-process-stop-icon.png" style="width: 20px; float: right; margin-right: 5px;"></a></td>
+                    {loop="$files"}
+                    <tr id="file_{$key}">
+                        <td style="border-right: 0px;">{$key}</td><td style="border-right: 0px;"><a href="#" onclick="removePHPSFile('{$key}');"><img src="{$PANTHERA_URL}/images/admin/menu/Actions-process-stop-icon.png" style="width: 20px; float: right; margin-right: 5px;"></a></td>
                     </tr>
-                    {/foreach}
+                    {/loop}
                 </tbody>
             </table>
          </div>

@@ -249,8 +249,6 @@ if ($_GET['action'] == "edit_page")
     if ($cpage->meta('id')->get('site_header') != null)
         $header = array_merge($header, $cpage->meta('unique')->get('site_header'));
         
-    $header = unserialize('a:2:{s:7:"scripts";a:0:{}s:6:"styles";a:1:{i:0;s:41:"{$PANTHERA_URL}/css/admin/custompages.css";}}');
-        
     if (count($header) > 0)
     {
         if (count($header['scripts']) > 0)

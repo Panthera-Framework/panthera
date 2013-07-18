@@ -1,11 +1,11 @@
-{"qmessages"|localizeDomain}
+{function="localizeDomain('qmessages')"}
 <script type="text/javascript">
 $(document).ready(function(){
     $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
 });
 </script>
 
-    <div class="titlebar">{"Message categories"|localize:qmessages} - {"Articles, quick messages, news etc."|localize:qmessages}{include file="_navigation_panel.tpl"}</div>
+    <div class="titlebar">{function="localize('Message categories', 'qmessages')"} - {function="localize('Articles, quick messages, news etc.', 'qmessages')"}{include="_navigation_panel.tpl"}</div>
 
     <br>
     <div class="msgSuccess" id="userinfoBox_success"></div>
@@ -15,23 +15,23 @@ $(document).ready(function(){
         <table class="gridTable">
             <thead>
                 <tr>
-                    <th scope="col" class="rounded-company" style="width: 250px;">{"Category name"|localize:qmessages}</th>
+                    <th scope="col" class="rounded-company" style="width: 250px;">{function="localize('Category name', 'qmessages')"}</th>
                 </tr>
             </thead>
 
             <tfoot>
                 <tr>
-                    <td colspan="5" class="rounded-foot-left"><em>Panthera - {"quickMessages"|localize:qmessages}</em>
+                    <td colspan="5" class="rounded-foot-left"><em>Panthera - {function="localize('quickMessages', 'qmessages')"}</em>
                     </td>
                 </tr>
             </tfoot>
 
             <tbody>
-              {foreach from=$categories key=k item=i}
+              {loop="$categories"}
                 <tr>
-                    <td><a href="{$AJAX_URL}?display=messages&action=display_category&cat={$i.category_name}" class="ajax_link">{$i.title|localize}</a></td>
+                    <td><a href="{$AJAX_URL}?display=messages&action=display_category&cat={$value.category_name}" class="ajax_link">{$value.title|localize}</a></td>
                 </tr>
-              {/foreach}
+              {/loop}
             </tbody>
         </table>
    </div>

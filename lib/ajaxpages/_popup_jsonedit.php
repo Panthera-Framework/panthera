@@ -14,18 +14,33 @@ if (!defined('IN_PANTHERA'))
 if (isset($_POST['jsonedit_content']))
 {
     $panthera -> session -> set('jsonedit_content', $_POST['jsonedit_content']);
+
+    // allow serialized arrays as input    
+    if (@unserialize($_POST['jsonedit_content']))
+        $_POST['jsonedit_content'] = json_encode(unserialize($_POST['jsonedit_content']));
     
     $response = serialize(json_decode($_POST['jsonedit_content'], true));
     
+    // return in "print_r" format
     if ($_POST['responseType'] == 'print_r')
+    {
         $response = print_r(unserialize($response), True);
-    elseif ($_POST['responseType'] == 'var_dump') {
+
+    // var_dump result
+    } elseif ($_POST['responseType'] == 'var_dump') {
         ob_start();
         var_dump(unserialize($response));
         $response = str_replace('=&gt; ', '=> ', strip_tags(ob_get_clean()));
-    }     
+        
+    } elseif ($_POST['responseType'] == 'json') {
+    // and json pretty printed
+        $response = json_encode(unserialize($response), JSON_PRETTY_PRINT);
+    } elseif ($_POST['responseType'] == 'var_export') {
+    // var_export support
+        $response = var_export(unserialize($response), True);
+    }
     
-    ajax_exit(array('status' => 'success', 'result' => $response));
+    ajax_exit(array('status' => 'success', 'result' => stripslashes($response)));
 }
    
 $array = unserialize(base64_decode($_GET['input']));

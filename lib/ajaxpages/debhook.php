@@ -120,6 +120,9 @@ foreach ($hookOptions as $key => $hooks)
     {
         if (is_array($value))
         {
+            if (get_class($value[0]) === False)
+                continue;
+            
             $reflection = new ReflectionMethod(get_class($value[0]), $value[1]);
             $name = get_class($value[0]). ' -> ' .$value[1];
         } else {

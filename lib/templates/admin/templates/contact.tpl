@@ -1,22 +1,26 @@
 {$site_header}
-
 <script type="text/javascript">
+var googleMap;
+
+function gmapsCallback ()
+{
+    var mapOptions = {
+        zoom: {$map_zoom},
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        center: new google.maps.LatLng({$map_x}, {$map_y})
+    };
+                
+    googleMap.createMap("map", mapOptions);
+}
 
 jQuery(document).ready(function($) {
-
     /**
       * Init MCE Editor
       *
       * @author Mateusz Warzyński
       */
 
-    function initEditor()
-    {
-        mceSetContent('address_text', htmlspecialchars_decode("{$adress_text}"));
-    }
-
-    {$mce_init = "init_instance_callback: initEditor,"}
-    {include file="mce.tpl"}
+    {include="mce.tpl"}
 
     mceInit('address_text');
 
@@ -24,19 +28,13 @@ jQuery(document).ready(function($) {
 
     if ($('#map').length > 0)
     {
-        {if !isset($map_zoom)}
+        {if="!isset($map_zoom)"}
         {$map_zoom = 10}
         {$map_x = 0}
         {$map_y = 0}
         {/if}
 
-        var mapOptions = {
-           zoom: {$map_zoom},
-           mapTypeId: google.maps.MapTypeId.ROADMAP,
-           center: new google.maps.LatLng({$map_x}, {$map_y})
-         };
-
-        createMap("map", mapOptions);
+        googleMap = new panthera.googleMap('gmapsCallback');
 
         /**
           * Find place from input
@@ -49,7 +47,7 @@ jQuery(document).ready(function($) {
 
             if (place != "")
             {
-                getLocation(place);
+                googleMap.getLocation(place);
                 $('#map_bounds').val(JSON.stringify({ "bounds":map.getBounds(), "zoom": map.getZoom(), "center": map.getCenter() }));
             }
 
@@ -84,39 +82,39 @@ jQuery(document).ready(function($) {
 });
 </script>
 
-        <div class="titlebar">{"Contact"|localize:contactpage} - {"Street adress, phone number, location etc."|localize:contactpage}{include file="_navigation_panel.tpl"}</div><br>
+        <div class="titlebar">{function="localize('Contact', 'contactpage')"} - {function="localize('Street adress, phone number, location etc.', 'contactpage')"}{include="_navigation_panel.tpl"}</div><br>
 
         <div class="msgSuccess" id="userinfoBox_success"></div>
         <div class="msgError" id="userinfoBox_failed"></div>
         
         <div class="grid-1" id="languagesList" style="position: relative;">
-          <div class="title-grid">{"Contact in other languages"|localize:contactpage}<span></span></div>
+          <div class="title-grid">{function="localize('Contact in other languages', 'contactpage')"}<span></span></div>
           <div class="content-table-grid">
               <table class="insideGridTable">
                 <tfoot>
                     <tr>
-                        <td colspan="3"><small>{"Contact informations can be provided in many diffirent site localisations"|localize:contactpage}</small></td>
+                        <td colspan="3"><small>{function="localize('Contact informations can be provided in many diffirent site localisations', 'contactpage')"}</small></td>
                     </tr>
                 </tfoot>
             
                 <tbody>
-                    {foreach from=$languages key=k item=i}
+                    {loop="$languages"}
                         <tr>
-                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$k}" onclick="navigateTo('?display=contact&language={$k}');">{$k}</a></td>
+                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$key}" onclick="navigateTo('?display=contact&language={$key}');">{$key}</a></td>
                             <td style="width: 60px; padding: 10px; border-right: 0px;"></td>
                         </tr>
-                    {/foreach}
+                    {/loop}
                 </tbody>
             </table>
          </div>
        </div>
 
-        {if !$skip_map}
+        {if="!$skip_map"}
         <div class="grid-1">
-               <div class="title-grid">{"Map"|localize:contactpage}</div>
+               <div class="title-grid">{function="localize('Map', 'contactpage')"}</div>
 
                <div class="content-gird">
-                    <form action="?display=contact&action=save" method="GET" id="map_form">{"Search"|localize:contactpage}: <input type="text" value="" id="map_searchbox" style="width:300px;height:25px; font-size:15px;"></form>
+                    <form action="?display=contact&action=save" method="GET" id="map_form">{function="localize('Search', 'contactpage')"}: <input type="text" value="" id="map_searchbox" style="width:300px;height:25px; font-size:15px;"></form>
                     <div id="map" style="width: 100%; height: 300px; margin-top: 10px;"></div>
                </div>
        </div>
@@ -126,37 +124,37 @@ jQuery(document).ready(function($) {
 
         <form action="?display=contact&action=save" method="GET" id="contact_form">
          <div class="grid-1">
-	      	 <div class="title-grid">{"Contact page text"|localize:contactpage}</div>
+	      	 <div class="title-grid">{function="localize('Contact page text', 'contactpage')"}</div>
 	      	 <div class="content-gird" style="padding: 0px;">
-                 <textarea id="address_text" name="address_text" style="width: 100%; height: 550px;"></textarea><br><br>
+                 <textarea id="address_text" name="address_text" style="width: 100%; height: 550px;">{$adress_text}</textarea><br><br>
             </div>
 		 </div>
 
 		 <input type="hidden" name="map_bounds" id="map_bounds">
 
          <div class="grid-1">
-               <div class="title-grid">{"Options"|localize:messages}</div>
+               <div class="title-grid">{function="localize('Options', 'messages')"}</div>
 
                <div class="content-gird" style="padding: 0px;">
                     <table class="gridTable" style="border: 0px;">
                         <tbody>
                             <tr>
-                                <td style="border-right: 0px; width: 20%;">{"E-mail address where all messages from form will to"|localize:contactpage}: </td>
+                                <td style="border-right: 0px; width: 20%;">{function="localize('E-mail address where all messages from form will to', 'contactpage')"}: </td>
                                 <td style="border-right: 0px;"><input type="text" name="contact_email" value="{$contact_mail}"></td>
                             </tr>
                             
                             <tr>
-                                <td style="border-right: 0px;">{"One contact page for all languages"|localize:contactpage}: </td>
-                                <td style="border-right: 0px;"><input type="checkbox" value="1" name="all_langs"{if $oneContactPage == True} checked{/if} id="oneContactCheckbox"></td>
+                                <td style="border-right: 0px;">{function="localize('One contact page for all languages', 'contactpage')"}: </td>
+                                <td style="border-right: 0px;"><input type="checkbox" value="1" name="all_langs"{if="$oneContactPage == True} checked{/if"} id="oneContactCheckbox"></td>
                             </tr>
                             
-                            <tr{if $oneContactPage == True} style="display: none;"{/if} id="contactLanguage">
-                                <td style="border-right: 0px; border-bottom: 0px;">{"Save this contact page in"|localize:contactpage}: </td>
+                            <tr{if="$oneContactPage == True} style='display: none;'{/if"} id="contactLanguage">
+                                <td style="border-right: 0px; border-bottom: 0px;">{function="localize('Save this contact page in', 'contactpage')"}: </td>
                                 <td style="border-right: 0px; border-bottom: 0px;">
                                     <select name="save_as_language">
-                                        {foreach from=$languages key=k item=i}
-                                            <option value="{$k}"{if $k == $selected_language} selected{/if}>{$k}</option>
-                                        {/foreach}
+                                        {loop="$languages"}
+                                            <option value="{$key}"{if="$key == $selected_language"} selected{/if}>{$key}</option>
+                                        {/loop}
                                     </select>
                                 </td>
                             </tr>
@@ -164,7 +162,7 @@ jQuery(document).ready(function($) {
                             <tr>
                                 <td style="border-bottom: 0px; border-right: 0px;">&nbsp;</td>
                                 <td style="border-bottom: 0px; border-right: 0px;">
-                                    <div style="float: right;"><input type="button" value="{"Manage permissions"|localize:messages}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_edit_contact', 1024, 'upload_popup');"> <input type="submit" value="{"Save"|localize}"></div>
+                                    <div style="float: right;"><input type="button" value="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_edit_contact', 1024, 'upload_popup');"> <input type="submit" value="{function="localize('Save')"}"></div>
                                 </td>
                             </tr>
                         </tbody>
