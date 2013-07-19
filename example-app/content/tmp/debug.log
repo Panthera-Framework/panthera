@@ -1,0 +1,6 @@
+Client addr(192.168.1.102) => GET /example-app/
+Importing "filesystem" from /lib/modules
+Read id=tpl.cfg.example from cache
+pantheraLocale::setLocale(polski)
+Adding domain "messages" from /home/panthera/public_html/lib/locales/polski
+Displaying /home/panthera/public_html/example-app//content//templates/example/templates/index.tpl

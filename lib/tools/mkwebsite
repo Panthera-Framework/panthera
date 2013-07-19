@@ -1,0 +1,58 @@
+#!/usr/bin/env php
+<?php
+/**
+  * Create a skeleton of a web application based on Panthera Framework
+  *
+  * @package Panthera\tools
+  * @author Damian Kęska
+  */
+
+set_time_limit(0); // never stop executing the script
+
+$libPath = dirname(realpath($argv[0]));
+$libPath = substr($libPath, 0, strlen($libPath)-6);
+$buildDir = getcwd();
+
+if (strpos($buildDir, $libPath) !== False)
+    die("Cannot create new website directory inside of Panthera library\n");
+
+print("Extracting archive...");    
+$archive = new Phar($libPath. '/content.phar');
+#$archive -> extractTo(getcwd()); // this function is propably bugged
+
+foreach (new RecursiveIteratorIterator($archive) as $key => $value)
+{
+    $fileName = str_replace('phar://' .$libPath. '/content.phar/', '', $key);
+    $path = explode('/', dirname($fileName));
+    $pathinfo = pathinfo($fileName);
+
+    // build directory tree    
+    $buildedPath = '';
+    foreach ($path as $directory)
+    {
+        $buildedPath .= $directory. '/';
+        
+        if (!is_dir($buildDir. '/' .$buildedPath))
+            mkdir($buildDir. '/' .$buildedPath);
+    }
+    
+    $contents = file_get_contents($key);
+    
+    // if its a directory
+    if ($pathinfo['extension'] == '' and $contents == '')
+    {
+        mkdir($buildDir. '/' .$fileName);
+    } else {
+    // or if its just a file
+        $fp = fopen($buildDir. '/' .$fileName, 'w');
+        fwrite($fp, $contents);
+        fclose($fp);
+    }
+}
+
+print("Creating symlinks to front controllers...");
+@symlink($libPath. '/frontpages/pa-admin.php', getcwd(). '/pa-admin.php');
+@symlink($libPath. '/frontpages/pa-login.php', getcwd(). '/pa-login.php');
+@symlink($libPath. '/frontpages/_ajax.php', getcwd(). '/_ajax.php');
+@symlink($libPath. '/frontpages/_crontab.php', getcwd(). '/_crontab.php');
+print("Done.");

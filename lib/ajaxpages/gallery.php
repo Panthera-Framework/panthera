@@ -10,7 +10,7 @@
 
 if (!defined('IN_PANTHERA'))
     exit;
-    
+
 // get active locale with override if avaliable
 $language = $panthera -> locale -> getFromOverride($_GET['language']);
 
@@ -21,6 +21,8 @@ $tpl = 'gallery.tpl';
 
 $panthera -> locale -> loadDomain('gallery');
 
+error_reporting(E_ALL);
+
 if (!getUserRightAttribute($user, 'can_view_galleryItem'))
 {
     $panthera -> template -> display('no_access.tpl');
@@ -30,24 +32,24 @@ if (!getUserRightAttribute($user, 'can_view_galleryItem'))
 if ($_GET['action'] == 'saveCategoryDetails')
 {
     $gallery = new galleryCategory('id', intval($_GET['id']));
-    
+
     if (!$gallery -> exists())
         ajax_exit(array('status' => 'failed', 'message' => localize('There is no such category', 'gallery')));
-        
+
     if ($panthera->locale->exists($_POST['language']))
         $gallery -> language = $_POST['language'];
-        
+
     if (strlen($_POST['title']) > 0)
         $gallery -> title = $_POST['title'];
-        
+
     if (isset($_POST['all_langs']))
         $gallery->meta('unique')->set('all_langs', $gallery->id);
     else
         $gallery->meta('unique')->set('all_langs', False);
-    
+
     $gallery->meta('unique')->save();
     $gallery -> save(); // just to be sure
-    
+
     ajax_exit(array('status' => 'success', 'language' => $gallery -> language, 'unique' => $gallery -> unique));
 }
 
@@ -137,7 +139,7 @@ if ($_GET['action'] == 'delete_category')
   * @author Mateusz Warzyński
   */
 
-if ($_GET['action'] == 'toggle_gallery_visibility') 
+if ($_GET['action'] == 'toggle_gallery_visibility')
 {
     if (!isset($_GET['ctgid']))
         pa_exit();
@@ -160,7 +162,7 @@ if ($_GET['action'] == 'toggle_gallery_visibility')
   * @author Mateusz Warzyński
   */
 
-if (@$_GET['action'] == 'toggle_item_visibility') 
+if (@$_GET['action'] == 'toggle_item_visibility')
 {
     if (!isset($_GET['itid']))
         pa_exit();
@@ -169,7 +171,7 @@ if (@$_GET['action'] == 'toggle_item_visibility')
 
     $item = new galleryItem('id', $id);
 
-    if ($item -> exists()) 
+    if ($item -> exists())
     {
         $item -> visibility = !(bool)$item->visibility;
         ajax_exit(array('status' => 'success', 'visible' => $item -> visibility));
@@ -184,15 +186,15 @@ if (@$_GET['action'] == 'toggle_item_visibility')
   * @author Mateusz Warzyński
   */
 
-if ($_GET['action'] == 'create_category') 
+if ($_GET['action'] == 'create_category')
 {
     // check if user can edit gallery items
     if (!getUserRightAttribute($user, 'can_edit_galleryItem'))
         ajax_exit(array('status' => 'failed', 'error' => localize('Permission denied. You dont have access to this action', 'messages')));
 
-    if ($_POST['title'] != '') 
+    if ($_POST['title'] != '')
     {
-        if (isset($_POST['visibility'])) 
+        if (isset($_POST['visibility']))
         {
             if (createGalleryCategory($_POST['title'], $user->login, $user->id, $user->language, intval($_POST['visibility']), $user->full_name))
                 ajax_exit(array('status' => 'success'));
@@ -209,23 +211,23 @@ if ($_GET['action'] == 'create_category')
   * @author Mateusz Warzyński
   */
 
-if ($_GET['action'] == 'display_category') 
+if ($_GET['action'] == 'display_category')
 {
     if (!isset($_GET['unique']))
         pa_exit();
 
     $template -> push('action', 'display_category');
-          
+
     // query for a page using `unique` and `language` columns
     $statement = new whereClause();
     $statement -> add('', 'unique', '=', $_GET['unique']);
     $statement -> add('AND', 'language', '=', $language);
     $category = new galleryCategory($statement, null);
-          
+
     if (!$category->exists())
     {
         $ctg = new galleryCategory('unique', $_GET['unique']);
-        
+
         if ($ctg -> exists())
         {
             if ($ctg->meta('unique')->get('all_langs') != intval($category->id))
@@ -235,7 +237,7 @@ if ($_GET['action'] == 'display_category')
                 unset($ctg);
             } else {
                 // create a category in a new language
-            
+
                 gallery::createCategory($ctg->title, $panthera->user->login, $panthera->user->id, $language, 0, $panthera->user->full_name, $ctg->unique);
                 $statement = new whereClause();
                 $statement -> add('', 'unique', '=', $_GET['unique']);
@@ -247,7 +249,7 @@ if ($_GET['action'] == 'display_category')
             }
         }
     }
-    
+
     // check language
     if (intval($category->meta('unique')->get('all_langs')) > 0)
     {
@@ -255,17 +257,17 @@ if ($_GET['action'] == 'display_category')
         {
             // load other category which is marked as for all languages
             $ctg = new galleryCategory('id', $category->meta('unique')->get('all_langs'));
-                  
+
             // replace only if new category exists
             if ($ctg->exists())
                 $category = $ctg;
          }
     }
-          
+
     // get gallery items
     $count = getGalleryItems(array('gallery_id' => $category->id), False);
     $i = getGalleryItems(array('gallery_id' => $category->id), $count, 0);
-          
+
     $template -> push('category_title', $category->title);
     $template -> push('category_id', $category->id);
     $template -> push('item_list', $i);
@@ -273,20 +275,20 @@ if ($_GET['action'] == 'display_category')
     $template -> push('unique', $_GET['unique']);
     $template -> push('languages', $panthera->locale->getLocales());
     $template -> push('galleryObject', $category);
-    
+
     if (intval($category->meta('unique')->get('all_langs')) > 0)
         $template -> push('all_langs', True);
 
     // get custom styles for gallery in both languages and for gallery in single language
     $header = $category->meta('unique')->get('site_header');
-    
+
     if ($category->meta('id')->get('site_header') != null)
         $header = array_merge($header, $category->meta('unique')->get('site_header'));
 
     //$header = unserialize('a:2:{s:7:"scripts";a:0:{}s:6:"styles";a:1:{i:0;s:49:"{$PANTHERA_URL}/css/admin/gallery_no_settings.css";}}');
     //$category->meta('unique')->set('site_header', $header);
     //$category->meta('unique')->save();
-    
+
     // add custom styles and scripts
     if (count($header) > 0)
     {
@@ -295,7 +297,7 @@ if ($_GET['action'] == 'display_category')
             foreach ($header['scripts'] as $key => $value)
                 $panthera -> template -> addScript($value);
         }
-        
+
         if (count($header['styles']) > 0)
         {
             foreach ($header['styles'] as $key => $value)
@@ -307,7 +309,7 @@ if ($_GET['action'] == 'display_category')
     $c = getGalleryCategories(array('language' => $user->language), $count, 0);
 
     $template -> push('category_list', $c);*/
-          
+
     $template -> display('gallery_displaycategory.tpl');
     pa_exit();
 }
@@ -319,18 +321,18 @@ if ($_GET['action'] == 'display_category')
   * @author Mateusz Warzyński
   */
 
-if ($_GET['action'] == 'edit_item_form') 
+if ($_GET['action'] == 'edit_item_form')
 {
     $panthera -> importModule('filesystem');
     $template -> push('action', 'edit_item');
 
-    if ($_GET['subaction'] == 'edit_item') 
+    if ($_GET['subaction'] == 'edit_item')
     {
         $id = intval($_GET['id']);
         $item = new galleryItem('id', $id);
         $_POST['upload_id'] = intval($_POST['upload_id']);
 
-        if ($item -> exists()) 
+        if ($item -> exists())
         {
             $file = new uploadedFile('id', $_POST['upload_id']);
 
@@ -361,7 +363,7 @@ if ($_GET['action'] == 'edit_item_form')
     $id = intval($_GET['itid']);
     $item = new galleryItem('id', $id);
 
-    if ($item -> exists()) 
+    if ($item -> exists())
     {
         $template -> push('id', $item -> id);
         $template -> push('title', $item -> title);
@@ -371,10 +373,10 @@ if ($_GET['action'] == 'edit_item_form')
         $template -> push('gallery_id', $item -> gallery_id);
         $template -> push('visibility', !$item -> visibility);
         $template -> push('upload_id', $item -> upload_id);
-        
+
         $c = getGalleryCategories('');
         $template -> push('category_list', $c);
-        
+
         $category = new galleryCategory('id', $item->gallery_id);
         $template -> push('unique', $category->unique);
         $template -> push('language', $category->language);
@@ -397,7 +399,7 @@ if ($_GET['action'] == 'edit_item_form')
         if ($_GET['subaction'] == 'add') {
 
             $panthera -> importModule('filesystem');
-            
+
             if ($_POST['title'] != '' and $_POST['gallery_id'] != '' and $_POST['upload_id'] != '')   {
 
         if ($_POST['visibility'] == '1')
@@ -431,7 +433,7 @@ if ($_GET['action'] == 'edit_item_form')
         $c = getGalleryCategories('');
 
         $category = new galleryCategory('id', $_GET['ctgid']);
-        
+
         if ($category -> exists())
         {
             $template -> push('category_list', $c);
@@ -444,14 +446,14 @@ if ($_GET['action'] == 'edit_item_form')
         }
 
     }
-    
+
     /**
       * Creating new category
       *
       * @author Mateusz Warzyński
       */
 
-    if ($_GET['action'] == 'add_category') 
+    if ($_GET['action'] == 'add_category')
     {
         // check user rights
         if (!getUserRightAttribute($user, 'manage_gallery_categ') and !getUserRightAttribute($user, 'gallery_manage_cat_' .$id))
@@ -460,24 +462,24 @@ if ($_GET['action'] == 'edit_item_form')
             pa_exit();
         }
 
-        if ($_GET['new_title'] != '') 
+        if ($_GET['new_title'] != '')
         {
             gallery::createCategory($_GET['filter'].$_GET['new_title'], $user->login, $user->id, $user->language, intval($_GET['visibility']), $user->full_name, md5(rand(999, 9999)));
             print(json_encode(array('status' => 'success')));
         } else {
             print(json_encode(array('status' => 'failed', 'error' => localize('Title cannot be empty', 'gallery'))));
         }
-        
+
         pa_exit();
     }
-    
+
     /**
       * Setting gallery thumbnail from gallery image
       *
       * @author Mateusz Warzyński
       */
 
-    if ($_GET['action'] == 'set_category_thumb') 
+    if ($_GET['action'] == 'set_category_thumb')
     {
         if (!getUserRightAttribute($user, 'manage_gallery_categ') and !getUserRightAttribute($user, 'gallery_manage_cat_' .$id))
         {
@@ -491,7 +493,7 @@ if ($_GET['action'] == 'edit_item_form')
         $item = new galleryItem('id', $id);
         $category = new galleryCategory('id', $ctgid);
 
-        if ($item -> exists() and $category -> exists()) 
+        if ($item -> exists() and $category -> exists())
         {
              $category -> thumb_id = $item -> id;
              $category -> thumb_url = $item -> link;
@@ -502,14 +504,14 @@ if ($_GET['action'] == 'edit_item_form')
         }
         pa_exit();
     }
-    
+
     /**
       * Editing category title and visibility
       *
       * @author Mateusz Warzyński
       */
 
-    if ($_GET['action'] == 'edit_category') 
+    if ($_GET['action'] == 'edit_category')
     {
 
         if (!getUserRightAttribute($user, 'manage_gallery_categ') and !getUserRightAttribute($user, 'gallery_manage_cat_' .$id))
@@ -522,7 +524,7 @@ if ($_GET['action'] == 'edit_item_form')
 
         $item = new galleryCategory('id', $id);
 
-        if ($item -> exists()) 
+        if ($item -> exists())
         {
             $response = array('status' => 'success');
 
@@ -543,7 +545,7 @@ if ($_GET['action'] == 'edit_item_form')
                     $response['visibility'] = 'show';
                 }
 
-                if ($_GET['visibility'] == 'hide') 
+                if ($_GET['visibility'] == 'hide')
                 {
                     $item -> visibility = False;
                     $response['visibility'] = 'hide';
@@ -558,7 +560,7 @@ if ($_GET['action'] == 'edit_item_form')
         }
         pa_exit();
     }
-    
+
     /*$conditions = '';
 
     if (isset($_GET['language']))
@@ -568,39 +570,39 @@ if ($_GET['action'] == 'edit_item_form')
         elseif (array_key_exists($_GET['language'], $panthera -> locale -> getLocales()))
             $panthera -> session -> set('admin_gallery_locale', $_GET['language']);
     }
-    
+
     if ($panthera->session->exists('admin_gallery_locale'))
     {
         if ($panthera -> session -> get('admin_gallery_locale') != '')
             $conditions = array('language' => $panthera -> session -> get('admin_gallery_locale'));
     }*/
-    
+
     // get categories
     $conditions = array('language' => $language);
     $categories = getGalleryCategories($conditions);
-    
+
     // with title filter
     $categoriesFiltered = array();
-        
+
     foreach ($categories as $category)
     {
         if (isset($_GET['filter']))
         {
             if (!stristr($category->title, $_GET['filter']))
                 continue;
-        }   
-        
+        }
+
         $categoriesFiltered[$category->unique] = $category;
     }
-    
+
     if (defined('GALLERY_FILTER'))
     {
         $template -> push('category_filter', $_GET['filter'].GALLERY_FILTER);
         $template -> push('category_filter_complete', $_GET['filter'].GALLERY_FILTER);
     } else
         $template -> push('category_filter', $_GET['filter']);
-        
-    
+
+
     $template -> push('category_list', $categoriesFiltered);
     $template -> display($tpl);
     pa_exit();

@@ -1,4 +1,4 @@
-    {include 'header.tpl'}
+    {include="header.tpl"}
     
     <script type="text/javascript">
     function toggleDebugValue()
@@ -13,8 +13,8 @@
     
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash">{"Dash"|localize}</a></li>
-        <li class="active"><a data-ignore="true">{"Debugging center"|localize}</a></li>
+        <li><a href="?display=dash">{function="localize('Dash')"}</a></li>
+        <li class="active"><a data-ignore="true">{function="localize('Debugging center')"}</a></li>
       </ul>
     </nav>
 
@@ -25,20 +25,20 @@
         <ul>
             <ul class="list inset">
              
-             <li class="list-divider">{"Tools"|localize:debug}</li>
+             <li class="list-divider">{function="localize('Tools', 'debug')"}</li>
              
-             {foreach from=$tools item=i key=k}
+             {loop="$tools"}
               <li class="list-item-single-line selectable">
-                <a href="{$i.link}" data-ignore="true" data-transition="push">
-                    <p style="vertical-align: middle;">{"$i.name"|localize:debug}</p>
+                <a href="{$value.link}" data-ignore="true" data-transition="push">
+                    <p style="vertical-align: middle;">{function="localize($value.name, 'debug')"}</p>
                 </a>
               </li>
-             {/foreach}
+             {/loop}
              
-             <li class="list-divider">{"Debugger state"|localize:debug}</li>
+             <li class="list-divider">{function="localize('Debugger state', 'debug')"}</li>
               <li class="list-item-single-line selectable">
                 <a href="" onclick="toggleDebugValue();" data-ignore="true">
-                    <p style="vertical-align: middle;" id="debugger_state">{if $debug eq true} {"True"|localize} {else} {"False"|localize} {/if}</p>
+                    <p style="vertical-align: middle;" id="debugger_state">{if="$debug == true"} {function="localize('True')"} {else} {function="localize('False')"} {/if}</p>
                 </a>
               </li>
              
@@ -49,4 +49,4 @@
    </div>
    <!-- End of content -->
      
-    {include 'footer.tpl'}
+    {include="footer.tpl"}

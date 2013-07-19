@@ -146,9 +146,9 @@ class pantheraTemplate extends pantheraClass
         $this->caching = (bool)$this->panthera->config->getKey('template_caching', False, 'bool');
         $this->cache_lifetime = intval($this->panthera->config->getKey('template_cache_lifetime', 120, 'int'));
         
-        $cacheDir = False;
-        if ($this->caching == True)
-            $cacheDir = SITE_DIR. '/content/tmp/templates_c/';
+        //$cacheDir = False;
+        //if ($this->caching == True)
+        $cacheDir = SITE_DIR. '/content/tmp/templates_c/';
         
         // configure RainTPL engine
         Rain\Tpl::configure(array("base_url" => null, "tpl_dir"	=> '/', "cache_dir"	=> $cacheDir, "debug" => $this->debugging, 'auto_escape' => false, 'php_enabled' => true, 'sandbox' => false));

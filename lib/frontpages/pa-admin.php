@@ -23,6 +23,7 @@ if ($_SERVER['QUERY_STRING'] != '')
 
 $panthera -> importModule('simpleMenu');
 
+/** Admin Menu **/
 // build a menu
 $menu = new simpleMenu();
 $menu -> add('dash', localize('Dash'), '?display=dash', '', '', '');
@@ -41,6 +42,9 @@ $panthera -> get_options('admin_menu', $menu);
 
 // set current active menu (optional)
 $menu -> setActive(@$_GET['display']);
+/** End of Admin Menu **/
+
+$panthera -> template -> push ('user', $panthera->user);
 
 // langauges list
 $locales = $panthera -> locale -> getLocales();

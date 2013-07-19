@@ -1,9 +1,9 @@
-    {include 'header.tpl'}
+    {include="header.tpl"}
 
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=debug" data-transition="push">{"Debugging center"|localize}</a></li>
-        <li class="active"><a data-ignore="true">{"Informations about system"|localize:settings}</a></li>
+        <li><a href="?display=debug" data-transition="push">{function="localize('Debugging center')"}</a></li>
+        <li class="active"><a data-ignore="true">{function="localize('Informations about system', 'settings')"}</a></li>
       </ul>
     </nav>
 
@@ -12,33 +12,33 @@
         <ul>
             <ul class="list inset">
 
-             <li class="list-divider">{"Developer informations"|localize:settings}</li>
-            {foreach from=$settings_list key=k item=v}
+             <li class="list-divider">{function="localize('Developer informations', 'settings')"}</li>
+            {loop="$settings_list"}
              <li class="list-item-multi-line selectable">
-                    <h3 style="font-size: 14px;">{$v}</h3>
-                    <p>{$k}</p>
+                    <h3 style="font-size: 14px;">{$value}</h3>
+                    <p>{$key}</p>
              </li>
-            {/foreach}
+            {/loop}
 
             <br><br>
 
-             <li class="list-divider">{"List of defined constants"|localize:settings}</li>
-            {foreach from=$constants key=k item=v}
+             <li class="list-divider">{function="localize('List of defined constants', 'settings')"}</li>
+            {loop="$constants"}
              <li class="list-item-multi-line selectable">
-                    <h3>{$v}</h3>
-                    <p>{$k}</p>
+                    <h3>{$value}</h3>
+                    <p>{$key}</p>
              </li>
-            {/foreach}
+            {/loop}
 
             <br><br>
 
-             <li class="list-divider">{"List of access controls for current user"|localize:settings}</li>
-            {foreach from=$acl_list key=k item=v}
+             <li class="list-divider">{function="localize('List of access controls for current user', 'settings')"}</li>
+            {loop="$acl_list"}
              <li class="list-item-multi-line selectable">
-                    <h3>{$v}</h3>
-                    <p>{$k}</p>
+                    <h3>{$value}</h3>
+                    <p>{$key}</p>
              </li>
-            {/foreach}
+            {/loop}
 
             </ul>
         </ul>
@@ -46,4 +46,4 @@
 
     </div>
 
-    {include 'footer.tpl'}
+    {include="footer.tpl"}

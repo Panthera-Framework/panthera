@@ -131,6 +131,7 @@ if (!defined('SKIP_TEMPLATE'))
     $template -> push('PANTHERA_URL', $panthera->config->getKey('url'));
     $template -> push('AJAX_URL', $panthera->config->getKey('ajax_url'));
     $template -> push('site_template_css', $panthera->config->getKey('main_css'));
+    $template -> push('PANTHERA_VERSION', PANTHERA_VERSION);
     $panthera -> template = $template;
 }
 

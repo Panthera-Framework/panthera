@@ -107,7 +107,7 @@ sliderChangeImage('{$link}');
         <tr>
             <td>{function="localize('Visibility', 'gallery')"}</td>
             <td>
-                  <input type="checkbox" name="visibility" {if="$visibility == '1'}checked='checked' {/if"}value="1">
+                  <input type="checkbox" name="visibility" {if="$visibility == '1'"}checked='checked' {/if}value="1">
             </td>
         </tr>
 
@@ -116,7 +116,7 @@ sliderChangeImage('{$link}');
             <td>
                   <select name="gallery_id">
                    {loop="$category_list"}
-                        <option value="{$i->id}" {if="$i->id == $gallery_id} selected='selected'{/if}>{$i->title} ({$i->language"})</option>
+                        <option value="{$i->id}" {if="$i->id == $gallery_id"} selected='selected'{/if}>{$i->title} ({$i->language})</option>
                    {/loop}
                   </select>
             </td>

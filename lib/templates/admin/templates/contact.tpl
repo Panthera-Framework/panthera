@@ -1,6 +1,6 @@
 {$site_header}
 <script type="text/javascript">
-var googleMap;
+var map = "";
 
 function gmapsCallback ()
 {
@@ -10,10 +10,10 @@ function gmapsCallback ()
         center: new google.maps.LatLng({$map_x}, {$map_y})
     };
                 
-    googleMap.createMap("map", mapOptions);
+    map.createMap("map", mapOptions);
 }
 
-jQuery(document).ready(function($) {
+jQuery(document).ready(function() {
     /**
       * Init MCE Editor
       *
@@ -34,8 +34,11 @@ jQuery(document).ready(function($) {
         {$map_y = 0}
         {/if}
 
-        googleMap = new panthera.googleMap('gmapsCallback');
-
+        map = new panthera.googleMap('gmapsCallback');
+        
+        if (typeof google !== 'undefined')
+            gmapsCallback();
+        
         /**
           * Find place from input
           *
@@ -47,8 +50,8 @@ jQuery(document).ready(function($) {
 
             if (place != "")
             {
-                googleMap.getLocation(place);
-                $('#map_bounds').val(JSON.stringify({ "bounds":map.getBounds(), "zoom": map.getZoom(), "center": map.getCenter() }));
+                map.getLocation(place);
+                $('#map_bounds').val(JSON.stringify({ "bounds":map.map.getBounds(), "zoom": map.map.getZoom(), "center": map.map.getCenter() }));
             }
 
             return false;
@@ -61,7 +64,7 @@ jQuery(document).ready(function($) {
           */
 
         $('#contact_form').submit(function () {
-            $('#map_bounds').val(JSON.stringify({ "bounds":map.getBounds(), "zoom": map.getZoom(), "center": map.getCenter() }));
+            $('#map_bounds').val(JSON.stringify({ "bounds":map.map.getBounds(), "zoom": map.map.getZoom(), "center": map.map.getCenter() }));
         });
     }
 
@@ -82,7 +85,7 @@ jQuery(document).ready(function($) {
 });
 </script>
 
-        <div class="titlebar">{function="localize('Contact', 'contactpage')"} - {function="localize('Street adress, phone number, location etc.', 'contactpage')"}{include="_navigation_panel.tpl"}</div><br>
+        <div class="titlebar">{function="localize('Contact', 'contactpage')"} - {function="localize('Street adress, phone number, location etc.', 'contactpage')"} ({$selected_language}){include="_navigation_panel.tpl"}</div><br>
 
         <div class="msgSuccess" id="userinfoBox_success"></div>
         <div class="msgError" id="userinfoBox_failed"></div>

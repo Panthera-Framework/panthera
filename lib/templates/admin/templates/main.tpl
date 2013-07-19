@@ -58,22 +58,22 @@
 <body>
 
     <header id="siteHeader">
-        <input type="button" onclick="navigateTo('pa-login.php?logout=True')" value="{function="localize('Logout')"}" style="float: right; margin-right: 20px; margin-top: 10px;">
         <div class="siteLogo"><h1><a href="{$PANTHERA_URL}/pa-admin.php">Panthera</a></h1> 
-        <span class="userHeader">
+        <span class="userHeader" style="width: 80%; height: 60px;">
             <div class="wrapper-demo">
-					<div id="dd" class="wrapper-dropdown-5" tabindex="1">John Doe
+					<div id="dd" class="wrapper-dropdown-5" tabindex="1">{$user->login}
 						<ul class="dropdown">
-							<li><a href="#"><i class="icon-user"></i>Profile</a></li>
-							<li><a href="#"><i class="icon-cog"></i>Settings</a></li>
-							<li><a href="#"><i class="icon-remove"></i>Log out</a></li>
+							<li><a href="#" onclick="navigateTo('?display=settings&action=my_account');"><i class="icon-user"></i>{function="localize('My profile')"}</a></li>
+							<li><a href="{$PANTHERA_URL}/pa-login.php?logout=True"><i class="icon-remove"></i>{function="localize('Logout')"}</a></li>
 						</ul>
 					</div>
 		    ​</div>
 		    
+		    <div class="flagsInHeader">
             {loop="$flags"}
                 <a href="?display=dash&_locale={$value}"><img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 12px; margin: 1px;"></a>
             {/loop}
+            </div>
         </span></div>
     </header>
 
@@ -113,9 +113,6 @@
 	            </ul>-->
 	    </aside>
 	    </div>
-
-
-
 
         <footer>
             <div class="footer">

@@ -557,7 +557,7 @@ abstract class pantheraFetchDB
             {
                 if ($SQL -> rowCount() > 0)
                 {
-                    $this->_data = $SQL -> fetch();
+                    $this->_data = $SQL -> fetch(PDO::FETCH_ASSOC);
                     
                     // write to cache
                     if ($panthera->cacheType('cache') == 'memory' and $panthera->db->cache > 0 and $this->cache == True)

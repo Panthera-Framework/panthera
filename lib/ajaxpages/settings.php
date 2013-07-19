@@ -93,6 +93,8 @@ if (!defined('IN_PANTHERA'))
       */
 
     } elseif (@$_GET['action'] == 'my_account') {
+        $panthera -> importModule('meta');
+    
         $tpl = "myaccount.tpl";
 
         if (isset($_GET['uid']) AND ($user->attributes->admin OR $user->attributes->superuser))
@@ -115,6 +117,9 @@ if (!defined('IN_PANTHERA'))
 
         if (isset($_POST['aclname']))
         {
+            if (strlen($_POST['aclname']) < 3)
+                ajax_exit(array('status' => 'failed', 'message' => localize('Too short ACL attribute name')));
+        
             if ($user->attributes->admin or $user->attributes->superuser)
             {
                 if ($_POST['value'] == "1")
@@ -126,7 +131,7 @@ if (!defined('IN_PANTHERA'))
 
                 ajax_exit(array('status' => 'success', 'name' => $_POST['aclname'], 'value' => $aclValue, 'post_value' => $_POST['value'], 'result' => $u -> acl -> get($_POST['aclname'])));
             } else {
-                ajax_exit(array('status' => 'success', 'message' => localize('You are not allowed to manage permissions', 'messages')));
+                ajax_exit(array('status' => 'failed', 'message' => localize('You are not allowed to manage permissions', 'messages')));
             }
         }
 

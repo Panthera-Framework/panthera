@@ -1,0 +1,9 @@
+php_flag magic_quotes_gpc Off
+
+RewriteEngine On
+RewriteBase /webnull-blog/
+RewriteRule ^index.html$  index.php
+RewriteRule ^index$  index.php
+RewriteRule ^index.py$  index.php
+RewriteRule ^index.pyc$  index.php
+

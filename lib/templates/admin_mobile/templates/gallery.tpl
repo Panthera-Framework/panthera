@@ -1,9 +1,9 @@
-    {include 'header.tpl'}
+    {include="header.tpl"}
 
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash" data-transition="push">{"Dash"|localize}</a></li>
-        <li class="active"><a data-ignore="true">{"Gallery"|localize}</a></li>
+        <li><a href="?display=dash" data-transition="push">{function="localize('Dash')"}</a></li>
+        <li class="active"><a data-ignore="true">{function="localize('Gallery')"}</a></li>
       </ul>
     </nav>
 
@@ -13,19 +13,19 @@
         <ul>
             <li id="gallery" class="tab-item active">
                 <ul class="list inset">
-                   <li class="list-divider">{"Gallery categories"|localize:gallery}</li>
+                   <li class="list-divider">{function="localize('Gallery categories', 'gallery')"}</li>
 
-                  {foreach from=$category_list key=k item=i}
+                  {loop="$category_list"}
                    <li class="list-item-single-line">
                       <div class="inline">
-                        <a href="?display=gallery&action=display_category&ctgid={$i->id}"><img src="{$i->thumb_url|pantheraUrl}" width="40px" height="40px" style="vertical-align: middle;"></a>
-                        <input type="text" placeholder="{"Name"|localize:mailing}" value='{$i->title}' id="value_{$i->id}" class="input-text inline" style="border-bottom: 0px; max-width: calc(100% - 162px);" onfocus="jQuery('#save_{$i->id}').show();">
-                        <button class="btn-small" style="float: right; display: none;" id="save_{$i->id}" onclick="saveCategory('{$i->id}');">{"Save"|localize:messages}</button>
-                        <!-- <button class="btn-small" style="float:right;">{"Edit"|localize:gallery}</button> -->
+                        <a href="?display=gallery&action=display_category&ctgid={$value->id}"><img src="{$value->thumb_url|pantheraUrl}" width="40px" height="40px" style="vertical-align: middle;"></a>
+                        <input type="text" placeholder="{function="localize('Name', 'mailing')"}" value='{$value->title}' id="value_{$value->id}" class="input-text inline" style="border-bottom: 0px; max-width: calc(100% - 162px);" onfocus="jQuery('#save_{$value->id}').show();">
+                        <button class="btn-small" style="float: right; display: none;" id="save_{$value->id}" onclick="saveCategory('{$value->id}');">{function="localize('Save', 'messages')"}</button>
+                        <!-- <button class="btn-small" style="float:right;">{function="localize('Edit', 'gallery')"}</button> -->
                       </div>
                      </a>
                    </li>
-                  {/foreach}
+                  {/loop}
                 </ul>
             </li>
         </ul>
@@ -54,4 +54,4 @@
     }
     </script>
 
-    {include 'footer.tpl'}
+    {include="footer.tpl"}

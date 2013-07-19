@@ -198,7 +198,7 @@ function aclModify(id, name)
                     <td style="border-right: 0px;">{$value.name}</td>
 
                     {if="$allow_edit_acl == True"}
-                    <td style="border-left: 0px;"><select id="acl_{$k}" onChange="aclModify('acl_{$k}', '{$k}');" style="float: right; margin: 4px;"><option value="1" {if="$value.active == 1"}selected{/if}>{function="localize('Yes', 'messages')"}}</option><option value='0' {if="$value.active == 0"}selected{/if}>{function="localize('No', 'messages')"}</option></td>
+                    <td style="border-left: 0px;"><select id="acl_{$key}" onChange="aclModify('acl_{$key}', '{$key}');" style="float: right; margin: 4px;"><option value="1" {if="$value.active == 1"}selected{/if}>{function="localize('Yes', 'messages')"}</option><option value='0' {if="$value.active == 0"}selected{/if}>{function="localize('No', 'messages')"}</option></td>
                     {else}
                     <td style="border-left: 0px;">{$value.value}</td>
                     {/if}

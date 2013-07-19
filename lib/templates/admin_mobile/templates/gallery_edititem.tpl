@@ -2,8 +2,8 @@
     
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=gallery&action=display_category&ctgid={$gallery_id}" data-transition="push">{"Gallery category"|localize}</a></li>
-        <li class="active"><a data-ignore="true">{"Editing gallery image"|localize:gallery}</a></li>
+        <li><a href="?display=gallery&action=display_category&ctgid={$gallery_id}" data-transition="push">{function="localize('Gallery category')"}</a></li>
+        <li class="active"><a data-ignore="true">{function="localize('Editing gallery image', 'gallery')"}</a></li>
       </ul>
     </nav>
 
@@ -12,20 +12,20 @@
         <ul>
             <li id="mailing" class="tab-item active">
                 <ul class="list">
-                    <li class="list-divider">{"Information"|localize:gallery}</li>
-                    <input type="text" name="title" placeholder="{"Title"|localize:gallery}" value="{$title}" class="input-text" autocomplete="off">
-                    <input type="text" name="description" placeholder="{"Decription"|localize:gallery}" value="{$description}" class="input-text" autocomplete="off">
+                    <li class="list-divider">{function="localize('Information', 'gallery')"}</li>
+                    <input type="text" name="title" placeholder="{function="localize('Title', 'gallery')"}" value="{$title}" class="input-text" autocomplete="off">
+                    <input type="text" name="description" placeholder="{function="localize('Decription', 'gallery')"}" value="{$description}" class="input-text" autocomplete="off">
                     
-                    <li class="list-divider">{"Visibility"|localize:gallery}</li>
+                    <li class="list-divider">{function="localize('Visibility', 'gallery')"}</li>
                     <li class="list-item-single-line selectable">
                         <a id="visibility_text" onclick="toggleItemVisibility();">
-                            {if $visibility eq "1"} {"True"|localize} {else} {"False"|localize} {/if}
+                            {if="$visibility == '1'} {'True'|localize} {else} {'False'|localize} {/if"}
                         </a>
-                            <input type="hidden" name="visibility" id="visibility_value" {if $visibility eq "1"} value="1" {else} value="0" {/if}>
+                            <input type="hidden" name="visibility" id="visibility_value" {if="$visibility == '1'} value='1' {else} value='0' {/if"}>
                     </li>
-                    <input type="submit" class="btn-block" value="{"Save"|localize}" id="save_button">
+                    <input type="submit" class="btn-block" value="{function="localize('Save')"}" id="save_button">
                     
-                    <li class="list-divider">{"Picture"|localize:gallery}</li>
+                    <li class="list-divider">{function="localize('Picture', 'gallery')"}</li>
                     <li>
                         <div style="width: 100%; max-height: 100%;">
                             <center><img src="{$link}" style="max-width: 100%;"></center>
@@ -75,13 +75,13 @@
         
         if (value == 1)
         {
-            $('#visibility_text').text("{"False"|localize}");
+            $('#visibility_text').text("{function="localize('False')"}");
             $('#visibility_value').val('0');
         }
                         
         if (value == 0)
         {
-            $('#visibility_text').text("{"True"|localize}");
+            $('#visibility_text').text("{function="localize('True')"}");
             $('#visibility_value').val('1');
         }
     }

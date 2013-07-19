@@ -1,8 +1,8 @@
-    {include 'header.tpl'}
+    {include="header.tpl"}
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash" data-transition="push">{"Dash"|localize}</a></li>
-        <li class="active"><a data-ignore="true">{"Mailing"|localize:mailing}</a></li>
+        <li><a href="?display=dash" data-transition="push">{function="localize('Dash')"}</a></li>
+        <li class="active"><a data-ignore="true">{function="localize('Mailing', 'mailing')"}</a></li>
       </ul>
     </nav>
 
@@ -12,30 +12,30 @@
         <ul>
             <li id="mailing" class="tab-item active">
                 <ul class="list inset">
-                  {foreach from=$mail_attributes key=k item=v}
-                   <li class="list-divider">{"$v.name"|localize:mailing}</li>
+                  {loop="$mail_attributes"}
+                   <li class="list-divider">{function="localize($value.name, 'mailing')"}</li>
                    <li class="list-item-single-line">
-                     {if is_bool($v.value)}
-                      <a id="php_mail" onclick="togglePhpMail();" style="display: inline;">{if $v.value eq "1"} {"True"|localize} {else} {"False"|localize} {/if}</a>
-                      <input type="text" id="value_{$v.record_name}" {if $v.value eq "1"} value="1" {else} value="0" {/if} style="display: none;">
-                     {elseif $v.record_name eq "mailing_password"}
-                      <input type="password" placeholder="{"$v.name"|localize:mailing}" value='{$v.value}' id="value_{$v.record_name}" class="input-text inline" onfocus="this.value = ''">
+                     {if="is_bool($value.value)"}
+                      <a id="php_mail" onclick="togglePhpMail();" style="display: inline;">{if="$value.value == True"} {function="localize('True')"} {else} {function="localize('False')"} {/if}</a>
+                      <input type="text" id="value_{$value.record_name}" {if="$value.value == True"} value='1' {else} value='0' {/if} style="display: none;">
+                     {elseif="$value.record_name == 'mailing_password'"}
+                      <input type="password" placeholder="{function="localize($value.name, 'mailing')"}" value='{$value.value}' id="value_{$value.record_name}" class="input-text inline" onfocus="this.value = ''">
                      {else}
-                      <input type="text" placeholder="{"$v.name"|localize:mailing}" value='{$v.value}' id="value_{$v.record_name}" class="input-text inline">
+                      <input type="text" placeholder="{function="localize($value.name, 'mailing')"}" value='{$value.value}' id="value_{$value.record_name}" class="input-text inline">
                      {/if}
-                      <button class="btn-small" onclick="saveVariable('{$v.record_name}');" style="float: right;" id="button_{$v.record_name}">{"Save"|localize}</button>
+                      <button class="btn-small" onclick="saveVariable('{$value.record_name}');" style="float: right;" id="button_{$value.record_name}">{function="localize('Save')"}</button>
                    </li>
-                  {/foreach}
+                  {/loop}
                   
                   <br><br>
                  
-                  <li class="list-divider">{"Send an e-mail"|localize:mailing}</li>
+                  <li class="list-divider">{function="localize('Send an e-mail', 'mailing')"}</li>
                    <form action="{$AJAX_URL}?display=mailing&action=send" method="POST" id="mail_form">
-                    <input type="text" name="subject" placeholder="{"Subject"|localize:mailing}" class="input-text" autocomplete="off">
-                    <input type="text" name="recipients" placeholder="{"Recipients"|localize:mailing}" class="input-text" autocomplete="off">
-                    <input type="email" name="from" placeholder="{"From"|localize:mailing}" class="input-text" autocomplete="off" value="{$last_from}">
-                    <input type="text" name="body" placeholder="{"Content"|localize:mailing}" class="input-text" autocomplete="off">
-                    <input type="submit" class="btn-block" value="{"Send"|localize:mailing}" id="send_button">
+                    <input type="text" name="subject" placeholder="{function="localize('Subject', 'mailing')"}" class="input-text" autocomplete="off">
+                    <input type="text" name="recipients" placeholder="{function="localize('Recipients', 'mailing')"}" class="input-text" autocomplete="off">
+                    <input type="email" name="from" placeholder="{function="localize('From', 'mailing')"}" class="input-text" autocomplete="off" value="{$last_from}">
+                    <input type="text" name="body" placeholder="{function="localize('Content', 'mailing')"}" class="input-text" autocomplete="off">
+                    <input type="submit" class="btn-block" value="{function="localize('Send', 'mailing')"}" id="send_button">
                    </form>
                </ul>    
             </li>
@@ -106,16 +106,17 @@
         if (variable == 1)
         {
             $("#value_mailing_use_php").val('0');
-            $('#php_mail').text("{"False"|localize}");
+            $('#php_mail').text("{function="localize('False')"}");
         }
         
         if (variable == 0)
         {
             $("#value_mailing_use_php").val('1');
-            $('#php_mail').text("{"True"|localize}");
+            $('#php_mail').text("{function="localize('True')"}");
         }
     }
 
     </script>
 
-    {include 'footer.tpl'}
+    {include="footer.tpl"}
+    

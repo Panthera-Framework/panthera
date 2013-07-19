@@ -21,3 +21,6 @@ $panthera -> logging -> printOutput = True;
 
 // print generated output before setting printOutput to True
 print($panthera->logging->getOutput());
+
+if (is_file('content/phpsh.rc.php'))
+   include 'content/phpsh.rc.php';

@@ -1,9 +1,9 @@
-    {include 'header.tpl'}
+    {include="header.tpl"}
     
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash" data-transition="push">{"Dash"|localize}</a></li>
-        <li class="active"><a data-ignore="true">{"Users"|localize}</a></li>
+        <li><a href="?display=dash" data-transition="push">{function="localize('Dash')"}</a></li>
+        <li class="active"><a data-ignore="true">{function="localize('Users')"}</a></li>
       </ul>
     </nav>
 
@@ -12,33 +12,33 @@
         <ul>
           <ul class="list inset">
 
-             <li class="list-divider">{"Users"|localize} {$users_from}-{$users_to}</li>
+             <li class="list-divider">{function="localize('Users')"} {$users_from}-{$users_to}</li>
 
-            {foreach from=$users_list key=k item=v}
+            {loop="$users_list"}
              <li class="list-item-two-lines selectable">
-                <a {if $view_users == True} href="?display=settings&action=my_account&uid={$v.id}" {else} href="" {/if}>
-                    <h3>{$v.full_name}</h3>
-                    <p>{$v.login} ({$v.primary_group})</p>
+                <a {if="$view_users == True"} href='?display=settings&action=my_account&uid={$value.id}' {else} href='' {/if}>
+                    <h3>{$value.full_name}</h3>
+                    <p>{$value.login} ({$value.primary_group})</p>
                 </a>
              </li>
-            {/foreach}
+            {/loop}
 
-            {foreach from=$pager key=user item=active}
-             {if $active == true}
+            {loop="$pager"}
+             {if="$value == true"}
                 {$control = $user}
              {/if}
 
-             {if $control eq $user-1}
-              <li class="list-divider">{"Pages"|localize:settings}</li>
+             {if="$control == $user-1"}
+              <li class="list-divider">{function="localize('Pages', 'settings')"}</li>
               <li class="list-item-single-line selectable">
-                 <a href="" onclick="jumpToAjaxPage({$user+1});"> {"Next page"|localize:settings} </a>
+                 <a href="" onclick="jumpToAjaxPage({$user+1});"> {function="localize('Next page', 'settings')"} </a>
               </li>
-             {elseif $control > 0}
+             {elseif="$control > 0"}
               <li class="list-item-single-line selectable">
-                 <a href="" onclick="jumpToAjaxPage({$user-1});"> {"Previous page"|localize:settings} </a>
+                 <a href="" onclick="jumpToAjaxPage({$user-1});"> {function="localize('Previous page', 'settings')"} </a>
               </li>
              {/if}
-            {/foreach}
+            {/loop}
 
           </ul>
        </ul>
@@ -53,4 +53,4 @@
     });
     </script>
 
-    {include 'footer.tpl'}
+    {include="footer.tpl"}

@@ -19,24 +19,6 @@ if (!checkUserPermissions($user))
     pa_exit();
 }
 
-// cosmetics, so here are permissions
-$panthera -> addPermission('can_see_users_table', localize('Can see other profiles (admin panel)'));
-$panthera -> addPermission('can_see_system_info', localize('Can view system informations (admin panel)'));
-$panthera -> addPermission('can_update_config_overlay', localize('Can change config overlay (admin panel)'));
-$panthera -> addPermission('can_update_locales', localize('Can manage system locales', 'messages'));
-$panthera -> addPermission('can_update_config_overlay', localize('Can edit site configuration', 'messages'));
-$panthera -> addPermission('can_see_system_info', localize('Can see system informations', 'messages'));
-$panthera -> addPermission('can_see_debug', localize('Can view debugging informations', 'messages'));
-$panthera -> addPermission('can_manage_debug', localize('Can manage debugger system', 'messages'));
-$panthera -> addPermission('can_see_debhook', localize('Can view plugins debugger page', 'messages'));
-$panthera -> addPermission('can_update_menus', localize('Can update menus', 'messages'));
-$panthera -> addPermission('can_see_ajax_pages', localize('Can see index of all ajax pages', 'messages'));
-$panthera -> addPermission('can_manage_all_uploads', localize('Can edit and delete existing uploads added by other users', 'messages'));
-$panthera -> addPermission('can_delete_own_uploads', localize('Can delete own uploaded files', 'messages'));
-$panthera -> addPermission('can_upload_files', localize('Can upload files', 'messages'));
-$panthera -> addPermission('can_view_qmsg', localize('Can view quick messages', 'messages'));
-$panthera -> addPermission('can_qmsg_manage_all', localize('Can manage all quickMessages elements', 'messages'));
-
 
 if(empty($_SERVER['HTTP_X_REQUESTED_WITH']) and !isset($_GET['_bypass_x_requested_with']))
     pa_redirect('pa-admin.php?'.$_SERVER['QUERY_STRING']);

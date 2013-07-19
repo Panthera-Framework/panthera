@@ -50,7 +50,7 @@
       <h1 class="title" style="color: #33b5e5;">&nbsp;&nbsp;&nbsp;Panthera Mobile</h1>
 
       <ul class="actions pull-right">
-        <li><a href="pa-login.php?logout=True" class="action" title="{"Sign out"|localize}" data-transition="push"><i class="icon-fries"></i></a></li>
+        <li><a href="pa-login.php?logout=True" class="action" data-transition="push"><i class="icon-fries"></i></a></li>
       </ul>
 
     </header>
@@ -59,7 +59,7 @@
     <!-- Bottom -->
     <nav class="action-bar fixed-bottom">
           <ul class="actions flex" data-overflow="false">
-            <li><a href="" class="action" title="{"Refresh"|localize}" data-ignore="true"><i class="icon-refresh"></i></a></li>
+            <li><a href="" class="action" title="{function="localize('Refresh')"}" data-ignore="true"><i class="icon-refresh"></i></a></li>
           </ul>
     </nav>
     <!-- End of bottom -->
