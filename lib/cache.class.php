@@ -475,7 +475,7 @@ class varCache_memcached extends pantheraClass
         if ($expire > -1)
             $this->m->set($this->prefix.'.vc.' .$var, $value, $expire);
         else
-            $this->m->get($this->prefix.'.vc.' .$var, $value);
+            $this->m->set($this->prefix.'.vc.' .$var, $value);
             
         return True;
     }

@@ -147,7 +147,7 @@ $(document).ready(function(){
 
     // AJAX UPLOAD FORM
     $('#upload_form').submit(function () {
-        panthera.jsonPOST({ data: '#upload_form', async: true,
+        panthera.jsonPOST({ data: '#upload_form', async: false, isUploading: true,
             before: function () {
                 $('#upload_box_window').css({ opacity: 1 });
             
