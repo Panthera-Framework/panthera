@@ -596,28 +596,35 @@ h1, h2, h3, h4, h5, h6 {
 	ul.menu li ul {
 		margin-bottom:-1px;
 	}
+	
 	ul.menu li ul li a, ul.menu ul.menu li ul li a {
 	  border-bottom: 1px solid #969ea3;
 	  background-image:none;
 	}
+	
 	ul.menu li ul li a:hover, ul.menu ul.menu li ul li a:hover {
-		background: #455057;
+		background-color: #455057;
 		color:#fff;
 		margin-left: -1px;
 	}
+	
 	ul.menu li ul li a:hover span.icon {
 		color:#fff;
 	}
+	
 	ul.menu ul.menu li a:hover {
 		border-left: 0;
 		padding-left: 0.5em;
 	}
+	
 	ul.menu ul.menu {
 		border-left: 5px #f00 solid;
 	}
+	
 	ul.menu a.active span.icon {
 		color:#fff;
 	}
+	
 	.menu span.icon {
 		background-repeat: no-repeat;
 		background-position:bottom left;

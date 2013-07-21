@@ -91,6 +91,7 @@ $(function(){
 				 <div class="clear"></div>
         </div>
         
+        {if="isset($showWidgets)"}
         <div style="float: right; margin-right: 40px; height: 20px;">
             <!-- add new widget button -->
             <a href="#" id="newWidgetIcon" {if="$widgetsLocked == True"}style="display: none;"{/if}>
@@ -114,6 +115,9 @@ $(function(){
                 <img src="{$PANTHERA_URL}/images/admin/object-{if="$widgetsLocked == True"}unlocked{else}locked{/if}.png" style="height: 20px;" id="widgetsLockedImg">
             </a>
         </div>
+        
+        <div style="width: 100%; height: 20px;">&nbsp;</div>
+        {/if}
 
         {if="isset($galleryItems) and count($galleryItems) > 0"}
         <div class="grid-2">

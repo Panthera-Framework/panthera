@@ -71,7 +71,7 @@ function conftool_array(k, value)
                 <tr>
                     <td>
 
-                        <small>{$value[0]|localize:type}</small> &nbsp;<b>{if="isset($value[2])"}{$value[2]}{else}{$key}{/if}</b>
+                        <small>{$value[0]}</small> &nbsp;<b>{if="isset($value[2])"}{$value[2]}{else}{$key}{/if}</b>
 
                     </td>
                     <td>

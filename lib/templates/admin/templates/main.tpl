@@ -98,7 +98,12 @@
 		            <li class="menuLong" style="display:block;">
 			            <ul>
 			                {loop="$admin_menu"}
-				            <li class="menuItemLi"><a href="#" onclick="navigateTo('{$value.link}');"><span class="menuItem">{$value.title}</span></a></li>
+				            <li class="menuItemLi">
+				                <a href="#" onclick="navigateTo('{$value.link}');">
+				                    {if="isset($value.icon)"}
+				                    <span style="position: absolute; top: 7px; width: 50px; height: 28px;"><img src="{$value.icon|pantheraUrl}" style="width: 28px;"></span>
+				                    {/if}
+				                    <span class="menuItem" {if="isset($value.icon)"}style="padding-left: 25px;"{/if}>{$value.title}</span></a></li>
                             {/loop}
 			            </ul>
 		            </li>
