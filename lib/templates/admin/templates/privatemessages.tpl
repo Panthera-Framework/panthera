@@ -38,21 +38,19 @@
 
 {elseif $action eq 'new_message'}
 <script type="text/javascript">
-jQuery("#send_message").ajaxForm({
-    url: '{$AJAX_URL}?display=privatemessages&action=send_message', type: 'post', dataType: 'json', success: function (response) {
-
-        // alert(response);
-
-        if (response.status == "success")
-        {
-                navigateTo('{$AJAX_URL}?display=privatemessages');
+$('#send_message').submit(function () {
+    panthera.jsonPOST( { data: '#send_message', success: function (response) {
+            if (response.status == "success")
+            {
+                navigateTo('?display=privatemessages');
                 jQuery("#new_pmessage").hide();
-                jQuery("#fade").hide()
-        } else {
+                jQuery("#fade").hide();
+            } else {
                 jQuery('#message_error').slideDown();
                 jQuery('#message_error').html(response.message);
+            }
         }
-    }
+    });
 });
 </script>
 

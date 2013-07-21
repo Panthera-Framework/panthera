@@ -59,7 +59,7 @@ $(document).ready(function(){
 
             <tbody>
                 {loop="$files"}
-                <tr {if="$value.bold == True"}style="background-color: rgb(255, 197, 197);"{/if}><td>{$value.name}</td><td>{$value.sum}</td><td>{$value.size}</td><td>{$value.time}</td><td>{if="isset($value.created)"}{function="localize('Created')"}{else}{if="$value.bold == True"}{function="localize('Modified')"}{/if}{/if}</td></tr>
+                <tr {if="='$value.bold == True'}style='background-color: rgb(255, 197, 197);'{/if}><td>{$value.name}</td><td>{$value.sum}</td><td>{$value.size}</td><td>{$value.time}</td><td>{if='isset($value.created)'}{function='localize('Created')'}{else}{if='$value.bold == True'}{function='localize('Modified')'}{/if}{/if"}</td></tr>
                 {/loop}
             </tbody>
        </table>

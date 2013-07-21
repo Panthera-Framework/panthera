@@ -1,14 +1,4 @@
-<script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
-
-$(document).ready(function(){
-    $('#upload_form').ajaxForm({ dataType: 'html',
-        success: function(response) {
-            $('#syschecksum_window').html(response);
-        }
-    });
-});
-
-</script>
+<script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
 
     <div class="titlebar">{function="localize('System error pages', 'errorpages')"} - {function="localize('Test system error pages in one place', 'errorpages')"}{include="_navigation_panel.tpl"}</div>
 

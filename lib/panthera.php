@@ -2055,7 +2055,7 @@ function getContentDir($dir)
         
     if (file_exists(SITE_DIR. '/content/'.$dir))
         return SITE_DIR. '/content/'.$dir;
-
+        
     if (file_exists(PANTHERA_DIR.$dir))
         return PANTHERA_DIR.$dir;
 }

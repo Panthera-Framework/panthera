@@ -505,7 +505,7 @@ class pantheraTemplate extends pantheraClass
 	 * @author Damian Kęska
 	 */
 
-    function display($template=NuLL)
+    function display($template=NuLL, $renderOnly=False)
     {
         $this->timer = microtime_float();
         
@@ -603,7 +603,12 @@ class pantheraTemplate extends pantheraClass
         foreach ($this->vars as $var => $value)
             $this -> tpl -> assign($var, $value);
             
-        print($this -> tpl -> draw($file, True, True));
+        $render = $this -> tpl -> draw($file, True, True);
+            
+        if ($renderOnly == True)
+            return $render;        
+        else
+            print($render);
         
         // generate template execution time
         $this -> timer = (microtime_float() - $this -> timer);
@@ -634,7 +639,7 @@ class pantheraTemplate extends pantheraClass
     
     public function compile($template)
     {
-        return $this->tpl->render($template, $this->vars);
+        return $this->display($template, True);
     }
     
     /**
@@ -790,94 +795,3 @@ class pantheraTemplate extends pantheraClass
         
     }
 }
-
-
-/**
- * Panthera Cache Source
- *
- * @package Panthera\cache\smarty
- * @author Damian Kęska
- */
- 
-/*class Smarty_CacheResource_Panthera extends Smarty_CacheResource_KeyValueStore {
-    protected $panthera;
-
-    public function __construct($panthera)
-    {
-        $this->panthera = $panthera;
-        
-        if ($panthera -> cache == False)
-            throw new Exception('Cannot use panthera->cache when cache is not active in Panthera');
-    }*/
-
-    /**
-     * Read values for a set of keys from cache
-     *
-     * @param array $keys list of keys to fetch
-     * @return array list of values with the given keys used as indexes
-     * @return boolean true on success, false on failure
-     */
-    /*protected function read(array $keys)
-    {
-        $_res = array();
-        
-        foreach ($keys as $key)
-        {
-            $_res[$key] = $this -> panthera -> cache -> get($key);
-        }
-    
-        return $_res;
-    }*/
-
-    /**
-     * Save values for a set of keys to cache
-     *
-     * @param array $keys list of values to save
-     * @param int $expire expiration time
-     * @return boolean true on success, false on failure
-     */
-    /*protected function write(array $keys, $expire=-1)
-    {
-        foreach ($keys as $key => $value)
-        {
-            $this -> panthera -> cache -> set($key, $value, $expire);
-        }
-        
-        return true;
-    }*/
-
-    /**
-     * Remove values from cache
-     *
-     * @param array $keys list of keys to delete
-     * @return boolean true on success, false on failure
-     */
-     
-    /*protected function delete(array $keys)
-    {
-        foreach ($keys as $k) {
-            $this->panthera->cache->remove($k);
-        }
-        return true;
-    }*/
-
-    /**
-     * Remove *all* values from cache
-     *
-     * @return boolean true on success, false on failure
-     */
-     
-    /*protected function purge()
-    {
-        return $this->panthera->cache->clear();
-    }
-}
-*/
-
-function rainStringTag($input)
-{
-    echo 'this is a test';
-    var_dump($input);
-}
-
-
