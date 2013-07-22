@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS `{$db_prefix}run` (
+DROP TABLE IF EXISTS `{$db_prefix}run`;
+
+CREATE TABLE `{$db_prefix}run` (
   `rid` int(16) NOT NULL AUTO_INCREMENT,
   `pid` bigint(32) NOT NULL,
   `name` varchar(64) NOT NULL,
@@ -9,4 +11,5 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}run` (
   KEY `pid` (`pid`),
   KEY `rid` (`rid`),
   KEY `rid_2` (`rid`)
-) ENGINE=MEMORY  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MEMORY AUTO_INCREMENT=1987 DEFAULT CHARSET=utf8;
+

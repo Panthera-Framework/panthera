@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS `{$db_prefix}comments` (
+DROP TABLE IF EXISTS `{$db_prefix}comments`;
+
+CREATE TABLE `{$db_prefix}comments` (
   `id` int(8) NOT NULL AUTO_INCREMENT,
   `title` varchar(128) NOT NULL,
   `content` varchar(256) NOT NULL,
@@ -13,4 +15,5 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}comments` (
   `votes_rank` smallint(3) NOT NULL DEFAULT '0',
   `content_id` varchar(64) NOT NULL COMMENT 'Content this comment belong to, eg. gallery item "gallery_item_1" or "quickmessage_1"',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS `{$db_prefix}private_messages` (
+DROP TABLE IF EXISTS `{$db_prefix}private_messages`;
+
+CREATE TABLE `{$db_prefix}private_messages` (
   `id` int(8) NOT NULL AUTO_INCREMENT,
   `title` varchar(128) NOT NULL,
   `sender` varchar(32) NOT NULL,
@@ -11,4 +13,5 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}private_messages` (
   `visibility_sender` tinyint(1) NOT NULL,
   `visibility_recipient` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+

@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS `{$db_prefix}newsletter_users` (
+DROP TABLE IF EXISTS `{$db_prefix}newsletter_users`;
+
+CREATE TABLE `{$db_prefix}newsletter_users` (
   `id` mediumint(8) NOT NULL AUTO_INCREMENT COMMENT 'Entry id',
   `nid` smallint(5) NOT NULL COMMENT 'Newsletter category id',
   `address` varchar(60) NOT NULL COMMENT 'E-mail or jabber or other adress',
@@ -9,4 +11,5 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}newsletter_users` (
   `unsubscribe_id` varchar(32) DEFAULT '' COMMENT 'Can be used to allow users removing their subscriptions',
   `activate_id` varchar(64) DEFAULT '' COMMENT 'Used to confirm subscription',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+

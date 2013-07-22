@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS `{$db_prefix}metas` (
+DROP TABLE IF EXISTS `{$db_prefix}metas`;
+
+CREATE TABLE `{$db_prefix}metas` (
   `metaid` int(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(128) NOT NULL,
   `value` varchar(128) NOT NULL,
@@ -6,4 +8,5 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}metas` (
   `userid` varchar(16) NOT NULL,
   PRIMARY KEY (`metaid`),
   KEY `metaid` (`metaid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=41 ;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
+

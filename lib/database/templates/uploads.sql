@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS `{$db_prefix}uploads` (
+DROP TABLE IF EXISTS `{$db_prefix}uploads`;
+
+CREATE TABLE `{$db_prefix}uploads` (
   `id` int(8) NOT NULL AUTO_INCREMENT,
   `category` varchar(32) NOT NULL DEFAULT 'default',
   `location` varchar(256) NOT NULL,
@@ -10,4 +12,5 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}uploads` (
   `protected` tinyint(1) NOT NULL DEFAULT '0',
   `public` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+

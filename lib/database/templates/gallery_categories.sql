@@ -1,5 +1,8 @@
-CREATE TABLE IF NOT EXISTS `{$db_prefix}gallery_categories` (
+DROP TABLE IF EXISTS `{$db_prefix}gallery_categories`;
+
+CREATE TABLE `{$db_prefix}gallery_categories` (
   `id` smallint(3) NOT NULL AUTO_INCREMENT,
+  `unique` varchar(32) NOT NULL,
   `title` varchar(128) NOT NULL,
   `author_login` varchar(32) NOT NULL,
   `author_id` int(6) NOT NULL,
@@ -11,4 +14,5 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}gallery_categories` (
   `thumb_id` varchar(64) NOT NULL,
   `thumb_url` varchar(196) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

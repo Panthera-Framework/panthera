@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS `{$db_prefix}menus` (
+DROP TABLE IF EXISTS `{$db_prefix}menus`;
+
+CREATE TABLE `{$db_prefix}menus` (
   `id` int(4) NOT NULL AUTO_INCREMENT,
   `type` varchar(32) NOT NULL COMMENT 'link belongs to grup of this name',
   `title` varchar(128) NOT NULL,
@@ -10,4 +12,5 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}menus` (
   `icon` varchar(256) NOT NULL COMMENT 'url adress to icon',
   `tooltip` varchar(128) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8;
+

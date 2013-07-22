@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS `{$db_prefix}users` (
+DROP TABLE IF EXISTS `{$db_prefix}users`;
+
+CREATE TABLE `{$db_prefix}users` (
   `id` int(6) NOT NULL AUTO_INCREMENT,
   `login` varchar(32) NOT NULL,
   `passwd` varchar(128) NOT NULL,
@@ -10,6 +12,9 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}users` (
   `mail` varchar(32) NOT NULL,
   `jabber` varchar(32) NOT NULL,
   `profile_picture` varchar(196) NOT NULL,
+  `lastlogin` datetime NOT NULL,
+  `lastip` varchar(16) NOT NULL COMMENT 'Last IP address used by user when logging in',
   PRIMARY KEY (`id`),
   UNIQUE KEY `login` (`login`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+

@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS `{$db_prefix}gallery_items` (
+DROP TABLE IF EXISTS `{$db_prefix}gallery_items`;
+
+CREATE TABLE `{$db_prefix}gallery_items` (
   `id` mediumint(6) NOT NULL AUTO_INCREMENT,
   `title` varchar(128) NOT NULL,
   `description` varchar(256) NOT NULL,
@@ -11,4 +13,5 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}gallery_items` (
   `upload_id` int(8) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `url_id` (`url_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

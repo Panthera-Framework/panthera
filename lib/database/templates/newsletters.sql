@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS `{$db_prefix}newsletters` (
+DROP TABLE IF EXISTS `{$db_prefix}newsletters`;
+
+CREATE TABLE `{$db_prefix}newsletters` (
   `nid` smallint(5) NOT NULL AUTO_INCREMENT,
   `title` varchar(320) NOT NULL COMMENT 'Title or a category of a newsletter (unique, so we can use it to build a object) Note: remember to trim spaces',
   `users` int(8) NOT NULL COMMENT 'Cache of users count',
@@ -7,4 +9,5 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}newsletters` (
   `default_type` varchar(8) NOT NULL DEFAULT 'mail' COMMENT 'Default contact type',
   PRIMARY KEY (`nid`),
   UNIQUE KEY `title` (`title`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+

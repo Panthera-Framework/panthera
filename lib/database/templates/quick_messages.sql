@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS `{$db_prefix}quick_messages` (
+DROP TABLE IF EXISTS `{$db_prefix}quick_messages`;
+
+CREATE TABLE `{$db_prefix}quick_messages` (
   `id` int(5) NOT NULL AUTO_INCREMENT,
   `unique` varchar(16) NOT NULL,
   `title` varchar(128) NOT NULL,
@@ -16,4 +18,5 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}quick_messages` (
   `viewcount` int(8) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `url_id` (`url_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8;
+

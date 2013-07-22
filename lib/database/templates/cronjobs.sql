@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS `{$db_prefix}cronjobs` (
+DROP TABLE IF EXISTS `{$db_prefix}cronjobs`;
+
+CREATE TABLE `{$db_prefix}cronjobs` (
   `jobid` bigint(16) NOT NULL AUTO_INCREMENT,
   `jobname` varchar(64) NOT NULL,
   `data` text NOT NULL,
@@ -16,4 +18,5 @@ CREATE TABLE IF NOT EXISTS `{$db_prefix}cronjobs` (
   `start_time` int(64) NOT NULL,
   PRIMARY KEY (`jobid`),
   UNIQUE KEY `jobname` (`jobname`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=48 ;
+) ENGINE=InnoDB AUTO_INCREMENT=4884 DEFAULT CHARSET=utf8;
+
