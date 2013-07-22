@@ -42,7 +42,8 @@ class pantheraSession
 
                 if ($check == True and is_bool($check))
                     return True;
-
+                    
+                $panthera -> logging -> output ('Useragent check failed', 'pantheraSession');
                 $this->removeSession();
             }
         }
@@ -57,6 +58,7 @@ class pantheraSession
                 if ($check == True and is_bool($check))
                     return True;
 
+                $panthera -> logging -> output ('Session expired', 'pantheraSession');
                 $this->removeSession();
             }
         }

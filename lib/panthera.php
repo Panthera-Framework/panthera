@@ -77,7 +77,6 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
 
     if (error_get_last() != NuLL)
     {
-
         $details = error_get_last();
 
         if ($errno == E_NOTICE)
@@ -113,7 +112,7 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
 class pantheraLogging
 {
     public $debug = False, $tofile = True, $printOutput = False, $filterMode = '', $filter = array();
-    private $_output = "", $panthera;
+    private $_output = array(), $panthera;
     
     /**
       * Constructor
@@ -146,16 +145,14 @@ class pantheraLogging
             return False;
             
         // filter
-        if ($this->filterMode == 'whitelist')
+        if ($this->filterMode == 'blacklist')
         {
-            if (!in_array($type, $this->filter))
+            if (array_key_exists($type, $this->filter))
                 return False;
-        } else if ($this->filterMode == 'blacklist') {
-        
-            if (in_array($type, $this->filter))
+        } else if ($this->filterMode == 'whitelist') {
+            if (!array_key_exists($type, $this->filter))
                 return False;
         }
-        
             
         if ($this->printOutput == True)
             print($msg. "\n");
@@ -163,7 +160,7 @@ class pantheraLogging
         // plugins support eg. firebug
         $this->panthera -> get_options('logging.output', $msg);
 
-        $this->_output .= $msg. "\n";
+        $this->_output[] = array($msg, $type);
 
         return True;
     }
@@ -177,7 +174,7 @@ class pantheraLogging
     
     public function clear()
     {
-        $this->_output = '';
+        $this->_output = array();
     }
     
     /**
@@ -187,15 +184,26 @@ class pantheraLogging
       * @author Damian Kęska
       */
 
-    public function getOutput()
+    public function getOutput($array=False)
     {
+        if ($array === True)
+            return $this->_output;
+        
         if (PANTHERA_MODE == 'CLI')
         {
             $defaults = "Client addr(".$_SERVER['SSH_CLIENT'].") => CLI ".$_SERVER['SCRIPT_NAME']."\n";
         } else
             $defaults = "Client addr(".$_SERVER['REMOTE_ADDR'].") => ".$_SERVER['REQUEST_METHOD']. " ".$_SERVER['REQUEST_URI']."\n";
+            
+        $msg = '';
         
-        return $defaults.$this->_output;
+        // convert output to string
+        foreach ($this->_output as $line)
+        {
+            $msg .= $line[0]. "\n";
+        }        
+        
+        return $defaults.$msg;
     }
     
     /**
@@ -312,7 +320,7 @@ class pantheraConfig
         {
             if ($this->panthera->types->exists($type))
             {
-                $this->panthera->logging->output('pantheraConfig::setKey( ' .$key. ', ' .str_replace("\n", " ", print_r($value, True)). ', ' .$type. ' )');
+                $this->panthera->logging->output('config -> setKey( ' .$key. ', ' .str_replace("\n", " ", print_r($value, True)). ', ' .$type. ' )', 'pantheraConfig');
                 $this->overlay[(string)$key][0] = $type;
             }
         }
@@ -599,7 +607,15 @@ class pantheraCore
             $this->locale = new pantheraLocale($this);
             
         if (class_exists('pantheraSession'))
+        {
             $this->session = new pantheraSession($this);
+            
+            if ($this->session->get('debug.filter.mode'))
+            {
+                $this->logging->filterMode = $this->session->get('debug.filter.mode');
+                $this->logging->filter = $this->session->get('debug.filter');
+            }   
+        }
 
         //$this->config->getKey('pluginsContext', array(), 'array');
 

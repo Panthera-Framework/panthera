@@ -1,13 +1,3 @@
-<div class="paHeader">
-      <div class="paTitle">{"Error"|localize}</div>
-      <div class="paDescription">Panthera Framework</div>
-</div>
+<div class="titlebar">{function="localize('Error')"} - Panthera Framework</div><br>
 
-<article>
-    <div class="text-section">
-    <ul class="states">
-        <li class="error">{"Page you are looking couldnt be found"|localize}</li>
-    </ul>
-
-    </div>
-</article>
+<h2 style="margin-left: 20px;">{function="localize('Page you are looking couldnt be found')"}</h2>
