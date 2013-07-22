@@ -154,7 +154,7 @@ function aclModify(id, name)
                                   <td>
                                     <select name="language">
                                      {loop="$locales_added"}
-                                          <option value="{$k}">{$k}</option>
+                                          <option value="{$key}">{$key}</option>
                                      {/loop}
                                     </select>
                                   </td>
