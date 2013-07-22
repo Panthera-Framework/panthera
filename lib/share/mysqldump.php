@@ -11,34 +11,27 @@
  * The Backup_Database class
  */
 class Backup_Database {
-    /**
-     * Host where database is located
-     */
-    var $host = '';
+    protected $host = '';
+    protected $username = '';
+    protected $passwd = '';
+    protected $dbName = '';
+    protected $charset = '';
+    public $resutType = 'string';
+    public $replacePrefix = False;
+    public $dropTables = True;
  
     /**
-     * Username used to connect to database
-     */
-    var $username = '';
- 
-    /**
-     * Password used to connect to database
-     */
-    var $passwd = '';
- 
-    /**
-     * Database to backup
-     */
-    var $dbName = '';
- 
-    /**
-     * Database charset
-     */
-    var $charset = '';
- 
-    /**
-     * Constructor initializes database
-     */
+      * Initialize connection
+      *
+      * @param string $host
+      * @param string $username
+      * @param string $passwd
+      * @param string $dbName
+      * @param string $charset
+      * @return void 
+      * @author Daniel López Azaña <http://www.daniloaz.com>
+      */
+     
     function Backup_Database($host, $username, $passwd, $dbName, $charset = 'utf8')
     {
         $this->host     = $host;
@@ -46,7 +39,6 @@ class Backup_Database {
         $this->passwd   = $passwd;
         $this->dbName   = $dbName;
         $this->charset  = $charset;
- 
         $this->initializeDatabase();
     }
  
@@ -66,8 +58,11 @@ class Backup_Database {
      * @param string $tables
      * @return SQL Dump as string
      */
-    public function backupTables($tables = '*')
+    public function backupTables($tables = '*', $backupData=True)
     {
+        global $panthera;
+    
+    
             /**
             * Tables to export
             */
@@ -91,55 +86,81 @@ class Backup_Database {
 
             $sql .= "CREATE DATABASE IF NOT EXISTS ".$this->dbName.";\n\n";
             $sql .= 'USE '.$this->dbName.";\n\n";
+            
+            if ($this->resultType == "array")
+                $result = array();
  
             /**
             * Iterate tables
             */
             foreach($tables as $table)
             {
+                if ($this->resultType == "array")
+                    $sql = "";
+            
                 #echo "Backing up ".$table." table...";
  
-                $result = mysql_query('SELECT * FROM '.$table);
-                $numFields = mysql_num_fields($result);
- 
-                $sql .= 'DROP TABLE IF EXISTS '.$table.';';
-                $row2 = mysql_fetch_row(mysql_query('SHOW CREATE TABLE '.$table));
-                $sql.= "\n\n".$row2[1].";\n\n";
- 
-                for ($i = 0; $i < $numFields; $i++)
+                if ($backupData == True)
                 {
-                    while($row = mysql_fetch_row($result))
+                    $result = mysql_query('SELECT * FROM '.$table);
+                    $numFields = mysql_num_fields($result);
+                }
+                
+                $fixedTableName = $table;
+                
+                if ($this->replacePrefix == True)
+                    $fixedTableName = str_replace($panthera->db->prefix, '{$db_prefix}', $table);
+                
+                
+                if ($this->dropTables == True)
+                    $sql .= 'DROP TABLE IF EXISTS `'.$fixedTableName.'`;';
+                    
+                $row2 = mysql_fetch_row(mysql_query('SHOW CREATE TABLE '.$table));
+                $sql.= "\n\n".str_replace('CREATE TABLE `' .$table. '`', 'CREATE TABLE `' .$fixedTableName. '`', $row2[1]).";\n\n";
+ 
+                if ($backupData == True)
+                {
+                    for ($i = 0; $i < $numFields; $i++)
                     {
-                        $sql .= 'INSERT INTO '.$table.' VALUES(';
-                        for($j=0; $j<$numFields; $j++)
+                        while($row = mysql_fetch_row($result))
                         {
-                            $row[$j] = addslashes($row[$j]);
-                            $row[$j] = ereg_replace("\n","\\n",$row[$j]);
-                            if (isset($row[$j]))
+                            $sql .= 'INSERT INTO `'.$fixedTableName.'` VALUES(';
+                            for($j=0; $j<$numFields; $j++)
                             {
-                                $sql .= '"'.$row[$j].'"' ;
+                                $row[$j] = addslashes($row[$j]);
+                                $row[$j] = ereg_replace("\n","\\n",$row[$j]);
+                                if (isset($row[$j]))
+                                {
+                                    $sql .= '"'.$row[$j].'"' ;
+                                }
+                                else
+                                {
+                                    $sql.= '""';
+                                }
+     
+                                if ($j < ($numFields-1))
+                                {
+                                    $sql .= ',';
+                                }
                             }
-                            else
-                            {
-                                $sql.= '""';
-                            }
- 
-                            if ($j < ($numFields-1))
-                            {
-                                $sql .= ',';
-                            }
+     
+                            $sql.= ");\n";
                         }
- 
-                        $sql.= ");\n";
                     }
                 }
+                
+                if ($this->resultType == "array")
+                    $result[str_replace('{$db_prefix}', '', $fixedTableName)] = $sql;
  
                 $sql.="\n\n\n";
  
                 #echo " OK" . "<br />";
             }
 
-        return $sql;
+        if ($this->resultType == "array")
+            return $result;
+        else
+            return $sql;
     }
  
     

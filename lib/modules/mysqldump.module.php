@@ -13,14 +13,70 @@ if(!class_exists('Backup_Database'))
  * Dump MySQL Database
  *
  * @param string $tables Optional - array of single tables to dump
+ * @param bool $backupData Backup all data, set to False to backup only structure
+ * @param bool $resultArray Return array instead of string
+ * @param bool $replacePrefix Replace tables prefix with {$db_prefix}
  * @return string SQL dump
  */
 
-function sqldump($tables='*')
+function sqldump($tables='*', $backupData=True, $resultArray=False, $replacePrefix=False)
+{
+    $backupDatabase = initSQLDump();
+    
+    if ($resultArray == True)
+        $backupDatabase -> resultType = "array";
+        
+    if ($replacePrefix == True)
+        $backupDatabase -> replacePrefix = True;
+    
+    return $backupDatabase->backupTables($tables, $backupData);
+}
+
+/**
+  * Create a new, configured instance of Backup_Database class
+  *
+  * @return object 
+  * @author Damian Kęska
+  */
+
+function initSQLDump()
 {
     global $panthera;
-    $backupDatabase = new Backup_Database($panthera->config->getKey('db_host'), $panthera->config->getKey('db_user'), $panthera->config->getKey('db_password'), $panthera->config->getKey('db_name'));
-    return $backupDatabase->backupTables($tables);
+    return new Backup_Database($panthera->config->getKey('db_host'), $panthera->config->getKey('db_user'), $panthera->config->getKey('db_password'), $panthera->config->getKey('db_name'));
+}
+
+function createTemplatesFromDB($dropTables=True)
+{
+    $backup = initSQLDump();
+    $backup -> resultType = "array";
+    $backup -> replacePrefix = True;
+    $backup -> dropTables = $dropTables;
+    
+    $structure = $backup -> backupTables('*', False);
+    
+    if (!is_dir(SITE_DIR. '/content/backups/db_structure'))
+        mkdir(SITE_DIR. '/content/backups/db_structure');
+        
+    $backupDir = SITE_DIR. '/content/backups/db_structure/' .date('G:i:s_d.m.Y');
+        
+    // remove old directory if exists
+    if (is_dir($backupDir))
+    {
+        $panthera -> importModule('filesystem');
+        deleteDirectory($backupDir);
+    }
+    
+    // here we will place all files
+    mkdir($backupDir);
+    
+    foreach ($structure as $table => $SQL)
+    {
+        $fp = fopen($backupDir. '/' .$table. '.sql', 'w');
+        fwrite($fp, $SQL);
+        fclose($fp);
+    }
+    
+    return $backupDir;
 }
 
 /**
