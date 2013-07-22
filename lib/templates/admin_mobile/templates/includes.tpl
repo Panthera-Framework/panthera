@@ -18,7 +18,7 @@
 
              {loop="$files"}
               <li class="list-item-single-line selectable">
-                <a href="#" onclick="navigateTo('?display=browsefile&path={$value}&back_btn={$back_btn}'); return false;" data-ignore="true" data-transition="push">
+                <a onclick="window.location = '?display=browsefile&path={$value}'" data-ignore="true" data-transition="push">
                     <p style="vertical-align: middle;">{$value}</p>
                 </a>
               </li>
