@@ -2,7 +2,7 @@
   <!-- Content -->
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=langtool&action=domains&locale={locale}">{function="localize('Manage domains', 'langtool')"}</a></li>
+        <li><a href="?display=langtool&action=domains&locale={$locale}">{function="localize('Manage domains', 'langtool')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Translates for', 'langtool')"} {$domain}</a></li>
       </ul>
     </nav>
@@ -14,7 +14,11 @@
             
             {loop="$translates"}
               <li class="list-item-two-lines">
-                    <h3>{$value}</h3>
+                    {loop="$value"}
+                      {if="$key == $locale"}
+                        <h3>{$value}</h3>
+                      {/if}
+                    {/loop}
                     <p>{$key}</p>
               </li>
             {/loop}

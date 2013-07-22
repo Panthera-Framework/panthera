@@ -586,7 +586,7 @@ if ($_GET['action'] == 'edit_item_form')
 
     foreach ($categories as $category)
     {
-        if (isset($_GET['filter']))
+        if ($_GET['filter'] != '')
         {
             if (!stristr($category->title, $_GET['filter']))
                 continue;
@@ -601,7 +601,6 @@ if ($_GET['action'] == 'edit_item_form')
         $template -> push('category_filter_complete', $_GET['filter'].GALLERY_FILTER);
     } else
         $template -> push('category_filter', $_GET['filter']);
-
 
     $template -> push('category_list', $categoriesFiltered);
     $template -> display($tpl);

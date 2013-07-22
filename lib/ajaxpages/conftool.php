@@ -10,9 +10,7 @@
 
 if (!defined('IN_PANTHERA'))
       exit;
-
-$tpl = 'conftool.tpl';
-
+      
 if (@$_GET['display'] == 'conftool') {
 
       if (!getUserRightAttribute($user, 'can_update_config_overlay')) {
@@ -77,4 +75,5 @@ if (@$_GET['display'] == 'conftool') {
       $template -> push('a', $array);
 }
 
-?>
+$panthera -> template -> display('conftool.tpl');
+pa_exit();

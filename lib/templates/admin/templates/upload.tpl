@@ -347,7 +347,7 @@ function getUploadsPage(data)
                             {else}
                             <a href="#" onclick="getUploadsPage('page={$key}'); return false;">{$key+1}</a>
                             {/if}
-                        {/loop}&rsaquo; {if="$upload_files == True"}<input type='button' value='{function="localize('Add new file')"}' style='float: right;' id='_upl_add_file'>{/if}</div>
+                        {/loop}&rsaquo; {if="$upload_files == True"}<input type='button' value="{function="localize('Add new file', 'files')"}" style="float: right;" id="_upl_add_file">{/if}</div>
   </div>
 
   <!-- UPLOAD BOX -->

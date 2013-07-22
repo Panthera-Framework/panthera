@@ -98,6 +98,7 @@ switch ($_GET['menu'])
         $menu[] = array('link' => '?display=custom', 'name' => localize('Custom pages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/custom-pages.png', 'linkType' => 'ajax');
         //$menu[] = array('link' => '?display=newsletter', 'name' => localize('Newsletter'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Newsletter.png', 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=messages', 'name' => localize('Quick messages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/messages.png', 'linkType' => 'ajax');
+        $panthera -> template -> push('showWidgets', True);
     break;
 }
 

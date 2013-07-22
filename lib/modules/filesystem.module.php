@@ -89,7 +89,8 @@ class uploadedFile extends pantheraFetchDB
                     }
                 }
 
-                $simpleImage -> save($thumb, IMAGETYPE_JPEG, 85);        
+                $simpleImage -> save($thumb, IMAGETYPE_JPEG, 85);     
+                chmod($thumb, 655);  
 
                 if(is_file($thumb))
                     return $thumb;
@@ -330,6 +331,7 @@ function handleUpload($file, $category, $uploaderID, $uploaderLogin, $protected,
 
     $panthera -> logging -> output('upload.module::Moving uploaded file from ' .$file['tmp_name']. ' to ' .$uploadDir. '/' .$name);
     rename($file['tmp_name'], $uploadDir. '/' .$name);
+    chmod($uploadDir. '/' .$name, 655);
 
     if (is_file($uploadDir. '/' .$name))
     {
@@ -360,6 +362,7 @@ function handleUpload($file, $category, $uploaderID, $uploaderLogin, $protected,
             $simpleImage -> load($uploadDir. '/' .$name);
             $simpleImage -> resizeToWidth(200); // resize to 100px width
             $simpleImage -> save($dir. '/200px_' .$fileInfo['filename']. '.jpg', IMAGETYPE_JPEG, 85);        
+            chmod($dir. '/200px_' .$fileInfo['filename']. '.jpg', 655);
         }
 
         $panthera -> db -> query('INSERT INTO `{$db_prefix}uploads` (`id`, `category`, `location`, `description`, `icon`, `mime`, `uploader_id`, `uploader_login`, `protected`, `public`) VALUES (NULL, :category, :location, :description, :icon, :mime, :uploader_id, :uploader_login, :protected, :public);', $values);
