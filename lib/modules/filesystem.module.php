@@ -219,8 +219,8 @@ function scandirDeeply($dir, $filesOnly=True)
             $list[] = $dir. '/' .$file;
         else {
         
-            if (!$filesOnly)
-                $list[] = $dir. '/' .$file;
+            //if (!$filesOnly)
+            //    $list[] = $dir. '/' .$file;
                 
             $dirFiles = scandirDeeply($dir. '/' .$file, $filesOnly);
 

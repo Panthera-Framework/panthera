@@ -20,6 +20,7 @@ class leopardPackage
     protected $manifest = array ('title' => '', 'description' => '', 'author' => '', 'contact' => array(), 'url' => '', 'files' => array(), 'version' => 0.1, 'release' => 1);
     public $phar;
     protected $destination;
+    protected $packageName = "";
     
     /**
       * Constructor
@@ -30,11 +31,16 @@ class leopardPackage
     
     public function __construct($destination)
     {
+        global $panthera;
+    
         $this->destination = $destination;
+        $this->packageName = leopard::packageName($this->destination);
         $import = False;
     
         if (is_file($this->destination))
             $import = True;
+            
+        $panthera -> logging -> output ('Opening "' .$destination. '" file and starting buffering mode', 'leopard');
 
         $this->phar = new Phar($destination);
         $this->phar->startBuffering();
@@ -62,6 +68,18 @@ class leopardPackage
     public function manifest()
     {
         return (object)$this->manifest;
+    }
+    
+    /**
+      * Get package name
+      *
+      * @return string 
+      * @author Damian Kęska
+      */
+    
+    public function getName()
+    {
+        return $this->packageName;
     }
 
     /**
@@ -247,6 +265,66 @@ class leopardPackage
     }
     
     /**
+      * Build a package from directory
+      *
+      * @param string $directory
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public function buildFromDirectory($directory)
+    {
+        global $panthera;
+        
+        if (!is_dir($directory))
+        {
+            $panthera -> logging -> output ('Cannot open directory "' .$directory. '"', 'leopard');
+            return False;
+        }
+        
+        $panthera -> importModule('filesystem');
+        
+        $panthera -> logging -> output ('Building package from directory "' .$directory. '"', 'leopard');
+    
+        // import manifest file if present
+        if (is_file($directory. '/manifest.json'))
+        {
+            $panthera -> logging -> output ('Adding manifest.json', 'leopard');
+            $this->importManifest($directory. '/manifest.json');
+        }
+        
+        // leopard.hooks.php
+        if (!is_file($directory. '/leopard.hooks.php'))
+            $panthera -> logging -> output ('leopard.hooks.php file not found in build directory, installation hooks will not be avaliable', 'leopard');
+        
+        
+        // add all other files
+        $elements = scandirDeeply($directory);
+        
+        foreach ($elements as $element)
+        {
+            $elementName = substr($element, (strlen($directory)+1), strlen($element));
+            
+            // skip manifest file
+            if (strtolower($elementName) == 'manifest.json')
+                continue;
+                
+            // make sure the name will be correct
+            if (strtolower($elementName) == 'leopard.hooks.php')
+                $elementName = strtolower('leopard.hooks.php');
+                
+            $panthera -> logging -> output ('Adding element "' .$elementName. '" to archive', 'leopard');
+            
+            if (is_dir($element))
+                $this->mkdir($elementName);
+            else
+                $this->addFile($element, $elementName);
+        }
+        
+        return True;
+    }
+    
+    /**
       * Make empty directory inside of archive
       *
       * @param string $dir Path to directory
@@ -329,6 +407,8 @@ class leopard
         $SQL = $panthera -> db -> query ('SELECT * FROM `{$db_prefix}leopard_packages`');
         $fetch = $SQL -> fetchAll(PDO::FETCH_ASSOC);
         
+        $fetch = $panthera -> get_filters('leopard.rebuilddb.packages', $fetch);
+        
         $panthera -> logging -> output ('Read ' .$SQL->rowCount(). ' packages from database', 'leopard');
         
         foreach ($fetch as $row)
@@ -336,16 +416,34 @@ class leopard
             self::$database[$row['name']] = array('info' => $row, 'files' => array());
         }
         
-        // updating records with files meta
-        $SQL = $panthera -> db -> query('SELECT * FROM `{$db_prefix}leopard_files`');
-        $fetch = $SQL -> fetchAll(PDO::FETCH_ASSOC);
-        
-        foreach ($fetch as $row)
+        if (count(self::$database) > 0)
         {
-            self::$database[$row['package']]['files'][$row['path']] = $row;
-        } 
-        
-        $panthera -> logging -> output ('Found ' .$SQL->rowCount(). ' managed files', 'leopard');
+            // updating records with files meta
+            $SQL = $panthera -> db -> query('SELECT * FROM `{$db_prefix}leopard_files`');
+            $fetch = $SQL -> fetchAll(PDO::FETCH_ASSOC);
+            
+            foreach ($fetch as $row)
+            {
+                self::$database[$row['package']]['files'][$row['path']] = $row;
+            } 
+            
+            $panthera -> logging -> output ('Found ' .$SQL->rowCount(). ' managed files', 'leopard');
+        }
+    }
+    
+    /**
+      * Get list of installed packages
+      *
+      * @return array 
+      * @author Damian Kęska
+      */
+    
+    public static function getInstalledPackages()
+    {
+        if (self::$database == null)
+            self::rebuildDB();
+    
+        return self::$database;
     }
 
 
@@ -395,12 +493,15 @@ class leopard
     public static function packageName($inputPath)
     {
         $pathinfo = pathinfo($inputPath);
-        return strtolower($pathinfo['filename']); // TODO: Support for names eg. package-1.0-2 or package-1.0
+        
+        preg_match('/^([A-Za-z0-9_]+)\-?([0-9.]+)?\-?([0-9]+)?/', strtolower($pathinfo['filename']), $matches);
+        
+        return $matches[1];
     }
     
     /**
       * Pre installation check
-      *
+      *attach
       * @param string $packageFile Path to package file
       * @param bool $overwriteFS Allow overwriting files on filesystem
       * @param bool $overwritePKGS Allow overwriting files that belongs to already installed package (can be dangerous)
@@ -416,7 +517,9 @@ class leopard
         
         if (self::checkInstalled($packageName))
         {
-            $installed = self::getInstalled($packageName);
+            // TODO: Package upgrades
+            $panthera -> logging -> output ('Package is already installed', 'leopard');
+            return False;
         } else {
             // TODO: Dependency support
         
@@ -490,7 +593,7 @@ class leopard
         
         try {
             $package -> phar['leopard.hooks.php'];
-            include $package -> phar['leopard.hooks.php'];
+            include_once $package -> phar['leopard.hooks.php'];
         } catch (Exception $e) {
             // pass
             $panthera -> logging -> output('leopard.hooks.php file not found in archive root or other error occured, exception: ' .$e->getMessage(), 'leopard');
@@ -510,17 +613,20 @@ class leopard
         $panthera -> db -> query('INSERT INTO `{$db_prefix}leopard_packages` (`id`, `name`, `manifest`, `installed_as`, `version`, `release`, `status`) VALUES (NULL, :name, :manifest, :installed_as, :version, :release, :status)', $array);
         
         // create backup directory
-        $backupDir = SITE_DIR. '/content/packages/backups/' .$packageName. '-' .$packageMeta->version. '-' .$packageMeta->release. '-backup';
-        $panthera -> logging -> output ('Creating backup directory "' .$backupDir. '"', 'leopard');
+        $backupDir = SITE_DIR. '/content/packages/' .$packageName. '-' .$packageMeta->version. '-' .$packageMeta->release;
+        $panthera -> logging -> output ('Creating package directory "' .$backupDir. '"', 'leopard');
         $dontBackup = False;
         
-        if (!is_dir(SITE_DIR. '/content/packages/backups/'))
-            @mkdir(SITE_DIR. '/content/packages/backups/');
+        if (!is_dir(SITE_DIR. '/content/packages/'))
+            @mkdir(SITE_DIR. '/content/packages/');
             
         if (!is_dir($backupDir))
             @mkdir($backupDir);
         else
             $dontBackup = True; // dont overwrite old backup after package reinstall, etc.
+            
+        // copy package file
+        copy($packageFile, $backupDir. '/' .$packageName. '.phar');
             
         // installing files
         foreach ((array)$packageMeta->files as $file => $sum)
@@ -574,7 +680,7 @@ class leopard
     public static function remove($packageName, $dontRestoreBackup=False)
     {
         global $panthera;
-    
+        
         // TODO: Dependency support and option to remove only single package without its dependencies
         
         $panthera -> logging -> output('Preparing to remove "' .$packageName. '" package', 'leopard');
@@ -588,7 +694,24 @@ class leopard
         $package = self::getInstalled($packageName);
         $packageMeta = (object)$package -> info;
         
-        $backupDir = SITE_DIR. '/content/packages/backups/' .$packageName. '-' .$packageMeta->version. '-' .$packageMeta->release. '-backup';
+        $backupDir = SITE_DIR. '/content/packages/' .$packageName. '-' .$packageMeta->version. '-' .$packageMeta->release;
+        
+        if (is_file($backupDir. '/' .$packageName. '.phar'))
+        {
+            $p = new Phar($backupDir. '/' .$packageName. '.phar');
+            
+            try {
+                $p['leopard.hooks.php'];
+                include $p['leopard.hooks.php'];
+            } catch (Exception $e) {
+                $panthera -> logging -> output ('No leopard.hooks.php file found in package archive', 'leopard');
+            }
+        }
+        
+        // pre-remove hooks
+        $panthera -> logging -> output('Running pre-remove hooks', 'leopard');
+        $package = $panthera -> get_filters('leopard.preremove', $package);
+        $package = $panthera -> get_filters('leopard.preremove.' .$packageName, $package);
         
         foreach ((array)$package->files as $file => $sum)
         {
@@ -603,6 +726,11 @@ class leopard
                     copy($backupDir. '/' .$sum, $file);
             }
         }
+        
+        // post-remove hooks
+        $panthera -> logging -> output('Running post-remove hooks', 'leopard');
+        $package = $panthera -> get_filters('leopard.postremove', $package);
+        $package = $panthera -> get_filters('leopard.postremove.' .$packageName, $package);
 
         // clean up
         $panthera -> logging -> output ('Cleaning up backup directory', 'leopard'); 

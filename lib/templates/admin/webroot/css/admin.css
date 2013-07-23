@@ -1128,3 +1128,10 @@ h1, h2, h3, h4, h5, h6 {
 	background:#649bcc; color:#fff;
 }
 .contextMenu>ul.list li:last-child { border:none }
+
+.consoleOutput {
+    background-color: black;
+    color: white;
+    font: 10px 'FixedSys', 'Monospace';
+    padding: 5px;
+}
