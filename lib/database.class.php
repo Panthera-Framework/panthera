@@ -47,9 +47,12 @@ class pantheraDB
                 $this->socketType = 'sqlite';
                 $this->sql = new PDO('sqlite:' .SITE_DIR. '/content/database/' .$config['db_file']);
                 $this->sql->exec("pragma synchronous = off;");
+                
+                $panthera -> logging -> output('Connected to SQLite3 database file ' .$config['db_file'], 'pantheraDB');
             } else {
                 $this->socketType = 'mysql';
                 $this->sql = new PDO('mysql:host='.$config['db_host'].';encoding=utf8;dbname='.$config['db_name'], $config['db_username'], $config['db_password']);
+                $panthera -> logging -> output('Connected to MySQL database, ' .$config['db_username']. '@' .$config['db_host'], 'pantheraDB');
             }
 
             $this->sql->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -135,7 +138,7 @@ class pantheraDB
 
         if ($this->panthera->logging->debug == True)
         {
-            $this->panthera->logging->output('SQL::query( ' .$query. ' , ' .json_encode($values). ' )');
+            $this->panthera->logging->output('SQL::query( ' .$query. ' , ' .json_encode($values). ' )', 'pantheraDB');
         }
 
         // try to import missing tables if enabled

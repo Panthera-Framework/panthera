@@ -29,8 +29,10 @@ $panthera -> logging -> tofile = False;
 
 /**
  * Change debug value
- * Returns json
+ *
+ * @author Damian Kęska
  */
+ 
 if ($_GET['action'] == 'toggle_debug_value')
 {
       if (!getUserRightAttribute($user, 'can_manage_debug')) {
@@ -42,6 +44,62 @@ if ($_GET['action'] == 'toggle_debug_value')
             ajax_exit(array('status' => 'success'));
 
       ajax_exit(array('status' => 'failed'));
+      
+/**
+  * Set messages filtering mode
+  *
+  * @author Damian Kęska
+  */
+      
+} elseif ($_GET['action'] == 'setMessagesFilter') {
+    
+    switch ($_POST['value'])
+    {
+        case 'whitelist':
+            $panthera->session->set('debug.filter.mode', 'whitelist');
+        break;
+        
+        case 'blacklist':
+            $panthera->session->set('debug.filter.mode', 'blacklist');
+        break;
+        
+        default:
+            $panthera->session->remove('debug.filter.mode');
+        break;
+    }
+    
+    ajax_exit(array('status' => 'success'));
+    
+/**
+  * Add or remove filter
+  *
+  * @author Damian Kęska
+  */
+  
+} elseif ($_GET['action'] == 'manageFilterList') {
+
+    $filters = $panthera -> session -> get('debug.filter');
+    $filterName = $_POST['filter'];
+    
+    if ($filterName == '' or !ctype_alpha($filterName))
+        ajax_exit(array('status' => 'failed'));
+    
+    if (!is_array($filters))
+        $filters = array();
+
+    if (!array_key_exists($filterName, $filters))
+        $filters[$filterName] = True;
+    else
+        unset($filters[$filterName]);
+        
+    // save filter list
+    $panthera -> session -> set('debug.filter', $filters);    
+    
+    $filtersTpl = array();
+    foreach ($filters as $filter => $enabled)
+        $filtersTpl[] = $filter;
+
+    ajax_exit(array('status' => 'success', 'filter' => implode(', ', $filtersTpl)));
 }
 
     /** END OF JSON PAGES **/
@@ -72,6 +130,29 @@ if (is_file(SITE_DIR. '/content/tmp/debug.log'))
       $template -> push('debug_log', $log);
 }
 
+// message filter type
+if ($panthera -> session -> get('debug.filter.mode'))
+    $panthera -> template -> push('messageFilterType', $panthera -> session -> get('debug.filter.mode'));
+else
+    $panthera -> template -> push('messageFilterType', '');
+
+// example filters
+$exampleFilters = array('pantheraCore', 'pantheraUser', 'pantheraTemplate', 'pantheraLocale', 'pantheraFetchDB', 'pantheraDB', 'leopard');
+
+foreach ($panthera->logging->getOutput(True) as $line)
+{
+    if(!in_array($line[1], $exampleFilters))
+        $exampleFilters[] = $line[1];
+}
+
+$panthera -> template -> push ('exampleFilters', $exampleFilters);
+
+// list of all defined filters
+$filtersTpl = array();
+foreach ($panthera -> session -> get('debug.filter') as $filter => $enabled)
+    $filtersTpl[] = $filter;
+
+$panthera -> template -> push ('filterList', implode(', ', $filtersTpl));
 $template -> push('current_log', explode("\n", $panthera -> logging -> getOutput()));
 $template -> push('debug', $panthera -> config -> getKey('debug'));
 $template -> push('tools', $tools);

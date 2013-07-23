@@ -25,12 +25,12 @@ class pantheraLocale
     public function __construct($panthera)
     {
         $this->panthera = $panthera;
-        $panthera->config->getKey('languages', array('polski' => True, 'english' => True, 'deutsh' => False), 'array');
+        $panthera->config->getKey('languages', array('polski' => True, 'english' => True), 'array');
         $this->defaultLocale = $panthera->config->getKey('language_default', 'english', 'string');
 
         // cache support
         if ($this->panthera->cache != False)
-            $this->cache = intval($panthera->config->getKey('cache_locale', 60, 'int'));
+            $this->cache = intval($panthera->config->getKey('cache_locale', 86400, 'int'));
     }
 
     /**
@@ -175,7 +175,7 @@ class pantheraLocale
         else
             $this->locale = $this->defaultLocale;
 
-        $this->panthera->logging->output('pantheraLocale::setLocale(' .$locale. ')', 'pantheraLocale');
+        $this->panthera->logging->output('setLocale(' .$locale. ')', 'pantheraLocale');
 
         // default domain should be always loaded
         $this->loadDomain('messages');
@@ -202,7 +202,7 @@ class pantheraLocale
             $string = $this->memory[$domain][$string];
 
         if ($this->panthera->logging->debug == True) {
-            $this->panthera->logging->output('pantheraLocale::Get "' .$orig. '", result="' .$string. '" domain='.$domain. ' (global: ' .$this->currentDomain. ')', 'pantheraLocale');
+            $this->panthera->logging->output('localize -> "' .$orig. '", result="' .$string. '" domain='.$domain. ' (global: ' .$this->currentDomain. ')', 'pantheraLocale');
         }
 
         return $string;

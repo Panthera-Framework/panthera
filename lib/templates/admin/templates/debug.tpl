@@ -10,8 +10,37 @@ $(document).ready(function() {
         $('#current_log_window').slideToggle('slow');
     });
     
-    panthera.inputTimeout({ element: '#messagesFilter', interval: 1200, callback: messagesFilterSave });
+    $('#messagesFilterButton').click(function () {
+        manageFilters($('#messagesFilterText').val());
+    });
+    
+    panthera.inputTimeout({ element: '#messagesFilter', interval: 900, callback: messagesFilterSave });
 });
+
+var spinner = new panthera.ajaxLoader($('#optionsTable'));
+
+/**
+  * Add or remove filter
+  *
+  * @author Damian Kęska
+  */
+
+function manageFilters(filter)
+{
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=debug&action=manageFilterList', data: 'filter='+filter, spinner: spinner, success: function (response) {
+            if(response.status == "success")
+            {
+                $('#filterList').html(response.filter);
+            }
+        }
+   });
+}
+
+/**
+  * Toggle debugger
+  *
+  * @author Damian Kęska
+  */
 
 function toggleDebugValue()
 {
@@ -22,9 +51,15 @@ function toggleDebugValue()
     });
 }
 
+/**
+  * Save messages filter mode
+  *
+  * @author Damian Kęska
+  */
+
 function messagesFilterSave()
 {
-    saveVariable('debug.msgfilter', $('#messagesFilter').val());
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=debug&action=setMessagesFilter', data: 'value='+$('#messagesFilter').val(), spinner: spinner});
 }
 
 /**
@@ -35,7 +70,6 @@ function messagesFilterSave()
 
 function saveVariable(id, value)
 {
-    spinner = new panthera.ajaxLoader($('#optionsTable'));
     panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&action=change', data: 'id='+id+'&value='+value, spinner: spinner});
     return false;
 
@@ -75,8 +109,7 @@ function saveVariable(id, value)
     <table class="gridTable" id="optionsTable" style="position: relative;">
         <thead>
             <tr>
-                <th>{function="localize('Key')"}</th>
-                <th>{function="localize('Value')"}</th>
+                <th colspan="2">{function="localize('Settings')"}</th>
             </tr>
 
         </thead>
@@ -87,14 +120,48 @@ function saveVariable(id, value)
             
             <tr>
                 <td>{function="localize('Messages filter', 'debug')"}</td>
-                <td><select id="messagesFilter"><option value="">all messages</option><option value="blacklist">blacklist</option><option value="whitelist">whitelist</option></select></td>
+                <td>
+                    <select id="messagesFilter">
+                        <option value="" {if="$messageFilterType == ''"}selected{/if}>{function="localize('all messages', 'debug')"}</option>
+                        <option value="blacklist" {if="$messageFilterType == 'blacklist'"}selected{/if}>{function="localize('blacklist', 'debug')"}</option>
+                        <option value="whitelist" {if="$messageFilterType == 'whitelist'"}selected{/if}>{function="localize('whitelist', 'debug')"}</option>
+                    </select>
+                </td>
+            </tr>
+            
+            <tr id="filterTr">
+                <td>
+                    {function="localize('Filter name (eg. pantheraLocale)', 'debug')"}
+                </td>
+                
+                <td>
+                    <input type="text" id="messagesFilterText"> <input type="button" value="{function="localize('Add')"}/{function="localize('Remove')"}" id="messagesFilterButton">
+                </td>
+            </tr>
+            
+            <tr id="filterListTr">
+                <td>
+                    {function="localize('Filter list', 'debug')"}
+                </td>
+                
+                <td id="filterList">
+                    {$filterList}
+                </td>
+            </tr>
+            
+            <tr>
+                <td>{function="localize('Small, incomplete list of example filters', 'debug')"}</td>
+                <td><small>
+                {loop="$exampleFilters"}
+                <a onclick="manageFilters('{$value}')" style="cursor: pointer;">{$value}</a>
+                {/loop}
             </tr>
         </tbody>
       </table>
 
    {if="$debug == true"}
-   <h1 id="current_log_trigger" style="cursor: hand; cursor: pointer; margin: 15px;">{function="localize('Show current log', 'debug')"}</h1>
-   <div id="current_log_window" style="display: none;">
+   <h1 id="current_log_trigger" style="cursor: hand; cursor: pointer; margin: 15px;">{function="localize('Current session log', 'debug')"}</h1>
+   <div id="current_log_window">
      <table class="greenLog">
         {loop="$current_log"}
         <tr>
@@ -105,8 +172,8 @@ function saveVariable(id, value)
      </table>
    </div>
 
-   <h1 id="debug_log_trigger" style="cursor: hand; cursor: pointer; margin: 15px;">{function="localize('Show debug.log content', 'debug')"}</h1>
-   <div id="debug_log_window" style="display: none;">
+   <h1 id="debug_log_trigger" style="cursor: hand; cursor: pointer; margin: 15px;">{function="localize('Debug.log content', 'debug')"}</h1>
+   <div id="debug_log_window">
      <table class="blueLog">
         {loop="$debug_log"}
         <tr>
