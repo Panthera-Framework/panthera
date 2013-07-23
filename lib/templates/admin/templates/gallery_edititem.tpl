@@ -116,7 +116,7 @@ sliderChangeImage('{$link}');
             <td>
                   <select name="gallery_id">
                    {loop="$category_list"}
-                        <option value="{$i->id}" {if="$i->id == $gallery_id"} selected='selected'{/if}>{$i->title} ({$i->language})</option>
+                        <option value="{$value->id}" {if="$value->id == $gallery_id"} selected='selected'{/if}>{$value->title} ({$value->language})</option>
                    {/loop}
                   </select>
             </td>
