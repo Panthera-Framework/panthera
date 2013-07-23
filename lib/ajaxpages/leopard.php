@@ -69,9 +69,11 @@ if ($_GET['action'] == 'upload')
         $panthera -> logging -> output ("Files in archive: \n".implode("\n", $package->getFiles())."\n", 'leopard');
         
         ajax_exit(array('status' => 'success', 'name' => $package->getName(), 'version' => $manifest->version, 'release' => $manifest->release, 'author' => $manifest->author, 'description' => $manifest->description, 'website' => $manifest->url, 'installed' => leopard::checkInstalled($package->getName()), 'log' => nl2br($panthera -> logging -> getOutput())));
+    } else {
+        $panthera -> logging -> output ('No input file received', 'leopard');
     }
     
-    ajax_exit(array('status' => 'failed', 'message' => localize('Unknown error')));
+    ajax_exit(array('status' => 'failed', 'message' => localize('Unknown error'), 'log' => nl2br($panthera -> logging -> getOutput())));
     
 /**
   * Manage packages
@@ -192,8 +194,9 @@ if ($_GET['action'] == 'upload')
 
 if($panthera->session->exists('leopard.build.last'))
 {
-    $panthera -> template -> push('buildName', $panthera->session->get('leopard.build.last')[0]);
-    $panthera -> template -> push('buildPath', $panthera->session->get('leopard.build.last')[1]);
+    $last = $panthera->session->get('leopard.build.last');
+    $panthera -> template -> push('buildName', $last[0]);
+    $panthera -> template -> push('buildPath', $last[1]);
 }
 
 $panthera -> template -> push ('SITE_DIR', SITE_DIR);
