@@ -47,7 +47,7 @@ $(function(){
 	    navigateTo('?display=dash&widget='+value+'&action=add');
 	});
 	
-	if ({$widgetsLocked} == 1)
+	if ({$widgetsLocked} == 1 && $('#widgetsLockedImg').length > 0)
 	    toggleWidgetsLock();
 });
 
