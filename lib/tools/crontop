@@ -45,7 +45,7 @@ class crontop
                 $current = new DateTime();
                 $next = new DateTime(date('G:i:s d.m.Y', $value->next_interation));
                 $interval = $current->diff($next);
-                $leftInterval = "(".$interval->format('%R%i min'). ")";
+                $leftInterval = "(".str_replace('0d ', '', $interval->format('%R%dd %hh %im')). ")";
 
                 // show job status
                 if (intval($interval->format('%i')) < 1)
