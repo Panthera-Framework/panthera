@@ -1,0 +1,11 @@
+{
+    "require": {
+        "rain/raintpl": "dev-split_parser",
+        "mtdowling/cron-expression": ">=v1.0.2",
+        "electrolinux/phpquery": ">=0.9.6",
+        "phpmailer/phpmailer": ">=v5.2.6",
+        "firephp/firephp-core": ">=v0.4.0",
+        "facebook/php-sdk": ">=v3.2.2",
+        "nategood/httpful": ">=0.2.6"
+    }
+}
