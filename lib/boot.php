@@ -121,7 +121,10 @@ $sql = $panthera->db;
 
 // localisations
 if (!defined('SKIP_LOCALE'))
+{
     $locale = $panthera->locale;
+    $panthera -> locale -> fromHeader(); // detect language from Accept-Language HTTP header
+}
 
 // template system
 if (!defined('SKIP_TEMPLATE'))
@@ -164,7 +167,7 @@ if (!defined('SKIP_USER') and !defined('SKIP_SESSION'))
 }
 
 // getting locale from current session
-if (!defined('SKIP_LOCALE'))
+if (!defined('SKIP_LOCALE') and !defined('SKIP_SESSION'))
     $locale -> fromSession();
 
 // customized startup for each website (config.php)

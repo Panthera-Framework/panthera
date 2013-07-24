@@ -244,8 +244,12 @@ class pantheraLocale
       * @author Damian Kęska
       */
 
-    public function loadDomain($domain)
+    public function loadDomain($domain, $force=False)
     {
+        // dont load same domains multiple times
+        if (array_key_exists($this->domains, $domain) and $force == False)
+            return False;
+    
         $dirs = array(SITE_DIR. '/content/locales/' .$this->locale, PANTHERA_DIR. '/locales/' .$this->locale);
 
         foreach ($dirs as $dir)
@@ -287,6 +291,28 @@ class pantheraLocale
 
         $this->panthera->logging->output('Cannot find domain "' .$domain. '"', 'pantheraLocale');
         return False;
+    }
+    
+    /**
+      * Try to detect browser's language
+      *
+      * @return void 
+      * @author Damian Kęska
+      */
+
+    public function fromHeader()
+    {
+        if(array_key_exists('HTTP_ACCEPT_LANGUAGE', $_SERVER))
+        {
+            $languageTable = array('en' => 'english', 'en-us' => 'english', 'pl' => 'polski', 'de' => 'deutsh');
+            $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, strpos($_SERVER['HTTP_ACCEPT_LANGUAGE'], ','));
+
+            // applications may add their supported languages to this table
+            $languageTable = $this->panthera->get_options('locale.header.langtable', $languageTable);
+            
+            if (array_key_exists($lang, $languageTable))
+                $this->setLocale($languageTable[$lang]);
+        }
     }
 
 
