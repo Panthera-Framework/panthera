@@ -17,7 +17,7 @@ if (!getUserRightAttribute($user, 'can_see_dash')) {
 }
 
 $panthera -> locale -> loadDomain('dash');
-$panthera -> template -> push('widgetsLocked', "1");
+$panthera -> template -> push('widgetsUnlocked', 0);
 
 /**
   * Remove widget from dashboard
@@ -37,7 +37,7 @@ if ($_GET['action'] == 'remove')
     }
     
     $panthera -> config -> setKey('dash_widgets', $widgets);
-    $panthera -> template -> push('widgetsLocked', "0");
+    $panthera -> template -> push('widgetsUnlocked', 1);
     
 /**
   * Add a widget from /modules/dash/ directory or builtin (gallery or lastLogged)
@@ -57,7 +57,7 @@ if ($_GET['action'] == 'remove')
         $panthera -> config -> setKey('dash_widgets', $widgets);
     }
     
-    $panthera -> template -> push('widgetsLocked', "0");
+    $panthera -> template -> push('widgetsUnlocked', 1);
 }
 
 $menu = array();

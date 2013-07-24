@@ -11,16 +11,16 @@ function toggleWidgetsLock(lock)
 {
     if (widgetsUnlocked == 1 || lock == 1)
     {
-        $('#widgetsLockedImg').attr('src', $('#widgetsLockedImg').attr('src').replace('-unlocked.png', '-locked.png'));
-        $('#widgetsLockedSpan').html('{function="localize('Lock widgets', 'dash')"}');
-        $('.widgetRemoveButtons').show();
-        $('#newWidgetIcon').show();
-        widgetsUnlocked = 0;
-    } else {
         $('#widgetsLockedImg').attr('src', $('#widgetsLockedImg').attr('src').replace('-locked.png', '-unlocked.png'));
         $('#widgetsLockedSpan').html('{function="localize('Unlock widgets', 'dash')"}');
         $('.widgetRemoveButtons').hide();
         $('#newWidgetIcon').hide();
+        widgetsUnlocked = 9;
+    } else {
+        $('#widgetsLockedImg').attr('src', $('#widgetsLockedImg').attr('src').replace('-unlocked.png', '-locked.png'));
+        $('#widgetsLockedSpan').html('{function="localize('Lock widgets', 'dash')"}');
+        $('.widgetRemoveButtons').show();
+        $('#newWidgetIcon').show();
         widgetsUnlocked = 1;
     }
 }
@@ -47,19 +47,17 @@ $(function(){
 	    navigateTo('?display=dash&widget='+value+'&action=add');
 	});
 	
-	if (widgetsUnlocked == 1 && $('#widgetsLockedImg').length > 0)
-	    toggleWidgetsLock(1);
+	if ({$widgetsUnlocked} == 1 && $('#widgetsLockedImg').length > 0)
+	    toggleWidgetsLock(0);
 });
 
 </script>
 
-{if="$widgetsLocked == True"}
 <style type="text/css">
 #widgetRemoveButtons {
     display: none;
 }
 </style>
-{/if}
 
 <div class="titlebar">{function="localize('Dash')"} - {function="localize('Everything is here', 'dash')"}{include="_navigation_panel.tpl"}</div>
         {loop="$dash_messages"}
@@ -96,7 +94,7 @@ $(function(){
         {if="isset($showWidgets)"}
         <div style="float: right; margin-right: 40px; height: 20px;">
             <!-- add new widget button -->
-            <a href="#" id="newWidgetIcon" {if="$widgetsLocked == True"}style="display: none;"{/if}>
+            <a href="#" id="newWidgetIcon" {if="$widgetsUnlocked == 0"}style="display: none;"{/if}>
                 <span class="tooltip">{function="localize('Add new widget', 'dash')"}</span>
                 
                 <div class="contextMenu" style="display: inline;">
@@ -113,8 +111,8 @@ $(function(){
             
             <!-- lock and unlock widgets button -->
             <a href="#" onclick="toggleWidgetsLock();">
-                <span class="tooltip" id="widgetsLockedSpan">{if="$widgetsLocked == True"}{function="localize('Unlock widgets', 'dash')"}{else}{function="localize('Lock widgets', 'dash')"}{/if}</span>
-                <img src="{$PANTHERA_URL}/images/admin/object-{if="$widgetsLocked == True"}unlocked{else}locked{/if}.png" style="height: 20px;" id="widgetsLockedImg">
+                <span class="tooltip" id="widgetsLockedSpan">{if="$widgetsUnlocked == 0"}{function="localize('Unlock widgets', 'dash')"}{else}{function="localize('Lock widgets', 'dash')"}{/if}</span>
+                <img src="{$PANTHERA_URL}/images/admin/object-{if="$widgetsUnlocked == 0"}unlocked{else}locked{/if}.png" style="height: 20px;" id="widgetsLockedImg">
             </a>
         </div>
         
@@ -123,7 +121,7 @@ $(function(){
 
         {if="isset($galleryItems) and count($galleryItems) > 0"}
         <div class="grid-2">
-           <div class="title-grid">{function="localize('Gallery')"}<span id="widgetRemoveButtons" class="widgetRemoveButtons" style="display: ;"><a href="#" onclick="removeWidget('gallery')"><img src="{$PANTHERA_URL}/images/admin/list-remove.png" style="height: 15px;"></a></span></div>
+           <div class="title-grid">{function="localize('Gallery')"}<span id="widgetRemoveButtons" class="widgetRemoveButtons"><a href="#" onclick="removeWidget('gallery')"><img src="{$PANTHERA_URL}/images/admin/list-remove.png" style="height: 15px;"></a></span></div>
            <div class="content-gird">
            <ul class="picturesBox">
                    {loop="$galleryItems"}
