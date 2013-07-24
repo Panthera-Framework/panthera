@@ -1,5 +1,5 @@
 <script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
-var widgetsLocked = 0;
+var widgetsUnlocked = 0;
 
 /**
   * Toogle lock
@@ -7,21 +7,21 @@ var widgetsLocked = 0;
   * @author Damian Kęska
   */
 
-function toggleWidgetsLock()
+function toggleWidgetsLock(lock)
 {
-    if (widgetsLocked == 1)
+    if (widgetsUnlocked == 1 || lock == 1)
     {
         $('#widgetsLockedImg').attr('src', $('#widgetsLockedImg').attr('src').replace('-unlocked.png', '-locked.png'));
         $('#widgetsLockedSpan').html('{function="localize('Lock widgets', 'dash')"}');
         $('.widgetRemoveButtons').show();
         $('#newWidgetIcon').show();
-        widgetsLocked = 0;
+        widgetsUnlocked = 0;
     } else {
         $('#widgetsLockedImg').attr('src', $('#widgetsLockedImg').attr('src').replace('-locked.png', '-unlocked.png'));
         $('#widgetsLockedSpan').html('{function="localize('Unlock widgets', 'dash')"}');
         $('.widgetRemoveButtons').hide();
         $('#newWidgetIcon').hide();
-        widgetsLocked = 1;
+        widgetsUnlocked = 1;
     }
 }
 
@@ -47,8 +47,8 @@ $(function(){
 	    navigateTo('?display=dash&widget='+value+'&action=add');
 	});
 	
-	if ({$widgetsLocked} == 1 && $('#widgetsLockedImg').length > 0)
-	    toggleWidgetsLock();
+	if ({$widgetsUnlocked} == 1 && $('#widgetsLockedImg').length > 0)
+	    toggleWidgetsLock(1);
 });
 
 </script>
