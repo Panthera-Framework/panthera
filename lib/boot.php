@@ -52,17 +52,10 @@ if (get_magic_quotes_gpc()) {
 }
 
 // panthera main directory
-if (PHP_OS == "WINNT")
-{
-    // Windows specific stuff
-    define('PANTHERA_DIR', str_ireplace("\\boot.php", '', __FILE__));
-} else {
-    // unix
-    define('PANTHERA_DIR', str_ireplace('/boot.php', '', __FILE__));
-}
-
+define('PANTHERA_DIR', $config['lib']);
 define('PANTHERA_VERSION', '1.3.4-DEV');
 define('IN_PANTHERA', True);
+
 // include core functions
 include(PANTHERA_DIR. '/panthera.php');
 include(PANTHERA_DIR. '/database.class.php');
