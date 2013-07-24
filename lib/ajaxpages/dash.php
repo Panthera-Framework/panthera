@@ -37,7 +37,7 @@ if ($_GET['action'] == 'remove')
     }
     
     $panthera -> config -> setKey('dash_widgets', $widgets);
-    $panthera -> template -> push('widgetsUnlocked', "1");
+    $panthera -> template -> push('widgetsLocked', "0");
     
 /**
   * Add a widget from /modules/dash/ directory or builtin (gallery or lastLogged)
@@ -57,7 +57,7 @@ if ($_GET['action'] == 'remove')
         $panthera -> config -> setKey('dash_widgets', $widgets);
     }
     
-    $panthera -> template -> push('widgetsUnlocked', "1");
+    $panthera -> template -> push('widgetsLocked', "0");
 }
 
 $menu = array();

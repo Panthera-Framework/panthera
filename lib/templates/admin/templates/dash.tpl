@@ -47,17 +47,19 @@ $(function(){
 	    navigateTo('?display=dash&widget='+value+'&action=add');
 	});
 	
-	if ({$widgetsUnlocked} == 1 && $('#widgetsLockedImg').length > 0)
+	if (widgetsUnlocked == 1 && $('#widgetsLockedImg').length > 0)
 	    toggleWidgetsLock(1);
 });
 
 </script>
 
+{if="$widgetsLocked == True"}
 <style type="text/css">
 #widgetRemoveButtons {
     display: none;
 }
 </style>
+{/if}
 
 <div class="titlebar">{function="localize('Dash')"} - {function="localize('Everything is here', 'dash')"}{include="_navigation_panel.tpl"}</div>
         {loop="$dash_messages"}
@@ -121,7 +123,7 @@ $(function(){
 
         {if="isset($galleryItems) and count($galleryItems) > 0"}
         <div class="grid-2">
-           <div class="title-grid">{function="localize('Gallery')"}<span id="widgetRemoveButtons" class="widgetRemoveButtons"><a href="#" onclick="removeWidget('gallery')"><img src="{$PANTHERA_URL}/images/admin/list-remove.png" style="height: 15px;"></a></span></div>
+           <div class="title-grid">{function="localize('Gallery')"}<span id="widgetRemoveButtons" class="widgetRemoveButtons" style="display: ;"><a href="#" onclick="removeWidget('gallery')"><img src="{$PANTHERA_URL}/images/admin/list-remove.png" style="height: 15px;"></a></span></div>
            <div class="content-gird">
            <ul class="picturesBox">
                    {loop="$galleryItems"}
