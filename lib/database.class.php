@@ -46,6 +46,7 @@ class pantheraDB
 
                 $this->socketType = 'sqlite';
                 $this->sql = new PDO('sqlite:' .SITE_DIR. '/content/database/' .$config['db_file']);
+                $this->sql->setAttribute( PDO::ATTR_STATEMENT_CLASS, array('pantheraDBStatement',array($this->sql)) );
                 $this->sql->exec("pragma synchronous = off;");
                 
                 $panthera -> logging -> output('Connected to SQLite3 database file ' .$config['db_file'], 'pantheraDB');
@@ -62,6 +63,8 @@ class pantheraDB
         } catch (Exception $e) {
             $this->_triggerErrorPage($e);
         }
+        
+        define('PANTHERA_DB_DRIVER', $this->socketType);
     }
     
     /**
@@ -135,11 +138,15 @@ class pantheraDB
     {
         $this->sqlCount++;
         $query = str_ireplace('{$db_prefix}', $this->prefix, $query);
+        
+        if ($this->socketType == "sqlite")
+        {
+            if ($query[strlen($query)-1] != ';')
+                $query .= ';';
+        }
 
         if ($this->panthera->logging->debug == True)
-        {
             $this->panthera->logging->output('SQL::query( ' .$query. ' , ' .json_encode($values). ' )', 'pantheraDB');
-        }
 
         // try to import missing tables if enabled
         if ($this->fixMissing == True)
@@ -155,36 +162,10 @@ class pantheraDB
                 $sth->execute();
                
             } catch (PDOException $e) {
-                if (($e -> getCode() == "42S02" and stristr($query, 'CREATE TABLE') === False) or ($e -> getCode() == "HY000" and stristr($query, 'CREATE TABLE') === False))
-                {
-                    preg_match("/'.*?'/", $e->getMessage(), $matches);
-                 
-                    // MySQL
-                    if (count($matches) > 0)
-                    {
-                        $dbName = str_ireplace("'", '', str_ireplace($this->panthera->config->getKey('db_name'). '.', '', $matches[0])); // get only table name
-                        $dbName = str_ireplace($this->prefix, '', $dbName); // remove prefix
-                    } else {
-                        // sqlite3                    
-                        $dbName = explode('no such table: ', $e->getMessage());
-                        $dbName = str_ireplace($this->prefix, '', $dbName[1]);
-                    }
-                    $file = getContentDir('/database/templates/' .$dbName. '.sql');
-
-                    // debugging
-                    $this->panthera->logging->output('Importing missing table "' .$dbName. '"', 'pantheraDB');
-                    
-                    if (is_file($file))
-                    {
-                        $SQL = file_get_contents($file);
-                        $this->query($SQL);
-                        return $this->query($query, $values);
-                        
-                    } else
-                        throw new Exception($e->getMessage());
-                
-                } else
-                    throw new Exception($e->getMessage());
+                if ($this->socketType == 'sqlite')
+                    $this->_fixMissingSQLite($e, $query, $values);
+                elseif ($this->socketType == 'mysql')
+                    $this->_fixMissingMySQL($e, $query, $values);
             }
         } else {
             $sth = $this->sql->prepare($query);
@@ -198,6 +179,84 @@ class pantheraDB
         }
             
         return $sth;
+    }
+    
+    /**
+      * MySQL missing tables import
+      *
+      * @param object $e
+      * @param string $query
+      * @param array $values
+      * @return object 
+      * @author Damian Kęska
+      */
+    
+    protected function _fixMissingMySQL ($e, $query, $values)
+    {
+        $this->panthera -> logging -> output('Called fixMissing MySQL tables recovery', 'pantheraDB');
+    
+        if ($e -> getCode() == "42S02" and stristr($query, 'CREATE TABLE') === False)
+        {
+            preg_match("/'.*?'/", $e->getMessage(), $matches);
+            
+            if (count($matches) == 0)
+            {
+                return False;
+            }
+            
+            $dbName = str_ireplace("'", '', str_ireplace($this->panthera->config->getKey('db_name'). '.', '', $matches[0])); // get only table name
+            $dbName = str_ireplace($this->prefix, '', $dbName); // remove prefix
+            $file = getContentDir('/database/templates/' .$dbName. '.sql');
+            
+            // debugging
+            $this->panthera->logging->output('Importing missing MySQL table "' .$dbName. '"', 'pantheraDB');
+            
+            if (is_file($file))
+            {
+                $SQL = file_get_contents($file);
+                $this->query($SQL);
+                return $this->query($query, $values);
+            } else
+                throw new Exception($e->getMessage());
+            
+        } else
+            throw new Exception($e->getMessage());
+    }
+    
+    /**
+      * SQLite missing tables import
+      *
+      * @param object $e
+      * @param string $query
+      * @param array $values
+      * @return object 
+      * @author Damian Kęska
+      */
+    
+    protected function _fixMissingSQLite($e, $query, $values)
+    {
+        $this->panthera -> logging -> output('Called fixMissing SQLite3 tables recovery', 'pantheraDB');
+    
+        if ($e -> getCode() == "HY000" and stristr($query, 'CREATE TABLE') === False)
+        {
+            // sqlite3                    
+            $dbName = explode('no such table: ', $e->getMessage());
+            $dbName = str_ireplace($this->prefix, '', $dbName[1]);
+            $file = getContentDir('/database/templates/sqlite3/' .$dbName. '.sql');
+            
+            // debugging
+            $this->panthera->logging->output('Importing missing SQLite3 table "' .$dbName. '"', 'pantheraDB');
+            
+            if (is_file($file))
+            {
+                $SQL = file_get_contents($file);
+                $this->query($SQL);
+                return $this->query($query, $values);
+            } else
+                throw new Exception($e->getMessage());
+                
+        } else 
+            throw new Exception($e->getMessage());
     }
     
     /**
@@ -678,4 +737,50 @@ abstract class pantheraFetchDB
         }
     }    
 }
-?>
+
+/**
+  * PDOStatement extension
+  *
+  * @package Panthera\core\database
+  * @author Damian Kęska
+  */
+
+class pantheraDBStatement extends PDOStatement
+{
+    protected $fetch = null;
+
+    protected function __construct() { }
+
+    /**
+      * This function contains fix for SQLite3 driver where rowCount were not working
+      *
+      * @return int 
+      * @author Damian Kęska
+      */
+
+    public function rowCount()
+    {
+        if (PANTHERA_DB_DRIVER == 'sqlite')
+        {
+            $this->fetch = $this->fetchAll();
+            return count($this->fetch);
+        } else
+            return parent::rowCount();
+    }
+
+    /**
+      * Fetching data
+      *
+      * @param int $mode
+      * @return mixed 
+      * @author Damian Kęska
+      */
+    
+    public function fetchAll($how=PDO::FETCH_ASSOC, $class_name=PDO::FETCH_COLUMN, $ctor_args=1)
+    {
+        if ($this->fetch != null)
+            return $this->fetch;
+        else
+            return parent::fetchAll($how);    
+    }
+}

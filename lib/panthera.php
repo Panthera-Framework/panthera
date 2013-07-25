@@ -127,6 +127,9 @@ class pantheraLogging
     {
         $this->panthera = $panthera;
         $this->panthera -> add_option('session_save', array($this, 'toFile'));
+        
+        if (defined('PANTHERA_FORCE_DEBUGGING'))
+            $this->debug = True;
     }
     
     /**
@@ -360,12 +363,12 @@ class pantheraConfig
     
     public function loadOverlay()
     {
-        $SQL = $this->panthera->db->query('SELECT `key`, `value`, `type` FROM `{$db_prefix}config_overlay`');
-
+        $SQL = $this->panthera->db->query('SELECT * FROM `{$db_prefix}config_overlay`');
+        
         if ($SQL -> rowCount() > 0)
         {
-            $array = $SQL -> fetchAll();
-
+            $array = $SQL -> fetchAll(PDO::FETCH_ASSOC);
+            
             foreach ($array as $key => $value)
             {
                 if ($value['type'] == 'array')
@@ -571,7 +574,7 @@ class pantheraCore
                 try {
                     $n = 'varCache_' .$varCacheType;
                     $this->varCache = new $n($this);
-                    $this->logging->output('varCache initialized, using ' .$cacheType, 'pantheraCore');
+                    $this->logging->output('varCache initialized, using ' .$varCacheType, 'pantheraCore');
                 } catch (Exception $e) {
                     $this->logging->output('Disabling varCache due to exception: ' .$e->getMessage(), 'pantheraCore');
                     $this->varCache = false;

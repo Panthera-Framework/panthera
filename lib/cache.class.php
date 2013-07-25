@@ -96,7 +96,12 @@ class varCache_db
     
     public function clear()
     {
-        $this->panthera->db->query('TRUNCATE TABLE `{$db_prefix}var_cache`');
+        // sqlite dont have TRUNCATE TABLE command
+        if ($this->panthera->db->getSocketType() == 'sqlite')
+            $this->panthera -> db -> query ('DELETE FROM `{$db_prefix}var_cache`');
+        else 
+            $this->panthera->db->query('TRUNCATE TABLE `{$db_prefix}var_cache`');
+            
         return True;
     }
     
