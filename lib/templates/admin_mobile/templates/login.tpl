@@ -1,19 +1,15 @@
-    {include 'header.tpl'}
-    
-    <nav class="tab-fixed">
-      <ul class="tab-inner">
-        <li class="active"><a data-ignore="true">{"Login"|localize}</a></li>
-      </ul>
-    </nav>
-    
+{include="header.tpl"}
+
+   <!-- Content -->        
     <div class="content">
      <form name="loginform" class="inset" id="loginform" action="?" method="post">
-       <input type="text" name="log" id="user_login" placeholder="{"Login"|localize}" class="input-text" autocomplete="off">
-       <input type="password" name="pwd" placeholder="{"Password"|localize}" class="input-text" autocomplete="off">
+       <input type="text" name="log" id="user_login" placeholder="{function="localize('Username', 'login')"}" class="input-text" autocomplete="off">
+       <input type="password" name="pwd" placeholder="{function="localize('Password', 'login')"}" class="input-text" autocomplete="off">
        
-       <input type="submit" class="btn-block" value="{"Sign in"|localize}" id="send_button">
-       
-       <button class="btn-block" id="wp-recover" onclick="setRecovery();">{"Recover password"|localize}</button>
+       <input type="submit" class="btn-block" value="{function="localize('Sign in', 'login')"}" id="send_button">
+       <button class="btn-block" id="wp-recover" onclick="setRecovery();">{function="localize('Recover password', 'login')"}</button>
      </form>
     </div>
-    {include 'footer.tpl'}
+   <!-- End of content -->
+   
+{include="footer.tpl"}
