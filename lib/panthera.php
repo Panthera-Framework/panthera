@@ -363,7 +363,7 @@ class pantheraConfig
     
     public function loadOverlay()
     {
-        $SQL = $this->panthera->db->query('SELECT * FROM `{$db_prefix}config_overlay`');
+        $SQL = $this->panthera->db->query('SELECT `key`, `value`, `type` FROM `{$db_prefix}config_overlay`');
         
         if ($SQL -> rowCount() > 0)
         {
