@@ -52,16 +52,18 @@ class ptopUpdater
         global $panthera;
         $page = microtime_float()-self::$time;
         $overall = microtime_float()-$_SERVER['REQUEST_TIME_FLOAT'];
-
+        
         if (self::$rid != False)
         {
             $run = new run('rid', self::$rid);
             $t = $run -> data;
             $t['time'] = array('overall' => $overall, 'page' => $page, 'template' => $panthera->template->timer);
             $run -> data = $t;
+            $run -> save();
             
             // close socket using `rid`
-            run::closeSocket('page', intval(getmypid()));
+            run::closeSocket('page', '', self::$rid);
+            $panthera -> logging -> output('Finished loading page, timing: ' .json_encode($t['time']), 'ptop');
         }
         
     }

@@ -1,11 +1,12 @@
+DROP TABLE IF EXISTS `{$db_prefix}run`;
+
 CREATE TABLE "{$db_prefix}run" (
-  "rid" int(16) NOT NULL ,
-  "pid" bigint(32) NOT NULL,
-  "name" varchar(64) NOT NULL,
-  "storage" varchar(8192) NOT NULL,
-  "started" double NOT NULL,
-  "expired" double NOT NULL,
-  PRIMARY KEY ("rid")
+  "rid" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "pid" INTEGER NOT NULL,
+  "name" VARCHAR NOT NULL,
+  "storage" VARCHAR NOT NULL,
+  "started" REAL NOT NULL,
+  "expired" REAL NOT NULL
 );
 
 CREATE INDEX "{$db_prefix}run_rid" ON "{$db_prefix}run" ("rid");

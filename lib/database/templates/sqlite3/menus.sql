@@ -1,12 +1,14 @@
+DROP TABLE IF EXISTS `{$db_prefix}menus`;
+
 CREATE TABLE "{$db_prefix}menus" (
-  "id" int(4) PRIMARY KEY,
-  "type" varchar(32) NOT NULL,
-  "title" varchar(128) NOT NULL,
-  "attributes" varchar(1024) NOT NULL,
-  "link" varchar(512) NOT NULL,
-  "language" varchar(32) NOT NULL DEFAULT 'polski',
-  "url_id" varchar(16) NOT NULL,
-  "order" smallint(3) NOT NULL,
-  "icon" varchar(256) NOT NULL,
-  "tooltip" varchar(128) NOT NULL
+  "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "type" VARCHAR NOT NULL,
+  "title" VARCHAR NOT NULL,
+  "attributes" VARCHAR NOT NULL,
+  "link" VARCHAR NOT NULL,
+  "language" VARCHAR NOT NULL DEFAULT 'polski',
+  "url_id" VARCHAR NOT NULL,
+  "order" INT NOT NULL,
+  "icon" VARCHAR NOT NULL,
+  "tooltip" VARCHAR NOT NULL
 );

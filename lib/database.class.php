@@ -141,8 +141,7 @@ class pantheraDB
         
         if ($this->socketType == "sqlite")
         {
-            if ($query[strlen($query)-1] != ';')
-                $query .= ';';
+            $query = $this->translateToSQLite($query);
         }
 
         if ($this->panthera->logging->debug == True)
@@ -163,9 +162,9 @@ class pantheraDB
                
             } catch (PDOException $e) {
                 if ($this->socketType == 'sqlite')
-                    $this->_fixMissingSQLite($e, $query, $values);
+                    return $this->_fixMissingSQLite($e, $query, $values);
                 elseif ($this->socketType == 'mysql')
-                    $this->_fixMissingMySQL($e, $query, $values);
+                    return $this->_fixMissingMySQL($e, $query, $values);
             }
         } else {
             $sth = $this->sql->prepare($query);
@@ -179,6 +178,27 @@ class pantheraDB
         }
             
         return $sth;
+    }
+    
+    /**
+      * Simply translate some MySQL names to SQLite3 equivalents
+      *
+      * @param string $query
+      * @return string
+      * @author Damian Kęska
+      */
+    
+    public function translateToSQLite($query)
+    {
+        $query = rtrim($query);
+        
+        if ($query[strlen($query)-1] != ';')
+            $query .= ';';
+                
+        // MySQL functions
+        $query = str_ireplace('NOW()', 'date(\'now\')', $query);
+        
+        return $query;
     }
     
     /**
@@ -235,7 +255,7 @@ class pantheraDB
     
     protected function _fixMissingSQLite($e, $query, $values)
     {
-        $this->panthera -> logging -> output('Called fixMissing SQLite3 tables recovery', 'pantheraDB');
+        $this->panthera -> logging -> output('Called fixMissing SQLite3 tables recovery (' .$e->getMessage(). ')', 'pantheraDB');
     
         if ($e -> getCode() == "HY000" and stristr($query, 'CREATE TABLE') === False)
         {
@@ -524,16 +544,16 @@ abstract class pantheraFetchDB
         global $panthera;
         $this->panthera = $panthera;
         
-        /**
-          * Cache
-          *
-          */
-
         // in case when we have other column identificator but want to use `id` to construct object
         if ($by == 'id' and $this->_idColumn != 'id')
         {
             $by = $this->_idColumn;
         }
+        
+        /**
+          * Cache
+          *
+          */
         
         if ($panthera->cacheType('cache') == 'memory' and $panthera->db->cache > 0)
             $this->cache = $panthera->db->cache;
@@ -541,6 +561,8 @@ abstract class pantheraFetchDB
         // caching
         if  ($this->cache > 0)
             $this->cacheID = $panthera->db->prefix.$this->_tableName. '.' .serialize($by);
+        else
+            $panthera -> logging -> output('Cache disabled for ' .get_class($this). ' class', 'pantheraFetchDB');
         
         if ($this->cacheID != "")
         {

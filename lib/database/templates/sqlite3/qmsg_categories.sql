@@ -1,9 +1,10 @@
+DROP TABLE IF EXISTS `{$db_prefix}qmsg_categories`;
+
 CREATE TABLE "{$db_prefix}qmsg_categories" (
-  "category_id" mediumint(4) NOT NULL ,
-  "title" varchar(128) NOT NULL,
-  "description" varchar(256) NOT NULL,
-  "category_name" varchar(16) NOT NULL,
-  PRIMARY KEY ("category_id")
+  "category_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "title" TEXT NOT NULL,
+  "description" TEXT NOT NULL,
+  "category_name" TEXT NOT NULL
 );
 
 CREATE INDEX "{$db_prefix}qmsg_categories_category_name" ON "{$db_prefix}qmsg_categories" ("category_name");

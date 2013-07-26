@@ -13,7 +13,7 @@ error_reporting(E_ALL);
 
 class ptop extends cliApp
 {
-    protected $sleepTime = 2;
+    protected $sleepTime = 3;
     protected $_waitAfterHelp = True;
 
     public function __construct()
@@ -55,9 +55,6 @@ class ptop extends cliApp
 
         print($this->screen->picker->getColoredString("ptop ".PANTHERA_VERSION."\n\n", 'light_cyan'));
 
-        // cleanup
-        cronjobs::cleanRunSockets();
-
         // get all sockets
         $sockets = run::getSockets();
 
@@ -72,7 +69,7 @@ class ptop extends cliApp
                 $executionTime = round(($socket->expired-$socket->started)*100);
 
             // unpack data            
-            $data = unserialize($socket->storage);
+            $data = $socket->storage;
             $time = '?';
             
             if (isset($data['time']))
@@ -100,6 +97,9 @@ class ptop extends cliApp
         print("\nTotal processes: ".$processes."\nPress [f] to freeze output.");
 
         print("\n");
+        
+        // cleanup
+        cronjobs::cleanRunSockets();
     }
 }
 

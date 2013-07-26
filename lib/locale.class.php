@@ -247,7 +247,7 @@ class pantheraLocale
     public function loadDomain($domain, $force=False)
     {
         // dont load same domains multiple times
-        if (array_key_exists($this->domains, $domain) and $force == False)
+        if (array_key_exists($domain, $this->domains) and $force == False)
             return False;
     
         $dirs = array(SITE_DIR. '/content/locales/' .$this->locale, PANTHERA_DIR. '/locales/' .$this->locale);

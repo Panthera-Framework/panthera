@@ -438,10 +438,11 @@ class run extends pantheraFetchDB
     protected $_idColumn = 'rid';
     protected $_constructBy = array('rid', 'array');
     protected $_unsetColumns = array('rid', 'started', 'name', 'expired');
+    protected $cache = 0;
 
     public function __get($var)
     {
-        if ($var == 'data')
+        if ($var == 'data' or $var == 'storage')
             return unserialize(parent::__get('storage'));
 
         return parent::__get($var);
@@ -449,7 +450,7 @@ class run extends pantheraFetchDB
     
     public function __set($var, $value)
     {
-        if ($var == 'data')
+        if ($var == 'data' or $var == 'storage')
         {
             $var = 'storage';
             $value = serialize($value);
@@ -476,7 +477,7 @@ class run extends pantheraFetchDB
             return False;
 
         $values = array('pid' => intval($pid), 'name' => $name, 'data' => serialize($data), 'started' => microtime(true), 'expired' => 0);
-        $panthera -> db -> query('INSERT INTO `{$db_prefix}run` (`pid`, `name`, `storage`, `started`, `expired`) VALUES (:pid, :name, :data, :started, :expired);', $values);
+        $panthera -> db -> query('INSERT INTO `{$db_prefix}run` (`rid`, `pid`, `name`, `storage`, `started`, `expired`) VALUES (NULL, :pid, :name, :data, :started, :expired);', $values);
         return $panthera -> db -> sql -> lastInsertId();
     }
 
@@ -490,7 +491,7 @@ class run extends pantheraFetchDB
      * @author Damian Kęska
      */
 
-    public static function closeSocket($name, $pid, $rid='')
+    public static function closeSocket($name, $pid='', $rid='')
     {
         global $panthera;
 
@@ -501,7 +502,10 @@ class run extends pantheraFetchDB
                 $panthera -> db -> query('UPDATE `{$db_prefix}run` SET `expired` = :expired WHERE `pid` = :pid AND `name` = :name', array('expired' => microtime(true), 'pid' => intval($pid), 'name' => $name));
                 
             return True;        
-        } catch (Exception $e) { return False; }    
+        } catch (Exception $e) {
+            $panthera -> logging -> output ('Warning: Cannot close socket pid=' .$pid. ', rid=' .$rid. ', exception=' .$e->getMessage(), 'run'); 
+            return False; 
+        }    
     }
 
     /**
@@ -518,9 +522,12 @@ class run extends pantheraFetchDB
         global $panthera;
 
         try {
-            //$panthera -> db -> query('DELETE FROM `{$db_prefix}run` WHERE `pid` = :pid AND `name` = :name', array('expired' => time(), 'pid' => intval($pid), 'name' => $name));
+            $panthera -> db -> query('DELETE FROM `{$db_prefix}run` WHERE `pid` = :pid AND `name` = :name', array('pid' => intval($pid), 'name' => $name));
             return True;        
-        } catch (Exception $e) { return False; }    
+        } catch (Exception $e) { 
+            $panthera -> logging -> output ('Warning: Cannot remove socket pid=' .$pid. ', name=' .$name. ', exception=' .$e->getMessage(), 'run'); 
+            return False; 
+        }    
     }
 
     /**

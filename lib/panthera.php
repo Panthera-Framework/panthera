@@ -46,7 +46,7 @@ function pantheraExceptionHandler($exception)
             if ($stackPoint['class'] != '')
                 $function = $stackPoint['class']. ' -> ' .$stackPoint['function']. '(' .implode(', ', $stackPoint['args']). ')';
 
-            $panthera->logging->output($key. ' => ' .$function. ' in ' .$stackPoint['file']. ' on line ' .$stackPoint['line']);
+            $panthera->logging->output($key. ' => ' .$function. ' in ' .$stackPoint['file']. ' on line ' .$stackPoint['line'], 'pantheraExceptionHandler');
         }
 
         if (is_dir(SITE_DIR. '/content/templates/exception_debug.php'))

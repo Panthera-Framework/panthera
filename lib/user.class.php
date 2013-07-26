@@ -206,6 +206,7 @@ class pantheraGroup extends pantheraFetchDB
     protected $_tableName = 'groups';
     protected $_idColumn = 'group_id';
     protected $_constructBy = array('id', 'group_id', 'name', 'array');
+    protected $cache = 3600;
     public $acl;
 
     public function __construct($by, $value)

@@ -1,8 +1,9 @@
+DROP TABLE IF EXISTS `{$db_prefix}password_recovery`;
+
 CREATE TABLE "{$db_prefix}password_recovery" (
-  "id" int(6) NOT NULL ,
-  "recovery_key" varchar(128) NOT NULL,
-  "user_login" varchar(32) NOT NULL,
+  "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "recovery_key" TEXT NOT NULL,
+  "user_login" TEXT NOT NULL,
   "date" timestamp NOT NULL ,
-  "new_passwd" varchar(128) NOT NULL,
-  PRIMARY KEY ("id")
+  "new_passwd" TEXT NOT NULL
 );
