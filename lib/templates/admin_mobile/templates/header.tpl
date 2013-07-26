@@ -48,18 +48,20 @@
       </a>
 
       <h1 class="title" style="color: #33b5e5;">&nbsp;&nbsp;&nbsp;Panthera Mobile</h1>
+      
+     {if="$user->login != ''"}
+      <div style="float: right; margin-right: 7px; margin-top: 9px;">
+        <a href="pa-login.php?logout=True">
+            <div class="login"><a href="pa-login.php?logout=True" />{function="localize('Logout')"}</a></div>
+        </a>
+      </div>
 
-      <ul class="actions pull-right">
-        <li><a href="pa-login.php?logout=True" class="action" data-transition="push"><i class="icon-fries"></i></a></li>
-      </ul>
+      <div id="flags" style="float: right; margin-right: 30px; margin-top: 12px;">
+          {loop="$flags"}
+              <a href="?display=dash&_locale={$value}"><img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 24px;"></a>&nbsp;&nbsp;
+          {/loop}
+      </div>
+     {/if}
 
     </header>
     <!-- End of header -->
-
-    <!-- Bottom -->
-    <nav class="action-bar fixed-bottom">
-          <ul class="actions flex" data-overflow="false">
-            <li><a href="" class="action" title="{function="localize('Refresh')"}" data-ignore="true"><i class="icon-refresh"></i></a></li>
-          </ul>
-    </nav>
-    <!-- End of bottom -->
