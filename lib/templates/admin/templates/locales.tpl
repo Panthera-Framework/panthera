@@ -51,15 +51,15 @@ $(document).ready(function () {
                 <tr>
                     {if="$value.flag == True"}<td style='width: 30px;'><img src='{$PANTHERA_URL}/images/admin/flags/{$key}.png'></td>{/if}
                     <td>{$key}</td>
-                    <td><input type="button" value="{function="localize('Delete')"}" onclick="localeAction('delete', '{$k}'); return false;">
+                    <td><input type="button" value="{function="localize('Delete')"}" onclick="localeAction('delete', '{$key}'); return false;">
 
                     {if="$value.visibility == True"}
-                    <input type="button" value="{function="localize('Hide')"}" onclick="localeAction('toggle_visibility', '{$k}');">
+                    <input type="button" value="{function="localize('Hide')"}" onclick="localeAction('toggle_visibility', '{$key}');">
                     {else}
-                    <input type="button" value="{function="localize('Show')"}" onclick="localeAction('toggle_visibility', '{$k}');">
+                    <input type="button" value="{function="localize('Show')"}" onclick="localeAction('toggle_visibility', '{$key}');">
                     {/if}
 
-                <input type="button" value="{function="localize('Set as default')"}" onclick="localeAction('set_as_default', '{$k}');"></td></tr>
+                <input type="button" value="{function="localize('Set as default')"}" onclick="localeAction('set_as_default', '{$key}');"></td></tr>
             {/loop}
 
         </tbody>
