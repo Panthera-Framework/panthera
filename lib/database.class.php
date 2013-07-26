@@ -492,7 +492,7 @@ class whereClause
 }
 
 /**
-  * Panthera Fetch DB - Turning database results into object, a data model
+  * Panthera Fetch DB - Turning database results into object, a data model with integrated caching and saving right back to database
   *
   * @package Panthera\core\database
   * @author Damian Kęska
@@ -602,6 +602,8 @@ abstract class pantheraFetchDB
             
                 $clause = $by->show();
                 $SQL = $panthera->db->query('SELECT * FROM `{$db_prefix}' .$this->_tableName. '` WHERE ' .$clause[0], $clause[1]);
+                $by = $clause[0];
+                $value = $clause[1];
             }
             
             /**
@@ -615,6 +617,7 @@ abstract class pantheraFetchDB
                 $SQL = $panthera->db->query('SELECT * FROM `{$db_prefix}' .$this->_tableName. '` WHERE `' .$by. '` = :' .$by, array($by => $value));
             }
 
+            // getting results and building a object
             if ($SQL != NULL)
             {
                 if ($SQL -> rowCount() > 0)
@@ -626,13 +629,13 @@ abstract class pantheraFetchDB
                         $panthera->cache->set($this->cacheID, $this->_data, $panthera->db->cache);
 
                     if($panthera->logging->debug == True)
-                        $panthera->logging->output(get_class($this). '::Found a record by ' .$by. ' (value=' .json_encode($value). ')');
+                        $panthera->logging->output(get_class($this). '::Found a record by "' .$by. '" (value=' .json_encode($value). ')', 'pantheraFetchDB');
 
                     $panthera -> add_option('session_save', array($this, 'save'));
 
                 } else {
                     if($panthera->logging->debug == True)
-                        $panthera->logging->output(get_class($this). '::Cannot find record by ' .$by. ' (value=' .json_encode($value). ')');
+                        $panthera->logging->output(get_class($this). '::Cannot find record by "' .$by. '" (value=' .json_encode($value). ')', 'pantheraFetchDB');
                 }
             }
         }
@@ -782,5 +785,13 @@ class pantheraDBStatement extends PDOStatement
             return $this->fetch;
         else
             return parent::fetchAll($how);    
+    }
+    
+    public function fetch($how=PDO::FETCH_ASSOC, $class_name=PDO::FETCH_COLUMN, $ctor_args=1)
+    {
+        if ($this->fetch != null)
+            return $this->fetch[0];
+        else
+            return parent::fetch($how);  
     }
 }

@@ -1,13 +1,12 @@
 CREATE TABLE "{$db_prefix}menus" (
-  "id" int(4) NOT NULL ,
-  "type" varchar(32) NOT NULL COMMENT 'link belongs to grup of this name',
+  "id" int(4) PRIMARY KEY,
+  "type" varchar(32) NOT NULL,
   "title" varchar(128) NOT NULL,
-  "attributes" varchar(1024) NOT NULL COMMENT 'serialized array with attributes',
+  "attributes" varchar(1024) NOT NULL,
   "link" varchar(512) NOT NULL,
   "language" varchar(32) NOT NULL DEFAULT 'polski',
   "url_id" varchar(16) NOT NULL,
   "order" smallint(3) NOT NULL,
-  "icon" varchar(256) NOT NULL COMMENT 'url adress to icon',
-  "tooltip" varchar(128) NOT NULL,
-  PRIMARY KEY ("id")
+  "icon" varchar(256) NOT NULL,
+  "tooltip" varchar(128) NOT NULL
 );

@@ -1,22 +1,9 @@
 <?php
 /**
-    * @package Panthera\core\user
-    * @copyright (C) Damian Kęska, Mateusz Warzyński
-    * @license GNU/AGPL, see lib/license.txt
-    * Panthera is free software; you can redistribute it and/or
-    * modify it under the terms of the GNU Affero General Public License 3
-    * as published by the Free Software Foundation.
-    *
-    * Panthera is distributed in the hope that it will be useful,
-    * but WITHOUT ANY WARRANTY; without even the implied warranty of
-    * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    * GNU General Public License for more details.
-    *
-    * You should have received a copy of the GNU Affero General Public License
-    * along with Panthera; if not, write to the Free Software
-    * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
-    * or see http://www.gnu.org/licenses/.
-    */
+  * Panthera user management
+  * @package Panthera\core\user
+  * @author Damian Kęska
+  */
 
 /**
  * Panthera User Management Class
@@ -77,6 +64,7 @@ class pantheraUser extends pantheraFetchDB
         if ($Array == -1)
         {
             $SQL = $this->panthera->db->query('SELECT `metaid`, `name`, `value` FROM `{$db_prefix}metas` WHERE `userid` = :userid AND `type` = "u"', array('userid' => $this->__get('id')));
+            
             $Array = $SQL->fetchAll();
             
             if ($this->cache > 0 and $Array != -1)
@@ -283,7 +271,7 @@ class _userMeta
         $this->_type = $type;
         $this->_input = $array;
         $this->_cache = $cache;
-
+        
         if (is_array($array))
         {
             foreach ($array as $key => $value)

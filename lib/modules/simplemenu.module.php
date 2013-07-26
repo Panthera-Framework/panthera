@@ -46,10 +46,10 @@ class simpleMenu
 
         if ($rows == -1)
         {        
-            $SQL = $this->panthera->db->query('SELECT * FROM `{$db_prefix}menus` WHERE `type`= :type ORDER BY `order` DESC', array('type' => $category));
+            $SQL = $this->panthera->db->query('SELECT * FROM `{$db_prefix}menus` WHERE `type`= :type ORDER BY `order` DESC;', array('type' => $category));
             $count = $SQL -> rowCount();
         }
-
+        
         if ($count > 0)
         {
             if ($rows == -1)
