@@ -2,7 +2,7 @@
 
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash">{function="localize('Dash')"}</a></li>
+        <li><a href="?display=dash&menu=settings">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Languages', 'langtool')"}</a></li>
       </ul>
     </nav>
