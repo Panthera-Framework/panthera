@@ -198,7 +198,7 @@ class pantheraLocale
         $orig = $string;
 
         // check if text exists in domain
-        if (array_key_exists($string, $this->memory[$domain]))
+        if (@array_key_exists($string, $this->memory[$domain]))
             $string = $this->memory[$domain][$string];
 
         if ($this->panthera->logging->debug == True) {

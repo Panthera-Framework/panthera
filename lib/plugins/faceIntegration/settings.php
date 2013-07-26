@@ -23,7 +23,7 @@ if ($_GET['display'] == 'facebook')
     // Initialize Facebook session
     $facebook = new facebookWrapper();
 
-    $facebook->loginUser(array('scope' => 'user_about_me'), 'script');
+    $facebook->loginUser($scope, 'script');
 
     // Get info about user (it will be needed in ajaxpages and template, therefore I created variable...)
     $userinfo = $facebook->sdk->api('/me');

@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS `{$db_prefix}cronjobs`;
 
 CREATE TABLE "{$db_prefix}cronjobs" (
-  "jobid" INGEGER PRIMARY KEY AUTOINCREMENT,
+  "jobid" INTEGER PRIMARY KEY AUTOINCREMENT,
   "jobname" VARCHAR NOT NULL,
   "data" VARCHAR NOT NULL,
   "minute" VARCHAR NOT NULL DEFAULT '*',

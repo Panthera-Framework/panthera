@@ -15,7 +15,10 @@
 class pantheraDB
 {
     public $sql, $prefix, $sqlCount=0, $cache=120;
-    private $panthera, $socketType, $fixMissing=False;
+    protected $panthera; 
+    protected $socketType;
+    protected $fixMissing=False;
+    protected $deepCount=0;
     
     /**
       * Prepare database connection
@@ -158,9 +161,16 @@ class pantheraDB
                     $this->bindArrayValue($sth, $values);
                 }
             
-                $sth->execute();
+                if (!$sth -> execute())
+                    return False;
                
             } catch (PDOException $e) {
+                $this->deepCount++;
+            
+                // this should prevent loops
+                if ($this->deepCount > 3)
+                    $this->_triggerErrorPage($e);
+                
                 if ($this->socketType == 'sqlite')
                     return $this->_fixMissingSQLite($e, $query, $values);
                 elseif ($this->socketType == 'mysql')
@@ -174,8 +184,11 @@ class pantheraDB
                 $this->bindArrayValue($sth, $values);
             }
                 
-            $sth -> execute();
+            if (!$sth -> execute())
+                return False;
         }
+        
+        $this->deepCount = 0;
             
         return $sth;
     }
@@ -234,6 +247,7 @@ class pantheraDB
             if (is_file($file))
             {
                 $SQL = file_get_contents($file);
+                
                 $this->query($SQL);
                 return $this->query($query, $values);
             } else
@@ -270,7 +284,8 @@ class pantheraDB
             if (is_file($file))
             {
                 $SQL = file_get_contents($file);
-                $this->query($SQL);
+                $result = $this->query($SQL);
+                
                 return $this->query($query, $values);
             } else
                 throw new Exception($e->getMessage());

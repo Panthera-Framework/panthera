@@ -20,42 +20,50 @@
 function pantheraExceptionHandler($exception)
 {
     global $panthera;
+    
+    $panthera->logging->output('pantheraExceptionHandler::Unhandled exception, starts;');
+    $panthera->logging->output($exception->getMessage());
+    $panthera->logging->output($exception->getFile(). ' on line ' .$exception->getLine());
 
-    if ($panthera->config->getKey('debug'))
+    $trace = $exception->getTrace();
+
+    foreach ($trace as $key => $stackPoint) {
+        // I'm converting arguments to their type
+        // (prevents passwords from ever getting logged as anything other than 'string')
+        $trace[$key]['args_content'] = json_encode($trace[$key]['args']);
+        $trace[$key]['args'] = array_map('gettype', $trace[$key]['args']);
+        $trace[$key]['class'] = $stackPoint['class'];
+    }
+
+    $stackTrace = array();
+    foreach ($trace as $key => $stackPoint) {
+        $stackTrace[] = array('key' => $key, 'file' => $stackPoint['file'], 'line' => $stackPoint['line'], 'function' => $stackPoint['function'], 'args' => implode(', ', $stackPoint['args']), 'args_json' => $stackPoint['args_content'], 'class' => $stackPoint['class']);
+
+        $function = $stackPoint['function'];
+
+        if ($stackPoint['class'] != '')
+            $function = $stackPoint['class']. ' -> ' .$stackPoint['function']. '(' .implode(', ', $stackPoint['args']). ')';
+
+        $panthera->logging->output($key. ' => ' .$function. ' in ' .$stackPoint['file']. ' on line ' .$stackPoint['line'], 'pantheraExceptionHandler');
+    }
+    
+    if ($panthera->config->getKey('debug', True, 'bool'))
     {
-        $panthera->logging->output('pantheraExceptionHandler::Unhandled exception, starts;');
-        $panthera->logging->output($exception->getMessage());
-        $panthera->logging->output($exception->getFile(). ' on line ' .$exception->getLine());
-
-        $trace = $exception->getTrace();
-
-        foreach ($trace as $key => $stackPoint) {
-            // I'm converting arguments to their type
-            // (prevents passwords from ever getting logged as anything other than 'string')
-            $trace[$key]['args_content'] = json_encode($trace[$key]['args']);
-            $trace[$key]['args'] = array_map('gettype', $trace[$key]['args']);
-            $trace[$key]['class'] = $stackPoint['class'];
-        }
-
-        $stackTrace = array();
-        foreach ($trace as $key => $stackPoint) {
-            $stackTrace[] = array('key' => $key, 'file' => $stackPoint['file'], 'line' => $stackPoint['line'], 'function' => $stackPoint['function'], 'args' => implode(', ', $stackPoint['args']), 'args_json' => $stackPoint['args_content'], 'class' => $stackPoint['class']);
-
-            $function = $stackPoint['function'];
-
-            if ($stackPoint['class'] != '')
-                $function = $stackPoint['class']. ' -> ' .$stackPoint['function']. '(' .implode(', ', $stackPoint['args']). ')';
-
-            $panthera->logging->output($key. ' => ' .$function. ' in ' .$stackPoint['file']. ' on line ' .$stackPoint['line'], 'pantheraExceptionHandler');
-        }
-
         if (is_dir(SITE_DIR. '/content/templates/exception_debug.php'))
             include_once(SITE_DIR. '/content/templates/exception_debug.php');
         else
             include_once(PANTHERA_DIR. '/templates/exception_debug.php');
 
         $panthera->logging->toFile();
-        die();
+        exit;
+        
+    } else {
+        if (is_dir(SITE_DIR. '/content/templates/exception.php'))
+            include_once SITE_DIR. '/content/templates/exception.php';
+        else
+            include_once PANTHERA_DIR. '/templates/exception.php';
+            
+        exit;
     }
 }
 

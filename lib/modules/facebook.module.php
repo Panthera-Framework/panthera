@@ -43,19 +43,28 @@ class facebookWrapper
         if ($secret == '')
             $secret = $panthera->config->getKey('facebook_secret');
 
+        if ($appid == null or $secret == null)
+        {
+            $panthera -> logging -> output('Facebook integration wrapper requires "facebook_appid" and "facebook_secret" to be configured', 'facebook');
+            throw new Exception('Facebook integration wrapper requires "facebook_appid" and "facebook_secret" to be configured');
+        } 
+        
         $this->sdk = new Facebook(array('appId'  => $appid, 'secret' => $secret));
-
+        
+        // get stored access token
+        if ($panthera->session->exists('facebook.token'))
+            $this->sdk->setAccessToken($panthera->session->get('facebook.token'));
+            
         if (isset($_GET['code']) and isset($_GET['state']))
         {
-            $panthera->session->set('facebook_code', $_GET['code']);
-            $panthera->session->set('facebook_state', $_GET['state']);
-            $panthera -> logging -> output('facebookWrapper::Detected code=' .$_GET['code']. ' and state=' .$_GET['state']. ' in url', 'facebook');
+            $panthera -> logging -> output('facebookWrapper::Detected code=' .$_GET['code']. ' and state=' .$_GET['state']. ' in url, saving access token', 'facebook');
+            $panthera -> session -> set('facebook.token', $this->sdk->getAccessToken());
         }
 
-        $panthera -> logging -> output('facebookWrapper::Using appid=' .$appid. ' and secret=' .$secret, 'facebook');
-
-        $_REQUEST['code'] = $panthera->session->get('facebook_code');
-        $_REQUEST['state'] = $panthera->session->get('facebook_state');
+        $panthera -> logging -> output('Using appid=' .$appid. ' and secret=' .$secret, 'facebook');
+        
+        //$_REQUEST['code'] = $panthera->session->get('facebook_code');
+        //$_REQUEST['state'] = $panthera->session->get('facebook_state');
     }
 
     /**
@@ -91,7 +100,7 @@ class facebookWrapper
     {
         $checkIfUserLikePage = $this->sdk->api(array(
             "method"    => "fql.query",
-            "query"     => "SELECT page_id FROM page_fan WHERE uid=me() AND page_id=".$pageID
+            "query"     => "SELECT target_id FROM page_fan WHERE uid=me() AND target_id=".$pageID
         ));
         
         return sizeof($checkIfUserLikePage);
@@ -130,19 +139,12 @@ class facebookWrapper
 
     public function loginUser($scope, $redirect=False)
     {
-        if ($this->sdk->getUser())
-        {
-            try {
-                $this -> user = $this->sdk->api('/me');
-                return True;
-            } catch (FacebookApiException $e) {
-                 $url = $this->sdk->getLoginUrl($scope);
-                 $this -> panthera -> logging -> output('facebookWrapper::Redirecting user to url=' .$url, 'facebook');
-                 return $this->panthera->template->redirect($url, $redirect);
-            }
-        } else {
-            $url = $this->sdk->getLoginUrl($scope);
-            $this -> panthera -> logging -> output('facebookWrapper::Redirecting user to url=' .$url. ' (!getUser())', 'facebook');
+        try {
+            $this -> user = $this->sdk->api('/me');
+            return True;
+        } catch (FacebookApiException $e) {
+            $url = $this->sdk->getLoginUrl(array('scope' => $scope));
+            $this -> panthera -> logging -> output('facebookWrapper::Redirecting user to url=' .$url, 'facebook');
             return $this->panthera->template->redirect($url, $redirect);
         }
     }

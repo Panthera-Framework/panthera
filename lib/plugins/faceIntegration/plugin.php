@@ -10,12 +10,10 @@
 $pluginInfo = array('name' => 'Facebook Integration', 'author' => 'Mateusz Warzyński', 'description' => 'Login to Panthera admin panel with Facebook', 'version' => PANTHERA_VERSION);
 $panthera -> addPermission('can_manage_facebook', localize('Can manage all faceIntegration elements', 'messages'));
 
-$panthera -> config -> getKey('facebook_scope', array('scope' => 'user_about_me'), 'array');
-
 function facebookAjaxpage()
 {
     global $panthera;
-    $scope = $panthera -> config -> getKey('facebook_scope');
+    $scope = $panthera -> config -> getKey('facebook_scope', array('publish_stream', 'user_about_me'), 'array');
     
     if ($_GET['display'] == 'facebook')
     {
@@ -38,7 +36,7 @@ function facebookConnect ($action, $back='')
     
     if ($action == 'connect' or $action == 'login') 
     {
-        $scope = $panthera -> config -> getKey('facebook_scope');
+        $scope = $panthera -> config -> getKey('facebook_scope', array('publish_stream', 'user_about_me'), 'array');
     
         $panthera -> importModule('facebook'); // facebook wrapper
         $panthera -> importModule('meta'); // user and group metas
