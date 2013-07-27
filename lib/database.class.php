@@ -36,6 +36,9 @@ class pantheraDB
         $config = $panthera->config->getConfig();
         
         $this->cache = intval(@$config['cache_db']);
+        
+        if (!array_key_exists('cache_db', $config))
+            $this -> cache = 3600;
        
         // this setting will automaticaly import database structures from template if any does not exists
         if (@$config['build_missing_tables'] == True)
@@ -157,8 +160,6 @@ class pantheraDB
         // try to import missing tables if enabled
         if ($this->fixMissing == True)
         {
-            $r = False;
-            
             try {
                 $sth = $this->sql->prepare($query);
 
@@ -172,14 +173,10 @@ class pantheraDB
 
             } catch (PDOException $e) {
                 if ($this->socketType == 'sqlite')
-                    $r = $this->_fixMissingSQLite($e, $query, $values);
+                    $sth = $this->_fixMissingSQLite($e, $query, $values);
                 elseif ($this->socketType == 'mysql')
-                    $r = $this->_fixMissingMySQL($e, $query, $values);
+                    $sth = $this->_fixMissingMySQL($e, $query, $values);
             }
-            
-            if ($r)
-                return $r;
-            
             
         } else {
             $sth = $this->sql->prepare($query);
@@ -227,6 +224,9 @@ class pantheraDB
     
     public function countMissingTables($e)
     {
+        if (!array_key_exists($e->getMessage(), $this->missing))
+            $this->missing[$e->getMessage()] = 0;
+    
         $this->missing[$e->getMessage()]++;
             
         if ($this->missing[$e->getMessage()] > 1)
@@ -249,7 +249,7 @@ class pantheraDB
     {
         $this->panthera -> logging -> output('Called fixMissing MySQL tables recovery', 'pantheraDB');
     
-        if ($e -> getCode() == "42S02" and stristr($query, 'CREATE TABLE') == False)
+        if ($e -> getCode() == "42S02" and stristr($query, 'CREATE TABLE') === False and stristr($query, 'DROP TABLE') === False)
         {
             $this->countMissingTables($e);
         
@@ -269,11 +269,10 @@ class pantheraDB
             
             if (is_file($file))
             {
-                $SQL = file_get_contents($file);
+                $SQL = str_ireplace('{$db_prefix}', $this->prefix, file_get_contents($file));
 
                 try {
-                    $sth = $this->sql->prepare($query);
-                    $sth -> execute();
+                    $this->sql->exec($SQL);
                     return $this->query($query, $values);
                 } catch (Exception $e) {
                     $this->_triggerErrorPage($e, 'Cannot create table, check template placed in ' .$file);
@@ -300,7 +299,7 @@ class pantheraDB
     {
         $this->panthera -> logging -> output('Called fixMissing SQLite3 tables recovery (' .$e->getMessage(). ')', 'pantheraDB');
     
-        if (strpos($e->getMessage(), 'no such table') !== False and strpos($query, 'CREATE TABLE') === False)
+        if (strpos($e->getMessage(), 'no such table') !== False and strpos($query, 'CREATE TABLE') === False and stristr($query, 'DROP TABLE') === False)
         {
             $this->countMissingTables($e);
             
@@ -316,11 +315,10 @@ class pantheraDB
                 $SQL = str_ireplace('{$db_prefix}', $this->prefix, file_get_contents($file));
                 
                 try {
-                    $sth = $this->sql->prepare($query);
-                    $sth -> execute();
+                    $this->sql->exec($SQL);
                     return $this->query($query, $values);
                 } catch (Exception $e) {
-                    $this->_triggerErrorPage($e, 'Cannot create table, check template placed in ' .$file);
+                    $this->_triggerErrorPage($e, 'Cannot create table, check template placed in "' .$file. '"');
                 }
                 
             } else
@@ -615,7 +613,7 @@ abstract class pantheraFetchDB
         else
             $panthera -> logging -> output('Cache disabled for ' .get_class($this). ' class', 'pantheraFetchDB');
         
-        if ($this->cacheID != "")
+        if ($this->cacheID != "" and $panthera->cache)
         {
             if ($panthera->cache->exists($this->cacheID))
             {
