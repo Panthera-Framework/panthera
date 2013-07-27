@@ -9,11 +9,12 @@
   */
 
 if (!defined('IN_PANTHERA'))
-      exit;
+    exit;
       
 if (@$_GET['display'] == 'conftool') {
 
-      if (!getUserRightAttribute($user, 'can_update_config_overlay')) {
+      if (!getUserRightAttribute($user, 'can_update_config_overlay')) 
+      {
             $template->display('no_access.tpl');
             pa_exit();
       }

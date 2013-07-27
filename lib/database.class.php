@@ -19,6 +19,7 @@ class pantheraDB
     protected $socketType;
     protected $fixMissing=False;
     protected $deepCount=0;
+    protected $missing = array();
     
     /**
       * Prepare database connection
@@ -49,7 +50,7 @@ class pantheraDB
 
                 $this->socketType = 'sqlite';
                 $this->sql = new PDO('sqlite:' .SITE_DIR. '/content/database/' .$config['db_file']);
-                $this->sql->setAttribute( PDO::ATTR_STATEMENT_CLASS, array('pantheraDBStatement',array($this->sql)) );
+                $this->sql->setAttribute( PDO::ATTR_STATEMENT_CLASS, array('pantheraDBStatement',array($this->sql, $this)) );
                 $this->sql->exec("pragma synchronous = off;");
                 
                 $panthera -> logging -> output('Connected to SQLite3 database file ' .$config['db_file'], 'pantheraDB');
@@ -66,8 +67,6 @@ class pantheraDB
         } catch (Exception $e) {
             $this->_triggerErrorPage($e);
         }
-        
-        define('PANTHERA_DB_DRIVER', $this->socketType);
     }
     
     /**
@@ -90,11 +89,16 @@ class pantheraDB
       * @author Damian Kęska
       */
 
-    public function _triggerErrorPage($e)
+    public function _triggerErrorPage($e, $customWarningMsg='')
     {
         // a little bit hook to provide possibility to inform administrator about the error
         if (function_exists('userDBError'))
             userDBError($e);
+            
+        if ($customWarningMsg != '')
+            $warningMessage = $customWarningMsg;
+        else
+            $warningMessage = 'Cannot connect to database, please check your connection and database configuration in /content/config.php file.<br>You can also check your SQL user and database priviledges, allowed hosts and if server is online. ';
 
         $message = $this->hideAuthInfo($e -> getMessage());
         $debugTemplate = getErrorPageFile('db_error');
@@ -107,7 +111,7 @@ class pantheraDB
         }
 
         // if not we will show simple error
-        die('<h2>Server error</h2><br>Cannot connect to database: ' .$message);
+        die('<h2>Server error</h2><br>Unrecoverable database error: ' .$message);
     }
     
     /**
@@ -153,6 +157,8 @@ class pantheraDB
         // try to import missing tables if enabled
         if ($this->fixMissing == True)
         {
+            $r = False;
+            
             try {
                 $sth = $this->sql->prepare($query);
 
@@ -163,19 +169,18 @@ class pantheraDB
             
                 if (!$sth -> execute())
                     return False;
-               
+
             } catch (PDOException $e) {
-                $this->deepCount++;
-            
-                // this should prevent loops
-                if ($this->deepCount > 3)
-                    $this->_triggerErrorPage($e);
-                
                 if ($this->socketType == 'sqlite')
-                    return $this->_fixMissingSQLite($e, $query, $values);
+                    $r = $this->_fixMissingSQLite($e, $query, $values);
                 elseif ($this->socketType == 'mysql')
-                    return $this->_fixMissingMySQL($e, $query, $values);
+                    $r = $this->_fixMissingMySQL($e, $query, $values);
             }
+            
+            if ($r)
+                return $r;
+            
+            
         } else {
             $sth = $this->sql->prepare($query);
 
@@ -187,8 +192,6 @@ class pantheraDB
             if (!$sth -> execute())
                 return False;
         }
-        
-        $this->deepCount = 0;
             
         return $sth;
     }
@@ -215,6 +218,24 @@ class pantheraDB
     }
     
     /**
+      * This function should count missing tables fix operations and stop script when loop detected
+      *
+      * @param string $e Database Exception
+      * @return void 
+      * @author Damian Kęska
+      */
+    
+    public function countMissingTables($e)
+    {
+        $this->missing[$e->getMessage()]++;
+            
+        if ($this->missing[$e->getMessage()] > 1)
+        {
+            $this->_triggerErrorPage($e, 'SQL table not found, cannot import it automaticaly, please import it manually from a template placed in ' .PANTHERA_DIR. '/database/');
+        }
+    }
+    
+    /**
       * MySQL missing tables import
       *
       * @param object $e
@@ -228,8 +249,10 @@ class pantheraDB
     {
         $this->panthera -> logging -> output('Called fixMissing MySQL tables recovery', 'pantheraDB');
     
-        if ($e -> getCode() == "42S02" and stristr($query, 'CREATE TABLE') === False)
+        if ($e -> getCode() == "42S02" and stristr($query, 'CREATE TABLE') == False)
         {
+            $this->countMissingTables($e);
+        
             preg_match("/'.*?'/", $e->getMessage(), $matches);
             
             if (count($matches) == 0)
@@ -247,9 +270,15 @@ class pantheraDB
             if (is_file($file))
             {
                 $SQL = file_get_contents($file);
+
+                try {
+                    $sth = $this->sql->prepare($query);
+                    $sth -> execute();
+                    return $this->query($query, $values);
+                } catch (Exception $e) {
+                    $this->_triggerErrorPage($e, 'Cannot create table, check template placed in ' .$file);
+                }
                 
-                $this->query($SQL);
-                return $this->query($query, $values);
             } else
                 throw new Exception($e->getMessage());
             
@@ -271,9 +300,10 @@ class pantheraDB
     {
         $this->panthera -> logging -> output('Called fixMissing SQLite3 tables recovery (' .$e->getMessage(). ')', 'pantheraDB');
     
-        if ($e -> getCode() == "HY000" and stristr($query, 'CREATE TABLE') === False)
+        if (strpos($e->getMessage(), 'no such table') !== False and strpos($query, 'CREATE TABLE') === False)
         {
-            // sqlite3                    
+            $this->countMissingTables($e);
+            
             $dbName = explode('no such table: ', $e->getMessage());
             $dbName = str_ireplace($this->prefix, '', $dbName[1]);
             $file = getContentDir('/database/templates/sqlite3/' .$dbName. '.sql');
@@ -283,10 +313,16 @@ class pantheraDB
             
             if (is_file($file))
             {
-                $SQL = file_get_contents($file);
-                $result = $this->query($SQL);
+                $SQL = str_ireplace('{$db_prefix}', $this->prefix, file_get_contents($file));
                 
-                return $this->query($query, $values);
+                try {
+                    $sth = $this->sql->prepare($query);
+                    $sth -> execute();
+                    return $this->query($query, $values);
+                } catch (Exception $e) {
+                    $this->_triggerErrorPage($e, 'Cannot create table, check template placed in ' .$file);
+                }
+                
             } else
                 throw new Exception($e->getMessage());
                 
@@ -789,7 +825,10 @@ class pantheraDBStatement extends PDOStatement
 {
     protected $fetch = null;
 
-    protected function __construct() { }
+    protected function __construct($PDO, $pantheraDB) 
+    {  
+        $this->driver = $pantheraDB->getSocketType();
+    }
 
     /**
       * This function contains fix for SQLite3 driver where rowCount were not working
@@ -800,7 +839,7 @@ class pantheraDBStatement extends PDOStatement
 
     public function rowCount()
     {
-        if (PANTHERA_DB_DRIVER == 'sqlite')
+        if ($this->driver == 'sqlite')
         {
             $this->fetch = $this->fetchAll();
             return count($this->fetch);
@@ -809,9 +848,9 @@ class pantheraDBStatement extends PDOStatement
     }
 
     /**
-      * Fetching data
+      * Fetching multiple rows
       *
-      * @param int $mode
+      * @param int $how
       * @return mixed 
       * @author Damian Kęska
       */
@@ -823,6 +862,14 @@ class pantheraDBStatement extends PDOStatement
         else
             return parent::fetchAll($how);    
     }
+    
+    /**
+      * Fetching single row
+      *
+      * @param string $how
+      * @return mixed 
+      * @author Damian Kęska
+      */
     
     public function fetch($how=PDO::FETCH_ASSOC, $class_name=PDO::FETCH_COLUMN, $ctor_args=1)
     {
