@@ -173,6 +173,27 @@ class pantheraGroup extends pantheraFetchDB
         $panthera -> db -> query('INSERT INTO `{$db_prefix}groups` (`group_id`, `name`, `description`) VALUES (NULL, :name, :description)', array('name' => $name, 'description' => $description));
         return True;
     }
+    
+    /**
+      * Remove a group
+      *
+      * @param string $name
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public static function remove($name)
+    {
+        try {
+            $panthera -> db -> query('DELETE FROM `{$db_prefix}groups` WHERE `name` = :name;', array('name' => $name));
+            $panthera -> db -> query('DELETE FROM `{$db_prefix}meta` WHERE `type` = "g" AND `userid` = :name', array('name' => $name));
+            return True;
+        } catch (Exception $e) {
+            $panthera -> logging -> output('Cannot delete group "' .$name. '"', 'pantheraGroup');
+        }
+        
+        return False;
+    }
 }
 
 /**
