@@ -10,10 +10,12 @@
 $pluginInfo = array('name' => 'Facebook Integration', 'author' => 'Mateusz Warzyński', 'description' => 'Login to Panthera admin panel with Facebook', 'version' => PANTHERA_VERSION);
 $panthera -> addPermission('can_manage_facebook', localize('Can manage all faceIntegration elements', 'messages'));
 
+$panthera -> config -> getKey('facebook_scope', array('scope' => 'user_about_me'), 'array');
+
 function facebookAjaxpage()
 {
     global $panthera;
-    $scope = $panthera -> config -> getKey('facebook_scope', array('publish_stream', 'user_about_me'), 'array');
+    $scope = $panthera -> config -> getKey('facebook_scope');
     
     if ($_GET['display'] == 'facebook')
     {
@@ -36,7 +38,7 @@ function facebookConnect ($action, $back='')
     
     if ($action == 'connect' or $action == 'login') 
     {
-        $scope = $panthera -> config -> getKey('facebook_scope', array('publish_stream', 'user_about_me'), 'array');
+        $scope = $panthera -> config -> getKey('facebook_scope');
     
         $panthera -> importModule('facebook'); // facebook wrapper
         $panthera -> importModule('meta'); // user and group metas
@@ -125,7 +127,7 @@ function facebookLogin($list)
 }
 
 // Add 'facebook' item to admin menu
-function fIntegrationToAdminMenu($menu) { $menu -> add('facebook', 'Facebook', '?display=facebook', '', '', ''); }
+function fIntegrationToAdminMenu($menu) { $menu -> add('facebook', 'Facebook', '?display=facebook', '', '{$PANTHERA_URL}/images/admin/menu/facebook.png', ''); }
 $panthera -> add_option('admin_menu', 'fIntegrationToAdminMenu');
 
 $panthera -> add_option('ajax_page', 'facebookAjaxpage');
