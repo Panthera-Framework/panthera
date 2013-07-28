@@ -587,11 +587,14 @@ class metaAttributes
         if ($this->_metas == null)
             $this->_metas = array();
     
-        foreach ($Array as $meta)
+        foreach ($Array as $key => $meta)
         {
             // dont overwrite old keys
             if (array_key_exists($meta['name'], $this->_metas) and $overwrite == False)
                 continue;
+
+            if (!array_key_exists('name', $meta))
+                $meta['name'] = $key;
         
             // looks complicated, yeah? we dont need to store some variables, so we can unset it
             unset($meta['userid']);
@@ -601,7 +604,10 @@ class metaAttributes
             unset($this->_metas[$meta['name']]['name']);
             
             // value
-            $this->_metas[$meta['name']]['value'] = unserialize($meta['value']);
+            if (is_bool($meta['value']))
+                $this->_metas[$meta['name']]['value'] = $meta['value'];
+            else
+                $this->_metas[$meta['name']]['value'] = unserialize($meta['value']);
             
             // overlay or not an overlay (empty string)
             $this->_metas[$meta['name']]['overlay'] = $overlay;
