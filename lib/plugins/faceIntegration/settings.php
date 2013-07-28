@@ -20,10 +20,43 @@ if ($_GET['display'] == 'facebook')
 
     $panthera -> locale -> loadDomain('facebook');
 
+    if (@$_GET['action'] == 'settings')
+    {
+        $tpl = 'facebook_settings.tpl';
+        
+        if (!getUserRightAttribute($user, 'can_update_config_overlay')) {
+                $template->display('no_access.tpl');
+                pa_exit();
+        }
+        
+        if ($_GET['subaction'] == 'save')
+        {
+            $appID = $_POST['appid'];
+            $secret = $_POST['secret'];
+            
+            if (gettype($appID) != 'string' OR gettype($secret) != 'string')
+                ajax_exit(array('status' => 'failed', 'message' => 'Invalid type of variables'));
+            
+            if (!$panthera->config->setKey("facebook_appid", $appID) OR !$panthera->config->setKey("facebook_secret", $secret))
+            {
+                ajax_exit(array('status' => 'failed', 'message' => localize('Invalid value for this data type')));
+                pa_exit();
+            } else {
+                ajax_exit(array('status' => 'success', 'message' => localize('AppID and Secret have been saved!')));
+                pa_exit();
+            }
+        }
+        
+        $template -> push('appid', $panthera -> config -> getKey('facebook_appid'));
+        $template -> push('secret', $panthera -> config -> getKey('facebook_secret'));
+        $template -> display($tpl);
+        pa_exit();
+    }
+
     // Initialize Facebook session
     $facebook = new facebookWrapper();
 
-    $facebook->loginUser($scope, 'script');
+    $facebook->loginUser(array('scope' => 'user_about_me'), 'script');
 
     // Get info about user (it will be needed in ajaxpages and template, therefore I created variable...)
     $userinfo = $facebook->sdk->api('/me');

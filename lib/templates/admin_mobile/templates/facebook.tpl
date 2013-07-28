@@ -1,5 +1,6 @@
-    {include="header.tpl"}
+{include="header.tpl"}
 
+   <!-- Content -->
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=dash" data-transition="push">{function="localize('Dash')"}</a></li>
@@ -27,13 +28,8 @@
                     <p>{function="localize('Name', 'facebook')"}</p>
                 </div>
               </li>
-
-              <li class="list-item-two-lines">
-                <div>
-                    <h3><img src="http://graph.facebook.com/{$user.id}/picture?width=200&height=200" height="28px" width="auto"></h3>
-                    <p>{function="localize('Avatar', 'facebook')"}</p>
-                </div>
-              </li>
+              
+              <img src="http://graph.facebook.com/{$user.id}/picture?width=200&height=200" height="200px" width="200px">
 
               <li class="list-item-two-lines">
                 <a href="{$user.link}">
@@ -43,34 +39,37 @@
               </li>
 
               <li class="list-item-two-lines">
-                <a href="#" data-ignore="true">
+                <div>
                     <h3>{function="localize($user.gender, 'facebook')"}</h3>
                     <p>{function="localize('Gender', 'facebook')"}</p>
-                </a>
+                </div>
               </li>
 
               <li class="list-item-two-lines">
+                <div>
                     <h3>{$user.timezone}</h3>
                     <p>{function="localize('Timezone', 'facebook')"}</p>
+                </div>
               </li>
 
               <li class="list-item-two-lines">
-                <a href="#" data-ignore="true">
+                <div>
                     <h3>{$user.locale}</h3>
                     <p>{function="localize('Locale', 'facebook')"}</p>
-                </a>
+                </div>
               </li>
 
               <br>
               
               <button class="btn-block" onclick="synchronizeData();">{function="localize('Synchronize', 'facebook')"}</button>
-
+              
             </ul>
         </ul>
      </div>
-
     </div>
+   <!-- End of content -->
     
+   <!-- JS code -->
     <script type="text/javascript">
 
     /**
@@ -81,9 +80,10 @@
     
     function synchronizeData()
     {
-        panthera.jsonPOST({ url: '{$AJAX_URL}?display=facebook&action=synchronize', data: '', messageBox: 'userinfoBox'});
+        panthera.jsonPOST({ url: '?display=facebook&action=synchronize', data: ''});
         return false;
     }
     </script>
-    
-    {include="footer.tpl"}
+   <!-- End of JS code -->
+
+{include="footer.tpl"}

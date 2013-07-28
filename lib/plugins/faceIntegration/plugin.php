@@ -7,7 +7,7 @@
   */
 
 // register plugin
-$pluginInfo = array('name' => 'Facebook Integration', 'author' => 'Mateusz Warzyński', 'description' => 'Login to Panthera admin panel with Facebook', 'version' => PANTHERA_VERSION);
+$pluginInfo = array('name' => 'Facebook Integration', 'author' => 'Mateusz Warzyński', 'description' => 'Login to Panthera admin panel with Facebook', 'version' => PANTHERA_VERSION, 'configuration' => '?display=facebook&action=settings');
 $panthera -> addPermission('can_manage_facebook', localize('Can manage all faceIntegration elements', 'messages'));
 
 $panthera -> config -> getKey('facebook_scope', array('scope' => 'user_about_me'), 'array');
