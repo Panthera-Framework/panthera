@@ -25,7 +25,7 @@ function addUser(acl)
               if (response.status == "success")
               {
                     // \"'+acl+'\", \"'+response.uid+'\", \"'+response.name+'_'+response.uid+'\"
-                  $('#user_list_tbody').html('<tr id="permission_'+response.name+'_'+response.uid+'"><td><i>'+response.full_name+'</i></td><td>"<b><i>'+login+'</i></b>" ({function="localize('group')"}: '+response.group+')</td><td><input type="button" value="{function="localize('Remove')"}" onclick="removePermission( \''+acl+'\', \''+response.uid+'\', \''+response.name+'_'+response.uid+'\' );"></td>'+$('#user_list_tbody').html());
+                  $('#user_list_tbody').html('<tr id="permission_'+response.name+'_'+response.uid+'"><td><i>'+response.full_name+'</i></td><td>"<b><i>'+login+'</i></b>" ({function="localize('group', 'acl')"}: '+response.group+')</td><td><input type="button" value="{function="localize('Remove', 'acl')"}" onclick="removePermission( \''+acl+'\', \''+response.uid+'\', \''+response.name+'_'+response.uid+'\' );"></td>'+$('#user_list_tbody').html());
               }
           }
     });
@@ -43,10 +43,7 @@ function addGroup(acl)
               {
                   $('#acl_error').hide();
                     // \"'+acl+'\", \"'+response.uid+'\", \"'+response.name+'_'+response.uid+'\"
-                  $('#user_list_tbody').html('<tr id="group_permission_'+response.name+'_'+response.aclName+'"><td><i>'+response.name+'</i></td><td>"<b><i>'+response.description+'</i></b>"</td><td><input type="button" value="{function="localize('Remove group')"}" onclick="removePermission(\''+response.aclName+'\', \''+response.name+'\', \''+response.name+'_'+response.aclName+'\', \'group\');"></td></tr>'+$('#user_list_tbody').html());
-              } else {
-                  $('#acl_error').html(response.message);
-                  $('#acl_error').slideDown();
+                  $('#user_list_tbody').html('<tr id="group_permission_'+response.name+'_'+response.aclName+'"><td><i>'+response.name+'</i></td><td>"<b><i>'+response.description+'</i></b>"</td><td><input type="button" value="{function="localize('Remove group', 'acl')"}" onclick="removePermission(\''+response.aclName+'\', \''+response.name+'\', \''+response.name+'_'+response.aclName+'\', \'group\');"></td></tr>'+$('#user_list_tbody').html());
               }
             }
         });
@@ -54,7 +51,7 @@ function addGroup(acl)
 
 </script>
 
-<h2 class="popupHeading">{function="localize('Manage permissions')"} - {$action_title|localize}</h2>
+<h2 class="popupHeading">{function="localize('Manage permissions', 'acl')"} - {$action_title|localize}</h2>
 
 <br>
 
@@ -65,7 +62,7 @@ function addGroup(acl)
 <table class="gridTable">
     <thead>
         <tr>
-            <th scope="col" colspan="5" style="width: 250px;"><b>{function="localize('Editing permissions')"}:</b> &nbsp;<i>{$acl_title}</i></th>
+            <th scope="col" colspan="5" style="width: 250px;"><b>{function="localize('Editing permissions', 'acl')"}:</b> &nbsp;<i>{$acl_title}</i></th>
         </tr>
     </thead>
 
@@ -84,15 +81,15 @@ function addGroup(acl)
                 <i>{$value.full_name}</i>
             </td>
             <td>
-                "<b><i>{$value.login}</i></b>" ({function="localize('group')"}: {$value.group})
+                "<b><i>{$value.login}</i></b>" ({function="localize('group', 'acl')"}: {$value.group})
             </td>
             <td>
-                <input type="button" value="{function="localize('Remove')"}" onclick="removePermission('{$acl_name}', '{$value.userid}', '{$key}', 'user');">
+                <input type="button" value="{function="localize('Remove', 'acl')"}" onclick="removePermission('{$acl_name}', '{$value.userid}', '{$key}', 'user');">
             </td>
         </tr>
     {/loop}
 
-    <!--{loop="$group_list"}
+    {loop="$group_list"}
         <tr id="group_permission_{$key}">
             <td>
                 <i>{$value.name}</i>
@@ -101,20 +98,20 @@ function addGroup(acl)
                 "<b><i>{$value.description}</i></b>"
             </td>
             <td>
-                <input type="button" value="{function="localize('Remove group')"}" onclick="removePermission('{$acl_name}', '{$value.name}', '{$key}', 'group');">
+                <input type="button" value="{function="localize('Remove group', 'acl')"}" onclick="removePermission('{$acl_name}', '{$value.name}', '{$key}', 'group');">
             </td>
         </tr>
-    {/loop}-->
+    {/loop}
     <tr>
-        <td><b>{function="localize('Login')"}:</b></td><td><input type="text" id="new_user_login" style="width: 80%;"></td><td><input type="button" value="{function="localize('Add user')"}" onclick="addUser('{$acl_name}');"></td>
+        <td><b>{function="localize('Login', 'acl')"}:</b></td><td><input type="text" id="new_user_login" style="width: 80%;"></td><td><input type="button" value="{function="localize('Add user', 'acl')"}" onclick="addUser('{$acl_name}');"></td>
     </tr>
 
-    <!--<tr>
-        <td><b>{function="localize('Group name')"}:</b></td><td><input type="text" id="new_group_name" style="width: 80%;"></td><td><input type="button" value="{function="localize('Add group')"}" onclick="addGroup('{$acl_name}');"></td>
-    </tr>-->
+    <tr>
+        <td><b>{function="localize('Group name', 'acl')"}:</b></td><td><input type="text" id="new_group_name" style="width: 80%;"></td><td><input type="button" value="{function="localize('Add group', 'acl')"}" onclick="addGroup('{$acl_name}');"></td>
+    </tr>
 
     </tbody>
 </table>
 {elseif="$action == 'disabled'"}
-<h2>{function="localize('Permissions management is currently disabled in website settings')"}</h2>
+<h2>{function="localize('Permissions management is currently disabled in website settings', 'acl')"}</h2>
 {/if}

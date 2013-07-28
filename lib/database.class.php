@@ -609,7 +609,7 @@ abstract class pantheraFetchDB
         
         // caching
         if  ($this->cache > 0)
-            $this->cacheID = $panthera->db->prefix.$this->_tableName. '.' .serialize($by);
+            $this->cacheID = $panthera->db->prefix.$this->_tableName. '.' .serialize($by). '.' .$value;
         else
             $panthera -> logging -> output('Cache disabled for ' .get_class($this). ' class', 'pantheraFetchDB');
         

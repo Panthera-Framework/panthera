@@ -53,7 +53,7 @@ function aclModify(id, name)
 }
 </script>
 
-<div class="titlebar">{function="localize('Panel with informations about user.', 'settings')"}</div>
+<div class="titlebar"><span class="titleBarIcons"><img src="{$PANTHERA_URL}/images/default_avatar.png" style="width: 28px"></a></span>{function="localize('Panel with informations about user.', 'settings')"}{include="_navigation_panel.tpl"}</div>
 
             <br>
 
@@ -128,7 +128,7 @@ function aclModify(id, name)
 
                 <tr>
                   <td>{function="localize('Primary group', 'settings')"}</td>
-                  <td>{$primary_group}</td>
+                  <td><a href="?display=acl&action=listGroup&group={$primary_group}" class="ajax_link">{$primary_group}</a></td>
                 </tr>
 
                 <tr>

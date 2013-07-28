@@ -5,7 +5,7 @@ CREATE TABLE "{$db_prefix}users" (
   "login" TEXT NOT NULL,
   "passwd" TEXT NOT NULL,
   "full_name" TEXT NOT NULL,
-  "primary_group" TEXT NOT NULL,
+  "primary_group" TEXT DEFAULT 'users',
   "joined" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "attributes" TEXT NOT NULL,
   "language" TEXT NOT NULL DEFAULT 'polski',

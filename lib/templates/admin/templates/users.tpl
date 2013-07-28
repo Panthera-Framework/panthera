@@ -1,52 +1,103 @@
 <script type="text/javascript">
+$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
+
+/**
+  * Jump to other page in a table
+  *
+  * @author Damian Kęska
+  */
+
 function jumpToAjaxPage(id)
 {
-    panthera.htmlGET({ url: '?display=settings&action=users&subaction=show_table&usersPage='+id, success: '#all_users_window' });
+    panthera.htmlGET({ url: '?display=settings&action=users&subaction=show_table&usersPage='+id, success: '#usersDiv' });
 }
+
+var groupSpinner = new panthera.ajaxLoader($('#groupTable'));
+
+// when page becomes ready
+$(document).ready(function () {
+
+    /**
+      * Add a new group
+      *
+      * @author Damian Kęska
+      */
+    
+    $('#createGroupForm').submit(function () {
+        panthera.jsonPOST( { data: '#createGroupForm', spinner: groupSpinner, success: function (response) {
+        
+                if (response.status == "success")
+                {
+                    //$('.groupTableItem').remove();
+                    $('#groupTableBody').prepend('<tr id="group_'+response.name+'" class="groupTableItem"><td><a href="?display=acl&action=listGroup&group='+response.name+'" class="ajax_link">'+response.name+'</a></td><td>'+response.description+'</td><td><input type="button" value="{function="localize('Remove', 'acl')"}" onclick="removeGroup(\''+response.name+'\');"></td>');
+                } else {
+                    if (response.message != undefined)
+                    {
+                        w2alert(response.message, '{function="localize('Warning', 'acl')"}');
+                    }
+                
+                }
+            }
+        });
+        return false;
+    });
+});
+
+/**
+  * Remove group
+  *
+  * @author Damian Kęska
+  */
+
+function removeGroup(name)
+{
+    w2confirm('{function="localize('Are you sure you want delete this group?', 'acl')"}', function (responseText) {
+        if (responseText == 'Yes')
+        {
+            panthera.jsonPOST( { url: '?display=settings&action=removeGroup', data: 'group='+name, spinner: groupSpinner, success: function (response) {
+                
+                    if (response.status == "success")
+                        $('#group_'+response.name).remove();
+                }
+            });
+        }
+    
+    });
+}
+
 </script>
 
-<div class="titlebar">{function="localize('Users')"} - {function="localize('All registered users on this website', 'settings')"}{include="_navigation_panel.tpl"}</div>
+<div class="titlebar"><span class="titleBarIcons"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" style="width: 25px"></a></span>{function="localize('Users')"} - {function="localize('All registered users on this website', 'settings')"}{include="_navigation_panel.tpl"}</div>
 
         <div class="grid-1">
-            <div id="all_users_window">
-            <table class="gridTable">
-                  <thead>
-                      <tr>
-                              <th scope="col">{function="localize('Login', 'settings')"}</th>
-                              <th scope="col">{function="localize('Full name', 'settings')"}</th>
-                              <th scope="col">{function="localize('Primary group', 'settings')"}</th>
-                              <th scope="col">{function="localize('Joined', 'settings')"}</th>
-                              <th scope="col">{function="localize('Default language', 'settings')"}</th>
-                        </tr>
-                  </thead>
-                  <tfoot>
-                      <td colspan="6"><em>{function="localize('Users')"} {$users_from}-{$users_to},
-                        {loop="$pager"}
-
-                            {if="$value == true"}
-                            <a href="#" onclick="jumpToAjaxPage({$key}); return false;"><b>{$key+1}</b></a>
-
-                            {else}
-                            <a href="#" onclick="jumpToAjaxPage({$key}); return false;">{$key+1}</a>
-                            {/if}
-
-                        {/loop}
-                        </em></td>
-                  </tfoot>
-
-                  <tbody>
-
-                        {loop="$users_list"}
-                        <tr>
-                              <td>{if="$view_users == True"}<a href='?display=settings&action=my_account&uid={$value.id}' class='ajax_link'>{$value.login}</a>{else}{$value.login}{/if}</td>
-                              <td>{$value.full_name}</td>
-                              <td>{$value.primary_group}</td>
-                              <td>{$value.joined}</td>
-                              <td>{$value.language|ucfirst}</td>
-                        </tr>
-                        {/loop}
-                  </tbody>
-             </table>
+            <div id="usersDiv" style="position: relative;">
+            {include="users_table.tpl"}
              </div>
-
         </div>
+        
+        <div class="grid-2" id="groupTable" style="position: relative;">
+        <table class="gridTable">
+        <thead>
+            <tr>
+                <th>{function="localize('Group name', 'acl')"}</th>
+                <th>{function="localize('Description', 'acl')"}</th>
+                <th><span style="float: right;"><a onclick="$('#groupsAddTr').show('slow');" style="cursor: pointer;"><img src="{$PANTHERA_URL}/images/admin/list-add.png" style="height: 15px;"></a></span></th>
+            </tr>
+        </thead>
+            <tbody id="groupTableBody">
+            {loop="$groups"}
+                <tr id="group_{$value.name}" class="groupTableItem">
+                    <td><a href="?display=acl&action=listGroup&group={$value.name}" class="ajax_link">{$value.name}</a></td>
+                    <td>{$value.description}</td>
+                    <td><input type="button" value="{function="localize('Remove', 'acl')"}" onclick="removeGroup('{$value.name}');"></td>
+                </tr>
+            {/loop}
+            
+                <form action="?display=settings&action=createGroup" method="POST" id="createGroupForm">
+                <tr id="groupsAddTr" style="display: none;">
+                    <td><input type="text" name="name" style="width: 95%;"></td><td><input type="text" name="description" style="width: 95%;"></td><td><input type="submit" value="{function="localize('Add new group', 'acl')"}"></td>
+                </tr>
+                </form>
+            </tbody>
+    </table>
+    </div>

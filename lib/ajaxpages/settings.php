@@ -243,6 +243,12 @@ if (!defined('IN_PANTHERA'))
         }
 
         $template -> push('aclList', $aclList);
+        
+    /**
+      * List of users and groups
+      *
+      * @author Damian Kęska
+      */
 
     } elseif (@$_GET['action'] == 'users') {
         if (!getUserRightAttribute($user, 'can_see_users_table'))
@@ -252,7 +258,7 @@ if (!defined('IN_PANTHERA'))
         }
 
         if (@$_GET['subaction'] == 'show_table')
-            $tpl = "settings_showtable.tpl";
+            $tpl = "users_table.tpl";
         else
             $tpl = "users.tpl";
 
@@ -301,6 +307,21 @@ if (!defined('IN_PANTHERA'))
             $users[] = array('login' => $w->login, 'full_name' => $w->full_name, 'primary_group' => $w->primary_group, 'joined' => $w->joined, 'language' => $w->language, 'id' => $w->id);
         }
 
+        // groups listing
+        if (@$_GET['subaction'] != 'show_table')
+        {
+            $panthera -> locale -> loadDomain('acl');
+            $groups = pantheraGroup::listGroups();
+            $groupsTpl = array();
+            
+            foreach ($groups as $group)
+            {
+                $groupsTpl[] = array('name' => $group->name, 'description' => $group->description, 'id' => $group->group_id);
+            }
+            
+            $panthera -> template -> push('groups', $groupsTpl);
+        }
+
         // find all recent 1-10 users
         // var_dump(getUsers('', 10, 0));
 
@@ -312,12 +333,67 @@ if (!defined('IN_PANTHERA'))
             $users[] = array('login' => 'test', 'full_name' => 'Testowy, nie istniejący user', 'primary_group' => 'non_existing', 'joined' => 'today', 'language' => 'Marsjański', 'id' => 1);
         }*/
 
-        $template -> push('users_list', $users);
-        $template -> push('view_users', True);
-        $template -> push('pager', $pager->getPages($usersPage));
-        $template -> push('users_from', $limit[0]);
-        $template -> push('users_to', $limit[1]);
-    } elseif (@$_GET['action'] == 'changeLocale') {
+        $panthera -> template -> push('users_list', $users);
+        $panthera -> template -> push('view_users', True);
+        $panthera -> template -> push('pager', $pager->getPages($usersPage));
+        $panthera -> template -> push('users_from', $limit[0]);
+        $panthera -> template -> push('users_to', $limit[1]);
+
+    /**
+      * Create a new group
+      *
+      * @author Damian Kęska
+      */
+
+    } elseif ($_GET['action'] == 'createGroup') {
+        if (!checkUserPermissions($panthera->user, True))
+        {
+            ajax_exit(array('status' => 'failed', 'message' => localize('403 - Access denied')));
+        }
+    
+        $groupName = $_POST['name'];
+        $groupDescription = $_POST['description'];
+        
+        try {
+            if (!pantheraGroup::create($groupName, $groupDescription))
+                ajax_exit(array('status' => 'failed', 'message' => localize('Group propably already exists', 'acl')));
+                
+            ajax_exit(array('status' => 'success', 'name' => $groupName, 'description' => $groupDescription));
+        } catch (Exception $e) {
+            ajax_exit(array('status' => 'failed', 'message' => localize('Invalid group name, only alphanumeric characters and "_" is allowed', 'acl')));
+        }
+        
+    /**
+      * Remove a group
+      *
+      * @author Damian Kęska
+      */
+
+    } elseif ($_GET['action'] == 'removeGroup') {
+        if (!checkUserPermissions($panthera->user, True))
+        {
+            ajax_exit(array('status' => 'failed', 'message' => localize('403 - Access denied')));
+        }
+
+        $groupName = $_POST['group'];
+        
+        try {
+            if(!pantheraGroup::remove($groupName))
+                ajax_exit(array('status' => 'failed'));
+                
+            ajax_exit(array('status' => 'success', 'name' => $groupName));
+        } catch (Exception $e) {
+            ajax_exit(array('status' => 'failed', localize('Cannot remove group', 'acl')));
+        }
+    
+        
+    /**
+      * Set current locale
+      *
+      * @author Mateusz Warzyński
+      */
+        
+    } elseif ($_GET['action'] == 'changeLocale') {
         if ($panthera -> locale -> setLocale($_POST['locale']) == $_POST['locale'])
         {
               $panthera->session->set('language', $_POST['locale']);

@@ -166,7 +166,7 @@ class pantheraGroup extends pantheraFetchDB
         $g = new pantheraGroup('name', $name);
         
         if ($g->exists())
-            return True;
+            return False;
             
         unset($g);
         
@@ -184,15 +184,86 @@ class pantheraGroup extends pantheraFetchDB
     
     public static function remove($name)
     {
+        global $panthera;
+        
+        $g = new pantheraGroup('name', $name);
+        
+        if (!$g->exists())
+            return False;
+
+        $panthera -> logging -> output ('Removing all users from "' .$name. '" group', 'pantheraGroup');
+        $users = $g->findUsers();
+        
+        // remove users from group
+        if (count($users) > 0)
+        {
+            foreach ($users as $user)
+            {
+                $u = new pantheraUser('id', $user['id']);
+                
+                if ($name != 'users')
+                    $u -> primary_group = 'users';
+                else
+                    $u -> primary_group = '';
+                    
+                $u -> save();
+                unset($u);
+            }
+        }
+        
         try {
+            $panthera -> logging -> output ('Removing group\'s meta tags and entry from group table', 'pantheraGroup');
             $panthera -> db -> query('DELETE FROM `{$db_prefix}groups` WHERE `name` = :name;', array('name' => $name));
-            $panthera -> db -> query('DELETE FROM `{$db_prefix}meta` WHERE `type` = "g" AND `userid` = :name', array('name' => $name));
+            $panthera -> db -> query('DELETE FROM `{$db_prefix}metas` WHERE `type` = "g" AND `userid` = :name', array('name' => $name));
+            
+            if ($panthera -> cache)
+            {
+                $panthera -> logging -> output('Cleaning up cache', 'pantheraGroup');
+                // remove meta attributes from cache
+                $panthera -> cache -> remove('meta.g.' .$name);
+                
+                // remove group cache
+                $panthera -> cache -> remove($panthera->db->prefix. '_groups.s:4:"name";.' .$name);
+                $panthera -> cache -> remove($panthera->db->prefix. '_groups.s:2:"id";.' .$g->group_id);
+                $panthera -> cache -> remove($panthera->db->prefix. '_groups.s:8:"group_id";.' .$g->group_id);
+                
+                $panthera -> logging -> output('Cache cleanup done', 'pantheraGroup');
+            }
+            
             return True;
         } catch (Exception $e) {
-            $panthera -> logging -> output('Cannot delete group "' .$name. '"', 'pantheraGroup');
+            $panthera -> logging -> output('Cannot delete group\'s "' .$name. '" meta and group table entry', 'pantheraGroup');
         }
         
         return False;
+    }
+    
+    /**
+      * List groups
+      *
+      * @param mixed $by
+      * @param int $offset
+      * @param int $limit
+      * @return array of objects 
+      * @author Damian Kęska
+      */
+    public static function listGroups($by='', $offset='', $limit='', $orderBy='group_id', $order='DESC')
+    {
+        global $panthera;
+        return $panthera->db->getRows('groups', $by, $limit, $offset, 'pantheraGroup', $orderBy, $order);
+    }
+    
+    /**
+      * Find all group users
+      *
+      * @return array 
+      * @author Damian Kęska
+      */
+    
+    public function findUsers()
+    {
+        $SQL = $this -> panthera -> db -> query('SELECT `login`, `id` FROM `{$db_prefix}users` WHERE `primary_group` = :groupName', array('groupName' => $this->name));
+        return $SQL -> fetchAll(PDO::FETCH_ASSOC);
     }
 }
 
@@ -378,7 +449,7 @@ function checkUserPermissions($user, $admin=False)
     if ($admin == False)
         return True;
     else {
-        if ($user->attributes->admin == True or $user->attributes->superuser)
+        if ($user->attributes->admin == True or $user->attributes->superuser or $user->acl->get('admin') or $user->acl->get('superuser'))
             return True;
         else
             return False;
@@ -396,15 +467,15 @@ function checkUserPermissions($user, $admin=False)
 function getUserRightAttribute($user, $attribute)
 {
     // if user has blocked attribute and not a superuser
-    if ((string)$user->acl->get($attribute) == '__blocked__' AND !$user->attributes->superuser)
+    if ((string)$user->acl->get($attribute) == '__blocked__' and !$user->attributes->superuser and !$user->acl->get('superuser'))
         return False;
 
     // if not a super user, not an admin and not allowed in current context (attribute == false)
-    if (!(bool)$user->acl->get($attribute) AND !$user->attributes->admin AND !$user->attributes->superuser)
+    if (!(bool)$user->acl->get($attribute) and !$user->attributes->admin and !$user->attributes->superuser and !$user->acl->get('superuser') and $user->acl->get('admin'))
         return False;
 
     // if user is admin or superuser
-    if($user->attributes->admin or $user->attributes->superuser)
+    if($user->attributes->admin or $user->attributes->superuser or $user->acl->get('user') or $user->acl->get('superuser'))
         return True;
 
     return (bool)$user->acl->get($attribute);
@@ -549,8 +620,14 @@ class metaAttributes
         $array = array();
 
         foreach ($this->_metas as $key => $value)
+        {
+            // skip items marked for removal
+            if ($this->_changed[$key] == 'remove')
+                continue;
+                
             $array[$key] = $value['value'];
-
+        }
+        
         return $array;
     }
 
@@ -742,6 +819,11 @@ class metaAttributes
                   */
                     
                 } else {
+                
+                    // cannot update possibly non-existing keys
+                    if ($meta['overlay'] != '')
+                        continue;
+                
                     // update existing meta
                     $metaValues = array('value' => serialize($meta['value']), 'metaid' => $meta['metaid']);
                     try {
@@ -770,5 +852,4 @@ class metaAttributes
             }*/
         }
     }
-
 }

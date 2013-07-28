@@ -187,6 +187,13 @@ h1, h2, h3, h4, h5, h6 {
 		color:#55585d;
 		width:auto;
 	}
+	
+	.titleBarIcons {
+        float: left;
+        margin-left: -10px;
+        margin-right: 12px; 
+        margin-top: -5px;
+    }
 
 	.titlebar a{
 		color:black;
@@ -970,14 +977,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .galleryIcon {
     width: 25px;
-}
-
-::selection {
-    background: transparent; 
-}
-
-::-moz-selection {
-    background: transparent; 
 }
 
 .wrapper-demo {
