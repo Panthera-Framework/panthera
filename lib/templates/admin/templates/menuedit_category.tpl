@@ -1,7 +1,7 @@
 <script type="text/javascript">
 
 /**
-  * Make our elements sortable... (?)
+  * Make our elements sortable...
   *
   * @author Mateusz Warzyński
   */
@@ -18,6 +18,44 @@ $(document).ready(function(){
     $('.gridTable tbody').disableSelection();
 });
 
+var spinner = new panthera.ajaxLoader($('#menu_category'));
+
+/**
+  * Order table
+  *
+  * @author Mateusz Warzyński
+  */
+
+function getTableOrder()
+{
+    var items = $(".sortable_hidden");
+    var linkIDs = [items.size()];
+    var index = 0;
+
+    items.each(
+        function(intIndex) {
+            linkIDs[index] = $(this).val();
+            index++;
+        });
+
+    linkIDs.reverse();
+
+    return JSON.stringify(linkIDs);
+}
+
+/**
+  * Save ordered menu
+  *
+  * @author Mateusz Warzyński
+  */
+
+function saveMenuOrder(id)
+{
+    panthera.jsonPOST({ url: "?display=menuedit&action=save_order", data: 'id='+id+'&order='+getTableOrder(), spinner: spinner});
+
+    return false;
+}
+
 /**
   * Remove menu item from database
   *
@@ -26,9 +64,11 @@ $(document).ready(function(){
 
 function removeItem(id)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=menuedit&action=remove_item&item_id='+id, data: '', messageBox: 'userinfoBox', success: function (response) {
-            if (response.status == "success")
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=menuedit&action=remove_item&item_id='+id, data: '', messageBox: 'userinfoBox', spinner: spinner, success: function (response) {
+            if (response.status == "success") {
+                jQuery('#item_'+id).slideUp();
                 jQuery('#item_'+id).remove();
+            }
         }
     });
 
@@ -38,10 +78,9 @@ function removeItem(id)
 
     <div class="titlebar">{function="localize('Menu editor', 'menuedit')"} - {function="localize('Edit menu', 'menuedit')"} ({function="localize('To change sequence of items in the category, you can drag & drop them', 'menuedit')"}).</div><br>
 
-    <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>
 
-    <div class="grid-1">
+    <div class="grid-1" style="position: relative;" id="menu_category">
       <table class="gridTable">
             <thead>
                   <tr>

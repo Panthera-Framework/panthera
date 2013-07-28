@@ -1,9 +1,27 @@
+<script type="text/javascript">
+
+var spinner = new panthera.ajaxLoader($('#menu_item'));
+
+    /**
+      * Save changes to database (item)
+      *
+      * @author Mateusz Warzyński
+      */
+    
+    $('#save_form').submit(function () {
+        panthera.jsonPOST({ data: '#save_form', spinner: spinner, messageBox: 'userinfoBox'});
+    
+        return false;
+    
+    });
+</script>
+
+
 <div class="titlebar">{function="localize('Menu editor', 'menuedit')"} - {function="localize('Editing item', 'menuedit')"}: {$item_title}</div><br>
 
-    <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>
 
-    <div class="grid-1">
+    <div class="grid-1" style="position: relative;" id="menu_item">
       <form id="save_form" method="POST" action="?display=menuedit&action=save_item">
         <table class="gridTable">
               <thead>
