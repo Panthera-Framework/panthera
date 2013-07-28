@@ -23,6 +23,11 @@
                         <p>({$value.author}) {$value.description}</p>
                       </a>
                    </li>
+                   
+                  {if="$value.configuration != ''"} 
+                   <button onclick="window.location = '{$value.configuration}'" class="btn-small" style="float: right;">{function="localize('Settings')"}</button>
+                   <br><br>
+                  {/if}
                   {/loop}
                   
                 </ul>
