@@ -4,80 +4,6 @@ $(document).ready(function(){
 });
 
 /**
-  * Save menu category
-  *
-  * @author Mateusz Warzyński
-  */
-
-$('#save_form').submit(function () {
-    panthera.jsonPOST({ data: '#save_form', messageBox: 'userinfoBox', success: function (response) {
-            if (response.status == "success")
-                navigateTo('?display=menuedit&action=category&cat='+jQuery('#cat_type').val());
-        }
-    });
-
-    return false;
-
-});
-
-
-/**
-  * Order table
-  *
-  * @author Mateusz Warzyński
-  */
-
-function getTableOrder()
-{
-    var items = $(".sortable_hidden");
-    var linkIDs = [items.size()];
-    var index = 0;
-
-    items.each(
-        function(intIndex) {
-            linkIDs[index] = $(this).val();
-            index++;
-        });
-
-    linkIDs.reverse();
-
-    return JSON.stringify(linkIDs);
-}
-
-/**
-  * Save ordered menu
-  *
-  * @author Mateusz Warzyński
-  */
-
-function saveMenuOrder(id)
-{
-    panthera.jsonPOST({ url: "?display=menuedit&action=save_order", data: 'id='+id+'&order='+getTableOrder(), messageBox: 'userinfoBox'});
-
-    return false;
-}
-</script>
-
-
-{if="$action == 'plugin_disabled'"}
-
-    <div class="titlebar">{function="localize('Error')"}{include="_navigation_panel.tpl"}</div><br>
-
-    <div class="msgSuccess" id="userinfoBox_success"></div>
-    <div class="msgError" id="userinfoBox_failed"></div>
-
-
-{elseif="$action == 'item'"}
-    {include="menuedit_item.tpl"}
-{elseif="$action == 'category'"}
-    {include="menuedit_category.tpl"}
-{elseif="$action == 'new_category'"}
-    {include="menuedit_newcategory.tpl"}
-{elseif="$action == 'new_item'"}
-    {include="menuedit_newitem.tpl"}
-{else}
-<script type="text/javascript">
-/**
   * Remove menu category
   *
   * @author Mateusz Warzyński
@@ -133,5 +59,3 @@ function removeMenuCategory(id)
           </tbody>
       </table>
     </div>
-
-{/if}
