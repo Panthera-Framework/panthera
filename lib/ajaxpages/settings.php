@@ -138,7 +138,7 @@ if (!defined('IN_PANTHERA'))
 
         if (isset($_GET['changepassword']))
         {
-            if ($u->checkPassword($_POST['old_passwd']) == True or ($u != $panthera->user and ($panthera->user->attributes -> admin or $panthera -> attributes -> root)))
+            if ($u->checkPassword($_POST['old_passwd']) == True or ($u != $panthera->user and checkUserPermissions($panthera->user, True)))
             {
                   if ($_POST['new_passwd'] == $_POST['retyped_newpasswd'])
                   {

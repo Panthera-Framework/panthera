@@ -301,7 +301,7 @@ class varCache_xcache extends pantheraClass
 
     public function exists($var)
     {
-        return xcache_isset($this->prefix.'.vc.' .$var);
+        return (bool)$this->get($var);
     }
     
     /**
@@ -327,7 +327,8 @@ class varCache_xcache extends pantheraClass
     
     public function remove($var)
     {
-        return xcache_unset($this->prefix.'.vc.' .$var);
+        return (bool)$this->set($var, null, 1);
+        //return xcache_unset($this->prefix.'.vc.' .$var); // i dont know why, but this is not working (bug?)
     }
     
 
@@ -341,10 +342,12 @@ class varCache_xcache extends pantheraClass
 
     public function get($var)
     {
-        if (!$this->exists($var))
+        $c = xcache_get($this->prefix.'.vc.' .$var);
+        
+        if ($c == null)
             return null;
             
-        return unserialize(xcache_get($this->prefix.'.vc.' .$var));
+        return unserialize($c);
     }
     
     /**

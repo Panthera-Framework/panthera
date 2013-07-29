@@ -581,8 +581,21 @@ class pantheraConfig
 // here will be our plugin system etc.
 class pantheraCore
 {
-    private $hooks = array(), $plugins, $_savedSession, $permissionsTable = array(), $modules = array();
-    public $config, $db, $user, $template, $session, $pluginsDir, $varCache=False, $cache=False;
+    protected $hooks = array();
+    protected $plugins;
+    protected $_savedSession;
+    protected $permissionsTable = array();
+    protected $modules = array();
+    
+    public $config;
+    public $db;
+    public $user;
+    public $template;
+    public $session;
+    public $pluginsDir;
+    public $varCache=False;
+    public $cache=False;
+    public $hashingAlgorithm = 'md5';
     // public $qSerialize = 'serialize';
 
     // exit right after all plugins are loaded
@@ -645,6 +658,20 @@ class pantheraCore
         $this->config = new pantheraConfig($this, $config);    
         $this->db = new pantheraDB($this);  
         $this->config->loadOverlay();
+        
+        /** Cryptography support **/
+        if (!function_exists('password_hash'))
+        {
+            // in older PHP versions there is no password hashing tools
+            require PANTHERA_DIR. '/share/password-compat/lib/password.php';
+            $this -> logging -> output ('Including userspace implementation of password hashing', 'pantheraCore');
+        }
+        
+        // get hashing algorithm
+        $this -> hashingAlgorithm = $this->config->getKey('hashing_algorithm');
+        $this -> logging -> output ('Using "' .$this->hashingAlgorithm. '" algorithm', 'pantheraCore');
+            
+        /** End of Cryptography support **/
         
         /** CACHE SYSTEM **/
         
@@ -2317,3 +2344,52 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
         return $timeleft;
     return $timeleft ? ($timestamp_future > $timestamp_past ? null : '-') . implode(', ', $timeleft) : 0;
 }  
+
+/**
+  * Description of a function
+  *
+  * @config hashing_algorithm
+  * @config salt
+  * @param string $password to encode
+  * @return string with hash 
+  * @author Damian Kęska
+  */
+
+function encodePassword($password)
+{
+    global $panthera;
+    
+    $salted = $panthera->config->getKey('salt').$password;
+    
+    if ($panthera->hashingAlgorithm == 'blowfish')
+        return password_hash($salted, PASSWORD_BCRYPT);
+    elseif ($panthera->hashingAlgorithm == 'sha512')
+        return hash('sha512', $salted);
+    else
+        return md5($salted);
+}
+
+/**
+  * Verify if password matches selected hash
+  *
+  * @config hashing_algorithm
+  * @config salt
+  * @param string $password to verify
+  * @param string $hash previously encoded password to verify with $password
+  * @return bool 
+  * @author Damian Kęska
+  */
+
+function verifyPassword($password, $hash)
+{
+    global $panthera;
+    
+    $salted = $panthera->config->getKey('salt').$password;
+    
+    if ($panthera->hashingAlgorithm == 'blowfish')
+        return password_verify($salted, $hash);
+    elseif ($panthera->hashingAlgorithm == 'sha512')
+        return ( $hash === hash('sha512', $salted) );
+    else
+        return ( $hash === md5($salted) );
+}

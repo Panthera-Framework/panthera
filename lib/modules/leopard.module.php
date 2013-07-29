@@ -306,7 +306,7 @@ class leopardPackage
             $elementName = substr($element, (strlen($directory)+1), strlen($element));
             
             // skip manifest file
-            if (strtolower($elementName) == 'manifest.json')
+            if (strtolower($elementName) == 'manifest.json' or strtolower($elementName) == 'readme' or strtolower($elementName) == 'readme.md')
                 continue;
                 
             // make sure the name will be correct
@@ -377,6 +377,30 @@ class leopardPackage
         
         unset($ph);
         return $files;
+    }
+    
+    /**
+      * Update files inside of archive
+      *
+      * @param string $dir Root directory where source files are
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public function updateFiles($dir='')
+    {
+        $files = $this -> getFiles();
+        
+        if ($dir == '')
+            $dir = dirname($this->destination);
+        
+        foreach ($files as $file)
+        {
+            if (is_file($dir. '/' .$file))
+                $this->addFile($dir. '/' .$file, $file);
+        }
+        
+        return True;
     }
 }
 

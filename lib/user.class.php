@@ -66,9 +66,8 @@ class pantheraUser extends pantheraFetchDB
         if (trim($passwd) == '')
             return False;
 
-        $salt = md5($this->panthera->config->getKey('salt').$passwd);
-        $this->__set('passwd', $salt);
-        $this->panthera->logging->output('Changing password for user ' .$this->__get('login'). ', passwd=' .$salt, 'pantheraUser');
+        $this->__set('passwd', encodePassword($passwd));
+        $this->panthera->logging->output('Changing password for user ' .$this->__get('login'). ', passwd=' .$this->__get('passwd'), 'pantheraUser');
         return True;
     }
 
@@ -81,7 +80,7 @@ class pantheraUser extends pantheraFetchDB
 
     public function checkPassword($passwd)
     {
-        if (md5($this->panthera->config->getKey('salt').$passwd) == $this->_data['passwd'])
+        if (verifyPassword($passwd, $this->passwd))
             return True;
 
         return False;
@@ -367,21 +366,20 @@ function userCreateSession($user, $passwd)
 {
     global $panthera;
 
-    $hash = md5($panthera->config->getKey('salt').$passwd);
+    $usr = new pantheraUser('login', $user);
     
-    $whereClause = new whereClause();
-    $whereClause -> add('', 'login', '=', $user);
-    $whereClause -> add('AND', 'passwd', '=', $hash);
-    
-    $usr = new pantheraUser($whereClause);
+    var_dump($usr -> checkPassword($passwd));
     
     if ($usr->exists())
     {
-        $panthera -> user = $usr;
-        $panthera -> session -> uid = $usr->id;
-        $usr -> lastlogin = 'NOW()';
-        $usr -> save();
-        return True;
+        if ($usr -> checkPassword($passwd))
+        {
+            $panthera -> user = $usr;
+            $panthera -> session -> uid = $usr->id;
+            $usr -> lastlogin = 'NOW()';
+            $usr -> save();
+            return True;
+        }
     }
 
     return False;
