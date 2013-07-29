@@ -368,8 +368,6 @@ function userCreateSession($user, $passwd)
 
     $usr = new pantheraUser('login', $user);
     
-    var_dump($usr -> checkPassword($passwd));
-    
     if ($usr->exists())
     {
         if ($usr -> checkPassword($passwd))
@@ -537,7 +535,7 @@ class metaAttributes
         
             if ($this->panthera->cache->exists($this->_cacheID))
             {
-                $this->_metas = $this->panthera->cache->get($this->_cacheID); // read from cache if exists
+                $this->_metas = $this->addFromArray($this->panthera->cache->get($this->_cacheID)); // read from cache if exists
                 $this->panthera->logging->output('Loaded meta from cache id=' .$this->_cacheID, 'metaAttributes');
             }
         } else
@@ -547,7 +545,7 @@ class metaAttributes
         {
             $SQL = $panthera -> db -> query ('SELECT * FROM `{$db_prefix}metas` WHERE `userid` = :objectID AND `type` = :type', array('objectID' => $objectID, 'type' => $type));
             $Array = $SQL -> fetchAll(PDO::FETCH_ASSOC);
-
+            
             if (count($Array) > 0)
             {
                 $this->addFromArray($Array);
