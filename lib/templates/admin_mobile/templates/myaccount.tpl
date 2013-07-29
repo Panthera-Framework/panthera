@@ -41,17 +41,12 @@
 
               <li class="list-item-two-lines">
                 <a href="#" data-ignore="true">
-                    <h3><img src="{$profile_picture}" height="28px" width="auto"></h3>
-                    <p>{function="localize('Avatar', 'settings')"}</p>
-                </a>
-              </li>
-
-              <li class="list-item-two-lines">
-                <a href="#" data-ignore="true">
                     <h3>{$full_name|ucfirst}</h3>
                     <p>{function="localize('Full name', 'settings')"}</p>
                 </a>
               </li>
+              
+              <img src="{$profile_picture}" height="auto" width="200px">
 
               <li class="list-item-two-lines">
                 <a href="#" data-ignore="true">

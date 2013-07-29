@@ -28,7 +28,7 @@
                     <br><br>
                     
                     <div style="background: #EDF6FF; color: black;">
-                       <div class="msgSuccess" id="userinfoBox_success" style="margin-left: 5px; margin-right: 5px;"></div>
+                       <div class="msgSuccess" id="userinfoBox_success" style="background: #000; color: #bbb; font-size: 14px;"></div>
                        <div class="msgError" id="userinfoBox_failed"></div>
                     </div>
                     

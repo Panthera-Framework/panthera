@@ -37,8 +37,8 @@
              <br><br>
              
              <label>{function="localize('Add domain', 'langtool')"}</label>
-             <button class="btn-small" placeholder="{function="localize('Name')"}" onclick="createDomain('{$locale}');" style="float: right;">{function="localize('Add')"}</button>
-             <input type="text" class="input-text inline" id="domain_name" style="max-width: calc(100% - 100px);">
+             <button class="btn-small" onclick="createDomain('{$locale}');" style="float: right;">{function="localize('Add')"}</button>
+             <input type="text" class="input-text inline" id="domain_name" style="max-width: calc(100% - 112spx);">
              
              <br><br>
              
