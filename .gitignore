@@ -6,6 +6,7 @@ lib/share/phpQuery.php
 lib/share/phpmailer
 lib/share/raintpl3
 lib/share/phpQuery
+lib/share/password-compat
 
 example-app/css
 example-app/images
