@@ -137,7 +137,7 @@ else
     $panthera -> template -> push('messageFilterType', '');
 
 // example filters
-$exampleFilters = array('pantheraCore', 'pantheraUser', 'pantheraGroup', 'pantheraTemplate', 'pantheraLocale', 'pantheraFetchDB', 'pantheraDB', 'leopard', 'metaAttributes');
+$exampleFilters = array('pantheraCore', 'pantheraUser', 'pantheraGroup', 'pantheraTemplate', 'pantheraLocale', 'pantheraFetchDB', 'pantheraDB', 'leopard', 'metaAttributes', 'scm');
 
 foreach ($panthera->logging->getOutput(True) as $line)
 {

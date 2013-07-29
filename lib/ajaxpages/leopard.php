@@ -20,7 +20,7 @@ $panthera -> importModule('leopard');
 $panthera -> locale -> loadDomain('leopard');
 
 $panthera -> logging -> clear();
-$panthera -> logging -> filter = array('leopard' => True);
+$panthera -> logging -> filter = array('leopard' => True, 'scm' => True);
 $panthera -> logging -> filterMode = 'whitelist';
 
 /**
@@ -34,13 +34,13 @@ if ($_GET['action'] == 'upload')
     $panthera -> importModule('filesystem');
 
     // flush buffers to automaticaly update console
-    function bufferProgressOutput($msg)
+    /*function bufferProgressOutput($msg)
     {
         print($msg. "\n");
         ob_flush();
     }
 
-    $panthera -> add_option('logging.output', 'bufferProgressOutput');
+    $panthera -> add_option('logging.output', 'bufferProgressOutput');*/
 
     if (isset($_FILES['packageFile']))
     {
@@ -121,8 +121,26 @@ if ($_GET['action'] == 'upload')
     $packageName = strip_tags($_POST['name']);
     $packageDirectory = strip_tags($_POST['directory']);
     $packageID = md5($packageName.$packageDirectory);
+    $tmpDir = null;
     
     $panthera -> logging -> output('Package name: ' .$packageName, 'leopard');
+    
+    // check if its a code repository
+    if (!is_dir($packageDirectory))
+    {
+        $panthera -> importModule('scm'); // maybe its a git repository, lets check it out
+        $panthera -> importModule('filesystem');
+        
+        $tmpDir = SITE_DIR. '/tmp/' .$packageID. '-scm';
+        
+        if (!scm::cloneBranch($packageDirectory, $tmpDir, $_POST['branch']))
+        {
+            $panthera -> logging -> output('Not a code repository and not a directory, cannot find package sources', 'leopard');
+            ajax_exit(array('status' => 'failed', 'log' => nl2br($panthera -> logging -> getOutput())));
+        }
+        
+        $packageDirectory = $tmpDir;
+    }
 
     // check if directory exists
     if (!is_dir($packageDirectory))
@@ -134,10 +152,14 @@ if ($_GET['action'] == 'upload')
     // check for manifest.json
     if (!is_file($packageDirectory. '/manifest.json'))
     {
+        if ($tmpDir != null)
+            deleteDirectory($tmpDir); // clean up
+    
         $panthera -> logging -> output('Cannot create package: Cannot find mainfest.json in root directory of package', 'leopard');
         ajax_exit(array('status' => 'failed', 'message' => localize('Cannot find mainfest.json in root directory of package', 'leopard'), 'log' => nl2br($panthera -> logging -> getOutput())));
     }
     
+    // check for installer hooks
     if (!is_file($packageDirectory. '/leopard.hooks.php'))
     {
         $panthera -> logging -> output('leopard.hooks.php does not exists, installation hooks will be disabled', 'leopard');
@@ -150,6 +172,9 @@ if ($_GET['action'] == 'upload')
         $panthera -> logging -> output('Creating a package from "' .$packageDirectory. ' directory"', 'leopard');
     } catch (Exception $e) {
         ajax_exit(array('status' => 'failed', 'message' => $e->getMessage(), 'log' => nl2br($panthera -> logging -> getOutput())));
+        
+        if ($tmpDir != null)
+            deleteDirectory($tmpDir); // clean up
     
     }
     
@@ -157,8 +182,11 @@ if ($_GET['action'] == 'upload')
     
     $panthera -> logging -> output ('url=' .$url, 'leopard');
     
+    if ($tmpDir != null)
+        deleteDirectory($tmpDir); // clean up
+    
     // save to session for future reuse
-    $panthera->session->set('leopard.build.last', array($packageName, $packageDirectory));
+    $panthera->session->set('leopard.build.last', array($packageName, $packageDirectory, $_POST['branch']));
     ajax_exit(array('status' => 'success', 'url' => $url, 'log' => nl2br($panthera -> logging -> getOutput())));
    
 /**
@@ -197,6 +225,9 @@ if($panthera->session->exists('leopard.build.last'))
     $last = $panthera->session->get('leopard.build.last');
     $panthera -> template -> push('buildName', $last[0]);
     $panthera -> template -> push('buildPath', $last[1]);
+    
+    if ($last[2] != '')
+        $panthera -> template -> push('buildBranch', $last[2]);
 }
 
 $panthera -> template -> push ('SITE_DIR', SITE_DIR);

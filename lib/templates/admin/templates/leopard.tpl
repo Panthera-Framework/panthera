@@ -49,6 +49,29 @@ function updatePackagesList(list)
         $('#noPackages').show();
 }
 
+/**
+  * Check if its a directory or a source code repository
+  *
+  * @author Damian Kęska
+  */
+
+function checkRepositoryUrl()
+{
+    url = $('#repositoryUrl').val().toLowerCase();
+    
+    if (url.substr(-4) == '.git' || url.substr(0, 7) == 'http://' || url.substr(0, 8) == 'https://' || url.substr(0, 6) == 'ssh://')
+    {
+        $('#repositoryUrl').css({'width': '64%'});
+        $('#repositoryBranch').css({'width': '30%'});
+        $('#repositoryBranch').show('slow');
+    } else {
+        $('#repositoryUrl').css({'width': '95%'});
+        $('#repositoryBranch').hide('slow');
+    }
+    
+    
+}
+
 $(document).ready(function () {
     /**
       * Package upload
@@ -96,7 +119,8 @@ $(document).ready(function () {
                 {
                     window.location = response.url;
                 } else {
-                    w2alert(response.message, '{function="localize('Error', 'leopard')"}');
+                    if (response.message != undefined)
+                        w2alert(response.message, '{function="localize('Error', 'leopard')"}');
                 }
                 
                 $('#consoleLog').html(response.log);
@@ -105,6 +129,8 @@ $(document).ready(function () {
         
         return false;
     });
+    
+    panthera.inputTimeout({ element: '#repositoryUrl', interval: 200, callback: checkRepositoryUrl });
 
 });
 </script>
@@ -147,7 +173,7 @@ $(document).ready(function () {
             </tr>
             
             <tr>
-                <td>{function="localize('Directory to build from', 'leopard')"}:</td><td><input type="text" name="directory" value="{if="isset($buildPath)"}{$buildPath}{else}{$SITE_DIR}/example{/if}" style="width: 95%;"></td>
+                <td>{function="localize('Directory or repository to build from', 'leopard')"}:</td><td><input type="text" name="directory" id="repositoryUrl" value="{if="isset($buildPath)"}{$buildPath}{else}{$SITE_DIR}/example{/if}" style="width: 95%;"> <input type="text" name="branch" id="repositoryBranch" style="display: none;" value="{if="isset($buildBranch)"}{$buildBranch}{else}master{/if}"></td>
             </tr>
             
             <tr>
