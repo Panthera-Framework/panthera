@@ -38,7 +38,7 @@ $tpl = 'no_page.tpl';
 
 // execute plugins
 $panthera -> get_options('ajax_page');
-$display = addslashes($_GET['display']);
+$display = str_replace('/', '', addslashes($_GET['display']));
 
 if (is_file(SITE_DIR. '/css/admin/custom/' .$display. '.css'))
     $panthera -> template -> addStyle('{$PANTHERA_URL}/css/admin/custom/' .$display. '.css');
