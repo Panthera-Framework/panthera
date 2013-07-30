@@ -75,12 +75,16 @@ if (!defined('IN_PANTHERA'))
 
         $options['varCache'] = $panthera->config->getKey('varcache_type', 'db', 'string');
         $options['cache'] = $panthera->config->getKey('cache_type', 'db', 'string');
-
+        
         /** Constants **/
         $const = get_defined_constants(true);
         $template -> push('const', $const['user']);
 
         $options = $panthera->get_filters('_ajax_settings', $options);
+        
+        if (!defined('DISABLE_BROWSER_DETECTION'))
+            $template -> push ('clientInfo', (array)$panthera -> session -> get('clientInfo'));
+            
         $template -> push('constants', $const['user']);
         $template -> push('settings_list', $options);
         $template -> push('acl_list', $user->acl->listAll());
