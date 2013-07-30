@@ -14,6 +14,7 @@ if (is_file('content/front.php'))
     require 'content/front.php';
 
 $display = str_replace('/', '', addslashes($_GET['display']));
+$template -> setTemplate($panthera->config->getKey('template'));
 
 // here we will include site pages
 if (is_file(SITE_DIR. '/content/pages/' .$display. '.php'))

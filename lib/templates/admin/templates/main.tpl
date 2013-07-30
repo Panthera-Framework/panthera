@@ -121,6 +121,8 @@
 
         <footer>
             <div class="footer">
+                <p style="float: left; margin-left: 275px;">{if="$mobileTemplate == True"}<a href="{$PANTHERA_URL}/pa-admin.php?__switchdevice=mobile">Mobile</a>{/if} | {if="$tabletTemplate == True"}<a href="{$PANTHERA_URL}/pa-admin.php?__switchdevice=tablet">Tablet</a>{/if} | <a href="{$PANTHERA_URL}/pa-admin.php?__switchdevice=desktop">Desktop</a></p>
+            
                 <p>Powered by <a href="http://github.com/webnull/panthera" target="_blank">Panthera Framework</a> {$PANTHERA_VERSION}</p>
             </div>
       </footer>

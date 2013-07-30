@@ -23,8 +23,8 @@ require PANTHERA_DIR. '/share/raintpl3/library/Rain/autoload.php';
 
 class pantheraTemplate extends pantheraClass
 {
-    protected $template, $name, $attributes = array('title' => '', 'keywords' => array(), 'metas' => array(), 'scripts' => array()), $panthera, $vars = array(), $cacheConfig = False;
-    public $tpl, $generateScripts = True, $generateHeader = True, $generateMeta = True, $generateKeywords = True, $generateLinks = True, $header = '', $deviceType = 'desktop', $forceKeepTemplate = False, $timer = 0, $engine = 'raintpl3';
+    protected $attributes = array('title' => '', 'keywords' => array(), 'metas' => array(), 'scripts' => array()), $panthera, $vars = array(), $cacheConfig = False;
+    public $tpl, $name, $template, $generateScripts = True, $generateHeader = True, $generateMeta = True, $generateKeywords = True, $generateLinks = True, $header = '', $deviceType = 'desktop', $forceKeepTemplate = False, $timer = 0, $engine = 'raintpl3';
     
     // configurable options
     protected $debugging, $caching, $cache_lifetime;
@@ -39,19 +39,16 @@ class pantheraTemplate extends pantheraClass
 
     public function setTemplate($template)
     {
-        $templatesDir = array();
         $tpl = null;
         
-        /*if ($this->deviceType == 'mobile' and $this->forceKeepTemplate == False)
-        {        
-            if (strpos($template, '_mobile') === False)
-            {
-                $this->panthera->logging->output('Checking for mobile template ' .$template. '_mobile', 'pantheraTemplate');
+        // template redirections
+        if ($this->panthera->session->exists('template.force'))
+        {
+            $force = $this -> panthera -> session -> get('template.force');
             
-                if (is_dir(SITE_DIR.'/content/templates/'.$template. '_mobile/') or is_dir(PANTHERA_DIR.'/templates/' .$template. '_mobile/'))
-                    $template = $template. '_mobile';
-            }
-        }*/
+            if ($template == $force[0])
+                $template = $force[1];
+        }
         
         if ($this->cacheConfig == True)
         {
@@ -64,32 +61,7 @@ class pantheraTemplate extends pantheraClass
 
         if ($tpl == null)
         {
-            // search for template directory in content
-            if(is_file(SITE_DIR.'/content/templates/'.$template. '/config.php'))
-                $templatesDir[] = SITE_DIR.'/content/templates/'.$template. '/templates';
-
-            // and search for template directory in lib (some templates can be provided by panthera by default
-            if(is_file(PANTHERA_DIR.'/templates/'.$template. '/config.php'))
-                $templatesDir[] = PANTHERA_DIR.'/templates/'.$template. '/templates';
-
-            // if there are no templates to display we must show an error, its a critical application error, so it should be shown
-            if (count($templatesDir) == 0)
-            {
-                throw new Exception('Template directory for template named "' .$template. '" doesnt exists or cannot find config.php');
-                return False;
-            } elseif (count($templatesDir) == 2) {
-                $this -> panthera -> logging -> output('setTemplate::Fallback to /lib avaliable', 'pantheraTemplate');
-            }
-
-            #var_dump(PANTHERA_DIR.'/content/templates/'.$template. '/plugins/');
-
-            // more important is config.php provided by content, so it will be loaded if present, but if not - it will be loaded from lib
-            if (is_file(SITE_DIR.'/content/templates/' .$template. '/config.php'))
-                @include(SITE_DIR.'/content/templates/' .$template. '/config.php');
-            else {
-                $this -> panthera -> logging -> output('setTemplate::Falling back to /lib, found configuration in /lib/templates/' .$template, 'pantheraTemplate');
-                @include(PANTHERA_DIR.'/templates/'.$template. '/config.php');
-            }
+            @include(getContentDir('/templates/'.$template. '/config.php'));
 
             if ($tpl == NuLL)
                 throw new Exception('Invalid template: $tpl variable was not set in '.SITE_DIR.'/content/templates/' .$template. '/config.php');
@@ -99,37 +71,48 @@ class pantheraTemplate extends pantheraClass
                 $this->panthera->cache->set('tpl.cfg.' .$template, $tpl, 3600); // 1 hour by default (for debugging please just disable caching option)
                 $this->panthera->logging->output('Wrote id=tpl.cfg.' .$template. ' to cache', 'pantheraTemplate');
             }
-            
         }
+        
+        // mobile browser detection
+        if (!defined('DISABLE_BROWSER_DETECTION') and !isset($force) and !$this->panthera->session->exists('template.force.skip'))
+        {
+            $browser = $this -> panthera -> session -> get('clientInfo');
+                
+            if ($browser -> deviceType == 'mobile' and array_key_exists('mobile_template', $tpl))
+            {
+                if ($tpl['mobile_template'] != $template)
+                {
+                    $this->panthera->session->set('template.force', array($template, $tpl['mobile_template'])); // set template redirection eg. from admin to admin_mobile
+                    return $this->setTemplate($tpl['mobile_template']);
+                }
+                        
+            } elseif ($browser -> deviceType == 'tablet' and array_key_exists('tablet_template', $tpl)) {
+                
+                if ($tpl['tablet_template'] != $template)
+                {
+                    $this->panthera->session->set('template.force', array($template, $tpl['tablet_template']));
+                    return $this->setTemplate($tpl['mobile_template']);
+                }
+            }
+        }
+        
+        if (array_key_exists('tablet_template', $tpl))
+            $this->push('tabletTemplate', True);
+            
+        if (array_key_exists('mobile_template', $tpl))
+            $this->push('mobileTemplate', True);
+            
+        if (array_key_exists('mobile', $tpl) or array_key_exists('tablet', $tpl))
+            $this->push('usingMobileTemplate', $tpl);
 
         $this->template = $tpl;
         $this->name = $template;
+        
+        // switching device type
+        if (isset($_GET['__switchdevice']) and !defined('DISABLE_DEVICES_SWITCH'))
+            $this -> panthera -> importModule('boot/switchdevice');
     }
     
-    /**
-      * Detect device type
-      *
-      * @return string with type {mobile, bot, desktop} 
-      * @author Damian Kęska
-      */
-    
-    public function detectDeviceType()
-    {
-        $UA = strtolower ($_SERVER['HTTP_USER_AGENT']);
-        
-        if ( preg_match ("/phone|iphone|itouch|ipod|symbian|android|htc_|htc-|palmos|blackberry|opera mini|iemobile|windows ce|nokia|fennec|hiptop|kindle|mot |mot-|webos\/|samsung|sonyericsson|^sie-|nintendo/", $UA))
-            return 'mobile';
-        
-        if (preg_match ("/mobile|pda;|avantgo|eudoraweb|minimo|netfront|brew|teleca|lg;|lge |wap;| wap /", $UA))
-            return 'mobile';
-        
-        if (preg_match("/googlebot|adsbot|yahooseeker|yahoobot|msnbot|watchmouse|pingdom\.com|feedfetcher-google/", $UA))
-            return 'bot';
-            
-        if (preg_match ("/mozilla\/|opera\//", $UA))
-            return 'desktop';
-    }
-
     /**
 	 * Initialize template system, configuration etc.
 	 *
@@ -141,7 +124,7 @@ class pantheraTemplate extends pantheraClass
     function __construct($panthera)
     {
         parent::__construct($panthera);
-    
+   
         // some configuration variables
         $this->debugging = (bool)$this->panthera->config->getKey('template_debugging', False, 'bool'); // TODO: A template that displays Panthera environment
         $this->caching = (bool)$this->panthera->config->getKey('template_caching', False, 'bool');
@@ -156,46 +139,12 @@ class pantheraTemplate extends pantheraClass
         $this->tpl = new Rain\Tpl;
         #\Rain\Tpl::registerTag('stringModifier', '{"([^}"]+)"|([a-zA-Z\"]+):?([A-Za-z0-9\"]+)?:?([A-Za-z0-9\"]+)?:?([A-Za-z0-9\"]+)?}', function( $params, $b ){ var_dump($params); } );
                 
-        /*
-        // functions
-        $this->tpl->addFunction(new Twig_SimpleFunction('localize', 'localize'));
-        $this->tpl->addFunction(new Twig_SimpleFunction('isset', 'isset'));
-        $this->tpl->addFunction(new Twig_SimpleFunction('count', 'count'));
-        $this->tpl->addFunction(new Twig_SimpleFunction('pantheraUrl', 'pantheraUrl'));
-        
-        // filters
-        $this->tpl->addFilter(new Twig_SimpleFilter('pantheraUrl', 'pantheraUrl'));
-        $this->tpl->addFilter(new Twig_SimpleFilter('ucfirst', 'ucfirst'));
-        $this->tpl->addFilter(new Twig_SimpleFilter('localize', 'localize'));
-        */
-        
-        // Device type detection
-        if (!$panthera->session->exists('device_type'))
-        {
-            $panthera->session->set('device_type', $this->detectDeviceType());
-            $this->deviceType = $panthera->session->get('device_type');
-        }
         
         // Force keep default template
         if ($panthera->session->get('tpl_forceKeepTemplate'))
         {
             $this->forceKeepTemplate = True;
         }
-        
-        /*if ($this->caching == True)
-        {
-            if ($this->panthera->cache != False)
-            {
-                if ($this->panthera->cache->type == 'memory')
-                {
-                    // integrate Smarty with Panthera cache
-                    $this->tpl->registerCacheResource('pantheraCache', new Smarty_CacheResource_Panthera($this->panthera));
-                    $this->tpl->caching_type = 'pantheraCache';
-                    $this->tpl->setCaching(true); 
-                    $this->tpl->compile_check = true;
-                }
-            }
-        }*/
 
         if ($this->panthera->cacheType('cache') == 'memory' and $this->caching == True)
         {
@@ -588,16 +537,14 @@ class pantheraTemplate extends pantheraClass
             $this->push('site_header', $header);
         }
 
-        $this->push('PANTHERA_DEBUG_MSG', $this->panthera->get_filters('debug_msg'));
-
         if ($template == NuLL)
             $template = $this->template['index'];
-
-        if (!is_file(SITE_DIR.'/content/templates/'.$this->name. '/templates/' .$template) and !is_file(PANTHERA_DIR.'/templates/'.$this->name. '/templates/' .$template))
-            throw new Exception('Cannot find template "' .$template. '" in both /content/templates/' .$this->name. '/templates and /lib/templates/' .$this->name. '/templates directories');
-            
             
         $file = getContentDir('/templates/' .$this->name. '/templates/' .$template);
+
+        if (!$file)
+            throw new Exception('Cannot find template "' .$template. '" in both /content/templates/' .$this->name. '/templates and /lib/templates/' .$this->name. '/templates directories');
+            
         $this->panthera->logging->output('Displaying ' .$file, 'pantheraTemplate');
 
         // assign all variables        

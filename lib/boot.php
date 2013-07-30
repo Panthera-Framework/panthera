@@ -123,12 +123,11 @@ if (!defined('SKIP_LOCALE'))
 if (!defined('SKIP_TEMPLATE'))
 {
     $template = new pantheraTemplate($panthera);
-    $template -> setTemplate($panthera->config->getKey('template'));
+    $panthera -> template = $template;
     $template -> push('PANTHERA_URL', $panthera->config->getKey('url'));
     $template -> push('AJAX_URL', $panthera->config->getKey('ajax_url'));
     $template -> push('site_template_css', $panthera->config->getKey('main_css'));
     $template -> push('PANTHERA_VERSION', PANTHERA_VERSION);
-    $panthera -> template = $template;
 }
 
 if (!defined('SKIP_USER') and !defined('SKIP_SESSION'))
@@ -170,12 +169,8 @@ if (function_exists('userStartup'))
 // load plugins after all core elements
 $plugins = $panthera -> loadPlugins();
 
-/*if(count($plugins) > 0 and is_array($plugins))
-{
-    foreach ($plugins as $key => $value)
-    {
-        include($value);
-    }
-}*/
-
 $panthera -> get_options('page_load_starts');
+
+// if site requires installation, redirect then to installer page
+if ($panthera->config->getKey('requires_instalation') and PANTHERA_FRONTCONTROLLER != '/install.php' and PANTHERA_MODE == 'CGI')
+    $panthera -> importModule('boot/installer');

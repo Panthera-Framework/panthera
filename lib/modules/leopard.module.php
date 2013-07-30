@@ -17,7 +17,7 @@
   
 class leopardPackage
 {
-    protected $manifest = array ('title' => '', 'description' => '', 'author' => '', 'contact' => array(), 'url' => '', 'files' => array(), 'version' => 0.1, 'release' => 1);
+    protected $manifest = array();
     public $phar;
     protected $destination;
     protected $packageName = "";
@@ -32,6 +32,19 @@ class leopardPackage
     public function __construct($destination)
     {
         global $panthera;
+        
+        // default manifest
+        $this->manifest = array ('title' => '', 
+                                'description' => '', 
+                                'author' => '', 
+                                'contact' => array(), 
+                                'url' => '', 
+                                'files' => array(), 
+                                'version' => 0.1, 
+                                'release' => 1, 
+                                'requirements' => array('dependencies' => array(), 
+                                                        'environment' => array())
+                                );
     
         $this->destination = $destination;
         $this->packageName = leopard::packageName($this->destination);
@@ -68,6 +81,43 @@ class leopardPackage
     public function manifest()
     {
         return (object)$this->manifest;
+    }
+    
+    /**
+      * Set requirement, eg. Panthera or PHP version, required PHP modules
+      *
+      * @param string $requirement
+      * @param string $value
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public function setRequire($requirement, $value)
+    {
+        $requirementsList = array('PHP', 'Panthera', 'Template_Engine', 'PHP_Modules', 'Database_Driver');
+        
+        if (!in_array($requirement, $requirementsList))
+        {
+            throw new Exception('Unsupported requirement "' .$requirement. ', not in list: ' .implode(', ', $requirementsList). '"');
+        }
+        
+        $this->manifest['requirements']['environment'][$requirement] = $value;
+        return True;
+    }
+    
+    /**
+      * Add required package as dependency
+      *
+      * @param string $package name
+      * @param string $version
+      * @return bool
+      * @author Damian Kęska
+      */
+    
+    public function addRequiredPackage($package, $version)
+    {
+        $this->manifest['requirements']['dependencies'][$package] = $version;
+        return True;
     }
     
     /**
@@ -243,6 +293,18 @@ class leopardPackage
     }
     
     /**
+      * Show JSON formatted manifest file
+      *
+      * @return string 
+      * @author Damian Kęska
+      */
+    
+    public function showManifest()
+    {
+        return json_encode($this->manifest, JSON_PRETTY_PRINT);
+    }
+    
+    /**
       * Add a file to package archive
       *
       * @param string $local Path to file in local filesystem
@@ -258,6 +320,9 @@ class leopardPackage
             
         if ($inArchive[0] == '/' or $inArchive[0] == '.')
             throw new Exception('Slashes and dots are not allowed at beigning destination path in archive');
+            
+        if (strtolower($inArchive) == 'manifest.json')
+            return False;
     
         $this->phar->addFile($local, $inArchive);
         $this->manifest['files'][$inArchive] = md5(file_get_contents($local));
@@ -305,8 +370,8 @@ class leopardPackage
         {
             $elementName = substr($element, (strlen($directory)+1), strlen($element));
             
-            // skip manifest file
-            if (strtolower($elementName) == 'manifest.json' or strtolower($elementName) == 'readme' or strtolower($elementName) == 'readme.md')
+            // skip some files
+            if (strtolower($elementName) == 'manifest.json' or strtolower($elementName) == 'readme' or strtolower($elementName) == 'readme.md' or strtolower($elementName) == '.gitignore' or substr($elementName, 0, 4) == '.git')
                 continue;
                 
             // make sure the name will be correct
@@ -343,6 +408,44 @@ class leopardPackage
     }
     
     /**
+      * Remove file from package
+      *
+      * @param string $inArchive path to file
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public function removeFile($inArchive)
+    {
+        try {
+            $this->phar->delete($inArchive);
+        } catch (Exception $e) {
+            // pass
+        }
+        
+        if ($this->fileExists($inArchive))
+        {
+            unset($this->manifest['files'][$inArchive]);
+            return True;
+        }
+        
+        return False;
+    }
+    
+    /**
+      * Check if file exists in archive
+      *
+      * @param string $inArchive path to file
+      * @return mixed 
+      * @author Damian Kęska
+      */
+    
+    public function fileExists($inArchive)
+    {
+        return array_key_exists($inArchive, $this->manifest['files']);
+    }
+    
+    /**
       * Write manifest and save to file
       *
       * @return void 
@@ -359,24 +462,30 @@ class leopardPackage
     /**
       * Get complete list of files inside archive
       *
+      * @param bool $listAllFiles List all files in archive
       * @return array 
       * @author Damian Kęska
       */
     
-    public function getFiles()
+    public function getFiles($listAllFiles=False)
     {
-        $pharRoot = 'phar://' .realpath($this->destination). '/';
-        $files = array();
-        $ph = new Phar($this->destination);
-    
-        foreach (new RecursiveIteratorIterator($ph) as $key => $file)
+        if ($listAllFiles == True)
         {
-            $filePath = str_replace($pharRoot, '', $key);
-            $files[] = $filePath;
-        }
+            $pharRoot = 'phar://' .realpath($this->destination). '/';
+            $files = array();
+            $ph = new Phar($this->destination);
         
-        unset($ph);
-        return $files;
+            foreach (new RecursiveIteratorIterator($ph) as $key => $file)
+            {
+                $filePath = str_replace($pharRoot, '', $key);
+                $files[] = $filePath;
+            }
+            
+            unset($ph);
+            return $files;
+        } else {
+            return $this->manifest['files'];
+        }
     }
     
     /**
@@ -389,7 +498,7 @@ class leopardPackage
     
     public function updateFiles($dir='')
     {
-        $files = $this -> getFiles();
+        $files = $this -> getFiles(True);
         
         if ($dir == '')
             $dir = dirname($this->destination);
@@ -456,6 +565,41 @@ class leopard
     }
     
     /**
+      * Compare two package versions
+      *
+      * @param string $first package
+      * @param string $second package
+      * @return bool True if first package is newer than second package 
+      * @author Damian Kęska
+      */
+    
+    public static function compareVersions($first, $second)
+    {
+        $checkFirst = self::packageName($first, True);
+        $checkSecond = self::packageName($second, True);
+        
+        // convert package name to only version
+        if (!is_numeric($checkFirst[1]))
+        {
+            $first = str_replace($checkFirst[1]. '-', '', $first);
+        }
+        
+        if (!is_numeric($checkSecond[1]))
+        {
+            $second = str_replace($checkSecond[1]. '-', '', $second);
+        }
+        
+        // example of input: 1.1-1
+        $first = intval(str_replace('-', '', str_replace('.', '', $first)));
+        $second = intval(str_replace('-', '', str_replace('.', '', $second)));
+        
+        if ($first > $second)
+            return True;
+
+        return False;        
+    }
+    
+    /**
       * Get list of installed packages
       *
       * @return array 
@@ -510,17 +654,21 @@ class leopard
       * Convert package path to package name
       *
       * @param string $inputPath
+      * @param bool $returnMatches
       * @return string 
       * @author Damian Kęska
       */
     
-    public static function packageName($inputPath)
+    public static function packageName($inputPath, $returnMatches=False)
     {
         $pathinfo = pathinfo($inputPath);
         
         preg_match('/^([A-Za-z0-9_]+)\-?([0-9.]+)?\-?([0-9]+)?/', strtolower($pathinfo['filename']), $matches);
         
-        return $matches[1];
+        if ($returnMatches == False)
+            return $matches[1];
+        else
+            return $matches;
     }
     
     /**
@@ -546,7 +694,7 @@ class leopard
             return False;
         } else {
             // TODO: Dependency support
-        
+            
             // check file collisions
             foreach ((array)$packageMeta->files as $file => $sum)
             {

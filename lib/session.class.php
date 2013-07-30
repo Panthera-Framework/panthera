@@ -71,8 +71,73 @@ class pantheraSession
         $addrs = $this->get('s_addrs');
         $addrs[$_SERVER['REMOTE_ADDR']] = True;
         $this->set('s_addrs', $addrs);
+        
+        // Browser detection check
+        if (!$this->get('clientInfo'))
+        {
+            $this -> set('clientInfo', $this->detectBrowser());
+        }
     }
+    
+    /**
+      * Detect a browser and os types and versions
+      *
+      * @return array 
+      * @author Damian Kęska
+      */
 
+    public function detectBrowser()
+    {
+        // require Mobile Detect library
+        if (!class_exists('Mobile_Detect'))
+            require PANTHERA_DIR. '/share/mobiledetectlib/Mobile_Detect.php';
+        
+        $info = array('deviceType' => 'desktop', 'browser' => 'Unknown', 'os' => 'Unknown', 'browserVersion' => '', 'engineVersion' => '');
+        
+        $detect = new Mobile_Detect;
+        // device type detection
+        if ($detect->isMobile()) { $info['deviceType'] = 'mobile'; }
+        elseif ($detect -> isTablet()) { $info['deviceType'] = 'tablet'; }
+        else {  
+            // desktop os and browser type & version
+            $ua = strtolower($detect->getUserAgent());
+        
+            if (strpos($ua, 'linux') !== False) { $info['os'] = 'Linux'; }
+            elseif (strpos($ua, 'macintosh') !== False) { $info['os'] = 'OS X'; }
+            elseif (strpos($ua, 'windows') !== False) { $info['os'] == 'Windows'; }
+            
+            if (strpos($ua, 'chrome') !== False) { $info['browser'] = 'Chrome'; $info['engineVersion'] = $detect->version('Webkit'); $info['browserVersion'] = $detect->version('Chrome'); }
+            elseif (strpos($ua, 'msie') !== False) { $info['browser'] = 'IE'; $info['engineVersion'] = $detect->version('MSIE'); $info['browserVersion'] = $detect->version('Trident'); }
+            elseif (strpos($ua, 'opera') !== False) { $info['browser'] = 'Opera'; $info['engineVersion'] = $detect->version('Webkit'); $info['browserVersion'] = $detect->version('Opera'); }
+            elseif (strpos($ua, 'firefox') !== False) { $info['browser'] = 'Firefox'; $info['engineVersion'] = $detect->version('Gecko'); $info['browserVersion'] = $detect->version('Firefox'); }
+            elseif (strpos($ua, 'safari') !== False) { $info['browser'] = 'Safari'; $info['engineVersion'] = $info['browserVersion'] = $detect->version('Webkit'); }
+               
+        } 
+        
+        // detect browser
+        if ($detect->isChrome()) { $info['browser'] = 'Chrome'; $info['browserVersion'] = $detect->version('Chrome'); $info['engineVersion'] = $detect->version('Webkit'); }
+        elseif ($detect->isOpera()) { $info['browser'] = 'Opera'; $info['engineVersion'] = $detect->version('Webkit'); $info['browserVersion'] = $detect->version('Opera'); }
+        elseif ($detect->isFirefox()) { $info['browser'] = 'Firefox'; $info['engineVersion'] = $detect->version('Gecko'); $info['browserVersion'] = $detect->version('Firefox'); }
+        elseif ($detect->isDolfin()) { $info['browser'] = 'Dolphin'; $info['engineVersion'] = $detect->version('Webkit'); $info['browserVersion'] = $detect->version('Dolfin'); }
+        elseif ($detect->isSafari()) { $info['browser'] = 'Safari'; $info['browserVersion'] = $detect->version('Safari'); $info['engineVersion'] = $detect->version('Webkit');  }
+        elseif ($detect->isIE()) { $info['browser'] = 'IE'; }
+        elseif ($detect->isGenericBrowser()) { $info['browser'] = 'Generic'; }
+        
+        // detect mobile os
+        if ($detect->isAndroidOS()) { $info['os'] = 'Android'; }
+        elseif ($detect->isiOS()) { $info['os'] = 'iOS'; }
+        elseif ($detect->isWindowsMobileOS()) { $info['os'] = 'Windows Mobile'; }
+        elseif ($detect->isWindowsPhoneOS()) { $info['os'] = 'Windows Phone'; }
+        elseif ($detect->isSymbianOS()) { $info['os'] = 'Symbian'; }
+        elseif ($detect->isMeeGoOS()) { $info['os'] = 'Meego'; }
+        elseif ($detect->isTizen()) { $info['os'] = 'Tizen'; }
+        elseif ($detect->isMaemoOS()) { $info['os'] = 'Maemo'; }
+        elseif ($detect->isbadaOS()) { $info['os'] = 'Bada OS'; }
+        elseif ($detect->isBlackBerryOS()) { $info['os'] = 'Blackberry OS'; }
+
+        return (object)$info;
+    }
+    
     /**
      * Remove all user session variables
      *
