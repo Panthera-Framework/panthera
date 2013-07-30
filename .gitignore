@@ -7,6 +7,8 @@ lib/share/phpmailer
 lib/share/raintpl3
 lib/share/phpQuery
 lib/share/password-compat
+lib/share/vendor
+lib/share/mobiledetectlib
 
 example-app/css
 example-app/images
