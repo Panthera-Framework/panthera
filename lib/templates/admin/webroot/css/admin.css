@@ -456,6 +456,7 @@ h1, h2, h3, h4, h5, h6 {
 	.picturesBox li img {
 		margin:auto;
 		height:110px;
+		background-color: #f3f3f4;
 		-webkit-border-radius: 3px;
 		-moz-border-radius: 3px;
 		border-radius: 3px;
