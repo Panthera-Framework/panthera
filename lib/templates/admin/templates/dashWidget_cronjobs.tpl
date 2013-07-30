@@ -10,7 +10,7 @@
                    {/loop}
                 {else}
                    <tr>
-                        <td colspan="3">{function="localize('No sheduled jobs found', 'dashWidget_cronjobs');"}</td>
+                        <td colspan="3">{function="localize('No sheduled jobs found', 'dashWidget_cronjobs')"}</td>
                    </tr>
                 {/if}
                </table>
