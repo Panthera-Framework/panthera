@@ -438,8 +438,11 @@ function checkUserPermissions($user, $admin=False)
 
     if(!$panthera->session->exists('uid'))
         return False;
-
+        
     if($user == False)
+        return False;
+        
+    if (!$user->exists())
         return False;
 
     if ($admin == False)

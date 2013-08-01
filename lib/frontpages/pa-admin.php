@@ -29,7 +29,7 @@ $menu = new simpleMenu();
 $menu -> add('dash', localize('Dash'), '?display=dash', '', '{$PANTHERA_URL}/images/admin/menu/dashboard.png', '');
 
 // other built-in pages
-if (getUserRightAttribute($user, 'can_see_debug'))
+if (getUserRightAttribute($panthera->user, 'can_see_debug'))
     $menu -> add('debug', localize('Debugging center'), '?display=debug', '', '{$PANTHERA_URL}/images/admin/menu/developement.png', '');
 
 $menu -> add('users', localize('Users'), '?display=settings&action=users', '', '{$PANTHERA_URL}/images/admin/menu/users.png', '');

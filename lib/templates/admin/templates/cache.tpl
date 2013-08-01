@@ -1,5 +1,7 @@
 {$site_header}
-<script>
+<script src="{$PANTHERA_URL}/js/admin/raphael-min.js"></script>
+<script src="{$PANTHERA_URL}/js/admin/charts.min.js"></script>
+<script type="text/javascript">
 $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
 
 var spinner = new panthera.ajaxLoader($('#cacheVariables'));
@@ -34,9 +36,31 @@ function saveCacheVariables()
     return false;
 }
 
-panthera.inputTimeout({ element: '#cache', interval: 1200, callback: saveCacheVariables });
-panthera.inputTimeout({ element: '#varcache', interval: 1200, callback: saveCacheVariables });
+$(document).ready(function () {
+    panthera.inputTimeout({ element: '#cache', interval: 1200, callback: saveCacheVariables });
+    panthera.inputTimeout({ element: '#varcache', interval: 1200, callback: saveCacheVariables });
+    
+    {if="count($memcachedServers) > 1"}
+    var bars = new Charts.BarChart('memcachedChart', {
+      show_grid: true,
+      label_max: false,
+      label_min: false,
+      x_label_color: "#333333",
+      bar_width: 30,
+      rounding: 3,
+    });
 
+    {loop="$memcachedServers"}
+    bars.add({
+      label: "#{$value.num}",
+      value: {$value.load_percent}
+    });
+    {/loop}
+
+    bars.draw();
+    {/if}
+
+});
 </script>
 
     <div class="titlebar">{function="localize('Cache management', 'cache')"} {include="_navigation_panel.tpl"}</div><br>
@@ -82,6 +106,20 @@ panthera.inputTimeout({ element: '#varcache', interval: 1200, callback: saveCach
       
     {if="count($memcachedServers) > 0"}
     
+    {if="count($memcachedServers) > 1"}
+    <!-- charts -->    
+    <div class="grid-2" style="width: 45%; margin-left: 40px; height: 230px;">
+         <div class="title-grid">{function="ucfirst(localize('Memcached statistics', 'cache'))"}<span></span></div>
+         <div class="content-table-grid">
+            <div style="padding: 20px; border: 10px; width: 480px; margin: 0 auto; text-align: center; overflow: auto;">
+                <div id='memcachedChart' style='width: 480px; height: 188px; margin-bottom: 10px;'></div> 
+                <small>{function="localize('Server load', 'cache')"}</small>
+            </div>
+         </div>
+    </div>
+    {/if}
+    
+    <!-- list of servers -->
     {loop="$memcachedServers"}
     <div class="grid-2" style="width: 46%;">
          <table class="gridTable">
@@ -131,6 +169,11 @@ panthera.inputTimeout({ element: '#varcache', interval: 1200, callback: saveCach
                 <tr>
                     <td>{function="localize('Connections', 'cache')"}:</td>
                     <td>{$value.connections_current} {function="localize('current', 'cache')"}, {$value.connections_total} {function="localize('total', 'cache')"}</td>
+                </tr>
+                
+                <tr>
+                    <td>{function="localize('Server load', 'cache')"}:</td>
+                    <td>{$value.load_percent}%</td>
                 </tr>
             </tbody>
          </table>

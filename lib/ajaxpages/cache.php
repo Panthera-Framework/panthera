@@ -73,10 +73,21 @@ if (extension_loaded('memcached'))
         pa_exit();
     }
     
+    $stats = $memcached -> getStats();
+    $maxLoad = 0;
+    
+    if (count($stats) > 1)
+    {
+        foreach ($stats as $server => $attributes)
+        {
+            $maxLoad += intval($attributes['cmd_get']) + intval($attributes['cmd_set']);
+        }
+    }
+    
     
     $servers = array();
     $i=0;
-    foreach ($memcached -> getStats() as $server => $attributes)
+    foreach ($stats as $server => $attributes)
     {
         $servers[$server] = array();
         $servers[$server]['num'] = $i++;
@@ -107,6 +118,7 @@ if (extension_loaded('memcached'))
         // memory usage
         $servers[$server]['memory_used'] = bytesToSize($attributes['bytes']);
         $servers[$server]['memory_max'] = bytesToSize($attributes['limit_maxbytes']);
+        $servers[$server]['load_percent'] = (($attributes['cmd_get'] + $attributes['cmd_set'])/$maxLoad)*100;
     }
     
     $panthera -> template -> push('memcachedServers', $servers);

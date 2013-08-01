@@ -81,7 +81,6 @@ switch ($_GET['menu'])
         $menu[] = array('link' => '?display=plugins', 'name' => ucfirst(localize('plugins', 'dash')), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Apps-preferences-plugin-icon.png', 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=templates', 'name' => ucfirst(localize('templates', 'dash')), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Icon-template.png', 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=langtool', 'name' => ucfirst(localize('translates', 'dash')), 'icon' => '{$PANTHERA_URL}/images/admin/menu/langtool.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=mergephps', 'name' => ucfirst(localize('merge phps and json arrays', 'dash')), 'icon' => '{$PANTHERA_URL}/images/admin/mimes/php.png', 'linkType' => 'ajax');
     break;
 
     case '':

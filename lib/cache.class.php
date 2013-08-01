@@ -407,6 +407,19 @@ class varCache_memcached extends pantheraClass
     }
     
     /**
+      * Filter a var to avoid syntax errors
+      *
+      * @param string $var
+      * @return string 
+      * @author Damian Kęska
+      */
+    
+    public function filterVar($var)
+    {
+        return hash('md4', $this->prefix.'.vc.' .$var);
+    }
+    
+    /**
       * Check if variable exists in the cache
       *
       * @param string $var Variable
@@ -416,7 +429,7 @@ class varCache_memcached extends pantheraClass
 
     public function exists($var)
     {
-        $this->m->get($var);
+        $this->m->get($this->filterVar($var));
         
         if ($this->m->getResultCode() == Memcached::RES_NOTFOUND)
             return False;
@@ -447,7 +460,7 @@ class varCache_memcached extends pantheraClass
     
     public function remove($var)
     {
-        return $this->m->delete($this->prefix.'.vc.' .$var);
+        return $this->m->delete($this->filterVar($var));
     }
     
 
@@ -463,8 +476,14 @@ class varCache_memcached extends pantheraClass
     {
         if (!$this->exists($var))
             return null;
+    
+        $var = $this->filterVar($var);
+        $value = $this->m->get($var);
+
+        if ($value == null)
+            return null;
             
-        return unserialize($this->m->get($this->prefix.'.vc.' .$var));
+        return @unserialize($value);
     }
     
     /**
@@ -478,12 +497,12 @@ class varCache_memcached extends pantheraClass
     
     public function set($var, $value, $expire=-1)
     {
-        $value = serialize($value);
-    
+        $var = $this->filterVar($var);
+        
         if ($expire > -1)
-            $this->m->set($this->prefix.'.vc.' .$var, $value, $expire);
+            $this->m->set($var, serialize($value), $expire);
         else
-            $this->m->set($this->prefix.'.vc.' .$var, $value);
+            $this->m->set($var, serialize($value), 3600);
             
         return True;
     }
