@@ -5,6 +5,7 @@
 $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
 
 var spinner = new panthera.ajaxLoader($('#cacheVariables'));
+var addMemcachedServerSpinner = new panthera.ajaxLoader($('#addMemcachedServerDiv'));
 
 /**
   * Save cache variables to database
@@ -36,6 +37,24 @@ function saveCacheVariables()
     return false;
 }
 
+function removeMemcachedServer(server, divid)
+{
+    w2confirm('{function="localize('Are you sure?')"}', '{function="localize('Confirmation')"}', function (response) {
+        if (response != 'Yes')
+        {
+            return false;
+        }
+    
+        panthera.jsonPOST( { url: '?display=cache&action=removeMemcachedServer', data: 'server='+server, success: function (response) {
+                if (response.status == 'success')
+                {
+                    $('#'+divid).remove();
+                }    
+            } 
+        });
+    });
+}
+
 $(document).ready(function () {
     panthera.inputTimeout({ element: '#cache', interval: 1200, callback: saveCacheVariables });
     panthera.inputTimeout({ element: '#varcache', interval: 1200, callback: saveCacheVariables });
@@ -51,14 +70,47 @@ $(document).ready(function () {
     });
 
     {loop="$memcachedServers"}
+    if ({$value.num} % 2)
+        color = '#53ba03';
+    else
+        color = '#00aadd';
+    
     bars.add({
       label: "#{$value.num}",
-      value: {$value.load_percent}
+      value: {$value.load_percent},
+      options: {
+        bar_color: color
+      }
     });
     {/loop}
 
     bars.draw();
     {/if}
+    
+    /**
+      * Add new Memcached server
+      *
+      * @author Damian Kęska
+      */
+    
+    $('#addMemcachedServer').submit(function () {
+        panthera.jsonPOST( { data: '#addMemcachedServer', spinner: addMemcachedServerSpinner, success: function (response) {
+                if (response.status == "success")
+                {
+                    navigateTo('?display=cache');
+                } else {
+                    if (response.message != undefined)
+                    {
+                        w2alert(response.message, '{function="localize('Error')"}');
+                    }
+                }
+        
+            }
+        });
+        
+        return false;
+    
+    });
 
 });
 </script>
@@ -100,12 +152,43 @@ $(document).ready(function () {
                        </select>
                     </td>
                 </tr>
+                
+                <tr>
+                    <td><b>session.save_handler</b><br><small>({function="localize('User sessions can be stored on harddrive by default, or in memory using memcached or mm. This can be set in PHP configuration.', 'cache')"})</small></td>
+                    <td>
+                        {$sessionHandler}
+                    </td>
+                </tr>
             </tbody>
          </table>
       </div>
       
-    {if="count($memcachedServers) > 0"}
+    {if="$memcacheAvaliable == True"}
+    <div class="grid-2" style="position: relative;" id="addMemcachedServerDiv">
+    <table class="gridTable">
+        <thead>
+            <tr>
+                <th colspan="2" style="width: 250px;">{function="localize('Add memcached server', 'cache')"} </th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            <tr>
+                <td style="text-align: center;">
+                    <form action="?display=cache&action=addMemcachedServer" method="POST" id="addMemcachedServer">
+                    <input type="text" name="ip" placeholder="{function="localize('address', 'cache')"}"> <input type="text" name="port" placeholder="{function="localize('port', 'cache')"}"> <input type="text" name="priority" placeholder="{function="localize('priority', 'cache')"} ({function="localize('optional', 'cache')"})"> <input type="submit" value="{function="localize('Add')"}">
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+    {/if}
     
+    <!-- separator -->
+    <div style="height: 1px; margin-top: 100px;"></div>
+      
+    {if="count($memcachedServers) > 0"}
     {if="count($memcachedServers) > 1"}
     <!-- charts -->    
     <div class="grid-2" style="width: 45%; margin-left: 40px; height: 230px;">
@@ -121,12 +204,19 @@ $(document).ready(function () {
     
     <!-- list of servers -->
     {loop="$memcachedServers"}
-    <div class="grid-2" style="width: 46%;">
+    <div class="grid-2" style="width: 46%;" id="server_{$value.num}">
          <table class="gridTable">
 
             <thead>
                 <tr>
-                    <th colspan="2"><a href="#" onclick="createPopup('_ajax.php?display=cache&popup=stats&server={$key}', 1000, 720);">memcached #{$value.num}</a></th>
+                    <th colspan="2">
+                        <a href="#" onclick="createPopup('_ajax.php?display=cache&popup=stats&server={$key}', 1000, 720);">memcached #{$value.num}</a> 
+                        <span class="widgetRemoveButtons" style="float: right;">
+                            <a href="#" onclick="removeMemcachedServer('{$key}', 'server_{$value.num}')">
+                                <img src="{$PANTHERA_URL}/images/admin/list-remove.png" style="height: 15px;">
+                            </a>
+                        </span>
+                    </th>
                 </tr>
             </thead>
 

@@ -532,19 +532,27 @@ class metaAttributes
         $this->_objectID = $objectID;
         $this->_cache = $cache;
         
+        // check if cache is enabled
         if ($this -> _cache > 0 and $panthera -> cache)
         {
             $this -> _cacheID = 'meta.' .$type. '.' .$objectID;
         
             if ($this->panthera->cache->exists($this->_cacheID))
             {
-                $this->_metas = $this->addFromArray($this->panthera->cache->get($this->_cacheID)); // read from cache if exists
-                $this->panthera->logging->output('Loaded meta from cache id=' .$this->_cacheID, 'metaAttributes');
+                $cache = $this->panthera->cache->get($this->_cacheID);
+
+                if ($cache == null or empty($cache))
+                {
+                    $this->_metas = array();
+                } else {
+                    $this->_metas = $this->addFromArray($cache); // read from cache if exists
+                    $this->panthera->logging->output('Loaded meta from cache id=' .$this->_cacheID, 'metaAttributes');
+                }
             }
         } else
             $panthera -> logging -> output ('Cache disabled for meta type=' .$type. ', objectid=' .$objectID, 'metaAttributes');
-            
-        if ($this->_metas == null)
+                
+        if ($this->_metas === null)
         {
             $SQL = $panthera -> db -> query ('SELECT * FROM `{$db_prefix}metas` WHERE `userid` = :objectID AND `type` = :type', array('objectID' => $objectID, 'type' => $type));
             $Array = $SQL -> fetchAll(PDO::FETCH_ASSOC);

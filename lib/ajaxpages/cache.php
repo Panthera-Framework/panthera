@@ -19,6 +19,11 @@ if (!getUserRightAttribute($panthera->user, 'can_manage_cache')) {
 
 $panthera -> locale -> loadDomain('cache');
 
+/**
+  * Saving cache and varCache settings
+  *
+  * @author Mateusz Warzyński
+  */
 
 if ($_GET['action'] == 'save')
 {
@@ -41,6 +46,67 @@ if ($_GET['action'] == 'save')
         ajax_exit(array('status' => 'success'));
         pa_exit();
     }
+
+/**
+  * Adding new Memcached server
+  *
+  * @author Damian Kęska
+  */    
+
+} elseif ($_GET['action'] == 'addMemcachedServer') {
+
+    if (!extension_loaded('memcached'))
+    {
+        ajax_exit(array('status' => 'failed'));
+    }
+    
+    $m = new Memcached();
+    $m->addServer($_POST['ip'], $_POST['port'], 50);
+    $stats = $m->getStats();
+
+    // configuration
+    $priority = 50; // default priority
+    
+    if (array_key_exists($_POST['ip']. ':' .$_POST['port'], $stats))
+    {
+        // check if connection to server was successful
+        if ($stats[$_POST['ip']. ':' .$_POST['port']]['pid'] == -1)
+            ajax_exit(array('status' => 'failed', 'message' => localize('Server IP or address is invalid', 'cache')));
+
+        $servers = $panthera -> config -> getKey('memcached_servers', array('default' => array('localhost', 11211, 50)), 'array');
+        
+        foreach ($servers as $name => $config)
+        {
+            if ($config[0] == $_POST['ip'] and $config[1] == $_POST['port'])
+            {
+                ajax_exit(array('status' => 'success'));
+            }
+        }
+        
+        if (intval($_POST['priority']) > 0)
+            $priority = intval($_POST['priority']);
+
+        $servers[md5($_POST['ip'].$_POST['port'])] = array($_POST['ip'], $_POST['port'], $priority);
+        $panthera -> config -> setKey('memcached_servers', $servers, 'array');
+        ajax_exit(array('status' => 'success'));
+    }
+    
+    ajax_exit(array('status' => 'failed', 'message' => localize('Server IP or address is invalid', 'cache')));
+
+} elseif ($_GET['action'] == 'removeMemcachedServer') {
+    $servers = $panthera -> config -> getKey('memcached_servers', array('default' => array('localhost', 11211, 50)), 'array');
+    $exp = explode(':', $_POST['server']); 
+       
+    foreach ($servers as $name => $config)
+    {
+        if ($config[0] == $exp[0] and $config[1] == $exp[1])
+        {
+            unset($servers[$name]);            
+        }
+    }
+    
+    $panthera -> config -> setKey('memcached_servers', $servers, 'array');
+    ajax_exit(array('status' => 'success'));
 }
 
 
@@ -136,8 +202,11 @@ if (extension_loaded('apc'))
     $cacheList['apc'] = True;
 
 if (extension_loaded('memcached'))
+{
     $cacheList['memcached'] = True;
-    
+    $panthera -> template -> push('memcacheAvaliable', True);
+}
+   
 $cacheList['db'] = True; // db is always avaliable
 
 // get list of avaliable cache methods from list of declared classes
@@ -154,6 +223,12 @@ foreach (get_declared_classes() as $className)
         }
     }
 }
+
+// check if memcached is used as session save handler
+if (ini_get('session.save_handler') == 'memcached' or ini_get('session.save_handler') == 'mm')
+    $panthera -> template -> push('sessionHandler', ini_get('session.save_handler'));
+else
+    $panthera -> template -> push('sessionHandler', localize('php default, on disk', 'cache'));
 
 // allow plugins modyfing list
 $cacheList = $panthera -> get_filters('cache.list', $cacheList);

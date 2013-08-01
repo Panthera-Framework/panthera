@@ -499,10 +499,10 @@ class varCache_memcached extends pantheraClass
     {
         $var = $this->filterVar($var);
         
-        if ($expire > -1)
-            $this->m->set($var, serialize($value), $expire);
-        else
-            $this->m->set($var, serialize($value), 3600);
+        if(!is_int($expire) or $expire < 1)
+            $expire = 3600;
+            
+        $this->m->set($var, serialize($value), $expire);
             
         return True;
     }
