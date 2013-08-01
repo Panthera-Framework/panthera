@@ -1,0 +1,1 @@
+a:5:{s:16:"Cache management";s:18:"Zarządzanie cache";s:6:"Server";s:6:"Serwer";s:4:"Port";s:4:"Port";s:11:"Server list";s:15:"Lista serwerów";s:20:"Statistics of server";s:18:"Statystyki serwera";}
