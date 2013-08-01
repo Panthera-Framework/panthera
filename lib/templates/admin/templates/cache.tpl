@@ -37,20 +37,13 @@ function saveCacheVariables()
 
             <thead>
                 <tr>
-                    <th scope="col" class="rounded-company" style="width: 250px;">{function="localize('Key')"}</th>
-                    <th colspan="2">{function="localize('Value')"}</th>
+                    <th colspan="2" style="width: 250px;">{function="localize('Set preffered cache methods in to caching slots', 'cache')"}</th>
                 </tr>
             </thead>
 
-            <tfoot>
-                <tr>
-                    <td colspan="2" class="rounded-foot-left"><em>Panthera - {function="localize('Cache management', 'cache')"} <input type="button" value="{function="localize('Save')"}" onclick="saveCacheVariables();" id="save_button" style="float: right; margin-right: 7px;"></em></td>
-                </tr>
-            </tfoot>
-            
             <tbody>
                 <tr>
-                    <td>cache</td>
+                    <td><b>cache</b><br><small>({function="localize('Needs to be really fast, huge amounts of data are stored here. Set only in-memory caching methods here - APC, XCache, Memcached', 'cache')"})</small></td>
                     <td>
                        <select id="cache">
                          {loop="$cache_list"}
@@ -63,12 +56,14 @@ function saveCacheVariables()
                 </tr>
                 
                 <tr>
-                    <td>varCache</td>
+                    <td><b>varCache</b><br><small>({function="localize('Used to store simple variables, this can be a database cache, but if any in-memory cache is avaliable, select it', 'cache')"})</small></td>
                     <td>
                         <select id="varcache">
                           {loop="$cache_list"}
-                             <option {if="$cache == $key"} selected {/if}>{$key}</option>
-                          {/loop}
+                           {if="$value == True"}
+                             <option {if="$varcache == $key"} selected {/if}>{$key}</option>
+                           {/if}
+                         {/loop}
                        </select>
                     </td>
                 </tr>
@@ -76,29 +71,60 @@ function saveCacheVariables()
          </table>
       </div>
       
-    <div class="grid-1">
+    {if="count($memcachedServers) > 0"}
+    
+    {loop="$memcachedServers"}
+    <div class="grid-2" style="width: 46%;">
          <table class="gridTable">
 
             <thead>
                 <tr>
-                    <th scope="col" class="rounded-company">{function="localize('Server', 'cache')"}</th>
-                    <th colspan="2">{function="localize('Port', 'cache')"}</th>
+                    <th colspan="2"><a href="#" onclick="createPopup('_ajax.php?display=cache&popup=stats&server={$key}', 1000, 720);">memcached #{$value.num}</a></th>
                 </tr>
             </thead>
 
-            <tfoot>
-                <tr>
-                    <td colspan="2" class="rounded-foot-left"><em>Panthera - {function="localize('Server list', 'cache')"} </em></td>
-                </tr>
-            </tfoot>
-            
             <tbody>
-              {loop="$servers"}
                 <tr>
-                    <td><a href="#" onclick="createPopup('_ajax.php?display=cache&popup=stats&server={$value.host}&port={$value.port}', 1000, 'server_stats');">{$value.host}</a></td>
-                    <td>{$value.port}</td>
+                    <td>{function="localize('Host', 'cache')"}:</td>
+                    <td><a href="#" onclick="createPopup('_ajax.php?display=cache&popup=stats&server={$key}', 1000, 720);">{$key}, pid: {$value.pid}, {$value.threads} {function="localize('threads', 'cache')"}</a></td>
                 </tr>
-              {/loop}
+                
+                <tr>
+                    <td>{function="localize('Uptime', 'cache')"}:</td>
+                    <td>{$value.uptime}</td>
+                </tr>
+                
+                <tr>
+                    <td>{function="localize('Version', 'cache')"}:</td>
+                    <td>{$value.version}</td>
+                </tr>
+                
+                <tr>
+                    <td>{function="localize('Used memory', 'cache')"}:</td>
+                    <td>{$value.memory_used} / {$value.memory_max}</td>
+                </tr>
+                
+                <tr>
+                    <td>{function="localize('Transferred', 'cache')"}:</td>
+                    <td>{$value.read} {function="localize('read', 'cache')"}, {$value.written} {function="localize('written', 'cache')"}</td>
+                </tr>
+                
+                <tr>
+                    <td>{function="localize('Items', 'cache')"}:</td>
+                    <td>{$value.items_current} {function="localize('current', 'cache')"}, {$value.items_total} {function="localize('total', 'cache')"}</td>
+                </tr>
+                
+                <tr>
+                    <td>{function="localize('Requests', 'cache')"}:</td>
+                    <td>{if="isset($value.readWarning)"}<b style="color: red;">{/if}{$value.get} {function="localize('get', 'cache')"}, {$value.set} {function="localize('set', 'cache')"}{if="isset($value.readWarning)"} (!)</b>{/if}</td>
+                </tr>
+                
+                <tr>
+                    <td>{function="localize('Connections', 'cache')"}:</td>
+                    <td>{$value.connections_current} {function="localize('current', 'cache')"}, {$value.connections_total} {function="localize('total', 'cache')"}</td>
+                </tr>
             </tbody>
          </table>
       </div>
+      {/loop}
+      {/if}
