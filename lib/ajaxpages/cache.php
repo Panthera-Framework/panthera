@@ -29,8 +29,8 @@ if ($_GET['action'] == 'save')
     if (!class_exists('varCache_' .$cache))
         ajax_exit(array('status' => 'failed', 'message' => localize('Cannot find class "varCache_' .$cache. '" for this caching method', 'cache')));
         
-    if (!class_exists('varCache_' .$varCache))
-        ajax_exit(array('status' => 'failed', 'message' => localize('Cannot find class "varCache_' .$varCache. '" for this caching method', 'cache')));
+    if (!class_exists('varCache_' .$varcache))
+        ajax_exit(array('status' => 'failed', 'message' => localize('Cannot find class "varCache_' .$varcache. '" for this caching method', 'cache')));
             
     // set our cache
     if (!$panthera->config->setKey("cache_type", $cache, 'string') OR !$panthera->config->setKey("varcache_type", $varcache, 'string'))

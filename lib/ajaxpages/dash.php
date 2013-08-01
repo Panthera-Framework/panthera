@@ -69,6 +69,7 @@ switch ($_GET['menu'])
         $menu[] = array('link' => '?display=settings&action=users', 'name' => localize('Users'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png', 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=settings&action=my_account', 'name' => localize('My account', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/user.png', 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=database', 'name' => localize('Database management', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/db.png' , 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=cache', 'name' => localize('Cache management', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/cache.png' , 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=leopard', 'name' => localize('Package management', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/package.png' , 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=settings&action=system_info', 'name' => localize('Informations about system', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/system.png', 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=conftool', 'name' => localize('Configuration editor', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/config.png', 'linkType' => 'ajax');

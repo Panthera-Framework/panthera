@@ -22,11 +22,20 @@ function saveCacheVariables()
                    jQuery('#save_button').animate({ height:'toggle'});
                    setTimeout("jQuery('#save_button').removeAttr('disabled');", 2500);
                    setTimeout("jQuery('#save_button').animate({ height:'toggle' });", 2500);
+          } else {
+          
+              if (response.message != undefined)
+              {
+                  w2alert(response.message, '{function="localize('Error', 'localize')"}');
+              }
           }
         }
     });
     return false;
 }
+
+panthera.inputTimeout({ element: '#cache', interval: 1200, callback: saveCacheVariables });
+panthera.inputTimeout({ element: '#varcache', interval: 1200, callback: saveCacheVariables });
 
 </script>
 
