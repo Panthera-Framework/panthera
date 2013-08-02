@@ -406,7 +406,7 @@ h1, h2, h3, h4, h5, h6 {
 		color: white;
 		border-bottom: 1px solid #21282d;
 		border-top: 1px solid #21282d;
-		font: 17px 'Bree Serif', serif;
+		font: 15px Helvetica, Arial, sans-serif;
 		display: block;
 		width: auto;
 		padding-left: 20px;
@@ -564,9 +564,9 @@ h1, h2, h3, h4, h5, h6 {
 		filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#4d565c", endColorStr="#323b41");
 
 		color:#fff;
-		font: 16px 'Bree Serif', serif;
+		font: 15px Helvetica, Arial, sans-serif;
 		display: block;
-		position: relative; /*To help in the anchoring of the ".statusicon" icon image*/
+		position: relative;
 		width: auto;
 		padding-left: 10px;
 		padding-top:12px;
