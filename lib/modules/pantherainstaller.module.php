@@ -29,16 +29,19 @@ class pantheraInstaller
         
         $panthera -> importModule('rwjson');
         
-        if (!is_file(SITE_DIR. '/content/installer.db.json'))
+        if (!is_dir(SITE_DIR. '/content/installer'))
+            mkdir(SITE_DIR. '/content/installer');
+        
+        if (!is_file(SITE_DIR. '/content/installer/db.json'))
         {
-            $fp = fopen(SITE_DIR. '/content/installer.db.json', 'w');
+            $fp = fopen(SITE_DIR. '/content/installer/db.json', 'w');
             fwrite($fp, '');
             fclose($fp);
         }
         
         // temporary database for installer
         $this -> config = (object)json_decode(file_get_contents($index));
-        $this -> db = new writableJSON(SITE_DIR. '/content/installer.db.json');
+        $this -> db = new writableJSON(SITE_DIR. '/content/installer/db.json');
     }
     
 }

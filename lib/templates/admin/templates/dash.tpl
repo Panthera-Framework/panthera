@@ -98,7 +98,7 @@ $(function(){
                 <span class="tooltip">{function="localize('Add new widget', 'dash')"}</span>
                 
                 <div class="contextMenu" style="display: inline;">
-                    <img src="{$PANTHERA_URL}/images/admin/list-add.png" style="height: 20px;" class="field">
+                    <img src="{$PANTHERA_URL}/images/admin/list-add.png" style="height: 20px; margin-right: 5px;" class="field">
                 
 	                <ul class="list" style="left: -300px;">
 	                    <b>{function="localize('Add new widget', 'dash')"}</b>

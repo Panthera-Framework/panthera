@@ -37,6 +37,12 @@ function saveCacheVariables()
     return false;
 }
 
+/**
+  * Remove a Memcached server from list
+  *
+  * @author Damian Kęska
+  */
+
 function removeMemcachedServer(server, divid)
 {
     w2confirm('{function="localize('Are you sure?')"}', '{function="localize('Confirmation')"}', function (response) {

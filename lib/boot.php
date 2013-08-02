@@ -84,7 +84,6 @@ if ($t[0] == "/")
     $t = substr($t, 1, strlen($t));
 
 define('PANTHERA_FRONTCONTROLLER', '/' .$t); // detect front controller
-define('PANTHERA_WEBROOT', $config['webroot']);
 
 // for cli we have set of functions for managing application behavor
 if (PANTHERA_MODE == 'CLI') {

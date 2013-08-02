@@ -781,19 +781,19 @@ class pantheraCore
         // load built-in phpQuery library
         if ($module == 'phpquery')
         {
-            include_once(PANTHERA_DIR. '/share/phpQuery.php');
+            include_once PANTHERA_DIR. '/share/phpQuery.php';
             $this->modules[$module] = True;
         }
 
         if(is_file(PANTHERA_DIR. '/modules/' .$module. '.module.php'))
         {
             $this->logging->output('Importing "' .$module. '" from /lib/modules', 'pantheraCore');
-            include_once(PANTHERA_DIR. '/modules/' .$module. '.module.php');
+            include_once PANTHERA_DIR. '/modules/' .$module. '.module.php';
 
             $this->modules[$module] = True;
         } elseif (is_file(SITE_DIR. '/content/modules/' .$module. '.module.php')) {
             $this->logging->output('Importing "' .$module. '" from /content/modules', 'pantheraCore');
-            include_once(SITE_DIR. '/content/modules/' .$module. '.module.php');
+            include_once SITE_DIR. '/content/modules/' .$module. '.module.php';
 
             $this->modules[$module] = True;
         } else {
@@ -2182,14 +2182,14 @@ function generateRandomString($length = 10, $characters='0123456789abcdefghijklm
 
 function getContentDir($dir)
 {
-    if (file_exists(SITE_DIR.$dir))
-        return SITE_DIR.$dir;
+    if (file_exists(SITE_DIR.'/'.$dir))
+        return SITE_DIR.'/'.$dir;
         
     if (file_exists(SITE_DIR. '/content/'.$dir))
         return SITE_DIR. '/content/'.$dir;
         
-    if (file_exists(PANTHERA_DIR.$dir))
-        return PANTHERA_DIR.$dir;
+    if (file_exists(PANTHERA_DIR. '/'.$dir))
+        return PANTHERA_DIR.'/'.$dir;
 }
 
 /**

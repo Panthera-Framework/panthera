@@ -3,9 +3,7 @@
     <head>
 	    <meta charset="utf-8">
 	    <title>Error - developer informations</title>
-
         <?php include(getContentDir('templates/error.css.php'));?>
-
     </head>
     <body>
         <br><br>

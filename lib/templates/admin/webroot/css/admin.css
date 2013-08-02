@@ -383,6 +383,7 @@ h1, h2, h3, h4, h5, h6 {
 	    -webkit-box-shadow: 1px 2px 10px 1px #272727;
         -moz-box-shadow: 1px 2px 10px 1px #272727;
          box-shadow: 1px 2px 10px 1px #272727;
+        min-height: 700px;
     }
     #container {
 	    width: 100%;
@@ -800,37 +801,37 @@ h1, h2, h3, h4, h5, h6 {
 		float:right;
 	}
 	
-	div > .tooltip, li > .tooltip, a > .tooltip, span > .tooltip {
-	opacity: 0;
-	margin-top: -10px;
-	visibility: hidden;
-	margin-left: -65px;
+	    div > .tooltip, li > .tooltip, a > .tooltip, span > .tooltip {
+	    opacity: 0.9;
+	    margin-top: -10px;
+	    visibility: hidden;
+	    margin-left: -65px;
 
-	-webkit-transition-property:opacity, margin-top, visibility, margin-left;
-	-webkit-transition-duration:0.5s, 0.3s, 0.5s, 0.3s;  
-	-webkit-transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out;
+	    -webkit-transition-property:opacity, margin-top, visibility, margin-left;
+	    -webkit-transition-duration:0.5s, 0.3s, 0.5s, 0.3s;  
+	    -webkit-transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out;
 	
-	-moz-transition-property:opacity, margin-top, visibility, margin-left;
-	-moz-transition-duration:0.5s, 0.3s, 0.5s, 0.3s;  
-	-moz-transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out;
+	    -moz-transition-property:opacity, margin-top, visibility, margin-left;
+	    -moz-transition-duration:0.5s, 0.3s, 0.5s, 0.3s;  
+	    -moz-transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out;
 	
-	-o-transition-property:opacity, margin-top, visibility, margin-left;
-	-o-transition-duration:0.5s, 0.3s, 0.5s, 0.3s;  
-	-o-transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out;
+	    -o-transition-property:opacity, margin-top, visibility, margin-left;
+	    -o-transition-duration:0.5s, 0.3s, 0.5s, 0.3s;  
+	    -o-transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out;
 	
-	transition-property:opacity, margin-top, visibility, margin-left;
-	transition-duration:0.5s, 0.3s, 0.5s, 0.3s;  
-	transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in;
-}
+	    transition-property:opacity, margin-top, visibility, margin-left;
+	    transition-duration:0.5s, 0.3s, 0.5s, 0.3s;  
+	    transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in;
+    }
 
 	div:hover > .tooltip, li:hover > .tooltip, a:hover > .tooltip, span:hover > .tooltip,
 	a .tooltip:hover, span .tooltip:hover, li .tooltip:hover, div .tooltip:hover {
 		opacity: 1;
 		visibility: visible;
 		overflow: visible;
-		margin-top: 30px;
+		margin-top: 35px;
 		display: inline;
-		margin-left: -40px;
+		margin-left: -30px;
 		
 		-webkit-transition-property:opacity, margin-top, visibility, margin-left;
 		-webkit-transition-duration:0.5s, 0.3s, 0.5s, 0.3s;  

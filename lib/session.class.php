@@ -640,8 +640,17 @@ class navigation
         // going back by two records $n-2 record equals url
         //if(self::$history[count(self::$history)-2] == $url)
         //    self::$history = array_slice(self::$history, 0, (count(self::$history)-2));
+        
+        if ($_GET['display'] == 'navigation_history' or substr($_GET['display'], 0, 6) == '_popup')
+            return False;
+        
+        if (array_key_exists('__navigationBack', $_GET))
+        {
+            array_pop(self::$history);
+            return False;
+        }
     
-        if(self::$history[count(self::$history)] != $url)
+        if(end(self::$history) != $url)
         {
             // remove old element to keep buffer in static size
             if (count(self::$history) >= self::$bufferMax)
@@ -688,7 +697,17 @@ class navigation
     
     public static function getBackButton()
     {
-        return end(self::$history);
+        $btn = end(self::$history);
+        
+        if (strpos($btn, '__navigationBack') === False)
+        {
+            if (strpos($btn, '?') === False)
+                $btn .= '?__navigationBack=True';
+            else
+                $btn .= '&__navigationBack=True';
+        }
+        
+        return $btn;
     }
     
     /**
@@ -717,6 +736,8 @@ class navigation
         if ($ajaxExit == False and PANTHERA_MODE == "CGI")
         {
             $url = parse_url($_SERVER['REQUEST_URI']);
+            $url = preg_replace('/\&?\_\=([0-9]+)/', '', $url);
+            
             navigation::appendHistory(substr(PANTHERA_FRONTCONTROLLER, 1, strlen(PANTHERA_FRONTCONTROLLER)). '?' .$url['query']);
             navigation::save();
         }
