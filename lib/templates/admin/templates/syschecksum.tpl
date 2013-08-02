@@ -24,7 +24,7 @@ $(document).ready(function(){
               <tr>
                 <td>{function="localize('Import', 'debug')"}:</td>
                 <td>
-                  <form id="upload_form" action="{$AJAX_URL}?display=syschecksum" method="POST" enctype="multipart/form-data">
+                  <form id="upload_form" action="{$AJAX_URL}?display=syschecksum&cat=admin" method="POST" enctype="multipart/form-data">
                     <input type="file" name="syschecksum"> <input type="submit" value="{function="localize('Import')"}"><br><br>
                     <input type="checkbox" name="show_only_modified" checked="checked" value="1"> {function="localize('Show only modified files', 'debug')"}<br>
                     <input type="radio" name="method" value="sum"> {function="localize('md5 checksum', 'debug')"}<br>
@@ -35,7 +35,7 @@ $(document).ready(function(){
               </tr>
               <tr>
                 <td>{function="localize('Export', 'debug')"}:</td>
-                <td><input type="button" value="{function="localize('Export current data to file', 'debug')"}" onclick="window.location.href='{$AJAX_URL}?display=syschecksum&export&_bypass_x_requested_with'"></td>
+                <td><input type="button" value="{function="localize('Export current data to file', 'debug')"}" onclick="window.location.href='{$AJAX_URL}?display=syschecksum&cat=admin&export&_bypass_x_requested_with'"></td>
               </tr>
           </tbody>
        </table>
@@ -53,7 +53,7 @@ $(document).ready(function(){
             <tfoot>
                 <tr>
                     <td colspan="5" class="rounded-foot-left"><em>Panthera syschecksum
-                    <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_manage_debug', 1024, 'upload_popup');" style="float: right;"></em></td>
+                    <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_manage_debug', 1024, 'upload_popup');" style="float: right;"></em></td>
                 </tr>
             </tfoot>
 

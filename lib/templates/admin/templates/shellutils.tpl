@@ -11,7 +11,7 @@ function executeShellCommand()
 {
     command = jQuery('#command_selection').val();
 
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=shellutils&exec='+command, data: '', messageBox: 'userinfoBox'});
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=shellutils&cat=admin&exec='+command, data: '', messageBox: 'userinfoBox'});
     return false;
 
 }

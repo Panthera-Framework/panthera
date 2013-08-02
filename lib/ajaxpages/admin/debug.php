@@ -109,18 +109,18 @@ if ($_GET['action'] == 'toggle_debug_value')
 
 // list of links (editable via @hook ajaxpages.debug.tools)
 $tools = array();
-$tools[] = array('link' => '?display=settings&action=system_info', 'name' => localize('Informations about system and session'));
-$tools[] = array('link' => '?display=debhook', 'name' => localize('Plugins debugger'));
-$tools[] = array('link' => '?display=includes', 'name' => localize('List of all included files in current code execution'));
-$tools[] = array('link' => '?display=errorpages', 'name' => localize('Test system error pages in one place'));
-$tools[] = array('link' => '?display=syschecksum', 'name' => localize('Checksum of system files'));
-$tools[] = array('link' => '?display=shellutils', 'name' => localize('Shell utils'));
-$tools[] = array('link' => '?display=phpinfo', 'name' => localize('phpinfo'));
-$tools[] = array('link' => '?display=database', 'name' => localize('Database management'));
-$tools[] = array('link' => '?display=dumpinput', 'name' => localize('DumpInput'));
-$tools[] = array('link' => '?display=mergephps', 'name' => ucfirst(localize('merge phps and json arrays', 'dash')));
-$tools[] = array('link' => '?display=ajaxpages', 'name' => localize('Complete list of all ajax avaliable subpages', 'ajaxpages'));
-$tools[] = array('link' => '?display=_popup_jsonedit', 'name' => localize('Array editor', 'debug'));
+$tools[] = array('link' => '?display=settings&cat=admin&action=system_info', 'name' => localize('Informations about system and session'));
+$tools[] = array('link' => '?display=debhook&cat=admin', 'name' => localize('Plugins debugger'));
+$tools[] = array('link' => '?display=includes&cat=admin', 'name' => localize('List of all included files in current code execution'));
+$tools[] = array('link' => '?display=errorpages&cat=admin', 'name' => localize('Test system error pages in one place'));
+$tools[] = array('link' => '?display=syschecksum&cat=admin', 'name' => localize('Checksum of system files'));
+$tools[] = array('link' => '?display=shellutils&cat=admin', 'name' => localize('Shell utils'));
+$tools[] = array('link' => '?display=phpinfo&cat=admin', 'name' => localize('phpinfo'));
+$tools[] = array('link' => '?display=database&cat=admin', 'name' => localize('Database management'));
+$tools[] = array('link' => '?display=dumpinput&cat=admin', 'name' => localize('DumpInput'));
+$tools[] = array('link' => '?display=mergephps&cat=admin', 'name' => ucfirst(localize('merge phps and json arrays', 'dash')));
+$tools[] = array('link' => '?display=ajaxpages&cat=admin', 'name' => localize('Complete list of all ajax avaliable subpages', 'ajaxpages'));
+$tools[] = array('link' => '?display=_popup_jsonedit&cat=admin', 'name' => localize('Array editor', 'debug'));
 $tools = $panthera -> get_filters('ajaxpages.debug.tools', $tools);
 
 // Displaying main debug site
@@ -137,7 +137,7 @@ else
     $panthera -> template -> push('messageFilterType', '');
 
 // example filters
-$exampleFilters = array('pantheraCore', 'pantheraUser', 'pantheraGroup', 'pantheraTemplate', 'pantheraLocale', 'pantheraFetchDB', 'pantheraDB', 'leopard', 'metaAttributes', 'scm');
+$exampleFilters = array('pantheraCore', 'pantheraUser', 'pantheraGroup', 'pantheraTemplate', 'pantheraLogging', 'pantheraLocale', 'pantheraFetchDB', 'pantheraDB', 'leopard', 'metaAttributes', 'scm');
 
 foreach ($panthera->logging->getOutput(True) as $line)
 {

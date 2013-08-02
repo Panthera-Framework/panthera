@@ -26,13 +26,13 @@ $panthera -> importModule('simpleMenu');
 /** Admin Menu **/
 // build a menu
 $menu = new simpleMenu();
-$menu -> add('dash', localize('Dash'), '?display=dash', '', '{$PANTHERA_URL}/images/admin/menu/dashboard.png', '');
+$menu -> add('dash', localize('Dash'), '?display=dash&cat=admin', '', '{$PANTHERA_URL}/images/admin/menu/dashboard.png', '');
 
 // other built-in pages
 if (getUserRightAttribute($panthera->user, 'can_see_debug'))
-    $menu -> add('debug', localize('Debugging center'), '?display=debug', '', '{$PANTHERA_URL}/images/admin/menu/developement.png', '');
+    $menu -> add('debug', localize('Debugging center'), '?display=debug&cat=admin', '', '{$PANTHERA_URL}/images/admin/menu/developement.png', '');
 
-$menu -> add('users', localize('Users'), '?display=settings&action=users', '', '{$PANTHERA_URL}/images/admin/menu/users.png', '');
+$menu -> add('users', localize('Users'), '?display=settings&cat=admin&action=users', '', '{$PANTHERA_URL}/images/admin/menu/users.png', '');
 
 // end of built-in pages
 $menu -> loadFromDB('admin');

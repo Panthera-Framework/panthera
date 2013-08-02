@@ -10,9 +10,9 @@ spinner = new panthera.ajaxLoader($('#langtoolWindow'));
 function createDomain(locale)
 {
     var name = $("#domain_name").val();
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=langtool&action=domains&subaction=add_domain&domain_name='+name+'&locale='+locale, data: '', spinner: spinner, messageBox: 'userinfoBox', success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=langtool&cat=admin&action=domains&subaction=add_domain&domain_name='+name+'&locale='+locale, data: '', spinner: spinner, messageBox: 'userinfoBox', success: function (response) {
             if (response.status == "success")
-                navigateTo('?display=langtool&action=domains&locale='+locale);
+                navigateTo('?display=langtool&cat=admin&action=domains&locale='+locale);
         }
     });
 
@@ -28,9 +28,9 @@ function createDomain(locale)
 function renameDomain(name, locale, n)
 {
     var newname = $("#domain_new_name_"+n).val();
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=langtool&action=domains&subaction=rename_domain&domain_name='+name+'&locale='+locale+'&new_domain_name='+newname, data: '', spinner: spinner, success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=langtool&cat=admin&action=domains&subaction=rename_domain&domain_name='+name+'&locale='+locale+'&new_domain_name='+newname, data: '', spinner: spinner, success: function (response) {
             if (response.status == "success")
-                $("#domain_name_"+n).html('<a href="?display=langtool&action=view_domain&locale='+locale+'&domain='+newname+'.phps">'+newname+'.phps</a>');
+                $("#domain_name_"+n).html('<a href="?display=langtool&cat=admin&action=view_domain&locale='+locale+'&domain='+newname+'.phps">'+newname+'.phps</a>');
                 $("#domain_new_name_"+n).val(newname);
         }
     });
@@ -47,7 +47,7 @@ function renameDomain(name, locale, n)
 
 function removeDomain(name, locale, n)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=langtool&action=domains&subaction=remove_domain&domain_name='+name+'&locale='+locale, data: '', spinner: spinner, success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=langtool&cat=admin&action=domains&subaction=remove_domain&domain_name='+name+'&locale='+locale, data: '', spinner: spinner, success: function (response) {
             if (response.status == "success")
                 jQuery('#domain_row_'+n).remove();
         }
@@ -64,7 +64,7 @@ function removeDomain(name, locale, n)
 
         <div class="grid-1" id="langtoolWindow" style="position: relative;">
 
-          <h1><a onclick="navigateTo('?display=langtool');" href="#">{function="localize('Back')"}</a></h1> <br>
+          <h1><a onclick="navigateTo('?display=langtool&cat=admin');" href="#">{function="localize('Back')"}</a></h1> <br>
 
           <table class="gridTable">
 
@@ -93,7 +93,7 @@ function removeDomain(name, locale, n)
               {$j=$j+1}
                 <tr id="domain_row_{$j}">
                     <td style="width: 1%;"><img src="{$PANTHERA_URL}/images/admin/flags/{$locale}.png"></td>
-                    <td id="domain_name_{$j}"><a href="#" onclick="navigateTo('?display=langtool&action=view_domain&locale={$locale}&domain={$value}');">{$value}</a></td>
+                    <td id="domain_name_{$j}"><a href="#" onclick="navigateTo('?display=langtool&cat=admin&action=view_domain&locale={$locale}&domain={$value}');">{$value}</a></td>
                     <td style="width: 230px;">
                         <input type="text" name="domain_new_name" value="{$value}" id="domain_new_name_{$j}" style="margin-right: 5px;"><input type="button" value="{function="localize('Remove')"}" onclick="removeDomain('{$value}', '{$locale}', '{$j}');">
                     </td>

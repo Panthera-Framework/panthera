@@ -65,22 +65,22 @@ $menu = array();
 switch ($_GET['menu'])
 {
     case 'settings':
-        $menu[] = array('link' => '?display=dash', 'name' => localize('Back'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/home.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=settings&action=users', 'name' => localize('Users'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=settings&action=my_account', 'name' => localize('My account', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/user.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=database', 'name' => localize('Database management', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/db.png' , 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=cache', 'name' => localize('Cache management', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/cache.png' , 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=leopard', 'name' => localize('Package management', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/package.png' , 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=settings&action=system_info', 'name' => localize('Informations about system', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/system.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=conftool', 'name' => localize('Configuration editor', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/config.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=ajaxpages', 'name' => localize('Index of ajax pages', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Actions-tab-detach-icon.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=shellutils', 'name' => localize('Shell utils', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Apps-yakuake-icon.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=errorpages', 'name' => localize('System error pages', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Actions-process-stop-icon.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=menuedit', 'name' => localize('Menu editor', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=locales', 'name' => localize('Language settings', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/locales.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=plugins', 'name' => ucfirst(localize('plugins', 'dash')), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Apps-preferences-plugin-icon.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=templates', 'name' => ucfirst(localize('templates', 'dash')), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Icon-template.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=langtool', 'name' => ucfirst(localize('translates', 'dash')), 'icon' => '{$PANTHERA_URL}/images/admin/menu/langtool.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=dash&cat=admin', 'name' => localize('Back'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/home.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=settings&cat=admin&action=users', 'name' => localize('Users'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=settings&cat=admin&action=my_account', 'name' => localize('My account', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/user.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=database&cat=admin', 'name' => localize('Database management', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/db.png' , 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=cache&cat=admin', 'name' => localize('Cache management', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/cache.png' , 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=leopard&cat=admin', 'name' => localize('Package management', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/package.png' , 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=settings&cat=admin&action=system_info', 'name' => localize('Informations about system', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/system.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=conftool&cat=admin', 'name' => localize('Configuration editor', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/config.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=ajaxpages&cat=admin', 'name' => localize('Index of ajax pages', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Actions-tab-detach-icon.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=shellutils&cat=admin', 'name' => localize('Shell utils', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Apps-yakuake-icon.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=errorpages&cat=admin', 'name' => localize('System error pages', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Actions-process-stop-icon.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=menuedit&cat=admin', 'name' => localize('Menu editor', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=locales&cat=admin', 'name' => localize('Language settings', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/locales.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=plugins&cat=admin', 'name' => ucfirst(localize('plugins', 'dash')), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Apps-preferences-plugin-icon.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=templates&cat=admin', 'name' => ucfirst(localize('templates', 'dash')), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Icon-template.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=langtool&cat=admin', 'name' => ucfirst(localize('translates', 'dash')), 'icon' => '{$PANTHERA_URL}/images/admin/menu/langtool.png', 'linkType' => 'ajax');
     break;
 
     case '':
@@ -88,16 +88,16 @@ switch ($_GET['menu'])
 
         // main menu, there are predefined variables
         $menu[] = array('link' => '{$PANTHERA_URL}', 'name' => localize('Front page', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/home.png');
-        $menu[] = array('link' => '?display=dash&menu=settings', 'name' => localize('Settings', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/settings.png' , 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=debug', 'name' => localize('Debugging center'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/developement.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=settings&action=users', 'name' => localize('Users'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=mailing', 'name' => localize('Mailing', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/mail-replied.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=gallery', 'name' => localize('Gallery'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/gallery.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => 'createPopup(\'_ajax.php?display=upload&popup=true&callback=upload_file_callback\', 1300, 550);', 'name' => localize('Uploads', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/uploads.png', 'linkType' => 'onclick');
-        $menu[] = array('link' => '?display=contact', 'name' => localize('Contact'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/contact.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=custom', 'name' => localize('Custom pages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/custom-pages.png', 'linkType' => 'ajax');
-        //$menu[] = array('link' => '?display=newsletter', 'name' => localize('Newsletter'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Newsletter.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=messages', 'name' => localize('Quick messages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/messages.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=dash&cat=admin&menu=settings', 'name' => localize('Settings', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/settings.png' , 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=debug&cat=admin', 'name' => localize('Debugging center'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/developement.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=settings&cat=admin&action=users', 'name' => localize('Users'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=mailing&cat=admin', 'name' => localize('Mailing', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/mail-replied.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=gallery&cat=admin', 'name' => localize('Gallery'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/gallery.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => 'createPopup(\'_ajax.php?display=upload&cat=admin&popup=true&callback=upload_file_callback\', 1300, 550);', 'name' => localize('Uploads', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/uploads.png', 'linkType' => 'onclick');
+        $menu[] = array('link' => '?display=contact&cat=admin', 'name' => localize('Contact'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/contact.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=custom&cat=admin', 'name' => localize('Custom pages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/custom-pages.png', 'linkType' => 'ajax');
+        //$menu[] = array('link' => '?display=newsletter&cat=admin', 'name' => localize('Newsletter'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Newsletter.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=messages&cat=admin', 'name' => localize('Quick messages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/messages.png', 'linkType' => 'ajax');
         $panthera -> template -> push('showWidgets', True);
     break;
 }

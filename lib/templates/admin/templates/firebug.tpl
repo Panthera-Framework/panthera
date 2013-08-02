@@ -8,9 +8,9 @@ $(document).ready(function () {
       */
 
     $('#addrAddBtn').click(function () {
-        panthera.jsonPOST({ url: '?display=firebugSettings&action=add', data: 'addr='+$('#addr').val(), messageBox: 'msgFirebug', success: function (response) {
+        panthera.jsonPOST({ url: '?display=firebugSettings&cat=admin&action=add', data: 'addr='+$('#addr').val(), messageBox: 'msgFirebug', success: function (response) {
              if (response.status == "success")
-                navigateTo('?display=firebugSettings');
+                navigateTo('?display=firebugSettings&cat=admin');
         }});
 
     });
@@ -25,7 +25,7 @@ $(document).ready(function () {
 
 function removeAddress(address, id)
 {
-    panthera.jsonPOST({ url: '?display=firebugSettings&action=remove', data: 'addr='+address, messageBox: 'msgFirebug', success: function (response) {
+    panthera.jsonPOST({ url: '?display=firebugSettings&cat=admin&action=remove', data: 'addr='+address, messageBox: 'msgFirebug', success: function (response) {
         if (response.status == "success")
             $('#addr_'+id).remove();
 

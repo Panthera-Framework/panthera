@@ -74,7 +74,7 @@ jQuery(document).ready(function($) {
 </script>
 
     <div id="edit_window">
-        <form action="{$AJAX_URL}?id={$custompage_unique}&lang={$custompage_language}&display=custom&action=post_form&pid={$custompage_id}" method="POST" id="save_form">
+        <form action="{$AJAX_URL}?id={$custompage_unique}&lang={$custompage_language}&display=custom&cat=admin&action=post_form&pid={$custompage_id}" method="POST" id="save_form">
         <div class="titlebar">{function="localize('Editing page', 'custompages')"} - <span id="page_title_editor" style="color: black;">"{$custompage_title}"</span> ({$custompage_language}){include="_navigation_panel.tpl"}</div>
 
         <br>
@@ -95,7 +95,7 @@ jQuery(document).ready(function($) {
                 <tbody>
                     {loop="$languages"}
                         <tr>
-                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$key}" onclick="navigateTo('?display=custom&action=edit_page&uid={$custompage_unique}&language={$key}');">{$key}</a></td>
+                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$key}" onclick="navigateTo('?display=custom&cat=admin&action=edit_page&uid={$custompage_unique}&language={$key}');">{$key}</a></td>
                             <td style="width: 60px; padding: 10px; border-right: 0px;"></td>
                         </tr>
                     {/loop}
@@ -165,12 +165,12 @@ jQuery(document).ready(function($) {
                        
                        <tr id="tr_permissions">
                            <td>{function="localize('Permissions', 'custompages')"}:</td>
-                           <td style="border-right: 0px;"><input type="button" value="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_manage_custompage_{$custompage_id}', 1024, 'upload_popup');"></td>
+                           <td style="border-right: 0px;"><input type="button" value="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_manage_custompage_{$custompage_id}', 1024, 'upload_popup');"></td>
                        </tr>
                        
                        <tr id="tr_menu">
                            <td>{function="localize('Menu')"}:</td>
-                           <td style="border-right: 0px;"><input type="button" value="{function="localize('Add to menu', 'menuedit')"}" onclick="createPopup('_ajax.php?display=menuedit&popup=true&action=quickAddFromPopup&link={$custompage_url_id_address}&title={$custompage_title}&language={$custompage_language}', 1024, 550);"></td>
+                           <td style="border-right: 0px;"><input type="button" value="{function="localize('Add to menu', 'menuedit')"}" onclick="createPopup('_ajax.php?display=menuedit&cat=admin&popup=true&action=quickAddFromPopup&link={$custompage_url_id_address}&title={$custompage_title}&language={$custompage_language}', 1024, 550);"></td>
                        </tr>
                        
                        <tr id="tr_save">

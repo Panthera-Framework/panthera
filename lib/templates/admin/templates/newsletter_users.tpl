@@ -5,7 +5,7 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
 function jumpToAjaxPage(id)
 {
     $.ajax({
-            url: '{$AJAX_URL}?display=newsletter_users&action=show_table&nid={$nid}&pagenum='+id,
+            url: '{$AJAX_URL}?display=newsletter_users&cat=admin&action=show_table&nid={$nid}&pagenum='+id,
             data: '',
             async: false,
             success: function (response) { 
@@ -17,7 +17,7 @@ function jumpToAjaxPage(id)
 
 function removeSubscriber(id)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=newsletter_users&nid={$nid}&action=remove_subscriber', data: 'id='+id, success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=newsletter_users&cat=admin&nid={$nid}&action=remove_subscriber', data: 'id='+id, success: function (response) {
             if (response.status == "success")
             {
                 $("#sub_"+id).remove();

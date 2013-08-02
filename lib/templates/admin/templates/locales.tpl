@@ -6,7 +6,7 @@ function localeAction(action, id)
     if (action == "add")
         id = jQuery('#locales_dir').val();
 
-    panthera.htmlPOST({ url: '{$AJAX_URL}?display=locales&action='+action, data: 'id='+id, success: '#locale_window' });
+    panthera.htmlPOST({ url: '{$AJAX_URL}?display=locales&cat=admin&action='+action, data: 'id='+id, success: '#locale_window' });
 }
 
 $(document).ready(function () {
@@ -21,7 +21,7 @@ $(document).ready(function () {
     
         panthera.jsonPOST({ data: '#createNewLanguage', spinner: spinner, async: true, messageBox: 'userinfoBox', success: function (response) {
                 if (response.status == "success")
-                    navigateTo('?display=langtool');    
+                    navigateTo('?display=langtool&cat=admin');    
             }
         });
         
@@ -87,7 +87,7 @@ $(document).ready(function () {
                 <input type="button" value="{function="localize('Add')"}" onclick="localeAction('add', ''); return false;"></td></tr>
             </tr>
             
-            <tr><td>{function="localize('Tools', 'locales')"}:</td><td><input type="button" value="{function="localize('Translations editor', 'langtool')"}" onclick="navigateTo('?display=langtool');"></td></tr>
+            <tr><td>{function="localize('Tools', 'locales')"}:</td><td><input type="button" value="{function="localize('Translations editor', 'langtool')"}" onclick="navigateTo('?display=langtool&cat=admin');"></td></tr>
         </tbody>
         </table>
 
@@ -118,7 +118,7 @@ $(document).ready(function () {
               <table class="insideGridTable">
                 <tbody>
                     <tr>
-                        <form action="?display=langtool&action=createNewLanguage" method="POST" id="createNewLanguage">
+                        <form action="?display=langtool&cat=admin&action=createNewLanguage" method="POST" id="createNewLanguage">
                             <td style="border-bottom: 0px;">{function="localize('Language name', 'langtool')"}<br><small>{function="localize('Single word, eg. polski, english, deutsh', 'langtool')"}</small></td>
                             <td style="border-bottom: 0px; border-right: 0px;"><input type="text" name="languageName"> <input type="submit" value=" {function="localize('Add', 'langtool')"} "></td>
                         </form>

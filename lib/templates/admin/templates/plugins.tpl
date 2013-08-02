@@ -9,9 +9,9 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
 
 function togglePlugin(name, value)
 {
-    panthera.jsonPOST({ url: '?display=plugins&action=toggle&plugin='+name+'&value='+value, messageBox: 'userinfoBox', success: function (response) {
+    panthera.jsonPOST({ url: '?display=plugins&cat=admin&action=toggle&plugin='+name+'&value='+value, messageBox: 'userinfoBox', success: function (response) {
             if (response.status == "success")
-                navigateTo("?display=plugins");
+                navigateTo("?display=plugins&cat=admin");
         }
     });
 

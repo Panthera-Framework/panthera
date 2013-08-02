@@ -39,7 +39,7 @@ function jsonEditSave(responseType)
 
 </script>
 
-<form action="{$AJAX_URL}?display=_popup_jsonedit" method="POST" id="jsonEditForm">
+<form action="{$AJAX_URL}?display=_popup_jsonedit&cat=admin" method="POST" id="jsonEditForm">
 
 <table class="gridTable">
     <thead>

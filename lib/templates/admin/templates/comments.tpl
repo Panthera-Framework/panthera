@@ -25,7 +25,7 @@
             <tbody>
               {foreach from=$items_list key=k item=i}
                 <tr id="comment_row_{$i.id}">
-                    <td><a href="{$AJAX_URL}?display=comments&action=show_comments&cmtid={$k}" class="ajax_link">{$i.title|localize}</a></td>
+                    <td><a href="{$AJAX_URL}?display=comments&cat=admin&action=show_comments&cmtid={$k}" class="ajax_link">{$i.title|localize}</a></td>
                     <td>{$i.author_login}</td>
                     <td>{$i.author_full_name}</td>
                     <td>{$i.mod_time}</td>

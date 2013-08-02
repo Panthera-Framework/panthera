@@ -9,7 +9,7 @@
 $('#add_category_form').submit(function () {
     panthera.jsonPOST({ data: '#add_category_form', messageBox: 'userinfoBox', success: function (response) {
             if (response.status == "success")
-                navigateTo('?display=menuedit');
+                navigateTo('?display=menuedit&cat=admin');
         }
     });
 
@@ -25,7 +25,7 @@ $('#add_category_form').submit(function () {
     <div class="msgError" id="userinfoBox_failed"></div>
 
     <div class="grid-1">
-      <form id="add_category_form" method="POST" action="?display=menuedit&action=add_category">
+      <form id="add_category_form" method="POST" action="?display=menuedit&cat=admin&action=add_category">
         <table class="gridTable">
             <thead>
                   <tr>

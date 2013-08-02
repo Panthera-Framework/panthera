@@ -9,7 +9,7 @@
 
 function synchronizeData()
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=facebook&action=synchronize', data: '', messageBox: 'userinfoBox'});
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=facebook&cat=admin&action=synchronize', data: '', messageBox: 'userinfoBox'});
     return false;
 }
 </script>

@@ -17,7 +17,7 @@ $('#edit_comment_form').submit(function () {
 
     <div class="grid-1">
       <div id="loader_comment" style="position: relative;">
-        <form action="?display=comments&action=save" method="POST" id="edit_comment_form">
+        <form action="?display=comments&cat=admin&action=save" method="POST" id="edit_comment_form">
          <table class="gridTable">
 
           <thead>
@@ -29,7 +29,7 @@ $('#edit_comment_form').submit(function () {
 
           <tfoot>
               <tr>
-                  <td colspan="2" class="rounded-foot-left"><em><input type="button" value="{"Back"|localize:messages}" onclick="navigateTo('?display=comments&action=show_comments&cmtid={$content_id}'); return false;"/> <input type="submit" value="{"Save"|localize:messages}"></em></td>
+                  <td colspan="2" class="rounded-foot-left"><em><input type="button" value="{"Back"|localize:messages}" onclick="navigateTo('?display=comments&cat=admin&action=show_comments&cmtid={$content_id}'); return false;"/> <input type="submit" value="{"Save"|localize:messages}"></em></td>
               </tr>
           </tfoot>
 

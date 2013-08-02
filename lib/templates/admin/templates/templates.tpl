@@ -77,7 +77,7 @@ var localizeUpToDate = "{function="localize('All files are up to date with syste
                         <td style="width: 100px;">{function="ucfirst(localize('cache', 'templates'))"}:</td><td style="border-right: 0px;"><input type="checkbox" id="template_caching" {if="$config.template_caching == True"}checked{/if}></td>
                     </tr>
                     <tr id="template_cache_lifetime_tr" {if="$config.template_caching == False"}style="display: none;"{/if}>
-                        <td>{function="ucfirst(localize('cache lifetime', 'templates'))"}:</td><td style="border-right: 0px;"><input type="text" value="{$config.template_cache_lifetime}" id="template_cache_lifetime"> <input type="button" value="{function="localize('Select', 'templates')"}" onclick="createPopup('_ajax.php?display=_popup_time&type=countSeconds&popup=true&callback=template_cache_lifetime_select', 1024, 'upload_popup');"></td>
+                        <td>{function="ucfirst(localize('cache lifetime', 'templates'))"}:</td><td style="border-right: 0px;"><input type="text" value="{$config.template_cache_lifetime}" id="template_cache_lifetime"> <input type="button" value="{function="localize('Select', 'templates')"}" onclick="createPopup('_ajax.php?display=_popup_time&cat=admin&type=countSeconds&popup=true&callback=template_cache_lifetime_select', 1024, 'upload_popup');"></td>
                     </tr>
                     <tr>
                         <td style="border-bottom: 0px;">{function="ucfirst(localize('debugging', 'templates'))"}: </td><td style="border-bottom: 0px; border-right: 0px;"><input type="checkbox"{if="$config.template_debugging == True"} checked {/if}id="template_debugging"></td>

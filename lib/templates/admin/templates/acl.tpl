@@ -1,7 +1,7 @@
 <script type="text/javascript">
 function removePermission(id, login, k, type)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=acl&popup=true&action=delete', messageBox: 'aclBox', data: 'id='+id+'&login='+login+'&type='+type, success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=acl&cat=admin&popup=true&action=delete', messageBox: 'aclBox', data: 'id='+id+'&login='+login+'&type='+type, success: function (response) {
               if (response.status == "success")
               {
                   if (type == "user")
@@ -21,7 +21,7 @@ function addUser(acl)
     if (login.length < 2)
         return false;
 
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=acl&popup=true&action=add', messageBox: 'aclBox', data: 'login='+login+'&acl='+acl+'&type=user', success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=acl&cat=admin&popup=true&action=add', messageBox: 'aclBox', data: 'login='+login+'&acl='+acl+'&type=user', success: function (response) {
               if (response.status == "success")
               {
                     // \"'+acl+'\", \"'+response.uid+'\", \"'+response.name+'_'+response.uid+'\"
@@ -38,7 +38,7 @@ function addGroup(acl)
     if (login.length < 2)
         return false;
 
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=acl&popup=true&action=add', messageBox: 'aclBox', data: 'login='+login+'&acl='+acl+'&type=group', success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=acl&cat=admin&popup=true&action=add', messageBox: 'aclBox', data: 'login='+login+'&acl='+acl+'&type=group', success: function (response) {
               if (response.status == "success")
               {
                   $('#acl_error').hide();

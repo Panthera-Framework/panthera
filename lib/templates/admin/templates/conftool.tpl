@@ -15,7 +15,7 @@ function saveVariable(id)
     value = $('#value_'+id).val();
     section = $('#section_'+id).val();
 
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&action=change', data: 'id='+id+'&value='+value+'&section='+section, messageBox: 'userinfoBox', spinner: spinner, success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&cat=admin&action=change', data: 'id='+id+'&value='+value+'&section='+section, messageBox: 'userinfoBox', spinner: spinner, success: function (response) {
             if (response.status == "success")
             {
                jQuery('#button_'+id).attr("disabled", "disabled");
@@ -32,7 +32,7 @@ function removeKey(id)
     w2confirm('{function="localize('Are you sure you want to delete this key?', 'conftool')"}', function callbackBtn(btn) { 
         if (btn == "Yes")
         {
-            panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&action=remove', data: 'key='+id, messageBox: 'userinfoBox', spinner: spinner, success: function (response) {
+            panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&cat=admin&action=remove', data: 'key='+id, messageBox: 'userinfoBox', spinner: spinner, success: function (response) {
                     if (response.status == "success")
                     {
                        $('#tr_'+id).remove();
@@ -77,7 +77,7 @@ function conftool_array(k, value)
 
             <tfoot>
                 <tr>
-                    <td colspan="5" class="rounded-foot-left"><em>Panthera - {function="localize('Configuration editor', 'conftool')"} <input type="button" value="{function="localize('Manage permissions')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_update_config_overlay', 1024, 'upload_popup');" style="float: right; margin-right: 7px;"></em></td>
+                    <td colspan="5" class="rounded-foot-left"><em>Panthera - {function="localize('Configuration editor', 'conftool')"} <input type="button" value="{function="localize('Manage permissions')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_update_config_overlay', 1024, 'upload_popup');" style="float: right; margin-right: 7px;"></em></td>
                 </tr>
             </tfoot>
 
@@ -102,7 +102,7 @@ function conftool_array(k, value)
                             
                             {if="$value[0] == 'array'"}
                             <input type="{$type}" value='{$value[1]}' id="value_{$key}" readonly style="width: 80%;">
-                            <input type="button" value="{function="localize('Edit')"}" style="width: 49px;" onclick="createPopup('?display=_popup_jsonedit&popup=True&input={$value['b64']}&output=serialize&callback=conftool_array&callback_arg={$key}', 1024, 550);">
+                            <input type="button" value="{function="localize('Edit')"}" style="width: 49px;" onclick="createPopup('?display=_popup_jsonedit&cat=admin&popup=True&input={$value['b64']}&output=serialize&callback=conftool_array&callback_arg={$key}', 1024, 550);">
                             {else}
                             <input type="{$type}" value='{$value[1]}' id="value_{$key}" style="width: 95%;">
                             {/if}

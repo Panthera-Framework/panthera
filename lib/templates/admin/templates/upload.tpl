@@ -78,7 +78,7 @@ $(document).ready(function(){
             
             fileReader.onload = (function(file) {
                 // upload a single file
-                panthera.jsonPOST({ url: '?display=upload&action=handle_file&popup=true', spinner: uploadProgress, data: { 'image': this.result, 'fileName': fileName.name}});
+                panthera.jsonPOST({ url: '?display=upload&cat=admin&action=handle_file&popup=true', spinner: uploadProgress, data: { 'image': this.result, 'fileName': fileName.name}});
                 
             });
             
@@ -103,7 +103,7 @@ $(document).ready(function(){
       */
     
     panthera.multiuploadArea({ id: '#upload_list_window', callback: function (content, fileName, fileNum, fileCount) {
-            panthera.jsonPOST({ url: '?display=upload&action=handle_file&popup=true', isUploading: true, spinner: uploadProgress, data: { 'image': content, 'fileName': fileName}});
+            panthera.jsonPOST({ url: '?display=upload&cat=admin&action=handle_file&popup=true', isUploading: true, spinner: uploadProgress, data: { 'image': content, 'fileName': fileName}});
             
             // finished
             if (fileNum == fileCount)
@@ -118,7 +118,7 @@ $(document).ready(function(){
         id = $('#file_id').val();
         k = $('#file_k').val();
         
-        panthera.jsonPOST({ url: '?display=upload&popup=true&action=delete', data: 'id='+id, spinner: uploadProgress, success:
+        panthera.jsonPOST({ url: '?display=upload&cat=admin&popup=true&action=delete', data: 'id='+id, spinner: uploadProgress, success:
             function (response) {
                   if (response.status == "success")
                   {
@@ -176,7 +176,7 @@ $(document).ready(function(){
 
 function getUploadsPage(data)
 {
-    panthera.htmlPOST({ url: '?display=upload&popup=true&action=display_list', data: data, spinner: uploadProgress, 'success': '#upload_list'});
+    panthera.htmlPOST({ url: '?display=upload&cat=admin&popup=true&action=display_list', data: data, spinner: uploadProgress, 'success': '#upload_list'});
 }
 </script>
 
@@ -355,7 +355,7 @@ function getUploadsPage(data)
         <div class="msgError" id="uploadSingleFile_failed"></div>
         <div class="msgSuccess" id="uploadSingleFile_success"></div>
 
-        <form action="?display=upload&action=handle_file&popup=true" method="POST" enctype="multipart/form-data" id="upload_form">
+        <form action="?display=upload&cat=admin&action=handle_file&popup=true" method="POST" enctype="multipart/form-data" id="upload_form">
             <table class="gridTable">
                 <thead>
                     <tr><th colspan="5">{function="localize('Upload a new file')"}</th></tr>

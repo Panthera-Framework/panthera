@@ -10,7 +10,7 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
 $('#changelanguage_form').submit(function () {
     panthera.jsonPOST({ data: '#changelanguage_form', messageBox: 'userinfoBox', success: function (response) {
             if (response.status == "success")
-                navigateTo('?display=settings&action=my_account');
+                navigateTo('?display=settings&cat=admin&action=my_account');
         }
     });
 
@@ -41,7 +41,7 @@ $('#changepasswd_form').submit(function () {
 
 function aclModify(id, name)
 {
-    panthera.jsonPOST({ url: '?display=settings&action=my_account{$user_uid}', data: 'aclname='+name+'&value='+$('#'+id).val(), success: function (response) {
+    panthera.jsonPOST({ url: '?display=settings&cat=admin&action=my_account{$user_uid}', data: 'aclname='+name+'&value='+$('#'+id).val(), success: function (response) {
           if (response.status == "success")
           {
           } else {
@@ -85,7 +85,7 @@ function aclModify(id, name)
                   <td>{function="localize('Password', 'settings')"}</td>
                   <td><a href="#" onclick="jQuery('#password_window').slideToggle(); return false;">{function="localize('Change password', 'settings')"}</a> <div id="password_window" style="display: none;">
 
-                <form action="?display=settings&action=my_account&changepassword{$user_uid}" method="POST" id="changepasswd_form">
+                <form action="?display=settings&cat=admin&action=my_account&changepassword{$user_uid}" method="POST" id="changepasswd_form">
                  <table style="width: 400px; border: 0px; font-size: 12px;">
                     <tfoot>
                         <tr>
@@ -128,7 +128,7 @@ function aclModify(id, name)
 
                 <tr>
                   <td>{function="localize('Primary group', 'settings')"}</td>
-                  <td><a href="?display=acl&action=listGroup&group={$primary_group}" class="ajax_link">{$primary_group}</a></td>
+                  <td><a href="?display=acl&cat=admin&action=listGroup&group={$primary_group}" class="ajax_link">{$primary_group}</a></td>
                 </tr>
 
                 <tr>
@@ -142,7 +142,7 @@ function aclModify(id, name)
                     <a href="#" onclick="jQuery('#localize_window').slideToggle(); return false;" id="default_language">{$language|ucfirst}</a>
                     <div id="localize_window" style="display: none;">
 
-                     <form action="?display=settings&action=my_account&changelanguage{$user_uid}" method="POST" id="changelanguage_form">
+                     <form action="?display=settings&cat=admin&action=my_account&changelanguage{$user_uid}" method="POST" id="changelanguage_form">
                        <table style="width: 400px;">
                           <tfoot>
                             <tr>

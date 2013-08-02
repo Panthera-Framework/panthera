@@ -178,7 +178,7 @@ if ($_GET['action'] == 'upload')
     
     }
     
-    $url = '?display=leopard&action=downloadCreatedPackage&id=' .$packageID. '&fileName=' .$packageName. '-' .$package->manifest()->version. '-' .$package->manifest()->release. '.phar&_bypass_x_requested_with=True';
+    $url = '?display=leopard&cat=admin&action=downloadCreatedPackage&id=' .$packageID. '&fileName=' .$packageName. '-' .$package->manifest()->version. '-' .$package->manifest()->release. '.phar&_bypass_x_requested_with=True';
     
     $panthera -> logging -> output ('url=' .$url, 'leopard');
     

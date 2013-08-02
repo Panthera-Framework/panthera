@@ -22,7 +22,7 @@ var spinner = new panthera.ajaxLoader($('#menu_item'));
     <div class="msgError" id="userinfoBox_failed"></div>
 
     <div class="grid-1" style="position: relative;" id="menu_item">
-      <form id="save_form" method="POST" action="?display=menuedit&action=save_item">
+      <form id="save_form" method="POST" action="?display=menuedit&cat=admin&action=save_item">
         <table class="gridTable">
               <thead>
                   <tr>
@@ -33,7 +33,7 @@ var spinner = new panthera.ajaxLoader($('#menu_item'));
               <tfoot>
                   <tr>
                       <td colspan="7" class="rounded-foot-left"><em>Panthera menuedit - {function="localize('Editing item', 'menuedit')"}</em><span>
-                      <input type="submit" value="{function="localize('Save')"}" style="float: right;"> <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=menuedit&action=category&cat={$cat_type}');" style="float: right;">
+                      <input type="submit" value="{function="localize('Save')"}" style="float: right;"> <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=menuedit&cat=admin&action=category&cat={$cat_type}');" style="float: right;">
                   </tr>
               </tfoot>
               <tbody>

@@ -34,7 +34,7 @@ function saveVariable(id)
 {
     value = jQuery('#value_'+id).val();
 
-    panthera.jsonPOST({ url: '?display=conftool&action=change', data: 'id='+id+'&value='+value, messageBox: 'userinfoBox', success: function (response) {
+    panthera.jsonPOST({ url: '?display=conftool&cat=admin&action=change', data: 'id='+id+'&value='+value, messageBox: 'userinfoBox', success: function (response) {
             if (response.status == "success") {
                 jQuery('#button_'+id).attr("disabled", "disabled");
                 jQuery('#button_'+id).animate({ height:'toggle'});
@@ -66,7 +66,7 @@ function saveVariable(id)
 
             <tfoot>
                 <tr>
-                    <td colspan="5" class="rounded-foot-left"><em>Panthera - {function="localize('mailing', 'mailing')"} <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_view_mailing', 1024, 'upload_popup');" style="float: right;">
+                    <td colspan="5" class="rounded-foot-left"><em>Panthera - {function="localize('mailing', 'mailing')"} <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_view_mailing', 1024, 'upload_popup');" style="float: right;">
                     </em></td>
                 </tr>
             </tfoot>
@@ -105,17 +105,17 @@ function saveVariable(id)
                 <tr><th colspan="5"><b>{function="localize('Send an e-mail', 'mailing')"}:</b></th></tr>
              </thead>
 
-            <form action="{$AJAX_URL}?display=mailing&action=send" method="POST" id="mail_form">
+            <form action="{$AJAX_URL}?display=mailing&cat=admin&action=send" method="POST" id="mail_form">
             <tfoot>
                 <tr>
-                    <td colspan="5" class="rounded-foot-left"><em>Panthera - {function="localize('mailing', 'mailing')"} <input type="submit" value="{function="localize('Send', 'mailing')"}" style="float: right;">&nbsp;<input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_send_mails', 1024, 'upload_popup');" style="float: right; margin-right: 7px;">
+                    <td colspan="5" class="rounded-foot-left"><em>Panthera - {function="localize('mailing', 'mailing')"} <input type="submit" value="{function="localize('Send', 'mailing')"}" style="float: right;">&nbsp;<input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_send_mails', 1024, 'upload_popup');" style="float: right; margin-right: 7px;">
                     </em></td>
                 </tr>
             </tfoot>
 
             <tbody>
                <tr><td>{function="localize('Subject', 'mailing')"}:</td><td colspan="2"><input type="text" style="width: 98%;" name="subject" value="{$last_subject}"></td></tr>
-               <tr><td>{function="localize('Recipients', 'mailing')"}:</td><td><input type="text" style="width: 100%;" name="recipients" value="{$last_recipients}"></td><td style="width: 30px;"> <input type="button" value="{function="localize('Select', 'messages')"}" onclick="createPopup('_ajax.php?display=mailing&action=select', 1024, 'upload_popup');"></td></tr>
+               <tr><td>{function="localize('Recipients', 'mailing')"}:</td><td><input type="text" style="width: 100%;" name="recipients" value="{$last_recipients}"></td><td style="width: 30px;"> <input type="button" value="{function="localize('Select', 'messages')"}" onclick="createPopup('_ajax.php?display=mailing&cat=admin&action=select', 1024, 'upload_popup');"></td></tr>
                <tr><td>{function="localize('From', 'mailing')"}:</td><td colspan="2"><input type="text" style="width: 98%;" name="from" value="{$last_from}"></td></tr>
                <tr><td>{function="localize('Content', 'mailing')"}:</td><td colspan="2"><textarea style="width: 98%;" name="body">{$last_body}</textarea></td></tr>
                </form>

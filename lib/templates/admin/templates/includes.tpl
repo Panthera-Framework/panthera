@@ -14,14 +14,14 @@
             <tfoot>
                 <tr>
                     <td colspan="2" class="rounded-foot-left"><em>Panthera - {function="localize('includes', 'includes')"}
-                    <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_see_debug');" style="float: right;"></em></td>
+                    <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_see_debug');" style="float: right;"></em></td>
                 </tr>
             </tfoot>
 
             <tbody>
-                {$back_btn=base64_encode('?display=includes')}
+                {$back_btn=base64_encode('?display=includes&cat=admin')}
                 {loop="$files"}
-                <tr><td><a href="#" onclick="navigateTo('?display=browsefile&path={$value}&back_btn={$back_btn}'); return false;">{$value}</a></td></tr>
+                <tr><td><a href="#" onclick="navigateTo('?display=browsefile&cat=admin&path={$value}&back_btn={$back_btn}'); return false;">{$value}</a></td></tr>
                 {/loop}
             </tbody>
            </table>

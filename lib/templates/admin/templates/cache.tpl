@@ -18,7 +18,7 @@ function saveCacheVariables()
     cache = $('#cache').val();
     varcache = $('#varcache').val();
     
-    panthera.jsonPOST({ url: '?display=cache&action=save', data: 'cache='+cache+'&varcache='+varcache, spinner: spinner, success: function (response) {
+    panthera.jsonPOST({ url: '?display=cache&cat=admin&action=save', data: 'cache='+cache+'&varcache='+varcache, spinner: spinner, success: function (response) {
           if (response.status == "success")
           {
                    jQuery('#save_button').attr("disabled", "disabled");
@@ -51,7 +51,7 @@ function removeMemcachedServer(server, divid)
             return false;
         }
     
-        panthera.jsonPOST( { url: '?display=cache&action=removeMemcachedServer', data: 'server='+server, success: function (response) {
+        panthera.jsonPOST( { url: '?display=cache&cat=admin&action=removeMemcachedServer', data: 'server='+server, success: function (response) {
                 if (response.status == 'success')
                 {
                     $('#'+divid).remove();
@@ -103,7 +103,7 @@ $(document).ready(function () {
         panthera.jsonPOST( { data: '#addMemcachedServer', spinner: addMemcachedServerSpinner, success: function (response) {
                 if (response.status == "success")
                 {
-                    navigateTo('?display=cache');
+                    navigateTo('?display=cache&cat=admin');
                 } else {
                     if (response.message != undefined)
                     {
@@ -181,7 +181,7 @@ $(document).ready(function () {
         <tbody>
             <tr>
                 <td style="text-align: center;">
-                    <form action="?display=cache&action=addMemcachedServer" method="POST" id="addMemcachedServer">
+                    <form action="?display=cache&cat=admin&action=addMemcachedServer" method="POST" id="addMemcachedServer">
                     <input type="text" name="ip" placeholder="{function="localize('address', 'cache')"}"> <input type="text" name="port" placeholder="{function="localize('port', 'cache')"}"> <input type="text" name="priority" placeholder="{function="localize('priority', 'cache')"} ({function="localize('optional', 'cache')"})"> <input type="submit" value="{function="localize('Add')"}">
                     </form>
                 </td>
@@ -216,7 +216,7 @@ $(document).ready(function () {
             <thead>
                 <tr>
                     <th colspan="2">
-                        <a href="#" onclick="createPopup('_ajax.php?display=cache&popup=stats&server={$key}', 1000, 720);">memcached #{$value.num}</a> 
+                        <a href="#" onclick="createPopup('_ajax.php?display=cache&cat=admin&popup=stats&server={$key}', 1000, 720);">memcached #{$value.num}</a> 
                         <span class="widgetRemoveButtons" style="float: right;">
                             <a href="#" onclick="removeMemcachedServer('{$key}', 'server_{$value.num}')">
                                 <img src="{$PANTHERA_URL}/images/admin/list-remove.png" style="height: 15px;">
@@ -229,7 +229,7 @@ $(document).ready(function () {
             <tbody>
                 <tr>
                     <td>{function="localize('Host', 'cache')"}:</td>
-                    <td><a href="#" onclick="createPopup('_ajax.php?display=cache&popup=stats&server={$key}', 1000, 720);">{$key}, pid: {$value.pid}, {$value.threads} {function="localize('threads', 'cache')"}</a></td>
+                    <td><a href="#" onclick="createPopup('_ajax.php?display=cache&cat=admin&popup=stats&server={$key}', 1000, 720);">{$key}, pid: {$value.pid}, {$value.threads} {function="localize('threads', 'cache')"}</a></td>
                 </tr>
                 
                 <tr>

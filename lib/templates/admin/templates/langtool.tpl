@@ -15,7 +15,7 @@
               {loop="$locales"}
                 <tr>
                     <td style="width: 30px;"><img src="{$PANTHERA_URL}/images/admin/flags/{$key}.png"></td>
-                    <td><a href="#" onclick="navigateTo('?display=langtool&action=domains&locale={$key}');">{$key}</a></td>
+                    <td><a href="#" onclick="navigateTo('?display=langtool&cat=admin&action=domains&locale={$key}');">{$key}</a></td>
                     <td>{$value}/{$key}</td>
                 </tr>
               {/loop}
@@ -23,7 +23,7 @@
             
             <tfoot>
                 <tr>
-                    <td colspan="3" class="rounded-foot-left"><em>Panthera - {function="localize('List of available languages', 'langtool')"}<input type="button" value="{function="localize('Locales management', 'langtool')"}" onclick="navigateTo('?display=locales');" style="float: right;"></em></td>
+                    <td colspan="3" class="rounded-foot-left"><em>Panthera - {function="localize('List of available languages', 'langtool')"}<input type="button" value="{function="localize('Locales management', 'langtool')"}" onclick="navigateTo('?display=locales&cat=admin');" style="float: right;"></em></td>
                 </tr>
             </tfoot>
             

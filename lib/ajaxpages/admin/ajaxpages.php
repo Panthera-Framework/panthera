@@ -39,9 +39,9 @@ foreach ($lib as $file)
     $pages[] = array('location' => 'lib', 'name' => $name, 'link' => '?display=' .$name);
 }
 
-$pages[] = array('location' => 'lib', 'name' => 'system_info', 'link' => '?display=settings&action=system_info');
-$pages[] = array('location' => 'lib', 'name' => 'users', 'link' => '?display=settings&action=users');
-$pages[] = array('location' => 'lib', 'name' => 'my_account', 'link' => '?display=settings&action=my_account');
+$pages[] = array('location' => 'lib', 'name' => 'system_info', 'link' => '?display=settings&cat=admin&action=system_info');
+$pages[] = array('location' => 'lib', 'name' => 'users', 'link' => '?display=settings&cat=admin&action=users');
+$pages[] = array('location' => 'lib', 'name' => 'my_account', 'link' => '?display=settings&cat=admin&action=my_account');
 
 foreach ($content as $file)
 {

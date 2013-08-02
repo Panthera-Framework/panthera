@@ -26,6 +26,7 @@ $panthera -> addPermission('can_delete_own_uploads', localize('Can delete own up
 $panthera -> addPermission('can_upload_files', localize('Can upload files', 'messages'));
 $panthera -> addPermission('can_view_qmsg', localize('Can view quick messages', 'messages'));
 $panthera -> addPermission('can_qmsg_manage_all', localize('Can manage all quickMessages elements', 'messages'));
+$panthera -> addPermission('can_access_pa', localize('Can login to admin panel', 'messages'));
 
 // TODO: Support for loading permissions from database (for plugins etc.) with cache support
   

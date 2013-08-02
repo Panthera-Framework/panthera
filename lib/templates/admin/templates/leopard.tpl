@@ -13,7 +13,7 @@ var packageSpinner = new panthera.ajaxLoader($('#packageInfoWindow'));
 
 function managePackage(packageName, type)
 {
-    panthera.jsonPOST({ url: '?display=leopard&action=manage', data: 'package='+packageName+'&job='+type, async: true, spinner: packageSpinner, success: function (response) {
+    panthera.jsonPOST({ url: '?display=leopard&cat=admin&action=manage', data: 'package='+packageName+'&job='+type, async: true, spinner: packageSpinner, success: function (response) {
             $('#consoleLog').html(response.log);
             updatePackagesList(response.packages);
             
@@ -166,7 +166,7 @@ $(document).ready(function () {
 <div class="grid-2" id="buildPackageWindow" style="position: relative;">
       <div class="title-grid">{function="localize('Build package', 'leopard')"}<span></span></div>
       <div class="content-table-grid">
-        <form action="?display=leopard&action=create" method="POST" id="buildPackageForm">
+        <form action="?display=leopard&cat=admin&action=create" method="POST" id="buildPackageForm">
           <table class="insideGridTable">
             <tr>
                 <td>{function="localize('Name', 'leopard')"}:</td><td><input type="text" name="name" style="width: 95%;" value="{$buildName}"></td>
@@ -217,7 +217,7 @@ $(document).ready(function () {
             
             <tr>
                 <td>{function="localize('Select a file', 'leopard')"}:</td>
-                <td><form action="?display=leopard&action=upload" method="POST" enctype="multipart/form-data" id="uploadFileForm"><input type="file" name="packageFile"> <input type="submit" value="{function="localize('Send', 'leopard')"}"></form></td>
+                <td><form action="?display=leopard&cat=admin&action=upload" method="POST" enctype="multipart/form-data" id="uploadFileForm"><input type="file" name="packageFile"> <input type="submit" value="{function="localize('Send', 'leopard')"}"></form></td>
             </tr>
           </table>
       </div>

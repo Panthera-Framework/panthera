@@ -13,7 +13,7 @@
             buttons: [{ value: "{function="localize('Yes', 'messages')"}" }, { value: "{function="localize('No', 'messages')"}" }, { value: "{function="localize('Cancel', 'messages')"}"}],
             success: function (result) { if (result == '{function="localize('Yes')"}') {
 
-                    panthera.jsonGET({ url: '{$AJAX_URL}?display=gallery&action=delete_item&image_id='+id, success: function (response) {
+                    panthera.jsonGET({ url: '{$AJAX_URL}?display=gallery&cat=admin&action=delete_item&image_id='+id, success: function (response) {
                             if (response.status == "success")
                             {
                                 $('#gallery_item_'+id).remove();
@@ -30,7 +30,7 @@
 
     function toggleItemVisibility(id)
     {
-        panthera.jsonGET({ url: '?display=gallery&action=toggle_item_visibility&itid='+id, success: function (response) {
+        panthera.jsonGET({ url: '?display=gallery&cat=admin&action=toggle_item_visibility&itid='+id, success: function (response) {
 
                     if (response.status == "success")
                     {
@@ -48,7 +48,7 @@
 
     function setAsCategoryThumb(id, ctgid)
     {
-        panthera.jsonGET({ 'url': '?display=gallery&action=set_category_thumb&itid='+id+'&ctgid='+ctgid});
+        panthera.jsonGET({ 'url': '?display=gallery&cat=admin&action=set_category_thumb&itid='+id+'&ctgid='+ctgid});
     }
 
     $(document).ready(function () {
@@ -58,7 +58,7 @@
             uploadProgress.ajaxLoaderInit();
 
         }, callback: function (content, fileName, fileNum, fileCount) {
-                panthera.jsonPOST({ url: '?display=upload&action=handle_file&popup=true', isUploading: true, data: { 'image': content, 'fileName': fileName}, success: function (response) {
+                panthera.jsonPOST({ url: '?display=upload&cat=admin&action=handle_file&popup=true', isUploading: true, data: { 'image': content, 'fileName': fileName}, success: function (response) {
                         if (response.status == "success")
                         {
                             multiuploadFiles.push(response.upload_id);
@@ -70,7 +70,7 @@
                 // finished
                 if (fileNum == fileCount)
                 {
-                    panthera.jsonPOST({ url: '?display=gallery&action=adduploads&gid={$category_id}', isUploading: true, data: { 'ids': JSON.stringify(multiuploadFiles) }});
+                    panthera.jsonPOST({ url: '?display=gallery&cat=admin&action=adduploads&gid={$category_id}', isUploading: true, data: { 'ids': JSON.stringify(multiuploadFiles) }});
                     uploadProgress.stop();
                     navigateTo(window.location);
                 }
@@ -90,7 +90,7 @@
                 
                     // refresh the page
                     if (response.status == "success")
-                        setTimeout("navigateTo('?display=gallery&action=display_category&unique="+response.unique+"&language="+response.language+"');", 800);
+                        setTimeout("navigateTo('?display=gallery&cat=admin&action=display_category&unique="+response.unique+"&language="+response.language+"');", 800);
 
                 } 
             });
@@ -134,7 +134,7 @@
                 <tbody>
                     {loop="$languages"}
                         <tr>
-                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$key}" onclick="navigateTo('?display=gallery&action=display_category&unique={$unique}&language={$key}');">{$key}</a></td>
+                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$key}" onclick="navigateTo('?display=gallery&cat=admin&action=display_category&unique={$unique}&language={$key}');">{$key}</a></td>
                             <td style="width: 60px; padding: 10px; border-right: 0px;"></td>
                         </tr>
                     {/loop}
@@ -145,7 +145,7 @@
     {/if}
     
     <!-- settings -->
-    <form action="?display=gallery&action=saveCategoryDetails&id={$galleryObject->id}" method="POST" id="saveCategoryDetails">
+    <form action="?display=gallery&cat=admin&action=saveCategoryDetails&id={$galleryObject->id}" method="POST" id="saveCategoryDetails">
     <div class="grid-{if="$all_langs"}1{else}2{/if}" style="position: relative; margin-bottom: 50px;" id="saveCategoryDetailsDiv">
           <div class="title-grid">{function="localize('Settings')"}<span></span></div>
           <div class="content-table-grid">
@@ -213,10 +213,10 @@
 
         <div class="galleryItemDetails">
             <div style="text-align: center;">
-                <a href="#edit" onclick="navigateTo('?display=gallery&action=edit_item_form&itid={$value->id}');"><img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/Text-x-generic_with_pencil.svg" class="galleryIcon" title="{function="localize('Edit', 'messages')"}"></a>
+                <a href="#edit" onclick="navigateTo('?display=gallery&cat=admin&action=edit_item_form&itid={$value->id}');"><img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/Text-x-generic_with_pencil.svg" class="galleryIcon" title="{function="localize('Edit', 'messages')"}"></a>
                 <a href="#delete" onclick="removeGalleryItem({$value->id});"><img src="{$PANTHERA_URL}/images/admin/menu/Actions-process-stop-icon.png" class="galleryIcon" title="{function="localize('Delete', 'messages')"}"></a>
                 <a href="#toggle-visibility" onclick="toggleItemVisibility({$value->id});"><img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/System-search.svg" class="galleryIcon" title="{function="localize('Toggle visibility', 'gallery')"}"></a>
-                <a href="#rights" onclick="createPopup('_ajax.php?display=acl&popup=true&name=gallery_manage_img_{$value->id}', 1024, 550);"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" class="galleryIcon" title="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton"></a>
+                <a href="#rights" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=gallery_manage_img_{$value->id}', 1024, 550);"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" class="galleryIcon" title="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton"></a>
                 <a href="#thumbnail" onclick="setAsCategoryThumb({$value->id}, {$category_id});"><img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/Image-x-generic.svg" class="galleryIcon" title="{function="localize('Set as thumbnail', 'gallery')"}"></a>
             </div>
         </div>
@@ -225,7 +225,7 @@
     {/loop}
             <div class="galleryItem" style="height: 100px; width: 100px; position: relative; border-radius: 2px;" id="addNewImage" ondragover="return false;">
                 <div class="paGalleryFrameOverlay" style="display: block; border-radius: 2px; opacity: 0.4; -moz-opacity: 0.4; -khtml-opacity: 0.4;">
-                    <a href="#" onclick="navigateTo('?display=gallery&action=add_item&ctgid={$category_id}');"><span class="tooltip">{function="localize('Drag and drop files to this area to start uploading', 'gallery')"}</span><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: absolute; top: 30px; left: 30px; opacity: 0.8;"></a>
+                    <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=add_item&ctgid={$category_id}');"><span class="tooltip">{function="localize('Drag and drop files to this area to start uploading', 'gallery')"}</span><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: absolute; top: 30px; left: 30px; opacity: 0.8;"></a>
                 </div>
             </div>
             {*}            

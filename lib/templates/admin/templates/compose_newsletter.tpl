@@ -19,11 +19,11 @@ jQuery(document).ready(function($) {
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>
 
-        <form id="newsletter_form" action="{$AJAX_URL}?display=compose_newsletter&nid={$nid}" method="POST">
+        <form id="newsletter_form" action="{$AJAX_URL}?display=compose_newsletter&cat=admin&nid={$nid}" method="POST">
         <div class="title-grid">{"Title"|localize}: <input type="text" value="" name="title"><span></span></div>
         <div class="content-gird">
              <textarea name="content" id="content_textarea"></textarea><br><br>
-             <input type="button" value="{"Subscribers"|localize}" onclick="createPopup('?display=newsletter_users&nid={$nid}', 1024);"> <input type="submit" value="{"Send"|localize}">
+             <input type="button" value="{"Subscribers"|localize}" onclick="createPopup('?display=newsletter_users&cat=admin&nid={$nid}', 1024);"> <input type="submit" value="{"Send"|localize}">
         </div>
         </form>
 </div>

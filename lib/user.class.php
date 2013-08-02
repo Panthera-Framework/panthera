@@ -465,6 +465,9 @@ function checkUserPermissions($user, $admin=False)
 
 function getUserRightAttribute($user, $attribute)
 {
+    if (!is_object($user))
+        return False;
+
     // if user has blocked attribute and not a superuser
     if ((string)$user->acl->get($attribute) == '__blocked__' and !$user->attributes->superuser and !$user->acl->get('superuser'))
         return False;

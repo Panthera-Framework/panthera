@@ -16,7 +16,7 @@
 
             <tfoot>
                 <tr>
-                    <td colspan="5" class="rounded-foot-left"><em>Panthera - {function="localize('Connection informations', 'database')"} <input type="button" value="{function="localize('Manage backups', 'database')"}" onclick="navigateTo('?display=sqldump');" style="float: right;">  <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_manage_databases', 1024, 'upload_popup');" style="float: right; margin-right: 7px;">
+                    <td colspan="5" class="rounded-foot-left"><em>Panthera - {function="localize('Connection informations', 'database')"} <input type="button" value="{function="localize('Manage backups', 'database')"}" onclick="navigateTo('?display=sqldump&cat=admin');" style="float: right;">  <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_manage_databases', 1024, 'upload_popup');" style="float: right; margin-right: 7px;">
                     </em></td>
                 </tr>
             </tfoot>

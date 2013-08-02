@@ -29,7 +29,7 @@ $(document).ready(function(){
             <tbody>
               {loop="$categories"}
                 <tr>
-                    <td><a href="{$AJAX_URL}?display=messages&action=display_category&cat={$value.category_name}" class="ajax_link">{$value.title|localize}</a></td>
+                    <td><a href="{$AJAX_URL}?display=messages&cat=admin&action=display_category&cat={$value.category_name}" class="ajax_link">{$value.title|localize}</a></td>
                 </tr>
               {/loop}
             </tbody>

@@ -164,14 +164,16 @@ class pantheraLogging
             if (!array_key_exists($type, $this->filter))
                 return False;
         }
-            
+        
+        $time = microtime();
+        
         if ($this->printOutput == True)
             print($msg. "\n");
             
         // plugins support eg. firebug
         $this->panthera -> get_options('logging.output', $msg);
 
-        $this->_output[] = array($msg, $type);
+        $this->_output[] = array($msg, $type, $time);
 
         return True;
     }
@@ -199,6 +201,8 @@ class pantheraLogging
     {
         if ($array === True)
             return $this->_output;
+            
+        $this->output('Generating output', 'pantheraLogging');
         
         if (PANTHERA_MODE == 'CLI')
         {
@@ -207,12 +211,17 @@ class pantheraLogging
             $defaults = "Client addr(".$_SERVER['REMOTE_ADDR'].") => ".$_SERVER['REQUEST_METHOD']. " ".$_SERVER['REQUEST_URI']."\n";
             
         $msg = '';
+        $lastTime = 0;
         
         // convert output to string
         foreach ($this->_output as $line)
         {
-            $msg .= $line[0]. "\n";
+            $time = microtime_float($line[2])-$_SERVER['REQUEST_TIME_FLOAT'];
+            $msg .= "[".substr($time, 0, 9).", ".substr(($time-$lastTime)*1000, 0, 9)."ms] [".$line[1]."] ".$line[0]. "\n";
+            $lastTime = $time;
         }        
+        
+        $msg .= "[".substr(microtime_float()-$_SERVER['REQUEST_TIME_FLOAT'], 0, 9)."] [pantheraLogging] Done\n";
         
         return $defaults.$msg;
     }

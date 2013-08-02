@@ -25,7 +25,7 @@
         // Add a custom button
         ed.addButton('pantheraUpload', { title : '{"Upload file"|localize}', image : '{$PANTHERA_URL}/images/file-explorer.png', onclick : function() {
                 ed.focus();
-                createPopup('_ajax.php?display=upload&popup=true&callback=mcePantheraInsertFile', 1024, 'upload_popup');
+                createPopup('_ajax.php?display=upload&cat=admin&popup=true&callback=mcePantheraInsertFile', 1024, 'upload_popup');
                 tinyMCE.execInstanceCommand(ed,"mceInsertContent",false,'Test');
             }
         });

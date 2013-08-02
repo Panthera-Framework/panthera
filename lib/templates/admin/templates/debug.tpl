@@ -27,7 +27,7 @@ var spinner = new panthera.ajaxLoader($('#optionsTable'));
 
 function manageFilters(filter)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=debug&action=manageFilterList', data: 'filter='+filter, spinner: spinner, success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=debug&cat=admin&action=manageFilterList', data: 'filter='+filter, spinner: spinner, success: function (response) {
             if(response.status == "success")
             {
                 $('#filterList').html(response.filter);
@@ -44,9 +44,9 @@ function manageFilters(filter)
 
 function toggleDebugValue()
 {
-    panthera.jsonGET({ data: '', url: '?display=debug&action=toggle_debug_value', success: function (response) {
+    panthera.jsonGET({ data: '', url: '?display=debug&cat=admin&action=toggle_debug_value', success: function (response) {
             if (response.status == "success")
-                navigateTo('?display=debug');
+                navigateTo('?display=debug&cat=admin');
         }
     });
 }
@@ -59,7 +59,7 @@ function toggleDebugValue()
 
 function messagesFilterSave()
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=debug&action=setMessagesFilter', data: 'value='+$('#messagesFilter').val(), spinner: spinner});
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=debug&cat=admin&action=setMessagesFilter', data: 'value='+$('#messagesFilter').val(), spinner: spinner});
 }
 
 /**
@@ -70,7 +70,7 @@ function messagesFilterSave()
 
 function saveVariable(id, value)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&action=change', data: 'id='+id+'&value='+value, spinner: spinner});
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&cat=admin&action=change', data: 'id='+id+'&value='+value, spinner: spinner});
     return false;
 
 }

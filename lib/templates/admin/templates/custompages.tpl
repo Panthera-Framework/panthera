@@ -12,7 +12,7 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
 $('#add_page').submit(function () {
     panthera.jsonPOST({ data: '#add_page', messageBox: 'userinfoBox', mce: 'tinymce_all', success: function (response) {
             if (response.status == "success")
-                navigateTo("?display=custom");
+                navigateTo("?display=custom&cat=admin");
         }
     });
 
@@ -29,7 +29,7 @@ $('#add_page').submit(function () {
 
 function removeCustomPage(id)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=custom&action=delete_page&pid='+id, data: '', success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=custom&cat=admin&action=delete_page&pid='+id, data: '', success: function (response) {
             if (response.status == "success")
                 jQuery('#custompage_row_'+id).remove();
         }
@@ -46,7 +46,7 @@ function removeCustomPage(id)
 function getOtherCustomPages()
 {
     value = jQuery('#language').val();
-    navigateTo("?display=custom&lang="+value);
+    navigateTo("?display=custom&cat=admin&lang="+value);
 }
 </script>
 
@@ -82,7 +82,7 @@ function getOtherCustomPages()
             <tbody>
               {loop="$pages_list"}
                 <tr id="custompage_row_{$value.id}">
-                    <td><a href="{$AJAX_URL}?display=custom&action=edit_page&uid={$value.unique}" class="ajax_link">{$value.title|localize}</a></td>
+                    <td><a href="{$AJAX_URL}?display=custom&cat=admin&action=edit_page&uid={$value.unique}" class="ajax_link">{$value.title|localize}</a></td>
                     <td>{$value.created}</td>
                     <td>{$value.modified}</td>
                     <td>{$value.author_name}</td>
@@ -102,7 +102,7 @@ function getOtherCustomPages()
                 </tr>
             </thead>
 
-            <form action="{$AJAX_URL}?display=custom&action=add_page" method="POST" id="add_page">
+            <form action="{$AJAX_URL}?display=custom&cat=admin&action=add_page" method="POST" id="add_page">
             <tbody>
                 <tr id="tr_newCustomPage">
                     <td style="width: 300px;"><input name="title" type="text" value='{function="localize('Title of new custom page', 'custompages')"}' onfocus="this.value = ''" style="margin-right: 15px; width: 290px;"></td>

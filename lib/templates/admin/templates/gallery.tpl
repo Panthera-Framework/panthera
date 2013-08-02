@@ -33,7 +33,7 @@ function editGallery(id, titleOfCategory)
 
 
         $.ajax({
-             url: '{$AJAX_URL}?display=gallery&action=edit_category&ctgid='+id+'&'+v,
+             url: '{$AJAX_URL}?display=gallery&cat=admin&action=edit_category&ctgid='+id+'&'+v,
              data: '',
              async: false,
              success: function (response) {
@@ -97,13 +97,13 @@ function addGallery()
 
 
         $.ajax({
-             url: '{$AJAX_URL}?display=gallery&action=add_category&filter={$category_filter}&'+v,
+             url: '{$AJAX_URL}?display=gallery&cat=admin&action=add_category&filter={$category_filter}&'+v,
              data: '',
              async: false,
              success: function (response) {
 
                   if (response.status == "success") {
-                        navigateTo('?display=gallery&filter={$category_filter}');
+                        navigateTo('?display=gallery&cat=admin&filter={$category_filter}');
                   }
              },
             dataType: 'json'
@@ -140,15 +140,15 @@ function addGallery()
             <tfoot>
             	<tr>
                 	<td colspan="8"><em>{function="localize('Gallery categories', 'gallery')"}<input type="button" value="{function="localize('Add category', 'gallery')"}" style="float: right;" onclick="addGallery();" >
-                    <input type="button" value="{function="localize('View permissions', 'gallery')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_view_galleryItem', 1024, 'upload_popup');" style="float: right;">
-                    <input type="button" value="{function="localize('Edit permissions', 'gallery')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_edit_galleryItem', 1024, 'upload_popup');" style="float: right;"></em></td>
+                    <input type="button" value="{function="localize('View permissions', 'gallery')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_view_galleryItem', 1024, 'upload_popup');" style="float: right;">
+                    <input type="button" value="{function="localize('Edit permissions', 'gallery')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_edit_galleryItem', 1024, 'upload_popup');" style="float: right;"></em></td>
                 </tr>
             </tfoot>
             <tbody>
                 {loop="$category_list"}
                 <tr id="galleryCategory_row_{$value->id}" {if="$value>visibility == 0"} style="background: rgba(172, 172, 172, 0.5);"{/if}>
                   <td><img src="{$value->thumb_url|pantheraUrl}" width="50" height="50"></td>
-                  <td><a href="?display=gallery&action=display_category&unique={$value->unique}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value->id}'>
+                  <td><a href="?display=gallery&cat=admin&action=display_category&unique={$value->unique}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value->id}'>
                         {$value->title}
                       </a></td>
                   <td>{$value->author_login}</td>
@@ -165,7 +165,7 @@ function addGallery()
                   <td>
                       <input type="button" value="{function="localize('Edit', 'messages')"}" onclick="editGallery({$value->id}, '{$value->title|addslashes}');">
                       <input type="button" value="{function="localize('Delete', 'messages')"}" onclick="removeGalleryCategory({$value->id}); return false;">
-                      <input type="button" value="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=gallery_manage_cat_{$value->id}', 1024, 'upload_popup');"></td>
+                      <input type="button" value="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=gallery_manage_cat_{$value->id}', 1024, 'upload_popup');"></td>
                 </tr>
                 {/loop}
             </tbody>
@@ -183,7 +183,7 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
 function toggleGalleryVisibility(id)
 {
     $.ajax({
-            url: '{$AJAX_URL}?display=gallery&action=toggle_gallery_visibility&ctgid='+id,
+            url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggle_gallery_visibility&ctgid='+id,
             data: '',
             async: false,
             success: function (response) {
@@ -218,14 +218,14 @@ function removeGalleryCategory(id)
         buttons: [{ value: "{function="localize('Yes', 'messages')"}" }, { value: "{function="localize('No', 'messages')"}" }, { value: "{function="localize('Cancel', 'messages')"}"}],
         success: function (result) { if (result == '{function="localize('Yes', 'messages')"}') {
                 $.ajax({
-                    url: '{$AJAX_URL}?display=gallery&action=delete_category&id='+id,
+                    url: '{$AJAX_URL}?display=gallery&cat=admin&action=delete_category&id='+id,
                     data: '',
                     async: false,
                     success: function (response) {
 
                         if (response.status == "success")
                         {
-                            navigateTo('?display=gallery&filter={$category_filter}');
+                            navigateTo('?display=gallery&cat=admin&filter={$category_filter}');
                         }
 
                     },

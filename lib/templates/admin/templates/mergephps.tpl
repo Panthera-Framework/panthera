@@ -1,7 +1,7 @@
 <script type="text/javascript">
 $(document).ready(function () {
     panthera.multiuploadArea({ id: '#dragDropHere,#resultWindow', callback: function (content, fileName, fileNum, fileCount) {
-            panthera.jsonPOST({ url: '?display=mergephps&action=upload', data: { 'file': content, 'fileName': fileName}, success: function (response) {
+            panthera.jsonPOST({ url: '?display=mergephps&cat=admin&action=upload', data: { 'file': content, 'fileName': fileName}, success: function (response) {
                     if (response.html)
                     {
                         $('#resultGrid').val(response.html);
@@ -41,7 +41,7 @@ function regenerateFileList(files)
 
 function removePHPSFile(id)
 {
-    panthera.jsonPOST({ url: '?display=mergephps&action=removeFile', data: { 'fileName': id }, success: function (response) {
+    panthera.jsonPOST({ url: '?display=mergephps&cat=admin&action=removeFile', data: { 'fileName': id }, success: function (response) {
             if (response.files)
             {
                 $('#resultGrid').val(response.html);
@@ -61,7 +61,7 @@ function removePHPSFile(id)
 
 function changeOutputType(name)
 {
-    panthera.jsonPOST({ url: '?display=mergephps&action=outputType', data: { 'type': name }, success: function (response) {
+    panthera.jsonPOST({ url: '?display=mergephps&cat=admin&action=outputType', data: { 'type': name }, success: function (response) {
             if (response.files)
             {
                 $('#resultGrid').val(response.html);

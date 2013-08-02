@@ -9,7 +9,7 @@
 $('#add_item_form').submit(function () {
     panthera.jsonPOST({ data: '#add_item_form', messageBox: 'userinfoBox', success: function (response) {
             if (response.status == "success")
-                navigateTo('?display=menuedit&action=category&cat='+jQuery('#cat_type').val());
+                navigateTo('?display=menuedit&cat=admin&action=category&cat='+jQuery('#cat_type').val());
         }
     });
 
@@ -24,7 +24,7 @@ $('#add_item_form').submit(function () {
     <div class="msgError" id="userinfoBox_failed"></div>
 
     <div class="grid-1">
-      <form id="add_item_form" method="POST" action="?display=menuedit&action=add_item">
+      <form id="add_item_form" method="POST" action="?display=menuedit&cat=admin&action=add_item">
        <table class="gridTable">
         <thead>
             <tr>
@@ -37,7 +37,7 @@ $('#add_item_form').submit(function () {
             <tr>
                 <td colspan="7" class="rounded-foot-left"><em>Panthera menuedit - {function="localize('Adding item', 'menuedit')"}</em><span>
                 <div style="float: right;">
-                    <input type="submit" value="{function="localize('Save', 'messages')"}" style="float: right;"> <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=menuedit&action=category&cat={$cat_type}');">
+                    <input type="submit" value="{function="localize('Save', 'messages')"}" style="float: right;"> <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=menuedit&cat=admin&action=category&cat={$cat_type}');">
                 </div>
             </tr>
         </tfoot>

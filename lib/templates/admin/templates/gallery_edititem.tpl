@@ -3,10 +3,10 @@ var progress = new panthera.ajaxLoader($('#change_item_form'));
 
 $(document).ready(function () {
     $("#change_item_form").submit(function () {
-        panthera.jsonPOST({ data: '#change_item_form', async: true, url: '{$AJAX_URL}?display=gallery&action=edit_item_form&subaction=edit_item&id={$id}', messageBox: 'userinfoBox', spinner: progress,
+        panthera.jsonPOST({ data: '#change_item_form', async: true, url: '{$AJAX_URL}?display=gallery&cat=admin&action=edit_item_form&subaction=edit_item&id={$id}', messageBox: 'userinfoBox', spinner: progress,
             success: function (response) {
                 if (response.status == "success")
-                    navigateTo('{$AJAX_URL}?display=gallery&action=display_category&unique={$unique}&language={$language}');
+                    navigateTo('{$AJAX_URL}?display=gallery&cat=admin&action=display_category&unique={$unique}&language={$language}');
             }
         });
 
@@ -73,7 +73,7 @@ sliderChangeImage('{$link}');
   <div class="msgSuccess" id="userinfoBox_success"></div>
   <div class="msgError" id="userinfoBox_failed"></div>
 
- <form action="?display=gallery&action=edit_item_form&subaction=edit_item&id={$id}" method="POST" id="change_item_form">
+ <form action="?display=gallery&cat=admin&action=edit_item_form&subaction=edit_item&id={$id}" method="POST" id="change_item_form">
   <table class="gridTable">
 
     <thead>
@@ -84,7 +84,7 @@ sliderChangeImage('{$link}');
 
     <tfoot>
         <tr>
-            <td colspan="2"><em><input type="button" value="{function="localize('Back', 'messages')"}" onclick="navigateTo('?display=gallery&action=display_category&unique={$unique}'); return false;"/> <input type="submit" value="{function="localize('Save', 'messages')"}"></em></td>
+            <td colspan="2"><em><input type="button" value="{function="localize('Back', 'messages')"}" onclick="navigateTo('?display=gallery&cat=admin&action=display_category&unique={$unique}'); return false;"/> <input type="submit" value="{function="localize('Save', 'messages')"}"></em></td>
         </tr>
     </tfoot>
 
@@ -101,7 +101,7 @@ sliderChangeImage('{$link}');
 
         <tr>
             <td>{function="localize('File', 'gallery')"}</td>
-            <td><input type="text" name="link" value="{$link}" style="width: 500px;" id="upload_file" disabled> <input type="button" value="{function="localize('Upload file', 'gallery')"}" onclick="createPopup('_ajax.php?display=upload&popup=true&callback=upload_file_callback', 1300, 550);"><input type="hidden" name="upload_id" id="upload_id" value="{$upload_id}"></td>
+            <td><input type="text" name="link" value="{$link}" style="width: 500px;" id="upload_file" disabled> <input type="button" value="{function="localize('Upload file', 'gallery')"}" onclick="createPopup('_ajax.php?display=upload&cat=admin&popup=true&callback=upload_file_callback', 1300, 550);"><input type="hidden" name="upload_id" id="upload_id" value="{$upload_id}"></td>
         </tr>
 
         <tr>

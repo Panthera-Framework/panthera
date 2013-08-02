@@ -11,9 +11,9 @@ $(document).ready(function(){
 
 function removeMenuCategory(id)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=menuedit&action=remove_category&category_id='+id, data: '', messageBox: 'userinfoBox', success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=menuedit&cat=admin&action=remove_category&category_id='+id, data: '', messageBox: 'userinfoBox', success: function (response) {
             if (response.status == "success")
-                navigateTo('?display=menuedit');
+                navigateTo('?display=menuedit&cat=admin');
         }
     });
     return false;
@@ -41,7 +41,7 @@ function removeMenuCategory(id)
           <tfoot>
               <tr>
                   <td colspan="5" class="rounded-foot-left"><em>Panthera menuedit - {function="localize('List of categories', 'menuedit')"}</em>
-                       <input type="button" value="{function="localize('Add new menu category', 'menuedit')"}" style="float: right;" onclick="navigateTo('?display=menuedit&action=new_category')">
+                       <input type="button" value="{function="localize('Add new menu category', 'menuedit')"}" style="float: right;" onclick="navigateTo('?display=menuedit&cat=admin&action=new_category')">
                   </td>
               </tr>
           </tfoot>
@@ -49,7 +49,7 @@ function removeMenuCategory(id)
           <tbody>
             {loop="$menu_categories"}
               <tr id="category_{$value.id}">
-                  <td><a href="{$AJAX_URL}?display=menuedit&action=category&cat={$value.name}" class="ajax_link">{$value.name}</a></td>
+                  <td><a href="{$AJAX_URL}?display=menuedit&cat=admin&action=category&cat={$value.name}" class="ajax_link">{$value.name}</a></td>
                   <td>{$value.title}</td>
                   <td>{$value.description}</td>
                   <td>{$value.elements}</td>

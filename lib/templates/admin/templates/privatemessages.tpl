@@ -42,7 +42,7 @@ $('#send_message').submit(function () {
     panthera.jsonPOST( { data: '#send_message', success: function (response) {
             if (response.status == "success")
             {
-                navigateTo('?display=privatemessages');
+                navigateTo('?display=privatemessages&cat=admin');
                 jQuery("#new_pmessage").hide();
                 jQuery("#fade").hide();
             } else {
@@ -75,7 +75,7 @@ $('#send_message').submit(function () {
         <li class="error" style="display: none;" id="message_error"></li>
       </ul>
       <div id="message_window">
-       <form action="?display=privatemessages&action=send_message" method="POST" id="send_message">
+       <form action="?display=privatemessages&cat=admin&action=send_message" method="POST" id="send_message">
           <h1><input type="text" name="title" value="{"Title"|localize:pmessages}"></h1>
           <textarea name="content" id="message_content"></textarea>
             <br><br>
@@ -105,7 +105,7 @@ function removeSentPrivateMessage(id)
         success: function (result) {
             if (result == "{"Yes"|localize:messages}") {
                 $.ajax({
-                    url: '{$AJAX_URL}?display=privatemessages&action=remove_message_sent&messageid='+id,
+                    url: '{$AJAX_URL}?display=privatemessages&cat=admin&action=remove_message_sent&messageid='+id,
                     data: '',
                     async: false,
                     success: function (response) { 
@@ -135,7 +135,7 @@ function removeReceivedPrivateMessage(id)
         success: function (result) {
             if (result == "{"Yes"|localize:messages}") {
                 $.ajax({
-                    url: '{$AJAX_URL}?display=privatemessages&action=remove_message_received&messageid='+id,
+                    url: '{$AJAX_URL}?display=privatemessages&cat=admin&action=remove_message_received&messageid='+id,
                     data: '',
                     async: false,
                     success: function (response) { 
@@ -175,7 +175,7 @@ jQuery(document).ready(function($) {
 
 <article>
     <div class="text-section">
-       <h1 style="cursor: hand; cursor: pointer;" onclick="createPopup('_ajax.php?display=privatemessages&action=new_message', 900, 'new_pmessage')">{"Send new message"|localize:pmessages}</h1>
+       <h1 style="cursor: hand; cursor: pointer;" onclick="createPopup('_ajax.php?display=privatemessages&cat=admin&action=new_message', 900, 'new_pmessage')">{"Send new message"|localize:pmessages}</h1>
        <h1 id="inbox_window_trigger" style="cursor: hand; cursor: pointer;">{"Inbox"|localize:pmessages}</h1>
         <div id="inbox" style="display: none;">
          <table id="rounded-corner" summary="" style="width: 95%;">
@@ -197,7 +197,7 @@ jQuery(document).ready(function($) {
             {foreach from=$pmessages_list_received key=k item=i}
               {if $i->visibility_recipient eq 1}
                 <tr id="message_row_received_{$i->id}">
-                	<td><a onclick="createPopup('_ajax.php?display=privatemessages&action=show_message&messageid={$i->id}', 900, 'show_pmessage')" style="cursor: hand; cursor: pointer;">{$i->title}</a></td>
+                	<td><a onclick="createPopup('_ajax.php?display=privatemessages&cat=admin&action=show_message&messageid={$i->id}', 900, 'show_pmessage')" style="cursor: hand; cursor: pointer;">{$i->title}</a></td>
                 	<td>{$i->sender}</td>
                   <td>{$i->sent}</td>
                   <td><input type="button" value="{"Remove"|localize:pmessages}" onclick="removeReceivedPrivateMessage({$i->id})"></td>
@@ -229,7 +229,7 @@ jQuery(document).ready(function($) {
             {foreach from=$pmessages_list_sent key=k item=i}
               {if $i->visibility_sender eq 1}
                 <tr id="message_row_sent_{$i->id}">
-                	<td><a onclick="createPopup('_ajax.php?display=privatemessages&action=show_message&messageid={$i->id}', 900, 'show_pmessage')" style="cursor: hand; cursor: pointer;">{$i->title}</a></td>
+                	<td><a onclick="createPopup('_ajax.php?display=privatemessages&cat=admin&action=show_message&messageid={$i->id}', 900, 'show_pmessage')" style="cursor: hand; cursor: pointer;">{$i->title}</a></td>
                 	<td>{$i->recipient}</td>
                   <td>{$i->sent}</td>
                   <td><input type="button" value="{"Remove"|localize:pmessages}" onclick="removeSentPrivateMessage({$i->id})"></td>

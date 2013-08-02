@@ -103,7 +103,7 @@ jQuery(document).ready(function() {
                 <tbody>
                     {loop="$languages"}
                         <tr>
-                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$key}" onclick="navigateTo('?display=contact&language={$key}');">{$key}</a></td>
+                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$key}" onclick="navigateTo('?display=contact&cat=admin&language={$key}');">{$key}</a></td>
                             <td style="width: 60px; padding: 10px; border-right: 0px;"></td>
                         </tr>
                     {/loop}
@@ -117,7 +117,7 @@ jQuery(document).ready(function() {
                <div class="title-grid">{function="localize('Map', 'contactpage')"}</div>
 
                <div class="content-gird">
-                    <form action="?display=contact&action=save" method="GET" id="map_form">{function="localize('Search', 'contactpage')"}: <input type="text" value="" id="map_searchbox" style="width:300px;height:25px; font-size:15px;"></form>
+                    <form action="?display=contact&cat=admin&action=save" method="GET" id="map_form">{function="localize('Search', 'contactpage')"}: <input type="text" value="" id="map_searchbox" style="width:300px;height:25px; font-size:15px;"></form>
                     <div id="map" style="width: 100%; height: 300px; margin-top: 10px;"></div>
                </div>
        </div>
@@ -125,7 +125,7 @@ jQuery(document).ready(function() {
 
        <br>
 
-        <form action="?display=contact&action=save" method="GET" id="contact_form">
+        <form action="?display=contact&cat=admin&action=save" method="GET" id="contact_form">
          <div class="grid-1">
 	      	 <div class="title-grid">{function="localize('Contact page text', 'contactpage')"}</div>
 	      	 <div class="content-gird" style="padding: 0px;">
@@ -165,7 +165,7 @@ jQuery(document).ready(function() {
                             <tr>
                                 <td style="border-bottom: 0px; border-right: 0px;">&nbsp;</td>
                                 <td style="border-bottom: 0px; border-right: 0px;">
-                                    <div style="float: right;"><input type="button" value="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_edit_contact', 1024, 'upload_popup');"> <input type="submit" value="{function="localize('Save')"}"></div>
+                                    <div style="float: right;"><input type="button" value="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_edit_contact', 1024, 'upload_popup');"> <input type="submit" value="{function="localize('Save')"}"></div>
                                 </td>
                             </tr>
                         </tbody>

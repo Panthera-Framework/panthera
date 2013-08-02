@@ -23,7 +23,7 @@ $('#add_item_form').submit(function () {
     <div class="msgError" id="menuInfoBox_failed"></div>
 
     <div class="grid-1">
-      <form id="add_item_form" method="POST" action="?display=menuedit&action=add_item">
+      <form id="add_item_form" method="POST" action="?display=menuedit&cat=admin&action=add_item">
        <table class="gridTable">
         <thead>
             <tr>

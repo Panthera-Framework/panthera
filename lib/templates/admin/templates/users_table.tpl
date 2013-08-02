@@ -29,9 +29,9 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
         <tbody>
         {loop="$users_list"}
             <tr>
-                <td>{if="$view_users == True"}<a href='?display=settings&action=my_account&uid={$value.id}' class='ajax_link'>{$value.login}</a>{else}{$value.login}{/if}</td>
+                <td>{if="$view_users == True"}<a href='?display=settings&cat=admin&action=my_account&uid={$value.id}' class='ajax_link'>{$value.login}</a>{else}{$value.login}{/if}</td>
                 <td>{$value.full_name}</td>
-                <td><a href="?display=acl&action=listGroup&group={$value.primary_group}" class="ajax_link">{$value.primary_group}</a></td>
+                <td><a href="?display=acl&cat=admin&action=listGroup&group={$value.primary_group}" class="ajax_link">{$value.primary_group}</a></td>
                 <td>{$value.joined}</td>
                 <td>{$value.language|ucfirst}</td>
             </tr>

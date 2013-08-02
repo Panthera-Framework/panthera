@@ -31,7 +31,7 @@ function saveGroupAttribute(key, groupName, action)
     
     data += '&key='+key;
     
-    panthera.jsonPOST({ url: '?display=acl&action=groupMetaSave', data: data, spinner: metaSpinner, success: function (response) {
+    panthera.jsonPOST({ url: '?display=acl&cat=admin&action=groupMetaSave', data: data, spinner: metaSpinner, success: function (response) {
             if (response.status == "success")
             {
                 if (action == 'remove')
@@ -100,7 +100,7 @@ function saveGroupUser(action, group, user)
     if (user.length < 2)
         return false;
 
-    panthera.jsonPOST({ url: '?display=acl&action=groupUsers', data: 'user='+user+'&subaction='+action+'&group='+group, spinner: userSpinner, success: function (response) {
+    panthera.jsonPOST({ url: '?display=acl&cat=admin&action=groupUsers', data: 'user='+user+'&subaction='+action+'&group='+group, spinner: userSpinner, success: function (response) {
             if (response.status == "success")
             {
                 // rebuild list of meta tags

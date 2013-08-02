@@ -9,7 +9,7 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
 
 function jumpToAjaxPage(id)
 {
-    panthera.htmlGET({ url: '?display=settings&action=users&subaction=show_table&usersPage='+id, success: '#usersDiv' });
+    panthera.htmlGET({ url: '?display=settings&cat=admin&action=users&subaction=show_table&usersPage='+id, success: '#usersDiv' });
 }
 
 var groupSpinner = new panthera.ajaxLoader($('#groupTable'));
@@ -29,7 +29,7 @@ $(document).ready(function () {
                 if (response.status == "success")
                 {
                     //$('.groupTableItem').remove();
-                    $('#groupTableBody').prepend('<tr id="group_'+response.name+'" class="groupTableItem"><td><a href="?display=acl&action=listGroup&group='+response.name+'" class="ajax_link">'+response.name+'</a></td><td>'+response.description+'</td><td><input type="button" value="{function="localize('Remove', 'acl')"}" onclick="removeGroup(\''+response.name+'\');"></td>');
+                    $('#groupTableBody').prepend('<tr id="group_'+response.name+'" class="groupTableItem"><td><a href="?display=acl&cat=admin&action=listGroup&group='+response.name+'" class="ajax_link">'+response.name+'</a></td><td>'+response.description+'</td><td><input type="button" value="{function="localize('Remove', 'acl')"}" onclick="removeGroup(\''+response.name+'\');"></td>');
                 } else {
                     if (response.message != undefined)
                     {
@@ -54,7 +54,7 @@ function removeGroup(name)
     w2confirm('{function="localize('Are you sure you want delete this group?', 'acl')"}', function (responseText) {
         if (responseText == 'Yes')
         {
-            panthera.jsonPOST( { url: '?display=settings&action=removeGroup', data: 'group='+name, spinner: groupSpinner, success: function (response) {
+            panthera.jsonPOST( { url: '?display=settings&cat=admin&action=removeGroup', data: 'group='+name, spinner: groupSpinner, success: function (response) {
                 
                     if (response.status == "success")
                         $('#group_'+response.name).remove();
@@ -87,13 +87,13 @@ function removeGroup(name)
             <tbody id="groupTableBody">
             {loop="$groups"}
                 <tr id="group_{$value.name}" class="groupTableItem">
-                    <td><a href="?display=acl&action=listGroup&group={$value.name}" class="ajax_link">{$value.name}</a></td>
+                    <td><a href="?display=acl&cat=admin&action=listGroup&group={$value.name}" class="ajax_link">{$value.name}</a></td>
                     <td>{$value.description}</td>
                     <td><input type="button" value="{function="localize('Remove', 'acl')"}" onclick="removeGroup('{$value.name}');"></td>
                 </tr>
             {/loop}
             
-                <form action="?display=settings&action=createGroup" method="POST" id="createGroupForm">
+                <form action="?display=settings&cat=admin&action=createGroup" method="POST" id="createGroupForm">
                 <tr id="groupsAddTr" style="display: none;">
                     <td><input type="text" name="name" style="width: 95%;"></td><td><input type="text" name="description" style="width: 95%;"></td><td><input type="submit" value="{function="localize('Add new group', 'acl')"}"></td>
                 </tr>

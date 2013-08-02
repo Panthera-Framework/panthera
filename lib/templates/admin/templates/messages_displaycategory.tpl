@@ -9,7 +9,7 @@
 
 function jumpToAjaxPage(id)
 {
-    panthera.jsonGET({ url: '{$AJAX_URL}?display=messages&action=display_category&language={$language}&type=ajax&cat={$category_name}&page='+id, data: '', success: function (response) {
+    panthera.jsonGET({ url: '{$AJAX_URL}?display=messages&cat=admin&action=display_category&language={$language}&type=ajax&cat={$category_name}&page='+id, data: '', success: function (response) {
     
             $('#all_messages_window').html('');
     
@@ -21,7 +21,7 @@ function jumpToAjaxPage(id)
                 if (i.icon != undefined && i.icon != "")
                     icon = '<img src="'+i.icon+'" class="quickMsgIcon">';
                
-                $('#all_messages_window').append('<tr><tr id="msg_'+i.id+'_row"><td style="width: 28px;">'+i.id+'</td><td style="width: 60px;">'+icon+'</td><td id="msg_'+i.id+'_title"><a href="#" onclick="editMessage('+i.id+'); return false;">'+i.title+'</a></td><td>'+i.author_login+'</td><td id="msg_'+i.id+'_mod_time">'+i.mod_time+'</td><td id="msg_'+i.id+'_visibility">'+i.visibility+'</td><td><input type="button" value="{function="localize('Delete', 'messages')"}" onclick="deleteMessage('+i.id+'); return false;"> <input type="button" value="{function="localize('Edit', 'qmessages')"}" onclick="editMessage('+i.id+'); return false;"> <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup(\'_ajax.php?display=acl&popup=true&name=can_qmsg_edit_'+i.id+'\', 1024, 550);"></td></tr>');
+                $('#all_messages_window').append('<tr><tr id="msg_'+i.id+'_row"><td style="width: 28px;">'+i.id+'</td><td style="width: 60px;">'+icon+'</td><td id="msg_'+i.id+'_title"><a href="#" onclick="editMessage('+i.id+'); return false;">'+i.title+'</a></td><td>'+i.author_login+'</td><td id="msg_'+i.id+'_mod_time">'+i.mod_time+'</td><td id="msg_'+i.id+'_visibility">'+i.visibility+'</td><td><input type="button" value="{function="localize('Delete', 'messages')"}" onclick="deleteMessage('+i.id+'); return false;"> <input type="button" value="{function="localize('Edit', 'qmessages')"}" onclick="editMessage('+i.id+'); return false;"> <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup(\'_ajax.php?display=acl&cat=admin&popup=true&name=can_qmsg_edit_'+i.id+'\', 1024, 550);"></td></tr>');
             }
         }
     });
@@ -38,7 +38,7 @@ var windowLocks = new Array();
 
 function editMessage(id)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=messages&action=get_msg&language={$language}&msgid='+id, data: '', success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=messages&cat=admin&action=get_msg&language={$language}&msgid='+id, data: '', success: function (response) {
             if (response.status == "success") {
                 $('#edit_msg_title').val(response.title);
                 $('#edit_msg_id').val(response.id);
@@ -74,7 +74,7 @@ function editMessage(id)
 
 function deleteMessage(id)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=messages&action=remove_msg&msgid='+id, data: '', messageBox: 'userinfoBox', success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=messages&cat=admin&action=remove_msg&msgid='+id, data: '', messageBox: 'userinfoBox', success: function (response) {
             if (response.status == "success")
                 jQuery('#msg_'+id+'_row').remove();
         }
@@ -182,7 +182,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
                 <tbody>
                     {loop="$languages"}
                         <tr>
-                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$key}" onclick="navigateTo('?display=messages&action=display_category&cat={$category_name}&language={$key}');">{$key}</a></td>
+                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$key}" onclick="navigateTo('?display=messages&cat=admin&action=display_category&cat={$category_name}&language={$key}');">{$key}</a></td>
                             <td style="width: 60px; padding: 10px; border-right: 0px;"></td>
                         </tr>
                     {/loop}
@@ -193,7 +193,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
        <br>
     
     <div id="message_window">
-       <form action="{$AJAX_URL}?display=messages&action=new_msg&cat={$category_id}&language={$language}" method="POST" id="post_new">
+       <form action="{$AJAX_URL}?display=messages&cat=admin&action=new_msg&cat={$category_id}&language={$language}" method="POST" id="post_new">
         <div class="grid-1">
             <div class="title-grid" style="height: 30px;">{function="localize('Title of a new message', 'qmessages')"}: &nbsp;<input type="text" name="message_title" style="height: 20px; width: 250px; margin-top: 3px;"></div>
             <div class="content-table-grid" style="padding: 0px;">
@@ -209,7 +209,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
                         <tbody>
                             <tr>
                                 <td>{function="localize('Icon', 'qmessages')"}<br><small>{function="localize('Optional icon, depends on if your website module support this function', 'qmessages')"}</small></td>
-                                <td style="border-right: 0px;"><input type="text" name="message_icon" id="message_icon" style="width: 300px;"> &nbsp;<input type="button" value="{function="localize('Upload file', 'qmessages')"}" onclick="createPopup('_ajax.php?display=upload&popup=true&callback=upload_file_callback_new', 1024, 550);"></td>
+                                <td style="border-right: 0px;"><input type="text" name="message_icon" id="message_icon" style="width: 300px;"> &nbsp;<input type="button" value="{function="localize('Upload file', 'qmessages')"}" onclick="createPopup('_ajax.php?display=upload&cat=admin&popup=true&callback=upload_file_callback_new', 1024, 550);"></td>
                             </tr>
                             <tr>
                                 <td>{function="localize('Is not hidden', 'qmessages')"}<br><small>{function="localize('If checked, this message will not be published on your website', 'qmessages')"}</small></td>
@@ -232,7 +232,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
     </div>
     
     <div id="edit_window" style="display: none;">
-       <form action="{$AJAX_URL}?display=messages&action=edit_msg&cat={$category_id}" method="POST" id="edit_msg_form">
+       <form action="{$AJAX_URL}?display=messages&cat=admin&action=edit_msg&cat={$category_id}" method="POST" id="edit_msg_form">
         <div class="grid-1">
             <div class="title-grid" style="height: 30px;">{function="localize('Edit a message', 'qmessages')"}: <input type="text" name="edit_msg_title" id="edit_msg_title" value="" style="width: 300px; height: 20px; margin-top: 3px;"></div>
             <div class="content-gird" style="padding: 0px;">
@@ -248,7 +248,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
                         <tbody>
                             <tr>
                                 <td>{function="localize('Icon', 'qmessages')"}<br><small>{function="localize('Optional icon, depends on if your website module support this function', 'qmessages')"}</small></td>
-                                <td style="border-right: 0px;"><input type="text" name="message_icon" id="message_icon" style="width: 300px;"> &nbsp;<input type="button" value="{function="localize('Upload file', 'qmessages')"}" onclick="createPopup('_ajax.php?display=upload&popup=true&callback=upload_file_callback_new', 1024, 550);"></td>
+                                <td style="border-right: 0px;"><input type="text" name="message_icon" id="message_icon" style="width: 300px;"> &nbsp;<input type="button" value="{function="localize('Upload file', 'qmessages')"}" onclick="createPopup('_ajax.php?display=upload&cat=admin&popup=true&callback=upload_file_callback_new', 1024, 550);"></td>
                             </tr>
                             <tr>
                                 <td>{function="localize('Is not hidden', 'qmessages')"}<br><small>{function="localize('If checked, this message will not be published on your website', 'qmessages')"}</small></td>
@@ -305,7 +305,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
                             {/if}
                         {/loop}
 
-                    <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_qmsg_manage_{$category_name}', 1024, 550);" style="float: right;">
+                    <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_qmsg_manage_{$category_name}', 1024, 550);" style="float: right;">
 
                     </em></td>
                 </tr>
@@ -319,7 +319,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
                     <td>{$value.author_login}</td>
                     <td id="msg_{$value.id}_mod_time">{$value.mod_time}</td>
                     <td id="msg_{$value.id}_visibility">{$value.visibility}</td>
-                    <td><input type="button" value="{function="localize('Delete', 'messages')"}" onclick="deleteMessage({$value.id}); return false;"> <input type="button" value="{function="localize('Edit', 'qmessages')"}" onclick="editMessage({$value.id}); return false;"> <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&popup=true&name=can_qmsg_edit_{$value.id}', 1024, 'upload_popup');"></td>
+                    <td><input type="button" value="{function="localize('Delete', 'messages')"}" onclick="deleteMessage({$value.id}); return false;"> <input type="button" value="{function="localize('Edit', 'qmessages')"}" onclick="editMessage({$value.id}); return false;"> <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_qmsg_edit_{$value.id}', 1024, 'upload_popup');"></td>
                 </tr>
                 {/loop}
             </tbody>

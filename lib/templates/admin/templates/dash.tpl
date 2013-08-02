@@ -33,7 +33,7 @@ function toggleWidgetsLock(lock)
 
 function removeWidget(widgetName)
 {
-    navigateTo('?display=dash&widget='+widgetName+'&action=remove');
+    navigateTo('?display=dash&cat=admin&widget='+widgetName+'&action=remove');
 }
 
 /**
@@ -44,7 +44,7 @@ function removeWidget(widgetName)
 
 $(function(){
 	$('.contextMenu').styleddropdown(function (value) {
-	    navigateTo('?display=dash&widget='+value+'&action=add');
+	    navigateTo('?display=dash&cat=admin&widget='+value+'&action=add');
 	});
 	
 	if ({$widgetsUnlocked} == 1 && $('#widgetsLockedImg').length > 0)
@@ -144,7 +144,7 @@ $(function(){
               <table class="insideGridTable">
                    {loop="$lastLogged"}
                    <tr>
-            	        <td><a href="?display=settings&action=my_account&uid={$value.uid}" class="ajax_link"><img src="{$value.avatar}" style="width: 20px"></a></td><td><a href="?display=settings&action=my_account&uid={$value.uid}" class="ajax_link">{$value.login}</a></td><td> {$value.time} {function="localize('ago')"}</td>
+            	        <td><a href="?display=settings&cat=admin&action=my_account&uid={$value.uid}" class="ajax_link"><img src="{$value.avatar}" style="width: 20px"></a></td><td><a href="?display=settings&cat=admin&action=my_account&uid={$value.uid}" class="ajax_link">{$value.login}</a></td><td> {$value.time} {function="localize('ago')"}</td>
             	   </tr>
                    {/loop}
                </table>

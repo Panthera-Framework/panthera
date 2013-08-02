@@ -51,7 +51,7 @@ function getTableOrder()
 
 function saveMenuOrder(id)
 {
-    panthera.jsonPOST({ url: "?display=menuedit&action=save_order", data: 'id='+id+'&order='+getTableOrder(), spinner: spinner});
+    panthera.jsonPOST({ url: "?display=menuedit&cat=admin&action=save_order", data: 'id='+id+'&order='+getTableOrder(), spinner: spinner});
 
     return false;
 }
@@ -64,7 +64,7 @@ function saveMenuOrder(id)
 
 function removeItem(id)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=menuedit&action=remove_item&item_id='+id, data: '', messageBox: 'userinfoBox', spinner: spinner, success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=menuedit&cat=admin&action=remove_item&item_id='+id, data: '', messageBox: 'userinfoBox', spinner: spinner, success: function (response) {
             if (response.status == "success") {
                 jQuery('#item_'+id).slideUp();
                 jQuery('#item_'+id).remove();
@@ -98,9 +98,9 @@ function removeItem(id)
             <tfoot>
                   <tr>
                       <td colspan="8" class="rounded-foot-left"><em>Panthera menuedit - {function="localize('List of items', 'menuedit')"}</em><span>
-                        <input type="button" value="{function="localize('Add new link', 'menuedit')"}" style="float: right;" onclick="navigateTo('_ajax.php?display=menuedit&action=new_item&cat={$category}');">
+                        <input type="button" value="{function="localize('Add new link', 'menuedit')"}" style="float: right;" onclick="navigateTo('_ajax.php?display=menuedit&cat=admin&action=new_item&cat={$category}');">
                         <input type="button" value="{function="localize('Save order', 'menuedit')"}" style="float: right;" onclick="saveMenuOrder('{$category}');">
-                        <input type="button" value="{function="localize('Back', 'messages')"}" onclick="navigateTo('?display=menuedit');" style="float: right;"></td>
+                        <input type="button" value="{function="localize('Back', 'messages')"}" onclick="navigateTo('?display=menuedit&cat=admin');" style="float: right;"></td>
                       </td>
                   </tr>
             </tfoot>
@@ -108,7 +108,7 @@ function removeItem(id)
             <tbody>
                 {loop="$menus"}
                   <tr id="item_{$value.id}">
-                      <td><a href="{$AJAX_URL}?display=menuedit&action=item&id={$value.id}" class="ajax_link">{$value.title}</a><input type="hidden" id="sortable_{$value.id}" class="sortable_hidden" value="{$value.id}"></td>
+                      <td><a href="{$AJAX_URL}?display=menuedit&cat=admin&action=item&id={$value.id}" class="ajax_link">{$value.title}</a><input type="hidden" id="sortable_{$value.id}" class="sortable_hidden" value="{$value.id}"></td>
                       <td><a href="{$value.link}" target="_blank">{$value.link_original}</a></td>
                       <td>{$value.language}</td>
                       <td>{$value.url_id}</td>

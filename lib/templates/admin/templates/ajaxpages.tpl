@@ -13,7 +13,7 @@
         <tfoot>
             <tr>
                 <td colspan="2" class="rounded-foot-left"><em>Panthera - {function="localize('ajax pages', 'ajaxpages')"}
-                <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('{$AJAX_URL}?display=acl&popup=true&name=can_see_ajax_pages');" style="float: right; margin-right: 7px;"></em></td>
+                <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('{$AJAX_URL}?display=acl&cat=admin&popup=true&name=can_see_ajax_pages');" style="float: right; margin-right: 7px;"></em></td>
             </tr>
         </tfoot>
 
