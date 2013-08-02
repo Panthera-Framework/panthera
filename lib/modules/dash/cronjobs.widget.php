@@ -16,6 +16,7 @@ class cronjobs_dashWidget extends pantheraClass
         $this->panthera->importModule('crontab');
         
         $jobs = crontab::getJobs('', 10);
+        
         $jobsTpl = array();
                 
         foreach ($jobs as $job)

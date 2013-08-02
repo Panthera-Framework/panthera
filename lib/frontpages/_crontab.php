@@ -15,6 +15,7 @@ require 'content/app.php';
 
 @set_time_limit(3600);
 
+$panthera -> config -> loadOverlay('crontab');
 $panthera -> importModule('crontab');
 
 // dont mess debug.log file
@@ -38,6 +39,14 @@ try {crontab::createJob('expired_passwd_recovery', array('cronjobs', 'removeExpi
 // removeExpiredSubscriptions
 
 $key = $_GET['_appkey'];
+
+/**
+  * Start a job
+  *
+  * @param object $job
+  * @return void 
+  * @author Damian Kęska
+  */
 
 function startJob($job)
 {
@@ -75,40 +84,16 @@ if ($key == $panthera -> config -> getKey('crontab_key', generateRandomString(64
     
     // get all expired jobs to start working
     $jobs = crontab::getJobsForWork();
-
-    // use pure PHP threading using pcntl_fork()
-    if (!class_exists('Thread') and function_exists('pcntl_fork'))
-        include(PANTHERA_DIR. '/share/php-threading/lib/threading.php');
-
+    
     // cont the jobs
     $jobsCount = 0;
 
-    // support for threading using pthreads (if avaliable) - WARNING: THIS IS EXPERIMENTAL FEATURE!
-    if ($panthera->config->getKey('crontab_threading') and class_exists('Thread'))
+    foreach ($jobs as $key => $job)
     {
-
-        print("Using threads\n");
-        foreach ($jobs as $key => $job)
-        {
-            $jobsCount++;
-            $thread = new Thread();
-            $thread -> run(function() {
-                startJob($job);
-                $job->save();
-            });
-        }
-
-    } else {
-
-        // without using threads
-        foreach ($jobs as $key => $job)
-        {
-            $jobsCount++;
-            print("Starting job: ".$job->jobname."\n");
-            startJob($job);
-            $job->save();
-        }
-
+        $jobsCount++;
+        print("Starting job: ".$job->jobname."\n");
+        startJob($job);
+        $job->save();
     }
 
     if ($jobsCount == 0)

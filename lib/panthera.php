@@ -428,24 +428,45 @@ class pantheraConfig
     
     public function loadOverlay($section='')
     {
-        if ($section == '*')
-            $SQL = $this->panthera->db->query('SELECT `key`, `value`, `type`, `section` FROM `{$db_prefix}config_overlay`');
-        else
-            $SQL = $this->panthera->db->query('SELECT `key`, `value`, `type`, `section` FROM `{$db_prefix}config_overlay` WHERE `section` = :section', array('section' => trim($section)));
-        
-        if ($SQL -> rowCount() > 0)
+        $array = null;
+        $cacheLoaded = False;
+    
+        if ($this->panthera->cache and $section == '')
         {
+            if ($this->panthera->cache->exists('config_overlay'))
+            {
+                $cacheLoaded = True;
+                $this->overlay = array_merge($this->overlay, $this->panthera->cache->get('config_overlay'));
+                $this->panthera->logging->output('Loaded config_overlay from cache', 'pantheraConfig');
+            }
+        }
+        
+        if ($array == null and $cacheLoaded == False)
+        {
+            if ($section == '*')
+                $SQL = $this->panthera->db->query('SELECT `key`, `value`, `type`, `section` FROM `{$db_prefix}config_overlay`');
+            else
+                $SQL = $this->panthera->db->query('SELECT `key`, `value`, `type`, `section` FROM `{$db_prefix}config_overlay` WHERE `section` = :section', array('section' => trim($section)));
+                
             $array = $SQL -> fetchAll(PDO::FETCH_ASSOC);
             
-            foreach ($array as $key => $value)
+            if (count($array) > 0)
             {
-                if ($value['type'] == 'array')
-                    $value['value'] = @unserialize($value['value']);
+                foreach ($array as $key => $value)
+                {
+                    if ($value['type'] == 'array')
+                        $value['value'] = @unserialize($value['value']);
 
-                if ($value['type'] == 'json')
-                    $value['value'] = @json_decode($value['value']);
+                    if ($value['type'] == 'json')
+                        $value['value'] = @json_decode($value['value']);
 
-                $this->overlay[$value['key']] = array($value['type'], $value['value'], $value['section']);
+                    $this->overlay[$value['key']] = array($value['type'], $value['value'], $value['section']);
+                }
+                
+                if ($this->panthera->cache and $section == '')
+                {
+                    $this->panthera->cache->set('config_overlay', $this->overlay, 3600);
+                }
             }
         }
         
@@ -454,31 +475,9 @@ class pantheraConfig
             $this->overlay['debug'] = array('bool', False);
             $this->overlay_modified['debug'] = 'created';
         }
+        
+        $this->panthera->logging->output('Overlay loaded, total ' .count($this->overlay). ' keys', 'pantheraCore');
     }
-
-    /*private function _loadOverlay()
-    {
-        if(is_file(PANTHERA_DIR. '/content/config-overlay.phpson'))
-        {
-            $c = file_get_contents(PANTHERA_DIR. '/content/config-overlay.phpson');
-
-            if (empty($c))
-                $array = array();
-            else
-                $array = @unserialize($c);
-
-            if(!is_array($array))
-                return False;
-
-            //$this->config = array_merge($this->config, $array);
-            $this->overlay = $array;
-        } else {
-            $this -> panthera -> logging -> output ('pantheraConfig::Creating new config-overlay.phpson');
-            $fp = @fopen(PANTHERA_DIR. '/content/config-overlay.phpson', 'w');
-            @fwrite($fp, serialize(array()));
-            @fclose($fp);
-        }
-    }*/
 
     
     /**
@@ -551,6 +550,13 @@ class pantheraConfig
                     $this->panthera->logging->output('Update attempt of ' .$key. ' variable', 'pantheraConfig');
                     $this->panthera->db->query('UPDATE `{$db_prefix}config_overlay` SET `value` = :value, `type` = :type, `section` = :section WHERE `key` = :key ', array('value' => $value[1], 'key' => $key, 'type' => $value[0], 'section' => $value[2]));
                 }
+            }
+            
+            // update cache
+            if ($this->panthera->cache)
+            {
+                $this->panthera->logging->output('Updating config_overlay', 'pantheraConfig');
+                $this->panthera->cache->set('config_overlay', $this->overlay, 3600);
             }
             
             // doing a multiple query
@@ -664,6 +670,14 @@ class pantheraCore
 
         $this->types = new pantheraTypes($this); // data types
         $this->logging = new pantheraLogging($this);
+        
+        if (isset($config['varCache']) and isset($config['cache']))
+        {
+            $this->logging -> output('Initializing cache configured in app.php', 'pantheraCore');
+            $this->loadCache($config['varCache'], $config['cache'], $config['session_key']);
+        }
+        
+        $this -> logging -> output('Loading configuration', 'pantheraCore');
         $this->config = new pantheraConfig($this, $config);    
         $this->db = new pantheraDB($this);  
         $this->config->loadOverlay();
@@ -684,47 +698,14 @@ class pantheraCore
         
         /** CACHE SYSTEM **/
         
-        if (!defined('SKIP_CACHE'))
+        // load cache if not loaded already
+        if (!defined('SKIP_CACHE') and !$this->varCache)
         {
             // load variable cache system
             $varCacheType = $this->config->getKey('varcache_type', 'db', 'string');
             $cacheType = $this->config->getKey('cache_type', '', 'string');
             
-            // primary cache (variables cache)
-            if (class_exists('varCache_' .$varCacheType))
-            {
-                try {
-                    $n = 'varCache_' .$varCacheType;
-                    $this->varCache = new $n($this);
-                    $this->logging->output('varCache initialized, using ' .$varCacheType, 'pantheraCore');
-                } catch (Exception $e) {
-                    $this->logging->output('Disabling varCache due to exception: ' .$e->getMessage(), 'pantheraCore');
-                    $this->varCache = false;
-                }
-            }
-            
-            if ($cacheType != '')
-            {
-                // if secondary cache type is same as primary, link both
-                if ($cacheType == $varCacheType)
-                    $this->cache = $this->varCache;
-                else {
-                
-                    // load secondary cache
-                    if (class_exists('varCache_' .$cacheType))
-                    {
-                        try {
-                            $n = 'varCache_' .$cacheType;
-                            $this->cache = new $n($this);
-                            $this->logging->output('Cache initialized, using ' .$cacheType, 'pantheraCore');
-                        } catch (Exception $e) {
-                            $this->logging->output('Disabling cache due to exception: ' .$e->getMessage(), 'pantheraCore');
-                            $this->cache = false;
-                        }
-                    }
-                
-                }
-            }
+            $this->loadCache($varCacheType, $cacheType);
         }
         /** END OF CACHE SYSTEM **/
         
@@ -768,6 +749,54 @@ class pantheraCore
             header('X-Content-Type-Options: nosniff');
 
         $this->pluginsDir = array(PANTHERA_DIR. '/plugins', SITE_DIR. '/content/plugins');
+    }
+    
+    /**
+      * Load caching modules
+      *
+      * @param string $varCacheType
+      * @param string $cacheType
+      * @return void 
+      * @author Damian Kęska
+      */
+    
+    protected function loadCache($varCacheType, $cacheType, $sessionKey='')
+    {
+        // primary cache (variables cache)
+        if (class_exists('varCache_' .$varCacheType))
+        {
+            try {
+                $n = 'varCache_' .$varCacheType;
+                $this->varCache = new $n($this, $sessionKey);
+                $this->logging->output('varCache initialized, using ' .$varCacheType, 'pantheraCore');
+            } catch (Exception $e) {
+                $this->logging->output('Disabling varCache due to exception: ' .$e->getMessage(), 'pantheraCore');
+                $this->varCache = false;
+            }
+        }
+            
+        if ($cacheType != '')
+        {
+            // if secondary cache type is same as primary, link both
+            if ($cacheType == $varCacheType)
+                $this->cache = $this->varCache;
+            else {
+                
+                // load secondary cache
+                if (class_exists('varCache_' .$cacheType))
+                {
+                    try {
+                        $n = 'varCache_' .$cacheType;
+                        $this->cache = new $n($this, $sessionKey);
+                        $this->logging->output('Cache initialized, using ' .$cacheType, 'pantheraCore');
+                    } catch (Exception $e) {
+                        $this->logging->output('Disabling cache due to exception: ' .$e->getMessage(), 'pantheraCore');
+                        $this->cache = false;
+                    }
+                }
+                
+            }
+        }
     }
 
     /* ==== MODULES ==== */

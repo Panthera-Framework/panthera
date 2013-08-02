@@ -21,9 +21,14 @@ class varCache_db
 
     protected $cache = array (), $panthera;
  
-    public function __construct($obj)
+    public function __construct($obj, $sessionKey='')
     {
         $this->panthera = $obj;
+        
+        if (!$this->panthera->config)
+        {
+            throw new Exception('varCache_db cannot be initialized from configuration from app.php');
+        }
     }
     
     /**
@@ -160,10 +165,14 @@ class varCache_apc extends pantheraClass
     public $name = 'apc';
     public $type = 'memory';
     
-    public function __construct ($panthera)
+    public function __construct ($panthera, $sessionKey='')
     {
         parent::__construct($panthera);
-        $this->prefix = $panthera -> config -> getKey('session_key');
+        
+        if ($panthera -> config)
+            $this->prefix = $panthera -> config -> getKey('session_key');
+        else
+            $this->prefix = $sessionKey;
         
         if (!function_exists('apc_fetch'))
             throw new Exception('Cannot find APC module in PHP');
@@ -279,10 +288,14 @@ class varCache_xcache extends pantheraClass
     public $name = 'xcache';
     public $type = 'memory';
 
-    public function __construct ($panthera)
+    public function __construct ($panthera, $sessionKey='')
     {
         parent::__construct($panthera);
-        $this->prefix = $panthera -> config -> getKey('session_key');
+        
+        if ($panthera -> config)
+            $this->prefix = $panthera -> config -> getKey('session_key');
+        else
+            $this->prefix = $sessionKey;
         
         if (PANTHERA_MODE == 'CLI')
             throw new Exception('Xcache will not work in CLI mode.');
@@ -385,10 +398,14 @@ class varCache_memcached extends pantheraClass
     public $type = 'memory';
     public $m = null;
 
-    public function __construct ($panthera)
+    public function __construct ($panthera, $sessionKey='')
     {
         parent::__construct($panthera);
-        $this->prefix = $panthera -> config -> getKey('session_key');
+        
+        if ($panthera -> config)
+            $this->prefix = $panthera -> config -> getKey('session_key');
+        else
+            $this->prefix = $sessionKey;
         
         if (!class_exists('Memcached'))
             throw new Exception('Memcached support is not installed in PHP, cache will be disabled');

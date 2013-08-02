@@ -365,9 +365,9 @@ function removeUser($login)
 function userCreateSession($user, $passwd)
 {
     global $panthera;
-
-    $usr = new pantheraUser('login', $user);
     
+    $usr = new pantheraUser('login', $user);
+
     if ($usr->exists())
     {
         if ($usr -> checkPassword($passwd))
@@ -750,7 +750,7 @@ class metaAttributes
     public function loadOverlay($type, $objectID, $forceReload=False, $highPriority=False)
     {
         // overlay already loaded
-        if (array_key_exists($type.$objectID, $this->overlays) and $forceReload === False)
+        if (isset($this->overlays[$type.$objectID]) and $forceReload === False)
             return True;
         
         $Array = null;
