@@ -543,8 +543,9 @@ class metaAttributes
             if ($this->panthera->cache->exists($this->_cacheID))
             {
                 $cache = $this->panthera->cache->get($this->_cacheID);
+                $usedCache = True;
 
-                if ($cache == null or empty($cache))
+                if ($cache === null or empty($cache))
                 {
                     $this->_metas = array();
                 } else {
@@ -554,8 +555,8 @@ class metaAttributes
             }
         } else
             $panthera -> logging -> output ('Cache disabled for meta type=' .$type. ', objectid=' .$objectID, 'metaAttributes');
-                
-        if ($this->_metas === null)
+            
+        if ($this->_metas === null and is_int($cache))
         {
             $SQL = $panthera -> db -> query ('SELECT * FROM `{$db_prefix}metas` WHERE `userid` = :objectID AND `type` = :type', array('objectID' => $objectID, 'type' => $type));
             $Array = $SQL -> fetchAll(PDO::FETCH_ASSOC);
@@ -596,14 +597,19 @@ class metaAttributes
     {
         if ($this->_metas == null)
             $this->_metas = array();
-    
+            
         foreach ($Array as $key => $meta)
         {
-            // dont overwrite old keys
-            if (array_key_exists($meta['name'], $this->_metas) and $overwrite == False)
+            if ($meta['name'] == null)
                 continue;
-
-            if (!array_key_exists('name', $meta))
+        
+            // dont overwrite old keys
+            if (isset($this->_metas[$meta['name']]) and $overwrite == False )
+            {
+                continue;
+            }
+            
+            if (!isset($meta['name']))
                 $meta['name'] = $key;
         
             // looks complicated, yeah? we dont need to store some variables, so we can unset it
@@ -622,6 +628,8 @@ class metaAttributes
             // overlay or not an overlay (empty string)
             $this->_metas[$meta['name']]['overlay'] = $overlay;
         }
+        
+        $this->panthera->logging->output('Loaded meta overlay, counting overall ' .count($this->_metas). ' elements', 'metaAttributes');
     }
     
     /**
@@ -754,17 +762,24 @@ class metaAttributes
             if ($this -> panthera -> cache -> exists($cacheID))
             {
                 $Array = $this -> panthera -> cache -> get($cacheID);
+                
+                if ($Array == null)
+                    $Array = array();
+                
                 $this -> panthera -> logging -> output ('Read from cache id=' .$cacheID, 'metaAttributes');
             }        
         }
         
-        if ($Array === null)
+        if ($Array == null)
         {
             $SQL = $this -> panthera -> db -> query ('SELECT * FROM `{$db_prefix}metas` WHERE `type` = :type AND `userid` = :objectID', array('type' => $type, 'objectID' => $objectID));
             $Array = $SQL -> fetchAll (PDO::FETCH_ASSOC);
             
             if ($this -> _cache > 0 and $this -> panthera -> cache)
-                $this -> panthera -> cache -> set ($cacheID, $Array, $this->cache);
+            {
+                $this -> panthera -> cache -> set ($cacheID, $Array, $this->_cache);
+                $this -> panthera -> logging -> output ('Wrote to cache id=' .$cacheID, 'metaAttributes');
+            }
         }
         
         if (count($Array) > 0)

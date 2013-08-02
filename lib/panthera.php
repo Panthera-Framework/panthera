@@ -221,7 +221,7 @@ class pantheraLogging
             $lastTime = $time;
         }        
         
-        $msg .= "[".substr(microtime_float()-$_SERVER['REQUEST_TIME_FLOAT'], 0, 9)."] [pantheraLogging] Done\n";
+        $msg .= "[".substr(microtime_float()-$_SERVER['REQUEST_TIME_FLOAT'], 0, 9).", ".substr((microtime_float()-$_SERVER['REQUEST_TIME_FLOAT']-$lastTime)*1000, 0, 9)."ms] [pantheraLogging] Done\n";
         
         return $defaults.$msg;
     }
