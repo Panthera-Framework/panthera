@@ -1,13 +1,11 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=menuedit&cat=admin&">{function="localize('Menu editor', 'menuedit')"}</a></li>
+        <li><a href="#" onclick="navigateTo('?display=menuedit&cat=admin');">{function="localize('Menu editor', 'menuedit')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Adding category', 'menuedit')"}</a></li>
       </ul>
     </nav>
 
     <div class="content">
-
-     <!-- Content -->
      <div class="slider tab-slider">
         <ul>
           <li id="dash" class="tab-item active">
@@ -36,10 +34,10 @@
       * @author Mateusz Warzyński
       */
 
-    $('#save_form').submit(function () {
-        panthera.jsonPOST({ data: '#save_form', success: function (response) {
+    $('#add_category_form').submit(function () {
+        panthera.jsonPOST({ data: '#add_category_form', success: function (response) {
                 if (response.status == "success")
-                    window.location = '?display=menuedit&cat=admin';
+                    navigateTo('?display=menuedit&cat=admin');
             }
         });
 

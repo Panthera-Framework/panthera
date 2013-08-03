@@ -273,7 +273,7 @@ if ($_GET['action'] == 'new_category') {
 if ($_GET['action'] == 'category') {
     $tpl = "menuedit_category.tpl";
 
-    $items = simpleMenu::getItems($_GET['cat']);
+    $items = simpleMenu::getItems($_GET['category']);
     $array = array();
 
     foreach ($items as $key => $value) {
@@ -284,14 +284,14 @@ if ($_GET['action'] == 'category') {
     }
 
     $template -> push('menus', $array);
-    $template -> push('category', $_GET['cat']);
+    $template -> push('category', $_GET['category']);
     $template -> display($tpl);
     pa_exit();
 }
 
 if ($_GET['action'] == 'new_item') {
-    $tpl = "menuedit_newitem.tpl";    
-        
+    $tpl = "menuedit_newitem.tpl";
+
     $locales = array();
 
     foreach ($panthera -> locale -> getLocales() as $key => $value) {
@@ -309,7 +309,7 @@ if ($_GET['action'] == 'new_item') {
     }
 
     $template -> push('item_language', $locales);
-    $template -> push('cat_type', $_GET['cat']);
+    $template -> push('cat_type', $_GET['category']);
     $template -> display($tpl);
     pa_exit();
 }

@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=menuedit&cat=admin&action=category&cat={$cat_type}">{function="localize('Category', 'menuedit')"}</a></li>
+        <li><a href="#" onclick="navigateTo('?display=menuedit&cat=admin&action=category&category={$cat_type}');">{function="localize('Category', 'menuedit')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Editing item', 'menuedit')"}</a></li>
       </ul>
     </nav>

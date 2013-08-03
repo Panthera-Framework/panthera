@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=menuedit&cat=admin&action=category&cat={$cat_type}">{function="localize('Category', 'menuedit')"}</a></li>
+        <li><a href="#" onclick="navigateTo('?display=menuedit&cat=admin&action=category&category={$cat_type}');">{function="localize('Category', 'menuedit')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Adding item', 'menuedit')"}</a></li>
       </ul>
     </nav>
@@ -52,7 +52,7 @@
     $('#add_item_form').submit(function () {
         panthera.jsonPOST({ data: '#add_item_form', success: function (response) {
                 if (response.status == "success")
-                    window.location = '?display=menuedit&cat=admin&action=category&cat={$cat_type}';
+                    navigateTo('?display=menuedit&cat=admin&action=category&category={$cat_type}');
             }
         });
 
