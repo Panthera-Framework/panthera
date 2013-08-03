@@ -74,7 +74,7 @@
 
       <div id="flags" style="float: right; margin-right: 30px; margin-top: 13px;">
           {loop="$flags"}
-              <a href="?display=dash&cat=admin&_locale={$value}"><img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 15px;"></a>&nbsp;&nbsp;
+              <a href="#{$value}" onclick="navigateTo('?display=dash&cat=admin&_locale={$value}');"><img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 15px;"></a>&nbsp;&nbsp;
           {/loop}
       </div>
      {/if}
