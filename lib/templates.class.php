@@ -669,13 +669,28 @@ class pantheraTemplate extends pantheraClass
       * @author Damian Kęska
       */
     
-    public function webrootMerge()
+    public function webrootMerge($customTemplates=array())
     {
         //$lastMod = $this -> panthera -> varCache -> get('webroot_checktime'); // last file modification
         $mainTemplate = $this -> panthera -> config -> getKey('template');
         
-        $roots = array (PANTHERA_DIR.'/templates/admin/webroot', SITE_DIR. '/content/templates/admin/webroot',
-                        PANTHERA_DIR.'/templates/' .$mainTemplate. '/webroot', SITE_DIR. '/content/templates/' .$mainTemplate. '/webroot');
+        $roots = array (
+                      PANTHERA_DIR.'/templates/admin/webroot', 
+                      SITE_DIR. '/content/templates/admin/webroot', 
+                      PANTHERA_DIR.'/templates/admin_mobile/webroot', 
+                      SITE_DIR. '/content/templates/admin_mobile/webroot',
+                      PANTHERA_DIR.'/templates/' .$mainTemplate. '/webroot', 
+                      SITE_DIR. '/content/templates/' .$mainTemplate. '/webroot'
+                    );
+                    
+        if (!empty($customTemplates))
+        {
+            foreach ($customTemplates as $template)
+            {
+                $roots[] = PANTHERA_DIR. '/templates/' .$template. '/webroot';
+                $roots[] = SITE_DIR. '/content/templates/' .$template. '/webroot';
+            }
+        }
                             
         $this->panthera->importModule('filesystem');
         
