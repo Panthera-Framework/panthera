@@ -1,4 +1,3 @@
-    {include="header.tpl"}
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=dash" data-transition="push">{function="localize('Dash')"}</a></li>
@@ -8,7 +7,7 @@
 
     <div class="content inset">
       <div class="slider tab-slider">
-      
+
         <ul>
             <li id="mailing" class="tab-item active">
                 <ul class="list inset">
@@ -26,9 +25,9 @@
                       <button class="btn-small" onclick="saveVariable('{$value.record_name}');" style="float: right;" id="button_{$value.record_name}">{function="localize('Save')"}</button>
                    </li>
                   {/loop}
-                  
+
                   <br><br>
-                 
+
                   <li class="list-divider">{function="localize('Send an e-mail', 'mailing')"}</li>
                    <form action="{$AJAX_URL}?display=mailing&action=send" method="POST" id="mail_form">
                     <input type="text" name="subject" placeholder="{function="localize('Subject', 'mailing')"}" class="input-text" autocomplete="off">
@@ -37,13 +36,14 @@
                     <input type="text" name="body" placeholder="{function="localize('Content', 'mailing')"}" class="input-text" autocomplete="off">
                     <input type="submit" class="btn-block" value="{function="localize('Send', 'mailing')"}" id="send_button">
                    </form>
-               </ul>    
+               </ul>
             </li>
         </ul>
-        
+
       </div>
     </div>
 
+   <!-- JS code -->
     <script type="text/javascript">
     $(document).ready(function(){
 
@@ -68,13 +68,13 @@
             return false;
         });
     });
-    
+
     /**
       * Save mailing variable
       *
       * @author Mateusz Warzyński
       */
-    
+
     function saveVariable(id)
     {
         value = jQuery('#value_'+id).val();
@@ -92,23 +92,23 @@
         return false;
 
     }
-    
+
     /**
       * Toggle PHP_MAIL bool value
       *
       * @author Mateusz Warzyński
       */
-    
+
     function togglePhpMail()
     {
         variable = $('#value_mailing_use_php').val();
-        
+
         if (variable == 1)
         {
             $("#value_mailing_use_php").val('0');
             $('#php_mail').text("{function="localize('False')"}");
         }
-        
+
         if (variable == 0)
         {
             $("#value_mailing_use_php").val('1');
@@ -117,6 +117,4 @@
     }
 
     </script>
-
-    {include="footer.tpl"}
-    
+   <!-- End of JS code -->

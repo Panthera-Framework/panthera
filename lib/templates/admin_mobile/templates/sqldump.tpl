@@ -1,6 +1,3 @@
-{include="header.tpl"}
-  
-  <!-- Content -->
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=database">{function="localize('Database management', 'database')"}</a></li>
@@ -15,7 +12,7 @@
             <li id="gallery" class="tab-item active">
                 <ul class="list inset">
                     <li class="list-divider">{function="localize('Avaliable dumps', 'database')"}</li>
-                    
+
                    {loop="$dumps"}
                     <li class="list-item-two-lines">
                      <a href="{$AJAX_URL}?display=sqldump&get={$value.name}&_bypass_x_requested_with">
@@ -24,15 +21,14 @@
                      </a>
                     </li>
                    {/loop}
-                   
+
                    <button class="btn-block" onclick="makeDump();">{function="localize('Create backup', 'database')"}</button>
-                   
+
                 </ul>
             </li>
         </ul>
       </div>
     </div>
-    <!-- End of content -->
 
     <!-- JS code -->
     <script>
@@ -41,7 +37,7 @@
       *
       * @author Mateusz Warzyński
       */
-    
+
     function makeDump()
     {
         panthera.jsonPOST({ url: '?display=sqldump', data: 'dump=True', success: function (response) {
@@ -51,8 +47,6 @@
         });
         return false;
     }
-    
+
     </script>
     <!-- End of JS code -->
-
-{include="footer.tpl"}

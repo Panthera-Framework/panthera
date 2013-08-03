@@ -1,5 +1,3 @@
-    {include="header.tpl"}
-    
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=dash" data-transition="push">{function="localize('Dash')"}</a></li>
@@ -44,7 +42,8 @@
        </ul>
      </div>
     </div>
-    
+
+   <!-- JS code -->
     <script type="text/javascript">
     $(document).ready(function(){
         function jumpToAjaxPage(id) {
@@ -52,5 +51,4 @@
         };
     });
     </script>
-
-    {include="footer.tpl"}
+   <!-- End of JS code -->

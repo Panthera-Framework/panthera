@@ -1,6 +1,3 @@
-{include="header.tpl"}
-   
-   <!-- Content -->
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=dash&menu=settings" data-transition="push">{function="localize('Dash')"}</a></li>
@@ -20,15 +17,15 @@
                         {function="slocalize('Tap to update static files', 'templates')"}
                       </a>
                    </li>
-                   
+
                    <li class="list-divider">{function="ucfirst(localize('tools', 'templates'))"}</li>
-                   
+
                    <li class="list-item-single-line selectable">
                       <a href="#" onclick="templateTool('clear_cache');" id="cache_clear">
                         {function="localize('Clear templates cache', 'templates')"}
                       </a>
                    </li>
-                   
+
                    <li class="list-divider">{function="localize('Here are listed all templates, including its files', 'templates')"}</li>
                   {loop="$templates_list"}
                    <li class="list-item-single-line">
@@ -37,14 +34,13 @@
                       </div>
                    </li>
                   {/loop}
-                   
+
                 </ul>
             </li>
         </ul>
       </div>
     </div>
-   <!-- End of content -->
-   
+
    <!-- JS code -->
     <script type="text/javascript">
    /**
@@ -52,7 +48,7 @@
       *
       * @author Damian Kęska
       */
-    
+
     function webrootMerge()
     {
         panthera.jsonPOST({ url: '?display=templates&action=webrootMerge', async: true, success: function (response) {
@@ -63,7 +59,7 @@
            }
         });
     }
-    
+
     /**
       * Execute a tool
       *
@@ -71,12 +67,12 @@
       * @return void
       * @author Damian Kęska
       */
-    
+
     function templateTool(toolName, value)
     {
         if (typeof value === "object")
             value = value.val();
-            
+
         panthera.jsonPOST({ url: '?display=templates&action=exec&name='+toolName+'&value='+value, async: true, success: function (response) {
                if (response.status == "success") {
                     $('#cache_clear').slideToggle();
@@ -87,4 +83,3 @@
     }
     </script>
    <!-- End of JS code -->
-{include="footer.tpl"}

@@ -1,6 +1,3 @@
-{include="header.tpl"}
-
-   <!-- Content -->    
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=gallery&action=display_category&unique={$unique}" data-transition="push">{function="localize('Gallery category')"}</a></li>
@@ -16,7 +13,7 @@
                     <li class="list-divider">{function="localize('Information', 'gallery')"}</li>
                     <input type="text" name="title" placeholder="{function="localize('Title', 'gallery')"}" value="{$title}" class="input-text" autocomplete="off">
                     <input type="text" name="description" placeholder="{function="localize('Decription', 'gallery')"}" value="{$description}" class="input-text" autocomplete="off">
-                    
+
                     <li class="list-divider">{function="localize('Visibility', 'gallery')"}</li>
                     <li class="list-item-single-line selectable">
                         <a id="visibility_text" onclick="toggleItemVisibility();">
@@ -24,18 +21,18 @@
                         </a>
                             <input type="hidden" name="visibility" id="visibility_value" {if="$visibility == 1"} value='1' {else} value='0' {/if}>
                     </li>
-                    
+
                     <li class="list-divider">{function="localize('Category', 'gallery')"}</li>
                     <select name="gallery_id">
                    {loop="$category_list"}
                         <option value="{$value->id}" {if="$value->id == $gallery_id"} selected='selected'{/if}>{$value->title} ({$value->language})</option>
                    {/loop}
                     </select>
-                    
+
                     <br><br>
-                    
+
                     <input type="submit" class="btn-block" value="{function="localize('Save')"}" id="save_button">
-                    
+
                     <li class="list-divider">{function="localize('Picture', 'gallery')"}</li>
                     <li>
                         <div style="width: 100%; max-height: 100%;">
@@ -50,8 +47,7 @@
         <input type="hidden" name="gallery_id" value="{$gallery_id}">
        </form>
     </div>
-    <!-- End of content -->
-    
+
     <!-- JS code -->
     <script type="text/javascript">
     $(document).ready(function () {
@@ -60,8 +56,8 @@
           *
           * @author Mateusz Warzyński
           */
-        
-        
+
+
         $("#change_item_form").submit(function () {
             panthera.jsonPOST({ data: '#change_item_form', async: true, url: '?display=gallery&action=edit_item_form&subaction=edit_item&id={$id}',
                 success: function (response) {
@@ -70,27 +66,27 @@
                         setTimeout("jQuery('#save_button').val('Save');", 2500);
                 }
             });
-    
+
             return false;
         });
     });
-    
+
     /**
       * Toggle Visibility bool value
       *
       * @author Mateusz Warzyński
       */
-    
+
     function toggleItemVisibility()
     {
         value = $('#visibility_value').val();
-        
+
         if (value == 1)
         {
             $('#visibility_text').text("{function="localize('False')"}");
             $('#visibility_value').val('0');
         }
-                        
+
         if (value == 0)
         {
             $('#visibility_text').text("{function="localize('True')"}");
@@ -99,4 +95,3 @@
     }
     </script>
     <!-- End of JS code -->
-{include="footer.tpl"}

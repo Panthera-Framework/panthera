@@ -1,13 +1,11 @@
-    {include="header.tpl"}
-
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=debug">{function="localize('Debugging center')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Dumpinput', 'debug')"}</a></li>
       </ul>
     </nav>
-    
-    
+
+
     <div class="content">
 
      <!-- Content -->
@@ -15,13 +13,13 @@
         <ul>
           <li id="dash" class="tab-item active">
             <ul class="list inset">
-                
-    
+
+
                 <li class="list-divider">$_COOKIE</li>
                 <li class="list-item-multi-line">
                         <p>{$cookie}</p>
                 </li>
-                
+
                 <li class="list-divider">$panthera->session->cookies</li>
                 <li class="list-item-multi-line">
                         <p>{$pantheraCookie}<br>
@@ -34,7 +32,7 @@
                         </i>
                         </p>
                 </li>
-                
+
                 <li class="list-divider">$panthera->session</li>
                 <li class="list-item-multi-line">
                         <p>{$pantheraSession}<br>
@@ -48,29 +46,27 @@
                         </i>
                         </p>
                 </li>
-                
+
                 <li class="list-divider">$_SESSION</li>
                 <li class="list-item-multi-line">
                         <p>{$SESSION}</p>
                 </li>
-                
+
                 <li class="list-divider">$_GET<li>
                 <li class="list-item-multi-line">
                         <p>{$GET}</p>
                 </li>
-                
+
                 <li class="list-divider">$_POST<li>
                 <li class="list-item-multi-line">
                         <p>{$POST}</p>
                 </li>
-                
+
                 <li class="list-divider">$_SERVER<li>
                 <li class="list-item-multi-line">
                         <p>{$SERVER}</p>
                 </li>
-                
+
             </ul>
         </ul>
      </div>
-                
-    {include="footer.tpl"}

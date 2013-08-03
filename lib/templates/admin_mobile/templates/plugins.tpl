@@ -1,6 +1,3 @@
-{include="header.tpl"}
-   
-   <!-- Content -->
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=dash&menu=settings" data-transition="push">{function="localize('Dash')"}</a></li>
@@ -23,20 +20,19 @@
                         <p>({$value.author}) {$value.description}</p>
                       </a>
                    </li>
-                   
-                  {if="$value.configuration != ''"} 
+
+                  {if="$value.configuration != ''"}
                    <button onclick="window.location = '{$value.configuration}'" class="btn-small" style="float: right;">{function="localize('Settings')"}</button>
                    <br><br>
                   {/if}
                   {/loop}
-                  
+
                 </ul>
             </li>
         </ul>
       </div>
     </div>
-   <!-- End of content -->
-   
+
    <!-- JS code -->
     <script type="text/javascript">
      /**
@@ -44,7 +40,7 @@
        *
        * @author Mateusz Warzyński
        */
-    
+
      function togglePlugin(name, value)
      {
         panthera.jsonPOST({ url: '?display=plugins&action=toggle&plugin='+name+'&value='+value, messageBox: 'userinfoBox', success: function (response) {
@@ -52,10 +48,9 @@
                     window.location = "?display=plugins";
             }
         });
-    
+
         return false;
      }
 
     </script>
    <!-- End of JS code -->
-{include="footer.tpl"}

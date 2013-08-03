@@ -1,5 +1,3 @@
-    {include="header.tpl"}
-
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=debug" data-transition="push">{function="localize('Debugging center')"}</a></li>
@@ -45,5 +43,3 @@
      </div>
 
     </div>
-
-    {include="footer.tpl"}

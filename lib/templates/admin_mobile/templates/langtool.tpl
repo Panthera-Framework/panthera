@@ -1,15 +1,12 @@
-{include="header.tpl"}
-
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=dash&menu=settings">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Languages', 'langtool')"}</a></li>
       </ul>
     </nav>
-    
+
     <div class="content">
 
-     <!-- Content -->
      <div class="slider tab-slider">
         <ul>
           <li id="dash" class="tab-item active">
@@ -25,6 +22,3 @@
             </ul>
         </ul>
      </div>
-     <!-- End of content -->
-     
-{include="footer.tpl"}

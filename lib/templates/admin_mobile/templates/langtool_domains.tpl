@@ -1,13 +1,10 @@
-{include="header.tpl"}
-
-   <!-- Content -->
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=langtool">{function="localize('Languages', 'langtool')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Manage domains', 'langtool')"}</a></li>
       </ul>
     </nav>
-    
+
     <div class="content">
      <div class="slider tab-slider">
         <ul>
@@ -23,7 +20,7 @@
                     <span style="vertical-align: middle;" id="value_{$j}">{$value}</span>
                 </a>
               </li>
-              
+
               <div id="option_{$j}" style="display: none;">
                   <br>
                   <button class="btn-small" onclick="renameDomain('{$value}', '{$locale}', '{$j}');" style="float: right;">{function="localize('Rename')"}</button>
@@ -33,29 +30,28 @@
                   <br><br>
               </div>
              {/loop}
-             
+
              <br><br>
-             
+
              <label>{function="localize('Add domain', 'langtool')"}</label>
              <button class="btn-small" onclick="createDomain('{$locale}');" style="float: right;">{function="localize('Add')"}</button>
              <input type="text" class="input-text inline" id="domain_name" style="max-width: calc(100% - 112spx);">
-             
+
              <br><br>
-             
+
             </ul>
         </ul>
      </div>
-    <!-- End of content -->
-     
+
     <!-- JS code -->
      <script type="text/javascript">
-     
+
      /**
       * Remove domain
       *
       * @author Mateusz Warzyński
       */
-    
+
      function removeDomain(name, locale, n)
      {
         panthera.jsonPOST({ url: '?display=langtool&action=domains&subaction=remove_domain&domain_name='+name+'&locale='+locale, data: '', success: function (response) {
@@ -66,16 +62,16 @@
                 }
             }
         });
-    
+
         return false;
      }
-     
+
      /**
       * Rename domain
       *
       * @author Mateusz Warzyński
       */
-     
+
      function renameDomain(name, locale, n)
      {
         var newname = $("#domain_new_name_"+n).val();
@@ -84,16 +80,16 @@
                     $('#value_'+n).html(newname);
             }
         });
-    
+
         return false;
      }
-     
+
      /**
       * Create domain
       *
       * @author Mateusz Warzyński
       */
-    
+
      function createDomain(locale)
      {
         var name = $("#domain_name").val();
@@ -102,11 +98,9 @@
                     window.location = '?display=langtool&action=domains&locale='+locale;
             }
         });
-    
+
         return false;
      }
-     
+
      </script>
     <!-- End of JS code -->
-     
-{include="footer.tpl"}

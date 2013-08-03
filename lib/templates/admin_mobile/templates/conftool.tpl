@@ -1,6 +1,3 @@
-{include="header.tpl"}
-   
-   <!-- Content -->
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=dash&menu=settings" data-transition="push">{function="localize('Dash')"}</a></li>
@@ -14,7 +11,7 @@
             <li id="conftool" class="tab-item active">
                 <ul class="list inset">
                    <li class="list-divider">{function="localize('Key')"} / {function="localize('Value')"}</li>
-                  
+
                   {loop="$a"}
                    <li class="list-item-two-lines">
                       <div>
@@ -28,14 +25,13 @@
                       </div>
                    </li>
                   {/loop}
-                   
+
                 </ul>
             </li>
         </ul>
       </div>
     </div>
-   <!-- End of content -->
-   
+
    <!-- JS code -->
     <script type="text/javascript">
     /**
@@ -43,11 +39,11 @@
       *
       * @author Mateusz Warzyński
       */
-    
+
     function saveVariable(id)
     {
         value = jQuery('#value_'+id).val();
-    
+
         panthera.jsonPOST({ url: '?display=conftool&action=change', data: 'id='+id+'&value='+value, success: function (response) {
                 if (response.status == "success")
                 {
@@ -56,10 +52,9 @@
                 }
             }
         });
-    
+
         return false;
-    
+
     }
     </script>
    <!-- End of JS code -->
-{include="footer.tpl"}

@@ -1,5 +1,3 @@
-{include="header.tpl"}
-  <!-- Content -->
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=debug">{function="localize('Debugging center')"}</a></li>
@@ -13,10 +11,10 @@
         <ul>
             <li id="gallery" class="tab-item active">
                 <ul class="list inset">
-                  
-                 {if="$action == 'list'"} 
+
+                 {if="$action == 'list'"}
                    {loop="$functions"}
-                   
+
                      {if="$value.type == 'method'"}
                           <li class="list-item-two-lines">
                             <a href="#" onclick="window.location = '?display=browsefile&path={$value.filename}&start={$value.startline}&end={$value.endline}&back_btn={"?display=debhook"|base64_encode}'">
@@ -39,13 +37,13 @@
                             </a>
                           </li>
                      {/if}
-                     
+
                    {/loop}
-                 
-                 {else}               
-                    
+
+                 {else}
+
                     <li class="list-divider">{function="localize('Hooked functions', 'debhook')"}</li>
-                    
+
                    {$where="?display=debhook"}
                    {loop="$hooks"}
                     <li class="list-item-two-lines">
@@ -55,15 +53,11 @@
                      </a>
                     </li>
                    {/loop}
-                   
+
                  {/if}
-                    
+
                 </ul>
             </li>
         </ul>
       </div>
     </div>
-   <!-- End of content -->
-
-{include="footer.tpl"}
-

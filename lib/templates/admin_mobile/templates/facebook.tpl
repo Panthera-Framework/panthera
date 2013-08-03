@@ -1,6 +1,3 @@
-{include="header.tpl"}
-
-   <!-- Content -->
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=dash" data-transition="push">{function="localize('Dash')"}</a></li>
@@ -12,7 +9,7 @@
      <div class="slider tab-slider">
         <ul>
             <ul class="list inset">
-                                
+
              <li class="list-divider">{function="localize('Facebook integration.', 'facebook')"}</li>
 
               <li class="list-item-two-lines">
@@ -28,7 +25,7 @@
                     <p>{function="localize('Name', 'facebook')"}</p>
                 </div>
               </li>
-              
+
               <img src="http://graph.facebook.com/{$user.id}/picture?width=200&height=200" height="200px" width="200px">
 
               <li class="list-item-two-lines">
@@ -60,15 +57,14 @@
               </li>
 
               <br>
-              
+
               <button class="btn-block" onclick="synchronizeData();">{function="localize('Synchronize', 'facebook')"}</button>
-              
+
             </ul>
         </ul>
      </div>
     </div>
-   <!-- End of content -->
-    
+
    <!-- JS code -->
     <script type="text/javascript">
 
@@ -77,7 +73,7 @@
       *
       * @author Mateusz Warzyński
       */
-    
+
     function synchronizeData()
     {
         panthera.jsonPOST({ url: '?display=facebook&action=synchronize', data: ''});
@@ -85,5 +81,3 @@
     }
     </script>
    <!-- End of JS code -->
-
-{include="footer.tpl"}

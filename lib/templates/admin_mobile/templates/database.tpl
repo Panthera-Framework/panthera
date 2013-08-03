@@ -1,19 +1,16 @@
-{include="header.tpl"}
-    
-   <!-- Content -->
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=dash&menu=settings">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Database management', 'database')"}</a></li>
       </ul>
     </nav>
-    
+
     <div class="content">
      <div class="slider tab-slider">
         <ul>
             <ul class="list inset">
                 <li class="list-divider">{function="localize('Connection informations', 'database')"}:</li>
-                
+
                 {loop="$sql_attributes"}
                 <li class="list-item-multi-lines">
                         <div>
@@ -22,13 +19,13 @@
                         </div>
                 </li>
                 {/loop}
-                
+
                 <button class="btn-block" onclick="window.location = '?display=sqldump'">{function="localize('Manage backups', 'database')"}</button>
-                
+
                 <br><br>
-                
+
                 <li class="list-divider">Panthera - {function="localize('database driver configuration', 'database')"}:</li>
-    
+
                 {loop="$panthera_attributes"}
                 <li class="list-item-two-lines">
                         <div>
@@ -41,6 +38,3 @@
         </ul>
      </div>
     </div>
-    <!-- End of content -->
-    
-{include="footer.tpl"}

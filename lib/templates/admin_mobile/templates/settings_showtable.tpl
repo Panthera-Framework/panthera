@@ -1,5 +1,3 @@
-    {include 'header.tpl'}
-
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=debug">{"Debugging center"|localize}</a></li>
@@ -23,6 +21,4 @@
             </ul>
         </ul>
      </div>
-
     </div>
-    {include 'footer.tpl'}

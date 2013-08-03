@@ -1,22 +1,17 @@
-{include="header.tpl"}
-
-   <!-- Content -->
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=dash&menu=settings">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Menu editor', 'menuedit')"}</a></li>
       </ul>
     </nav>
-    
-    <div class="content">
 
-     <!-- Content -->
+    <div class="content">
      <div class="slider tab-slider">
         <ul>
           <li id="dash" class="tab-item active">
             <ul class="list inset">
                 <li class="list-divider">{function="localize('List of categories', 'menuedit')"}</li>
-                
+
                {loop="$menu_categories"}
                 <li class="list-item-two-lines selectable" id="category_{$value.id}">
                     <button class="btn-small" style="float: right;" onclick="removeMenuCategory({$value.id});">{function="localize('Delete')"}</button>
@@ -26,26 +21,25 @@
                     </a>
                 </li>
                {/loop}
-               
+
                <br><br>
-               
+
                <button class="btn-block" onclick="window.location = '?display=menuedit&action=new_category'">{function="localize('Add new menu category', 'menuedit')"}</button>
-               
+
             </ul>
           </li>
         </ul>
      </div>
-   <!-- End of content -->
 
    <!-- JS code -->
     <script type="text/javascript">
-    
+
     /**
       * Remove menu category
       *
       * @author Mateusz Warzyński
       */
-    
+
     function removeMenuCategory(id)
     {
         panthera.jsonPOST({ url: '?display=menuedit&action=remove_category&category_id='+id, data: '', messageBox: 'userinfoBox', success: function (response) {
@@ -55,8 +49,6 @@
         });
         return false;
     }
-    
+
     </script>
    <!-- End of JS code -->
-   
-{include="footer.tpl"}

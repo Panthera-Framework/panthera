@@ -1,6 +1,3 @@
-{include="header.tpl"}
-
-   <!-- Content -->
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=settings&action=users" data-transition="push">{function="localize('Users')"}</a></li>
@@ -26,7 +23,7 @@
                     <p>{function="localize('Password', 'settings')"}</p>
                 </a>
               </li>
-              
+
               <div id="window_password" style="display: none;">
                 <form action="?display=settings&action=my_account&changepassword{$user_uid}" method="POST" id="changepasswd_form">
                   {if="!isset($dontRequireOld)"}
@@ -45,7 +42,7 @@
                     <p>{function="localize('Full name', 'settings')"}</p>
                 </a>
               </li>
-              
+
               <img src="{$profile_picture}" height="auto" width="200px">
 
               <li class="list-item-two-lines">
@@ -66,7 +63,7 @@
                     <p>{function="localize('Language', 'settings')"}</p>
                 </a>
               </li>
-              
+
               <div id="window_language" style="display: none;">
                   <br>
                 <form action="?display=settings&action=my_account&changelanguage{$user_uid}" method="POST" id="changelanguage_form">
@@ -79,22 +76,21 @@
                 </form>
                   <br><br>
               </div>
-              
+
             </ul>
         </ul>
      </div>
     </div>
-   <!-- End of content -->
-   
+
    <!-- JS code -->
     <script type="text/javascript">
-    
+
     /**
       * Submit change password form
       *
       * @author Damian Kęska
       */
-     
+
     $('#changepasswd_form').submit(function () {
         panthera.jsonPOST({ data: '#changepasswd_form', success: function (response) {
                 if (response.status == "success")
@@ -103,28 +99,26 @@
                 }
             }
         });
-    
+
         return false;
-    
+
      });
-     
+
      /**
       * Submit language form
       *
       * @author Damian Kęska
       */
-    
+
     $('#changelanguage_form').submit(function () {
         panthera.jsonPOST({ data: '#changelanguage_form', success: function (response) {
                 if (response.status == "success")
                     window.location = '?display=settings&action=my_account';
             }
         });
-    
+
         return false;
-    
+
     });
     </script>
    <!-- End of JS code -->
-   
-{include="footer.tpl"}

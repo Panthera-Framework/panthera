@@ -1,5 +1,3 @@
-    {include="header.tpl"}
-
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=dash&menu=settings">{function="localize('Dash')"}</a></li>
@@ -9,12 +7,11 @@
 
     <div class="content">
 
-     <!-- Content -->
      <div class="slider tab-slider">
         <ul>
             <ul class="list inset">
                 <li class="list-divider">{function="localize('Pages index', 'ajaxpages')"}:</li>
-                
+
                 {loop="$pages"}
                 <li class="list-item-single-line selectable">
                     <a href="{$value.link}" data-ignore="true">
@@ -22,9 +19,8 @@
                     </a>
                 </li>
                 {/loop}
-                
+
             </ul>
         </ul>
      </div>
     </div>
-     {include="footer.tpl"}

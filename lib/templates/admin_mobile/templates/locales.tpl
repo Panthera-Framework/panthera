@@ -1,6 +1,3 @@
-{include="header.tpl"}
-   
-   <!-- Content -->
     <nav class="tab-fixed">
       <ul class="tab-inner">
         <li><a href="?display=dash&menu=settings" data-transition="push">{function="localize('Dash')"}</a></li>
@@ -14,7 +11,7 @@
             <li id="conftool" class="tab-item active">
                 <ul class="list inset">
                    <li class="list-divider">{function="localize('Languages', 'locales')"}</li>
-                  
+
                   {loop="$locales_added"}
                    <li class="list-item-single-lines selectable">
                       {if="$value.visibility == True"}
@@ -27,36 +24,36 @@
                           <span {if="$value.visibility != True"} style="color: #bbb;" {/if}>{$key}</span>
                       </a>
                    </li>
-                   
+
                    <div id="options_{$key}" style="display: none;">
                        <button class="btn-small" style="float: right;" onclick="localeAction('delete', '{$key}');">{function="localize('Remove')"}</button>
                        <button class="btn-small" style="float: right;" onclick="localeAction('set_as_default', '{$key}');">{function="localize('Set as default')"}</button>
                        <br><br>
                    </div>
                   {/loop}
-                  
+
                    <br>
-                  
+
                    <li class="list-divider">{function="localize('Settings')"}</li>
-                  
+
                    <li class="list-item-two-lines">
                       <div>
                           <h3>{$locale_system_default}</h3>
                           <p>{function="localize('Website default language', 'locales')"}</p>
                       </div>
                    </li>
-                   
+
                    <li class="list-item-two-lines selectable">
                       <a href="?display=langtool">
                           <h3>{function="localize('Translations editor', 'langtool')"}</h3>
                           <p>{function="localize('Tools', 'locales')"}</p>
                       </a>
                    </li>
-                   
+
                    <br>
-                   
+
                    <li class="list-divider">{function="localize('Loaded language domains', 'locales')"}</li>
-                  
+
                   {loop="$loaded_domains"}
                    <li class="list-item-two-lines">
                       <div>
@@ -65,60 +62,58 @@
                       </div>
                    </li>
                   {/loop}
-                  
+
                   <br>
-                  
+
                   <li class="list-divider">{function="localize('Add new language', 'langtool')"}</li>
-                  
-                  <div id="newLanguageGrid"> 
+
+                  <div id="newLanguageGrid">
                     <form action="?display=langtool&action=createNewLanguage" method="POST" id="createNewLanguage">
                         <button type="submit" class="btn-small" style="float: right;">{function="localize('Add')"}</button>
                         <input type="text" class="input-text inline" placeholder="{function="localize('Language name', 'langtool')"}" name="languageName" style="max-width: calc(100% - 115px);">
                     </form>
                   </div>
-                   
+
                 </ul>
             </li>
         </ul>
       </div>
     </div>
-   <!-- End of content -->
-  
+
   {if="$action == ''"}
    <!-- JS code -->
     <script type="text/javascript">
-        
+
         /**
           * Execute an action on locale
           *
           * @author Damian Kęska
           */
-    
+
     function localeAction(action, id)
-    {    
+    {
         panthera.htmlPOST({ url: '?display=locales&action='+action, data: 'id='+id});
         window.location = '?display=locales';
     }
-    
+
     $(document).ready(function () {
         /**
           * Adding new language
           *
           * @author Damian Kęska
           */
-    
+
         $('#newLanguageGrid').submit(function () {
-        
+
             panthera.jsonPOST({ data: '#createNewLanguage', async: true, success: function (response) {
                     if (response.status == "success")
-                        window.location = '?display=langtool';    
+                        window.location = '?display=langtool';
                 }
             });
-            
+
             return false;
         })
     });
     </script>
    <!-- End of JS code -->
   {/if}
-{include="footer.tpl"}
