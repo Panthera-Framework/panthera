@@ -1,5 +1,5 @@
 <script type="text/javascript">
-{include="mce.tpl"}
+{include="mce"}
 
 /**
   * Jump to ajax page

@@ -28,7 +28,7 @@ jQuery(document).ready(function($) {
     }
 
     {$mce_init = "init_instance_callback: initEditor,"}
-    {include="mce.tpl"}
+    {include="mce"}
 
     mceInit('page_content');
     

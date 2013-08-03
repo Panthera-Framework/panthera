@@ -20,7 +20,7 @@ jQuery(document).ready(function() {
       * @author Mateusz Warzyński
       */
 
-    {include="mce.tpl"}
+    {include="mce"}
 
     mceInit('address_text');
 
