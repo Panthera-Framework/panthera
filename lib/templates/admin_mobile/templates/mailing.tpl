@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash" data-transition="push">{function="localize('Dash')"}</a></li>
+        <li><a href="?display=dash&cat=admin" data-transition="push">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Mailing', 'mailing')"}</a></li>
       </ul>
     </nav>
@@ -29,7 +29,7 @@
                   <br><br>
 
                   <li class="list-divider">{function="localize('Send an e-mail', 'mailing')"}</li>
-                   <form action="{$AJAX_URL}?display=mailing&action=send" method="POST" id="mail_form">
+                   <form action="{$AJAX_URL}?display=mailing&cat=admin&action=send" method="POST" id="mail_form">
                     <input type="text" name="subject" placeholder="{function="localize('Subject', 'mailing')"}" class="input-text" autocomplete="off">
                     <input type="text" name="recipients" placeholder="{function="localize('Recipients', 'mailing')"}" class="input-text" autocomplete="off">
                     <input type="email" name="from" placeholder="{function="localize('From', 'mailing')"}" class="input-text" autocomplete="off" value="{$last_from}">
@@ -79,7 +79,7 @@
     {
         value = jQuery('#value_'+id).val();
 
-        panthera.jsonPOST({ url: '?display=conftool&action=change', data: 'id='+id+'&value='+value, success: function (response) {
+        panthera.jsonPOST({ url: '?display=conftool&cat=admin&action=change', data: 'id='+id+'&value='+value, success: function (response) {
                 if (response.status == "success") {
                     jQuery('#button_'+id).attr("disabled", "disabled");
                     jQuery('#button_'+id).animate({ height:'toggle'});

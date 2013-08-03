@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash&menu=settings">{function="localize('Dash')"}</a></li>
+        <li><a href="?display=dash&cat=admin&menu=settings">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Menu editor', 'menuedit')"}</a></li>
       </ul>
     </nav>
@@ -15,7 +15,7 @@
                {loop="$menu_categories"}
                 <li class="list-item-two-lines selectable" id="category_{$value.id}">
                     <button class="btn-small" style="float: right;" onclick="removeMenuCategory({$value.id});">{function="localize('Delete')"}</button>
-                    <a href="?display=menuedit&action=category&cat={$value.name}" data-ignore="true">
+                    <a href="?display=menuedit&cat=admin&action=category&cat={$value.name}" data-ignore="true">
                         <h3>{$value.name}</h3>
                         <p>{$value.title} ({$value.description})</p>
                     </a>
@@ -24,7 +24,7 @@
 
                <br><br>
 
-               <button class="btn-block" onclick="window.location = '?display=menuedit&action=new_category'">{function="localize('Add new menu category', 'menuedit')"}</button>
+               <button class="btn-block" onclick="window.location = '?display=menuedit&cat=admin&action=new_category'">{function="localize('Add new menu category', 'menuedit')"}</button>
 
             </ul>
           </li>
@@ -42,7 +42,7 @@
 
     function removeMenuCategory(id)
     {
-        panthera.jsonPOST({ url: '?display=menuedit&action=remove_category&category_id='+id, data: '', messageBox: 'userinfoBox', success: function (response) {
+        panthera.jsonPOST({ url: '?display=menuedit&cat=admin&action=remove_category&category_id='+id, data: '', messageBox: 'userinfoBox', success: function (response) {
                 if (response.status == "success")
                     $('#category_'+id).slideToggle();
             }

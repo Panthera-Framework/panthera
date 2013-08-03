@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash&menu=settings" data-transition="push">{function="localize('Dash')"}</a></li>
+        <li><a href="?display=dash&cat=admin&menu=settings" data-transition="push">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Configuration editor', 'conftool')"}</a></li>
       </ul>
     </nav>
@@ -44,7 +44,7 @@
     {
         value = jQuery('#value_'+id).val();
 
-        panthera.jsonPOST({ url: '?display=conftool&action=change', data: 'id='+id+'&value='+value, success: function (response) {
+        panthera.jsonPOST({ url: '?display=conftool&cat=admin&action=change', data: 'id='+id+'&value='+value, success: function (response) {
                 if (response.status == "success")
                 {
                    $('#button_'+id).attr("disabled", "disabled");

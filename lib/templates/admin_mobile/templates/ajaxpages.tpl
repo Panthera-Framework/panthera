@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash&menu=settings">{function="localize('Dash')"}</a></li>
+        <li><a href="?display=dash&cat=admin&menu=settings">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Index of ajax pages', 'ajaxpages')"}</a></li>
       </ul>
     </nav>

@@ -1,6 +1,6 @@
    <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=debug">{function="localize('Debugging center')"}</a></li>
+        <li><a href="?display=debug&cat=admin">{function="localize('Debugging center')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Array editor', 'debug')"}</a></li>
       </ul>
     </nav>
@@ -11,7 +11,7 @@
         <ul>
             <li id="json_edit" class="tab-item active">
              <ul class="list inset">
-              <form action="{$AJAX_URL}?display=_popup_jsonedit" method="POST" id="jsonEditForm">
+              <form action="{$AJAX_URL}?display=_popup_jsonedit&cat=admin" method="POST" id="jsonEditForm">
                <label>{function="localize('Enter JSON code or serialized array to convert to PHP array', 'debug')"}</label>
                <textarea name="jsonedit_content" style="width: 98%; height: 200px;">{$code}</textarea>
 

@@ -1,12 +1,12 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=gallery&action=display_category&unique={$unique}" data-transition="push">{function="localize('Gallery category')"}</a></li>
+        <li><a href="?display=gallery&cat=admin&action=display_category&unique={$unique}" data-transition="push">{function="localize('Gallery category')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Editing gallery image', 'gallery')"}</a></li>
       </ul>
     </nav>
 
     <div class="content">
-       <form action="?display=gallery&action=edit_item_form&subaction=edit_item&id={$id}" method="POST" id="change_item_form">
+       <form action="?display=gallery&cat=admin&action=edit_item_form&subaction=edit_item&id={$id}" method="POST" id="change_item_form">
         <ul>
             <li id="gallery_edititem" class="tab-item active">
                 <ul class="list">
@@ -59,7 +59,7 @@
 
 
         $("#change_item_form").submit(function () {
-            panthera.jsonPOST({ data: '#change_item_form', async: true, url: '?display=gallery&action=edit_item_form&subaction=edit_item&id={$id}',
+            panthera.jsonPOST({ data: '#change_item_form', async: true, url: '?display=gallery&cat=admin&action=edit_item_form&subaction=edit_item&id={$id}',
                 success: function (response) {
                     if (response.status == "success")
                         $('#save_button').val('Saved!');

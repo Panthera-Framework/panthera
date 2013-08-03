@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash" data-transition="push">{function="localize('Dash')"}</a></li>
+        <li><a href="?display=dash&cat=admin" data-transition="push">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Users')"}</a></li>
       </ul>
     </nav>
@@ -14,7 +14,7 @@
 
             {loop="$users_list"}
              <li class="list-item-two-lines selectable">
-                <a {if="$view_users == True"} href='?display=settings&action=my_account&uid={$value.id}' {else} href='' {/if}>
+                <a {if="$view_users == True"} href='?display=settings&cat=admin&action=my_account&uid={$value.id}' {else} href='' {/if}>
                     <h3>{$value.full_name}</h3>
                     <p>{$value.login} ({$value.primary_group})</p>
                 </a>
@@ -47,7 +47,7 @@
     <script type="text/javascript">
     $(document).ready(function(){
         function jumpToAjaxPage(id) {
-            panthera.htmlGET({ url: '?display=settings&action=users&subaction=show_table&usersPage='+id, success: '#all_users_window' });
+            panthera.htmlGET({ url: '?display=settings&cat=admin&action=users&subaction=show_table&usersPage='+id, success: '#all_users_window' });
         };
     });
     </script>

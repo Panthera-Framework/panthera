@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=debug">{function="localize('Debugging center')"}</a></li>
+        <li><a href="?display=debug&cat=admin">{function="localize('Debugging center')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Shell utils', 'debug')"}</a></li>
       </ul>
     </nav>
@@ -46,7 +46,7 @@
     {
         command = jQuery('#command_selection').val();
 
-        panthera.jsonPOST({ url: '{$AJAX_URL}?display=shellutils&exec='+command, data: '', messageBox: 'userinfoBox'});
+        panthera.jsonPOST({ url: '{$AJAX_URL}?display=shellutils&cat=admin&exec='+command, data: '', messageBox: 'userinfoBox'});
         return false;
 
     }

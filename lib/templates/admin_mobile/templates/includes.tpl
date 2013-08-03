@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=debug">{function="localize('Debugging center')"}</a></li>
+        <li><a href="?display=debug&cat=admin">{function="localize('Debugging center')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Includes')"}</a></li>
       </ul>
     </nav>
@@ -16,7 +16,7 @@
 
              {loop="$files"}
               <li class="list-item-single-line selectable">
-                <a onclick="window.location = '?display=browsefile&path={$value}'" data-ignore="true" data-transition="push">
+                <a onclick="window.location = '?display=browsefile&cat=admin&path={$value}'" data-ignore="true" data-transition="push">
                     <p style="vertical-align: middle;">{$value}</p>
                 </a>
               </li>

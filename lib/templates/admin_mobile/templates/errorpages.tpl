@@ -1,6 +1,6 @@
   <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash&menu=settings">{function="localize('Dash')"}</a></li>
+        <li><a href="?display=dash&cat=admin&menu=settings">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Errorpages')"}</a></li>
       </ul>
   </nav>
@@ -23,7 +23,7 @@
                 {else}
                     <li class="list-item-two-lines">
                         <div>
-                            <button class="btn-small" style="float: right; display: none;" onclick="window.open('{$AJAX_URL}?display=errorpages&show={$value.testname}','error_window','width=1024,height=768'); return false;">{function="localize('Trigger test', 'errorpages')"}</button>
+                            <button class="btn-small" style="float: right; display: none;" onclick="window.open('{$AJAX_URL}?display=errorpages&cat=admin&show={$value.testname}','error_window','width=1024,height=768'); return false;">{function="localize('Trigger test', 'errorpages')"}</button>
                             <h3><b>{$value.name}</b></h3>
                             <p>{$value.file}</p>
                         </div>

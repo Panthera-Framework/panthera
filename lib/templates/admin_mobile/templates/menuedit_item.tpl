@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=menuedit&action=category&cat={$cat_type}">{function="localize('Category', 'menuedit')"}</a></li>
+        <li><a href="?display=menuedit&cat=admin&action=category&cat={$cat_type}">{function="localize('Category', 'menuedit')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Editing item', 'menuedit')"}</a></li>
       </ul>
     </nav>
@@ -11,7 +11,7 @@
      <div class="slider tab-slider">
         <ul>
           <li id="dash" class="tab-item active">
-           <form id="save_form" method="POST" action="?display=menuedit&action=save_item">
+           <form id="save_form" method="POST" action="?display=menuedit&cat=admin&action=save_item">
             <ul class="list inset">
                 <input type="text" name="item_title" placeholder="{function="localize('Title', 'menuedit')"}" value="{$item_title}" class="input-text" autocomplete="off">
                 <input type="text" name="item_link" placeholder="{function="localize('Link', 'messages')"}" value="{$item_link}" class="input-text" autocomplete="off">

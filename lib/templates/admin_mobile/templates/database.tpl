@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash&menu=settings">{function="localize('Dash')"}</a></li>
+        <li><a href="?display=dash&cat=admin&menu=settings">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Database management', 'database')"}</a></li>
       </ul>
     </nav>
@@ -20,7 +20,7 @@
                 </li>
                 {/loop}
 
-                <button class="btn-block" onclick="window.location = '?display=sqldump'">{function="localize('Manage backups', 'database')"}</button>
+                <button class="btn-block" onclick="window.location = '?display=sqldump&cat=admin'">{function="localize('Manage backups', 'database')"}</button>
 
                 <br><br>
 

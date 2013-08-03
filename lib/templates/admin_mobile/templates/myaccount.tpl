@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=settings&action=users" data-transition="push">{function="localize('Users')"}</a></li>
+        <li><a href="?display=settings&cat=admin&action=users" data-transition="push">{function="localize('Users')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('User account', 'settings')"}</a></li>
       </ul>
     </nav>
@@ -25,7 +25,7 @@
               </li>
 
               <div id="window_password" style="display: none;">
-                <form action="?display=settings&action=my_account&changepassword{$user_uid}" method="POST" id="changepasswd_form">
+                <form action="?display=settings&cat=admin&action=my_account&changepassword{$user_uid}" method="POST" id="changepasswd_form">
                   {if="!isset($dontRequireOld)"}
                     <input type="password" name="old_passwd" class="input-text" placeholder="{function="localize('Old password', 'settings')"}">
                   {/if}
@@ -66,7 +66,7 @@
 
               <div id="window_language" style="display: none;">
                   <br>
-                <form action="?display=settings&action=my_account&changelanguage{$user_uid}" method="POST" id="changelanguage_form">
+                <form action="?display=settings&cat=admin&action=my_account&changelanguage{$user_uid}" method="POST" id="changelanguage_form">
                     <select name="language">
                        {loop="$locales_added"}
                          <option value="{$key}">{$key}</option>
@@ -113,7 +113,7 @@
     $('#changelanguage_form').submit(function () {
         panthera.jsonPOST({ data: '#changelanguage_form', success: function (response) {
                 if (response.status == "success")
-                    window.location = '?display=settings&action=my_account';
+                    window.location = '?display=settings&cat=admin&action=my_account';
             }
         });
 

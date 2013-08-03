@@ -1,6 +1,6 @@
    <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=includes">{function="localize('Includes', 'debug')"}</a></li>
+        <li><a href="?display=includes&cat=admin">{function="localize('Includes', 'debug')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('File browser')"}</a></li>
       </ul>
     </nav>

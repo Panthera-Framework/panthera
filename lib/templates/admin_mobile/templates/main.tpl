@@ -49,7 +49,7 @@
                     {if="isset($navigateTo)"}
                         navigateTo('{$AJAX_URL}?{$navigateTo}');
                     {else}
-                        navigateTo('{$AJAX_URL}?display=dash&cat=admin');
+                        navigateTo('{$AJAX_URL}?display=dash&cat=admin&cat=admin');
                     {/if}
             });
       </script>
@@ -63,28 +63,28 @@
     <!-- Header -->
     <header class="action-bar fixed-top">
 
-      <a href="?display=dash" class="app-icon action up" data-ignore="true">
-        <i class="chevron"></i>
-      </a>
-
-      <h1 class="title" style="color: #33b5e5;">&nbsp;&nbsp;&nbsp;Panthera Mobile</h1>
+      <h2 class="title" style="margin-left: 20px;">Panthera Mobile <span class="subtitle"><a href="{$PANTHERA_URL}/pa-admin.php?display=dash&cat=admin&cat=admin&__switchdevice=desktop">Desktop</a></span></h2>
 
      {if="$user->login != ''"}
-      <div style="float: right; margin-right: 7px; margin-top: 9px;">
+      <div style="float: right; margin-right: 7px; margin-top: 7px;">
         <a href="pa-login.php?logout=True">
-            <div class="login"><a href="pa-login.php?logout=True" />{function="localize('Logout')"}</a></div>
+            <div class="login"><h2 class="title"><a href="pa-login.php?logout=True" />{function="localize('Logout')"}</a></h2></div>
         </a>
       </div>
 
       <div id="flags" style="float: right; margin-right: 30px; margin-top: 12px;">
           {loop="$flags"}
-              <a href="?display=dash&_locale={$value}"><img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 24px;"></a>&nbsp;&nbsp;
+              <a href="?display=dash&cat=admin&_locale={$value}"><img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 24px;"></a>&nbsp;&nbsp;
           {/loop}
       </div>
      {/if}
 
     </header>
    <!-- End of header -->
+
+   <!-- Content -->
+    <div id="ajax_content" class="ajax_content"></div>
+   <!-- End of content -->
 
    <!-- Bottom -->
     <nav class="action-bar fixed-bottom">
@@ -101,10 +101,6 @@
           </ul>
     </nav>
    <!-- End of bottom -->
-
-   <!-- Content -->
-    <div id="ajax_content" class="ajax_content"></div>
-   <!-- End of content -->
 
    </div>
   <!-- End of page -->

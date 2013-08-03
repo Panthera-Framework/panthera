@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash" data-transition="push">{function="localize('Dash')"}</a></li>
+        <li><a href="?display=dash&cat=admin" data-transition="push">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Facebook', 'facebook')"}</a></li>
       </ul>
     </nav>
@@ -26,7 +26,7 @@
         appID = $('#appID_value').val();
         Secret = $('#secret_value').val();
 
-        panthera.jsonPOST({ url: '?display=facebook&action=settings&subaction=save', data: 'appid='+appID+'&secret='+Secret, success: function (response) {
+        panthera.jsonPOST({ url: '?display=facebook&cat=admin&action=settings&subaction=save', data: 'appid='+appID+'&secret='+Secret, success: function (response) {
                 if (response.status == "success")
                 {
                    jQuery('#save_button').attr("disabled", "disabled");

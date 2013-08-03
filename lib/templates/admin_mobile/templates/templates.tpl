@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash&menu=settings" data-transition="push">{function="localize('Dash')"}</a></li>
+        <li><a href="?display=dash&cat=admin&menu=settings" data-transition="push">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Templates management', 'templates')"}</a></li>
       </ul>
     </nav>
@@ -51,7 +51,7 @@
 
     function webrootMerge()
     {
-        panthera.jsonPOST({ url: '?display=templates&action=webrootMerge', async: true, success: function (response) {
+        panthera.jsonPOST({ url: '?display=templates&cat=admin&action=webrootMerge', async: true, success: function (response) {
             if (response.status == "success") {
                 $('#merge_a').slideToggle();
                 $('#merge_a').slideToggle();
@@ -73,7 +73,7 @@
         if (typeof value === "object")
             value = value.val();
 
-        panthera.jsonPOST({ url: '?display=templates&action=exec&name='+toolName+'&value='+value, async: true, success: function (response) {
+        panthera.jsonPOST({ url: '?display=templates&cat=admin&action=exec&name='+toolName+'&value='+value, async: true, success: function (response) {
                if (response.status == "success") {
                     $('#cache_clear').slideToggle();
                     $('#cache_clear').slideToggle();

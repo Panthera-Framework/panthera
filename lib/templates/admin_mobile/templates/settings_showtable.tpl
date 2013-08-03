@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=debug">{"Debugging center"|localize}</a></li>
+        <li><a href="?display=debug&cat=admin">{"Debugging center"|localize}</a></li>
         <li class="active"><a data-ignore="true">{"Informations about system"|localize:settings}</a></li>
       </ul>
     </nav>

@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=debug">{function="localize('Debugging center')"}</a></li>
+        <li><a href="?display=debug&cat=admin">{function="localize('Debugging center')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Firebug settings', 'firebug')"}</a></li>
       </ul>
     </nav>
@@ -72,9 +72,9 @@
           */
 
         $('#addrAddBtn').click(function () {
-            panthera.jsonPOST({ url: '?display=firebugSettings&action=add', data: 'addr='+$('#addr').val(), success: function (response) {
+            panthera.jsonPOST({ url: '?display=firebugSettings&cat=admin&action=add', data: 'addr='+$('#addr').val(), success: function (response) {
                  if (response.status == "success")
-                    window.location = "?display=firebugSettings";
+                    window.location = "?display=firebugSettings&cat=admin";
             }});
 
         });
@@ -89,7 +89,7 @@
 
    function removeAddress(address, id)
    {
-        panthera.jsonPOST({ url: '?display=firebugSettings&action=remove', data: 'addr='+address, success: function (response) {
+        panthera.jsonPOST({ url: '?display=firebugSettings&cat=admin&action=remove', data: 'addr='+address, success: function (response) {
             if (response.status == "success")
                 $('#addr_'+id).remove();
 

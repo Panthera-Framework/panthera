@@ -14,9 +14,9 @@
 
     function toggleDebugValue()
     {
-        panthera.jsonGET({ data: '', url: '?display=debug&action=toggle_debug_value', success: function (response) {
+        panthera.jsonGET({ data: '', url: '?display=debug&cat=admin&action=toggle_debug_value', success: function (response) {
                 if (response.status == "success")
-                    navigateTo('?display=debug');
+                    navigateTo('?display=debug&cat=admin');
             }
         });
     }
@@ -29,7 +29,7 @@
 
     function manageFilters(filter)
     {
-        panthera.jsonPOST({ url: '{$AJAX_URL}?display=debug&action=manageFilterList', data: 'filter='+filter, success: function (response) {
+        panthera.jsonPOST({ url: '{$AJAX_URL}?display=debug&cat=admin&action=manageFilterList', data: 'filter='+filter, success: function (response) {
                 if(response.status == "success")
                 {
                     $('#filterList').html(response.filter);
@@ -42,7 +42,7 @@
 
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash">{function="localize('Dash')"}</a></li>
+        <li><a href="?display=dash&cat=admin">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Debugging center')"}</a></li>
       </ul>
     </nav>

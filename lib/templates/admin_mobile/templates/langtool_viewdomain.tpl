@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=langtool&action=domains&locale={$locale}">{function="localize('Manage domains', 'langtool')"}</a></li>
+        <li><a href="?display=langtool&cat=admin&action=domains&locale={$locale}">{function="localize('Manage domains', 'langtool')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Translates for', 'langtool')"} {$domain}</a></li>
       </ul>
     </nav>
@@ -10,7 +10,7 @@
         <ul>
             <ul class="list inset">
                <label>{function="localize('Add new translation', 'langtool')"}</label>
-              <form id="add_string" action="?display=langtool&action=view_domain&locale={$locale}&domain={$domain}&subaction=set_string" method="POST">
+              <form id="add_string" action="?display=langtool&cat=admin&action=view_domain&locale={$locale}&domain={$domain}&subaction=set_string" method="POST">
                   <img src="{$PANTHERA_URL}/images/admin/flags/english.png" height="12px">&nbsp;<input type="text" name="id" class="input-text inline" autocomplete="off" style="max-width: calc(100% - 22px);"><br>
                   <img src="{$PANTHERA_URL}/images/admin/flags/{$locale}.png" height="12px">&nbsp;<input type="text" name="string" class="input-text inline" autocomplete="off" style="max-width: calc(100% - 22px);">
                   <button class="btn-block" onclick="addString();" style="margin-top: 6px;">{function="localize('Add')"}</button>
@@ -75,7 +75,7 @@
     {
         string = $("#string_value_"+j).val();
         id = $("#key_"+j).val();
-        panthera.jsonPOST({ url: "?display=langtool&action=view_domain&locale="+locale+"&domain="+domain+"&subaction=set_string&id="+id+"&string="+string, data: "", success: function (response) {
+        panthera.jsonPOST({ url: "?display=langtool&cat=admin&action=view_domain&locale="+locale+"&domain="+domain+"&subaction=set_string&id="+id+"&string="+string, data: "", success: function (response) {
 
             // return string from server (just in case)
             if (response.status == "success")
@@ -99,7 +99,7 @@
 
             // return string from server (just in case)
             if (response.status == "success")
-                window.location = '?display=langtool&action=view_domain&locale={$locale}&domain={$domain}';
+                window.location = '?display=langtool&cat=admin&action=view_domain&locale={$locale}&domain={$domain}';
 
             }
         });
@@ -115,7 +115,7 @@
     {
         id = $("#key_"+j).val();
 
-        panthera.jsonPOST({ url: "?display=langtool&action=view_domain&locale="+locale+"&domain="+domain+"&subaction=remove_string&id="+id, data: "", messageBox: 'userinfoBox', success: function (response) {
+        panthera.jsonPOST({ url: "?display=langtool&cat=admin&action=view_domain&locale="+locale+"&domain="+domain+"&subaction=remove_string&id="+id, data: "", messageBox: 'userinfoBox', success: function (response) {
 
             // return string from server (just in case)
             if (response.status == "success")
