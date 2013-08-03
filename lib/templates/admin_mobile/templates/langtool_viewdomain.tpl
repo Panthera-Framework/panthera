@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=langtool&cat=admin&action=domains&locale={$locale}">{function="localize('Manage domains', 'langtool')"}</a></li>
+        <li><a href="#" onclick="navigateTo('?display=langtool&cat=admin&action=domains&locale={$locale}');">{function="localize('Manage domains', 'langtool')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Translates for', 'langtool')"} {$domain}</a></li>
       </ul>
     </nav>
@@ -99,7 +99,7 @@
 
             // return string from server (just in case)
             if (response.status == "success")
-                window.location = '?display=langtool&cat=admin&action=view_domain&locale={$locale}&domain={$domain}';
+                navigateTo('?display=langtool&cat=admin&action=view_domain&locale={$locale}&domain={$domain}');
 
             }
         });

@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=gallery&cat=admin&action=display_category&unique={$unique}" data-transition="push">{function="localize('Gallery category')"}</a></li>
+        <li><a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=display_category&unique={$unique}');" data-transition="push">{loop="$category_list"}{if="$value->id == $gallery_id"} {$value->title} {/if} {/loop}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Editing gallery image', 'gallery')"}</a></li>
       </ul>
     </nav>

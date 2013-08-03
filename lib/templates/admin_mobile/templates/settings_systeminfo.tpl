@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=debug&cat=admin" data-transition="push">{function="localize('Debugging center')"}</a></li>
+        <li><a href="#" onclick="navigateTo('?display=debug&cat=admin');" data-transition="push">{function="localize('Debugging center')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Informations about system', 'settings')"}</a></li>
       </ul>
     </nav>

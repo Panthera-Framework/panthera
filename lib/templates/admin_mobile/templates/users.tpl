@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash&cat=admin" data-transition="push">{function="localize('Dash')"}</a></li>
+        <li><a href="#" onclick="navigateTo('?display=dash&cat=admin');" data-transition="push">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Users')"}</a></li>
       </ul>
     </nav>
@@ -14,7 +14,7 @@
 
             {loop="$users_list"}
              <li class="list-item-two-lines selectable">
-                <a {if="$view_users == True"} href='?display=settings&cat=admin&action=my_account&uid={$value.id}' {else} href='' {/if}>
+                <a {if="$view_users == True"} href="#" onclick="navigateTo('?display=settings&cat=admin&action=my_account&uid={$value.id}');" {else} href='' {/if}>
                     <h3>{$value.full_name}</h3>
                     <p>{$value.login} ({$value.primary_group})</p>
                 </a>

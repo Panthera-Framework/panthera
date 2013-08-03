@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=debug&cat=admin">{function="localize('Debugging center')"}</a></li>
+        <li><a href="#" onclick="navigateTo('?display=debug&cat=admin');">{function="localize('Debugging center')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Firebug settings', 'firebug')"}</a></li>
       </ul>
     </nav>
@@ -9,7 +9,7 @@
       <div class="slider tab-slider">
 
         <ul>
-            <li id="gallery" class="tab-item active">
+            <li id="firebug" class="tab-item active">
                 <ul class="list inset">
                     <li class="list-divider">{function="localize('Whitelist - only listed users will be able to use Firebug', 'firebug')"}</li>
 
@@ -74,7 +74,7 @@
         $('#addrAddBtn').click(function () {
             panthera.jsonPOST({ url: '?display=firebugSettings&cat=admin&action=add', data: 'addr='+$('#addr').val(), success: function (response) {
                  if (response.status == "success")
-                    window.location = "?display=firebugSettings&cat=admin";
+                    navigateTo("?display=firebugSettings&cat=admin");
             }});
 
         });

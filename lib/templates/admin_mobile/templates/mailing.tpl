@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash&cat=admin" data-transition="push">{function="localize('Dash')"}</a></li>
+        <li><a href="#" onclick="navigateTo('?display=dash&cat=admin');" data-transition="push">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Mailing', 'mailing')"}</a></li>
       </ul>
     </nav>
@@ -15,14 +15,14 @@
                    <li class="list-divider">{function="localize($value.name, 'mailing')"}</li>
                    <li class="list-item-single-line">
                      {if="is_bool($value.value)"}
-                      <a id="php_mail" onclick="togglePhpMail();" style="display: inline;">{if="$value.value == True"} {function="localize('True')"} {else} {function="localize('False')"} {/if}</a>
+                      <a id="id_{$value.record_name}" onclick="togglePhpMail('{$value.record_name}'); $('#button_{$value.record_name}').slideDown();" style="display: inline;">{if="$value.value == True"} {function="localize('True')"} {else} {function="localize('False')"} {/if}</a>
                       <input type="text" id="value_{$value.record_name}" {if="$value.value == True"} value='1' {else} value='0' {/if} style="display: none;">
                      {elseif="$value.record_name == 'mailing_password'"}
-                      <input type="password" placeholder="{function="localize($value.name, 'mailing')"}" value='{$value.value}' id="value_{$value.record_name}" class="input-text inline" onfocus="this.value = ''">
+                      <input type="password" placeholder="{function="localize($value.name, 'mailing')"}" value='{$value.value}' id="value_{$value.record_name}" class="input-text inline" onfocus="this.value = ''; $('#button_{$value.record_name}').slideDown();">
                      {else}
-                      <input type="text" placeholder="{function="localize($value.name, 'mailing')"}" value='{$value.value}' id="value_{$value.record_name}" class="input-text inline">
+                      <input type="text" placeholder="{function="localize($value.name, 'mailing')"}" value='{$value.value}' id="value_{$value.record_name}" class="input-text inline" onfocus="$('#button_{$value.record_name}').slideDown();">
                      {/if}
-                      <button class="btn-small" onclick="saveVariable('{$value.record_name}');" style="float: right;" id="button_{$value.record_name}">{function="localize('Save')"}</button>
+                      <button class="btn-small" onclick="saveVariable('{$value.record_name}');" style="float: right; display: none;" id="button_{$value.record_name}">{function="localize('Save')"}</button>
                    </li>
                   {/loop}
 
@@ -99,20 +99,20 @@
       * @author Mateusz Warzyński
       */
 
-    function togglePhpMail()
+    function togglePhpMail(value)
     {
-        variable = $('#value_mailing_use_php').val();
+        variable = $('#value_'+value).val();
 
         if (variable == 1)
         {
-            $("#value_mailing_use_php").val('0');
-            $('#php_mail').text("{function="localize('False')"}");
+            $('#value_'+value).val('0');
+            $('#id_'+value).text("{function="localize('False')"}");
         }
 
         if (variable == 0)
         {
-            $("#value_mailing_use_php").val('1');
-            $('#php_mail').text("{function="localize('True')"}");
+            $('#value_'+value).val('1');
+            $('#id_'+value).text("{function="localize('True')"}");
         }
     }
 

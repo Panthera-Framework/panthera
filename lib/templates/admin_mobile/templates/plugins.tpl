@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash&cat=admin&menu=settings" data-transition="push">{function="localize('Dash')"}</a></li>
+        <li><a href="#" onclick="navigateTo('?display=dash&cat=admin&menu=settings');" data-transition="push">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Plugins', 'plugins')"}</a></li>
       </ul>
     </nav>
@@ -22,7 +22,7 @@
                    </li>
 
                   {if="$value.configuration != ''"}
-                   <button onclick="window.location = '{$value.configuration}'" class="btn-small" style="float: right;">{function="localize('Settings')"}</button>
+                   <button onclick="navigateTo('{$value.configuration}');" class="btn-small" style="float: right;">{function="localize('Settings')"}</button>
                    <br><br>
                   {/if}
                   {/loop}
@@ -45,7 +45,7 @@
      {
         panthera.jsonPOST({ url: '?display=plugins&cat=admin&action=toggle&plugin='+name+'&value='+value, messageBox: 'userinfoBox', success: function (response) {
                 if (response.status == "success")
-                    window.location = "?display=plugins&cat=admin";
+                    navigateTo("?display=plugins&cat=admin");
             }
         });
 

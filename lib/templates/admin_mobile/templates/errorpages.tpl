@@ -1,6 +1,6 @@
   <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash&cat=admin&menu=settings">{function="localize('Dash')"}</a></li>
+        <li><a href="#" onclick="navigateTo('?display=dash&cat=admin&menu=settings');">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Errorpages')"}</a></li>
       </ul>
   </nav>

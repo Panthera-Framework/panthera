@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=langtool&cat=admin">{function="localize('Languages', 'langtool')"}</a></li>
+        <li><a href="#" onclick="navigateTo('?display=langtool&cat=admin');">{function="localize('Languages', 'langtool')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Manage domains', 'langtool')"}</a></li>
       </ul>
     </nav>
@@ -15,7 +15,7 @@
               {$j=$j+1}
               <li class="list-item-single-line" id="domain_{$j}">
                 <button class="btn-small" style="float: right;" onclick="$('#option_{$j}').slideToggle();">{function="localize('Options')"}</button>
-                <a href="?display=langtool&cat=admin&action=view_domain&locale={$locale}&domain={$value}" data-ignore="true">
+                <a href="#" onclick="navigateTo('?display=langtool&cat=admin&action=view_domain&locale={$locale}&domain={$value}');" data-ignore="true">
                     <img src="{$PANTHERA_URL}/images/admin/flags/{$locale}.png" width="auto" height="15px" style="vertical-align: middle;">
                     <span style="vertical-align: middle;" id="value_{$j}">{$value}</span>
                 </a>
@@ -95,7 +95,7 @@
         var name = $("#domain_name").val();
         panthera.jsonPOST({ url: '?display=langtool&cat=admin&action=domains&subaction=add_domain&domain_name='+name+'&locale='+locale, data: '', success: function (response) {
                 if (response.status == "success")
-                    window.location = '?display=langtool&cat=admin&action=domains&locale='+locale;
+                    navigateTo('?display=langtool&cat=admin&action=domains&locale='+locale);
             }
         });
 

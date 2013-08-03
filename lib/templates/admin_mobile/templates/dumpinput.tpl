@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=debug&cat=admin">{function="localize('Debugging center')"}</a></li>
+        <li><a onclick="navigateTo('?display=debug&cat=admin');">{function="localize('Debugging center')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Dumpinput', 'debug')"}</a></li>
       </ul>
     </nav>

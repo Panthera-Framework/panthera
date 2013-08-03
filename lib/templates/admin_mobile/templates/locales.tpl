@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash&cat=admin&menu=settings" data-transition="push">{function="localize('Dash')"}</a></li>
+        <li><a href="#" onclick="navigateTo('?display=dash&cat=admin&menu=settings');" data-transition="push">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Language settings', 'locales')"}</a></li>
       </ul>
     </nav>
@@ -44,7 +44,7 @@
                    </li>
 
                    <li class="list-item-two-lines selectable">
-                      <a href="?display=langtool&cat=admin">
+                      <a href="#" onclick="navigateTo('?display=langtool&cat=admin');">
                           <h3>{function="localize('Translations editor', 'langtool')"}</h3>
                           <p>{function="localize('Tools', 'locales')"}</p>
                       </a>
@@ -93,7 +93,7 @@
     function localeAction(action, id)
     {
         panthera.htmlPOST({ url: '?display=locales&cat=admin&action='+action, data: 'id='+id});
-        window.location = '?display=locales&cat=admin';
+        navigateTo('?display=locales&cat=admin');
     }
 
     $(document).ready(function () {
@@ -107,7 +107,7 @@
 
             panthera.jsonPOST({ data: '#createNewLanguage', async: true, success: function (response) {
                     if (response.status == "success")
-                        window.location = '?display=langtool&cat=admin';
+                        navigateTo('?display=langtool&cat=admin');
                 }
             });
 

@@ -1,7 +1,7 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=gallery&cat=admin" data-transition="push">{function="localize('Gallery')"}</a></li>
-        <li class="active"><a data-ignore="true">{function="localize('Display category')"}</a></li>
+        <li><a href="#" onclick="navigateTo('?display=gallery&cat=admin');" data-transition="push">{function="localize('Gallery')"}</a></li>
+        <li class="active"><a data-ignore="true">{$category_title}</a></li>
       </ul>
     </nav>
 
@@ -14,13 +14,13 @@
 
                {loop="$languages"}
                 <li class="list-item-single-line">
-                  <a href="#{$key}" onclick="window.location = '?display=gallery&cat=admin&action=display_category&unique={$unique}&language={$key}'">
+                  <a href="#{$key}" onclick="navigateTo('?display=gallery&cat=admin&action=display_category&unique={$unique}&language={$key}');">
                     <p>{$key}</p>
                   </a>
                 </li>
                {/loop}
 
-               <label>{function="localize('Items', 'gallery')"}</label>
+               <label></label>
             </ul>
         </ul>
       {/if}
@@ -28,7 +28,7 @@
       <div class="gallery">
 
         {loop="$item_list"}
-              <a href="?display=gallery&cat=admin&action=edit_item_form&itid={$value->id}">
+              <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=edit_item_form&itid={$value->id}');">
                 <div class="image">
                     <img src="{$value->getThumbnail(300, True, True)}" class="picture" {if="$value->visibility == 1"} style='opacity: 0.2;' {/if}/>
                     <div class="description" {if="$value->visibility == 1"} style='color: #7E7E7E;' {/if}>

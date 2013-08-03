@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=dash&cat=admin" data-transition="push">{function="localize('Dash')"}</a></li>
+        <li><a href="#" onclick="navigateTo('?display=dash&cat=admin');" data-transition="push">{function="localize('Dash')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('Gallery')"}</a></li>
       </ul>
     </nav>
@@ -15,7 +15,7 @@
                   {loop="$category_list"}
                    <li class="list-item-single-line" style="height: 60px;" id="li_{$value->id}">
                       <div class="inline">
-                        <a href="?display=gallery&cat=admin&action=display_category&unique={$value->unique}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}"><img src="{$value->thumb_url|pantheraUrl}" width="40px" height="40px" style="vertical-align: middle;"></a>
+                        <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=display_category&unique={$value->unique}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}');"><img src="{$value->thumb_url|pantheraUrl}" width="40px" height="40px" style="vertical-align: middle;"></a>
                         <input type="text" placeholder="{function="localize('Name', 'mailing')"}" value='{$value->title}' id="value_{$value->id}" class="input-text inline" {if="$value->visibility == 0"} style="border-bottom: 0px; color: #858585;" {else}  style="border-bottom: 0px;" {/if} onfocus="jQuery('#options_{$value->id}').animate({ height:'toggle'});">
                         <!-- <button class="btn-small" style="float:right;">{function="localize('Edit', 'gallery')"}</button> -->
                       </div>
@@ -96,7 +96,7 @@
 
             panthera.jsonPOST({ url: '?display=gallery&cat=admin&action=add_category&visibility='+visibility+'&new_title='+title, data: '', success: function (response) {
                     if (response.status == "success") {
-                        window.location = '?display=gallery&cat=admin';
+                        navigateTo('?display=gallery&cat=admin');
                     }
                 }
             });

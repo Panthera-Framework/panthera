@@ -1,6 +1,6 @@
     <nav class="tab-fixed">
       <ul class="tab-inner">
-        <li><a href="?display=settings&cat=admin&action=users" data-transition="push">{function="localize('Users')"}</a></li>
+        <li><a href="#" onclick="navigateTo('?display=settings&cat=admin&action=users');" data-transition="push">{function="localize('Users')"}</a></li>
         <li class="active"><a data-ignore="true">{function="localize('User account', 'settings')"}</a></li>
       </ul>
     </nav>
@@ -113,7 +113,7 @@
     $('#changelanguage_form').submit(function () {
         panthera.jsonPOST({ data: '#changelanguage_form', success: function (response) {
                 if (response.status == "success")
-                    window.location = '?display=settings&cat=admin&action=my_account';
+                    navigateTo('?display=settings&cat=admin&action=my_account');
             }
         });
 
