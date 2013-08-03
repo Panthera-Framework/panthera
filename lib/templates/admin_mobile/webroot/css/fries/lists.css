@@ -91,7 +91,6 @@
 }
 .picture {
     max-height: 300px;
-    width: 100%;
     max-width: 390px;
     position:absolute;
     margin: auto;
