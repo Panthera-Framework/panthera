@@ -615,7 +615,7 @@ abstract class pantheraFetchDB
         
         if ($this->cacheID != "" and $panthera->cache)
         {
-            if ($panthera->cache->exists($this->cacheID))
+            if ($panthera->cache->get($this->cacheID) !== null)
             {
                 $panthera->logging->output('Found record in cache by id=' .$this->cacheID, 'pantheraFetchDB');
                 $this->_data = $panthera->cache->get($this->cacheID);

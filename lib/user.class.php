@@ -539,12 +539,12 @@ class metaAttributes
         if ($this -> _cache > 0 and $panthera -> cache)
         {
             $this -> _cacheID = 'meta.' .$type. '.' .$objectID;
-        
-            if ($this->panthera->cache->exists($this->_cacheID))
+            
+            if ($this->panthera->cache->get($this->_cacheID) === null)
             {
                 $cache = $this->panthera->cache->get($this->_cacheID);
                 $usedCache = True;
-
+                
                 if ($cache === null or empty($cache))
                 {
                     $this->_metas = array();
@@ -555,8 +555,8 @@ class metaAttributes
             }
         } else
             $panthera -> logging -> output ('Cache disabled for meta type=' .$type. ', objectid=' .$objectID, 'metaAttributes');
-            
-        if ($this->_metas === null and is_int($cache))
+        
+        if ($this->_metas === null and !isset($usedCache))
         {
             $SQL = $panthera -> db -> query ('SELECT * FROM `{$db_prefix}metas` WHERE `userid` = :objectID AND `type` = :type', array('objectID' => $objectID, 'type' => $type));
             $Array = $SQL -> fetchAll(PDO::FETCH_ASSOC);
@@ -572,6 +572,9 @@ class metaAttributes
             // update cache
             if ($this -> _cache > 0 and $panthera -> cache)
             {
+                if (empty($this->_metas))
+                    $this->_metas = null;
+            
                 $panthera -> cache -> set ($this->_cacheID, $this->_metas, $this->cache);
                 $panthera -> logging -> output ('Wrote meta to cache id=' .$this->_cacheID, 'metaAttributes');
             }

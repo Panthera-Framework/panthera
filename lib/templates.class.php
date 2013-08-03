@@ -681,6 +681,8 @@ class pantheraTemplate extends pantheraClass
         
         // array with list of changes
         $changes = array();
+        
+        $this -> panthera -> logging -> output ('Starting webrootMerge', 'pantheraTemplate');
 
         foreach ($roots as $dir)
         {
