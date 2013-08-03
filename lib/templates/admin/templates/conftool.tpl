@@ -59,7 +59,7 @@ function conftool_array(k, value)
 
 </script>
 
-        <div class="titlebar">{function="localize('Configuration editor', 'conftool')"} - {function="localize('Administration tool for developers and administrators.', 'conftool')"}{include="_navigation_panel.tpl"}</div><br>
+        <div class="titlebar">{function="localize('Configuration editor', 'conftool')"} - {function="localize('Administration tool for developers and administrators.', 'conftool')"}{include="_navigation_panel"}</div><br>
 
         <div class="msgSuccess" id="userinfoBox_success"></div>
         <div class="msgError" id="userinfoBox_failed"></div>

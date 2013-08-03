@@ -76,7 +76,7 @@ function saveVariable(id, value)
 }
 </script>
 
-<div class="titlebar">{function="localize('Debugging center')"}{include="_navigation_panel.tpl"}</div>
+<div class="titlebar">{function="localize('Debugging center')"}{include="_navigation_panel"}</div>
 
       <table class="gridTable">
         <tfoot>

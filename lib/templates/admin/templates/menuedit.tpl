@@ -21,7 +21,7 @@ function removeMenuCategory(id)
 
 </script>
 
-    <div class="titlebar">{function="localize('Menu editor', 'menuedit')"} - {function="localize('Menu management for site and administration panel', 'menuedit')"}.{include="_navigation_panel.tpl"}</div><br>
+    <div class="titlebar">{function="localize('Menu editor', 'menuedit')"} - {function="localize('Menu management for site and administration panel', 'menuedit')"}.{include="_navigation_panel"}</div><br>
 
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>

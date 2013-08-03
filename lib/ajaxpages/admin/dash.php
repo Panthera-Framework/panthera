@@ -210,7 +210,7 @@ if ($category == 'main')
                 if (isset($enabledWidgets[$widget]->template))
                     $dashCustomWidgets[] = $enabledWidgets[$widget]->template;
                 else
-                    $dashCustomWidgets[] = 'dashWidget_' .$widget. '.tpl';
+                    $dashCustomWidgets[] = 'dashWidget_' .$widget;
                     
             } catch (Exception $e) {
                 $panthera -> logging -> output ('Cannot display a widget, got an exception: ' .$e->getMessage(), 'dash');

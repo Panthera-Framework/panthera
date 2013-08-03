@@ -34,7 +34,7 @@ $(document).ready(function () {
 
 <script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
 <div id="locale_window">
-    <div class="titlebar">{function="localize('Language settings', 'locales')"} - {function="localize('Manage site localization', 'locales')"}{include="_navigation_panel.tpl"}</div>
+    <div class="titlebar">{function="localize('Language settings', 'locales')"} - {function="localize('Manage site localization', 'locales')"}{include="_navigation_panel"}</div>
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>
 

@@ -56,7 +56,7 @@ function getOtherCustomPages()
          {/loop}
            <option value="all" {if="$current_lang == 'all'"} selected {/if} >{function="localize('all', 'messages')"}</option>
         </select>
-        {include="_navigation_panel.tpl"}
+        {include="_navigation_panel"}
     </div>
 
     <div class="grid-1">

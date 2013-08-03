@@ -135,7 +135,7 @@ $(document).ready(function () {
 });
 </script>
 
-<div class="titlebar">{function="localize('Packages management', 'leopard')"}{include="_navigation_panel.tpl"}</div>
+<div class="titlebar">{function="localize('Packages management', 'leopard')"}{include="_navigation_panel"}</div>
 
 <div class="grid-2" id="installedPackagesWindow" style="position: relative;">
           <div class="title-grid">{function="localize('Installed packages', 'leopard')"}<span></span></div>

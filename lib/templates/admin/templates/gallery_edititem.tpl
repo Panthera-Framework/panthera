@@ -68,7 +68,7 @@ sliderChangeImage('{$link}');
 </style>
 
 <article>
-  <div class="titlebar">{function="localize('Editing gallery image', 'gallery')"}{include="_navigation_panel.tpl"}</div>
+  <div class="titlebar">{function="localize('Editing gallery image', 'gallery')"}{include="_navigation_panel"}</div>
   <br>
   <div class="msgSuccess" id="userinfoBox_success"></div>
   <div class="msgError" id="userinfoBox_failed"></div>

@@ -1,7 +1,7 @@
 {if="$popup"}
 <h2 class="popupHeading">{function="localize('Array editor', 'debug')"}</h2>
 {else}
-<div class="titlebar" style="margin-bottom: 20px;">{function="localize('Array editor', 'debug')"}{include="_navigation_panel.tpl"}</div>
+<div class="titlebar" style="margin-bottom: 20px;">{function="localize('Array editor', 'debug')"}{include="_navigation_panel"}</div>
 {/if}
 
 <div class="msgSuccess" id="jsonEditBox_success"></div>

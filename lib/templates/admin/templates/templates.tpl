@@ -12,7 +12,7 @@ var localizeUpToDate = "{function="localize('All files are up to date with syste
 }
 </style>
 
-   <div class="titlebar">{function="localize('Templates management', 'templates')"}{include="_navigation_panel.tpl"}</div>
+   <div class="titlebar">{function="localize('Templates management', 'templates')"}{include="_navigation_panel"}</div>
    
         <div class="msgError" id="messageBox_failed"></div>
         <div class="msgSuccess" id="messageBox_success"></div>

@@ -18,7 +18,7 @@ function makeDump()
 
 </script>
 
-    <div class="titlebar">{function="localize('Database backup', 'database')"} - {function="localize('Backup your database to prevent data loss', 'database')"}{include="_navigation_panel.tpl"}</div>
+    <div class="titlebar">{function="localize('Database backup', 'database')"} - {function="localize('Backup your database to prevent data loss', 'database')"}{include="_navigation_panel"}</div>
 
     <br>
     <div class="msgSuccess" id="userinfoBox_success"></div>

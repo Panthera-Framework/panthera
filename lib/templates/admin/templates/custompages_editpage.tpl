@@ -75,7 +75,7 @@ jQuery(document).ready(function($) {
 
     <div id="edit_window">
         <form action="{$AJAX_URL}?id={$custompage_unique}&lang={$custompage_language}&display=custom&cat=admin&action=post_form&pid={$custompage_id}" method="POST" id="save_form">
-        <div class="titlebar">{function="localize('Editing page', 'custompages')"} - <span id="page_title_editor" style="color: black;">"{$custompage_title}"</span> ({$custompage_language}){include="_navigation_panel.tpl"}</div>
+        <div class="titlebar">{function="localize('Editing page', 'custompages')"} - <span id="page_title_editor" style="color: black;">"{$custompage_title}"</span> ({$custompage_language}){include="_navigation_panel"}</div>
 
         <br>
          <div class="msgSuccess" id="userinfoBox_success"></div>

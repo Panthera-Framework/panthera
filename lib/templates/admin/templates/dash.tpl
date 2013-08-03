@@ -59,7 +59,7 @@ $(function(){
 }
 </style>
 
-<div class="titlebar">{function="localize('Dash')"} - {function="localize('Everything is here', 'dash')"}{include="_navigation_panel.tpl"}</div>
+<div class="titlebar">{function="localize('Dash')"} - {function="localize('Everything is here', 'dash')"}{include="_navigation_panel"}</div>
         {loop="$dash_messages"}
             {if="$value.type == 'warning'"}
                 <div class="msgWarning" style="display: block;">{$value.message}</div>

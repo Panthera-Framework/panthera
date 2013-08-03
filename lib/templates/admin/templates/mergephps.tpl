@@ -75,7 +75,7 @@ function changeOutputType(name)
 {if="$popup == True"}
 <h2 class="popupHeading">{function="localize('Merge serialized arrays and json files', 'debug')"}</h2>
 {else}
-<div class="titlebar">{function="localize('Merge serialized arrays and json files', 'debug')"}{include="_navigation_panel.tpl"}</div>
+<div class="titlebar">{function="localize('Merge serialized arrays and json files', 'debug')"}{include="_navigation_panel"}</div>
 {/if}
 
         <div class="msgError" id="messageBox_failed"></div>

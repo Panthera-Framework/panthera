@@ -135,7 +135,7 @@ class pantheraTemplate extends pantheraClass
         $cacheDir = SITE_DIR. '/content/tmp/templates_c/';
         
         // configure RainTPL engine
-        Rain\Tpl::configure(array("base_url" => null, "tpl_dir"	=> '/', "cache_dir"	=> $cacheDir, "debug" => $this->debugging, 'auto_escape' => false, 'php_enabled' => true, 'sandbox' => false));
+        Rain\Tpl::configure(array("base_url" => null, "tpl_dir"	=> '/', "cache_dir"	=> $cacheDir, "tpl_ext" => 'tpl', "debug" => $this->debugging, 'auto_escape' => false, 'php_enabled' => true, 'sandbox' => false));
         $this->tpl = new Rain\Tpl;
         #\Rain\Tpl::registerTag('stringModifier', '{"([^}"]+)"|([a-zA-Z\"]+):?([A-Za-z0-9\"]+)?:?([A-Za-z0-9\"]+)?:?([A-Za-z0-9\"]+)?}', function( $params, $b ){ var_dump($params); } );
                 
@@ -551,7 +551,7 @@ class pantheraTemplate extends pantheraClass
         foreach ($this->vars as $var => $value)
             $this -> tpl -> assign($var, $value);
             
-        $render = $this -> tpl -> draw($file, True, True);
+        $render = $this -> tpl -> draw(str_replace('.tpl', '', $file), True, True);
             
         if ($renderOnly == True)
             return $render;        

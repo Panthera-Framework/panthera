@@ -1,6 +1,6 @@
 <script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
 
-    <div class="titlebar">{function="localize('System error pages', 'errorpages')"} - {function="localize('Test system error pages in one place', 'errorpages')"}{include="_navigation_panel.tpl"}</div>
+    <div class="titlebar">{function="localize('System error pages', 'errorpages')"} - {function="localize('Test system error pages in one place', 'errorpages')"}{include="_navigation_panel"}</div>
 
     <br>
     <div class="msgSuccess" id="userinfoBox_success"></div>

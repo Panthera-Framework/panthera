@@ -1,6 +1,6 @@
 <script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
 
-   <div class="titlebar">{function="localize('Index of ajax pages', 'ajaxpages')"} - {function="localize('Complete list of all ajax avaliable subpages', 'ajaxpages')"}{include="_navigation_panel.tpl"}</div>
+   <div class="titlebar">{function="localize('Index of ajax pages', 'ajaxpages')"} - {function="localize('Complete list of all ajax avaliable subpages', 'ajaxpages')"}{include="_navigation_panel"}</div>
 
         <br>
 

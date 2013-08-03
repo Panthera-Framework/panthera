@@ -139,7 +139,7 @@ function rebuildUserList(users)
 
 </script>
 
-<div class="titlebar"><span class="titleBarIcons"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" style="width: 25px"></a></span>{function="localize('Groups management', 'acl')"} - <b><i>"{$groupName}" {if="strlen($groupDescription) > 0"}({$groupDescription}){/if}</i></b>{include="_navigation_panel.tpl"}</div>
+<div class="titlebar"><span class="titleBarIcons"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" style="width: 25px"></a></span>{function="localize('Groups management', 'acl')"} - <b><i>"{$groupName}" {if="strlen($groupDescription) > 0"}({$groupDescription}){/if}</i></b>{include="_navigation_panel"}</div>
 
 <br>
 

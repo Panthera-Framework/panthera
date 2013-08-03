@@ -5,7 +5,7 @@ $(document).ready(function(){
 });
 </script>
 
-    <div class="titlebar">{function="localize('Message categories', 'qmessages')"} - {function="localize('Articles, quick messages, news etc.', 'qmessages')"}{include="_navigation_panel.tpl"}</div>
+    <div class="titlebar">{function="localize('Message categories', 'qmessages')"} - {function="localize('Articles, quick messages, news etc.', 'qmessages')"}{include="_navigation_panel"}</div>
 
     <br>
     <div class="msgSuccess" id="userinfoBox_success"></div>

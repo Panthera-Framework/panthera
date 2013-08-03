@@ -1,4 +1,4 @@
-        <div class="titlebar">{function="localize('Languages', 'langtool')"} - {function="localize('Manage languages', 'langtool')"}{include="_navigation_panel.tpl"}</div><br>
+        <div class="titlebar">{function="localize('Languages', 'langtool')"} - {function="localize('Manage languages', 'langtool')"}{include="_navigation_panel"}</div><br>
 
         <div class="grid-1">
         <div class="content-table-grid">

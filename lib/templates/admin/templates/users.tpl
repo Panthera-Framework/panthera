@@ -67,11 +67,11 @@ function removeGroup(name)
 
 </script>
 
-<div class="titlebar"><span class="titleBarIcons"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" style="width: 25px"></a></span>{function="localize('Users')"} - {function="localize('All registered users on this website', 'settings')"}{include="_navigation_panel.tpl"}</div>
+<div class="titlebar"><span class="titleBarIcons"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" style="width: 25px"></a></span>{function="localize('Users')"} - {function="localize('All registered users on this website', 'settings')"}{include="_navigation_panel"}</div>
 
         <div class="grid-1">
             <div id="usersDiv" style="position: relative;">
-            {include="users_table.tpl"}
+            {include="users_table"}
              </div>
         </div>
         

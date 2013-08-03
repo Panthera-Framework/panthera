@@ -30,7 +30,7 @@ function saveFacebook()
 
 </script>
 
-    <div class="titlebar">Facebook - {function="localize('Settings')"}{include="_navigation_panel.tpl"}</div><br>
+    <div class="titlebar">Facebook - {function="localize('Settings')"}{include="_navigation_panel"}</div><br>
     
     <div class="grid-1" style="position: relative;" id="facebookSettings">
          <table class="gridTable">
