@@ -72,9 +72,9 @@
         </a>
       </div>
 
-      <div id="flags" style="float: right; margin-right: 30px; margin-top: 12px;">
+      <div id="flags" style="float: right; margin-right: 30px; margin-top: 13px;">
           {loop="$flags"}
-              <a href="?display=dash&cat=admin&_locale={$value}"><img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 24px;"></a>&nbsp;&nbsp;
+              <a href="?display=dash&cat=admin&_locale={$value}"><img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 15px;"></a>&nbsp;&nbsp;
           {/loop}
       </div>
      {/if}
