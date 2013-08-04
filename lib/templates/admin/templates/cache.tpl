@@ -81,6 +81,29 @@ function saveCacheVariables()
 }
 
 /**
+  * Clear memcached server
+  *
+  * @author Mateusz Warzyński
+  */
+
+function clearMemcachedCache(id)
+{
+    panthera.jsonPOST({ url: '?display=cache&cat=admin&action=clearMemcachedCache&id='+id, data: '', success: function (response) {
+          if (response.status == "success") {
+                   jQuery('#button_'+id).animate({ height:'toggle'});
+                   jQuery('#button_'+id).animate({ height:'toggle'});
+          } else {
+              if (response.message != undefined)
+              {
+                  w2alert(response.message, '{function="localize('Error', 'localize')"}');
+              }
+          }
+        }
+    });
+    return false;
+}
+
+/**
   * Remove a Memcached server from list
   *
   * @author Damian Kęska
@@ -269,6 +292,17 @@ $(document).ready(function () {
                 </tr>
             </thead>
 
+            <tfoot>
+                <tr>
+                    <td colspan="2" class="rounded-foot-left">
+                        <em>
+                            <input type="button" value="{function="localize('Clear cache of this server', 'cache')"}" onclick="clearMemcachedCache({$value.num});" style="float: right; margin-right: 7px;" id="button_{$value.num}">
+                        </em>
+                    </td>
+                </tr>
+            </tfoot>
+
+
             <tbody>
                 <tr>
                     <td>{function="localize('Host', 'cache')"}:</td>
@@ -336,8 +370,8 @@ $(document).ready(function () {
                 <tr>
                     <td colspan="2" class="rounded-foot-left">
                         <em>
-                            <input type="button" value="{function="localize('Clear variables cache')"}" onclick="clearVariablesCache();" style="float: right; margin-right: 7px;" id="cl1">
-                            <input type="button" value="{function="localize('Clear files cache')"}" onclick="clearFilesCache();" style="float: right; margin-right: 7px;" id="cl2">
+                            <input type="button" value="{function="localize('Clear variables cache', 'cache')"}" onclick="clearVariablesCache();" style="float: right; margin-right: 7px;" id="cl1">
+                            <input type="button" value="{function="localize('Clear files cache', 'cache')"}" onclick="clearFilesCache();" style="float: right; margin-right: 7px;" id="cl2">
                         </em>
                     </td>
                 </tr>

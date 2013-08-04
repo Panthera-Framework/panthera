@@ -200,6 +200,37 @@ if (extension_loaded('memcached'))
         $panthera -> template -> push('stats', $serverStats);
         $panthera -> template -> display('cache_stats_memcached.tpl');
         pa_exit();
+
+
+    /**
+      * Clear memcached cache
+      *
+      * @author Mateusz Warzyński
+      */
+
+    } elseif ($_GET['action'] == 'clearMemcachedCache') {
+        $id = $_GET['id'];
+        $stats = $memcached -> getStats();
+
+        // get server and port from id
+        $i=0;
+        foreach ($stats as $server => $attributes)
+        {
+            if ($id == $i)
+            {
+                $serverPort = $server;
+            }
+            $i = $i++;
+        }
+
+        $server = explode(':', $serverPort);
+        $m = new Memcached;
+        $m -> addServer($server[0], $server[1]);
+
+        if ($m -> flush())
+            ajax_exit(array('status' => 'success'));
+        else
+            ajax_exit(array('status' => 'failed', 'message' => localize('Cannot clean cache!')));
     }
 
     $stats = $memcached -> getStats();
