@@ -4,8 +4,51 @@
 <script type="text/javascript">
 $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
 
+// Spinners
 var spinner = new panthera.ajaxLoader($('#cacheVariables'));
+var apc_cache = new panthera.ajaxLoader($('#apc_window'));
 var addMemcachedServerSpinner = new panthera.ajaxLoader($('#addMemcachedServerDiv'));
+
+/**
+  * Clear variables cache
+  *
+  * @author Mateusz Warzyński
+  */
+
+function clearVariablesCache()
+{
+        panthera.jsonPOST( { url: '?display=cache&cat=admin&action=clearVariablesCache', data: '', spinner: apc_cache, success: function (response) {
+                if (response.status == 'success')
+                {
+                    $('#cl1').slideUp();
+                    $('#cl1').slideDown();
+                }
+            }
+        });
+
+        return false;
+}
+
+/**
+  * Clear files cache
+  *
+  * @author Mateusz Warzyński
+  */
+
+function clearFilesCache()
+{
+        panthera.jsonPOST( { url: '?display=cache&cat=admin&action=clearFilesCache', data: '', spinner: apc_cache, success: function (response) {
+                if (response.status == 'success')
+                {
+                    $('#cl2').slideUp();
+                    $('#cl2').slideDown();
+                }
+            }
+        });
+
+        return false;
+}
+
 
 /**
   * Save cache variables to database
@@ -278,7 +321,7 @@ $(document).ready(function () {
       {/if}
 
      {if="$acp_info != ''"}
-      <div class="grid-2">
+      <div class="grid-2" id="apc_window">
          <table class="gridTable">
 
             <thead>
@@ -288,6 +331,17 @@ $(document).ready(function () {
                     </th>
                 </tr>
             </thead>
+
+            <tfoot>
+                <tr>
+                    <td colspan="2" class="rounded-foot-left">
+                        <em>
+                            <input type="button" value="{function="localize('Clear variables cache')"}" onclick="clearVariablesCache();" style="float: right; margin-right: 7px;" id="cl1">
+                            <input type="button" value="{function="localize('Clear files cache')"}" onclick="clearFilesCache();" style="float: right; margin-right: 7px;" id="cl2">
+                        </em>
+                    </td>
+                </tr>
+            </tfoot>
 
             <tbody>
                 <tr>

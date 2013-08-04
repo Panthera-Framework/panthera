@@ -113,6 +113,30 @@ if ($_GET['action'] == 'save')
 
     $panthera -> config -> setKey('memcached_servers', $servers, 'array');
     ajax_exit(array('status' => 'success'));
+
+/**
+  * Clear variables cache (APC)
+  *
+  * @author Mateusz Warzyński
+  */
+
+} elseif ($_GET['action'] == 'clearVariablesCache') {
+    if (apc_clear_cache('user'))
+        ajax_exit(array('status' => 'success'));
+    else
+        ajax_exit(array('status' => 'failed'));
+
+/**
+  * Clear files cache (APC)
+  *
+  * @author Mateusz Warzyński
+  */
+
+} elseif ($_GET['action'] == 'clearFilesCache') {
+    if (apc_clear_cache('opcode'))
+        ajax_exit(array('status' => 'success'));
+    else
+        ajax_exit(array('status' => 'failed'));
 }
 
 // Check if apc support is available in PHP, if yes show some statistics
