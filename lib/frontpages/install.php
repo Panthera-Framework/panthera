@@ -28,10 +28,17 @@ if ($config['preconfigured'] !== True)
     $config['db_socket'] = 'sqlite';
     $config['db_file'] = 'db.sqlite3';
     $config['SITE_DIR'] = dirname($_SERVER['SCRIPT_FILENAME']);
-    $config['upload_dir'] = 'content/uploads';
-    $config['db_prefix'] = 'pa_';
+    
+    if (!isset($config['upload_dir']))
+        $config['upload_dir'] = 'content/uploads';
+        
+    if (!isset($config['db_prefix']))
+        $config['db_prefix'] = 'pa_';
+        
     $config['requires_instalation'] = True;
-    $config['timezone'] = 'Europe/Warsaw';
+    
+    if (!isset($config['timezone']))
+        $config['timezone'] = 'UTC';
 
     // if lib directory is not provided try to get it manually
     if (!is_dir($config['lib']))
@@ -105,3 +112,5 @@ $panthera -> template -> setTitle('Panthera Installer');
 // include step
 define('PANTHERA_INSTALLER', True);
 $panthera -> importModule('installer/' .$step);
+
+$installer -> display();

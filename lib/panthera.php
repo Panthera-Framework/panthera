@@ -581,6 +581,22 @@ class pantheraConfig
     }
     
     /**
+      * Update in-memory configuration
+      *
+      * @param array $array
+      * @return void 
+      * @author Damian Kęska
+      */
+    
+    public function updateConfigCache($array)
+    {
+        if (is_array($array))
+        {
+            $this->config = $array;
+        }
+    }
+    
+    /**
       * Get all configuration variables from overlay in database
       *
       * @return array 
@@ -804,16 +820,17 @@ class pantheraCore
     /**
 	 * Import module
 	 *
-     * @param module name
+     * @param string $module Name
+     * @param bool $forceReload Reload module if already loaded
 	 * @return void
 	 * @author Damian Kęska
 	 */
 
-    public function importModule($module)
+    public function importModule($module, $forceReload=False)
     {
         $module = strtolower($module);
 
-        if ($this->moduleImported($module))
+        if ($this->moduleImported($module) and $forceReload == False)
             return True;
 
         // load built-in phpQuery library
