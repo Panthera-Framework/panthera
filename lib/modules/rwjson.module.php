@@ -100,7 +100,7 @@ class writableJSON
         if ($this->modified == True)
         {
             $fp = fopen($this->file, 'w');
-            fwrite($fp, (array)json_encode($this->db, JSON_PRETTY_PRINT));
+            fwrite($fp, json_encode($this->db, JSON_PRETTY_PRINT));
             fclose($fp);
         }
     }
