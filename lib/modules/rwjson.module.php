@@ -89,6 +89,25 @@ class writableJSON
     }
     
     /**
+      * Remove a key from database
+      *
+      * @param string $key
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public function remove($key)
+    {
+        if (isset($this->db[$key]))
+        {
+            unset($this->db[$key]);
+            return True;
+        }
+        
+        return False;
+    }
+    
+    /**
       * Save data back to file
       *
       * @return void 

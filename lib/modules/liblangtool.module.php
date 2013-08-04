@@ -295,7 +295,7 @@ class localesManagement
   * @author Damian Kęska
   */
 
-class localeDomain extends localesManagement
+class localeDomain
 {
     protected $panthera; // Panthera object
     protected $dir = "";

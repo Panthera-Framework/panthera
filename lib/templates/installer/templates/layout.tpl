@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Panthera installer</title>
+        <title>{$site_title}</title>
+        {$site_header}
         <meta charset="utf-8">
         <link rel='stylesheet' href='{$PANTHERA_URL}/css/admin/login.css' type='text/css' media='all' />
         <link rel='stylesheet' href='{$PANTHERA_URL}/css/admin/jquery.dropdown.css' type='text/css' media='all' />
@@ -24,6 +25,7 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
             -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
             -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            margin-bottom: 200px;
         }
         
         #ajax_content {
@@ -55,6 +57,7 @@
         }
         
         .table td {
+            font-size: smaller;
             border-bottom: 1px solid #E6E8EA;
             padding: 10px 10px 10px 10px;
         }
@@ -99,14 +102,19 @@
             -webkit-box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
         }
         
-        .disabled {
+        .button:disabled {
             background: #A1B7C9;
             border: 1px solid #A1B7C9;
         }
         
-        .disabled:hover {
+        .button:disabled:hover {
             background: #A1B7C9;
             border: 1px solid #A1B7C9;
+        }
+        
+        .description {
+            margin-left: 5px;
+            font-size: smaller;
         }
         </style>
     </head>
@@ -116,9 +124,11 @@
         <div id="wrapper">
             <div id="ajax_content">{include="$stepTemplate"}</div>
             
-            <div style="right: 0; bottom: 0; float: right; margin-bottom: 20px;">
-                <input type="button" class="button disabled" value="Back"> 
-                <input type="button" class="button" value="Next">
+            <div style="width: 100%; height: 60px;">
+                <div style="margin-bottom: 20px; height: 100px; float: right;">
+                    <input type="button" class="button" disabled value="{function="localize('Back', 'installer')"}" id="installer-controll-backBtn" onclick="navigateTo('?_stepbackward=True');"> 
+                    <input type="button" class="button" value="{function="localize('Next', 'installer')"}" id="installer-controll-nextBtn" onclick="navigateTo('?_nextstep=True');">
+                </div>
             </div>
         </div>
     </body>

@@ -30,7 +30,7 @@ class pantheraLocale
 
         // cache support
         if ($this->panthera->cache != False)
-            $this->cache = intval($panthera->config->getKey('cache_locale', 86400, 'int'));
+            $this->cache = intval($panthera->config->getKey('cache_locale', 120, 'int'));
     }
 
     /**

@@ -36,6 +36,7 @@ foreach (localesManagement::getLocales() as $locale => $path)
         $locales[$locale] = is_file(SITE_DIR. '/images/admin/flags/' .$locale. '.png');
 }
 
+
 /** List of locales, current language **/
 
 $currentLocale = 'english';
@@ -80,5 +81,14 @@ if (isset($_GET['_timezone']))
     }
 }
 
+$installer -> setButton('back', False);
+
+if ($panthera->config->getKey('timezone'))
+    $installer -> enableNextStep();
+    
+$time = new DateTime('NOW');
+$time -> setTimezone(new DateTimeZone($panthera->config->getKey('timezone')));
+
+$panthera -> template -> push ('currentTime', $time->format('G:i:s d.m.Y'));
 $panthera -> template -> push ('timezones', $timezones);
 $installer -> template = 'index';

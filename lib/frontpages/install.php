@@ -90,18 +90,8 @@ if (!$panthera->config->getKey('url'))
     $panthera -> config -> setKey('url', $protocol. '://' .$_SERVER['HTTP_HOST'].str_replace(basename($_SERVER['REQUEST_URI']), '', $_SERVER['REQUEST_URI']));
 
 }
-// include step
-$step = addslashes($_GET['step']);
-
-if ($step == '')
-    $step = 'index';
-
-if (!$panthera -> moduleExists('installer/' .$step))
-{
-    $step = 'error_no_step';
-}    
-
 // initialize installer
+$panthera -> locale -> loadDomain('installer');
 $panthera -> importModule('pantherainstaller');
 $installer = new pantheraInstaller($panthera);
 
@@ -109,8 +99,6 @@ $installer = new pantheraInstaller($panthera);
 $panthera -> template -> setTemplate('installer');
 $panthera -> template -> setTitle('Panthera Installer');
 
-// include step
-define('PANTHERA_INSTALLER', True);
-$panthera -> importModule('installer/' .$step);
-
+$installer -> loadStep();
 $installer -> display();
+$installer -> db -> save();
