@@ -86,7 +86,7 @@ if (@$_GET['display'] == 'langtool') {
             
             foreach ($domains as $key => $domain)
             {
-                $dir = localesManagement::getDomainDir($_GET['locale'], $domain);
+                $dir = localesManagement::getDomainDir(str_replace($_GET['locale'], str_replace('.phps', '', $domain));
                 
                 if (substr($dir, 0, strlen(PANTHERA_DIR)) == PANTHERA_DIR and defined('LANGTOOL_DISABLE_LIB'))
                 {

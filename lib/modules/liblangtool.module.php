@@ -112,7 +112,7 @@ class localesManagement
     
     public static function getDomainDir($language, $domain)
     {
-        $dirs = array(SITE_DIR. '/content/locales/' .$language. '/' .$domain, PANTHERA_DIR. '/locales/' .$language. '/' .$domain);
+        $dirs = array(SITE_DIR. '/content/locales/' .$language. '/' .$domain. '.phps', PANTHERA_DIR. '/locales/' .$language. '/' .$domain. '.phps');
         
         foreach ($dirs as $dir)
         {
