@@ -187,7 +187,7 @@ $(document).ready(function () {
 });
 </script>
 
-    <div class="titlebar">{function="localize('Cache management', 'cache')"} {include="_navigation_panel.tpl"}</div><br>
+    <div class="titlebar">{function="localize('Cache management', 'cache')"} {include="_navigation_panel"}</div><br>
 
     <div class="grid-1" style="position: relative;" id="cacheVariables">
          <table class="gridTable">
