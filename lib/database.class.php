@@ -30,10 +30,13 @@ class pantheraDB
       * @author Damian Kęska
       */
 
-    public function __construct($panthera)
+    public function __construct($panthera, $alternativeConfig='', $dontTriggerError=False)
     {
         $this->panthera = $panthera;
         $config = $panthera->config->getConfig();
+
+        if ($alternativeConfig != '')
+            $config = $alternativeConfig;
         
         $this->cache = intval(@$config['cache_db']);
         
@@ -68,7 +71,10 @@ class pantheraDB
 
 
         } catch (Exception $e) {
-            $this->_triggerErrorPage($e);
+            if ($dontTriggerError == False)
+                $this->_triggerErrorPage($e);
+            else
+                throw new Exception($e->getMessage());
         }
     }
     
@@ -236,6 +242,20 @@ class pantheraDB
     }
     
     /**
+      * Directly execute SQL statement
+      *
+      * @param string $SQL query
+      * @return object 
+      * @author Damian Kęska
+      */
+    
+    public function execute($SQL)
+    {
+        $SQL = str_ireplace('{$db_prefix}', $this->prefix, $SQL);
+        return $this->sql->exec($SQL);
+    }
+    
+    /**
       * MySQL missing tables import
       *
       * @param object $e
@@ -367,6 +387,40 @@ class pantheraDB
         $newID = $this->sql->lastInsertId();
         return $newID;
         
+    }
+    
+    /**
+      * List tables in current database
+      *
+      * @return array 
+      * @author Damian Kęska
+      */
+    
+    public function listTables()
+    {
+        $tables = array();
+    
+        if ($this->socketType == 'sqlite')
+        {
+            $SQL = $this -> panthera -> db -> query ('SELECT * FROM sqlite_master WHERE type=\'table\';');
+            
+            foreach ($SQL -> fetchAll(PDO::FETCH_ASSOC) as $table)
+            {
+                if ($table['name'] == 'sqlite_sequence')
+                    continue;
+            
+                $tables[] = $table['name'];
+            }
+        } else {
+            $SQL = $this -> panthera -> db -> query ('SHOW TABLES FROM `' .$this->panthera->config->getKey('db_name').'`');
+            
+            foreach ($SQL -> fetchAll(PDO::FETCH_ASSOC) as $table)
+            {
+                $tables[] = end($table);
+            }
+        }
+        
+        return $tables;
     }
     
     /**
