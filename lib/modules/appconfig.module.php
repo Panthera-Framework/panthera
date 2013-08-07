@@ -65,7 +65,7 @@ class appConfigEditor
         // if variable was modified
         if ($this -> config != $this -> originalConfig and $this->path != '')
         {
-            $app = str_replace($this->exported, '$config = ' .var_export($this->config, True). ';', $this->app);
+            $app = str_replace($this->exported, '$config = ' .var_export((array)$this->config, True). ';', $this->app);
             $fp = @fopen($this->path, 'w');
             
             if (!$fp)

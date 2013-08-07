@@ -37,7 +37,7 @@ class pantheraDB
 
         if ($alternativeConfig != '')
             $config = $alternativeConfig;
-        
+            
         $this->cache = intval(@$config['cache_db']);
         
         if (!array_key_exists('cache_db', $config))
@@ -46,7 +46,7 @@ class pantheraDB
         // this setting will automaticaly import database structures from template if any does not exists
         if (@$config['build_missing_tables'] == True)
             $this->fixMissing = True;
-
+            
         try {
             // selecting between SQLite3 and MySQL database
             if (strtolower(@$config['db_socket']) == 'sqlite')
@@ -399,10 +399,10 @@ class pantheraDB
     public function listTables()
     {
         $tables = array();
-    
+        
         if ($this->socketType == 'sqlite')
         {
-            $SQL = $this -> panthera -> db -> query ('SELECT * FROM sqlite_master WHERE type=\'table\';');
+            $SQL = $this -> query ('SELECT * FROM sqlite_master WHERE type=\'table\';');
             
             foreach ($SQL -> fetchAll(PDO::FETCH_ASSOC) as $table)
             {
@@ -412,7 +412,7 @@ class pantheraDB
                 $tables[] = $table['name'];
             }
         } else {
-            $SQL = $this -> panthera -> db -> query ('SHOW TABLES FROM `' .$this->panthera->config->getKey('db_name').'`');
+            $SQL = $this -> query ('SHOW TABLES FROM `' .$this->panthera->config->getKey('db_name').'`');
             
             foreach ($SQL -> fetchAll(PDO::FETCH_ASSOC) as $table)
             {

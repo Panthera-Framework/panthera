@@ -7,7 +7,7 @@ CREATE TABLE "{$db_prefix}quick_messages" (
   "message" text NOT NULL,
   "author_login" TEXT NOT NULL,
   "author_full_name" TEXT NOT NULL,
-  "mod_time" timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  "mod_time" timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   "visibility" INTEGER NOT NULL,
   "mod_author_login" TEXT NOT NULL,
   "mod_author_full_name" TEXT NOT NULL,

@@ -8,7 +8,7 @@
   */
   
 session_start();
-  
+
 // load app.php and extract $config variable
 $app = file_get_contents('content/app.php');
 $configExported = substr($app, strpos($app, '$config'), strpos($app, ');')-4);
@@ -24,10 +24,23 @@ if (!is_array($config))
 if ($config['preconfigured'] !== True)
 {
     // pre-configure installer environment
-    $config['build_missing_tables'] = True;
+    $config['build_missing_tables'] = False;
     $config['db_socket'] = 'sqlite';
     $config['db_file'] = 'db.sqlite3';
     $config['SITE_DIR'] = dirname($_SERVER['SCRIPT_FILENAME']);
+    $config['disable_overlay'] = True;
+    $config['debug'] = True;
+    
+    if (!isset($config['url']))
+    {
+        $protocol = 'http';
+
+        if ($_SERVER['HTTPS'])
+            $protocol = 'https';
+
+        $config['url'] = $protocol. '://' .$_SERVER['HTTP_HOST'].str_replace(basename($_SERVER['REQUEST_URI']), '', $_SERVER['REQUEST_URI']);
+
+    }
     
     if (!isset($config['upload_dir']))
         $config['upload_dir'] = 'content/uploads';
@@ -80,16 +93,6 @@ define('PANTHERA_FORCE_DEBUGGING', True);
 // app starts here
 require $config['lib']. '/boot.php';
 
-if (!$panthera->config->getKey('url'))
-{
-    $protocol = 'http';
-
-    if ($_SERVER['HTTPS'])
-        $protocol = 'https';
-
-    $panthera -> config -> setKey('url', $protocol. '://' .$_SERVER['HTTP_HOST'].str_replace(basename($_SERVER['REQUEST_URI']), '', $_SERVER['REQUEST_URI']));
-
-}
 // initialize installer
 $panthera -> locale -> loadDomain('installer');
 $panthera -> importModule('pantherainstaller');

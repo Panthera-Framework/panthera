@@ -10,6 +10,5 @@ CREATE TABLE "{$db_prefix}uploads" (
   "uploader_id" INTEGER NOT NULL,
   "uploader_login" TEXT NOT NULL,
   "protected" INTEGER NOT NULL DEFAULT '0',
-  "public" INTEGER NOT NULL DEFAULT '1',
-  PRIMARY KEY ("id")
+  "public" INTEGER NOT NULL DEFAULT '1'
 );

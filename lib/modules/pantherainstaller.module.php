@@ -42,7 +42,7 @@ class pantheraInstaller
         }
         
         // merge webroot if not merged
-            $panthera -> template -> webrootMerge();
+            //$panthera -> template -> webrootMerge();
         
         // temporary database for installer
         $this -> config = (object)json_decode(file_get_contents($index));
@@ -95,6 +95,13 @@ class pantheraInstaller
         
         return True;
     }
+    
+    /**
+      * Load a step, detect backward and forward moving parameters
+      *
+      * @return void 
+      * @author Damian Kęska
+      */
     
     public function loadStep()
     {

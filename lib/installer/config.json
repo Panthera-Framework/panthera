@@ -1,6 +1,6 @@
 {
     "steps": [
-        "index", "environment"
+        "index", "environment", "database", "simpleconfiguration"
     ]
 
 }

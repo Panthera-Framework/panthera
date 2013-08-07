@@ -489,6 +489,13 @@ class pantheraConfig
 
     public function save()
     {
+        // if overlay is disabled dont save changes
+        if ($this->config['disable_overlay'])
+        {
+            $this -> panthera -> logging -> output ('Overlay disabled, will not save changes', 'pantheraConfig');
+            return False;
+        }
+        
         if (count($this->overlay_modified) > 0)
         {
             $this->panthera->logging->output('pantheraConfig::Saving config overlay to SQL');
@@ -696,7 +703,9 @@ class pantheraCore
         $this -> logging -> output('Loading configuration', 'pantheraCore');
         $this->config = new pantheraConfig($this, $config);    
         $this->db = new pantheraDB($this);  
-        $this->config->loadOverlay();
+        
+        if (!$config['disable_overlay'])
+            $this->config->loadOverlay();
         
         /** Cryptography support **/
         if (!function_exists('password_hash'))

@@ -8,6 +8,8 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
+// TODO: SQLite3 support
+
 if (!defined('IN_PANTHERA'))
       exit;
 
@@ -43,8 +45,6 @@ if (isset($_POST['dump']))
 {
     if ($panthera->db->getSocketType() == 'mysql')
         $name = $panthera->config->getKey('db_name'). '-' .date('G:i:s_d.m.Y'). '.sql';
-    else
-        $name = date('G:i:s_d.m.Y'). '.sql';
 
     $dump = sqldump();
 

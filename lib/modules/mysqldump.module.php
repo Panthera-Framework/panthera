@@ -47,6 +47,7 @@ function initSQLDump()
 
 function createTemplatesFromDB($dropTables=True)
 {
+    // TODO: SQLite3 support
     $backup = initSQLDump();
     $backup -> resultType = "array";
     $backup -> replacePrefix = True;
@@ -99,7 +100,7 @@ function getSQLDumps($limitFrom=0, $count=0)
     {
         $pathInfo = pathinfo($file);
 
-        if (strtolower($pathInfo['extension']) != 'sql')
+        if (strtolower($pathInfo['extension']) != 'sql' and strtolower($pathInfo['extension']) != 'sqlite3')
             continue;
 
         $i++;
