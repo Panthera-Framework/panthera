@@ -23,7 +23,7 @@ if (!$panthera->config->getKey('crontab_key') or $_GET['action'] == 'save')
 
 // show generated key and url
 $panthera -> template -> push ('crontabKey', $panthera -> config -> getKey('crontab_key'));
-$panthera -> template -> push ('crontabUrl', $panthera -> config -> getKey('url'). '/_crontab.php?_appkey=' .$panthera -> config -> getKey('crontab_key'));
+$panthera -> template -> push ('crontabUrl', str_replace('http:/', 'http://', str_replace('//', '/', $panthera -> config -> getKey('url'). '/_crontab.php?_appkey=' .$panthera -> config -> getKey('crontab_key'))));
 
 $installer -> enableNextStep();
 $installer -> template = 'crontab';
