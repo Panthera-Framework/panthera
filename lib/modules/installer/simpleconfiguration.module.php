@@ -74,6 +74,8 @@ if (isset($_GET['save']))
     $panthera -> config -> setKey('salt', md5(rand(99999, 999999)), 'string');
     $panthera -> config -> setKey('ajax_url', $panthera -> config -> getKey('url'). '/_ajax.php', 'string');
     $panthera -> config -> save();
+    
+    $installer -> enableNextStep();
     ajax_exit(array('status' => 'success'));
 }
 

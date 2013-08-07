@@ -196,6 +196,26 @@
             padding-bottom: 25px;
             font-size: 15px;
         }
+        
+        code {
+            margin: 15px;
+            display: block;
+            padding: 15px;
+            border: 1px solid #D8D8D8;
+            border-radius: 2px;
+            background: #FAFAFB;
+            font-size: 12px;
+        }
+        
+        h2 {
+            font-family: 'Bree Serif', serif;
+            font-weight: 300;
+            font-size: 20px;
+            line-height: 34px;
+            color: #414848;
+            text-shadow: 1px 1px 0 #FFF;
+            margin-bottom: 10px;
+        }
         </style>
     </head>
     
