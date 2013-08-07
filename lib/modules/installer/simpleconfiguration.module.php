@@ -40,8 +40,6 @@ if (isset($_GET['save']))
     $app = new appConfigEditor();
     $config = (array)$app->config;
     
-    var_dump($config);
-            
     foreach ($keys as $key => $type)
     {
         if (isset($_POST[$key]))
