@@ -216,6 +216,32 @@
             text-shadow: 1px 1px 0 #FFF;
             margin-bottom: 10px;
         }
+        
+        input[type="submit"], .submitButton {
+            background: -webkit-gradient(linear, left top, left bottom, from(#F0F0F0), to(#DBDBDB));
+            background: -moz-linear-gradient(top, #F0F0F0 0%, #DBDBDB 100%);
+            background: -o-linear-gradient(top, #F0F0F0 0%,#DBDBDB 100%);
+            background: -ms-linear-gradient(top, #F0F0F0 0%,#DBDBDB 100%);
+            background: linear-gradient(top, #F0F0F0 0%,#DBDBDB 100%);
+            border-top-left-radius: 2px 5px;
+            border-bottom-left-radius: 3px 5px;
+            border-top-right-radius: 2px 5px;
+            border-bottom-right-radius: 3px 5px;
+            box-shadow: 1px 2px 2px #DDD;
+            padding: 3px;
+            font-size: 12px;
+            border: 1px solid #929292;
+            color: #333;
+        }
+        
+         input[type="submit"]:active, .submitButton:active {
+            background: -webkit-gradient(linear, left top, left bottom, from(#DBDBDB), to(rgb(240, 240, 240)));
+            background: -moz-linear-gradient(top, #DBDBDB 0%, rgb(240, 240, 240) 100%);
+		    background: -o-linear-gradient(top, #DBDBDB 0%,rgb(240, 240, 240) 100%);
+		    background: -ms-linear-gradient(top, #DBDBDB 0%,rgb(240, 240, 240) 100%);
+		    background: linear-gradient(top, #DBDBDB 0%,rgb(240, 240, 240) 100%);
+            padding-top: 3px;
+        }
         </style>
     </head>
     

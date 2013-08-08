@@ -61,10 +61,10 @@ class pantheraTemplate extends pantheraClass
 
         if ($tpl == null)
         {
-            @include(getContentDir('/templates/'.$template. '/config.php'));
-
+            $tpl = $this -> getTemplateConfig($template);
+            
             if ($tpl == NuLL)
-                throw new Exception('Invalid template: $tpl variable was not set in '.SITE_DIR.'/content/templates/' .$template. '/config.php');
+                throw new Exception('Invalid template: $tpl variable was not set in '.SITE_DIR.'/content/templates/' .$template. '/config.json');
                 
             if ($this->cacheConfig == True)
             {
@@ -588,6 +588,28 @@ class pantheraTemplate extends pantheraClass
     public function compile($template)
     {
         return $this->display($template, True);
+    }
+    
+    /**
+      * Returns template configuration as array
+      *
+      * @param string $template name or path
+      * @return array|null 
+      * @author Damian Kęska
+      */
+    
+    public function getTemplateConfig($template)
+    {
+        if (strpos($template, '/'))
+        {
+            $path = $template;
+        } else
+            $path = getContentDir('templates/' .$template);
+            
+        if ($path)
+            return json_decode(file_get_contents($path. '/config.json'), true);
+
+        return null;
     }
     
     /**

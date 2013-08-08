@@ -52,7 +52,7 @@ class pantheraDB
             if (strtolower(@$config['db_socket']) == 'sqlite')
             {
                 if (!is_file(SITE_DIR. '/content/database/' .$config['db_file']))
-                    throw new Exception('Database fils is missing in /content/database/, please check config.php (variable - db_file) and file name');
+                    throw new Exception('Database fils is missing in /content/database/, please check app.php (variable - db_file) and file name');
 
                 $this->socketType = 'sqlite';
                 $this->sql = new PDO('sqlite:' .SITE_DIR. '/content/database/' .$config['db_file']);
@@ -107,7 +107,7 @@ class pantheraDB
         if ($customWarningMsg != '')
             $warningMessage = $customWarningMsg;
         else
-            $warningMessage = 'Cannot connect to database, please check your connection and database configuration in /content/config.php file.<br>You can also check your SQL user and database priviledges, allowed hosts and if server is online. ';
+            $warningMessage = 'Cannot connect to database, please check your connection and database configuration in /content/app.php file.<br>You can also check your SQL user and database priviledges, allowed hosts and if server is online. ';
 
         $message = $this->hideAuthInfo($e -> getMessage());
         $debugTemplate = getErrorPageFile('db_error');

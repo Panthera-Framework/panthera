@@ -50,7 +50,7 @@ if (is_file(PANTHERA_DIR. '/' .$path) or is_file(SITE_DIR. '/' .$path))
     $type = fileTypeByMime($mime);
 
     // we cannot show config.php
-    if (str_ireplace(SITE_DIR, '', $filePath) == '/content/config.php')
+    if (str_ireplace(SITE_DIR, '', $filePath) == '/content/app.php')
     {
         $template -> push('err', localize('file not found'));
         $template -> display($tpl);
