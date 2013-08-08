@@ -9,7 +9,7 @@
 $('#add_item_form').submit(function () {
     panthera.jsonPOST({ data: '#add_item_form', messageBox: 'userinfoBox', success: function (response) {
             if (response.status == "success")
-                navigateTo('?display=menuedit&cat=admin&action=category&cat='+jQuery('#cat_type').val());
+                navigateTo('?display=menuedit&cat=admin&action=category&category={$cat_type}');
         }
     });
 

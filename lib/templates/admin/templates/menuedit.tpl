@@ -49,7 +49,7 @@ function removeMenuCategory(id)
           <tbody>
             {loop="$menu_categories"}
               <tr id="category_{$value.id}">
-                  <td><a href="{$AJAX_URL}?display=menuedit&cat=admin&action=category&cat={$value.name}" class="ajax_link">{$value.name}</a></td>
+                  <td><a href="#" onclick="navigateTo('?display=menuedit&cat=admin&action=category&category={$value.name}');" class="ajax_link">{$value.name}</a></td>
                   <td>{$value.title}</td>
                   <td>{$value.description}</td>
                   <td>{$value.elements}</td>

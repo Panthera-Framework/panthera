@@ -98,7 +98,7 @@ function removeItem(id)
             <tfoot>
                   <tr>
                       <td colspan="8" class="rounded-foot-left"><em>Panthera menuedit - {function="localize('List of items', 'menuedit')"}</em><span>
-                        <input type="button" value="{function="localize('Add new link', 'menuedit')"}" style="float: right;" onclick="navigateTo('_ajax.php?display=menuedit&cat=admin&action=new_item&cat={$category}');">
+                        <input type="button" value="{function="localize('Add new link', 'menuedit')"}" style="float: right;" onclick="navigateTo('_ajax.php?display=menuedit&cat=admin&action=new_item&category={$category}');">
                         <input type="button" value="{function="localize('Save order', 'menuedit')"}" style="float: right;" onclick="saveMenuOrder('{$category}');">
                         <input type="button" value="{function="localize('Back', 'messages')"}" onclick="navigateTo('?display=menuedit&cat=admin');" style="float: right;"></td>
                       </td>
