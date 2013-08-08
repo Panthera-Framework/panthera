@@ -7,12 +7,12 @@ var spinner = new panthera.ajaxLoader($('#menu_item'));
       *
       * @author Mateusz Warzyński
       */
-    
+
     $('#save_form').submit(function () {
         panthera.jsonPOST({ data: '#save_form', spinner: spinner, messageBox: 'userinfoBox'});
-    
+
         return false;
-    
+
     });
 </script>
 
@@ -33,7 +33,7 @@ var spinner = new panthera.ajaxLoader($('#menu_item'));
               <tfoot>
                   <tr>
                       <td colspan="7" class="rounded-foot-left"><em>Panthera menuedit - {function="localize('Editing item', 'menuedit')"}</em><span>
-                      <input type="submit" value="{function="localize('Save')"}" style="float: right;"> <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=menuedit&cat=admin&action=category&cat={$cat_type}');" style="float: right;">
+                      <input type="submit" value="{function="localize('Save')"}" style="float: right;"> <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=menuedit&cat=admin&action=category&category={$cat_type}');" style="float: right;">
                   </tr>
               </tfoot>
               <tbody>
