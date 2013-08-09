@@ -1,26 +1,26 @@
 <?php
 /**
   * Panthera Framework main file
-  * 
+  *
   * @package Panthera\core
   * @author Damian Kęska
   * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
   */
-  
+
 /**
   * Exception handler
   *
   * @param object $exception
-  * @return void 
+  * @return void
   * @Package Panthera\core
   * @author Damian Kęska
   */
-  
+
 function pantheraExceptionHandler($exception)
 {
     global $panthera;
-    
+
     $panthera->logging->output('pantheraExceptionHandler::Unhandled exception, starts;');
     $panthera->logging->output($exception->getMessage());
     $panthera->logging->output($exception->getFile(). ' on line ' .$exception->getLine());
@@ -46,7 +46,7 @@ function pantheraExceptionHandler($exception)
 
         $panthera->logging->output($key. ' => ' .$function. ' in ' .$stackPoint['file']. ' on line ' .$stackPoint['line'], 'pantheraExceptionHandler');
     }
-    
+
     if ($panthera->config->getKey('debug', True, 'bool'))
     {
         if (is_dir(SITE_DIR. '/content/templates/exception_debug.php'))
@@ -56,13 +56,13 @@ function pantheraExceptionHandler($exception)
 
         $panthera->logging->toFile();
         exit;
-        
+
     } else {
         if (is_dir(SITE_DIR. '/content/templates/exception.php'))
             include_once SITE_DIR. '/content/templates/exception.php';
         else
             include_once PANTHERA_DIR. '/templates/exception.php';
-            
+
         exit;
     }
 }
@@ -74,7 +74,7 @@ function pantheraExceptionHandler($exception)
   * @param string $errstr
   * @param string $errfile
   * @param string $errline
-  * @return mixed 
+  * @return mixed
   * @Package Panthera\core
   * @author Damian Kęska
   */
@@ -121,13 +121,13 @@ class pantheraLogging
 {
     public $debug = False, $tofile = True, $printOutput = False, $filterMode = '', $filter = array();
     private $_output = array(), $panthera;
-    
+
     /**
       * Constructor
       * Its just adding an event to hook session_save to allow saving data on application exit
       *
       * @param object $panthera
-      * @return void 
+      * @return void
       * @author Damian Kęska
       */
 
@@ -135,18 +135,18 @@ class pantheraLogging
     {
         $this->panthera = $panthera;
         $this->panthera -> add_option('session_save', array($this, 'toFile'));
-        
+
         if (defined('PANTHERA_FORCE_DEBUGGING'))
             $this->debug = True;
     }
-    
+
     /**
       * Add a line to messages log
       *
       * @param string $msg Message
       * @param string $type Identifier for group of messages
       * @hook logging.output
-      * @return bool 
+      * @return bool
       * @author Damian Kęska
       */
 
@@ -154,7 +154,7 @@ class pantheraLogging
     {
         if($this->debug == False)
             return False;
-            
+
         // filter
         if ($this->filterMode == 'blacklist')
         {
@@ -164,12 +164,12 @@ class pantheraLogging
             if (!array_key_exists($type, $this->filter))
                 return False;
         }
-        
+
         $time = microtime();
-        
+
         if ($this->printOutput == True)
             print($msg. "\n");
-            
+
         // plugins support eg. firebug
         $this->panthera -> get_options('logging.output', $msg);
 
@@ -177,19 +177,19 @@ class pantheraLogging
 
         return True;
     }
-    
+
     /**
       * Clear output string
       *
-      * @return void 
+      * @return void
       * @author Damian Kęska
       */
-    
+
     public function clear()
     {
         $this->_output = array();
     }
-    
+
     /**
       * Get complete output
       *
@@ -201,35 +201,35 @@ class pantheraLogging
     {
         if ($array === True)
             return $this->_output;
-            
+
         $this->output('Generating output', 'pantheraLogging');
-        
+
         if (PANTHERA_MODE == 'CLI')
         {
             $defaults = "Client addr(".$_SERVER['SSH_CLIENT'].") => CLI ".$_SERVER['SCRIPT_NAME']."\n";
         } else
             $defaults = "Client addr(".$_SERVER['REMOTE_ADDR'].") => ".$_SERVER['REQUEST_METHOD']. " ".$_SERVER['REQUEST_URI']."\n";
-            
+
         $msg = '';
         $lastTime = 0;
-        
+
         // convert output to string
         foreach ($this->_output as $line)
         {
             $time = microtime_float($line[2])-$_SERVER['REQUEST_TIME_FLOAT'];
             $msg .= "[".substr($time, 0, 9).", ".substr(($time-$lastTime)*1000, 0, 9)."ms] [".$line[1]."] ".$line[0]. "\n";
             $lastTime = $time;
-        }        
-        
+        }
+
         $msg .= "[".substr(microtime_float()-$_SERVER['REQUEST_TIME_FLOAT'], 0, 9).", ".substr((microtime_float()-$_SERVER['REQUEST_TIME_FLOAT']-$lastTime)*1000, 0, 9)."ms] [pantheraLogging] Done\n";
-        
+
         return $defaults.$msg;
     }
-    
+
     /**
       * Save debug to file
       *
-      * @return void 
+      * @return void
       * @author Damian Kęska
       */
 
@@ -269,14 +269,14 @@ class pantheraConfig
         // add option to save configuration on exit
         $panthera -> add_option('session_save', array($this, 'save'));
     }
-    
+
     /**
       * Get configuration key and create it if does not exists if provided default values and type
       *
       * @param string $key name
       * @param mixed $default value
       * @param string $type Data type
-      * @return mixed 
+      * @return mixed
       * @author Damian Kęska
       */
 
@@ -285,7 +285,7 @@ class pantheraConfig
         // load configuration section first
         if ($section !== '')
             $this->loadSection($section);
-    
+
         if(array_key_exists($key, $this->config))
             return $this->config[$key];
 
@@ -298,18 +298,18 @@ class pantheraConfig
 
         if($default == '__none')
             return Null;
-        
+
         return $default;
     }
-    
+
     /**
       * Load configuration section
       *
       * @param string $section name
-      * @return bool 
+      * @return bool
       * @author Damian Kęska
       */
-    
+
     public function loadSection($section)
     {
         if (!array_key_exists($section, $this->sections) and $section !== '')
@@ -317,15 +317,15 @@ class pantheraConfig
             $this->loadOverlay($section);
             return True;
         }
-        
+
         return False;
     }
-    
+
     /**
       * Simply get key using config->KEYNAME
       *
       * @param string $var Key name
-      * @return mixed 
+      * @return mixed
       * @author Damian Kęska
       */
 
@@ -333,14 +333,14 @@ class pantheraConfig
     {
         return $this->getKey($var);
     }
-    
+
     /**
       * Set configuration key
       *
       * @param string $key
       * @param mixed $value
       * @param string $type
-      * @return mixed 
+      * @return mixed
       * @author Damian Kęska
       */
 
@@ -348,7 +348,7 @@ class pantheraConfig
     {
         if($key == NuLL and $value == '__none')
             return False;
-            
+
 
         if (array_key_exists((string)$key, $this->overlay))
         {
@@ -358,7 +358,7 @@ class pantheraConfig
                 $this->overlay_modified[(string)$key] = True;
                 $this->overlay[(string)$key][2] = $section;
             }
-        
+
             // mark overlay as modified on value modification
             if ($this -> getKey($key) != $value)
             {
@@ -371,7 +371,7 @@ class pantheraConfig
             $this->overlay[(string)$key][2] = $section;
             $this->overlay_modified[(string)$key] = 'created';
         }
-        
+
         if($type != '__none')
         {
             if ($this->panthera->types->exists($type))
@@ -386,27 +386,27 @@ class pantheraConfig
             $this->overlay[(string)$key][1] = $value;
             return True;
         }
-        
+
         return False;
     }
-    
+
     public function removeKey($key)
     {
         if (!array_key_exists($key, $this->overlay))
         {
             return False;
         }
-        
+
         // mark for deletion
         $this->overlay_modified[(string)$key] = 'delete';
         return True;
     }
-    
+
     /**
       * Get key type
       *
       * @param string $type
-      * @return string 
+      * @return string
       * @author Damian Kęska
       */
 
@@ -422,15 +422,15 @@ class pantheraConfig
     /**
       * Load configuration overlay from database
       *
-      * @return void 
+      * @return void
       * @author Damian Kęska
       */
-    
+
     public function loadOverlay($section='')
     {
         $array = null;
         $cacheLoaded = False;
-    
+
         if ($this->panthera->cache and $section == '')
         {
             if ($this->panthera->cache->exists('config_overlay'))
@@ -440,16 +440,16 @@ class pantheraConfig
                 $this->panthera->logging->output('Loaded config_overlay from cache', 'pantheraConfig');
             }
         }
-        
+
         if ($array == null and $cacheLoaded == False)
         {
             if ($section == '*')
                 $SQL = $this->panthera->db->query('SELECT `key`, `value`, `type`, `section` FROM `{$db_prefix}config_overlay`');
             else
                 $SQL = $this->panthera->db->query('SELECT `key`, `value`, `type`, `section` FROM `{$db_prefix}config_overlay` WHERE `section` = :section', array('section' => trim($section)));
-                
+
             $array = $SQL -> fetchAll(PDO::FETCH_ASSOC);
-            
+
             if (count($array) > 0)
             {
                 foreach ($array as $key => $value)
@@ -462,40 +462,33 @@ class pantheraConfig
 
                     $this->overlay[$value['key']] = array($value['type'], $value['value'], $value['section']);
                 }
-                
+
                 if ($this->panthera->cache and $section == '')
                 {
                     $this->panthera->cache->set('config_overlay', $this->overlay, 3600);
                 }
             }
         }
-        
+
         if (!array_key_exists('debug', $this->overlay))
         {
             $this->overlay['debug'] = array('bool', False);
             $this->overlay_modified['debug'] = 'created';
         }
-        
+
         $this->panthera->logging->output('Overlay loaded, total ' .count($this->overlay). ' keys', 'pantheraCore');
     }
 
-    
+
     /**
       * Save cached changes to database
       *
-      * @return void 
+      * @return void
       * @author Damian Kęska
-      */    
+      */
 
     public function save()
     {
-        // if overlay is disabled dont save changes
-        if ($this->config['disable_overlay'])
-        {
-            $this -> panthera -> logging -> output ('Overlay disabled, will not save changes', 'pantheraConfig');
-            return False;
-        }
-        
         if (count($this->overlay_modified) > 0)
         {
             $this->panthera->logging->output('pantheraConfig::Saving config overlay to SQL');
@@ -513,13 +506,13 @@ class pantheraConfig
                     if(is_array($value[1]))
                         $value[1] = serialize($value[1]);
                 }
-                
+
                 /**
                   * Creating new entry
                   *
                   * @author Damian Kęska
                   */
-                
+
                 // creating new record in database
                 if ($this->overlay_modified[$key] == 'created' and is_string($this->overlay_modified[$key]))
                 {
@@ -527,45 +520,45 @@ class pantheraConfig
 
                     try {
                         $q = $this->panthera->db->query('INSERT INTO `{$db_prefix}config_overlay` (`id`, `key`, `value`, `type`, `section`) VALUES (NULL, :key, :value, :type, :section);', array('key' => $key, 'value' => $value[1], 'type' => $value[0], 'section' => $value[2]));
-                    } catch (Exception $e) { 
+                    } catch (Exception $e) {
                         $this->panthera->logging->output('Cannot insert new key, SQL error: ' .print_r($e->getMessage(), True), 'pantheraConfig');
                     }
-                    
+
                 /**
                   * Removing configuration variable
                   *
                   * @author Damian Kęska
                   */
-                    
+
                 } elseif ($this->overlay_modified[$key] === 'delete') {
 
-                    try {                
+                    try {
                         $this -> panthera -> logging -> output('Removing key=' .$key. ' from configuration', 'pantheraConfig');
                         $this -> panthera -> db -> query('DELETE FROM `{$db_prefix}config_overlay` WHERE `key` = :key', array('key' => $key));
                     } catch (Exception $e) {
                         $this->panthera->logging->output('Cannot remove a key, SQL error: ' .print_r($e->getMessage(), True), 'pantheraConfig');
                     }
-                    
+
                 /**
                   * Upading existing variable
                   *
                   * @author Damian Kęska
                   */
-                    
+
                 // updating existing
                 } else {
                     $this->panthera->logging->output('Update attempt of ' .$key. ' variable', 'pantheraConfig');
                     $this->panthera->db->query('UPDATE `{$db_prefix}config_overlay` SET `value` = :value, `type` = :type, `section` = :section WHERE `key` = :key ', array('value' => $value[1], 'key' => $key, 'type' => $value[0], 'section' => $value[2]));
                 }
             }
-            
+
             // update cache
             if ($this->panthera->cache)
             {
                 $this->panthera->logging->output('Updating config_overlay', 'pantheraConfig');
                 $this->panthera->cache->set('config_overlay', $this->overlay, 3600);
             }
-            
+
             // doing a multiple query
             //$this->panthera->db->query('UPDATE `{$db_prefix}config_overlay` SET `value` = :value WHERE `key` = :key;', $values, True);
             /*$this -> panthera -> logging -> output ('pantheraConfig::Saving config-overlay.phpson');
@@ -574,11 +567,11 @@ class pantheraConfig
             @fclose($fp);*/
         }
     }
-    
+
     /**
       * Get all configuration variables from app.php
       *
-      * @return array 
+      * @return array
       * @author Damian Kęska
       */
 
@@ -586,15 +579,15 @@ class pantheraConfig
     {
         return $this->config;
     }
-    
+
     /**
       * Update in-memory configuration
       *
       * @param array $array
-      * @return void 
+      * @return void
       * @author Damian Kęska
       */
-    
+
     public function updateConfigCache($array)
     {
         if (is_array($array))
@@ -602,11 +595,11 @@ class pantheraConfig
             $this->config = $array;
         }
     }
-    
+
     /**
       * Get all configuration variables from overlay in database
       *
-      * @return array 
+      * @return array
       * @author Damian Kęska
       */
 
@@ -624,7 +617,7 @@ class pantheraCore
     protected $_savedSession;
     protected $permissionsTable = array();
     protected $modules = array();
-    
+
     public $config;
     public $db;
     public $user;
@@ -659,7 +652,7 @@ class pantheraCore
                     $pathInfo = pathinfo($_SERVER['DOCUMENT_ROOT'].$_SERVER['PHP_SELF']);
                     $path = $pathInfo['dirname'];
                 }
-                
+
                 // if the main script is not executing in main directory but in any other directory on higher level in the tree eg. /pages/make_thumbnail.php (level = 1), /other/scripts/show_users.php (level = 2)
                 // so, the script should look back in parent directories and check if content/config.php exists at this level
                 if (!is_file($path. '/content/app.php'))
@@ -677,36 +670,34 @@ class pantheraCore
                         if ($deep == 8)
                             break;
                     }
-                }    
+                }
 
                 define('SITE_DIR', $path);
             }
         } else
             define('SITE_DIR', $config['SITE_DIR']); // get SITE_DIR from configuration if avaliable
-        
+
         if (!is_file(SITE_DIR. '/content/app.php'))
             throw new Exception('Cannot find /content/app.php, looking in SITE_DIR=' .SITE_DIR);
-            
+
         // best performance provides binary serializing
 //        if (function_exists('igbinary_serialize'))
 //            $this->qSerialize = 'binary';
 
         $this->types = new pantheraTypes($this); // data types
         $this->logging = new pantheraLogging($this);
-        
+
         if (isset($config['varCache']) and isset($config['cache']))
         {
             $this->logging -> output('Initializing cache configured in app.php', 'pantheraCore');
             $this->loadCache($config['varCache'], $config['cache'], $config['session_key']);
         }
-        
+
         $this -> logging -> output('Loading configuration', 'pantheraCore');
-        $this->config = new pantheraConfig($this, $config);    
-        $this->db = new pantheraDB($this);  
-        
-        if (!$config['disable_overlay'])
-            $this->config->loadOverlay();
-        
+        $this->config = new pantheraConfig($this, $config);
+        $this->db = new pantheraDB($this);
+        $this->config->loadOverlay();
+
         /** Cryptography support **/
         if (!function_exists('password_hash'))
         {
@@ -714,38 +705,38 @@ class pantheraCore
             require PANTHERA_DIR. '/share/password-compat/lib/password.php';
             $this -> logging -> output ('Including userspace implementation of password hashing', 'pantheraCore');
         }
-        
+
         // get hashing algorithm
         $this -> hashingAlgorithm = $this->config->getKey('hashing_algorithm');
         $this -> logging -> output ('Using "' .$this->hashingAlgorithm. '" algorithm', 'pantheraCore');
-            
+
         /** End of Cryptography support **/
-        
+
         /** CACHE SYSTEM **/
-        
+
         // load cache if not loaded already
         if (!defined('SKIP_CACHE') and !$this->varCache)
         {
             // load variable cache system
             $varCacheType = $this->config->getKey('varcache_type', 'db', 'string');
             $cacheType = $this->config->getKey('cache_type', '', 'string');
-            
+
             $this->loadCache($varCacheType, $cacheType);
         }
         /** END OF CACHE SYSTEM **/
-        
+
         if (class_exists('pantheraLocale'))
             $this->locale = new pantheraLocale($this);
-            
+
         if (class_exists('pantheraSession'))
         {
             $this->session = new pantheraSession($this);
-            
+
             if ($this->session->get('debug.filter.mode'))
             {
                 $this->logging->filterMode = $this->session->get('debug.filter.mode');
                 $this->logging->filter = $this->session->get('debug.filter');
-            }   
+            }
         }
 
         //$this->config->getKey('pluginsContext', array(), 'array');
@@ -759,12 +750,12 @@ class pantheraCore
 
         // Security: iframe policy
         if ($this->config->getKey('header_framing', 'sameorigin', 'string'))
-            header('X-Frame-Options: ' .$this->config->getKey('header_framing'));   
+            header('X-Frame-Options: ' .$this->config->getKey('header_framing'));
 
         // Security: Mask PHP version
         if ($this->config->getKey('header_maskphp'))
             header('X-Powered-By: Django/1.2.1 SVN-13336');
-             
+
         // Security: XSS protection for IE
         if ($this->config->getKey('header_xssprot'))
             header('X-XSS-Protection: 1; mode=block');
@@ -775,17 +766,17 @@ class pantheraCore
 
         $this->pluginsDir = array(PANTHERA_DIR. '/plugins', SITE_DIR. '/content/plugins');
     }
-    
+
     /**
       * Load caching modules
       *
       * @param string $varCacheType
       * @param string $cacheType
-      * @return void 
+      * @return void
       * @author Damian Kęska
       */
-    
-    protected function loadCache($varCacheType, $cacheType, $sessionKey='')
+
+    public function loadCache($varCacheType, $cacheType, $sessionKey='')
     {
         // primary cache (variables cache)
         if (class_exists('varCache_' .$varCacheType))
@@ -799,14 +790,14 @@ class pantheraCore
                 $this->varCache = false;
             }
         }
-            
+
         if ($cacheType != '')
         {
             // if secondary cache type is same as primary, link both
             if ($cacheType == $varCacheType)
                 $this->cache = $this->varCache;
             else {
-                
+
                 // load secondary cache
                 if (class_exists('varCache_' .$cacheType))
                 {
@@ -819,7 +810,7 @@ class pantheraCore
                         $this->cache = false;
                     }
                 }
-                
+
             }
         }
     }
@@ -948,11 +939,11 @@ class pantheraCore
             $context[$plugin] = array($file);
         } else {
             $this -> logging -> output ('panthera::Adding '.$file. ' to ' .$plugin. ' context');
-            $context[$plugin][] = $file;        
+            $context[$plugin][] = $file;
         }
 
         if(!$old)
-            $this->config->setKey('pluginsContext', $context);            
+            $this->config->setKey('pluginsContext', $context);
 
         return True;
     }
@@ -969,15 +960,15 @@ class pantheraCore
             return True;
         }
     }*/
-    
+
     /**
       * Return cache type
       *
       * @param string $cacheType Cache type can be cache or varCache
-      * @return mixed 
+      * @return mixed
       * @author Damian Kęska
       */
-    
+
     public function cacheType($cache)
     {
         if ($cache == 'cache')
@@ -1011,20 +1002,20 @@ class pantheraCore
             if(count($function) != 2)
             {
                 $this->logging->output("panthera::Invalid function array specified to add_option, requires to be first argument a class type and second a function name of that class");
-                return False; 
+                return False;
             }
 
             // this is also checked when hooks are executed
             /*if (is_object($function[0]) and !class_exists($function[0]))
             {
                 $this->logging->output("panthera::add_option::Class '".$function[0]."' does not exists");
-                return False; 
+                return False;
             }
 
             if (!method_exists($function[0], $function[1]))
             {
                 $this->logging->output("panthera::add_option::Method '".$function[1]."' of '".$function[0]."' class does not exists");
-                return False; 
+                return False;
             }*/
 
         } else { // and here is just a simple function
@@ -1032,9 +1023,9 @@ class pantheraCore
             {
                 $this->logging->output("panthera::Hooked function ".$function." does not exists.");
                 return False;
-            }        
+            }
         }
-        
+
         $this->hooks[$hookName][] = $function;
         return True;
     }
@@ -1049,10 +1040,10 @@ class pantheraCore
     {
         if(!array_key_exists($hookName, $this->hooks))
             return $args;
-     
+
         //if ($hookName == "page_load_ends")
         //    var_dump($this->hooks['page_load_ends']);
-            
+
         foreach ($this->hooks[$hookName] as $key => $hook)
         {
             if (gettype($hook) == "array")
@@ -1062,12 +1053,12 @@ class pantheraCore
 
                 if (!method_exists($hook[0], $hook[1]))
                     continue;
-                    
+
                 if (is_object($hook[0]))
                     $args = $hook[0]->$hook[1]($args);
                 else
                     $args = $hook[0]::$hook[1]($args);
-                    
+
             } else {
                 if (!function_exists($hook))
                     continue;
@@ -1094,35 +1085,35 @@ class pantheraCore
     {
         if ($plugin == '.' or $plugin == '..' or $plugin == '')
             return False;
-    
+
         $plugins = $this->config->getKey('plugins');
-        
+
         if (!$this->pluginExists($plugin))
         {
             $this->logging->output('Plugin "' .$plugin. '" does not exists, cannot change state', 'pantheraCore');
             return False;
         }
-        
+
         $plugins[$plugin] = (bool)$value;
         $this->logging->output('Setting plugin "' .$plugin. '" state to "' .(int)$value. '"', 'pantheraCore');
         $this->config->setKey('plugins', $plugins, 'array');
-        
+
         return True;
     }
-    
+
     /**
       * Check if plugin exists
       *
       * @param string $name Plugin directory name
-      * @return bool 
+      * @return bool
       * @author Damian Kęska
       */
-    
+
     public function pluginExists($name)
     {
         if ($name == '.' or $name == '..' or $name == '')
             return False;
-    
+
         foreach ($this->pluginsDir as $dir)
         {
             if (is_dir($dir. '/' .$name. '/'))
@@ -1130,7 +1121,7 @@ class pantheraCore
                 return True;
             }
         }
-        
+
         return False;
     }
 
@@ -1145,7 +1136,7 @@ class pantheraCore
     {
         // list of enabled plugins
         $configPlugins = $this->config->getKey('plugins', array(), 'array');
-        
+
         // get all plugins from /lib and /content
         foreach ($this->pluginsDir as $dir)
         {
@@ -1166,23 +1157,23 @@ class pantheraCore
                     if ($configPlugins[$file] == True)
                         $enabled = True;
                 }
-                
+
                 $files[$file] = array('include_path' => $dir. '/' .$file, 'enabled' => $enabled, 'info' => $this->plugins[$file]);
             }
         }
 
         return $files;
     }
-    
+
     /**
       * Check plugin's PHP syntax (if there is access to shell)
       * Returns True if test passed or if there is no access to shell to make a test, and returns string with error if not passed
       *
       * @param string $plugin Plugin's directory name
-      * @return mixed 
+      * @return mixed
       * @author Damian Kęska
       */
-    
+
     public function checkPluginSyntax($plugin)
     {
         if ($this->pluginExists($plugin))
@@ -1190,16 +1181,16 @@ class pantheraCore
             $this->importModule('filesystem');
             $plugins = $this->getPlugins();
             $dir = scandirDeeply($plugins[$plugin]['include_path']);
-            
+
             try {
                 foreach ($dir as $file)
                 {
                     $pathinfo = pathinfo($file);
-                    
+
                     if ($pathinfo['extension'] == 'php')
                     {
                         $test = shell_exec('php -l ' .$file);
-                        
+
                         if (!stristr($test, 'No syntax errors detected'))
                         {
                             return $test;
@@ -1223,7 +1214,7 @@ class pantheraCore
 	 */
 
     public function loadPlugins($pluginsDir='')
-    { 
+    {
         global $panthera, $user, $template;
 
         if ($pluginsDir == '')
@@ -1265,7 +1256,7 @@ class pantheraCore
                 continue;
             else { // disable plugins with False value in configuration file
                 if($configPlugins[$key] == False)
-                    continue;            
+                    continue;
             }
 
             $this -> logging -> output('Loading '.$value.' plugin', 'pantheraCore');
@@ -1281,9 +1272,9 @@ class pantheraCore
                 }
             } else
                 $this -> logging -> output('panthera::No context for plugin '.$value);*/
-                
+
             $exp = explode('.', $value);
-            
+
             if ($exp[1] == 'cgi' and PANTHERA_MODE != "CGI")
             {
                 $this -> logging -> output('Skipping loading of "' .$value. '" plugin in ' .PANTHERA_MODE. ' mode', 'pantheraCore');
@@ -1323,18 +1314,18 @@ class pantheraCore
         $dir = str_replace(pantheraUrl('{$PANTHERA_DIR}/plugins/'), '', $file);
         $pInfo = pathinfo($dir);
         $dir = $pInfo['dirname'];
-        
+
         if ($dir == "." or $dir == ".." or $dir == "")
             return False;
-    
+
         if (is_file(SITE_DIR. '/content/plugins/' .$pluginName. '/plugin.php'))
             $type = 'normal';
         else
             $type = 'module'; // TODO: Create better module plugins support
-            
+
         $this->plugins[$dir] = array('name' => $pluginName, 'type' => 'module', 'file' => $file, 'meta' => $info);
         $this->logging->output("Registering plugin ".$pluginName." for file ".$file.", key=".$dir);
-        return True; 
+        return True;
     }
 
     /**
@@ -1390,100 +1381,100 @@ class pantheraTypes extends pantheraClass
     public function _url($v) { return filter_var($v, FILTER_VALIDATE_URL); }
     public function _json($v) { return True; } // TODO: Validate json
     public function _array($v) { return True; } // TODO: Validate arrays
-    
+
     /**
       * Supports international phone number with whitespaces
       *
       * @param string $v phone number
-      * @return bool 
+      * @return bool
       * @author Damian Kęska
       */
-    
+
     public function _phone($v) {
         $v = str_replace(' ', '', $v);
         $v = str_replace('-', '', $v);
-     
+
         // with whitespaces
         if (preg_match('/^\d{3}\s\d{3}\s\d{4}\s\d{3}$/', $v))
             return True;
-            
+
         // 111-222-333-444
         if (preg_match("/^[0-9]{3}-[0-9]{4}-[0-9]{4}$/", $v))
             return True;
-            
+
         // Polish phone numbers
         if (preg_match('/^[0-9\+]{5,13}$/', $v))
             return True;
-            
-        return False; 
+
+        return False;
     }
-    
+
     /**
       * Polish PESEL validation
       *
       * @param string $str Number
-      * @return bool 
+      * @return bool
       * @author PHPedia.pl <http://phpedia.pl/wiki/Walidacja_numeru_PESEL>
       */
-    
+
     function _pesel($str)
     {
 	    if (!preg_match('/^[0-9]{11}$/',$str)) //sprawdzamy czy ciąg ma 11 cyfr
 		    return False;
-     
+
 	    $arrSteps = array(1, 3, 7, 9, 1, 3, 7, 9, 1, 3); // tablica z odpowiednimi wagami
 	    $intSum = 0;
-	    
+
 	    for ($i = 0; $i < 10; $i++)
 		    $intSum += $arrSteps[$i] * $str[$i]; //mnożymy każdy ze znaków przez wagć i sumujemy wszystko
-	    
+
 	    $int = 10 - $intSum % 10; //obliczamy sumę kontrolną
 	    $intControlNr = ($int == 10)?0:$int;
-	    
+
 	    if ($intControlNr == $str[10]) //sprawdzamy czy taka sama suma kontrolna jest w ciągu
 		    return True;
-		    
+
 	    return False;
-    } 
-    
+    }
+
      /**
       * Polish NIP validation
       *
       * @param string $str Number
-      * @return bool 
+      * @return bool
       * @author PHPedia.pl <http://phpedia.pl/wiki/Walidacja_numeru_NIP>
       */
-    
+
     function _nip($str)
     {
 	    $str = preg_replace("/[^0-9]+/","",$str);
-	    
+
 	    if (strlen($str) != 10)
 		    return false;
-     
+
 	    $arrSteps = array(6, 5, 7, 2, 3, 4, 5, 6, 7);
 	    $intSum=0;
-	    
+
 	    for ($i = 0; $i < 9; $i++)
 		    $intSum += $arrSteps[$i] * $str[$i];
-		    
+
 	    $int = $intSum % 11;
-     
+
 	    $intControlNr=($int == 10)?0:$int;
 	    if ($intControlNr == $str[9])
 		    return true;
-		    
+
 	    return false;
     }
-    
+
     /**
       * NRB validation
       *
       * @param string $p_iNRB Number
-      * @return bool 
+      * @return bool
       * @author PHPedia.pl <http://phpedia.pl/wiki/Walidacja_numeru_NRB>
       */
-    
+
     function _nrb($p_iNRB)
     {
       // Usuniecie spacji
@@ -1491,54 +1482,54 @@ class pantheraTypes extends pantheraClass
       // Sprawdzenie czy przekazany numer zawiera 26 znaków
       if(strlen($iNRB) != 26)
         return false;
-     
-      // Zdefiniowanie tablicy z wagami poszczególnych cyfr				
+
+      // Zdefiniowanie tablicy z wagami poszczególnych cyfr
       $aWagiCyfr = array(1, 10, 3, 30, 9, 90, 27, 76, 81, 34, 49, 5, 50, 15, 53, 45, 62, 38, 89, 17, 73, 51, 25, 56, 75, 71, 31, 19, 93, 57);
-     
-      // Dodanie kodu kraju (w tym przypadku dodajemy kod PL)		
+
+      // Dodanie kodu kraju (w tym przypadku dodajemy kod PL)
       $iNRB = $iNRB.'2521';
-      $iNRB = substr($iNRB, 2).substr($iNRB, 0, 2); 
-     
+      $iNRB = substr($iNRB, 2).substr($iNRB, 0, 2);
+
       // Wyzerowanie zmiennej
       $iSumaCyfr = 0;
-     
+
       // Pętla obliczająca sumć cyfr w numerze konta
-      for($i = 0; $i < 30; $i++) 
+      for($i = 0; $i < 30; $i++)
         $iSumaCyfr += $iNRB[29-$i] * $aWagiCyfr[$i];
-     
+
       // Sprawdzenie czy modulo z sumy wag poszczegolnych cyfr jest rowne 1
       return ($iSumaCyfr % 97 == 1);
     }
-    
+
     /**
       * Polish regon validation
       *
       * @param string $str Number
-      * @return bool 
+      * @return bool
       * @author PHPedia.pl <http://phpedia.pl/wiki/Walidacja_numeru_REGON>
       */
-    
+
     function _regon($str)
     {
 	    if (strlen($str) != 9)
 		    return False;
-     
+
 	    $arrSteps = array(8, 9, 2, 3, 4, 5, 6, 7);
 	    $intSum=0;
-	    
+
 	    for ($i = 0; $i < 8; $i++)
 		    $intSum += $arrSteps[$i] * $str[$i];
-		    
+
 	    $int = $intSum % 11;
 	    $intControlNr=($int == 10)?0:$int;
-	    
-	    if ($intControlNr == $str[8]) 
+
+	    if ($intControlNr == $str[8])
 		    return True;
-		    
+
 	    return False;
     }
 
-    public function _bool($v) 
+    public function _bool($v)
     {
         if (is_numeric($v) or is_int($v))
         {
@@ -1598,7 +1589,7 @@ class pantheraTypes extends pantheraClass
                 if(is_array($this->types[$type]))
                     return $this->types[$type][0]->$this->types[$type][1]($value);
                 else
-                    return $this->types[$type]($value);            
+                    return $this->types[$type]($value);
             }
         }
 
@@ -1673,30 +1664,30 @@ class pantheraTypes extends pantheraClass
 
         return False;
     }
-    
+
     /**
       * Parse string type to real data type
       *
       * @param string $input Input data represented as string
       * @param string $type Type to convert to
-      * @return mixed 
+      * @return mixed
       * @author Damian Kęska
       */
-    
+
     public function parse($input, $type)
     {
         if ($type == 'bool')
             return (bool)$input;
-        
+
         if ($type == 'int')
             return intval($input);
-            
+
         if ($type == 'ip')
         {
             if (!$this->_ip($input))
                 return '0.0.0.0';
         }
-            
+
         return $input;
     }
 }
@@ -1752,10 +1743,10 @@ class _arrayObject
 function ajax_exit($array)
 {
     global $panthera;
-    
+
     if ($panthera -> logging -> debug == True)
         $panthera -> logging -> output('ajax_exit: ' .json_encode($array), 'pantheraCore');
-    
+
     print(json_encode($array));
     pa_exit('', True);
 }
@@ -1915,7 +1906,7 @@ class Pager
             $left = 0;
 
         $pages = array();
-        
+
         for ($i=$left; $i<$currentPage; $i++)
         {
             $pages[(string)$i] = False;
@@ -1927,7 +1918,7 @@ class Pager
             $right += ($m-count($pages));
 
         $pages[(string)$currentPage] = True;
-        
+
         if ($right > $this->pages)
             $right = $this->pages;
 
@@ -1974,12 +1965,12 @@ function filterInput($input, $filtersList)
  * @author Damian Kęska
  */
 
-function pantheraUrl($url, $reverse=False) 
+function pantheraUrl($url, $reverse=False)
 {
     global $panthera;
 
     $var = array('{$AJAX_URL}' => $panthera->config->getKey('ajax_url'), '{$PANTHERA_DIR}' => PANTHERA_DIR, '{$SITE_DIR}' => SITE_DIR, '{$PANTHERA_URL}' => $panthera->config->getKey('url'), '{$upload_dir}' => $panthera->config->getKey('upload_dir'));
-    
+
     //if (!defined('SKIP_LOCALE'))
     //    $var['{$language}'] = $panthera->locale->getActive();
 
@@ -2144,7 +2135,7 @@ function __HTML__closetags($html) {
       #put all opened tags into an array
       preg_match_all('#<([a-z]+)(?: .*)?(?<![/|/ ])>#iU', $html, $result);
       $openedtags = $result[1];
-     
+
       #put all closed tags into an array
       preg_match_all('#</([a-z]+)>#iU', $html, $result);
       $closedtags = $result[1];
@@ -2248,10 +2239,10 @@ function getContentDir($dir)
 {
     if (file_exists(SITE_DIR.'/'.$dir))
         return SITE_DIR.'/'.$dir;
-        
+
     if (file_exists(SITE_DIR. '/content/'.$dir))
         return SITE_DIR. '/content/'.$dir;
-        
+
     if (file_exists(PANTHERA_DIR. '/'.$dir))
         return PANTHERA_DIR.'/'.$dir;
 }
@@ -2259,7 +2250,7 @@ function getContentDir($dir)
 /**
   * Create an empty directory with unique name in /content/tmp/ dir
   *
-  * @return string 
+  * @return string
   * @author Damian Kęska
   */
 
@@ -2269,12 +2260,12 @@ function maketmp()
 
     $seed = $panthera->config->getKey('session_key'). '_' .substr(md5(rand(999999,99999999)), 0, 6);
 
-    // generate unique dir    
+    // generate unique dir
     while (is_dir(SITE_DIR. '/content/tmp/_' .$seed))
         $seed = $panthera->config->getKey('session_key'). '_' .substr(md5(rand(999999,99999999)), 0, 6);
-        
+
     @mkdir(SITE_DIR. '/content/tmp/_' .$seed);
-    
+
     return SITE_DIR. '/content/tmp/_' .$seed;
 }
 
@@ -2283,7 +2274,7 @@ function maketmp()
   *
   * @param object $obj Input object
   * @debug
-  * @return void 
+  * @return void
   * @author Damian Kęska
   */
 
@@ -2300,7 +2291,7 @@ function object_dump($obj)
                   'properties' => $class->getProperties(),
                   'constants' => $class->getConstants()
                    );
-                   
+
    var_dump($data);
 }
 
@@ -2308,17 +2299,17 @@ function object_dump($obj)
   * Data serialization using method with best performance
   *
   * @param mixed $data
-  * @return string 
+  * @return string
   * @author Damian Kęska
   */
 
 /*function quickSerialize($data)
 {
     global $panthera;
-    
+
     if ($panthera->qSerialize == 'binary')
         return igbinary_serialize($data);
-    else    
+    else
         return serialize($data);
 }*/
 
@@ -2326,17 +2317,17 @@ function object_dump($obj)
   * Data unserialization using method with best performance
   *
   * @param mixed $data
-  * @return string 
+  * @return string
   * @author Damian Kęska
   */
 
 /*function quickUnserialize($data)
 {
     global $panthera;
-    
+
     if ($panthera->qSerialize == 'binary')
         return igbinary_unserialize($data);
-    else    
+    else
         return unserialize($data);
 }*/
 
@@ -2344,7 +2335,7 @@ function object_dump($obj)
   * Splits seconds with microseconds from microtime() output
   *
   * @param string $time Optional input time, if not specified it will be generated with microtime()
-  * @return float 
+  * @return float
   * @author http://php.net
   */
 
@@ -2369,7 +2360,7 @@ function microtime_float($time='')
   * @param bool $mins
   * @param bool $secs
   * @param bool $display_output
-  * @return string|array 
+  * @return string|array
   * @author Chris <http://stackoverflow.com/questions/5010016/php-time-since-function>
   */
 
@@ -2407,7 +2398,7 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
     if ($display_output === false)
         return $timeleft;
     return $timeleft ? ($timestamp_future > $timestamp_past ? null : '-') . implode(', ', $timeleft) : 0;
-}  
+}
 
 /**
   * Description of a function
@@ -2415,16 +2406,16 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
   * @config hashing_algorithm
   * @config salt
   * @param string $password to encode
-  * @return string with hash 
+  * @return string with hash
   * @author Damian Kęska
   */
 
 function encodePassword($password)
 {
     global $panthera;
-    
+
     $salted = $panthera->config->getKey('salt').$password;
-    
+
     if ($panthera->hashingAlgorithm == 'blowfish')
         return password_hash($salted, PASSWORD_BCRYPT);
     elseif ($panthera->hashingAlgorithm == 'sha512')
@@ -2440,16 +2431,16 @@ function encodePassword($password)
   * @config salt
   * @param string $password to verify
   * @param string $hash previously encoded password to verify with $password
-  * @return bool 
+  * @return bool
   * @author Damian Kęska
   */
 
 function verifyPassword($password, $hash)
 {
     global $panthera;
-    
+
     $salted = $panthera->config->getKey('salt').$password;
-    
+
     if ($panthera->hashingAlgorithm == 'blowfish')
         return password_verify($salted, $hash);
     elseif ($panthera->hashingAlgorithm == 'sha512')
