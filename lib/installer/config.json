@@ -1,6 +1,6 @@
 {
     "steps": [
-        "index", "environment", "database", "simpleconfiguration", "crontab", "templates"
+        "index", "environment", "database", "simpleconfiguration", "crontab", "templates", "locales"
     ]
 
 }

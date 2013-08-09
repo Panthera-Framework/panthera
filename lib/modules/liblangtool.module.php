@@ -10,6 +10,13 @@
 
 global $panthera;
 
+/**
+  * Group of static methods providing locales management
+  *
+  * @package Panthera\modules\liblangtool
+  * @author Damian Kęska
+  */
+
 class localesManagement
 {
     /**
@@ -35,7 +42,7 @@ class localesManagement
                     if($file == "." or $file == "..")
                         continue;
 
-                    if (!is_dir($dir. '/' .$file) or $file == 'nocache')
+                    if (!is_dir($dir. '/' .$file))
                         continue;
 
                     $languages[$file] = $dir;
@@ -175,7 +182,12 @@ class localesManagement
 
         // create dir if does not exists
         if (!is_dir(SITE_DIR. '/content/locales/' .$locale. '/'))
-        {
+        {/**
+  * Object of this class represents a translation that can be modified
+  *
+  * @package Panthera\modules\liblangtool
+  * @author Damian Kęska
+  */
             mkdir(SITE_DIR. '/content/locales/' .$locale. '/');
         }
 

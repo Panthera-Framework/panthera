@@ -9,7 +9,7 @@ function createNewTemplate()
 </script>
 
 <span class="description">
-    {function="localize('Every website needs a layout and... a template describing it. You need to create a default template for your application, and optionaly make views for mobile devices.', 'installer')"}
+    {function="localize('Every website needs a layout and a template describing it. You need to create a default template for your application, and optionaly make views for mobile devices.', 'installer')"}
 </span>
 
 <table class="table" style="margin: 0 auto; width: 80%; margin-top: 30px;">
