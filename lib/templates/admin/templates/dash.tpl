@@ -46,7 +46,7 @@ $(function(){
 	$('.contextMenu').styleddropdown(function (value) {
 	    navigateTo('?display=dash&cat=admin&widget='+value+'&action=add');
 	});
-	
+
 	if ({$widgetsUnlocked} == 1 && $('#widgetsLockedImg').length > 0)
 	    toggleWidgetsLock(0);
 });
@@ -90,16 +90,16 @@ $(function(){
 				</ul>
 				 <div class="clear"></div>
         </div>
-        
+
         {if="isset($showWidgets)"}
         <div style="float: right; margin-right: 40px; height: 20px;">
             <!-- add new widget button -->
             <a href="#" id="newWidgetIcon" {if="$widgetsUnlocked == 0"}style="display: none;"{/if}>
                 <span class="tooltip">{function="localize('Add new widget', 'dash')"}</span>
-                
+
                 <div class="contextMenu" style="display: inline;">
                     <img src="{$PANTHERA_URL}/images/admin/list-add.png" style="height: 20px; margin-right: 5px;" class="field">
-                
+
 	                <ul class="list" style="left: -300px;">
 	                    <b>{function="localize('Add new widget', 'dash')"}</b>
 		                {loop="$dashAvaliableWidgets"}
@@ -108,14 +108,14 @@ $(function(){
 	                </ul>
                 </div>
             </a>
-            
+
             <!-- lock and unlock widgets button -->
             <a href="#" onclick="toggleWidgetsLock();">
                 <span class="tooltip" id="widgetsLockedSpan">{if="$widgetsUnlocked == 0"}{function="localize('Unlock widgets', 'dash')"}{else}{function="localize('Lock widgets', 'dash')"}{/if}</span>
                 <img src="{$PANTHERA_URL}/images/admin/object-{if="$widgetsUnlocked == 0"}unlocked{else}locked{/if}.png" style="height: 20px;" id="widgetsLockedImg">
             </a>
         </div>
-        
+
         <div style="width: 100%; height: 20px;">&nbsp;</div>
         {/if}
 
@@ -136,7 +136,7 @@ $(function(){
            </div>
         </div>
         {/if}
-        
+
         {if="isset($lastLogged) and count($lastLogged) > 0"}
         <div class="grid-2">
            <div class="title-grid">{function="localize('Recently logged in users')"}<span id="widgetRemoveButtons" class="widgetRemoveButtons"><a href="#" onclick="removeWidget('lastLogged')"><img src="{$PANTHERA_URL}/images/admin/list-remove.png" style="height: 15px;"></a></span></div>
@@ -144,7 +144,7 @@ $(function(){
               <table class="insideGridTable">
                    {loop="$lastLogged"}
                    <tr>
-            	        <td><a href="?display=settings&cat=admin&action=my_account&uid={$value.uid}" class="ajax_link"><img src="{$value.avatar}" style="width: 20px"></a></td><td><a href="?display=settings&cat=admin&action=my_account&uid={$value.uid}" class="ajax_link">{$value.login}</a></td><td> {$value.time} {function="localize('ago')"}</td>
+            	        <td><a href="?display=users&cat=admin&action=account&uid={$value.uid}" class="ajax_link"><img src="{$value.avatar}" style="width: 20px"></a></td><td><a href="?display=users&cat=admin&action=account&uid={$value.uid}" class="ajax_link">{$value.login}</a></td><td> {$value.time} {function="localize('ago')"}</td>
             	   </tr>
                    {/loop}
                </table>
@@ -152,7 +152,7 @@ $(function(){
            </div>
         </div>
         {/if}
-        
+
         {loop="$dashCustomWidgets"}
             {include="$value"}
         {/loop}
