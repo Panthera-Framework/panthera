@@ -37,12 +37,16 @@ if ($_GET['action'] == 'save')
     if (!class_exists('varCache_' .$varcache))
         ajax_exit(array('status' => 'failed', 'message' => localize('Cannot find class "varCache_' .$varcache. '" for this caching method', 'cache')));
 
+    $panthera -> varCache -> clear();
+
     // set our cache
     if (!$panthera->config->setKey("cache_type", $cache, 'string') OR !$panthera->config->setKey("varcache_type", $varcache, 'string'))
     {
         ajax_exit(array('status' => 'failed', 'message' => localize('Invalid value for this data type', 'cache')));
         pa_exit();
     } else {
+        $panthera -> loadCache($varcache, $cache, $panthera->config->getKey('session_key'));
+        $panthera -> varCache -> clear();
         ajax_exit(array('status' => 'success'));
         pa_exit();
     }
