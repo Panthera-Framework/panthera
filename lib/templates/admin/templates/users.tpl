@@ -9,10 +9,11 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
 
 function jumpToAjaxPage(id)
 {
-    panthera.htmlGET({ url: '?display=settings&cat=admin&action=users&subaction=show_table&usersPage='+id, success: '#usersDiv' });
+    panthera.htmlGET({ url: '?display=users&cat=admin&subaction=show_table&usersPage='+id, success: '#usersDiv' });
 }
 
 var groupSpinner = new panthera.ajaxLoader($('#groupTable'));
+var userSpinner = new panthera.ajaxLoader($('#usersDiv'));
 
 // when page becomes ready
 $(document).ready(function () {
@@ -22,10 +23,10 @@ $(document).ready(function () {
       *
       * @author Damian Kęska
       */
-    
+
     $('#createGroupForm').submit(function () {
         panthera.jsonPOST( { data: '#createGroupForm', spinner: groupSpinner, success: function (response) {
-        
+
                 if (response.status == "success")
                 {
                     //$('.groupTableItem').remove();
@@ -35,7 +36,7 @@ $(document).ready(function () {
                     {
                         w2alert(response.message, '{function="localize('Warning', 'acl')"}');
                     }
-                
+
                 }
             }
         });
@@ -54,27 +55,49 @@ function removeGroup(name)
     w2confirm('{function="localize('Are you sure you want delete this group?', 'acl')"}', function (responseText) {
         if (responseText == 'Yes')
         {
-            panthera.jsonPOST( { url: '?display=settings&cat=admin&action=removeGroup', data: 'group='+name, spinner: groupSpinner, success: function (response) {
-                
+            panthera.jsonPOST( { url: '?display=users&cat=admin&action=removeGroup', data: 'group='+name, spinner: groupSpinner, success: function (response) {
+
                     if (response.status == "success")
                         $('#group_'+response.name).remove();
                 }
             });
         }
-    
+
+    });
+}
+
+/**
+  * Remove user
+  *
+  * @author Mateusz Warzyński
+  */
+
+function removeUser(id)
+{
+    w2confirm('{function="localize('Are you sure you want delete this user?', 'users')"}', function (responseText) {
+        if (responseText == 'Yes')
+        {
+            panthera.jsonPOST( { url: '?display=users&cat=admin&action=removeUser', data: 'id='+id, spinner: userSpinner, success: function (response) {
+
+                    if (response.status == "success")
+                        $('#user_'+id).remove();
+                }
+            });
+        }
+
     });
 }
 
 </script>
 
-<div class="titlebar"><span class="titleBarIcons"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" style="width: 25px"></a></span>{function="localize('Users')"} - {function="localize('All registered users on this website', 'settings')"}{include="_navigation_panel"}</div>
+<div class="titlebar"><span class="titleBarIcons"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" style="width: 25px"></a></span>{function="localize('Users')"} - {function="localize('All registered users on this website', 'users')"}{include="_navigation_panel"}</div>
 
         <div class="grid-1">
             <div id="usersDiv" style="position: relative;">
             {include="users_table"}
              </div>
         </div>
-        
+
         <div class="grid-2" id="groupTable" style="position: relative;">
         <table class="gridTable">
         <thead>
@@ -92,8 +115,8 @@ function removeGroup(name)
                     <td><input type="button" value="{function="localize('Remove', 'acl')"}" onclick="removeGroup('{$value.name}');"></td>
                 </tr>
             {/loop}
-            
-                <form action="?display=settings&cat=admin&action=createGroup" method="POST" id="createGroupForm">
+
+                <form action="?display=users&cat=admin&action=createGroup" method="POST" id="createGroupForm">
                 <tr id="groupsAddTr" style="display: none;">
                     <td><input type="text" name="name" style="width: 95%;"></td><td><input type="text" name="description" style="width: 95%;"></td><td><input type="submit" value="{function="localize('Add new group', 'acl')"}"></td>
                 </tr>

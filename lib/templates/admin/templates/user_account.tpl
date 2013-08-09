@@ -1,6 +1,10 @@
 <script type="text/javascript">
 $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
 
+// spinners
+var spinner = new panthera.ajaxLoader($('#userWindow'));
+var acl = new panthera.ajaxLoader($('#aclWindow'));
+
 /**
   * Submit language form
   *
@@ -8,9 +12,9 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
   */
 
 $('#changelanguage_form').submit(function () {
-    panthera.jsonPOST({ data: '#changelanguage_form', messageBox: 'userinfoBox', success: function (response) {
+    panthera.jsonPOST({ data: '#changelanguage_form', spinner: spinner, success: function (response) {
             if (response.status == "success")
-                navigateTo('?display=settings&cat=admin&action=my_account');
+                navigateTo('?display=users&cat=admin&action=account');
         }
     });
 
@@ -25,7 +29,7 @@ $('#changelanguage_form').submit(function () {
   */
 
 $('#changepasswd_form').submit(function () {
-    panthera.jsonPOST({ data: '#changepasswd_form', messageBox: 'userinfoBox', success: function (response) {
+    panthera.jsonPOST({ data: '#changepasswd_form', spinner: spinner, success: function (response) {
             if (response.status == "success")
             {
                 jQuery('#change_success').slideDown();
@@ -41,7 +45,7 @@ $('#changepasswd_form').submit(function () {
 
 function aclModify(id, name)
 {
-    panthera.jsonPOST({ url: '?display=settings&cat=admin&action=my_account{$user_uid}', data: 'aclname='+name+'&value='+$('#'+id).val(), success: function (response) {
+    panthera.jsonPOST({ url: '?display=users&cat=admin&action=account{$user_uid}', data: 'aclname='+name+'&value='+$('#'+id).val(), spinner: acl, success: function (response) {
           if (response.status == "success")
           {
           } else {
@@ -59,7 +63,7 @@ function aclModify(id, name)
 
             <div class="msgSuccess" id="userinfoBox_success"></div>
             <div class="msgError" id="userinfoBox_failed"></div>
-
+        <div id="userWindow" style="position: relative;">
             <table class="gridTable">
 
              <thead>
@@ -85,7 +89,7 @@ function aclModify(id, name)
                   <td>{function="localize('Password', 'settings')"}</td>
                   <td><a href="#" onclick="jQuery('#password_window').slideToggle(); return false;">{function="localize('Change password', 'settings')"}</a> <div id="password_window" style="display: none;">
 
-                <form action="?display=settings&cat=admin&action=my_account&changepassword{$user_uid}" method="POST" id="changepasswd_form">
+                <form action="?display=users&cat=admin&action=account&changepassword{$user_uid}" method="POST" id="changepasswd_form">
                  <table style="width: 400px; border: 0px; font-size: 12px;">
                     <tfoot>
                         <tr>
@@ -118,7 +122,13 @@ function aclModify(id, name)
 
                 <tr>
                   <td>{function="localize('Avatar', 'settings')"}</td>
-                  <td><img src="{$profile_picture}" height="{$avatar_dimensions[0]}" width="{$avatar_dimensions[1]}"><br><br><!--<input type="button" value="{function="localize('Change avatar')"} !IMPLEMENT ME!" style="float:left;">--><br><br></td>
+                  <td>
+                      <div class="galleryImageFrame">
+                        <div class="paGalleryFrameContent">
+                            <img src="{$profile_picture}" id="avatar_image" style="max-width: {$avatar_dimensions[1]}px; max-height: {$avatar_dimensions[0]}px;">
+                        </div>
+                      </div>
+                  </td>
                 </tr>
 
                 <tr>
@@ -142,7 +152,7 @@ function aclModify(id, name)
                     <a href="#" onclick="jQuery('#localize_window').slideToggle(); return false;" id="default_language">{$language|ucfirst}</a>
                     <div id="localize_window" style="display: none;">
 
-                     <form action="?display=settings&cat=admin&action=my_account&changelanguage{$user_uid}" method="POST" id="changelanguage_form">
+                     <form action="?display=users&cat=admin&action=account&changelanguage{$user_uid}" method="POST" id="changelanguage_form">
                        <table style="width: 400px;">
                           <tfoot>
                             <tr>
@@ -178,8 +188,10 @@ function aclModify(id, name)
              </tbody>
 
             </table>
-            <br>
+           </div>
 
+            <br>
+           <div id="aclWindow" style="position: relative;">
             <table class="gridTable">
             <thead>
                 <tr>
@@ -207,3 +219,4 @@ function aclModify(id, name)
                 {/loop}
             </tbody>
         </table>
+       </div>

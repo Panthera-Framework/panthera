@@ -29,34 +29,34 @@ $panthera -> template -> push('widgetsUnlocked', 0);
 if ($_GET['action'] == 'remove')
 {
     $widgets = $panthera -> config -> getKey('dash_widgets');
-    
+
     // disable widget
     if(array_key_exists($_GET['widget'], $widgets))
     {
         $widgets[$_GET['widget']] = False;
     }
-    
+
     $panthera -> config -> setKey('dash_widgets', $widgets);
     $panthera -> template -> push('widgetsUnlocked', 1);
-    
+
 /**
   * Add a widget from /modules/dash/ directory or builtin (gallery or lastLogged)
   *
   * @param string $widget
   * @author Damian Kęska
   */
-  
+
 } elseif ($_GET['action'] == 'add') {
 
     $widget = addslashes(str_replace('/', '', $_GET['widget']));
-    
+
     if (is_file(PANTHERA_DIR. '/modules/dash/' .$widget. '.widget.php') or is_file(SITE_DIR. '/content/modules/dash/' .$widget. '.widget.php') or $widget == 'gallery' or $widget == 'lastLogged')
     {
         $widgets = $panthera -> config -> getKey('dash_widgets');
         $widgets[$widget] = True;
         $panthera -> config -> setKey('dash_widgets', $widgets);
     }
-    
+
     $panthera -> template -> push('widgetsUnlocked', 1);
 }
 
@@ -90,7 +90,7 @@ switch ($_GET['menu'])
         $menu[] = array('link' => '{$PANTHERA_URL}', 'name' => localize('Front page', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/home.png');
         $menu[] = array('link' => '?display=dash&cat=admin&menu=settings', 'name' => localize('Settings', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/settings.png' , 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=debug&cat=admin', 'name' => localize('Debugging center'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/developement.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=settings&cat=admin&action=users', 'name' => localize('Users'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=users&cat=admin', 'name' => localize('Users'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png', 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=mailing&cat=admin', 'name' => localize('Mailing', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/mail-replied.png', 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=gallery&cat=admin', 'name' => localize('Gallery'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/gallery.png', 'linkType' => 'ajax');
         $menu[] = array('link' => 'createPopup(\'_ajax.php?display=upload&cat=admin&popup=true&callback=upload_file_callback\', 1300, 550);', 'name' => localize('Uploads', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/uploads.png', 'linkType' => 'onclick');
@@ -116,7 +116,7 @@ if ($category == 'main')
     $widgets = False;
     $enabledWidgets = array(); // array of widget instances
     $dashCustomWidgets = array(); // list of templates
-    
+
     if ($panthera->varCache)
     {
         if ($panthera->varCache->exists('dash.widgets'))
@@ -132,33 +132,33 @@ if ($category == 'main')
         $widgetsDir = array();
         if (is_dir(PANTHERA_DIR. '/modules/dash/'))
             $widgetsDir = @scandir(PANTHERA_DIR. '/modules/dash/');
-            
+
         $widgetsContentDir = array();
         if (is_dir(SITE_DIR. '/content/modules/dash/'))
             $widgetsContentDir = @scandir(SITE_DIR. '/content/modules/dash/');
-            
+
         $widgets = array_merge($widgetsDir, $widgetsContentDir);
         unset($widgets[0]);
         unset($widgets[1]);
-        
+
         if ($panthera -> varCache)
         {
             $panthera -> varCache -> set('dash.widgets', $widgets, 120);
             $panthera -> logging -> output('Saving widgets list to varCache', 'dash');
         }
     }
-    
+
     // add widgets from lib and content directories to the list
     foreach ($widgets as $widget)
     {
         $widget = substr($widget, 0, strlen($widget)-11);
-    
+
         if (!array_key_exists($widget, $settings))
             $settings[$widget] = False;
     }
-    
+
     $panthera -> template -> push ('dashAvaliableWidgets', $settings);
-    
+
     // recent gallery items
     if ($settings['gallery'] === True)
     {
@@ -166,12 +166,12 @@ if ($category == 'main')
         $panthera -> template -> push ('galleryItems', gallery::getRecentPicture('', 9));
     }
 
-    // last logged in users    
+    // last logged in users
     if ($settings['lastLogged'] === True)
     {
         $u = getUsers('', 10, 0, 'lastlogin', 'DESC');
         $users = array();
-        
+
         foreach ($u as $key => $value)
         {
             //if ($value->attributes->superuser)
@@ -179,45 +179,45 @@ if ($category == 'main')
 
             $users[] = array('login' => $value->login, 'time' => date_calc_diff(strtotime($value->lastlogin), time()), 'avatar' => pantheraUrl($value->profile_picture), 'uid' => $value->id);
         }
-        
+
         $panthera -> template -> push ('lastLogged', $users);
     }
-    
+
     // load all enabled widgets
     foreach ($settings as $widget => $enabled)
     {
         if ($enabled == True)
         {
             $dir = getContentDir('/modules/dash/' .$widget. '.widget.php');
-            
+
             if ($dir == False)
                 continue;
-                
+
             $widgetName = $widget. '_dashWidget';
-            
+
             try {
                 include_once $dir;
-                
+
                 if (!class_exists($widgetName))
                 {
                     $panthera -> logging -> output('Class ' .$widgetName. ' does not exists in ' .$dir. ' file, skipping this widget', 'dash');
                     continue;
                 }
-                
+
                 $enabledWidgets[$widget] = new $widgetName($panthera);
                 $enabledWidgets[$widget] -> display();
-                
+
                 if (isset($enabledWidgets[$widget]->template))
                     $dashCustomWidgets[] = $enabledWidgets[$widget]->template;
                 else
                     $dashCustomWidgets[] = 'dashWidget_' .$widget;
-                    
+
             } catch (Exception $e) {
                 $panthera -> logging -> output ('Cannot display a widget, got an exception: ' .$e->getMessage(), 'dash');
             }
         }
     }
-    
+
     $template -> push ('dashCustomWidgets', $dashCustomWidgets);
 }
 

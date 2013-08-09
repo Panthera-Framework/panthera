@@ -32,7 +32,7 @@ $menu -> add('dash', localize('Dash'), '?display=dash&cat=admin', '', '{$PANTHER
 if (getUserRightAttribute($panthera->user, 'can_see_debug'))
     $menu -> add('debug', localize('Debugging center'), '?display=debug&cat=admin', '', '{$PANTHERA_URL}/images/admin/menu/developement.png', '');
 
-$menu -> add('users', localize('Users'), '?display=settings&cat=admin&action=users', '', '{$PANTHERA_URL}/images/admin/menu/users.png', '');
+$menu -> add('users', localize('Users'), '?display=users&cat=admin', '', '{$PANTHERA_URL}/images/admin/menu/users.png', '');
 
 // end of built-in pages
 $menu -> loadFromDB('admin');
@@ -56,7 +56,7 @@ foreach ($locales as $lang => $enabled)
     {
         if (is_file(SITE_DIR. '/images/admin/flags/' .$lang. '.png'))
             $localesTpl[] = $lang;
-    } 
+    }
 }
 
 $panthera -> template -> push('flags', $localesTpl);
