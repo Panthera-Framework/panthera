@@ -8,9 +8,10 @@
   */
   
 session_start();
+error_reporting(E_ERROR);
 
 // load app.php and extract $config variable
-$app = file_get_contents('content/app.php');
+$app = @file_get_contents('content/app.php');
 $configExported = substr($app, strpos($app, '$config'), strpos($app, ');')-4);
 @eval($configExported);
 $newAppFile = False;
@@ -20,16 +21,21 @@ if (!is_array($config))
     $newAppFile = True;
     $config = array();
 }
-   
+
 if ($config['preconfigured'] !== True)
 {
     // pre-configure installer environment
-    $config['build_missing_tables'] = False;
+    $config['build_missing_tables'] = True;
     $config['db_socket'] = 'sqlite';
     $config['db_file'] = 'db.sqlite3';
     $config['SITE_DIR'] = dirname($_SERVER['SCRIPT_FILENAME']);
     $config['disable_overlay'] = True;
     $config['debug'] = True;
+    
+    if (!is_file($config['SITE_DIR']. '/content/database/' .$config['db_file']))
+    {
+        file_put_contents($config['SITE_DIR']. '/content/database/' .$config['db_file'], '');
+    }
     
     if (!isset($config['url']))
     {

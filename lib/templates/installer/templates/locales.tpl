@@ -13,14 +13,14 @@
         {loop="$locales"}
         <tr>
             <td>{if="$value['icon'] == True"}<img src="{$PANTHERA_URL}/images/admin/flags/{$key}.png"> &nbsp;{/if}{$key|ucfirst}</td>
-            <td style="width: 30%;"><input type="radio" style="float: right; margin-right: 10px;" onclick="navigateTo('?setDefaultLanguage={$key}');"{if="$value['default'] == True"} checked{/if}></td>
+            <td style="width: 30%;"><input type="radio" name="language" style="float: right; margin-right: 10px;" onclick="navigateTo('?setDefaultLanguage={$key}');"{if="$value['default'] == True"} checked{/if}></td>
             <td><input type="checkbox" style="float: right; margin-right: 10px;" onclick="navigateTo('?switchLanguage={$key}');"{if="$value['enabled'] == True"} checked{/if}></td>
         </tr>
         {/loop}
         
         <tr>
             <td><img src="{$PANTHERA_URL}/images/admin/flags/english.png"> &nbsp;English</td>
-            <td><input type="radio" style="float: right; margin-right: 10px;" onclick="navigateTo('?setDefaultLanguage=english');"{if="$defaultLocale == 'english'"} checked{/if}></td>
+            <td><input type="radio" name="language" style="float: right; margin-right: 10px;" onclick="navigateTo('?setDefaultLanguage=english');"{if="$defaultLocale == 'english'"} checked{/if}></td>
             <td><input type="checkbox" style="float: right; margin-right: 10px;" disabled checked></td>
         </tr>
     </tbody>

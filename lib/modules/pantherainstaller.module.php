@@ -42,7 +42,8 @@ class pantheraInstaller
         }
         
         // merge webroot if not merged
-            //$panthera -> template -> webrootMerge();
+        if (!is_dir(SITE_DIR. '/content/images') or !is_dir(SITE_DIR. '/content/js') or !is_dir(SITE_DIR. '/content/css'))
+            $panthera -> template -> webrootMerge();
         
         // temporary database for installer
         $this -> config = (object)json_decode(file_get_contents($index));

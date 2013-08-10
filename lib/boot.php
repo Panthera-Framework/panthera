@@ -28,10 +28,10 @@ if (PANTHERA_MODE == 'CLI') {
     // CGI mode
 
     // we will use sessions and cookies
-    session_start();
+    @session_start();
 
     ini_set("display_errors", 1);
-    error_reporting(E_ALL);
+    error_reporting(E_ERROR | E_PARSE | E_WARNING);
 }
 
 // Strip magic quotes
@@ -52,7 +52,7 @@ if (get_magic_quotes_gpc()) {
 }
 
 // panthera main directory
-define('PANTHERA_DIR', $config['lib']);
+define('PANTHERA_DIR', realpath($config['lib']));
 define('PANTHERA_VERSION', '1.3.4-DEV');
 define('IN_PANTHERA', True);
 
@@ -78,7 +78,8 @@ if (!defined('SKIP_SESSION'))
 
 // core elements
 $panthera = new pantheraCore($config);
-$t = str_replace(SITE_DIR, '', $_SERVER['DOCUMENT_ROOT'].$_SERVER['PHP_SELF']);
+$t = str_replace(SITE_DIR, '', str_replace('//', '/', $_SERVER['DOCUMENT_ROOT'].$_SERVER['PHP_SELF']));
+
 
 if ($t[0] == "/")
     $t = substr($t, 1, strlen($t));

@@ -19,12 +19,14 @@ $panthera -> importModule('liblangtool');
 $allLocales = localesManagement::getLocales();
 $locales = array();
 
+
 if (isset($_GET['setDefaultLanguage']))
 {
-    if (isset($allLocales[$_GET['setDefaultLanguage']]))
+    if (isset($allLocales[$_GET['setDefaultLanguage']]) or $_GET['setDefaultLanguage'] == 'english')
     {
         $panthera -> locale -> setSystemDefault($_GET['setDefaultLanguage']);
     }
+    
 } elseif (isset($_GET['switchLanguage'])) {
 
     if (isset($allLocales[$_GET['switchLanguage']]))
@@ -59,13 +61,13 @@ foreach ($allLocales as $locale => $path)
     }
     
     // check if this language is currently set as default
-    if ($panthera->locale->getActive() == $locale)
+    if ($panthera->locale->getSystemDefault() == $locale)
     {
         $locales[$locale]['default'] = True;
     }
 }
 
 $installer -> enableNextStep();
-$panthera -> template -> push ('defaultLocale', $panthera->locale->getActive());
+$panthera -> template -> push ('defaultLocale', $panthera->locale->getSystemDefault());
 $panthera -> template -> push ('locales', $locales);
 $installer -> template = 'locales';

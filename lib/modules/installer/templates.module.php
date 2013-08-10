@@ -82,9 +82,8 @@ if ($_GET['action'] == 'createView')
     $baseTemplateConfig -> save();
     pa_redirect('install.php');
 } elseif ($_GET['action'] == 'setDefaultTemplate') {
-
     // check if template exists
-    if (!isset($tpl[$_GET['template']]))
+    if (!isset($tpl[$_GET['name']]))
         ajax_exit(array('status' => 'failed'));
         
     $panthera -> config -> setKey('template', $_GET['name']);
