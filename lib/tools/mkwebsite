@@ -50,9 +50,14 @@ foreach (new RecursiveIteratorIterator($archive) as $key => $value)
     }
 }
 
-print("Creating symlinks to front controllers...");
-@symlink($libPath. '/frontpages/pa-admin.php', getcwd(). '/pa-admin.php');
-@symlink($libPath. '/frontpages/pa-login.php', getcwd(). '/pa-login.php');
-@symlink($libPath. '/frontpages/_ajax.php', getcwd(). '/_ajax.php');
-@symlink($libPath. '/frontpages/_crontab.php', getcwd(). '/_crontab.php');
-print("Done.");
+print("Creating symlinks to front controllers...\n");
+
+$frontControllers = scandir($libPath. '/frontpages/');
+
+foreach ($frontControllers as $frontController)
+{
+    print("ln -s ".$libPath. '/frontpages/' .$frontController." ".getcwd(). '/' .$frontController."\n");
+    @symlink($libPath. '/frontpages/' .$frontController, getcwd(). '/' .$frontController);
+}
+
+print("Done.\n");
