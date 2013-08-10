@@ -19,7 +19,6 @@ $panthera -> importModule('liblangtool');
 $allLocales = localesManagement::getLocales();
 $locales = array();
 
-
 if (isset($_GET['setDefaultLanguage']))
 {
     if (isset($allLocales[$_GET['setDefaultLanguage']]))
