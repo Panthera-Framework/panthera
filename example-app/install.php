@@ -1,0 +1,1 @@
+../lib/frontpages/install.php

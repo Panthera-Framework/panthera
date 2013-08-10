@@ -1,5 +1,6 @@
 <?php
 $config = array('lib' => '../lib',
+                'requires_instalation' => true,
                 'SITE_DIR' => '{$SITE_DIR}',
                 'template' => 'PUT-YOUR-TEMPLATE-NAME-HERE',
                 'timezone' => 'Europe/Warsaw',
