@@ -67,7 +67,7 @@ switch ($_GET['menu'])
     case 'settings':
         $menu[] = array('link' => '?display=dash&cat=admin', 'name' => localize('Back'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/home.png', 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=users&cat=admin', 'name' => localize('Users'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png', 'linkType' => 'ajax');
-        $menu[] = array('link' => '?display=settings&cat=admin&action=my_account', 'name' => localize('My account', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/user.png', 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=users&cat=admin&action=my_account', 'name' => localize('My account', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/user.png', 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=database&cat=admin', 'name' => localize('Database management', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/db.png' , 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=cache&cat=admin', 'name' => localize('Cache management', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/cache.png' , 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=leopard&cat=admin', 'name' => localize('Package management', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/package.png' , 'linkType' => 'ajax');
