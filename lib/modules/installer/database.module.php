@@ -154,7 +154,7 @@ if (isset($_POST['db_prefix']))
         {
             $dumpFile = getContentDir('database/templates/' .$dumpDir. '/' .$file);
         
-            if ($file == '..' or $file == '.' or !$dumpFile)
+            if ($file == '..' or $file == '.' or !$dumpFile or is_dir($dumpFile))
                 continue;
                 
             if (in_array($db -> prefix. str_ireplace('.sql', '', $file), $tables))
