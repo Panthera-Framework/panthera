@@ -40,6 +40,15 @@ class pantheraDB
             
         $this->cache = intval(@$config['cache_db']);
         
+        // database timeout
+        if (!isset($config['db_timeout']))
+            $config['db_timeout'] = 5; // 5 seconds
+        
+        $config['db_timeout'] = intval(@$config['db_timeout']);
+        
+        if (!isset($config['db_autocommit']))
+            $config['db_autocommit'] = True;
+        
         if (!array_key_exists('cache_db', $config))
             $this -> cache = 3600;
        
@@ -67,6 +76,8 @@ class pantheraDB
             }
 
             $this->sql->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->sql->setAttribute(PDO::ATTR_TIMEOUT, $config['db_timeout']);
+            $this->sql->setAttribute(PDO::ATTR_AUTOCOMMIT, $config['db_autocommit']);
             $this->prefix = $config['db_prefix'];
 
 
