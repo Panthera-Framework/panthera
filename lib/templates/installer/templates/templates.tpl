@@ -26,7 +26,7 @@ function createNewTemplate()
         <tr>
             <td><input type="radio" name="selectedTemplate"{if="$value['active'] == True"} checked{else} onclick="navigateTo('?action=setDefaultTemplate&name={$key}')"{/if}> {$key}</td>
             {if="$value['mobile'] == False and $value['tablet'] == False"}
-            <td colspan="2">Create view: <br><li><a href="?action=createView&view=mobile&template={$key}">{function="localize('mobile', 'installer')"}</a></li> <li><a href="?action=createView&view=tablet&template={$key}">tablet</a></li> <li><a href="?action=createView&view=mobile,tablet&template={$key}">{function="localize('same view for mobile and tablet devices', 'installer')"}</a></li></td>
+            <td colspan="2">{function="localize('Create view', 'installer')"}: <br><li><a href="?action=createView&view=mobile&template={$key}">{function="localize('mobile', 'installer')"}</a></li> <li><a href="?action=createView&view=tablet&template={$key}">{function="localize('tablet', 'installer')"}</a></li> <li><a href="?action=createView&view=mobile,tablet&template={$key}">{function="localize('same view for mobile and tablet devices', 'installer')"}</a></li></td>
             {else}
             <td>
                 {if="$value['mobile'] == True"}

@@ -12,7 +12,8 @@ customNextBtn = false;
 <span class="description">{function="localize('Internal crontab module placed inside of Panthera Framework does not have possibility to work as a deamon, so it requires a real Unix-like crontab to work and to execute jobs in correct time', 'installer')"}.</span>
 
 <code>
-<i>crontab -e # open crontab joblist using text editor</i>
+<i># {function="localize('open crontab joblist using text editor', 'installer')"}<br>
+crontab -e</i>
 </code>
 
 <span class="description">{function="localize('Please paste one of those commands to you\'r Unix crontab list', 'installer')"}</span>

@@ -1,6 +1,6 @@
 {include="buttons"}
 
-<h1>{function="localize('Languages used in your application')"}</h1>
+<h1>{function="localize('Languages used in your application', 'installer')"}</h1>
 
 <span class="description">{function="localize('Panthera is offering native support for multiple languages, default preffered language is English that is translated to other languages using our translation system. New languages and its translations can be created using administration panel.', 'installer')"}</span>
 

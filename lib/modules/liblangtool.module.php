@@ -182,12 +182,7 @@ class localesManagement
 
         // create dir if does not exists
         if (!is_dir(SITE_DIR. '/content/locales/' .$locale. '/'))
-        {/**
-  * Object of this class represents a translation that can be modified
-  *
-  * @package Panthera\modules\liblangtool
-  * @author Damian Kęska
-  */
+        {
             mkdir(SITE_DIR. '/content/locales/' .$locale. '/');
         }
 
@@ -213,8 +208,14 @@ class localesManagement
 
     public static function removeDomain($locale, $domain)
     {
+        global $panthera;
+    
         if (is_file(SITE_DIR. '/content/locales/' .$locale. '/' .$domain. '.phps'))
         {
+            // clean up the cache if avaliable
+            if ($panthera->cache)
+                $panthera->cache->remove('locale.' .$locale. '.' .$domain);
+        
             unlink(SITE_DIR. '/content/locales/' .$locale. '/' .$domain. '.phps');
             return True;
         }
@@ -234,12 +235,18 @@ class localesManagement
 
     public static function renameDomain($locale, $domain, $newName)
     {
+        global $panthera;
+    
         // check if destination already exists
         if (is_file(SITE_DIR. '/content/locales/' .$locale. '/' .$newName. '.phps'))
             return False;
 
         if (is_file(SITE_DIR. '/content/locales/' .$locale. '/' .$domain. '.phps'))
         {
+            // clean up the cache if avaliable
+            if ($panthera->cache)
+                $panthera->cache->remove('locale.' .$locale. '.' .$domain);
+        
             rename(SITE_DIR. '/content/locales/' .$locale. '/' .$domain. '.phps', SITE_DIR. '/content/locales/' .$locale. '/' .$newName. '.phps');
             return True;
         }
@@ -271,15 +278,27 @@ class localesManagement
 
         return false;
     }
+    
+    /**
+      * Rename a locale
+      *
+      * @param string $locale
+      * @param string $newName
+      * @return mixed 
+      * @author Damian Kęska
+      */
 
-    public static function renameLocale($locale)
+    public static function renameLocale($locale, $newName)
     {
-        if ($locale == "")
+        if ($locale == "" or $locale == $newName)
             return False;
 
-        if (is_dir(SITE_DIR. '/content/locales/' .$locale))
+        if (is_dir(SITE_DIR. '/content/locales/' .$locale) and !is_dir(SITE_DIR. '/content/locales/' .$newName))
         {
+            return rename(SITE_DIR. '/content/locales/' .$locale, SITE_DIR. '/content/locales/' .$newName);
         }
+        
+        return false;
     }
 
     /**
@@ -312,6 +331,8 @@ class localeDomain
     protected $panthera; // Panthera object
     protected $dir = "";
     protected $memory = array();
+    protected $locale;
+    protected $domain;
 
     /**
       * Check there is such language domain etc.Musisz 
@@ -327,6 +348,8 @@ class localeDomain
     {
         global $panthera;
         $this->panthera = $panthera;
+        $this->locale = $localeName;
+        $this->domain = $domain;
 
         // check if file exists in /content
         if (is_file(SITE_DIR. '/content/locales/' .$localeName. '/' .$domain. '.phps'))
@@ -449,6 +472,10 @@ class localeDomain
             $saveDir = $this->dir;
 
         @mkdir(dirname($saveDir));
+        
+        // clean up the cache if avaliable
+        if ($this->panthera->cache)
+            $this->panthera->cache->remove('locale.' .$this->locale. '.' .$this->domain);
 
         try {
             $fp = fopen($saveDir, 'w');

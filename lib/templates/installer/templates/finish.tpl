@@ -19,6 +19,6 @@ $(document).bind('onNextBtn', function () {
 <div style="margin: 0 auto; width: 50%; text-align: center; margin-top: 30px;">
     <img src="{$PANTHERA_URL}/images/default_avatar.png"></a><br>
     <div style="margin-top: 15px;">
-        <small>Welcome <b>{$userLogin|ucfirst}</b>, {function="localize('use your login and password to login to Administration Panel.', 'installer')"}</small>
+        <small>{function="localize('Welcome', 'installer')"} <b>{$userLogin|ucfirst}</b>, {function="localize('use your login and password to login to Administration Panel.', 'installer')"}</small>
     </div>
 </div>

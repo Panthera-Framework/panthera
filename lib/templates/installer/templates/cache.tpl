@@ -18,7 +18,7 @@
     });
 </script>
 
-<h1>{function="localize('Cache settings')"}</h1>
+<h1>{function="localize('Cache settings', 'installer')"}</h1>
 
 <span class="description">{function="localize('Please spent a minute on setting caching settings, correct settings can improve your application performance even on 2-3 times. You can handle more users without need to buy better hardware.', 'installer')"}</span>
 

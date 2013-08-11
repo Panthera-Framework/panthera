@@ -93,7 +93,7 @@ $(document).ready (function () {
             <tr><td>{function="localize('Password', 'installer')"}:<br><small><i>{function="localize('Phrase required to authenticate with server', 'installer')"}</i></small></td><td><input type="text" name="mailing_password" id="mailing_password"></td></tr>
             
             <tr><td>{function="localize('Use SSL', 'installer')"}:<br><small><i>{function="localize('SSL/TLS connection encryption', 'installer')"}</i></small></td>
-                <td><select name="mailing_smtp_ssl"><option value="1" selected>Yes</option><option value="">No</option></td>
+                <td><select name="mailing_smtp_ssl"><option value="1" selected>{function="localize('Yes', 'installer')"}</option><option value="">{function="localize('No', 'installer')"}</option></td>
             </tr>
             
             <!-- session and cookies -->
@@ -107,7 +107,7 @@ $(document).ready (function () {
             </tr>
             
             <tr><td>{function="localize('Encrypt cookies', 'installer')"}:<br><small><i>{function="localize('Cookies can be encrypted with strong algorithm, so the user wont be able to read contents', 'installer')"}</i></small></td>
-                <td><select name="cookie_encrypt"><option value="1">Yes</option><option value="" selected>No</option></td>
+                <td><select name="cookie_encrypt"><option value="1" selected>{function="localize('Yes', 'installer')"}</option><option value="">{function="localize('No', 'installer')"}</option></td>
             </tr>
         </tbody>
     

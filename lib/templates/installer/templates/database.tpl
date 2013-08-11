@@ -174,7 +174,7 @@ $(document).bind('onNextBtn', function () {
             <td>{function="localize('File name', 'installer')"}:</td>
             <td>
                 <input type="text" id="dbFile" style="width: 50%;" placeholder="eg. db (/content/database/db.sqlite3)" value="{if="isset($databaseSettings['db_file'])"}{$databaseSettings.db_file}{/if}"> 
-                <span id="dbFileCreate" style="margin-left: 15px; display: none;"><small>Database file does not exists. <a href="#" onclick="createNewFile()"><b>Create new file?</b></a></small></span>
+                <span id="dbFileCreate" style="margin-left: 15px; display: none;"><small>{function="localize('Database file does not exists', 'installer')"}. <a href="#" onclick="createNewFile()"><b>{function="localize('Create new file?', 'installer')"}</b></a></small></span>
             </td>
         </tr>
         
