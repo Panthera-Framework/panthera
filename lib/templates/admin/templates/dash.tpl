@@ -112,7 +112,13 @@ $(function(){
             <!-- lock and unlock widgets button -->
             <a href="#" onclick="toggleWidgetsLock();">
                 <span class="tooltip" id="widgetsLockedSpan">{if="$widgetsUnlocked == 0"}{function="localize('Unlock widgets', 'dash')"}{else}{function="localize('Lock widgets', 'dash')"}{/if}</span>
-                <img src="{$PANTHERA_URL}/images/admin/object-{if="$widgetsUnlocked == 0"}unlocked{else}locked{/if}.png" style="height: 20px;" id="widgetsLockedImg">
+                <img src="{$PANTHERA_URL}/images/admin/object-{if="$widgetsUnlocked == 0"}unlocked{else}locked{/if}.png" style="height: 20px; margin-right: 5px;" id="widgetsLockedImg">
+            </a>
+            
+            <!-- permissions popup -->
+            <a href="#" onclick="createPopup('?display=acl&cat=admin&popup=true&name=can_see_dash', 1300, 550);">
+                <span class="tooltip" id="widgetsLockedSpan">{function="localize('Manage permissions')"}</span>
+                <img src="{$PANTHERA_URL}/images/admin/menu/users.png" style="height: 20px;" id="widgetsLockedImg">
             </a>
         </div>
 

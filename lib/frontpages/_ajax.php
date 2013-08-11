@@ -7,7 +7,7 @@
   * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
   */
-
+  
 require 'content/app.php';
 
 // only for registered users

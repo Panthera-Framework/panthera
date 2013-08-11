@@ -11,7 +11,7 @@
 if (!defined('IN_PANTHERA'))
       exit;
 
-if (!getUserRightAttribute($user, 'can_see_phpinfo')) {
+if (!getUserRightAttribute($panthera->user, 'can_see_phpinfo')) {
     $template->display('no_access.tpl');
     pa_exit();
 }
@@ -23,6 +23,4 @@ if ($_GET['action'] == 'iframe')
 }
 
 $panthera -> template -> display('phpinfo.tpl');
-
 pa_exit();
-?>
