@@ -1,6 +1,6 @@
 <?php
 /**
-  * Database configuration
+  * Templates configuration
   * 
   * @package Panthera\installer
   * @author Damian Kęska
@@ -116,7 +116,7 @@ if ($_GET['action'] == 'createView')
     }
 }
 
-foreach ($tpl as $key => $value)
+foreach ($panthera -> template -> listTemplates() as $key => $value)
 {
     if ($key == 'installer' or substr($key, 0, 5) == 'admin')
     {
