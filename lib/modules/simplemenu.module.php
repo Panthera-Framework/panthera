@@ -160,7 +160,7 @@ class simpleMenu
     
     // ==== STATIC FUNCTIONS ====
     
-     /**
+    /**
      * Get all menu items by `type_name`, $limitTo, $limitFrom, $orderBy = 'order', $order = 'DESC' (descending)
      *
      * @return array
@@ -184,6 +184,7 @@ class simpleMenu
     {
         global $panthera;
         $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}menus` (`id`, `type`, `title`, `attributes`, `link`, `language`, `url_id`, `order`, `icon`, `tooltip`) VALUES (NULL, :type, :title, :attributes, :link, :language, :url_id, :order, :icon, :tooltip);', array('type' => $type, 'order' => $order, 'title' => $title, 'attributes' => $attributes, 'link' => $link, 'language' => $language, 'url_id' => $url_id, 'icon' => $icon, 'tooltip' => $tooltip));
+        
         return (bool)$SQL->rowCount();
     }
 

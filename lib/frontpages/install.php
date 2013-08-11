@@ -32,6 +32,12 @@ if ($config['preconfigured'] !== True)
     $config['disable_overlay'] = True;
     $config['debug'] = True;
     
+    // remove "/" at the end of string
+    if (substr($config['SITE_DIR'], -1) == '/')
+    {
+        $config['SITE_DIR'] = substr($config['SITE_DIR'], 0, -1);
+    }
+    
     if (!is_file($config['SITE_DIR']. '/content/database/' .$config['db_file']))
     {
         file_put_contents($config['SITE_DIR']. '/content/database/' .$config['db_file'], '');

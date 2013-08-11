@@ -25,13 +25,14 @@ $panthera -> importModule('simplemenu');
 
 /** JSON PAGES **/
 
-if ($_GET['action'] == 'save_order') {
+if ($_GET['action'] == 'save_order') 
+{
     $order = json_decode($_POST['order']);
 
     foreach ($order as $orderKey => $id)
         $panthera -> db -> query('UPDATE `{$db_prefix}menus` SET `order`= :orderKey WHERE `id`= :id', array('id' => intval($id), 'orderKey' => intval($orderKey)));
 
-    ajax_exit(array('status' => 'success', 'message' => localize('Order has been successfully saved!')));
+    ajax_exit(array('status' => 'success', 'message' => localize('Order has been successfully saved', 'menuedit')));
 }
 
 if ($_GET['action'] == 'quickAddFromPopup') {
@@ -91,7 +92,7 @@ if ($_GET['action'] == 'save_item') {
         ajax_exit(array('status' => 'success', 'message' => localize('Item has been successfully saved!')));
     }
 
-    ajax_exit(array('status' => 'failed', 'message' => 'Unhandled error!'));
+    ajax_exit(array('status' => 'failed', 'message' => 'Unhandled error'));
 }
 
 /**
@@ -104,7 +105,7 @@ if ($_GET['action'] == 'save_item') {
 
 if ($_GET['action'] == 'add_item') {
     if ($_POST['cat_type'] == '' or $_POST['item_title'] == '')
-        ajax_exit(array('status' => 'failed', 'message' => localize('Some areas are empty!')));
+        ajax_exit(array('status' => 'failed', 'message' => localize('Please enter a title', 'menuedit')));
 
     $lastItem = simpleMenu::getItems($_POST['cat_type'], 0, 1, 'order', 'desc');
 
@@ -138,11 +139,8 @@ if ($_GET['action'] == 'add_item') {
 
     $language = $panthera -> locale -> getActive();
 
-    if (simpleMenu::createItem($_POST['cat_type'], $title, $attributes, $link, $language, $url_id, $order, $icon, $tooltip)) {
-        ajax_exit(array('status' => 'success', 'message' => localize('Item has been successfully added!')));
-    }
-
-    ajax_exit(array('status' => 'failed', 'message' => 'Unhandled error'));
+    simpleMenu::createItem($_POST['cat_type'], $title, $attributes, $link, $language, $url_id, $order, $icon, $tooltip);
+    ajax_exit(array('status' => 'success', 'message' => localize('Item has been successfully added!')));
 }
 
 /**
@@ -157,13 +155,8 @@ if ($_GET['action'] == 'remove_item') {
     $id = intval($_GET['item_id']);
 
     $item = new menuItem('id', $id);
-
-    if ($item -> exists()) {
-        if (simpleMenu::removeItem($item -> id))
-            ajax_exit(array('status' => 'success', 'message' => localize('Item has been successfully removed!')));
-    }
-
-    ajax_exit(array('status' => 'failed', 'message' => localize('Cannot remove item')));
+    simpleMenu::removeItem($item -> id);
+    ajax_exit(array('status' => 'success', 'message' => localize('Item has been successfully removed')));
 }
 
 /**
@@ -208,8 +201,8 @@ if ($_GET['action'] == 'remove_category') {
 
     // check if category exists
     if ($category -> exists()) {
-        if (simpleMenu::removeCategory($category -> id))
-            ajax_exit(array('status' => 'success', 'message' => localize('Gallery was removed')));
+        simpleMenu::removeCategory($category -> id);
+        ajax_exit(array('status' => 'success', 'message' => localize('Gallery was removed')));
     }
 
     ajax_exit(array('status' => 'failed', 'message' => localize('Cannot remove category')));
@@ -318,6 +311,22 @@ if ($_GET['action'] == 'new_item') {
 
 // default action is to view all menu categories
 $categories = simpleMenu::getCategories('');
+$found = false;
+
+foreach ($categories as $category)
+{
+    if ($category -> type_name == 'admin')
+    {
+        $found = true;
+        break;
+    }
+}
+
+if ($found == False)
+{
+    simpleMenu::createCategory('admin', 'Admin menu', '', 0, 0);
+    $categories = simpleMenu::getCategories('');
+}
 
 $c = array();
 
