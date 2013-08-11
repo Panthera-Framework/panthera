@@ -8,6 +8,9 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
+if (!defined('IN_PANTHERA'))
+    exit;
+  
 $pluginInfo = array('name' => 'Firebug integration', 'author' => 'Damian Kęska', 'description' => 'Integration with FirePHP', 'version' => PANTHERA_VERSION, 'configuration' => '?display=firebugSettings&cat=admin');
 
 include(PANTHERA_DIR. '/share/firephp-core/lib/FirePHPCore/FirePHP.class.php');

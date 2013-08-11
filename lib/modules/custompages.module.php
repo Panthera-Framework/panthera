@@ -7,7 +7,10 @@
   * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
   */
-  
+
+if (!defined('IN_PANTHERA'))
+    exit;
+
 /**
   * Panthera fetch DB based wrapper for custom_pages table in database
   * @package Panthera\modules\custompages

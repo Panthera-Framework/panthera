@@ -7,7 +7,10 @@
   * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
   */
-  
+
+if (!defined('IN_PANTHERA'))
+    exit;
+
 /**
   * Abstract interface for newsletter Type plugins
   *

@@ -13,6 +13,9 @@
   * @package Panthera\core\cache
   * @author Damian Kęska
   */
+
+if (!defined('IN_PANTHERA'))
+    exit;
   
 class varCache_db
 {

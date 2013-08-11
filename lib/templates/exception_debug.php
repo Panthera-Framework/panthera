@@ -1,3 +1,10 @@
+<?php
+
+if (!defined('IN_PANTHERA'))
+    exit;
+
+?>
+
 <!DOCTYPE html>
 <html>
     <head>

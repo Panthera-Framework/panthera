@@ -1,3 +1,10 @@
+<?php
+
+if (!defined('IN_PANTHERA'))
+    exit;
+
+?>
+
 <style>
             body {
                 background: -webkit-gradient(linear, left top, left bottom, from(rgb(0, 0, 0)), to(rgb(111, 111, 111))); /* Chromium/Chrome/Safari - all webkit based browsers */

@@ -6,6 +6,9 @@
     * @license GNU Affero General Public License 3, see license.txt
     */
 
+if (!defined('IN_PANTHERA'))
+    exit;
+
 // register plugin
 $pluginInfo = array('name' => 'Nice comments', 'author' => 'Mateusz Warzyński', 'description' => 'A simple comments system for Panthera Framework', 'version' => PANTHERA_VERSION);
 $panthera -> addPermission('can_manage_comments', localize('Can manage all niceComments elements', 'messages'));

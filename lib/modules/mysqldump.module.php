@@ -6,6 +6,9 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
+if (!defined('IN_PANTHERA'))
+    exit;
+  
 if(!class_exists('Backup_Database'))
     include(PANTHERA_DIR. '/share/mysqldump.php');
 

@@ -7,6 +7,9 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
+if (!defined('IN_PANTHERA'))
+    exit;
+  
 // YES! We are using third-party library
 include (PANTHERA_DIR. '/share/cron-expression/src/Cron/CronExpression.php');
 include (PANTHERA_DIR. '/share/cron-expression/src/Cron/FieldInterface.php');

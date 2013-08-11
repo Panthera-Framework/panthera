@@ -6,6 +6,9 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
+if (!defined('IN_PANTHERA'))
+    exit;
+  
 // register plugin
 $pluginInfo = array('name' => 'Facebook Integration', 'author' => 'Mateusz Warzyński', 'description' => 'Login to Panthera admin panel with Facebook', 'version' => PANTHERA_VERSION, 'configuration' => '?display=facebook&action=settings&cat=admin');
 $panthera -> addPermission('can_manage_facebook', localize('Can manage all faceIntegration elements', 'messages'));

@@ -7,6 +7,9 @@
   * @author Damian Kęska
   */
   
+if (!defined('IN_PANTHERA'))
+    exit;
+  
 class cronjobs_dashWidget extends pantheraClass
 {
     //public $template = 'cronjobs';

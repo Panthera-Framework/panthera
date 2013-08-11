@@ -8,6 +8,9 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
   
+if (!defined('IN_PANTHERA'))
+    exit;
+  
 global $panthera;
 $panthera -> addPermission('can_view_galleryItem', localize('Can view gallery items', 'messages'));
 $panthera -> addPermission('can_edit_galleryItem', localize('Can edit gallery items', 'messages'));

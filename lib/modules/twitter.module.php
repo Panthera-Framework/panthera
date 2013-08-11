@@ -7,6 +7,9 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
+if (!defined('IN_PANTHERA'))
+    exit;
+  
 // include necessary libraries
 include(PANTHERA_DIR. '/share/twitter/twitter.php');
 include(PANTHERA_DIR. '/share/twitter/tmhOAuth.php');

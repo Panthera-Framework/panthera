@@ -8,6 +8,9 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
+if (!defined('IN_PANTHERA'))
+    exit;
+  
 global $panthera;
 require_once PANTHERA_DIR. '/share/phpQuery.php';
 require_once PANTHERA_DIR. '/share/httpful/src/Httpful/Bootstrap.php';

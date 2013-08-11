@@ -8,6 +8,9 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
+if (!defined('IN_PANTHERA'))
+    exit;
+  
 global $panthera;
 
 // if installer file does not exists link it

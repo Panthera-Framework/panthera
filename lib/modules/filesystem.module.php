@@ -7,6 +7,9 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
+if (!defined('IN_PANTHERA'))
+    exit;
+  
 /**
   * Uploaded file management (wrapper for `uploads` table in DB)
   *

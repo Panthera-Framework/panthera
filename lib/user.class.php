@@ -5,6 +5,9 @@
   * @author Damian Kęska
   */
 
+if (!defined('IN_PANTHERA'))
+    exit;
+
 /**
  * Panthera User Management Class
  *
@@ -25,10 +28,10 @@ class pantheraUser extends pantheraFetchDB
     public function __construct($by, $value)
     {
         parent::__construct($by, $value);
-     
+
         if ($this->panthera->cacheType('cache') == 'memory' and $this->panthera->db->cache and $this->cache == True)
             $this->cache = $this->panthera->db->cache;
-            
+
         if ($this->exists())
         {
             // user attributes will be avaliable to read and write via $self->attributes->attribute
@@ -36,7 +39,7 @@ class pantheraUser extends pantheraFetchDB
 
             // user meta values (permissions)
             $this -> acl = new metaAttributes($this->panthera, 'u', $this->id, $this->cache);
-            
+
             // merge group rights with user rights
             $this -> acl -> loadOverlay('g', $this->_data['primary_group']);
         }
@@ -94,10 +97,10 @@ class pantheraUser extends pantheraFetchDB
 
         if($var == 'acl')
             return $this->acl;
-            
+
         if($var == 'meta')
             return $this->acl;
-            
+
         if(array_key_exists($var, $this->_data))
             return $this->_data[$var];
     }
@@ -125,7 +128,7 @@ class pantheraGroup extends pantheraFetchDB
     protected $_constructBy = array('id', 'group_id', 'name', 'array');
     protected $cache = 3600;
     public $acl;
-    
+
     /**
       * Constructor
       *
@@ -138,112 +141,112 @@ class pantheraGroup extends pantheraFetchDB
     public function __construct($by, $value)
     {
         parent::__construct($by, $value);
-        
+
         if ($this->exists())
         {
             $this -> acl = new metaAttributes($this->panthera, 'g', $this->name, $this->cache);
         }
     }
-    
+
     /**
       * Create a new group (static function)
       *
       * @param string $name Group name
       * @param string $description Optional description
-      * @return bool 
+      * @return bool
       * @author Damian Kęska
       */
-    
+
     public static function create($name, $description='')
     {
         global $panthera;
-    
+
         if (strlen($name) < 3)
             throw new Exception('Group name is too short');
 
         // check if group already exists
         $g = new pantheraGroup('name', $name);
-        
+
         if ($g->exists())
             return False;
-            
+
         unset($g);
-        
+
         $panthera -> db -> query('INSERT INTO `{$db_prefix}groups` (`group_id`, `name`, `description`) VALUES (NULL, :name, :description)', array('name' => $name, 'description' => $description));
         return True;
     }
-    
+
     /**
       * Remove a group
       *
       * @param string $name
-      * @return bool 
+      * @return bool
       * @author Damian Kęska
       */
-    
+
     public static function remove($name)
     {
         global $panthera;
-        
+
         $g = new pantheraGroup('name', $name);
-        
+
         if (!$g->exists())
             return False;
 
         $panthera -> logging -> output ('Removing all users from "' .$name. '" group', 'pantheraGroup');
         $users = $g->findUsers();
-        
+
         // remove users from group
         if (count($users) > 0)
         {
             foreach ($users as $user)
             {
                 $u = new pantheraUser('id', $user['id']);
-                
+
                 if ($name != 'users')
                     $u -> primary_group = 'users';
                 else
                     $u -> primary_group = '';
-                    
+
                 $u -> save();
                 unset($u);
             }
         }
-        
+
         try {
             $panthera -> logging -> output ('Removing group\'s meta tags and entry from group table', 'pantheraGroup');
             $panthera -> db -> query('DELETE FROM `{$db_prefix}groups` WHERE `name` = :name;', array('name' => $name));
             $panthera -> db -> query('DELETE FROM `{$db_prefix}metas` WHERE `type` = "g" AND `userid` = :name', array('name' => $name));
-            
+
             if ($panthera -> cache)
             {
                 $panthera -> logging -> output('Cleaning up cache', 'pantheraGroup');
                 // remove meta attributes from cache
                 $panthera -> cache -> remove('meta.g.' .$name);
-                
+
                 // remove group cache
                 $panthera -> cache -> remove($panthera->db->prefix. '_groups.s:4:"name";.' .$name);
                 $panthera -> cache -> remove($panthera->db->prefix. '_groups.s:2:"id";.' .$g->group_id);
                 $panthera -> cache -> remove($panthera->db->prefix. '_groups.s:8:"group_id";.' .$g->group_id);
-                
+
                 $panthera -> logging -> output('Cache cleanup done', 'pantheraGroup');
             }
-            
+
             return True;
         } catch (Exception $e) {
             $panthera -> logging -> output('Cannot delete group\'s "' .$name. '" meta and group table entry', 'pantheraGroup');
         }
-        
+
         return False;
     }
-    
+
     /**
       * List groups
       *
       * @param mixed $by
       * @param int $offset
       * @param int $limit
-      * @return array of objects 
+      * @return array of objects
       * @author Damian Kęska
       */
     public static function listGroups($by='', $offset='', $limit='', $orderBy='group_id', $order='DESC')
@@ -251,14 +254,14 @@ class pantheraGroup extends pantheraFetchDB
         global $panthera;
         return $panthera->db->getRows('groups', $by, $limit, $offset, 'pantheraGroup', $orderBy, $order);
     }
-    
+
     /**
       * Find all group users
       *
-      * @return array 
+      * @return array
       * @author Damian Kęska
       */
-    
+
     public function findUsers()
     {
         $SQL = $this -> panthera -> db -> query('SELECT `login`, `id` FROM `{$db_prefix}users` WHERE `primary_group` = :groupName', array('groupName' => $this->name));
@@ -325,10 +328,10 @@ function getCurrentUser()
 function createNewUser($login, $passwd, $full_name, $primary_group, $attributes, $language, $mail='', $jabber='', $ip)
 {
     global $panthera;
-    
+
     if ($ip == '')
         $ip = $_SERVER['REMOTE_ADDR'];
-    
+
     $array = array('login' => $login, 'passwd' => $passwd, 'full_name' => $full_name, 'primary_group' => $primary_group, 'attributes' => $attributes, 'language' => $language, 'mail' => $mail, 'jabber' => $jabber, 'profile_picture' => '{$PANTHERA_URL}/images/default_avatar.png', 'ip' => $ip);
 
     $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}users` (`id`, `login`, `passwd`, `full_name`, `primary_group`, `joined`, `attributes`, `language`, `mail`, `jabber`, `profile_picture`, `lastlogin`, `lastip`) VALUES (NULL, :login, :passwd, :full_name, :primary_group, NOW(), :attributes, :language, :mail, :jabber, :profile_picture, NOW(), :ip);', $array);
@@ -369,7 +372,7 @@ function removeUser($login)
 function userCreateSession($user, $passwd)
 {
     global $panthera;
-    
+
     $usr = new pantheraUser('login', $user);
 
     if ($usr->exists())
@@ -391,7 +394,7 @@ function userCreateSession($user, $passwd)
   * Create user session by user id
   *
   * @param int $id User id
-  * @return bool 
+  * @return bool
   * @package Panthera\core\user
   * @author Damian Kęska
   */
@@ -401,14 +404,14 @@ function userCreateSessionById($id)
     global $panthera;
 
     $user = new pantheraUser('id', $id);
-    
+
     if ($user -> exists())
     {
         $panthera -> session -> uid = $id;
         $panthera -> user = $user;
         return True;
     }
-    
+
     return False;
 }
 
@@ -442,10 +445,10 @@ function checkUserPermissions($user, $admin=False)
 
     if(!$panthera->session->exists('uid'))
         return False;
-        
+
     if($user == False)
         return False;
-        
+
     if (!$user->exists())
         return False;
 
@@ -498,10 +501,10 @@ function getUserRightAttribute($user, $attribute)
 function userLoggedIn()
 {
     global $panthera;
-    
+
     if (!is_object($pantera->user))
         return False;
-    
+
     return $panthera -> user -> exists();
 }
 
@@ -523,7 +526,7 @@ class metaAttributes
     protected $_cacheID = '';
     protected $panthera;
     protected $overlays = array();
-    
+
     /**
       * Constructor
       *
@@ -538,17 +541,17 @@ class metaAttributes
         $this->_type = $type;
         $this->_objectID = $objectID;
         $this->_cache = $cache;
-        
+
         // check if cache is enabled
         if ($this -> _cache > 0 and $panthera -> cache)
         {
             $this -> _cacheID = 'meta.' .$type. '.' .$objectID;
-            
+
             if ($this->panthera->cache->get($this->_cacheID) === null)
             {
                 $cache = $this->panthera->cache->get($this->_cacheID);
                 $usedCache = True;
-                
+
                 if ($cache === null or empty($cache))
                 {
                     $this->_metas = array();
@@ -559,12 +562,12 @@ class metaAttributes
             }
         } else
             $panthera -> logging -> output ('Cache disabled for meta type=' .$type. ', objectid=' .$objectID, 'metaAttributes');
-        
+
         if ($this->_metas === null and !isset($usedCache))
         {
             $SQL = $panthera -> db -> query ('SELECT * FROM `{$db_prefix}metas` WHERE `userid` = :objectID AND `type` = :type', array('objectID' => $objectID, 'type' => $type));
             $Array = $SQL -> fetchAll(PDO::FETCH_ASSOC);
-            
+
             if (count($Array) > 0)
             {
                 $this->addFromArray($Array);
@@ -572,77 +575,77 @@ class metaAttributes
                 $this -> _metas = array();
                 $panthera -> logging -> output('No any meta tags found for objectid=' .$objectID. ', type=' .$type, 'metaAttributes');
             }
-            
+
             // update cache
             if ($this -> _cache > 0 and $panthera -> cache)
             {
                 if (empty($this->_metas))
                     $this->_metas = null;
-            
+
                 $panthera -> cache -> set ($this->_cacheID, $this->_metas, $this->cache);
                 $panthera -> logging -> output ('Wrote meta to cache id=' .$this->_cacheID, 'metaAttributes');
             }
-            
+
         }
-        
+
         if ($this->_metas == null)
             $this->_metas = array();
 
         $panthera -> add_option('session_save', array($this, 'save'));
     }
-    
+
     /**
       * Add data from array
       *
       * @param array $Array
       * @param string $overlay name
-      * @return void 
+      * @return void
       * @author Damian Kęska
       */
-    
+
     protected function addFromArray ($Array, $overlay='', $overwrite=True)
     {
         if ($this->_metas == null)
             $this->_metas = array();
-            
+
         foreach ($Array as $key => $meta)
         {
             if ($meta['name'] == null)
                 continue;
-        
+
             // dont overwrite old keys
             if (isset($this->_metas[$meta['name']]) and $overwrite == False )
             {
                 continue;
             }
-            
+
             if (!isset($meta['name']))
                 $meta['name'] = $key;
-        
+
             // looks complicated, yeah? we dont need to store some variables, so we can unset it
             unset($meta['userid']);
             unset($meta['type']);
-            
+
             $this->_metas[$meta['name']] = $meta;
             unset($this->_metas[$meta['name']]['name']);
-            
+
             // value
             if (is_bool($meta['value']))
                 $this->_metas[$meta['name']]['value'] = $meta['value'];
             else
                 $this->_metas[$meta['name']]['value'] = unserialize($meta['value']);
-            
+
             // overlay or not an overlay (empty string)
             $this->_metas[$meta['name']]['overlay'] = $overlay;
         }
-        
+
         $this->panthera->logging->output('Loaded meta overlay, counting overall ' .count($this->_metas). ' elements', 'metaAttributes');
     }
-    
+
     /**
       * List all loaded tags
       *
-      * @return array 
+      * @return array
       * @author Damian Kęska
       */
 
@@ -655,10 +658,10 @@ class metaAttributes
             // skip items marked for removal
             if ($this->_changed[$key] == 'remove')
                 continue;
-                
+
             $array[$key] = $value['value'];
         }
-        
+
         return $array;
     }
 
@@ -677,15 +680,15 @@ class metaAttributes
 
         return NuLL;
     }
-    
+
     /**
       * Mark meta value for removal
       *
       * @param string $meta name
-      * @return bool 
+      * @return bool
       * @author Damian Kęska
       */
-    
+
     public function remove($meta)
     {
         if (array_key_exists((string)$meta, $this->_metas))
@@ -693,11 +696,11 @@ class metaAttributes
             // can't remove variables from overlays eg. group meta
             if ($this->_metas[$meta]['overlay'] != '')
                 return False;
-        
+
             $this->_changed[$meta] = 'remove';
             return True;
         }
-        
+
         return False;
     }
 
@@ -742,7 +745,7 @@ class metaAttributes
 
         return (bool)count($this->_changed);
     }
-    
+
     /**
       * Load other set of meta tags eg. group tags to merge with user tags
       *
@@ -753,55 +756,55 @@ class metaAttributes
       * @return bool true when something was loaded, false when no meta tags loaded
       * @author Damian Kęska
       */
-    
+
     public function loadOverlay($type, $objectID, $forceReload=False, $highPriority=False)
     {
         // overlay already loaded
         if (isset($this->overlays[$type.$objectID]) and $forceReload === False)
             return True;
-        
+
         $Array = null;
-            
+
         if ($this -> _cache > 0 and $this -> panthera -> cache)
         {
             $cacheID = 'meta.' .$type. '.' .$objectID;
-            
+
             if ($this -> panthera -> cache -> exists($cacheID))
             {
                 $Array = $this -> panthera -> cache -> get($cacheID);
-                
+
                 if ($Array == null)
                     $Array = array();
-                
+
                 $this -> panthera -> logging -> output ('Read from cache id=' .$cacheID, 'metaAttributes');
-            }        
+            }
         }
-        
+
         if ($Array == null)
         {
             $SQL = $this -> panthera -> db -> query ('SELECT * FROM `{$db_prefix}metas` WHERE `type` = :type AND `userid` = :objectID', array('type' => $type, 'objectID' => $objectID));
             $Array = $SQL -> fetchAll (PDO::FETCH_ASSOC);
-            
+
             if ($this -> _cache > 0 and $this -> panthera -> cache)
             {
                 $this -> panthera -> cache -> set ($cacheID, $Array, $this->_cache);
                 $this -> panthera -> logging -> output ('Wrote to cache id=' .$cacheID, 'metaAttributes');
             }
         }
-        
+
         if (count($Array) > 0)
         {
             $this->addFromArray($Array, $type.$objectID, $highPriority);
             return True;
         }
-        
+
         return False;
     }
-    
+
     /**
       * Save attributes that were modified
       *
-      * @return void 
+      * @return void
       * @author Damian Kęska
       */
 
@@ -814,7 +817,7 @@ class metaAttributes
             foreach ($this->_changed as $key => $value)
             {
                 $meta = $this->_metas[$key];
-                
+
                 /**
                   * Creating new attribute
                   *
@@ -830,7 +833,7 @@ class metaAttributes
                     } catch (Exception $e) {
                         $panthera -> logging -> output ('Cannot create meta attribute id=' .$meta['metaid']. ', exception=' .$e->getMessage(), 'metaAttributes');
                     }
-                    
+
                 /**
                   * Removing attribute
                   *
@@ -838,30 +841,30 @@ class metaAttributes
                   */
 
                 } elseif ((string)$value == 'remove') {
-                
+
                     // can't remove variable from overlay
                     if ($meta['overlay'] != '')
                         continue;
-                
+
                     try {
                         $panthera -> db -> query('DELETE FROM `{$db_prefix}metas` WHERE `metaid` = :metaid', array('metaid' => $meta['metaid']));
                         unset($this->_metas[$key]);
                     } catch (Exception $e) {
                         $panthera -> logging -> output ('Cannot remove meta attribute id=' .$meta['metaid']. ', exception=' .$e->getMessage(), 'metaAttributes');
                     }
-                
+
                 /**
                   * Updating existing one
                   *
                   * @author Damian Kęska
                   */
-                    
+
                 } else {
-                
+
                     // cannot update possibly non-existing keys
                     if ($meta['overlay'] != '')
                         continue;
-                
+
                     // update existing meta
                     $metaValues = array('value' => serialize($meta['value']), 'metaid' => $meta['metaid']);
                     try {
@@ -874,14 +877,14 @@ class metaAttributes
 
             // reset array because we already saved all values to database
             $this -> _changed = array();
-            
+
             // write changes to cache too
             if ($this -> _cache > 0 and $panthera -> cache)
             {
                 $panthera -> cache -> set ($this->_cacheID, $this->_metas, $this->cache);
                 $panthera -> logging -> output ('Saved meta to cache id=' .$this->_cacheID, 'metaAttributes');
             }
-            
+
             // write to cache
             /*if ($this->cache > 0)
             {

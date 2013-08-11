@@ -8,6 +8,9 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
+if (!defined('IN_PANTHERA'))
+    exit;
+  
 // include facebook sdk library
 include(PANTHERA_DIR. '/share/facebook-php-sdk/src/facebook.php');
 

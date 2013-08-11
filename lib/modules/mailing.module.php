@@ -7,6 +7,9 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
+if (!defined('IN_PANTHERA'))
+    exit;
+  
 // include phpmailer liblary
 require_once(PANTHERA_DIR. '/share/phpmailer/class.phpmailer.php');
 

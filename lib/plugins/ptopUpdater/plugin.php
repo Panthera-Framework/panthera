@@ -6,6 +6,9 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
+if (!defined('IN_PANTHERA'))
+    exit;
+  
 // register plugin
 $pluginInfo = array('name' => 'ptop traffic updater', 'author' => 'Damian Kęska', 'description' => 'This plugin should not be enabled manually', 'version' => PANTHERA_VERSION);
 

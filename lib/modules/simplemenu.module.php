@@ -8,6 +8,9 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
+if (!defined('IN_PANTHERA'))
+    exit;
+  
 class simpleMenu
 {
     private $_menu = array(), $panthera, $active, $cache = 0;

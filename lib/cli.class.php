@@ -7,19 +7,20 @@
     * Panthera is free software; you can redistribute it and/or
     * modify it under the terms of the GNU Affero General Public License 3
     * as published by the Free Software Foundation.
-    * 
+    *
     * Panthera is distributed in the hope that it will be useful,
     * but WITHOUT ANY WARRANTY; without even the implied warranty of
     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     * GNU General Public License for more details.
-    * 
+    *
     * You should have received a copy of the GNU Affero General Public License
     * along with Panthera; if not, write to the Free Software
     * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
     * or see http://www.gnu.org/licenses/.
     */
 
-//error_reporting(E_ALL);
+if (!defined('IN_PANTHERA'))
+    exit;
 
 include(PANTHERA_DIR. '/share/CommandLine.php');
 
@@ -37,14 +38,14 @@ class pantheraCli
      * @author Damian Kęska
      */
 
-    public function readline($sec, $def='') 
-    { 
-        return trim(shell_exec('bash -c ' . 
-            escapeshellarg('phprlto=' . 
-                escapeshellarg($def) . ';' . 
-                'read -t ' . ((int)$sec) . ' phprlto;' . 
-                'echo "$phprlto"'))); 
-    } 
+    public function readline($sec, $def='')
+    {
+        return trim(shell_exec('bash -c ' .
+            escapeshellarg('phprlto=' .
+                escapeshellarg($def) . ';' .
+                'read -t ' . ((int)$sec) . ' phprlto;' .
+                'echo "$phprlto"')));
+    }
 
     /**
      * Clear the screen
@@ -174,7 +175,7 @@ abstract class cliApp
 
         // dont mess logs when in cli mode
         $panthera -> logging -> tofile = False;
-        
+
         // signal handler
         $panthera->add_option('cliSignal', array($this, 'signalHandler'));
 
@@ -199,15 +200,15 @@ abstract class cliApp
             newt_init();
         }
     }
-    
+
     /**
       * Simple signal handler
       *
       * @param int $signal
-      * @return void 
+      * @return void
       * @author Damian Kęska
       */
-    
+
     public function signalHandler($signal)
     {
         pa_exit();
@@ -218,7 +219,7 @@ abstract class cliApp
      *
      * @param string $command User input
      * @param string $function Method inside of class
-     * @param string $description Description 
+     * @param string $description Description
      * @return bool
      * @author Damian Kęska
      */
@@ -300,7 +301,7 @@ abstract class cliApp
     {
         if ($immediately == True)
             $this->screen->clear();
-        else 
+        else
             $this->_markedForClear = True;
     }
 
@@ -382,11 +383,11 @@ abstract class cliApp
                 $this->main();
                 $this->catchUserInput(readline());
             }
-            
-           
+
+
         // to capture user input we can use emulated readline
         } elseif ($this->loopType == 'readlineEmulated') {
-            
+
             while (True)
             {
                 if ($this->_markedForClear == True)
@@ -398,7 +399,7 @@ abstract class cliApp
                 $this->main();
                 $this->catchUserInput($this->screen->readline($this->sleepTime));
             }
-        
+
         } else {
             // if we dont need to take input from user we can just use sleep
             while (True)
@@ -416,7 +417,7 @@ abstract class cliApp
 class cliColor {
     private $foreground_colors = array();
     private $background_colors = array();
-  
+
     public function __construct() {
        // Set up shell colors
        $this->foreground_colors['black'] = '0;30';
@@ -435,7 +436,7 @@ class cliColor {
        $this->foreground_colors['yellow'] = '1;33';
        $this->foreground_colors['light_gray'] = '0;37';
        $this->foreground_colors['white'] = '1;37';
-  
+
        $this->background_colors['black'] = '40';
        $this->background_colors['red'] = '41';
        $this->background_colors['green'] = '42';
@@ -445,11 +446,11 @@ class cliColor {
        $this->background_colors['cyan'] = '46';
        $this->background_colors['light_gray'] = '47';
     }
-  
+
     // Returns colored string
     public function getColoredString($string, $foreground_color = null, $background_color = null) {
         $colored_string = "";
-  
+
         // Check if given foreground color found
         if (isset($this->foreground_colors[$foreground_color])) {
             $colored_string .= "\033[" . $this->foreground_colors[$foreground_color] . "m";
@@ -458,18 +459,18 @@ class cliColor {
         if (isset($this->background_colors[$background_color])) {
             $colored_string .= "\033[" . $this->background_colors[$background_color] . "m";
         }
-  
+
         // Add string and end coloring
         $colored_string .=  $string . "\033[0m";
-  
+
         return $colored_string;
     }
-  
+
      // Returns all foreground color names
     public function getForegroundColors() {
         return array_keys($this->foreground_colors);
     }
-  
+
     // Returns all background color names
     public function getBackgroundColors() {
         return array_keys($this->background_colors);
@@ -480,7 +481,7 @@ class cliColor {
   * Handles a signal
   *
   * @param string $signal
-  * @return void 
+  * @return void
   * @author Damian Kęska
   */
 

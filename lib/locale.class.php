@@ -8,6 +8,9 @@
   * @author Damian Kęska
   */
 
+if (!defined('IN_PANTHERA'))
+    exit;
+
 class pantheraLocale
 {
     protected $panthera, $locale, $defaultLocale = 'english', $defaultDomain = 'messages', $currentDomain = 'messages', $domains = array();
@@ -68,15 +71,15 @@ class pantheraLocale
      */
 
     public function getSystemDefault() { return $this->defaultLocale; }
-    
+
     /**
       * Check if locale exists
       *
       * @param string $localeName
-      * @return bool 
+      * @return bool
       * @author Damian Kęska
       */
-    
+
     public function exists($localeName) { return array_key_exists($localeName, $this->getLocales()); }
 
     /**
@@ -249,7 +252,7 @@ class pantheraLocale
         // dont load same domains multiple times
         if (array_key_exists($domain, $this->domains) and $force == False)
             return False;
-    
+
         $dirs = array(SITE_DIR. '/content/locales/' .$this->locale, PANTHERA_DIR. '/locales/' .$this->locale);
 
         foreach ($dirs as $dir)
@@ -284,7 +287,7 @@ class pantheraLocale
                         $this->panthera->logging->output('Wrote id=locale.' .$this->locale. '.' .$domain. ' to cache', 'pantheraLocale');
 
                 }
-                
+
                 return True;
             }
         }
@@ -292,11 +295,11 @@ class pantheraLocale
         $this->panthera->logging->output('Cannot find domain "' .$domain. '"', 'pantheraLocale');
         return False;
     }
-    
+
     /**
       * Try to detect browser's language
       *
-      * @return void 
+      * @return void
       * @author Damian Kęska
       */
 
@@ -309,7 +312,7 @@ class pantheraLocale
 
             // applications may add their supported languages to this table
             $languageTable = $this->panthera->get_options('locale.header.langtable', $languageTable);
-            
+
             if (array_key_exists($lang, $languageTable))
                 $this->setLocale($languageTable[$lang]);
         }
@@ -352,23 +355,23 @@ class pantheraLocale
         $this->setLocale($this->panthera->session->get('language'));
         return True;
     }
-    
+
     /**
       * Get locale name with override function
       *
       * @param string $override Locale name
-      * @return string 
+      * @return string
       * @author Damian Kęska
       */
-    
+
     public static function getFromOverride($override)
     {
         global $panthera;
         $language = $panthera -> locale -> getActive();
-        
+
         if ($panthera->locale->exists($override))
             $language = $override;
-            
+
         return $language;
     }
 }
