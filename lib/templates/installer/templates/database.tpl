@@ -26,12 +26,12 @@ $(document).ready (function () {
          $('.serverBasedDB').show();
     {/if}
     
-    panthera.inputTimeout({ element: '#dbPrefix', interval: 900, callback: function () { databaseCheck(); } });
+    /*panthera.inputTimeout({ element: '#dbPrefix', interval: 900, callback: function () { databaseCheck(); } });
     panthera.inputTimeout({ element: '#dbFile', interval: 900, callback: function () { databaseCheck(); } });
     panthera.inputTimeout({ element: '#dbHost', interval: 900, callback: function () { databaseCheck(); } });
     panthera.inputTimeout({ element: '#dbUser', interval: 900, callback: function () { databaseCheck(); } });
     panthera.inputTimeout({ element: '#dbPassword', interval: 900, callback: function () { databaseCheck(); } });
-    panthera.inputTimeout({ element: '#dbName', interval: 900, callback: function () { databaseCheck(); } });
+    panthera.inputTimeout({ element: '#dbName', interval: 900, callback: function () { databaseCheck(); } });*/
 });
 
 customNextBtn = true;
@@ -52,7 +52,7 @@ function databaseCheck()
         data = data + '&collisionsSelection='+$('input:radio[name=collisionsSelection]:checked').val();
     }
     
-    panthera.jsonPOST( { url: '?', data: data, async: false, success: function (response) {
+    panthera.jsonPOST( { url: '?', data: data, async: true, success: function (response) {
             if (response.status == 'success')
             {
                 $('#installer-controll-nextBtn').attr('disabled', false);
