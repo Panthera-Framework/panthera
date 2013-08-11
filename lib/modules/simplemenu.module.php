@@ -46,26 +46,28 @@ class simpleMenu
                 $rows = $this->panthera->cache->get('menu.'.$category);
             }
         }
-
-        if ($rows == -1)
+        
+        // if the cache was empty
+        if ($rows === -1)
         {        
             $SQL = $this->panthera->db->query('SELECT * FROM `{$db_prefix}menus` WHERE `type`= :type ORDER BY `order` DESC;', array('type' => $category));
             $count = $SQL -> rowCount();
         }
         
-        if ($count > 0)
+        
+        if ($rows == -1)
         {
-            if ($rows == -1)
-            {
-                $rows = $SQL -> fetchAll();
+            $rows = $SQL -> fetchAll();
                 
-                if ($this->cache > 0)
-                {
-                    $this->panthera->logging->output('Saving menu to cache id=menu'.$category, 'simpleMenu');
-                    $this->panthera->cache->set('menu.'.$category, $rows, $this->cache);
-                }
+            if ($this->cache > 0)
+            {
+                $this->panthera->logging->output('Saving menu to cache id=menu'.$category, 'simpleMenu');
+                $this->panthera->cache->set('menu.'.$category, $rows, $this->cache);
             }
-
+        }
+        
+        if (count($rows) > 0)
+        {
             foreach ($rows as $row)
             {
                 $attr = @unserialize($row['attributes']);
@@ -83,7 +85,7 @@ class simpleMenu
 
                 $this -> add($row['url_id'], $row['title'], $row['link'], $attr, $row['icon'], $row['tooltip']);
             }
-            
+                
             return True;
         }
     }
@@ -185,6 +187,10 @@ class simpleMenu
         global $panthera;
         $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}menus` (`id`, `type`, `title`, `attributes`, `link`, `language`, `url_id`, `order`, `icon`, `tooltip`) VALUES (NULL, :type, :title, :attributes, :link, :language, :url_id, :order, :icon, :tooltip);', array('type' => $type, 'order' => $order, 'title' => $title, 'attributes' => $attributes, 'link' => $link, 'language' => $language, 'url_id' => $url_id, 'icon' => $icon, 'tooltip' => $tooltip));
         
+        // clear menu cache
+        if ($panthera->cache)
+            $panthera->cache->remove('menu.'.$type);
+        
         return (bool)$SQL->rowCount();
     }
 
@@ -198,6 +204,19 @@ class simpleMenu
     public static function removeItem($id)
     {
         global $panthera;
+        
+        // reload menu cache
+        if ($panthera->cache)
+        {
+            $SQL = $panthera -> db -> query('SELECT `type` FROM `{$db_prefix}menus` WHERE `id` = :id', array('id' => $id));
+            $fetch = $SQL -> fetch(PDO::FETCH_ASSOC);
+            
+            if ($fetch)
+            {
+                $panthera->cache->remove('menu.'.$fetch['type']);
+            } 
+        }
+        
         $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}menus` WHERE `id` = :id', array('id' => $id));
         return (bool)$SQL->rowCount();
     }
