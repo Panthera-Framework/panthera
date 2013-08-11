@@ -1,6 +1,6 @@
 <?php
 /**
-  * Database configuration
+  * Crontab configuration
   * 
   * @package Panthera\installer
   * @author Damian Kęska

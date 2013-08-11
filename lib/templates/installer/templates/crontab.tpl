@@ -1,4 +1,7 @@
 {include="buttons"}
+<script type="text/javascript">
+customNextBtn = false;
+</script>
 
 <h1>{function="localize('Job scheduler configuration', 'installer')"}</h1>
 
