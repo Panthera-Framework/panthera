@@ -560,6 +560,8 @@ class pantheraTemplate extends pantheraClass
             return $render;        
         else
             print($render);
+            
+        @ob_end_clean();
         
         // generate template execution time
         $this -> timer = (microtime_float() - $this -> timer);

@@ -767,6 +767,10 @@ class pantheraCore
         if ($this->config->getKey('header_nosniff'))
             header('X-Content-Type-Options: nosniff');
 
+        // gzip compression
+        if ($this->config->getKey('gzip_compression', False, 'bool') == True)
+            ob_start("ob_gzhandler");
+
         $this->pluginsDir = array(PANTHERA_DIR. '/plugins', SITE_DIR. '/content/plugins');
     }
 
