@@ -1,5 +1,6 @@
 {$site_header}
 <script type="text/javascript">
+var gmap = "";
 var map = "";
 
 function gmapsCallback ()
@@ -9,8 +10,8 @@ function gmapsCallback ()
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         center: new google.maps.LatLng({$map_x}, {$map_y})
     };
-                
-    map.createMap("map", mapOptions);
+    
+    gmap.createMap("map", mapOptions);
 }
 
 jQuery(document).ready(function() {
@@ -34,11 +35,11 @@ jQuery(document).ready(function() {
         {$map_y = 0}
         {/if}
 
-        map = new panthera.googleMap('gmapsCallback');
+        gmap = new panthera.googleMap('gmapsCallback', '{$gmapsApiKey}');
         
         if (typeof google !== 'undefined')
             gmapsCallback();
-        
+            
         /**
           * Find place from input
           *
@@ -47,11 +48,11 @@ jQuery(document).ready(function() {
 
         $('#map_form').submit(function () {
             place = $('#map_searchbox').val();
-
+            
             if (place != "")
             {
-                map.getLocation(place);
-                $('#map_bounds').val(JSON.stringify({ "bounds":map.map.getBounds(), "zoom": map.map.getZoom(), "center": map.map.getCenter() }));
+                gmap.getLocation(place);
+                $('#map_bounds').val(JSON.stringify({ "bounds":gmap.map.getBounds(), "zoom": gmap.map.getZoom(), "center": gmap.map.getCenter() }));
             }
 
             return false;
@@ -64,7 +65,8 @@ jQuery(document).ready(function() {
           */
 
         $('#contact_form').submit(function () {
-            $('#map_bounds').val(JSON.stringify({ "bounds":map.map.getBounds(), "zoom": map.map.getZoom(), "center": map.map.getCenter() }));
+            $('#map_bounds').val(JSON.stringify({ "bounds":gmap.map.getBounds(), "zoom": gmap.map.getZoom(), "center": gmap.map.getCenter() }));
+            return false;
         });
     }
 
@@ -76,7 +78,6 @@ jQuery(document).ready(function() {
 
     $('#contact_form').submit(function () {
         panthera.jsonPOST({ data: '#contact_form', mce: 'tinymce_all', messageBox: 'userinfoBox'});
-
         return false;
 
     });

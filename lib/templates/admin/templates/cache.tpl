@@ -355,7 +355,7 @@ $(document).ready(function () {
       {/if}
 
      {if="$acp_info != ''"}
-      <div class="grid-2" id="apc_window">
+      <div class="grid-2" id="apc_window" style="position: relative;">
          <table class="gridTable">
 
             <thead>

@@ -114,6 +114,7 @@ if (!defined('CONTACT_SKIP_MAP'))
 } else
     $template -> push ('skip_map', True);
 
+$template -> push ('gmapsApiKey', $panthera -> config -> getKey('gmaps_key', '', 'string'));
 $template -> push ('contact_mail', $contactData['mail']);
 $template -> push ('adress_text', htmlspecialchars(str_replace("\n", ' ', $contactData['text'])));
 $template -> display('contact.tpl');
