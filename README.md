@@ -6,5 +6,23 @@ Simple web framework written in PHP, designed to be simple as possible, modular 
 Notice
 =======
 
-Panthera is under highly development. We are doing everything to make it usable for everyone outside of our Panthera developers group. Please be patient.
-We plan a composer integration, better shell tools (for projects management) and a Panthera installer to split it all together.
+Panthera is still in beta development, we already made an installer, composer integration and many things to make it easier to install.
+
+Instalation
+======
+
+Instalation of Panthera Framework is very simple, but at this moment requires shell access to the server. In near future we plan making zipped packages with all dependencies to allow just place Panthera on shared hosting using FTP.
+
+So, lets download fresh contents.
+
+```bash
+git clone https://github.com/webnull/panthera
+cd panthera
+./install.sh
+```
+And if you are not using account WWW server is using, you should allow your Nginx, Lighttpd or Apache to write to example-site directory.
+It requires to create some directories and files, so make it writable.
+
+```bash
+chown www-data example-site -R
+```
