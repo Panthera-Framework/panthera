@@ -43,9 +43,23 @@
             </tfoot>
 
             <tbody>
-                {loop="$panthera_attributes"}
-                <tr><td>{$value.name}<td>{$value.value}</td></tr>
-                {/loop}
+               {loop="$panthera_attributes"}
+                <tr>
+                	<td>{$value.name}</td>
+                  
+                  {if="$value.type == 'bool'"}
+                   
+                   {if="$value.value == true"}
+                  	<td>{function="localize('True')"}</td>
+                   {else}
+                   	<td>{function="localize('False')"}</td>
+                   {/if}
+                  
+                  {else}
+                	<td>{$value.value}</td>
+                  {/if}
+                </tr>
+               {/loop}
             </tbody>
        </table>
     </div>
