@@ -50,6 +50,17 @@ if ($panthera->db->getSocketType() == 'mysql')
     $pantheraAttributes[] = array('name' => localize('Username', 'database'), 'value' => $panthera->config->getKey('db_username'));
     $pantheraAttributes[] = array('name' => localize('Database name', 'database'), 'value' => $panthera->config->getKey('db_name'));
     $pantheraAttributes[] = array('name' => localize('Prefix', 'database'), 'value' => $panthera->config->getKey('db_prefix'));
+	
+	if ($panthera->config->getKey('db_timeout') != NULL)
+		$pantheraAttributes[] = array('name' => localize('Connection timeout', 'database'), 'value' => $panthera->config->getKey('db_timeout'));
+	else
+		$pantheraAttributes[] = array('name' => localize('Connection timeout', 'database'), 'value' => '30');
+	
+	if ($panthera->config->getKey('db_autocommit') != NULL)
+		$pantheraAttributes[] = array('name' => localize('Automatic commit mode', 'database'), 'value' => $panthera->config->getKey('db_autocommit'), 'type' => 'bool');
+	else
+		$pantheraAttributes[] = array('name' => localize('Automatic commit mode', 'database'), 'value' => false, 'type' => 'bool');
+	var_dump($panthera->config->getKey('db_autocommit'));
 } elseif ($panthera->db->getSocketType() == 'sqlite') {
     $pantheraAttributes[] = array('name' => localize('File', 'database'), 'value' => $panthera->config->getKey('db_file'));
 }
