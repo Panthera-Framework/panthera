@@ -52,7 +52,7 @@ if ($_GET['action'] == 'save')
 
 
 } elseif ($_GET['action'] == 'clearXCache') {
-    if (!extension_loaded('XCache'))
+    if (!function_exists('xcache_set'))
     {
         ajax_exit(array('status' => 'failed'));
     }
@@ -301,7 +301,7 @@ if (extension_loaded('memcached'))
 $cacheList = array('xcache' => False, 'apc' => False, 'memcached' => False);
 
 // check for requirements for built-in caching methods
-if (extension_loaded('xcache'))
+if (function_exists('xcache_set'))
 {
     $xcacheInfo = array();
     
