@@ -49,7 +49,12 @@ if ($_GET['action'] == 'save')
         ajax_exit(array('status' => 'success'));
         pa_exit();
     }
-
+    
+/**
+  * Clear XCache
+  *
+  * @author Damian Kęska
+  */
 
 } elseif ($_GET['action'] == 'clearXCache') {
     if (!function_exists('xcache_set'))
@@ -59,7 +64,64 @@ if ($_GET['action'] == 'save')
 
     xcache_clear_cache(XC_TYPE_VAR, intval($_GET['cacheID']));
     ajax_exit(array('status' => 'success'));
+    
+/**
+  * Add new Redis server
+  *
+  * @author Damian Kęska
+  */
+    
+} elseif ($_GET['action'] == 'addRedisServer') {
+    // TODO: Support socket connections
 
+    $config = $panthera -> config -> getKey('redis_servers');
+    $persistent = False;
+    
+    if ($_POST['persistent'] == "1")
+        $persistent = True;
+    
+    $found = False;
+    foreach ($config as $server)
+    {
+        if ($server['host'] == $_POST['ip'] and $server['port'] == $_POST['port'])
+        {
+            ajax_exit(array('status' => 'failed', 'message' => localize('Server is already on the list', 'cache')));
+        }
+    }
+    
+    $r = new Redis();
+    $r -> connect($_POST['ip'], $_POST['port']);
+    
+    if ($r -> info())
+    {
+        $config[] = array('host' => $_POST['ip'], 'port' => $_POST['port'], 'persistent' => $persistent, 'socket' => False);
+    }
+    
+    $panthera -> config -> setKey('redis_servers', $config, 'array');
+    ajax_exit(array('status' => 'success'));
+    
+/**
+  * Remove a Redis server
+  *
+  * @author Damian Kęska
+  */
+
+} elseif ($_GET['action'] == 'removeRedisServer') {
+    $details = explode(':', $_POST['address']);
+    $config = $panthera -> config -> getKey('redis_servers');
+
+    foreach ($config as $key => $server)
+    {
+        if ($server['host'] == $details[0] and $server['port'] == $details[1])
+        {
+            unset($config[$key]);
+            $panthera -> config -> setKey('redis_servers', $config, 'array');
+            ajax_exit(array('status' => 'success'));
+        }
+    }
+    
+    ajax_exit(array('status' => 'failed'));
+    
 /**
   * Adding new Memcached server
   *
@@ -383,6 +445,7 @@ if (class_exists('Redis'))
             );
             
             $panthera -> template -> push ('redisInfo', $redisInfo);
+            $panthera -> template -> push ('redisServers', $panthera->config->getKey('redis_servers'));
         }
     }
 

@@ -8,6 +8,7 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
 var spinner = new panthera.ajaxLoader($('#cacheVariables'));
 var apc_cache = new panthera.ajaxLoader($('#apc_window'));
 var addMemcachedServerSpinner = new panthera.ajaxLoader($('#addMemcachedServerDiv'));
+var addRedisServerSpinner = new panthera.ajaxLoader($('#addRedisServerDiv'));
 
 /**
   * Clear variables cache
@@ -140,6 +141,17 @@ function clearXCache (cacheID)
     });
 }
 
+function removeRedisServer(address)
+{
+    panthera.jsonPOST( { url: '?display=cache&cat=admin&action=removeRedisServer', data: 'address='+address, spinner: addRedisServerSpinner, success: function (response) {
+            if (response.status == "success")
+            {
+                window.setTimeout("navigateTo('?display=cache&cat=admin')", 800);
+            }    
+        }
+    });
+}
+
 $(document).ready(function () {
     panthera.inputTimeout({ element: '#cache', interval: 1200, callback: saveCacheVariables });
     panthera.inputTimeout({ element: '#varcache', interval: 1200, callback: saveCacheVariables });
@@ -190,6 +202,24 @@ $(document).ready(function () {
                     }
                 }
 
+            }
+        });
+
+        return false;
+
+    });
+
+    $('#addRedisServer').submit(function () {
+        panthera.jsonPOST( { data: '#addRedisServer', spinner: addRedisServerSpinner, success: function (response) {
+                if (response.status == "success")
+                {
+                    navigateTo('?display=cache&cat=admin');
+                } else {
+                    if (response.message != undefined)
+                    {
+                        w2alert(response.message, '{function="localize('Error')"}');
+                    }
+                }
             }
         });
 
@@ -286,10 +316,49 @@ $(document).ready(function () {
             <tr>
                 <td style="text-align: center;">
                     <form action="?display=cache&cat=admin&action=addMemcachedServer" method="POST" id="addMemcachedServer">
-                    <input type="text" name="ip" placeholder="{function="localize('address', 'cache')"}"> <input type="text" name="port" placeholder="{function="localize('port', 'cache')"}"> <input type="text" name="priority" placeholder="{function="localize('priority', 'cache')"} ({function="localize('optional', 'cache')"})"> <input type="submit" value="{function="localize('Add')"}">
+                    <input type="text" name="ip" placeholder="{function="localize('address', 'cache')"}" style="width: 110px;"> 
+                    <input type="text" name="port" placeholder="{function="localize('port', 'cache')"}" style="width: 60px;"> 
+                    <input type="text" name="priority" placeholder="{function="localize('priority', 'cache')"} ({function="localize('optional', 'cache')"})" style="width: 90px;"> 
+                    <input type="submit" value="{function="localize('Add')"}">
                     </form>
                 </td>
             </tr>
+        </tbody>
+    </table>
+    </div>
+    {/if}
+    
+    {if="isset($redisInfo)"}
+    <div class="grid-2" style="position: relative;" id="addRedisServerDiv">
+    <table class="gridTable">
+        <thead>
+            <tr>
+                <th colspan="2" style="width: 250px;">{function="localize('Add Redis cache', 'cache')"} </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <form action="?display=cache&cat=admin&action=addRedisServer" method="POST" id="addRedisServer">
+                    <input type="text" name="ip" placeholder="{function="localize('address', 'cache')"}" style="width: 110px;"> 
+                    <input type="text" name="port" placeholder="{function="localize('port', 'cache')"}" style="width: 60px;"> 
+                    
+                    <select name="persistent">
+                        <option value="1">{function="localize('Persistent connection', 'cache')"}</option>
+                        <option value="">{function="localize('Normal connection', 'cache')"}</option>
+                    </select>
+                    <input type="submit" value="{function="localize('Add')"}">
+                    </form>
+                </td>
+            </tr>
+            
+            {loop="$redisServers"}
+            <tr>
+                <td style="text-align: center;">{if="$value['socket'] != False"}{$value.socket}{else}{$value.host}:{$value.port} {if="$value['persistent'] == True"}({function="localize('persistent connection', 'cache')"}){/if}{/if}</td>
+                <td><a href="#" onclick="removeRedisServer('{$value.host}:{$value.port}')">{function="localize('Remove')"}</a></td>
+            </tr>
+            {/loop}
         </tbody>
     </table>
     </div>
@@ -324,16 +393,6 @@ $(document).ready(function () {
                     </th>
                 </tr>
             </thead>
-
-            <tfoot>
-                <tr>
-                    <td colspan="2" class="rounded-foot-left">
-                        <em>
-                            <input type="button" value="{function="localize('Clear cache', 'cache')"}" onclick="clearRedis('{$key}');" style="float: right; margin-right: 7px;">
-                        </em>
-                    </td>
-                </tr>
-            </tfoot>
 
             <tbody>
                 <tr>
@@ -383,7 +442,7 @@ $(document).ready(function () {
 
     <!-- list of servers -->
     {loop="$memcachedServers"}
-    <div class="grid-2" style="width: 46%; margin-bottom: 15px;" id="server_{$value.num}">
+    <div class="grid-2" style="width: 46%; margin-bottom: 15px; position: relative;" id="server_{$value.num}">
          <table class="gridTable">
 
             <thead>
@@ -510,7 +569,7 @@ $(document).ready(function () {
      {if="isset($xcacheInfo)"}
      {loop="$xcacheInfo"}
      <div style="height: 1px; margin-bottom: 15px;"></div>
-     <div class="grid-1" style="position: relative;" id="xcacheWindow_{$key}">
+     <div class="grid-2" style="position: relative; width: 97%;" id="xcacheWindow_{$key}">
          <table class="gridTable">
 
             <thead>
