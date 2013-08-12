@@ -70,14 +70,14 @@ class varCache_db
       * @author Damian Kęska
       */
     
-    public function getExpirationTime($var)
+    /*public function getExpirationTime($var)
     {
         if (!$this->exists($var))
             return False;
             
         // return from memory cache
         return $this->cache[$var][1];
-    }
+    }*/
     
     /**
       * Check if variable exists in the cache

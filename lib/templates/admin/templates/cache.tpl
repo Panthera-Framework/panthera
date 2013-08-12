@@ -311,6 +311,75 @@ $(document).ready(function () {
          </div>
     </div>
     {/if}
+    
+    {if="isset($redisInfo)"}
+     <div style="height: 1px; margin-bottom: 30px;"></div>
+     <div class="grid-2" style="position: relative;" id="redisWindow">
+         <table class="gridTable">
+
+            <thead>
+                <tr>
+                    <th colspan="2">
+                        {function="localize('Redis server', 'cache')"}
+                    </th>
+                </tr>
+            </thead>
+
+            <tfoot>
+                <tr>
+                    <td colspan="2" class="rounded-foot-left">
+                        <em>
+                            <input type="button" value="{function="localize('Clear cache', 'cache')"}" onclick="clearRedis('{$key}');" style="float: right; margin-right: 7px;">
+                        </em>
+                    </td>
+                </tr>
+            </tfoot>
+
+            <tbody>
+                <tr>
+                    <td>{function="localize('Host', 'cache')"}:</td>
+                    <td>{$redisInfo.hosts}</td>
+                </tr>
+            
+                <tr>
+                    <td>{function="localize('Uptime', 'cache')"}:</td>
+                    <td>{$redisInfo.uptime}</td>
+                </tr>
+
+                <tr>
+                    <td>{function="localize('Used memory', 'cache')"}:</td>
+                    <td>{$redisInfo.usedMemory}</td>
+                </tr>
+
+                <tr>
+                    <td>{function="localize('Elements', 'cache')"}:</td>
+                    <td>{$redisInfo.hits} {function="localize('hits', 'cache')"}, {$redisInfo.misses} {function="localize('misses', 'cache')"}, {$redisInfo.expiredKeys} {function="localize('expired', 'cache')"}</td>
+                </tr>
+                
+                <tr>
+                    <td>{function="localize('Role', 'cache')"}:</td>
+                    <td>{$redisInfo.role}, {$redisInfo.slaves} {function="localize('connected slaves', 'cache')"}</td>
+                </tr>
+                
+                <tr>
+                    <td>{function="localize('Version', 'cache')"}:</td>
+                    <td>Redis {$redisInfo.version}</td>
+                </tr>
+                
+                <tr>
+                    <td>{function="localize('CPU usage', 'cache')"}:</td>
+                    <td>{$redisInfo.cpu}</td>
+                </tr>
+                
+                <tr>
+                    <td>{function="localize('Operating system', 'cache')"}:</td>
+                    <td>{$redisInfo.os} @ {$redisInfo.arch} bit</td>
+                </tr>
+            </tbody>
+
+         </table>
+      </div>
+     {/if}
 
     <!-- list of servers -->
     {loop="$memcachedServers"}

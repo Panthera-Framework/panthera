@@ -298,7 +298,7 @@ if (extension_loaded('memcached'))
 }
 
 // Detection of APC, XCache and Memcached.
-$cacheList = array('xcache' => False, 'apc' => False, 'memcached' => False);
+$cacheList = array('xcache' => False, 'apc' => False, 'memcached' => False, 'redis' => False);
 
 // check for requirements for built-in caching methods
 if (function_exists('xcache_set'))
@@ -347,6 +347,46 @@ if (extension_loaded('memcached'))
     $panthera -> template -> push('memcacheAvaliable', True);
     $panthera -> template -> push('memcachedSerializer', ini_get('memcached.serializer'));
     $panthera -> template -> push('memcachedCompression', ini_get('memcached.compression_type'));
+}
+
+if (class_exists('Redis'))
+{
+    if ($panthera->cache)
+    {
+        if ($panthera->cache->name == 'redis')
+        {
+            $info = $panthera -> cache -> redis -> info();
+            $hosts = '';
+            
+            foreach ($panthera->config->getKey('redis_servers') as $server)
+            {
+                $hosts .= $server['host']. ':' .$server['port']. ', ';
+            }
+            
+            $redisInfo = array(
+                'hosts' => rtrim($hosts, ', '),
+                'clients' => $info['connected_clients'],
+                'uptime' => date_calc_diff(time() - $info['uptime_in_seconds'], time()),
+                'expiredKeys' => $info['expired_keys'],
+                'hits' => $info['keyspace_hits'],
+                'misses' => $info['keyspace_misses'],
+                'usedMemory' => bytesToSize($info['used_memory']),
+                'commands' => $info['total_commands_processed'],
+                'totalConnections' => $info['total_connections_received'],
+                'role' => $info['role'],
+                'slaves' => $info['connected_slaves'],
+                'cpu' => $info['used_cpu_user'],
+                'os' => $info['os'],
+                'arch' => $info['arch_bits'],
+                'pid' => $info['process_id'],
+                'version' => $info['redis_version']
+            );
+            
+            $panthera -> template -> push ('redisInfo', $redisInfo);
+        }
+    }
+
+    $cacheList['redis'] = True;
 }
 
 $cacheList['db'] = True; // db is always available
