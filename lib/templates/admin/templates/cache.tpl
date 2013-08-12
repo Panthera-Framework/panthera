@@ -89,10 +89,12 @@ function saveCacheVariables()
 function clearMemcachedCache(id)
 {
     panthera.jsonPOST({ url: '?display=cache&cat=admin&action=clearMemcachedCache&id='+id, data: '', success: function (response) {
-          if (response.status == "success") {
-                   jQuery('#button_'+id).animate({ height:'toggle'});
-                   jQuery('#button_'+id).animate({ height:'toggle'});
-          } else {
+        if (response.status == "success") 
+        {
+            $('#button_'+id).animate({ height:'toggle'});
+            $('#button_'+id).animate({ height:'toggle'});
+            navigateTo('?display=cache&cat=admin');
+        } else {
               if (response.message != undefined)
               {
                   w2alert(response.message, '{function="localize('Error', 'localize')"}');
@@ -124,6 +126,17 @@ function removeMemcachedServer(server, divid)
                 }
             }
         });
+    });
+}
+
+function clearXCache (cacheID)
+{
+    panthera.jsonPOST( { url: '?display=cache&cat=admin&action=clearXCache', data: 'cacheID='+cacheID, spinner: new panthera.ajaxLoader($('#xcacheWindow_'+cacheID)), success: function (response) {
+            if (response.status == "success")
+            {
+                window.setTimeout("navigateTo('?display=cache&cat=admin')", 800);
+            }    
+        }
     });
 }
 
@@ -231,6 +244,31 @@ $(document).ready(function () {
                         {$sessionHandler}
                     </td>
                 </tr>
+                
+                <tr>
+                    <td><b>session.serialize_handler</b><br><small>({function="localize('User session storage mechanism, by default PHP is using its own serialize method, but there are also faster methods like igbinary', 'cache')"})</small></td>
+                    <td>
+                        {$sessionSerializer}
+                    </td>
+                </tr>
+                
+                {if="isset($memcachedSerializer)"}
+                <tr>
+                    <td><b>memcached.serializer</b><br><small>({function="localize('Memcached is storing data in special containers using a serializer mechanism, by default its using PHP serializer, but there are also faster methods like igbinary', 'cache')"})</small></td>
+                    <td>
+                        {$memcachedSerializer}
+                    </td>
+                </tr>
+                {/if}
+                
+                {if="isset($memcachedCompression)"}
+                <tr>
+                    <td><b>memcached.compression_type</b><br><small>({function="localize('Compression used to store Memcached data, zlib provides better compression but fastlz better performance', 'cache')"})</small></td>
+                    <td>
+                        {$memcachedCompression}
+                    </td>
+                </tr>
+                {/if}
             </tbody>
          </table>
       </div>
@@ -276,7 +314,7 @@ $(document).ready(function () {
 
     <!-- list of servers -->
     {loop="$memcachedServers"}
-    <div class="grid-2" style="width: 46%;" id="server_{$value.num}">
+    <div class="grid-2" style="width: 46%; margin-bottom: 15px;" id="server_{$value.num}">
          <table class="gridTable">
 
             <thead>
@@ -344,10 +382,12 @@ $(document).ready(function () {
                     <td>{$value.connections_current} {function="localize('current', 'cache')"}, {$value.connections_total} {function="localize('total', 'cache')"}</td>
                 </tr>
 
+                {if="count($memcachedServers) > 1"}
                 <tr>
                     <td>{function="localize('Server load', 'cache')"}:</td>
                     <td>{$value.load_percent}%</td>
                 </tr>
+                {/if}
             </tbody>
          </table>
       </div>
@@ -355,7 +395,7 @@ $(document).ready(function () {
       {/if}
 
      {if="$acp_info != ''"}
-      <div class="grid-2" id="apc_window" style="position: relative;">
+      <div class="grid-2" id="apc_window" style="position: relative; margin-bottom: 15px;">
          <table class="gridTable">
 
             <thead>
@@ -396,4 +436,90 @@ $(document).ready(function () {
 
          </table>
       </div>
+     {/if}
+     
+     {if="isset($xcacheInfo)"}
+     {loop="$xcacheInfo"}
+     <div style="height: 1px; margin-bottom: 15px;"></div>
+     <div class="grid-1" style="position: relative;" id="xcacheWindow_{$key}">
+         <table class="gridTable">
+
+            <thead>
+                <tr>
+                    <th colspan="2">
+                        XCache #{$key}
+                    </th>
+                </tr>
+            </thead>
+
+            <tfoot>
+                <tr>
+                    <td colspan="2" class="rounded-foot-left">
+                        <em>
+                            <input type="button" value="{function="localize('Clear cache', 'cache')"}" onclick="clearXCache('{$key}');" style="float: right; margin-right: 7px;">
+                        </em>
+                    </td>
+                </tr>
+            </tfoot>
+
+            <tbody>
+                <tr>
+                    <td>{function="localize('Items', 'cache')"}:</td>
+                    <td>{$value.cached} / {$value.slots}, {$value.deleted} {function="localize('deleted', 'cache')"}</td>
+                </tr>
+
+                <tr>
+                    <td>{function="localize('Used memory', 'cache')"}:</td>
+                    <td>{$value.used} / {$value.size}</td>
+                </tr>
+
+                <tr>
+                    <td>{function="localize('Errors', 'cache')"}:</td>
+                    <td>{$value.errors}</td>
+                </tr>
+                
+                <tr>
+                    <td>{function="localize('Requests', 'cache')"}:</td>
+                    <td>{$value.hits} {function="localize('hits', 'cache')"}, {$value.misses} {function="localize('misses', 'cache')"}</td>
+                </tr>
+                
+                <tr>
+                    <td colspan="2">{function="localize('Hourly usage', 'cache')"}:
+                    
+                        <div style="text-align: center; width: 800px; margin: 0 auto;">
+                        <div id='xcacheBar_{$key}' style='width: 900px; height: 188px; margin-bottom: 10px;'></div>
+                        <script type="text/javascript">
+                            var xcacheBar_{$key} = new Charts.BarChart('xcacheBar_{$key}', {
+                              show_grid: true,
+                              label_max: false,
+                              label_min: false,
+                              x_label_color: "#333333",
+                              bar_width: 14,
+                              rounding: 3,
+                            });
+                            
+                            {$xkey=$key}
+
+                            {loop="$value['hourlyStats']"}
+                            color = rgbToHex(0, 170*{$key}, 221*{$key})
+
+                            xcacheBar_{$xkey}.add({
+                              label: "{$key}",
+                              value: {$value},
+                              options: {
+                                bar_color: color
+                              }
+                            });
+                            {/loop}
+
+                            xcacheBar_{$key}.draw();
+                        </script>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+
+         </table>
+      </div>
+     {/loop}
      {/if}

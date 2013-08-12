@@ -2,9 +2,8 @@
 /**
   * Cache management
   *
-  * @package Panthera
-  * @subpackage core
-  * @copyright (C) Mateusz Warzyński
+  * @package Panthera\modules\cache
+  * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
   */
 
@@ -50,6 +49,16 @@ if ($_GET['action'] == 'save')
         ajax_exit(array('status' => 'success'));
         pa_exit();
     }
+
+
+} elseif ($_GET['action'] == 'clearXCache') {
+    if (!extension_loaded('XCache'))
+    {
+        ajax_exit(array('status' => 'failed'));
+    }
+
+    xcache_clear_cache(XC_TYPE_VAR, intval($_GET['cacheID']));
+    ajax_exit(array('status' => 'success'));
 
 /**
   * Adding new Memcached server
@@ -293,7 +302,41 @@ $cacheList = array('xcache' => False, 'apc' => False, 'memcached' => False);
 
 // check for requirements for built-in caching methods
 if (extension_loaded('xcache'))
+{
+    $xcacheInfo = array();
+    
+    for ($i=0; $i < xcache_count(XC_TYPE_VAR); $i++)
+    {
+        $info = xcache_info(XC_TYPE_VAR, $i);
+        $xcacheInfo[$i] = array();
+        $xcacheInfo[$i]['slots'] = $info['slots'];
+        $xcacheInfo[$i]['cached'] = $info['cached'];
+        $xcacheInfo[$i]['errors'] = $info['errors'];
+        $xcacheInfo[$i]['deleted'] = $info['deleted'];
+        
+        // size
+        $xcacheInfo[$i]['size'] = bytesToSize($info['size']);
+        
+        $free = 0;
+        foreach ($info['free_blocks'] as $block)
+        {
+            $free += $block['size'];
+        }
+        
+        $xcacheInfo[$i]['free'] = bytesToSize($free);
+        $xcacheInfo[$i]['used'] = bytesToSize($info['size']-$free);
+        
+        // hits and misses (usage)
+        $xcacheInfo[$i]['hits'] = $info['hits'];
+        $xcacheInfo[$i]['misses'] = $info['misses'];
+        
+        // stats
+        $xcacheInfo[$i]['hourlyStats'] = $info['hits_by_hour'];
+    }
+    
+    $panthera -> template -> push('xcacheInfo', $xcacheInfo);
     $cacheList['xcache'] = True;
+}
 
 if (extension_loaded('apc'))
     $cacheList['apc'] = True;
@@ -302,6 +345,8 @@ if (extension_loaded('memcached'))
 {
     $cacheList['memcached'] = True;
     $panthera -> template -> push('memcacheAvaliable', True);
+    $panthera -> template -> push('memcachedSerializer', ini_get('memcached.serializer'));
+    $panthera -> template -> push('memcachedCompression', ini_get('memcached.compression_type'));
 }
 
 $cacheList['db'] = True; // db is always available
@@ -322,7 +367,7 @@ foreach (get_declared_classes() as $className)
 }
 
 // check if memcached is used as session save handler
-if (ini_get('session.save_handler') == 'memcached' or ini_get('session.save_handler') == 'mm')
+if (ini_get('session.save_handler') == 'memcached' or ini_get('session.save_handler') == 'mm' or ini_get('session.save_handler') == 'redis')
     $panthera -> template -> push('sessionHandler', ini_get('session.save_handler'));
 else
     $panthera -> template -> push('sessionHandler', localize('php default, on disk', 'cache'));
@@ -330,6 +375,7 @@ else
 // allow plugins modyfing list
 $cacheList = $panthera -> get_filters('cache.list', $cacheList);
 
+$panthera -> template -> push('sessionSerializer', ini_get('session.serialize_handler'));
 $panthera -> template -> push('cache', $panthera -> config -> getKey('cache_type'));
 $panthera -> template -> push('varcache', $panthera -> config -> getKey('varcache_type'));
 $panthera -> template -> push('cache_list', $cacheList);
