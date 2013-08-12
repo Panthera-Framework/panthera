@@ -17,7 +17,7 @@ global $installer;
 
 // we will check here the PHP version and required basic modules
 $requiredExtensions = array('pcre' => 'any', 'hash' => 'any', 'fileinfo' => 'any', 'json' => 'any', 'session' => 'any', 'Reflection' => 'any', 'Phar' => 'any', 'PDO' => 'any', 'gd' => 'any', 'pdo_mysql' => 'any', 'pdo_sqlite' => 'any');
-$optionalExtensions = array('mcrypt' => 'any', 'curl' => 'any', 'memcached' => 'any', 'XCache' => 'any', 'apc' => 'any', 'xdebug' => 'any');
+$optionalExtensions = array('mcrypt' => 'any', 'curl' => 'any', 'memcached' => 'any', 'XCache' => 'any', 'apc' => 'any', 'xdebug' => 'any', 'redis' => 'any');
 $requiredPHPVersion = '5.2.0';
 
 // errors count
