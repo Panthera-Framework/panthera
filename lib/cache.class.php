@@ -458,10 +458,16 @@ class varCache_memcached extends pantheraClass
 
     public function exists($var)
     {
-        $this->m->get($this->filterVar($var));
+        $result = $this->m->get($this->filterVar($var));
         
-        if ($this->m->getResultCode() == Memcached::RES_NOTFOUND)
-            return False;
+        if (!method_exists($this->m, 'getResultCode'))
+        {
+            if ($this->m->getResultCode() == Memcached::RES_NOTFOUND)
+                return False;
+        } else {
+            if ($result == null)
+                return False;
+        }
         
         return True;
     }
