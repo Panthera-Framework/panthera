@@ -141,7 +141,7 @@ if ($_GET['action'] == 'save')
             unset($config[$key]);
             $panthera -> config -> setKey('redis_servers', $config, 'array');
             ajax_exit(array('status' => 'success'));
-        }Memcached
+        }
     }
     
     ajax_exit(array('status' => 'failed'));
