@@ -386,6 +386,17 @@ class varCache_xcache extends pantheraClass
     }
 }
 
+if (class_exists('Memcache') and !class_exists('Memcached'))
+{
+    class Memcached extends Memcache
+    {
+        public function getStats()
+        {
+            return $this->getExtendedStats();
+        }
+    }
+}
+
 /**
   * varCache stored by memcached servers
   *

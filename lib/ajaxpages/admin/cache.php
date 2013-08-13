@@ -141,7 +141,7 @@ if ($_GET['action'] == 'save')
             unset($config[$key]);
             $panthera -> config -> setKey('redis_servers', $config, 'array');
             ajax_exit(array('status' => 'success'));
-        }
+        }Memcached
     }
     
     ajax_exit(array('status' => 'failed'));
@@ -154,7 +154,7 @@ if ($_GET['action'] == 'save')
 
 } elseif ($_GET['action'] == 'addMemcachedServer') {
 
-    if (!extension_loaded('memcached'))
+    if (!class_exists('Memcached'))
     {
         ajax_exit(array('status' => 'failed'));
     }
@@ -427,7 +427,7 @@ if (function_exists('xcache_set'))
 if (extension_loaded('apc'))
     $cacheList['apc'] = True;
 
-if (extension_loaded('memcached'))
+if (class_exists('Memcached'))
 {
     $cacheList['memcached'] = True;
     $panthera -> template -> push('memcacheAvaliable', True);
