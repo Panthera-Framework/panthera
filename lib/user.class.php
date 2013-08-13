@@ -478,14 +478,14 @@ function getUserRightAttribute($user, $attribute)
     // if user has blocked attribute and not a superuser
     if ((string)$user->acl->get($attribute) == '__blocked__' and !$user->attributes->superuser and !$user->acl->get('superuser'))
         return False;
-
-    // if not a super user, not an admin and not allowed in current context (attribute == false)
-    if (!(bool)$user->acl->get($attribute) and !$user->attributes->admin and !$user->attributes->superuser and !$user->acl->get('superuser') and $user->acl->get('admin'))
-        return False;
-
+        
     // if user is admin or superuser
-    if($user->attributes->admin or $user->attributes->superuser or $user->acl->get('user') or $user->acl->get('superuser'))
+    if($user->attributes->admin or $user->attributes->superuser or $user->acl->get('admin') or $user->acl->get('superuser'))
         return True;
+        
+    // if not a super user, not an admin and not allowed in current context (attribute == false)
+    if (!(bool)$user->acl->get($attribute) and !$user->attributes->admin and !$user->attributes->superuser and !$user->acl->get('superuser') and !$user->acl->get('admin'))
+        return False;
 
     return (bool)$user->acl->get($attribute);
 }
