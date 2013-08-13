@@ -275,7 +275,7 @@ if (extension_loaded('apc') && function_exists('apc_cache_info'))
 // Check if memcached support is avaliable in PHP, if yes import our wrapper library
  $panthera -> template -> push('memcachedServers', array());
 
-if (extension_loaded('memcached'))
+if (class_exists('Memcached'))
 {
     $panthera -> importModule('filesystem');
     $panthera -> importModule('memcached');
