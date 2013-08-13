@@ -388,8 +388,20 @@ class varCache_xcache extends pantheraClass
 
 if (class_exists('Memcache') and !class_exists('Memcached'))
 {
+    /**
+      * Memcached compatibility layer
+      *
+      * @package Panthera\core\cache
+      * @author Damian Kęska
+      */
+
     class Memcached extends Memcache
     {
+        public function __construct()
+        {
+            // do nothing
+        }
+        
         public function getStats()
         {
             return $this->getExtendedStats();
