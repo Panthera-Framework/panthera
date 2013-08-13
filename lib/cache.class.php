@@ -50,7 +50,7 @@ class varCache_db
     
         $SQL = $this->panthera->db->query('SELECT `value`, `expire` FROM `{$db_prefix}var_cache` WHERE `var` = :var', array('var' => $var));
         
-        if ($SQL->rowCount() == 1)
+        if ($SQL->rowCount() > 0)
         {
             $Array = $SQL -> fetch();
             $v = unserialize($Array['value']);
@@ -89,7 +89,7 @@ class varCache_db
     
     public function exists($var)
     {
-        if ($this->get($var) != null)
+        if ($this->get($var) !== null)
             return True;
             
         return False;
