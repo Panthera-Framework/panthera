@@ -406,6 +406,16 @@ if (class_exists('Memcache') and !class_exists('Memcached'))
         {
             return $this->getExtendedStats();
         }
+        
+        public function set($key, $value, $expire)
+        {
+            if ($this->get($key) === null)
+            {
+                return parent::set($key, $value, false, $expire);
+            } else {
+                return $this->replace($key, $value, false, $expire);
+            }
+        }
     }
 }
 
@@ -457,7 +467,8 @@ class varCache_memcached extends pantheraClass
     
     public function filterVar($var)
     {
-        return hash('md4', $this->prefix.'.vc.' .$var);
+        //return str_replace(' ', '', $this->prefix.'.vc.' .$var);
+        return substr(hash('md4', $this->prefix.'.vc.' .$var), 0, 6);
     }
     
     /**
