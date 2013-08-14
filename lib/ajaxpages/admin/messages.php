@@ -69,7 +69,7 @@ if ($_GET['action'] == 'new_msg')
     if (strlen($content) < 4)
         ajax_exit(array('status' => 'failed', 'message' => localize('Content is too short', 'qmessages')));
 
-    createQuickMessage($title, $content, $user->login, $user->full_name, $url_id, $language, $categoryName, $visibility, $icon);
+    quickMessage::create($title, $content, $user->login, $user->full_name, $url_id, $language, $categoryName, $visibility, $icon);
     ajax_exit(array('status' => 'success'));
 }
 
@@ -151,7 +151,7 @@ if ($_GET['action'] == 'remove_msg')
         ajax_exit(array('status' => 'failed', 'error' => localize('Permission denied. You dont have access to this action', 'messages')));
     }
 
-    if (removeQuickMessage($_GET['msgid']))
+    if (quickMessage::remove($_GET['msgid']))
         ajax_exit(array('status' => 'success'));
     else
         ajax_exit(array('status' => 'failed', 'error' => localize('Unknown error', 'messages')));
@@ -210,7 +210,7 @@ if ($_GET['action'] == 'display_category')
         $page = 0;
 
     // here we will list all messages on default page (listing)
-    $count = getQuickMessages(array('language' => $language, 'category_name' => $categoryName), False);
+    $count = quickMessage::getQuickMessages(array('language' => $language, 'category_name' => $categoryName), False);
 
     // count pages
     $pager = new Pager($count, $panthera->config->getKey('max_qmsg', 10, 'int'));
@@ -233,7 +233,7 @@ if ($_GET['action'] == 'display_category')
     $specialItemsMax = intval($panthera->config->getKey('qmsg_special_count', 4, 'int'));
 
     // get limited results
-    $m = getQuickMessages(array('language' => $language, 'category_name' => $categoryName), $limit[1], $limit[0]);
+    $m = quickMessage::getQuickMessages(array('language' => $language, 'category_name' => $categoryName), $limit[1], $limit[0]);
 
     if (count($m) > 0 and $m != False)
     {
@@ -282,7 +282,7 @@ if (!getUserRightAttribute($user, 'can_view_qmsg'))
 $template -> push('action', '');
 
 // get all categories
-$categories = getQuickCategories('');
+$categories = quickCategory::getCategories('');
 $template -> push('categories', $categories);
 $template -> display('messages.tpl');
 pa_exit();
