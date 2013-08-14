@@ -31,7 +31,7 @@ if ($_GET['action'] == 'new_msg')
     $title = filterInput(trim($_POST['message_title']), 'quotehtml');
     $content = $_POST['message_content'];
     $visibility = (bool)$_POST['message_hidden'];
-    $categoryName = $_GET['cat'];
+    $categoryName = $_GET['category'];
     $category = new quickCategory('category_name', $categoryName);
     $icon = filterInput($_POST['message_icon'], 'quotehtml');
     
@@ -192,8 +192,7 @@ if ($_GET['action'] == 'get_msg')
 if ($_GET['action'] == 'display_category')
 {
     $page = intval($_GET['page']);
-    $categoryName = $_GET['cat'];
-
+    $categoryName = $_GET['category'];
     $category = new quickCategory('category_name', $categoryName);
 
     if (!getUserRightAttribute($user, 'can_qmsg_manage_' .$categoryName) and !getUserRightAttribute($user, 'can_qmsg_manage_all'))

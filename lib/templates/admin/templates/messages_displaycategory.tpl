@@ -9,7 +9,7 @@
 
 function jumpToAjaxPage(id)
 {
-    panthera.jsonGET({ url: '{$AJAX_URL}?display=messages&cat=admin&action=display_category&language={$language}&type=ajax&cat={$category_name}&page='+id, data: '', success: function (response) {
+    panthera.jsonGET({ url: '{$AJAX_URL}?display=messages&cat=admin&action=display_category&language={$language}&type=ajax&category={$category_name}&page='+id, data: '', success: function (response) {
     
             $('#all_messages_window').html('');
     
@@ -182,7 +182,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
                 <tbody>
                     {loop="$languages"}
                         <tr>
-                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$key}" onclick="navigateTo('?display=messages&cat=admin&action=display_category&cat={$category_name}&language={$key}');">{$key}</a></td>
+                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$key}" onclick="navigateTo('?display=messages&cat=admin&action=display_category&category={$category_name}&language={$key}');">{$key}</a></td>
                             <td style="width: 60px; padding: 10px; border-right: 0px;"></td>
                         </tr>
                     {/loop}
@@ -193,7 +193,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
        <br>
     
     <div id="message_window">
-       <form action="{$AJAX_URL}?display=messages&cat=admin&action=new_msg&cat={$category_id}&language={$language}" method="POST" id="post_new">
+       <form action="{$AJAX_URL}?display=messages&cat=admin&action=new_msg&category={$category_id}&language={$language}" method="POST" id="post_new">
         <div class="grid-1">
             <div class="title-grid" style="height: 30px;">{function="localize('Title of a new message', 'qmessages')"}: &nbsp;<input type="text" name="message_title" style="height: 20px; width: 250px; margin-top: 3px;"></div>
             <div class="content-table-grid" style="padding: 0px;">
@@ -232,7 +232,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
     </div>
     
     <div id="edit_window" style="display: none;">
-       <form action="{$AJAX_URL}?display=messages&cat=admin&action=edit_msg&cat={$category_id}" method="POST" id="edit_msg_form">
+       <form action="{$AJAX_URL}?display=messages&cat=admin&action=edit_msg&category={$category_id}" method="POST" id="edit_msg_form">
         <div class="grid-1">
             <div class="title-grid" style="height: 30px;">{function="localize('Edit a message', 'qmessages')"}: <input type="text" name="edit_msg_title" id="edit_msg_title" value="" style="width: 300px; height: 20px; margin-top: 3px;"></div>
             <div class="content-gird" style="padding: 0px;">
