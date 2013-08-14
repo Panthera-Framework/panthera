@@ -54,13 +54,13 @@ class quickMessage extends pantheraFetchDB
     {
         if ($modificationAuthor == True)
         {
-            if (!$this->__get('mod_author_full_name'))
+            if ($this->__get('mod_author_full_name'))
                 return $this->__get('mod_author_full_name');
                 
             return $this->__get('mod_author_login');
         }
     
-        if (!$this->__get('author_full_name'))
+        if ($this->__get('author_full_name'))
             return $this->__get('author_full_name');
             
         return $this->__get('author_login');
