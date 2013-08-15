@@ -431,8 +431,12 @@ if (class_exists('Memcached'))
 {
     $cacheList['memcached'] = True;
     $panthera -> template -> push('memcacheAvaliable', True);
-    $panthera -> template -> push('memcachedSerializer', ini_get('memcached.serializer'));
-    $panthera -> template -> push('memcachedCompression', ini_get('memcached.compression_type'));
+    
+    if (extension_loaded('memcached'))
+    {
+        $panthera -> template -> push('memcachedSerializer', ini_get('memcached.serializer'));
+        $panthera -> template -> push('memcachedCompression', ini_get('memcached.compression_type'));
+    }
 }
 
 if (class_exists('Redis'))
@@ -494,7 +498,7 @@ foreach (get_declared_classes() as $className)
 }
 
 // check if memcached is used as session save handler
-if (ini_get('session.save_handler') == 'memcached' or ini_get('session.save_handler') == 'mm' or ini_get('session.save_handler') == 'redis')
+if (ini_get('session.save_handler') != 'php')
     $panthera -> template -> push('sessionHandler', ini_get('session.save_handler'));
 else
     $panthera -> template -> push('sessionHandler', localize('php default, on disk', 'cache'));
