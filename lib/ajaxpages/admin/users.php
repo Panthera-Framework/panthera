@@ -354,8 +354,6 @@ if ($_GET['action'] == 'account') {
 
 } elseif ($_GET['action'] == 'add_user') {
 	
-	var_dump($_POST);
-
     if (strlen($_POST['login']) > 2)
         $login = $_POST['login'];
     else
