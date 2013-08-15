@@ -311,22 +311,6 @@ if ($_GET['action'] == 'new_item') {
 
 // default action is to view all menu categories
 $categories = simpleMenu::getCategories('');
-$found = false;
-
-foreach ($categories as $category)
-{
-    if ($category -> type_name == 'admin')
-    {
-        $found = true;
-        break;
-    }
-}
-
-if ($found == False)
-{
-    simpleMenu::createCategory('admin', 'Admin menu', '', 0, 0);
-    $categories = simpleMenu::getCategories('');
-}
 
 $c = array();
 
