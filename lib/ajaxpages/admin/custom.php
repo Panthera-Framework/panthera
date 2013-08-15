@@ -69,8 +69,9 @@ if ($_GET['action'] == 'post_form')
         ajax_exit(array('status' => 'failed', 'message' => localize('Message is too short', 'custompages')));
 
     // last time modified by user...
-    $cpage -> mod_author_name = $user -> login;
-    $cpage -> mod_author_id = $user -> id;
+    $cpage -> mod_author_name = $panthera -> user -> getName();
+    $cpage -> mod_author_id = $panthera -> user -> id;
+    $cpage -> mod_time = 'NOW()';
     $cpage -> html = $_POST['page_content_custom'];
     //$cpage -> url_id = seoUrl($cpage -> title);
     
@@ -151,7 +152,7 @@ if ($_GET['action'] == "edit_page")
     if (!$cpage -> exists()) 
     {
         $title = '...';
-        $seoURL = md5(time());
+        $seoURL = md5(microtime());
         
         // get title from custom page in other language
         $ppage = new customPage('unique', $uid);
@@ -170,6 +171,10 @@ if ($_GET['action'] == "edit_page")
                 $cpage -> html = $ppage->html;
                 $cpage -> admin_tpl = $ppage->admin_tpl;
                 $cpage -> meta_tags = $ppage->meta_tags;
+                $cpage -> mod_author_name = $panthera -> user -> getName();
+                $cpage -> mod_author_id = $panthera -> user -> id;
+                $cpage -> mod_author_id = $panthera -> user -> id;
+                $cpage -> mod_time = 'NOW()';
             }
             
             $cpage -> save();

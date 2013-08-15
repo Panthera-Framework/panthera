@@ -23,6 +23,7 @@ class customPage extends pantheraFetchDB
     protected $_idColumn = 'id';
     protected $_constructBy = array('id', 'url_id', 'unique', 'array');
     protected $_meta;
+    protected $_unsetColumns = array();
     
     /**
       * Get custompage's meta attributes

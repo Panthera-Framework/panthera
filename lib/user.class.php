@@ -88,6 +88,22 @@ class pantheraUser extends pantheraFetchDB
 
         return False;
     }
+    
+    /**
+      * Return user's login or full name depends on if full name is provided in user profile
+      *
+      * @param string $getLogin Get user login instead of full name
+      * @return string 
+      * @author Damian Kęska
+      */
+    
+    public function getName($getLogin=False)
+    {
+        if (!empty($this->__get('full_name')) and $getLogin == False)
+            return $this->__get('full_name');
+        
+        return $this->__get('login');
+    }
 
     // user attributes will be avaliable via $self->attribute
     public function __get($var)
