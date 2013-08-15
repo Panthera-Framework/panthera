@@ -119,7 +119,11 @@ class writableJSON
         if ($this->modified == True)
         {
             $fp = fopen($this->file, 'w');
-            fwrite($fp, json_encode($this->db, JSON_PRETTY_PRINT));
+            if (version_compare(phpversion(), '5.4.0', '>'))
+                fwrite($fp, json_encode($this->db, JSON_PRETTY_PRINT));
+            else
+                fwrite($fp, json_encode($this->db));
+                
             fclose($fp);
         }
     }
