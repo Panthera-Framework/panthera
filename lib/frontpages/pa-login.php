@@ -14,7 +14,7 @@ $locales = $panthera -> locale -> getLocales();
 // logout user, TODO: CHANGE TO POST
 if (isset($_GET['logout']))
     logoutUser();
-
+    
 // redirect user if already logged in
 if(checkUserPermissions($user))
     pa_redirect('pa-admin.php');
@@ -42,11 +42,24 @@ if (isset($_POST['log']) or isset($_GET['key']))
     } else {
         if(userCreateSession($_POST['log'], $_POST['pwd']))
         {
+            if ($panthera->session->exists('login_referer'))
+            {
+                header('Location: ' .$panthera->session->get('login_referer'));
+                $panthera -> session -> remove ('login_referer');
+                pa_exit();
+            }
+        
             pa_redirect('pa-admin.php');
             pa_exit();
         } else
             $template -> push('message', localize('Invalid user name or password', 'messages'));
     }
+}
+
+// save the referer when logging in
+if (strpos($_SERVER['HTTP_REFERER'], $panthera->config->getKey('ajax_url')) !== False and strpos($_SERVER['HTTP_REFERER'], '&cat=admin') !== False)
+{
+    $panthera->session->set('login_referer', $_SERVER['HTTP_REFERER']);
 }
 
 $panthera -> template -> setTitle(localize('Log in'));
