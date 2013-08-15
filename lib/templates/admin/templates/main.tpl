@@ -26,6 +26,8 @@
                     {else}
                         navigateTo('{$AJAX_URL}?display=dash&cat=admin');
                     {/if}
+                    
+                    $('.ajaxLinkMain').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
             });
 
             function DropDown(el) {
@@ -99,7 +101,7 @@
 			            <ul>
 			                {loop="$admin_menu"}
 				            <li class="menuItemLi">
-				                <a href="#" onclick="navigateTo('{$value.link}');">
+				                <a href="{$value.link}" class="ajaxLinkMain">
 				                    {if="isset($value.icon)"}
 				                    <span style="position: absolute; top: 7px; width: 50px; height: 28px;"><img src="{$value.icon|pantheraUrl}" style="width: 28px;"></span>
 				                    {/if}
