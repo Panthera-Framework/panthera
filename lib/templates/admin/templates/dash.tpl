@@ -150,7 +150,7 @@ $(function(){
               <table class="insideGridTable">
                    {loop="$lastLogged"}
                    <tr>
-            	        <td><a href="?display=users&cat=admin&action=account&uid={$value.uid}" class="ajax_link"><img src="{$value.avatar}" style="max-width: 20px; max-height: 20px; margin-left: -5px;"></a></td><td><a href="?display=users&cat=admin&action=account&uid={$value.uid}" class="ajax_link">{$value.login}</a></td><td> {$value.time} {function="localize('ago')"}</td>
+            	        <td><a href="?display=users&cat=admin&action=account&uid={$value.uid}" class="ajax_link"><img src="{$value.avatar}" style="width: 20px"></a></td><td><a href="?display=users&cat=admin&action=account&uid={$value.uid}" class="ajax_link">{$value.login}</a></td><td> {$value.time} {function="localize('ago')"}</td>
             	   </tr>
                    {/loop}
                </table>

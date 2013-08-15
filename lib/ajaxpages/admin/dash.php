@@ -176,6 +176,8 @@ if ($category == 'main')
         {
             //if ($value->attributes->superuser)
                 //continue;
+                
+            
 
             $users[] = array('login' => $value->login, 'time' => date_calc_diff(strtotime($value->lastlogin), time()), 'avatar' => pantheraUrl($value->profile_picture), 'uid' => $value->id);
         }
