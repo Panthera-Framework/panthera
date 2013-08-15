@@ -50,12 +50,7 @@ function getOtherCustomPages()
 }
 </script>
 
-    <div class="titlebar">{function="localize('List of custom pages in', 'custompages')"} <select onChange="getOtherCustomPages()" id="language">
-         {loop="$locales"}
-           <option value="{$key}" {if="$current_lang == $key"} selected {/if}>{$key}</option>
-         {/loop}
-           <option value="all" {if="$current_lang == 'all'"} selected {/if} >{function="localize('all', 'messages')"}</option>
-        </select>
+    <div class="titlebar">{function="localize('Static pages', 'custompages')"}
         {include="_navigation_panel"}
     </div>
 
@@ -66,8 +61,7 @@ function getOtherCustomPages()
                     <th scope="col" class="rounded-company">{function="localize('Title', 'custompages')"}</th>
                     <th>{function="localize('Created', 'custompages')"}</th>
                     <th>{function="localize('Modified', 'custompages')"}</th>
-                    <th>{function="localize('Author name', 'custompages')"}</th>
-                    <th>{function="localize('Mod author name', 'custompages')"}</th>
+                    <th>{function="localize('Avaliable in', 'custompages')"}</th>
                     <th>{function="localize('Options', 'custompages')"}</th>
                 </tr>
             </thead>
@@ -83,10 +77,15 @@ function getOtherCustomPages()
               {loop="$pages_list"}
                 <tr id="custompage_row_{$value.id}">
                     <td><a href="{$AJAX_URL}?display=custom&cat=admin&action=edit_page&uid={$value.unique}" class="ajax_link">{$value.title|localize}</a></td>
-                    <td>{$value.created}</td>
-                    <td>{$value.modified}</td>
-                    <td>{$value.author_name}</td>
-                    <td>{$value.mod_author_name}</td>
+                    <td>{$value.created} {function="localize('by', 'custompages')"} {$value.author_name}</td>
+                    <td>{if="$value['created'] == $value['modified']"}{function="localize('without changes', 'custompages')"}{else}{$value.modified} {function="localize('by', 'custompages')"} {$value.mod_author_name}{/if}</td>
+                    <td>
+                        <select>
+                            {loop="$value['languages']"}
+                            <option>{$key}</option>
+                            {/loop}
+                        </select>
+                    </td>
                     <td><input type="button" value="{function="localize('Delete', 'messages')"}" onclick="removeCustomPage({$value.id});"></td>
                 </tr>
               {/loop}
@@ -95,26 +94,38 @@ function getOtherCustomPages()
 
         <br>
 
-        <table class="gridTable" style="padding: 0px; margin: 0px;">
+        <table class="gridTable" style="padding: 0px; margin: 0px; width: 50%;">
             <thead>
                 <tr>
-                    <th scope="col" colspan="3" class="rounded-company">{function="localize('Add new custom page', 'custompages')"}</th>
+                    <th colspan="4">{function="localize('Options', 'custompages')"}</th>
                 </tr>
             </thead>
 
             <form action="{$AJAX_URL}?display=custom&cat=admin&action=add_page" method="POST" id="add_page">
             <tbody>
                 <tr id="tr_newCustomPage">
-                    <td style="width: 300px;"><input name="title" type="text" value='{function="localize('Title of new custom page', 'custompages')"}' onfocus="this.value = ''" style="margin-right: 15px; width: 290px;"></td>
+                    <td style="width: 35%;">{function="localize('Add new custom page', 'custompages')"}: </td>
+                    <td style="width: 40%;"><input name="title" type="text" placeholder='{function="localize('Title of new custom page', 'custompages')"}' style="margin-right: 15px; width: 90%;"></td>
                     <td style="width: 80px;">
                         <select name="language" style="margin-right: 16px;">
                         {loop="$locales"}
                             <option value="{$key}">{$key}</option>
                         {/loop}
-                            <option value="all">{function="localize('all')"}</option>
+                            <option value="all">{function="localize('all', 'custompages')"}</option>
                         </select>
-                    </td>
-                    <td><input type="submit" value="{function="localize('Add')"}"></td>
+                    
+                    <input type="submit" value="&nbsp;{function="localize('Add')"}&nbsp;"></td>
+                </tr>
+                
+                <tr>
+                    <td>{function="localize('Filter by language', 'custompages')"}:</td>
+                    <td colspan="2"><select onChange="getOtherCustomPages()" id="language">
+                         {loop="$locales"}
+                           <option value="{$key}" {if="$current_lang == $key"} selected {/if}>{$key}</option>
+                         {/loop}
+                           <option value="" {if="$current_lang == ''"} selected {/if} >{function="localize('all', 'custompages')"}</option>
+                        </select>
+                   </td>
                 </tr>
             </tbody>
             </form>

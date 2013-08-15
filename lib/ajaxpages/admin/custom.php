@@ -309,24 +309,31 @@ if (@$_GET['action'] == "delete_page")
   * @author Damian Kęska
   */
 
-if (isset($_GET['lang'])) 
+if (@$_GET['lang'] != '') 
 {
-    if ($_GET['lang'] == 'all')
-        $p = customPage::fetch();
-    else
-        $p = customPage::fetch(array('language' => $_GET['lang']));
-        
+    $p = customPage::fetch(array('language' => $_GET['lang']));
     $template -> push('current_lang', $_GET['lang']);
     
 } else {
-    $p = customPage::fetch(array('language' => $panthera -> locale -> getActive()));
+    //$p = customPage::fetch(array('language' => $panthera -> locale -> getActive()));
+    $p = customPage::fetch();
 }
 
 if (count($p) > 0) 
 {
+    $array = array();
+
     foreach ($p as $page) 
     {
-        $array[] = array('id' => $page -> id, 'unique' => $page -> unique, 'url_id' => $page -> url_id, 'modified' => $page -> mod_time, 'created' => $page -> created, 'title' => $page -> title, 'author_name' => $page -> author_name, 'mod_author_name' => $page -> mod_author_name, 'language' => $page -> language);
+        $languages = array($page->language => True);
+    
+        if (isset($array[$page->unique]))
+        {
+            $languages = $array[$page->unique]['languages'];
+            $languages[$page->language] = True;
+        }
+    
+        $array[$page->unique] = array('id' => $page -> id, 'unique' => $page -> unique, 'url_id' => $page -> url_id, 'modified' => $page -> mod_time, 'created' => $page -> created, 'title' => $page -> title, 'author_name' => $page -> author_name, 'mod_author_name' => $page -> mod_author_name, 'language' => $page -> language, 'languages' => $languages);
     }
     
     $template -> push('pages_list', $array);
