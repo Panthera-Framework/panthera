@@ -11,6 +11,8 @@
 if (!defined('IN_PANTHERA'))
     exit;
 
+$panthera -> locale -> loadDomain('users');
+
 $template -> push('action', '');
 $template -> push('user_uid', '');
 $template -> push('locales', $panthera -> locale -> getLocales());
@@ -116,6 +118,7 @@ if ($_GET['action'] == 'account') {
 
     $template -> push('locales_added', $localesActive);
     $template -> push('action', 'my_account');
+	$template -> push('id', $u->id);
     $template -> push('user_login', $u->login);
     $template -> push('avatar_dimensions', explode('x', $panthera -> config -> getKey('avatar_dimensions', '80x80', 'string')));
     $template -> push('profile_picture', pantheraUrl($u->profile_picture));
@@ -216,7 +219,94 @@ if ($_GET['action'] == 'account') {
     }
 
 /**
-  * Remove an user (by login!)
+  * Save information about user to database
+  *
+  * @author Mateusz Warzyński
+  */
+
+} elseif ($_GET['action'] == 'edit_user') {
+	
+	if (strlen($_POST['uid']) > 0)
+		$u = getUserById($_POST['uid']);
+	else
+		ajax_exit(array('status' => 'failed', 'message' => localize('Cannot find UID of user!', 'users')));
+	
+	if ($_POST['passwd'] != '********') {
+		if (strlen($_POST['passwd']) > 6) {
+			if ($_POST['passwd'] == $_POST['retyped_passwd']) {
+                if ($u->changePassword($_POST['passwd'])) {
+                    $u->save();
+                } else {
+                    print(json_encode(array('status' => 'failed', 'message' => localize('Error with changing password'))));
+                }
+            } else {
+                print(json_encode(array('status' => 'failed', 'message' => localize('Passwords are not identical'))));
+                pa_exit();
+            }
+	    } else
+	        ajax_exit(array('status' => 'failed', 'message' => localize('Password is too short!', 'users')));
+	}
+
+    if (strlen($_POST['full_name']) > 4)
+        $u -> full_name = $_POST['full_name'];
+    else
+        ajax_exit(array('status' => 'failed', 'message' => localize('Full name is too short', 'users')));
+
+    if (strlen($_POST['avatar']) > 6)
+        $u -> profile_picture = $_POST['avatar'];
+
+    $u -> mail = $_POST['email'];
+    $u -> jabber = $_POST['jabber'];
+
+    $u -> language = $_POST['language'];
+    $u -> primary_group = $_POST['primary_group'];
+
+	$u -> save();
+	
+	ajax_exit(array('status' => 'success', 'message' => 'Information about user has been saved successfully!'));
+
+/**
+  * Redirect to users_edituser template
+  *
+  * @author Mateusz Warzyński
+  */
+
+} elseif ($_GET['action'] == 'editUser') {
+	$tpl = "users_edituser.tpl";
+	
+	if (isset($_GET['uid']) AND ($user->attributes->admin OR $user->attributes->superuser)) {
+        $u = getUserById($_GET['uid']);
+        $template -> push('user_uid', '&uid=' .$_GET['uid']);
+    } else {
+        $u = $user;
+    }
+	
+	$groups = pantheraGroup::listGroups();
+    $groupsTpl = array();
+
+    foreach ($groups as $group) {
+        $groupsTpl[] = array('name' => $group->name);
+    }
+	
+	$template -> push('id', $u->id);
+	$template -> push('user_login', $u->login);
+    $template -> push('avatar_dimensions', explode('x', $panthera -> config -> getKey('avatar_dimensions', '80x80', 'string')));
+    $template -> push('profile_picture', pantheraUrl($u->profile_picture));
+    $template -> push('full_name', $u->full_name);
+    $template -> push('primary_group', $u->primary_group);
+    $template -> push('joined', $u->joined);
+    $template -> push('language', $u->language);
+	$template -> push('email', $u->mail);
+	$template -> push('jabber', $u->jabber);
+	
+	$template -> push('groups', $groupsTpl);
+	$template -> push('locales_added', $panthera->locale->getLocales());
+	
+	$template -> push('action', 'edit');
+	
+
+/**
+  * Remove an user (by id)
   *
   * @author Mateusz Warzyński
   */
@@ -248,7 +338,7 @@ if ($_GET['action'] == 'account') {
   */
 
 } elseif ($_GET['action'] == 'new_user') {
-    $tpl = 'users_adduser.tpl';
+    $tpl = "users_edituser.tpl";
 
     $groups = pantheraGroup::listGroups();
     $groupsTpl = array();
@@ -259,10 +349,11 @@ if ($_GET['action'] == 'account') {
 
     $panthera -> template -> push('groups', $groupsTpl);
     $panthera -> template -> push('locales_added', $panthera->locale->getLocales());
+	$panthera -> template -> push('avatar_dimensions', explode('x', $panthera -> config -> getKey('avatar_dimensions', '80x80', 'string')));
 
 
 } elseif ($_GET['action'] == 'add_user') {
-
+	
     if (strlen($_POST['login']) > 2)
         $login = $_POST['login'];
     else
