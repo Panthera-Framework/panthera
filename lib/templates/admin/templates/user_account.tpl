@@ -57,7 +57,7 @@ function aclModify(id, name)
 }
 </script>
 
-<div class="titlebar"><span class="titleBarIcons"><img src="{$PANTHERA_URL}/images/default_avatar.png" style="width: 28px"></a></span>{function="localize('Panel with informations about user.', 'settings')"}{include="_navigation_panel"}</div>
+<div class="titlebar"><span class="titleBarIcons"><img src="{$PANTHERA_URL}/images/default_avatar.png" style="width: 28px"></a></span>{function="localize('Panel with informations about user.', 'users')"}{include="_navigation_panel"}</div>
 
             <br>
 
@@ -68,50 +68,50 @@ function aclModify(id, name)
 
              <thead>
                 <tr>
-                    <th scope="col" style="width: 300px;">{function="localize('User', 'settings')"}</th>
+                    <th scope="col" style="width: 300px;">{function="localize('User', 'users')"}</th>
                     <th scope="col"> </th>
                 </tr>
              </thead>
 
              <tfoot>
                 <tr>
-                    <td colspan="2" class="rounded-foot-left"><em>{function="localize('Informations about user', 'settings')"}</em></td>
+                    <td colspan="2" class="rounded-foot-left"><em>{function="localize('Informations about user', 'users')"}<input type="button" value="{function="localize('Edit', 'users')"}" onclick="navigateTo('?display=users&cat=admin&action=editUser&uid={$id}')" style="float: right;"></em></td>
                 </tr>
              </tfoot>
 
              <tbody>
                 <tr>
-                    <td>{function="localize('Login', 'settings')"}</td>
+                    <td>{function="localize('Login', 'users')"}</td>
                     <td>{$user_login}</td>
                 </tr>
 
                 <tr>
-                  <td>{function="localize('Password', 'settings')"}</td>
-                  <td><a href="#" onclick="jQuery('#password_window').slideToggle(); return false;">{function="localize('Change password', 'settings')"}</a> <div id="password_window" style="display: none;">
+                  <td>{function="localize('Password', 'users')"}</td>
+                  <td><a href="#" onclick="jQuery('#password_window').slideToggle(); return false;">{function="localize('Change password', 'users')"}</a> <div id="password_window" style="display: none;">
 
                 <form action="?display=users&cat=admin&action=account&changepassword{$user_uid}" method="POST" id="changepasswd_form">
                  <table style="width: 400px; border: 0px; font-size: 12px;">
                     <tfoot>
                         <tr>
-                            <td colspan="2" class="rounded-foot-left"><em><input type="submit" value="{function="localize('Change password')"}"></em></td>
+                            <td colspan="2" class="rounded-foot-left"><em><input type="submit" value="{function="localize('Change password', 'users')"}"></em></td>
                         </tr>
                     </tfoot>
                     <thead>
                         {if="!isset($dontRequireOld)"}
                         <tr>
                             <td><input type="password" name="old_passwd"> </td>
-                            <td>{function="localize('Old password', 'settings')"}</td>
+                            <td>{function="localize('Old password', 'users')"}</td>
                         </tr>
                         {/if}
 
                         <tr>
                             <td><input type="password" name="new_passwd"> </td>
-                            <td>{function="localize('New password', 'settings')"}</td>
+                            <td>{function="localize('New password', 'users')"}</td>
                         </tr>
 
                         <tr>
                             <td><input type="password" name="retyped_newpasswd"></td>
-                            <td>{function="localize('Retype new password', 'settings')"}</td>
+                            <td>{function="localize('Retype new password', 'users')"}</td>
                         </tr>
                     </thead>
                  </table>
@@ -121,7 +121,7 @@ function aclModify(id, name)
                 </tr>
 
                 <tr>
-                  <td>{function="localize('Avatar', 'settings')"}</td>
+                  <td>{function="localize('Avatar', 'users')"}</td>
                   <td>
                       <div class="galleryImageFrame">
                         <div class="paGalleryFrameContent">
@@ -132,22 +132,22 @@ function aclModify(id, name)
                 </tr>
 
                 <tr>
-                  <td>{function="localize('Full name', 'settings')"}</td>
+                  <td>{function="localize('Full name', 'users')"}</td>
                   <td>{$full_name|ucfirst}</td>
                 </tr>
 
                 <tr>
-                  <td>{function="localize('Primary group', 'settings')"}</td>
+                  <td>{function="localize('Primary group', 'users')"}</td>
                   <td><a href="?display=acl&cat=admin&action=listGroup&group={$primary_group}" class="ajax_link">{$primary_group}</a></td>
                 </tr>
 
                 <tr>
-                  <td>{function="localize('Joined', 'settings')"}</td>
+                  <td>{function="localize('Joined', 'users')"}</td>
                   <td>{$joined}</td>
                 </tr>
 
                 <tr>
-                  <td>{function="localize('Language', 'settings')"}</td>
+                  <td>{function="localize('Language', 'users')"}</td>
                   <td>
                     <a href="#" onclick="jQuery('#localize_window').slideToggle(); return false;" id="default_language">{$language|ucfirst}</a>
                     <div id="localize_window" style="display: none;">
@@ -156,7 +156,7 @@ function aclModify(id, name)
                        <table style="width: 400px;">
                           <tfoot>
                             <tr>
-                                <td colspan="2" class="rounded-foot-left"><em><input type="submit" value="{function="localize('Change language')"}"></em></td>
+                                <td colspan="2" class="rounded-foot-left"><em><input type="submit" value="{function="localize('Change language', 'users')"}"></em></td>
                               </tr>
                           </tfoot>
                           <tbody>
@@ -168,7 +168,7 @@ function aclModify(id, name)
                                      {/loop}
                                     </select>
                                   </td>
-                                  <td>{function="localize('Set language', 'settings')"}</td>
+                                  <td>{function="localize('Set language', 'users')"}</td>
                               </tr>
                           </tbody>
                        </table>
@@ -195,13 +195,13 @@ function aclModify(id, name)
             <table class="gridTable">
             <thead>
                 <tr>
-                    <th scope="col">{function="localize('Permission name', 'settings')"}</th>
+                    <th scope="col">{function="localize('Permission name', 'users')"}</th>
                     <th scope="col">&nbsp;</th>
                 </tr>
             </thead>
                 <tfoot>
                 <tr>
-                    <td colspan="2" class="rounded-foot-left"><em>{function="localize('Access control list for current user', 'settings')"}</em></td>
+                    <td colspan="2" class="rounded-foot-left"><em>{function="localize('Access control list for current user', 'users')"}</em></td>
                 </tr>
             </tfoot>
             <tbody>
