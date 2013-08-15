@@ -47,7 +47,12 @@ function removeMenuCategory(id)
           </tfoot>
 
           <tbody>
-            {loop="$menu_categories"}
+          	{if="$menu_categories == False"}
+          	  <tr>
+          	  	  <td colspan="5">{function="localize('No any categories found, use button below to create one', 'menuedit')"}.</td>
+          	  </tr>
+          	{else}
+             {loop="$menu_categories"}
               <tr id="category_{$value.id}">
                   <td><a href="#" onclick="navigateTo('?display=menuedit&cat=admin&action=category&category={$value.name}');" class="ajax_link">{$value.name}</a></td>
                   <td>{$value.title}</td>
@@ -55,7 +60,8 @@ function removeMenuCategory(id)
                   <td>{$value.elements}</td>
                   <td><input type="button" value="{function="localize('Delete')"}" onclick="removeMenuCategory({$value.id});"></td>
               </tr>
-            {/loop}
+             {/loop}
+            {/if}
           </tbody>
       </table>
     </div>
