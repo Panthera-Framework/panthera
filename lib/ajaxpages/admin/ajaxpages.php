@@ -20,8 +20,8 @@ if (!getUserRightAttribute($user, 'can_see_ajax_pages')) {
 
 $panthera -> locale -> loadDomain('ajaxpages');
 
-$lib = scandir(PANTHERA_DIR. '/ajaxpages');
-$content = scandir(SITE_DIR. '/content/ajaxpages');
+$lib = scandir(PANTHERA_DIR. '/ajaxpages/admin');
+$content = scandir(SITE_DIR. '/content/ajaxpages/admin');
 $pages = array();
 
 foreach ($lib as $file)
@@ -31,7 +31,7 @@ foreach ($lib as $file)
     if (strtolower($pathinfo['extension']) != 'php')
         continue;
 
-    if (!is_file(PANTHERA_DIR. '/ajaxpages/' .$file))
+    if (!is_file(PANTHERA_DIR. '/ajaxpages/admin/' .$file))
         continue;
 
     $name = str_ireplace('.php', '', $file);
@@ -40,8 +40,7 @@ foreach ($lib as $file)
 }
 
 $pages[] = array('location' => 'lib', 'name' => 'system_info', 'link' => '?display=settings&cat=admin&action=system_info');
-$pages[] = array('location' => 'lib', 'name' => 'users', 'link' => '?display=settings&cat=admin&action=users');
-$pages[] = array('location' => 'lib', 'name' => 'my_account', 'link' => '?display=settings&cat=admin&action=my_account');
+$pages[] = array('location' => 'lib', 'name' => 'my_account', 'link' => '?display=users&cat=admin&action=my_account');
 
 foreach ($content as $file)
 {
@@ -50,7 +49,7 @@ foreach ($content as $file)
     if (strtolower($pathinfo['extension']) != 'php')
         continue;
 
-    if (!is_file(SITE_DIR. '/content/ajaxpages/' .$file))
+    if (!is_file(SITE_DIR. '/content/ajaxpages/admin/' .$file))
         continue;
 
     $name = str_ireplace('.php', '', $file);
