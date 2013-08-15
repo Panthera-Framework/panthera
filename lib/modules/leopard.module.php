@@ -283,7 +283,11 @@ class leopardPackage
     public function exportManifest($file)
     {
         $fp = @fopen($file, 'w');
-        @fwrite($fp, json_encode($this->manifest, JSON_PRETTY_PRINT));
+        if (version_compare(phpversion(), '5.4.0', '>'))
+            @fwrite($fp, json_encode($this->manifest, JSON_PRETTY_PRINT));
+        else
+            @fwrite($fp, json_encode($this->manifest));
+        
         @fclose($fp);
         
         if (is_file($file))
@@ -301,7 +305,10 @@ class leopardPackage
     
     public function showManifest()
     {
-        return json_encode($this->manifest, JSON_PRETTY_PRINT);
+        if (version_compare(phpversion(), '5.4.0', '>'))
+            return json_encode($this->manifest, JSON_PRETTY_PRINT);
+        else
+            return json_encode($this->manifest);
     }
     
     /**
@@ -455,7 +462,12 @@ class leopardPackage
     public function save()
     {
         $this->phar->stopBuffering();
-        $manifest = json_encode($this->manifest, JSON_PRETTY_PRINT);
+        
+        if (version_compare(phpversion(), '5.4.0', '>'))
+            $manifest = json_encode($this->manifest, JSON_PRETTY_PRINT);
+        else
+            $manifest = json_encode($this->manifest);
+
         $this->phar->addFromString('manifest.json', $manifest);
     }
     

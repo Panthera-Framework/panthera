@@ -101,8 +101,12 @@ if ($_GET['action'] == 'outputType')
     }
     
     if ($panthera -> session -> get('mergephps_type') == 'json')
-        $html = json_encode(mergePHPS(), JSON_PRETTY_PRINT);
-    else
+    {
+        if (version_compare(phpversion(), '5.4.0', '>'))
+            $html = json_encode(mergePHPS(), JSON_PRETTY_PRINT);
+        else
+            $html = json_encode(mergePHPS());
+    } else
         $html = serialize(mergePHPS());
     
     ajax_exit(array('status' => 'success', 'files' => getFileNames(), 'html' => $html));
@@ -121,8 +125,12 @@ if ($_GET['action'] == 'removeFile')
     $panthera -> session -> set('mergephps_files', $mergephpsFiles);
     
     if ($panthera -> session -> get('mergephps_type') == 'json')
-        $html = json_encode(mergePHPS(), JSON_PRETTY_PRINT);
-    else
+    {
+        if (version_compare(phpversion(), '5.4.0', '>'))
+            $html = json_encode(mergePHPS(), JSON_PRETTY_PRINT);
+        else
+            $html = json_encode(mergePHPS());
+    } else
         $html = serialize(mergePHPS());
     
     ajax_exit(array('status' => 'success', 'files' => getFileNames(), 'html' => $html));     
@@ -147,8 +155,12 @@ if ($_GET['action'] == 'upload')
     $panthera -> session -> set('mergephps_files', $mergephpsFiles);
     
     if ($panthera -> session -> get('mergephps_type') == 'json')
-        $html = json_encode(mergePHPS(), JSON_PRETTY_PRINT);
-    else
+    {
+        if (version_compare(phpversion(), '5.4.0', '>'))
+            $html = json_encode(mergePHPS(), JSON_PRETTY_PRINT);
+        else
+            $html = json_encode(mergePHPS());
+    } else
         $html = serialize(mergePHPS());
     
     ajax_exit(array('status' => 'success', 'files' => getFileNames(), 'html' => $html));    
@@ -167,8 +179,12 @@ foreach ($mergephpsFiles as $file => $content)
 }
 
 if ($panthera -> session -> get('mergephps_type') == 'json')
-    $html = json_encode(mergePHPS(), JSON_PRETTY_PRINT);
-else
+{
+    if (version_compare(phpversion(), '5.4.0', '>'))
+        $html = json_encode(mergePHPS(), JSON_PRETTY_PRINT);
+    else
+        $html = json_encode(mergePHPS());
+} else
     $html = serialize(mergePHPS());
 
 $panthera -> template -> push('popup', $_GET['popup']);

@@ -34,7 +34,11 @@ if (isset($_POST['jsonedit_content']))
         
     } elseif ($_POST['responseType'] == 'json') {
     // and json pretty printed
-        $response = json_encode(unserialize($response), JSON_PRETTY_PRINT);
+        if (version_compare(phpversion(), '5.4.0', '>'))
+            $response = json_encode(unserialize($response), JSON_PRETTY_PRINT);
+        else
+            $response = json_encode(unserialize($response));
+            
     } elseif ($_POST['responseType'] == 'var_export') {
     // var_export support
         $response = var_export(unserialize($response), True);
@@ -44,8 +48,11 @@ if (isset($_POST['jsonedit_content']))
 }
    
 $array = unserialize(base64_decode($_GET['input']));
-$code = json_encode($array, JSON_PRETTY_PRINT);
 
+if (version_compare(phpversion(), '5.4.0', '>'))
+    $code = json_encode($array, JSON_PRETTY_PRINT);
+else
+    $code = json_encode($array);
 // remember last code after page refresh
 if ($array == False and !isset($_GET['popup']))
 {
