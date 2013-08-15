@@ -2368,43 +2368,87 @@ function microtime_float($time='')
   * @param bool $secs
   * @param bool $display_output
   * @return string|array
-  * @author Chris <http://stackoverflow.com/questions/5010016/php-time-since-function>
+  * @author Damian Kęska
   */
 
 function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $months = true, $days = true, $hours = true, $mins = true, $secs = true, $display_output = true)
 {
-    $diff = $timestamp_future - $timestamp_past;
-    $calc_times = array();
-    $timeleft   = array();
-
-    // Prepare array, depending on the output we want to get.
-    if ($years)  $calc_times[] = array(localize('Year'),   localize('Years'),   31104000);
-    if ($months) $calc_times[] = array(localize('Month'),  localize('Months'),  2592000);
-    if ($days)   $calc_times[] = array(localize('Day'),    localize('Days'),    86400);
-    if ($hours)  $calc_times[] = array(localize('Hour'),   localize('Hours'),   3600);
-    if ($mins)   $calc_times[] = array(localize('Minute'), localize('Minutes'), 60);
-    if ($secs)   $calc_times[] = array(localize('Second'), localize('Seconds'), 1);
-
-    foreach ($calc_times AS $timedata)
+    if (is_int($timestamp_past))
     {
-        list($time_sing, $time_plur, $offset) = $timedata;
+        $timestamp_past = date('G:i:s d.m.Y', $timestamp_past);
+    }
+    
+    if (is_int($timestamp_future))
+    {
+        $timestamp_future = date('G:i:s d.m.Y', $timestamp_future);
+    }
 
-        if ($diff >= $offset)
+    $past = new DateTime($timestamp_past);
+    $future = new DateTime($timestamp_future);
+    $diff = $future->diff($past);
+    
+    $output = '';
+    
+    if ($years == True)
+    {
+        if ($diff->format('%y') > 0)
         {
-            $left = floor($diff / $offset);
-            $diff -= ($left * $offset);
-            if ($display_output === true) {
-                $timeleft[] = "{$left} " . ($left == 1 ? $time_sing : $time_plur);
-            } else {
-                if (!isset($timeleft[strtolower($time_sing)]))
-                    $timeleft[strtolower($time_sing)] = 0;
-                $timeleft[strtolower($time_sing)] += $left;
-            }
+            $array['years'] = $diff->format('%y');
+            $output .= $diff->format('%y'). ' ' .localize('years'). ' ';
         }
     }
-    if ($display_output === false)
-        return $timeleft;
-    return $timeleft ? ($timestamp_future > $timestamp_past ? null : '-') . implode(', ', $timeleft) : 0;
+    
+    if ($months == True)
+    {
+        if ($diff->format('%m') > 0)
+        {
+            $array['months'] = $diff->format('%m');
+            $output .= $diff->format('%m'). ' ' .localize('months'). ' ';
+        }
+    }
+    
+    if ($days == True)
+    {
+        if ($diff->format('%d') > 0)
+        {
+            $array['days'] = $diff->format('%d');
+            $output .= $diff->format('%d'). ' ' .localize('days'). ' ';
+        }
+    }
+    
+    if ($hours == True)
+    {
+        if ($diff->format('%h') > 0)
+        {
+            $array['hours'] = $diff->format('%h');
+            $output .= $diff->format('%h'). ' ' .localize('hours'). ' ';
+        }
+    }
+    
+    if ($mins == True)
+    {
+        if ($diff->format('%i') > 0)
+        {
+            $array['minutes'] = $diff->format('%i');
+            $output .= $diff->format('%i'). ' ' .localize('minutes'). ' ';
+        }
+    }
+    
+    if ($secs == True)
+    {
+        if ($diff->format('%s') > 0)
+        {
+            $array['seconds'] = $diff->format('%s');
+            $output .= $diff->format('%s'). ' ' .localize('seconds'). ' ';
+        }
+    }
+    
+    if ($display_output == False)
+    {
+        return $array;
+    } else {
+        return $output;
+    }
 }
 
 /**
