@@ -424,7 +424,7 @@ class pantheraDB
                 $tables[] = $table['name'];
             }
         } else {
-            $SQL = $this -> query ('SHOW TABLES FROM `' .$this->panthera->config->getKey('db_name').'`');
+            $SQL = $this -> query ('SHOW TABLES FROM `' .$this->config['db_name'].'`');
             
             foreach ($SQL -> fetchAll(PDO::FETCH_ASSOC) as $table)
             {
