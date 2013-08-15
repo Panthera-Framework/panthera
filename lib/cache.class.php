@@ -446,6 +446,7 @@ class varCache_memcached extends pantheraClass
         
         $servers = $panthera -> config -> getKey('memcached_servers', array('default' => array('localhost', 11211, 50)), 'array');
         $this->m = new Memcached();
+        $serversConnected = 0;
         
         foreach ($servers as $server)
         {
@@ -453,8 +454,17 @@ class varCache_memcached extends pantheraClass
                 continue;
                 
             // host, port, weight
-            $this -> m -> addServer($server[0], intval($server[1]), intval($server[2]));
+            if (!$this -> m -> addServer($server[0], intval($server[1]), intval($server[2])))
+            {
+                $panthera -> logging -> output('Cannot connected to Memcached server ' .$server[0]. ':' .$server[1], 'pantheraCache');
+                continue;
+            }
+            
+            $serversConnected++;
         }
+        
+        if ($serversConnected == 0)
+            throw new Exception('Cannot initialize Memcached, no servers connected');
     }
     
     /**
@@ -619,6 +629,11 @@ class varCache_redis
         if (extension_loaded('igbinary') and $panthera->config->getKey('redisIgbinary') == True)
         {
             $this->redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_IGBINARY);
+        }
+        
+        if (!$this->redis)
+        {
+            throw new Exception('Cannot connect to one or more Redis nodes, disabling cache');
         }
     }
     
