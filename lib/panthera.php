@@ -2383,9 +2383,18 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
         $timestamp_future = date('G:i:s d.m.Y', $timestamp_future);
     }
 
-    $past = new DateTime($timestamp_past);
-    $future = new DateTime($timestamp_future);
-    $diff = $future->diff($past);
+    try {
+        $past = new DateTime($timestamp_past);
+        $future = new DateTime($timestamp_future);
+        $diff = $future->diff($past);
+    } catch (Exception $e) {
+        if ($display_output == False)
+        {
+            return array();
+        } else {
+            return "";
+        }
+    }
     
     $output = '';
     
