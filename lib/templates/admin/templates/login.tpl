@@ -33,6 +33,7 @@
 
         <div class="footer">
         <input type="submit" class="button" value="{function="localize('Sign in', 'login')"}" />
+        <input type="button" class="recover" onclick="window.location = 'pa-login.php?__switchdevice=mobile'" value="Mobile" style="float: left;"/>
         <input type="submit" class="recover" onclick="setRecovery();" value="{function="localize('Recover password', 'login')"}" />
         </div>
 
