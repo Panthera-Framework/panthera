@@ -6,11 +6,11 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
     <thead>
         <tr>
             <th></th>
-            <th>{function="localize('Login', 'settings')"}</th>
-            <th>{function="localize('Full name', 'settings')"}</th>
-            <th>{function="localize('Primary group', 'settings')"}</th>
-            <th>{function="localize('Joined', 'settings')"}</th>
-            <th>{function="localize('Default language', 'settings')"}</th>
+            <th>{function="localize('Login', 'users')"}</th>
+            <th>{function="localize('Full name', 'users')"}</th>
+            <th>{function="localize('Primary group', 'users')"}</th>
+            <th>{function="localize('Joined', 'users')"}</th>
+            <th>{function="localize('Default language', 'users')"}</th>
             <th><span style="float: right;"><a onclick="navigateTo('?display=users&cat=admin&action=new_user');" style="cursor: pointer;"><img src="{$PANTHERA_URL}/images/admin/list-add.png" style="height: 15px;"></a></span></th>
         </tr>
     </thead>
@@ -37,7 +37,7 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
                 <td><a href="?display=acl&cat=admin&action=listGroup&group={$value.primary_group}" class="ajax_link">{$value.primary_group}</a></td>
                 <td>{$value.joined}</td>
                 <td>{$value.language|ucfirst}</td>
-                <td><input type="button" value="{function="localize('Remove')"}" onclick="removeUser('{$value.login}');"></td>
+                <td><input type="button" value="{function="localize('Edit', 'users')"}" onclick="navigateTo('?display=users&cat=admin&action=editUser&uid={$value.id}')">&nbsp;<input type="button" value="{function="localize('Remove')"}" onclick="removeUser('{$value.login}');"></td>
             </tr>
         {/loop}
         </tbody>
