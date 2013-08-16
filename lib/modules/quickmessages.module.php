@@ -67,6 +67,38 @@ class quickMessage extends pantheraFetchDB
     }
     
     /**
+      * Get author login / object
+      *
+      * @param bool $loginOnly Return login string instead of object
+      * @return string|object 
+      * @author Damian Kęska
+      */
+    
+    public function getAuthor($loginOnly=False)
+    {
+        if ($loginOnly == True)
+            return $this->__get('author_login');
+            
+        return new pantheraUser('login', $this->__get('author_login'));
+    }
+    
+    /**
+      * Get modification author login / object
+      *
+      * @param bool $loginOnly Return login string instead of object
+      * @return string|object 
+      * @author Damian Kęska
+      */
+    
+    public function getModificationAuthor($loginOnly=False)
+    {
+        if ($loginOnly == True)
+            return $this->__get('mod_author_login');
+            
+        return new pantheraUser('login', $this->__get('mod_author_login'));
+    }
+    
+    /**
       * Increase view count
       *
       * @param int $count
