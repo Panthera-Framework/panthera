@@ -67,7 +67,7 @@
             <div class="wrapper-demo">
 					<div id="dd" class="wrapper-dropdown-5" tabindex="1">{$user->login}
 						<ul class="dropdownBlue">
-							<li><a href="#" onclick="navigateTo('?display=settings&cat=admin&action=my_account');"><i class="icon-user"></i>{function="localize('My profile')"}</a></li>
+							<li><a href="#" onclick="navigateTo('?display=users&cat=admin&action=account');"><i class="icon-user"></i>{function="localize('My profile')"}</a></li>
 							<li><a href="{$PANTHERA_URL}/pa-login.php?logout=True"><i class="icon-remove"></i>{function="localize('Logout')"}</a></li>
 						</ul>
 					</div>
