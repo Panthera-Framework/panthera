@@ -22,11 +22,22 @@ if (is_file('content/front.php'))
 
 $display = str_replace('/', '', addslashes($_GET['display']));
 $template -> setTemplate($panthera->config->getKey('template'));
+$path = False;
+
+if (!defined('PAGES_DISABLE_LIB'))
+{
+    $path = getContentDir('/content/pages/' .$display. '.php');
+} else {
+    if (is_dir(SITE_DIR. '/content/pages/' .$display. '.php'))
+        $path = SITE_DIR. '/content/pages/' .$display. '.php';
+}
+
+var_dump($path);
 
 // here we will include site pages
-if (is_file(SITE_DIR. '/content/pages/' .$display. '.php'))
+if ($path)
 {
-    @include(SITE_DIR. '/content/pages/' .$display. '.php');
+    @include($path);
     pa_exit();
 } else {
     define('SITE_ERROR', 404);
