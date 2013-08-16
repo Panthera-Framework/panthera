@@ -99,7 +99,7 @@ class pantheraUser extends pantheraFetchDB
     
     public function getName($getLogin=False)
     {
-        if (strlen($this->__get('full_name')) > 0 and $getLogin == False)
+        if (!empty($this->__get('full_name')) and $getLogin == False)
             return $this->__get('full_name');
         
         return $this->__get('login');
@@ -293,10 +293,10 @@ class pantheraGroup extends pantheraFetchDB
  * @author Damian Kęska
  */
 
-function getUsers($by, $limit=0, $limitFrom=0)
+function getUsers($by, $limit=0, $limitFrom=0, $order='id', $direction='DESC')
 {
     global $panthera;
-    return $panthera->db->getRows('users', $by, $limit, $limitFrom, 'pantheraUser');
+    return $panthera->db->getRows('users', $by, $limit, $limitFrom, 'pantheraUser', $order, $direction);
 }
 
 /**
@@ -341,14 +341,14 @@ function getCurrentUser()
  * @author Mateusz Warzyński
  */
 
-function createNewUser($login, $passwd, $full_name, $primary_group, $attributes, $language, $mail='', $jabber='', $profile_picture='', $ip)
+function createNewUser($login, $passwd, $full_name, $primary_group, $attributes, $language, $mail='', $jabber='', $ip)
 {
     global $panthera;
 
     if ($ip == '')
         $ip = $_SERVER['REMOTE_ADDR'];
 
-    $array = array('login' => $login, 'passwd' => $passwd, 'full_name' => $full_name, 'primary_group' => $primary_group, 'attributes' => $attributes, 'language' => $language, 'mail' => $mail, 'jabber' => $jabber, 'profile_picture' => $profile_picture, 'ip' => $ip);
+    $array = array('login' => $login, 'passwd' => $passwd, 'full_name' => $full_name, 'primary_group' => $primary_group, 'attributes' => $attributes, 'language' => $language, 'mail' => $mail, 'jabber' => $jabber, 'profile_picture' => '{$PANTHERA_URL}/images/default_avatar.png', 'ip' => $ip);
 
     $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}users` (`id`, `login`, `passwd`, `full_name`, `primary_group`, `joined`, `attributes`, `language`, `mail`, `jabber`, `profile_picture`, `lastlogin`, `lastip`) VALUES (NULL, :login, :passwd, :full_name, :primary_group, NOW(), :attributes, :language, :mail, :jabber, :profile_picture, NOW(), :ip);', $array);
 

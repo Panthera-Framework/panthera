@@ -178,6 +178,11 @@ if ($_GET['action'] == 'account') {
   */
 
 } elseif ($_GET['action'] == 'createGroup') {
+    // check user permissions
+    if (!checkUserPermissions($panthera->user, True)) 
+    {
+        ajax_exit(array('status' => 'failed', 'message' => localize('No rights to execute this action', 'permissions')));
+    }
 
     if (!checkUserPermissions($panthera->user, True)) {
         ajax_exit(array('status' => 'failed', 'message' => localize('403 - Access denied')));
@@ -202,9 +207,10 @@ if ($_GET['action'] == 'account') {
   */
 
 } elseif ($_GET['action'] == 'removeGroup') {
-
-    if (!checkUserPermissions($panthera->user, True)) {
-        ajax_exit(array('status' => 'failed', 'message' => localize('403 - Access denied')));
+    // check user permissions
+    if (!checkUserPermissions($panthera->user, True)) 
+    {
+        ajax_exit(array('status' => 'failed', 'message' => localize('No rights to execute this action', 'permissions')));
     }
 
     $groupName = $_POST['group'];
@@ -225,6 +231,11 @@ if ($_GET['action'] == 'account') {
   */
 
 } elseif ($_GET['action'] == 'edit_user') {
+    // check user permissions
+    if (!checkUserPermissions($panthera->user, True)) 
+    {
+        ajax_exit(array('status' => 'failed', 'message' => localize('No rights to execute this action', 'permissions')));
+    }
 	
 	if (strlen($_POST['uid']) > 0)
 		$u = getUserById($_POST['uid']);
@@ -274,7 +285,7 @@ if ($_GET['action'] == 'account') {
 } elseif ($_GET['action'] == 'editUser') {
 	$tpl = "users_edituser.tpl";
 	
-	if (isset($_GET['uid']) AND ($user->attributes->admin OR $user->attributes->superuser)) {
+	if (isset($_GET['uid']) AND checkUserPermissions($panthera->user, True)) {
         $u = getUserById($_GET['uid']);
         $template -> push('user_uid', '&uid=' .$_GET['uid']);
     } else {
@@ -312,9 +323,10 @@ if ($_GET['action'] == 'account') {
   */
 
 } elseif ($_GET['action'] == 'removeUser') {
-
-    if (!checkUserPermissions($panthera->user, True)) {
-        ajax_exit(array('status' => 'failed', 'message' => localize('403 - Access denied')));
+    // check user permissions
+    if (!checkUserPermissions($panthera->user, True)) 
+    {
+        ajax_exit(array('status' => 'failed', 'message' => localize('No rights to execute this action', 'permissions')));
     }
 
     $id = $_POST['id'];
@@ -338,6 +350,13 @@ if ($_GET['action'] == 'account') {
   */
 
 } elseif ($_GET['action'] == 'new_user') {
+    // check permissions
+    if (!checkUserPermissions($this->user, True))
+    {
+        $template->display('no_access.tpl');
+        pa_exit();
+    }
+
     $tpl = "users_edituser.tpl";
 
     $groups = pantheraGroup::listGroups();
@@ -353,6 +372,13 @@ if ($_GET['action'] == 'account') {
 
 
 } elseif ($_GET['action'] == 'add_user') {
+    // check permissions
+    if (!checkUserPermissions($this->user, True))
+    {
+        ajax_exit(array('status' => 'failed', 'message' => localize('No rights to execute this action', 'permissions')));
+        pa_exit();
+    }
+
 
     if (strlen($_POST['login']) > 2)
         $login = $_POST['login'];
@@ -401,6 +427,30 @@ if ($_GET['action'] == 'account') {
             $template->display('no_access.tpl');
             pa_exit();
         }
+        
+        $panthera -> importModule('admin/ui.searchbar');
+
+        $sBar = new uiSearchbar('uiTop');
+        //$sBar -> setMethod('POST');
+        $sBar -> setQuery($_GET['query']);
+        $sBar -> setAddress('?display=users&cat=admin');
+        $sBar -> navigate(True);
+        $sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_see_users_table', localize('Manage permissions'));
+        $sBar -> addSetting('order', localize('Order by', 'custompages'), 'select', array(
+            'id' => array('title' => 'id', 'selected' => ($_GET['order'] == 'id')),
+            'login' => array('title' => localize('Login', 'users'), 'selected' => ($_GET['order'] == 'login')),
+            'full_name' => array('title' => localize('Full name', 'users'), 'selected' => ($_GET['order'] == 'full_name')),
+            'joined' => array('title' => localize('Joined', 'users'), 'selected' => ($_GET['order'] == 'joined')),
+            'lastlogin' => array('title' => localize('Last logged in', 'users'), 'selected' => ($_GET['order'] == 'lastlogin')),
+            'lastip' => array('title' => localize('Last used IP address', 'users'), 'selected' => ($_GET['order'] == 'lastip')),
+            'mail' => array('title' => localize('E-Mail address', 'users'), 'selected' => ($_GET['order'] == 'mail')),
+            'primary_group' => array('title' => localize('Group', 'users'), 'selected' => ($_GET['order'] == 'primary_group'))
+        ));
+        
+        $sBar -> addSetting('direction', localize('Direction', 'custompages'), 'select', array(
+            'ASC' => array('title' => localize('Ascending'), 'selected' => ($_GET['direction'] == 'ASC')),
+            'DESC' => array('title' => localize('Descending'), 'selected' => ($_GET['direction'] == 'DESC'))
+        ));
 
         if (@$_GET['subaction'] == 'show_table')
             $tpl = "users_table.tpl";
@@ -422,6 +472,8 @@ if ($_GET['action'] == 'account') {
         // $count = getQuickMessages(array('language' => $user->language), False);
 
         $usersPage = (intval(@$_GET['usersPage']));
+        $order = 'id'; $orderColumns = array('id', 'login', 'full_name', 'joined', 'lastlogin', 'lastip', 'mail', 'primary_group');
+        $direction = 'DESC';
 
         if ($usersPage < 0)
                 $usersPage = 0;
@@ -434,14 +486,32 @@ if ($_GET['action'] == 'account') {
             $panthera->config->setKey('paging_users_max', 25);
         }
 
-
-        $pager = new Pager(getUsers('', False), $maxOnPage);
+        $w = new whereClause();
+        
+        if ($_GET['query'])
+        {
+            $w -> add( 'AND', 'login', 'LIKE', '%' .$_GET['query']. '%');
+            $w -> add( 'OR', 'full_name', 'LIKE', '%' .$_GET['query']. '%');
+        }
+        
+        // order by
+        if (in_array($orderColumns, $_GET['order']))
+        {
+            $order = $_GET['order'];
+        }
+        
+        if ($_GET['direction'] == 'DESC' or $_GET['direction'] == 'ASC')
+        {
+            $direction = $_GET['direction'];
+        }
+        
+        $pager = new Pager(getUsers($w, False), $maxOnPage, $order, $direction);
         $pager -> maxLinks = 6;
         $limit = $pager -> getPageLimit($usersPage);
 
         // this we will pass to template
         $users = array();
-        $usersData = getUsers('', $limit[1], $limit[0]);
+        $usersData = getUsers($w, $limit[1], $limit[0], $order, $direction);
 
         foreach ($usersData as $w)
         {
@@ -449,7 +519,7 @@ if ($_GET['action'] == 'account') {
             if ($w -> attributes -> superuser and !$user->attributes->superuser)
                 continue;
 
-            $users[] = array('login' => $w->login, 'full_name' => $w->full_name, 'primary_group' => $w->primary_group, 'joined' => $w->joined, 'language' => $w->language, 'id' => $w->id, 'avatar' => pantheraUrl($w->profile_picture));
+            $users[] = array('login' => $w->login, 'name' => $w->getName(), 'primary_group' => $w->primary_group, 'joined' => $w->joined, 'language' => $w->language, 'id' => $w->id, 'avatar' => pantheraUrl($w->profile_picture));
         }
 
         // groups listing

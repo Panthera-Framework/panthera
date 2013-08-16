@@ -494,17 +494,21 @@ class pantheraDB
 
         if(is_array($by))
         {
-            $w = new whereClause();
-
-            foreach ($by as $k => $v)
+            if (!is_object($by))
             {
-                if (strpos($k, '*LIKE*') !== False)
+                $w = new whereClause();
+
+                foreach ($by as $k => $v)
                 {
-                    $w -> add( 'AND', str_replace('*LIKE*', '', $k), 'LIKE', $v);
-                } else {
-                    $w -> add( 'AND', $k, '=', $v);
+                    if (strpos($k, '*LIKE*') !== False)
+                    {
+                        $w -> add( 'AND', str_replace('*LIKE*', '', $k), 'LIKE', $v);
+                    } else {
+                        $w -> add( 'AND', $k, '=', $v);
+                    }
                 }
-            }
+            } else
+                $w = $by;
 
             $q = $w -> show();
             $whereClause = ' WHERE ' .$q[0];
