@@ -134,7 +134,9 @@ class varCache_db
     {
         if ($expire > 0 and is_int($expire))
             $expire = time()+$expire;
-    
+        else
+            $expire = -1;
+            
         if (!$this->exists($var))
         {
             $SQL = $this -> panthera -> db -> query ('INSERT INTO `{$db_prefix}var_cache` (`var`, `value`, `expire`) VALUES (:var, :value, :expire)', array('var' => $var, 'value' => serialize($value), 'expire' => $expire));
