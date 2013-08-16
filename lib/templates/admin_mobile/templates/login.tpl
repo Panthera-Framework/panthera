@@ -51,6 +51,7 @@
    <!-- Content -->
     <div class="content">
      <br>
+     	<a href="pa-login.php?__switchdevice=desktop" style="float: left; margin-left: 17px;">Desktop</a>
      <center>
     {if="isset($message)"}
          <span style="color: #F00; font-size: 14px;">{function="localize($message, 'login')"}!</span>
