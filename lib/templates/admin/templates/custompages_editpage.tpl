@@ -120,23 +120,26 @@ jQuery(document).ready(function($) {
                       {loop="$tag_list"}
                        <tr id="tag_p_{$key}">
                            <td style="width: 380px;"><input type="text" value="{$value}" name="tag_{$key}" style="width: 360px;"></td>
-                           <td style="border-right: 0px;"><input type="button" value="{function="localize('Delete', 'messages')"}" onclick="deleteTag('tag_p_{$key}'); return false;"></td>
+                           {if="!isset($readOnly)"}<td style="border-right: 0px;"><input type="button" value="{function="localize('Delete', 'messages')"}" onclick="deleteTag('tag_p_{$key}'); return false;"></td>{/if}
                        </tr>
                       {/loop}
 
                     </tbody>
                     
+                    {if="!isset($readOnly)"}
                     <tbody>
                        <tr>
                          <td style="width: 380px;"><input type="text" name="tag_new" id="new_tag_text" style="width: 360px;"></td>
                          <td style="border-right: 0px;"><input type="button" value="{function="localize('Add new tag', 'custompages')"}" id="new_tag"></td>
                        </tr>
                     </tbody>
+                    {/if}
                </table>
             </div>
         </div>
         <!-- end of tags -->
        
+       {if="!isset($readOnly)"}
         <div class="grid-2" style="float: right; margin-right: 25px;" id="customOptionsWindow">
              <div class="title-grid">{function="localize('Options', 'custompages')"}<span></span></div>
              <div class="content-table-grid">
@@ -182,9 +185,10 @@ jQuery(document).ready(function($) {
              </div>
         
         </div>
+        {/if}
 
         <!-- content -->
-        <div class="grid-1" style="margin-top: 350px;">
+        <div class="grid-2" style="width: 96%;">
         <div class="title-grid">{function="localize('Content', 'custompages')"}<span></span></div>
             <div class="content-gird" style="padding: 0px;">
                <textarea name="page_content_custom" id="page_content" style="width: 100%; height: 350px;"></textarea><br>
@@ -193,7 +197,7 @@ jQuery(document).ready(function($) {
         <!-- end of content -->
         </form>
         
-        <div class="grid-1">
+        <div class="grid-2" style="width: 96%;">
             <div class="title-grid">{function="localize('Informations', 'custompages')"}<span></span></div>
             <div class="content-table-grid">
                  <table class="insideGridTable">

@@ -95,7 +95,7 @@ function getOtherCustomPages()
                             {/loop}
                         </select>
                     </td>
-                    <td><input type="button" value="{function="localize('Delete', 'messages')"}" onclick="removeCustomPage({$value.id});"></td>
+                    <td>{if="$managementRights"}<input type="button" value="{function="localize('Delete', 'messages')"}" onclick="removeCustomPage({$value.id});">{/if}</td>
                 </tr>
               {/loop}
               {else}
@@ -115,6 +115,7 @@ function getOtherCustomPages()
 
             <form action="{$AJAX_URL}?display=custom&cat=admin&action=add_page" method="POST" id="add_page">
             <tbody>
+                {if="$rightsToCreate"}
                 <tr id="tr_newCustomPage">
                     <td style="width: 35%;">{function="localize('Add new custom page', 'custompages')"}: </td>
                     <td style="width: 40%;"><input name="title" type="text" placeholder='{function="localize('Title of new custom page', 'custompages')"}' style="margin-right: 15px; width: 90%;"></td>
@@ -128,6 +129,7 @@ function getOtherCustomPages()
                     
                     <input type="submit" value="&nbsp;{function="localize('Add')"}&nbsp;"></td>
                 </tr>
+                {/if}
                 
                 <tr>
                     <td>{function="localize('Filter by language', 'custompages')"}:</td>

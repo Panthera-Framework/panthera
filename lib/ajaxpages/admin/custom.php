@@ -11,10 +11,16 @@
 if (!defined('IN_PANTHERA'))
     exit;
 
-if (!getUserRightAttribute($user, 'can_customPages') and !getUserRightAttribute($user, 'can_manage_custompage_' . $id)) {
+// rights
+if (!getUserRightAttribute($user, 'can_view_custompages') and !getUserRightAttribute($user, 'can_manage_custompage_' . $id)) {
     $template -> display('no_access.tpl');
     pa_exit();
 }
+
+// right to see pages created by other users
+$rightsViewAll = getUserRightAttribute($panthera->user, 'can_see_all_custompages');
+$rightsCreate = getUserRightAttribute($panthera->user, 'can_create_custompages');
+$rightsManagement = getUserRightAttribute($panthera->user, 'can_manage_custompages'); // complete management
 
 $tpl = 'custompages.tpl';
 
@@ -34,6 +40,12 @@ if ($_GET['action'] == 'post_form')
 {
     $cpage = new customPage('id', $_GET['pid']);
     
+    // check user rights to edit custom pages or just only this custompage
+    if ($cpage->author_id != $panthera->user->id and !getUserRightAttribute($user, 'can_manage_custompage_' . $cpage->id) and !$rightsManagement)
+    {
+        ajax_exit(array('status' => 'failed', 'message' => localize('No rights to execute this action', 'permissions')));
+    }
+    
     if (!isset($_POST['for_all_languages']))
     {
         meta::remove('var', 'cp_gen_' .$cpage->unique);
@@ -50,10 +62,6 @@ if ($_GET['action'] == 'post_form')
         customPage::remove(array('language' => 'all', 'unique' => $cpage->unique));
     }
     
-    // check user rights to edit custom pages or just only this custompage
-    if (!getUserRightAttribute($user, 'can_edit_customPages') and !getUserRightAttribute($user, 'can_manage_custompage_' . $id))
-        ajax_exit(array('status' => 'failed', 'message' => localize('You dont have rights to edit this page', 'messages')));
-                
     // if there is title specified
     if (isset($_POST['content_title'])) 
     {
@@ -142,6 +150,22 @@ if ($_GET['action'] == "edit_page")
     $statement -> add ( 'AND', 'language', '=', $language );
     
     $cpage = new customPage($statement, $uid);
+    
+    if ($cpage -> exists())
+    {
+        // is author or can manage this page or can manage all pages or can view all pages (but not edit)
+        if ($cpage->author_id != $panthera->user->id and !getUserRightAttribute($user, 'can_manage_custompage_' . $cpage->id) and !$rightsManagement and !$rightsViewAll)
+        {
+            $template -> display('no_access.tpl');
+            pa_exit();
+        }
+    }
+    
+    // mark as read only (this should hide save button)
+    if (!($cpage->author_id == $panthera->user->id or getUserRightAttribute($user, 'can_manage_custompage_' . $cpage->id) or $rightsManagement) and $rightsViewAll)
+    {
+        $panthera -> template -> push('readOnly', True);
+    }
 
     /**
       * Creating pages in other languages
@@ -160,6 +184,13 @@ if ($_GET['action'] == "edit_page")
         if ($ppage->exists())
         {
             $title = $ppage->title;
+            
+            // (is owner or can manage this page and can create new pages) or (just can manage all pages)
+            if (($ppage->author_id != $panthera->user->id and !getUserRightAttribute($user, 'can_manage_custompage_' . $ppage->id and $rightsCreate)) or !$rightsManagement)
+            {
+                $template -> display('no_access.tpl');
+                pa_exit();
+            }
         }
         
         if (customPage::create($title, $language, $panthera -> user -> login, $panthera -> user -> id, $uid, seoUrl($seoURL)))
@@ -273,6 +304,12 @@ if ($_GET['action'] == "edit_page")
     pa_exit();
     
 } elseif (@$_GET['action'] == "add_page") {
+
+    if (!$rightsCreate and !$rightsManagement)
+    {
+        ajax_exit(array('status' => 'failed', 'message' => localize('No rights to execute this action', 'permissions')));
+    }
+
     if (customPage::create($_POST['title'], $_POST['language'], $user -> login, $user -> id, md5(rand(666, 6666)), seoUrl($_POST['title'])))
         ajax_exit(array('status' => 'success', 'message' => localize('Page has been successfuly added!')));
     else
@@ -293,6 +330,12 @@ if (@$_GET['action'] == "delete_page")
     
     // check if custom page exists
     if ($cpage -> exists()) {
+    
+        // if user has no rights to delete page
+        if ($cpage->author_id != $panthera->user->id and !getUserRightAttribute($user, 'can_manage_custompage_' . $cpage->id) and !$rightsManagement)
+        {
+            ajax_exit(array('status' => 'failed', 'message' => localize('No rights to execute this action', 'permissions')));
+        }
     
         // perform a deletion
         if (customPage::removeById($cpage -> id))
@@ -321,7 +364,7 @@ $sBar = new uiSearchbar('uiTop');
 $sBar -> setQuery($_GET['query']);
 $sBar -> setAddress('?display=custom&cat=admin&mode=search');
 $sBar -> navigate(True);
-$sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_customPages', localize('Manage permissions'));
+$sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_view_custompages', localize('Manage permissions'));
 $sBar -> addSetting('only_mine', localize('Show only my pages', 'custompages'), 'checkbox', "1");
 //$sBar -> addSetting('custom_column', localize('Search in custom column', 'custompages'), 'text', '');
 
@@ -374,6 +417,10 @@ if (count($p) > 0)
 
     foreach ($p as $page) 
     {
+        // dont show pages user dont have rights
+        if (!$rightsViewAll and $page->author_id != $panthera->user->id and !getUserRightAttribute($user, 'can_manage_custompage_' . $page->id) and !$rightsManagement)
+            continue;
+    
         $languages = array($page->language => True);
     
         if (isset($array[$page->unique]))
@@ -382,12 +429,25 @@ if (count($p) > 0)
             $languages[$page->language] = True;
         }
     
-        $array[$page->unique] = array('id' => $page -> id, 'unique' => $page -> unique, 'url_id' => $page -> url_id, 'modified' => $page -> mod_time, 'created' => $page -> created, 'title' => $page -> title, 'author_name' => $page -> author_name, 'mod_author_name' => $page -> mod_author_name, 'language' => $page -> language, 'languages' => $languages);
+        $array[$page->unique] = array(
+            'id' => $page -> id, 
+            'unique' => $page -> unique, 
+            'url_id' => $page -> url_id, 
+            'modified' => $page -> mod_time, 
+            'created' => $page -> created, 
+            'title' => $page -> title, 
+            'author_name' => $page -> author_name, 
+            'mod_author_name' => $page -> mod_author_name, 
+            'language' => $page -> language, 
+            'languages' => $languages, 
+            'managementRights' => !($page->author_id != $panthera->user->id and !getUserRightAttribute($user, 'can_manage_custompage_' . $page->id) and !$rightsManagement)
+        );
     }
     
     $template -> push('pages_list', $array);
 }
 
-$template -> push('locales', $panthera -> locale -> getLocales());
-$template -> display($tpl);
+$panthera -> template -> push('rightsToCreate', ($rightsCreate or $rightsManagement)); 
+$panthera -> template -> push('locales', $panthera -> locale -> getLocales());
+$panthera -> template -> display($tpl);
 pa_exit();

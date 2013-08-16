@@ -11,25 +11,32 @@ if (!defined('IN_PANTHERA'))
     exit;
 
 global $panthera;
+
+// load permissions domain
+$panthera -> locale -> loadDomain('permissions');
   
 // cosmetics, so here are predefined permissions
-$panthera -> addPermission('can_see_users_table', localize('Can see other profiles (admin panel)'));
-$panthera -> addPermission('can_see_system_info', localize('Can view system informations (admin panel)'));
-$panthera -> addPermission('can_update_config_overlay', localize('Can change config overlay (admin panel)'));
-$panthera -> addPermission('can_update_locales', localize('Can manage system locales', 'messages'));
-$panthera -> addPermission('can_update_config_overlay', localize('Can edit site configuration', 'messages'));
-$panthera -> addPermission('can_see_system_info', localize('Can see system informations', 'messages'));
-$panthera -> addPermission('can_see_debug', localize('Can view debugging informations', 'messages'));
-$panthera -> addPermission('can_manage_debug', localize('Can manage debugger system', 'messages'));
-$panthera -> addPermission('can_see_debhook', localize('Can view plugins debugger page', 'messages'));
-$panthera -> addPermission('can_update_menus', localize('Can update menus', 'messages'));
-$panthera -> addPermission('can_see_ajax_pages', localize('Can see index of all ajax pages', 'messages'));
-$panthera -> addPermission('can_manage_all_uploads', localize('Can edit and delete existing uploads added by other users', 'messages'));
-$panthera -> addPermission('can_delete_own_uploads', localize('Can delete own uploaded files', 'messages'));
-$panthera -> addPermission('can_upload_files', localize('Can upload files', 'messages'));
-$panthera -> addPermission('can_view_qmsg', localize('Can view quick messages', 'messages'));
-$panthera -> addPermission('can_qmsg_manage_all', localize('Can manage all quickMessages elements', 'messages'));
-$panthera -> addPermission('can_access_pa', localize('Can login to admin panel', 'messages'));
+$panthera -> addPermission('can_see_users_table', localize('Can see other profiles (admin panel)', 'permissions'));
+$panthera -> addPermission('can_see_system_info', localize('Can view system informations (admin panel)', 'permissions'));
+$panthera -> addPermission('can_update_config_overlay', localize('Can change config overlay (admin panel)', 'permissions'));
+$panthera -> addPermission('can_update_locales', localize('Can manage system locales', 'permissions'));
+$panthera -> addPermission('can_update_config_overlay', localize('Can edit site configuration', 'permissions'));
+$panthera -> addPermission('can_see_system_info', localize('Can see system informations', 'permissions'));
+$panthera -> addPermission('can_see_debug', localize('Can view debugging informations', 'permissions'));
+$panthera -> addPermission('can_manage_debug', localize('Can manage debugger system', 'permissions'));
+$panthera -> addPermission('can_see_debhook', localize('Can view plugins debugger page', 'permissions'));
+$panthera -> addPermission('can_update_menus', localize('Can update menus', 'permissions'));
+$panthera -> addPermission('can_see_ajax_pages', localize('Can see index of all ajax pages', 'permissions'));
+$panthera -> addPermission('can_manage_all_uploads', localize('Can edit and delete existing uploads added by other users', 'permissions'));
+$panthera -> addPermission('can_delete_own_uploads', localize('Can delete own uploaded files', 'permissions'));
+$panthera -> addPermission('can_upload_files', localize('Can upload files', 'permissions'));
+$panthera -> addPermission('can_view_qmsg', localize('Can view quick messages', 'permissions'));
+$panthera -> addPermission('can_qmsg_manage_all', localize('Can manage all quickMessages elements', 'permissions'));
+$panthera -> addPermission('can_access_pa', localize('Can login to admin panel', 'permissions'));
+$panthera -> addPermission('can_see_dash', localize('Can see dash', 'permissions'));
+$panthera -> addPermission('can_access_pa', localize('Can access admin panel', 'permissions'));
+$panthera -> addPermission('admin', localize('Administrator priviledges', 'permissions'));
+$panthera -> addPermission('superuser', localize('Superuser priviledges', 'permissions'));
 
 // TODO: Support for loading permissions from database (for plugins etc.) with cache support
   
