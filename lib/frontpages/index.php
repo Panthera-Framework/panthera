@@ -32,8 +32,6 @@ if (!defined('PAGES_DISABLE_LIB'))
         $path = SITE_DIR. '/content/pages/' .$display. '.php';
 }
 
-var_dump($path);
-
 // here we will include site pages
 if ($path)
 {
