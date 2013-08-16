@@ -102,12 +102,12 @@ class customPage extends pantheraFetchDB
      * @author Mateusz Warzyński
      */
 
-    public static function create($title, $language, $author_name, $author_id, $unique, $url_id)
+    public static function create($title, $language, $author_name, $author_id, $unique, $url_id, $admin_tpl='')
     {
         global $panthera;
-        $array = array('unique' => $unique, 'url_id' => $url_id, 'title' => $title, 'meta_tags' => '', 'html' => '', 'author_name' => $author_name, 'author_id' => $author_id, 'language' => $language, 'mod_author_name' => $author_name, 'mod_author_id' => $author_id);
+        $array = array('unique' => $unique, 'url_id' => $url_id, 'title' => $title, 'meta_tags' => '', 'html' => '', 'author_name' => $author_name, 'author_id' => $author_id, 'language' => $language, 'mod_author_name' => $author_name, 'mod_author_id' => $author_id, 'admin_tpl' => $admin_tpl);
 
-        $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}custom_pages` (`id`, `unique`, `url_id`, `title`, `meta_tags`, `html`, `author_name`, `author_id`, `language`, `created`, `mod_author_name`, `mod_author_id`, `mod_time`) VALUES (NULL, :unique, :url_id, :title, :meta_tags, :html, :author_name, :author_id, :language, NOW(), :mod_author_name, :mod_author_id, NOW());', $array);
+        $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}custom_pages` (`id`, `unique`, `url_id`, `title`, `meta_tags`, `html`, `author_name`, `author_id`, `language`, `created`, `mod_author_name`, `mod_author_id`, `mod_time`, `admin_tpl`) VALUES (NULL, :unique, :url_id, :title, :meta_tags, :html, :author_name, :author_id, :language, NOW(), :mod_author_name, :mod_author_id, NOW(), :admin_tpl);', $array);
 
         if ($SQL)
           return True;
