@@ -9,8 +9,10 @@
 
 require 'content/app.php';
 
-if (!checkUserPermissions($user))
-    pa_redirect('pa-login.php');
+if (!checkUserPermissions($user, True))
+{
+    pa_redirect($panthera->config->getKey('redirect_after_login', 'index.php', 'string', 'pa-login'));
+}
 
 $panthera -> template -> setTemplate('admin');
 $panthera -> template -> setTitle($panthera -> config -> getKey('site_title', 'Panthera', 'string'));
