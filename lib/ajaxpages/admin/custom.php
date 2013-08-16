@@ -313,16 +313,60 @@ if (@$_GET['action'] == "delete_page")
   * @return mixed 
   * @author Damian Kęska
   */
+  
+$panthera -> importModule('admin/ui.searchbar');
 
-if (@$_GET['lang'] != '') 
+$sBar = new uiSearchbar('uiTop');
+//$sBar -> setMethod('POST');
+$sBar -> setQuery($_GET['query']);
+$sBar -> setAddress('?display=custom&cat=admin&mode=search');
+$sBar -> navigate(True);
+$sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_customPages', localize('Manage permissions'));
+$sBar -> addSetting('only_mine', localize('Show only my pages', 'custompages'), 'checkbox', "1");
+//$sBar -> addSetting('custom_column', localize('Search in custom column', 'custompages'), 'text', '');
+
+$locales = array();
+
+foreach ($panthera->locale->getLocales() as $locale => $value)
 {
-    $p = customPage::fetch(array('language' => $_GET['lang']));
-    $template -> push('current_lang', $_GET['lang']);
-    
-} else {
-    //$p = customPage::fetch(array('language' => $panthera -> locale -> getActive()));
-    $p = customPage::fetch();
+    if ($value == False)
+        continue;
+        
+    $locales[$locale] = array('title' => ucfirst($locale), 'selected' => ($locale == $_GET['lang'] or $locale == $_POST['lang']));
 }
+
+if (!$_GET['lang'])
+    $locales[''] = array('title' => localize('all', 'custompages'), 'selected' => True);
+else
+    $locales[''] = array('title' => localize('all', 'custompages'), 'selected' => False);
+
+$sBar -> addSetting('lang', localize('Language', 'custompages'). ' :', 'select', $locales);
+
+$filter = array();
+
+// only in selected language
+if ($_GET['lang']) 
+{
+    $filter['language'] = $_GET['lang'];
+    $template -> push('current_lang', $_GET['lang']);
+}
+
+// search query
+if ($_GET['query'])
+{
+    $filter['title*LIKE*'] = '%' .$_GET['query']. '%';
+}
+
+// only pages created by current user
+if (isset($_GET['only_mine']))
+{
+    $filter['author_id'] = $panthera -> user -> id;
+}
+
+if (count($filter))
+    $p = customPage::fetch($filter);
+else
+    $p = customPage::fetch();
 
 if (count($p) > 0) 
 {

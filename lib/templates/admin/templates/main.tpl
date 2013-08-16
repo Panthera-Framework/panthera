@@ -16,9 +16,11 @@
         <script type="text/javascript" src="{$PANTHERA_URL}/js/panthera.js"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/tiny_mce/tiny_mce.js"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/w2ui-1.2.min.js"></script>
-        <script type="text/javascript" src="{$PANTHERA_URL}/js/jquery.form.js"></script> <!-- deprecated -->
         <script type="text/javascript" src="{$PANTHERA_URL}/js/jquery.tinycarousel.js"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/jquery.msgBox.js"></script>
+        
+        <link rel='stylesheet' href='{$PANTHERA_URL}/css/admin/jquery.dropdown.css' type='text/css' media='all' />
+        <script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery.dropdown.js"></script>
         <script type="text/javascript">
             $(document).ready(function() {
                     {if="isset($navigateTo)"}
@@ -80,12 +82,12 @@
     </header>
 
 
-  <section id="contentDiv">
+  <section id="contentDiv" style="position: relative;">
   	<div id="container-main">
 		<div id="container">
-		<div id="content">
+		<div id="content" style="position: relative;">
 
-		<div id="ajax_content" class="ajax_content">
+		<div id="ajax_content" class="ajax_content" style="position: relative;">
 
         </div>
 

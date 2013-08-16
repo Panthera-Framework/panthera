@@ -36,6 +36,11 @@ function removeCustomPage(id)
     });
 }
 
+function uiTop_callback(response)
+{
+    alert(response);
+}
+
 
 /**
   * Get custom pages by language
@@ -54,6 +59,9 @@ function getOtherCustomPages()
         {include="_navigation_panel"}
     </div>
 
+    {$uiSearchbarName="uiTop"}
+    {include="ui.searchbar"}
+    
     <div class="grid-1">
         <table class="gridTable" style="padding: 0px; margin: 0px;">
             <thead>
@@ -74,6 +82,7 @@ function getOtherCustomPages()
             </tfoot>
 
             <tbody>
+              {if="count($pages_list) > 0"}
               {loop="$pages_list"}
                 <tr id="custompage_row_{$value.id}">
                     <td><a href="{$AJAX_URL}?display=custom&cat=admin&action=edit_page&uid={$value.unique}" class="ajax_link">{$value.title|localize}</a></td>
@@ -89,6 +98,9 @@ function getOtherCustomPages()
                     <td><input type="button" value="{function="localize('Delete', 'messages')"}" onclick="removeCustomPage({$value.id});"></td>
                 </tr>
               {/loop}
+              {else}
+              <tr><td colspan="6" style="text-align: center;">{function="localize('No any records found', 'custompages')"}</td></tr>
+              {/if}
             </tbody>
         </table>
 

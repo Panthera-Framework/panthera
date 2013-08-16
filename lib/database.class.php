@@ -20,7 +20,7 @@ class pantheraDB
     protected $fixMissing=False;
     protected $deepCount=0;
     protected $missing = array();
-    protected $config = array();
+    protected $config;
     
     /**
       * Prepare database connection
@@ -34,52 +34,53 @@ class pantheraDB
     public function __construct($panthera, $alternativeConfig='', $dontTriggerError=False)
     {
         $this->panthera = $panthera;
-        $this->config = $panthera->config->getConfig();
+        $config = $panthera->config->getConfig();
 
         if ($alternativeConfig != '')
-            $this->config = $alternativeConfig;
+            $config = $alternativeConfig;
             
-        $this->cache = intval(@$this->config['cache_db']);
+        $this->cache = intval(@$config['cache_db']);
         
         // database timeout
-        if (!isset($this->config['db_timeout']))
-            $this->config['db_timeout'] = 5; // 5 seconds
+        if (!isset($config['db_timeout']))
+            $config['db_timeout'] = 5; // 5 seconds
         
-        $this->config['db_timeout'] = intval(@$this->config['db_timeout']);
-        
-        if (!isset($this->config['cache_db']))
+        $config['db_timeout'] = intval(@$config['db_timeout']);
+        $this->config = $config;        
+
+        if (!array_key_exists('cache_db', $config))
             $this -> cache = 3600;
        
         // this setting will automaticaly import database structures from template if any does not exists
-        if (@$this->config['build_missing_tables'] == True)
+        if (@$config['build_missing_tables'] == True)
             $this->fixMissing = True;
             
         try {
             // selecting between SQLite3 and MySQL database
-            if (strtolower(@$this->config['db_socket']) == 'sqlite')
+            if (strtolower(@$config['db_socket']) == 'sqlite')
             {
-                if (!is_file(SITE_DIR. '/content/database/' .$this->config['db_file']))
+                if (!is_file(SITE_DIR. '/content/database/' .$config['db_file']))
                     throw new Exception('Database fils is missing in /content/database/, please check app.php (variable - db_file) and file name');
 
                 $this->socketType = 'sqlite';
-                $this->sql = new PDO('sqlite:' .SITE_DIR. '/content/database/' .$this->config['db_file']);
+                $this->sql = new PDO('sqlite:' .SITE_DIR. '/content/database/' .$config['db_file']);
                 $this->sql->setAttribute( PDO::ATTR_STATEMENT_CLASS, array('pantheraDBStatement',array($this->sql, $this)) );
                 $this->sql->exec("pragma synchronous = off;");
                 
-                $panthera -> logging -> output('Connected to SQLite3 database file ' .$this->config['db_file'], 'pantheraDB');
+                $panthera -> logging -> output('Connected to SQLite3 database file ' .$config['db_file'], 'pantheraDB');
             } else {
                 $this->socketType = 'mysql';
-                $this->sql = new PDO('mysql:host='.$this->config['db_host'].';encoding=utf8;dbname='.$this->config['db_name'], $this->config['db_username'], $this->config['db_password']);
-                $panthera -> logging -> output('Connected to MySQL database, ' .$this->config['db_username']. '@' .$this->config['db_host'], 'pantheraDB');
+                $this->sql = new PDO('mysql:host='.$config['db_host'].';encoding=utf8;dbname='.$config['db_name'], $config['db_username'], $config['db_password']);
+                $panthera -> logging -> output('Connected to MySQL database, ' .$config['db_username']. '@' .$config['db_host'], 'pantheraDB');
             }
 
             $this->sql->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->sql->setAttribute(PDO::ATTR_TIMEOUT, $this->config['db_timeout']);
+            $this->sql->setAttribute(PDO::ATTR_TIMEOUT, $config['db_timeout']);
             
-            if (isset($this->config['db_autocommit']))
-                $this->sql->setAttribute(PDO::ATTR_AUTOCOMMIT, $this->config['db_autocommit']);
+            if (isset($config['db_autocommit']))
+                $this->sql->setAttribute(PDO::ATTR_AUTOCOMMIT, $config['db_autocommit']);
                 
-            $this->prefix = $this->config['db_prefix'];
+            $this->prefix = $config['db_prefix'];
 
 
         } catch (Exception $e) {
@@ -497,7 +498,12 @@ class pantheraDB
 
             foreach ($by as $k => $v)
             {
-                $w -> add( 'AND', $k, '=', $v);
+                if (strpos($k, '*LIKE*') !== False)
+                {
+                    $w -> add( 'AND', str_replace('*LIKE*', '', $k), 'LIKE', $v);
+                } else {
+                    $w -> add( 'AND', $k, '=', $v);
+                }
             }
 
             $q = $w -> show();
@@ -599,7 +605,7 @@ class whereClause
         $this->Values = array();
 		$Equals_list = array ( '=' , '!=', '<', '>', '<=', '>=', 'LIKE' );
 
-		if ( !in_array ( $Equals, $Equals_list ) ) //# Needle, haystack...
+		if ( !in_array ( $Equals, $Equals_list ) )
 			return false;
 
 		if ($Equals == 'LIKE')
@@ -607,7 +613,7 @@ class whereClause
 
 		$Statement_list = array ( 'OR', 'AND', '', ',' );
 	
-		if ( !in_array ( $Statement, $Statement_list ) ) //# Needle, haystack...
+		if ( !in_array ( $Statement, $Statement_list ) )
 			return false;
 
 		if ( $this -> SQL == NuLL )

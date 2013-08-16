@@ -540,8 +540,12 @@ class pantheraTemplate extends pantheraClass
             $this->push('site_header', $header);
         }
 
+
         if ($template == NuLL)
             $template = $this->template['index'];
+            
+        // execute hooks
+        $this->panthera->get_options('template.display', $template);
             
         $file = getContentDir('/templates/' .$this->name. '/templates/' .$template);
 
