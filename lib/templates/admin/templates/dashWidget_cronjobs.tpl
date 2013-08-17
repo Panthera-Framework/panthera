@@ -1,5 +1,5 @@
 <div class="grid-2">
-           <div class="title-grid">{function="localize('Recent cronjobs', 'dashWidget_cronjobs')"}<span id="widgetRemoveButtons" class="widgetRemoveButtons"><a href="#" onclick="removeWidget('cronjobs')"><img src="{$PANTHERA_URL}/images/admin/list-remove.png" style="height: 15px;"></a></span></div>
+           <div class="title-grid">{function="localize('Recent cronjobs', 'dash')"}<span id="widgetRemoveButtons" class="widgetRemoveButtons"><a href="#" onclick="removeWidget('cronjobs')"><img src="{$PANTHERA_URL}/images/admin/list-remove.png" style="height: 15px;"></a></span></div>
            <div class="content-table-grid">
               <table class="insideGridTable">
                 {if="count($cronjobsWidgetJobs) > 0"}
@@ -10,7 +10,7 @@
                    {/loop}
                 {else}
                    <tr>
-                        <td colspan="3">{function="localize('No sheduled jobs found', 'dashWidget_cronjobs')"}</td>
+                        <td colspan="3">{function="localize('No sheduled jobs found', 'dash')"}!</td>
                    </tr>
                 {/if}
                </table>
