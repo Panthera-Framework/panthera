@@ -48,7 +48,7 @@ class pantheraDB
         $config['db_timeout'] = intval(@$config['db_timeout']);
         $this->config = $config;        
 
-        if (!array_key_exists('cache_db', $config))
+        if (!isset($config['cache_db']))
             $this -> cache = 3600;
        
         // this setting will automaticaly import database structures from template if any does not exists
@@ -243,7 +243,7 @@ class pantheraDB
     
     public function countMissingTables($e)
     {
-        if (!array_key_exists($e->getMessage(), $this->missing))
+        if (!isset($this->missing[$e->getMessage()]))
             $this->missing[$e->getMessage()] = 0;
     
         $this->missing[$e->getMessage()]++;
@@ -855,9 +855,25 @@ abstract class pantheraFetchDB
     // Fast columns access from DB
     public function __get($var)
     {
-        if(@array_key_exists($var, $this->_data))
+        if(isset($this->_data[$var]))
             return $this->_data[$var];
 
+        return False;
+    }
+    
+    /**
+      * Get raw data by column name
+      *
+      * @param string $key name
+      * @return mixed 
+      * @author Damian Kęska
+      */
+    
+    public function getRaw($key)
+    {
+        if (isset($this->_data[$key]))
+            return $this->_data[$key];
+            
         return False;
     }
     
@@ -873,7 +889,7 @@ abstract class pantheraFetchDB
     public function __set($var, $value)
     {
         // dont allow create new keys (because we will save those keys in database and we cant create new columns)
-        if (@!array_key_exists($var, $this->_data))
+        if(isset($this->_data[$var]))
             return False;
 
         // if the variable already have save value as we are trying to set

@@ -99,7 +99,7 @@ class pantheraUser extends pantheraFetchDB
     
     public function getName($getLogin=False)
     {
-        if (!empty($this->__get('full_name')) and $getLogin == False)
+        if (!$this->__get('full_name') and $getLogin == False)
             return $this->__get('full_name');
         
         return $this->__get('login');
@@ -398,6 +398,7 @@ function userCreateSession($user, $passwd)
             $panthera -> user = $usr;
             $panthera -> session -> uid = $usr->id;
             $usr -> lastlogin = 'NOW()';
+            $usr -> lastip = $_SERVER['REMOTE_ADDR'];
             $usr -> save();
             return True;
         }
@@ -565,7 +566,7 @@ class metaAttributes
             
             if ($panthera->cache->exists($this->_cacheID))
             {
-                $this->_metas = $panthera->cache->get($this->_cacheID);
+                //$this->_metas = $panthera->cache->get($this->_cacheID);
             }
         }
         
@@ -589,7 +590,7 @@ class metaAttributes
                 $panthera -> logging -> output ('Wrote meta to cache id=' .$this->_cacheID, 'metaAttributes');
             }
         }
-
+        
         if ($this->_metas == null)
             $this->_metas = array();
 

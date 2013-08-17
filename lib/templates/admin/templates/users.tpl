@@ -115,7 +115,11 @@ function removeUser(id)
                 <tr id="group_{$value.name}" class="groupTableItem">
                     <td><a href="?display=acl&cat=admin&action=listGroup&group={$value.name}" class="ajax_link">{$value.name}</a></td>
                     <td>{$value.description}</td>
-                    <td><input type="button" value="{function="localize('Remove', 'acl')"}" onclick="removeGroup('{$value.name}');"></td>
+                    <td>
+                        <a href="#" onclick="removeGroup('{$value.name}');">
+                            <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove', 'acl')"}">
+                        </a>
+                    </td>
                 </tr>
             {/loop}
 

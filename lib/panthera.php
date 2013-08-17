@@ -57,7 +57,7 @@ function pantheraExceptionHandler($exception)
         else
             include_once(PANTHERA_DIR. '/templates/exception_debug.php');
 
-        $panthera->logging->toFile();
+        $panthera->logging->saveLog();
         exit;
 
     } else {
@@ -99,7 +99,7 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
         if ($panthera->config->getKey('debug'))
         {
             $panthera->logging->output('pantheraErrorHandler::Unexcepted error ' .json_encode($details));
-            $panthera->logging->toFile();
+            $panthera->logging->saveLog();
 
             $stack = debug_backtrace( false );
 

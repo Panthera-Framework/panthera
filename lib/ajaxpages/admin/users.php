@@ -541,7 +541,17 @@ if ($_GET['action'] == 'account') {
                 if ($w -> attributes -> superuser and !$user->attributes->superuser)
                     continue;
 
-                $users[] = array('login' => $w->login, 'name' => $w->getName(), 'primary_group' => $w->primary_group, 'joined' => $w->joined, 'language' => $w->language, 'id' => $w->id, 'avatar' => pantheraUrl($w->profile_picture));
+                $users[] = array(
+                    'login' => $w->login, 
+                    'name' => $w->getName(), 
+                    'primary_group' => $w->primary_group, 
+                    'joined' => $w->joined, 
+                    'language' => $w->language, 
+                    'id' => $w->id, 
+                    'avatar' => pantheraUrl($w->profile_picture),
+                    'lastip' => $w->getRaw('lastip'),
+                    'lastlogin' => $w->lastlogin
+                );
             }
             
             if ($panthera->cache)

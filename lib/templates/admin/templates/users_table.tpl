@@ -10,6 +10,7 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
             <th>{function="localize('Primary group', 'users')"}</th>
             <th>{function="localize('Joined', 'users')"}</th>
             <th>{function="localize('Default language', 'users')"}</th>
+            <th>{function="localize('Last login', 'users')"}</th>
             <th><span style="float: right;"><a onclick="navigateTo('?display=users&cat=admin&action=new_user');" style="cursor: pointer;"><img src="{$PANTHERA_URL}/images/admin/list-add.png" style="height: 15px;"></a></span></th>
         </tr>
     </thead>
@@ -35,7 +36,15 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
                 <td><a href="?display=acl&cat=admin&action=listGroup&group={$value.primary_group}" class="ajax_link">{$value.primary_group}</a></td>
                 <td>{$value.joined}</td>
                 <td>{$value.language|ucfirst}</td>
-                <td><input type="button" value="{function="localize('Edit', 'users')"}" onclick="navigateTo('?display=users&cat=admin&action=editUser&uid={$value.id}')">&nbsp;<input type="button" value="{function="localize('Remove')"}" onclick="removeUser('{$value.login}');"></td>
+                <td>{$value.lastlogin}<br><small>{$value.lastip}</small></td>
+                <td>
+                    <a href="#" onclick="navigateTo('?display=users&cat=admin&action=editUser&uid={$value.id}')">
+                        <img src="{$PANTHERA_URL}/images/admin/ui/edit.png" style="max-height: 22px;" alt="{function="localize('Edit', 'users')"}">
+                    </a>
+                    <a href="#" onclick="removeUser('{$value.login}');">
+                        <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
+                    </a>
+                </td>
             </tr>
         {/loop}
         </tbody>
