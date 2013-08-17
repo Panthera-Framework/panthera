@@ -92,6 +92,9 @@ function removeUser(id)
 
 <div class="titlebar"><span class="titleBarIcons"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" style="width: 25px"></a></span>{function="localize('Users')"} - {function="localize('All registered users on this website', 'users')"}.{include="_navigation_panel"}</div>
 
+        {$uiSearchbarName="uiTop"}
+        {include="ui.searchbar"}
+
         <div class="grid-1">
             <div id="usersDiv" style="position: relative;">
             {include="users_table"}
