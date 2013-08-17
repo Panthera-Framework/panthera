@@ -43,7 +43,7 @@ if (isset($_POST['log']) or isset($_GET['key']))
         if(userCreateSession($_POST['log'], $_POST['pwd']))
         {
             // if user cannot access Admin Panel, redirect to other location (specified in redirect_after_login config section)
-            if (!getUserRightAttribute($user, 'can_access_pa'))
+            if (!getUserRightAttribute($panthera->user, 'can_access_pa'))
             {
                 pa_redirect($panthera->config->getKey('redirect_after_login', 'index.php', 'string', 'pa-login'));
             }
