@@ -411,7 +411,7 @@ if (class_exists('Memcache') and !class_exists('Memcached'))
         
         public function set($key, $value, $expire)
         {
-            if (!$this->get($key))
+            if (!$this->get($key) === False)
             {
                 return parent::set($key, $value, false, $expire);
             } else {

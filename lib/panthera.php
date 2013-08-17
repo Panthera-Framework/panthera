@@ -122,8 +122,14 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
 
 class pantheraLogging
 {
-    public $debug = False, $tofile = True, $toVarCache=True, $printOutput = False, $filterMode = '', $filter = array();
-    private $_output = array(), $panthera;
+    public $debug = False; 
+    public $tofile = True;
+    public $toVarCache=True; 
+    public $printOutput = False;
+    public $filterMode = '';
+    public $filter = array();
+    private $_output = array();
+    private $panthera;
 
     /**
       * Constructor
@@ -251,7 +257,7 @@ class pantheraLogging
         {
             if ($this->panthera->varCache)
             {
-                $this->panthera->varCache->set('debug.log', $output, 864000);
+                $this->panthera->varCache->set('debug.log', base64_encode($output), 864000);
             }
         }
     }
@@ -269,7 +275,7 @@ class pantheraLogging
         {
             if ($this->panthera->varCache->exists('debug.log'))
             {
-                return $this->panthera->varCache->get('debug.log');
+                return base64_decode($this->panthera->varCache->get('debug.log'));
             }
         }
         
@@ -278,7 +284,7 @@ class pantheraLogging
             return @file_get_contents(SITE_DIR. '/content/tmp/debug.log');
         }
         
-        return Fale;
+        return False;
     }
 }
 
@@ -1224,6 +1230,11 @@ class pantheraCore
 
     public function checkPluginSyntax($plugin)
     {
+        if (!$this->config->getKey('check_plugins_syntax'))
+        {
+            return True;
+        }
+    
         if ($this->pluginExists($plugin))
         {
             $this->importModule('filesystem');
@@ -1237,9 +1248,9 @@ class pantheraCore
 
                     if ($pathinfo['extension'] == 'php')
                     {
-                        $test = shell_exec('php -l ' .$file);
+                        $test = shell_exec('php-cli -l ' .$file);
 
-                        if (!stristr($test, 'No syntax errors detected'))
+                        if (stristr($test, 'No syntax errors detected') !== False)
                         {
                             return $test;
                         }
