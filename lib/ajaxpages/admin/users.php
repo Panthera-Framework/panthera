@@ -351,7 +351,7 @@ if ($_GET['action'] == 'account') {
 
 } elseif ($_GET['action'] == 'new_user') {
     // check permissions
-    if (!checkUserPermissions($this->user, True))
+    if (!checkUserPermissions($panthera->user, True))
     {
         $template->display('no_access.tpl');
         pa_exit();
@@ -373,7 +373,7 @@ if ($_GET['action'] == 'account') {
 
 } elseif ($_GET['action'] == 'add_user') {
     // check permissions
-    if (!checkUserPermissions($this->user, True))
+    if (!checkUserPermissions($panthera->user, True))
     {
         ajax_exit(array('status' => 'failed', 'message' => localize('No rights to execute this action', 'permissions')));
         pa_exit();
