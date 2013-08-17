@@ -496,7 +496,7 @@ if ($_GET['action'] == 'account') {
         }
         
         // order by
-        if (in_array($orderColumns, $_GET['order']))
+        if (in_array($_GET['order'], $orderColumns))
         {
             $order = $_GET['order'];
         }
@@ -522,10 +522,10 @@ if ($_GET['action'] == 'account') {
         // if does not exists in cache
         if (!isset($usersTotal))
         {
-            $usersTotal = getUsers($w, False);
+            $usersTotal = getUsers($w, False, False, $order);
         }
         
-        $pager = new Pager($usersTotal, $maxOnPage, $order, $direction);
+        $pager = new Pager($usersTotal, $maxOnPage);
         $pager -> maxLinks = 6;
         $limit = $pager -> getPageLimit($usersPage);
 
