@@ -42,9 +42,10 @@ function addString(backURL)
   * @author Mateusz Warzyński
   */
 
-function removeString(j, locale, domain, id)
+function removeString(j, locale, domain)
 {
-    panthera.jsonPOST({ url: "?display=langtool&cat=admin&action=view_domain&locale="+locale+"&domain="+domain+"&subaction=remove_string&id="+id, data: "", messageBox: 'userinfoBox', success: function (response) {
+	string = $('#id_'+j).val();
+    panthera.jsonPOST({ url: "?display=langtool&cat=admin&action=view_domain&locale="+locale+"&domain="+domain+"&subaction=remove_string&id="+string, data: "", messageBox: 'userinfoBox', success: function (response) {
 
         // return string from server (just in case)
         if (response.status == "success")
@@ -101,14 +102,15 @@ function addOtherString(j, locale, domain, id)
        {$j=$j+1}
        {$k=$key}
        <div class="grid-1" id="translate_{$j}">
-          <div class="title-grid"><img src="{$PANTHERA_URL}/images/admin/flags/english.png" style="padding-right: 25px; margin-left: 1px;"> {$key}</div>
+          <div class="title-grid"><img src="{$PANTHERA_URL}/images/admin/flags/english.png" style="padding-right: 25px; margin-left: 1px;">{$k}</div>
+          	<input type="text" id="id_{$j}" value="{$key}" style="display: none;">
           <div class="content-table-grid">
               <table class="insideGridTable">
                <form id="change_string_{$j}" action="?display=langtool&cat=admin&action=view_domain&locale={$locale}&domain={$domain}&subaction=set_string&id={$k}" method="POST">
                 <tfoot>
                     <tr>
                         <td colspan="2">
-                            <input type="button" value="{function="localize('Remove')"}" style="float: right;" onclick="removeString('{$j}', '{$locale}', '{$domain}', '{$k}');">
+                            <input type="button" value="{function="localize('Remove')"}" style="float: right;" onclick="removeString('{$j}', '{$locale}', '{$domain}');">
                         </td>
                     </tr>
                 </tfoot>

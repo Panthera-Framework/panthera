@@ -125,7 +125,15 @@ $(function(){
         <div style="width: 100%; height: 20px;">&nbsp;</div>
         {/if}
 
-        {if="isset($galleryItems) and count($galleryItems) > 0"}
+      {if="isset($galleryItems)"}
+        {if="count($galleryItems) == 0"}
+        <div class="grid-2">
+        	<div class="title-grid">{function="localize('Gallery')"}<span id="widgetRemoveButtons" class="widgetRemoveButtons"><a href="#" onclick="removeWidget('gallery')"><img src="{$PANTHERA_URL}/images/admin/list-remove.png" style="height: 15px;"></a></span></div>
+        	<div class="content-gird">
+        		<p>{function="localize('There is not any items in gallery', 'dash')"}!</p>
+        	</div>
+        </div>
+        {else}
         <div class="grid-2">
            <div class="title-grid">{function="localize('Gallery')"}<span id="widgetRemoveButtons" class="widgetRemoveButtons"><a href="#" onclick="removeWidget('gallery')"><img src="{$PANTHERA_URL}/images/admin/list-remove.png" style="height: 15px;"></a></span></div>
            <div class="content-gird">
@@ -142,15 +150,16 @@ $(function(){
            </div>
         </div>
         {/if}
+      {/if}
 
         {if="isset($lastLogged) and count($lastLogged) > 0"}
         <div class="grid-2">
-           <div class="title-grid">{function="localize('Recently logged in users')"}<span id="widgetRemoveButtons" class="widgetRemoveButtons"><a href="#" onclick="removeWidget('lastLogged')"><img src="{$PANTHERA_URL}/images/admin/list-remove.png" style="height: 15px;"></a></span></div>
+           <div class="title-grid">{function="localize('Recently logged in users', 'dash')"}<span id="widgetRemoveButtons" class="widgetRemoveButtons"><a href="#" onclick="removeWidget('lastLogged')"><img src="{$PANTHERA_URL}/images/admin/list-remove.png" style="height: 15px;"></a></span></div>
            <div class="content-table-grid">
               <table class="insideGridTable">
                    {loop="$lastLogged"}
                    <tr>
-            	        <td><a href="?display=users&cat=admin&action=account&uid={$value.uid}" class="ajax_link"><img src="{$value.avatar}" style="width: 20px"></a></td><td><a href="?display=users&cat=admin&action=account&uid={$value.uid}" class="ajax_link">{$value.login}</a></td><td> {$value.time} {function="localize('ago')"}</td>
+            	        <td><a href="?display=users&cat=admin&action=account&uid={$value.uid}" class="ajax_link"><img src="{$value.avatar}" style="width: 20px"></a></td><td><a href="?display=users&cat=admin&action=account&uid={$value.uid}" class="ajax_link">{$value.login}</a></td><td> {$value.time} {function="localize('ago', 'dash')"}</td>
             	   </tr>
                    {/loop}
                </table>
