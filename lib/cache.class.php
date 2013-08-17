@@ -21,8 +21,8 @@ class varCache_db
 {
     public $name = 'db';
     public $type = 'database';
-
-    protected $cache = array (), $panthera;
+    protected $cache = array ();
+    protected $panthera;
  
     public function __construct($obj, $sessionKey='')
     {
@@ -132,7 +132,13 @@ class varCache_db
     
     public function set($var, $value, $expire=-1)
     {
-        if ($expire > 0 and is_int($expire))
+        if(!is_int($expire))
+            $expire = $this->panthera->getCacheTime($expire);
+        
+        if($expire < 1)
+            $expire = 3600;
+    
+        if ($expire > 0)
             $expire = time()+$expire;
         else
             $expire = -1;
@@ -165,14 +171,15 @@ class varCache_db
   * @author Damian Kęska
   */
 
-class varCache_apc extends pantheraClass
+class varCache_apc
 {
     public $name = 'apc';
     public $type = 'memory';
+    protected $panthera;
     
     public function __construct ($panthera, $sessionKey='')
     {
-        parent::__construct($panthera);
+        $this->panthera = $panthera;
         
         if ($panthera -> config)
             $this->prefix = $panthera -> config -> getKey('session_key');
@@ -250,7 +257,11 @@ class varCache_apc extends pantheraClass
     
     public function set($var, $value, $expire=-1)
     {
-        $value = $value;
+        if(!is_int($expire))
+            $expire = $this->panthera->getCacheTime($expire);
+        
+        if($expire < 1)
+            $expire = 3600;
     
         if ($expire > -1)
             apc_store($this->prefix.'.vc.' .$var, $value, $expire);
@@ -288,14 +299,15 @@ if(!function_exists('apc_exists') and function_exists('apc_fetch'))
   * @author Damian Kęska
   */
 
-class varCache_xcache extends pantheraClass
+class varCache_xcache
 {
     public $name = 'xcache';
     public $type = 'memory';
+    protected $panthera;
 
     public function __construct ($panthera, $sessionKey='')
     {
-        parent::__construct($panthera);
+        $this->panthera = $panthera;
         
         if ($panthera -> config)
             $this->prefix = $panthera -> config -> getKey('session_key');
@@ -379,6 +391,12 @@ class varCache_xcache extends pantheraClass
     
     public function set($var, $value, $expire=-1)
     {
+        if(!is_int($expire))
+            $expire = $this->panthera->getCacheTime($expire);
+        
+        if($expire < 1)
+            $expire = 3600;
+    
         if ($expire > -1)
             xcache_set($this->prefix.'.vc.' .$var, $value, $expire);
         else
@@ -411,7 +429,7 @@ if (class_exists('Memcache') and !class_exists('Memcached'))
         
         public function set($key, $value, $expire)
         {
-            if (!$this->get($key) === False)
+            if ($this->get($key) === False)
             {
                 return parent::set($key, $value, false, $expire);
             } else {
@@ -428,15 +446,16 @@ if (class_exists('Memcache') and !class_exists('Memcached'))
   * @author Damian Kęska
   */
 
-class varCache_memcached extends pantheraClass
+class varCache_memcached
 {
     public $name = 'memcached';
     public $type = 'memory';
     public $m = null;
+    protected $panthera;
 
     public function __construct ($panthera, $sessionKey='')
     {
-        parent::__construct($panthera);
+        $this->panthera = $panthera;
         
         if ($panthera -> config)
             $this->prefix = $panthera -> config -> getKey('session_key');
@@ -572,7 +591,10 @@ class varCache_memcached extends pantheraClass
     {
         $var = $this->filterVar($var);
         
-        if(!is_int($expire) or $expire < 1)
+        if(!is_int($expire))
+            $expire = $this->panthera->getCacheTime($expire);
+        
+        if($expire < 1)
             $expire = 3600;
             
         if ($value === False)
@@ -594,9 +616,12 @@ class varCache_redis
     public $name = 'redis';
     public $type = 'memory';
     public $redis;
+    protected $panthera;
 
     public function __construct($panthera, $sessionKey)
     {
+        $this->panthera = $panthera;
+        
         if (!class_exists('Redis'))
             throw new Exception('Warning: Redis PHP module is not loaded, cache cannot be initialized');
             
@@ -654,7 +679,10 @@ class varCache_redis
       
     public function set($var, $value, $expire=-1)
     {
-        if(!is_int($expire) or $expire < 1)
+        if(!is_int($expire))
+            $expire = $this->panthera->getCacheTime($expire);
+        
+        if($expire < 1)
             $expire = 3600;
             
         $this->redis->set($var, $value);

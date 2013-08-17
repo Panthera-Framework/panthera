@@ -820,6 +820,26 @@ class pantheraCore
 
         $this->pluginsDir = array(PANTHERA_DIR. '/plugins', SITE_DIR. '/content/plugins');
     }
+    
+    /**
+      * Get cache time for selected object type
+      *
+      * @param string $cacheObjectType
+      * @return int 
+      * @author Damian Kęska
+      */
+    
+    public function getCacheTime($cacheObjectType)
+    {
+        $array = $this -> config -> getKey('cache_timing', array(
+            'usersTable' => 60
+        ), 'array');
+        
+        if (isset($array[$cacheObjectType]))
+            return $cacheObjectType;
+            
+        return 120; // default is 120 seconds if not found
+    }
 
     /**
       * Load caching modules

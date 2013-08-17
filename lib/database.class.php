@@ -492,7 +492,7 @@ class pantheraDB
         
         $whereClause = '';
 
-        if(is_array($by))
+        if(is_array($by) or is_object($by))
         {
             if (!is_object($by))
             {
@@ -511,7 +511,9 @@ class pantheraDB
                 $w = $by;
 
             $q = $w -> show();
-            $whereClause = ' WHERE ' .$q[0];
+            
+            if ($q[0])
+                $whereClause = ' WHERE ' .$q[0];
         }
 
         $what = '*';

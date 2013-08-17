@@ -490,6 +490,7 @@ if ($_GET['action'] == 'account') {
         
         if ($_GET['query'])
         {
+            $_GET['query'] = trim(strtolower($_GET['query'])); // strip unneeded spaces and make it lowercase
             $w -> add( 'AND', 'login', 'LIKE', '%' .$_GET['query']. '%');
             $w -> add( 'OR', 'full_name', 'LIKE', '%' .$_GET['query']. '%');
         }
@@ -505,21 +506,49 @@ if ($_GET['action'] == 'account') {
             $direction = $_GET['direction'];
         }
         
-        $pager = new Pager(getUsers($w, False), $maxOnPage, $order, $direction);
+        // search identificatior (used to cache results)
+        $sid = 'search:' .hash('md4', $_GET['query'].$_GET['order'].$_GET['direction'].$usersPage);
+        
+        // try to get results from cache
+        if ($panthera->cache)
+        {
+            if ($panthera->cache->exists($sid))
+            {
+                list($usersTotal, $users) = $panthera -> cache -> get($sid);
+                $panthera -> logging -> output('Getting search results ' .$sid. ' from cache', 'pantheraUser');
+            }
+        }
+
+        // if does not exists in cache
+        if (!isset($usersTotal))
+        {
+            $usersTotal = getUsers($w, False);
+        }
+        
+        $pager = new Pager($usersTotal, $maxOnPage, $order, $direction);
         $pager -> maxLinks = 6;
         $limit = $pager -> getPageLimit($usersPage);
 
         // this we will pass to template
-        $users = array();
-        $usersData = getUsers($w, $limit[1], $limit[0], $order, $direction);
-
-        foreach ($usersData as $w)
+        if (!isset($users))
         {
-            // superuser cant be listed, it must be hidden
-            if ($w -> attributes -> superuser and !$user->attributes->superuser)
-                continue;
+            $users = array();
+            $usersData = getUsers($w, $limit[1], $limit[0], $order, $direction);
 
-            $users[] = array('login' => $w->login, 'name' => $w->getName(), 'primary_group' => $w->primary_group, 'joined' => $w->joined, 'language' => $w->language, 'id' => $w->id, 'avatar' => pantheraUrl($w->profile_picture));
+            foreach ($usersData as $w)
+            {
+                // superuser cant be listed, it must be hidden
+                if ($w -> attributes -> superuser and !$user->attributes->superuser)
+                    continue;
+
+                $users[] = array('login' => $w->login, 'name' => $w->getName(), 'primary_group' => $w->primary_group, 'joined' => $w->joined, 'language' => $w->language, 'id' => $w->id, 'avatar' => pantheraUrl($w->profile_picture));
+            }
+            
+            if ($panthera->cache)
+            {
+                $panthera->cache->set($sid, array($usersTotal, $users), 'usersTable');
+                $panthera->logging->output('Saving users search results to cache ' .$sid, 'pantheraUser');
+            }
         }
 
         // groups listing
