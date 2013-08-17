@@ -130,18 +130,24 @@ h1, h2, h3, h4, h5, h6 {
 
 
 	.siteLogo{
-	    padding-left:20px;
-		padding-right:20px;
+	    padding-left: 13%;
+		padding-right: 10%;
 	    position: relative;
 	    padding-top: 10px;
 
 	    /* width: 1050px; */
-	    width: 75%;
+	    width: 70%;
 	    margin: auto;
 	}
 
 	.siteLogo h1 {
 	    color: white;
+	}
+	
+	.logo {
+		position: absolute;
+		width: 50px;
+		margin-left: 10%;
 	}
 
 	.userHeader {

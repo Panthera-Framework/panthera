@@ -62,8 +62,10 @@
 <body>
 
     <header id="siteHeader">
-        <div class="siteLogo"><h1><a href="{$PANTHERA_URL}/pa-admin.php">Panthera</a></h1> 
-        <span class="userHeader" style="width: 80%; height: 60px;">
+    	<img src="{$PANTHERA_URL}/images/admin/logo.svg" class="logo"></img>
+        <div class="siteLogo">
+        	<h1><a href="{$PANTHERA_URL}/pa-admin.php">Panthera</a></h1> 
+           <span class="userHeader" style="width: 80%; height: 60px;">
             <div class="wrapper-demo">
 					<div id="dd" class="wrapper-dropdown-5" tabindex="1">{$user->login}
 						<ul class="dropdownBlue">
@@ -78,7 +80,8 @@
                 <a href="?display=dash&cat=admin&_locale={$value}"><img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 12px; margin: 1px;"></a>
             {/loop}
             </div>
-        </span></div>
+           </span>
+       </div>
     </header>
 
 
