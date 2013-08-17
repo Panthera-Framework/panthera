@@ -31,6 +31,8 @@ if ($config['preconfigured'] !== True)
     $config['SITE_DIR'] = dirname($_SERVER['SCRIPT_FILENAME']);
     $config['disable_overlay'] = True;
     $config['debug'] = True;
+    $config['debug_to_varcache'] = True;
+    $config['debug_to_file'] = True;
     
     // remove "/" at the end of string
     if (substr($config['SITE_DIR'], -1) == '/')
