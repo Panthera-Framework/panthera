@@ -26,7 +26,7 @@ $path = False;
 
 if (!defined('PAGES_DISABLE_LIB'))
 {
-    $path = getContentDir('/content/pages/' .$display. '.php');
+    $path = getContentDir('/pages/' .$display. '.php');
 } else {
     if (is_dir(SITE_DIR. '/content/pages/' .$display. '.php'))
         $path = SITE_DIR. '/content/pages/' .$display. '.php';
