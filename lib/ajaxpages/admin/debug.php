@@ -10,9 +10,8 @@
   */
 
 if (!defined('IN_PANTHERA'))
-      exit;
+    exit;
 
-$tpl = 'debug.tpl';
 
 if (!getUserRightAttribute($user, 'can_see_debug')) {
     $template->display('no_access.tpl');
@@ -23,6 +22,7 @@ $panthera -> locale -> loadDomain('debug');
 $panthera -> locale -> loadDomain('dash');
 $panthera -> locale -> loadDomain('ajaxpages');
 
+$toFile = $panthera -> logging -> tofile;
 $panthera -> logging -> tofile = False;
 
     /** JSON PAGES **/
@@ -33,8 +33,7 @@ $panthera -> logging -> tofile = False;
  * @author Damian Kęska
  */
  
-if ($_GET['action'] == 'toggle_debug_value')
-{
+if ($_GET['action'] == 'toggle_debug_value') {
       if (!getUserRightAttribute($user, 'can_manage_debug')) {
           $template->display('no_access.tpl');
           pa_exit();
@@ -126,7 +125,7 @@ $tools = $panthera -> get_filters('ajaxpages.debug.tools', $tools);
 // Displaying main debug site
 if (is_file(SITE_DIR. '/content/tmp/debug.log'))
 {
-      $log = explode("\n", file_get_contents(SITE_DIR. '/content/tmp/debug.log'));
+      $log = explode("\n", $panthera -> logging -> readSavedLog());
       $template -> push('debug_log', $log);
 }
 
@@ -139,8 +138,7 @@ else
 // example filters
 $exampleFilters = array('pantheraCore', 'pantheraUser', 'pantheraGroup', 'pantheraTemplate', 'pantheraLogging', 'pantheraLocale', 'pantheraFetchDB', 'pantheraDB', 'leopard', 'metaAttributes', 'scm');
 
-foreach ($panthera->logging->getOutput(True) as $line)
-{
+foreach ($panthera->logging->getOutput(True) as $line) {
     if(!in_array($line[1], $exampleFilters))
         $exampleFilters[] = $line[1];
 }
@@ -151,12 +149,20 @@ $panthera -> template -> push ('exampleFilters', $exampleFilters);
 $filtersTpl = array();
 foreach ($panthera -> session -> get('debug.filter') as $filter => $enabled)
     $filtersTpl[] = $filter;
+    
+// debug.log save handlers
+$logHandlers = array();
+
+if ($panthera -> logging -> toVarCache)
+    $logHandlers[] = 'varCache';
+    
+if ($toFile)
+    $logHandlers[] = 'file';
 
 $panthera -> template -> push ('filterList', implode(', ', $filtersTpl));
-$template -> push('current_log', explode("\n", $panthera -> logging -> getOutput()));
-$template -> push('debug', $panthera -> config -> getKey('debug'));
-$template -> push('tools', $tools);
-
-    /** END OF Ajax-HTML PAGES **/
-
-?>
+$panthera -> template -> push ('logHandlers', implode(', ', $logHandlers));
+$panthera -> template -> push ('current_log', explode("\n", $panthera -> logging -> getOutput()));
+$panthera -> template -> push ('debug', $panthera -> config -> getKey('debug'));
+$panthera -> template -> push ('tools', $tools);
+$panthera -> template -> display('debug.tpl');
+pa_exit();

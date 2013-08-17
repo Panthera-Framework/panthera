@@ -119,6 +119,11 @@ function saveVariable(id, value)
             </tr>
             
             <tr>
+                <td>{function="localize('Log save handlers', 'debug')"}</td>
+                <td>{$logHandlers}</td>
+            </tr>
+            
+            <tr>
                 <td>{function="localize('Messages filter', 'debug')"}</td>
                 <td>
                     <select id="messagesFilter">

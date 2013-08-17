@@ -411,7 +411,7 @@ if (class_exists('Memcache') and !class_exists('Memcached'))
         
         public function set($key, $value, $expire)
         {
-            if ($this->get($key) === null)
+            if (!$this->get($key))
             {
                 return parent::set($key, $value, false, $expire);
             } else {
@@ -553,6 +553,9 @@ class varCache_memcached extends pantheraClass
         if ($value == null)
             return null;
             
+        if ($value == '_$bool_$False')
+            $value = False;
+            
         return $value;
     }
     
@@ -572,9 +575,10 @@ class varCache_memcached extends pantheraClass
         if(!is_int($expire) or $expire < 1)
             $expire = 3600;
             
-        $this->m->set($var, $value, $expire);
+        if ($value === False)
+            $value = '_$bool_$False';
             
-        return True;
+        return $this->m->set($var, $value, $expire);
     }
 }
 
@@ -711,5 +715,4 @@ class varCache_redis
     {
         $this->redis->flushAll();
     }
-
 }
