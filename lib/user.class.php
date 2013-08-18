@@ -566,7 +566,7 @@ class metaAttributes
             
             if ($panthera->cache->exists($this->_cacheID))
             {
-                //$this->_metas = $panthera->cache->get($this->_cacheID);
+                $this->_metas = $panthera->cache->get($this->_cacheID);
             }
         }
         
@@ -770,7 +770,7 @@ class metaAttributes
 
         if ($this -> _cache > 0 and $this -> panthera -> cache)
         {
-            $cacheID = 'meta.' .$type. '.' .$objectID;
+            $cacheID = 'meta.overlay.' .$type. '.' .$objectID;
 
             if ($this -> panthera -> cache -> exists($cacheID))
             {
