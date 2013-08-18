@@ -233,7 +233,7 @@ if ($_GET['action'] == "edit_page")
       *
       * @author Damian Kęska
       */
-       
+      
     $html = str_replace("\n", '\\n', $cpage -> html);
     $html = str_replace("\r", '\\r', $html);
     $html = htmlspecialchars($html, ENT_QUOTES);

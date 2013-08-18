@@ -50,7 +50,7 @@ class pantheraDB
 
         if ($this -> cache < 1)
             $this -> cache = 3600;
-       
+            
         // this setting will automaticaly import database structures from template if any does not exists
         if (@$config['build_missing_tables'] == True)
             $this->fixMissing = True;
@@ -690,10 +690,10 @@ abstract class pantheraFetchDB
             $this->cacheID = $panthera->db->prefix.$this->_tableName. '.' .serialize($by). '.' .$value;
         else
             $panthera -> logging -> output('Cache disabled for ' .get_class($this). ' class', 'pantheraFetchDB');
-        
-        if ($this->cacheID != "" and $panthera->cache)
+            
+        if ($this->cacheID != "" and !is_object($by))
         {
-            if ($panthera->cache->get($this->cacheID) !== null)
+            if ($panthera->cache->exists($this->cacheID))
             {
                 $panthera->logging->output('Found record in cache by id=' .$this->cacheID, 'pantheraFetchDB');
                 $this->_data = $panthera->cache->get($this->cacheID);
@@ -751,8 +751,11 @@ abstract class pantheraFetchDB
             
                 $clause = $by->show();
                 $SQL = $panthera->db->query('SELECT * FROM `{$db_prefix}' .$this->_tableName. '` WHERE ' .$clause[0], $clause[1]);
-                $by = $clause[0];
-                $value = $clause[1];
+                //$by = $clause[0]; // caching object cannot be realized, its almost impossible
+                //$value = $clause[1];
+                
+                if($panthera->logging->debug == True)
+                    $panthera->logging->output(get_class($this). ':: Skipped cache in construction by object ' .$clause[0]. ' ' .json_encode($clause[1]), 'pantheraFetchDB');
             }
             
             /**
@@ -774,20 +777,19 @@ abstract class pantheraFetchDB
                     $this->_data = $SQL -> fetch(PDO::FETCH_ASSOC);
                     
                     // write to cache
-                    if ($this->cache > 0)
+                    if ($this->cache > 0 and !is_object($by))
                     {
-                        $this -> clearCache();
-                        $panthera->cache->set($this->cacheID, $this->_data, $panthera->db->cache);
+                        $this -> updateCache();
                     }
                     
                     if($panthera->logging->debug == True)
-                        $panthera->logging->output(get_class($this). '::Found a record by "' .$by. '" (value=' .json_encode($value). ')', 'pantheraFetchDB');
+                        $panthera->logging->output(get_class($this). '::Found a record by "' .json_encode($by). '" (value=' .json_encode($value). ')', 'pantheraFetchDB');
 
                     $panthera -> add_option('session_save', array($this, 'save'));
 
                 } else {
                     if($panthera->logging->debug == True)
-                        $panthera->logging->output(get_class($this). '::Cannot find record by "' .$by. '" (value=' .json_encode($value). ')', 'pantheraFetchDB');
+                        $panthera->logging->output(get_class($this). '::Cannot find record by "' .json_encode($by). '" (value=' .json_encode($value). ')', 'pantheraFetchDB');
                 }
             }
         }
@@ -800,7 +802,7 @@ abstract class pantheraFetchDB
       * @author Damian Kęska
       */
     
-    public function clearCache()
+    public function clearCache($index=False)
     {
         if (!$this->exists())
         {
@@ -813,20 +815,66 @@ abstract class pantheraFetchDB
             return False;
         }
         
-        $i = 0;
+        /*if (!$index)
+        {
+            $index = $this -> panthera -> cache -> get ($this -> panthera->db->prefix.$this->_tableName. '.index.' .$this->__get($this->_idColumn));
+        }
+        
+        foreach ($index as $key)
+        {
+            $this -> panthera -> cache -> remove ($key);
+            $this -> panthera -> logging -> output ('Clearing cache record, id=' .$key, 'pantheraFetchDB');
+        }*/
         
         foreach ($this->_constructBy as $column)
         {
             if ($this->__get($column))
             {
-                $i++;
                 $cacheID = $this -> panthera->db->prefix.$this->_tableName. '.' .serialize($column). '.' .$this->__get($column);
+                
+                //if (in_array($cacheID, $index))
+                //    continue;
+                
                 $this -> panthera -> cache -> remove($cacheID);
                 $this -> panthera -> logging -> output ('Clearing cache record, id=' .$cacheID, 'pantheraFetchDB');
             }
         }
         
         return True;
+    }
+    
+    /**
+      * This function will completly update cache
+      *
+      * @return void 
+      * @author Damian Kęska
+      */
+    
+    public function updateCache()
+    {
+        // list of all cached versions of this item
+        /*$cacheIndex = $this -> panthera->db->prefix.$this->_tableName. '.index.' .$this->__get($this->_idColumn);
+        
+        if (!$this->panthera->cache->exists($cacheIndex))
+        {
+            $index = array($this->cacheID);
+            $this -> panthera->cache->set($cacheIndex, $index, $this->panthera->db->cache);
+        } else {
+        
+            $index = $this -> panthera -> cache -> get ($cacheIndex);
+            
+            if (!in_array($this->cacheID, $index))
+            {
+                $index[] = array($this->cacheID);
+                $this -> panthera->cache->set($cacheIndex, $index, $this->panthera->db->cache);
+            }
+        }*/
+        
+        $this -> clearCache();
+        
+        // update single record
+        $this -> panthera -> cache -> set($this->cacheID, $this->_data, $this->panthera->db->cache);
+        $this -> panthera->logging->output('Updated cache id=' .$this->cacheID, 'pantheraFetchDB');
     }
     
     /**
@@ -942,9 +990,9 @@ abstract class pantheraFetchDB
             // update cache
             if ($this->cache > 0)
             {
-                $this -> clearCache();
-                $panthera->logging->output('Updated cache id=' .$this->cacheID, 'pantheraFetchDB');
-                $panthera->cache->set($this->cacheID, $this->_data, $panthera->db->cache);
+                $this -> updateCache();
+                //$panthera->logging->output('Updated cache id=' .$this->cacheID, 'pantheraFetchDB');
+                //$panthera->cache->set($this->cacheID, $this->_data, $panthera->db->cache);
             }
                  
             $this->_dataModified = False;

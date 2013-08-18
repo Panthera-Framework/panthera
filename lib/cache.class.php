@@ -519,7 +519,7 @@ class varCache_memcached
             if ($this->m->getResultCode() == Memcached::RES_NOTFOUND)
                 return False;
         } else {
-            if ($result == null)
+            if ($result === false)
                 return False;
         }
         
@@ -549,6 +549,7 @@ class varCache_memcached
     
     public function remove($var)
     {
+        //$this -> panthera -> logging -> output('DEL ' .$this->filterVar($var). ' (' .$var. ')', 'cache');
         return $this->m->delete($this->filterVar($var));
     }
     
@@ -590,7 +591,7 @@ class varCache_memcached
     public function set($var, $value, $expire=-1)
     {
         $var = $this->filterVar($var);
-        
+     
         if(!is_int($expire))
             $expire = $this->panthera->getCacheTime($expire);
         
@@ -599,6 +600,8 @@ class varCache_memcached
             
         if ($value === False)
             $value = '_$bool_$False';
+            
+        //$this->panthera->logging->output('SET ' .$var. ', expire=' .$expire, 'cache');
             
         return $this->m->set($var, $value, $expire);
     }
