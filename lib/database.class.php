@@ -48,7 +48,7 @@ class pantheraDB
         $config['db_timeout'] = intval(@$config['db_timeout']);
         $this->config = $config;        
 
-        if (!isset($config['cache_db']))
+        if ($this -> cache < 1)
             $this -> cache = 3600;
        
         // this setting will automaticaly import database structures from template if any does not exists
@@ -889,9 +889,12 @@ abstract class pantheraFetchDB
     public function __set($var, $value)
     {
         // dont allow create new keys (because we will save those keys in database and we cant create new columns)
-        if(isset($this->_data[$var]))
+        if(!isset($this->_data[$var]))
+        {
+            $this->panthera->logging->output(get_class($this). '::Trying to set non-existing property "' .$var. '"', 'pantheraFetchDB');
             return False;
-
+        }
+        
         // if the variable already have save value as we are trying to set
         if ($this->_data[$var] == $value)
             return False;

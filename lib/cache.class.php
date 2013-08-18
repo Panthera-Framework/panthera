@@ -499,7 +499,7 @@ class varCache_memcached
     public function filterVar($var)
     {
         //return str_replace(' ', '', $this->prefix.'.vc.' .$var);
-        return substr(hash('md4', $this->prefix.'.vc.' .$var), 0, 6);
+        return substr(hash('md4', $this->prefix.'.vc.' .$var), 0, 9);
     }
     
     /**

@@ -81,6 +81,7 @@ if ($_GET['action'] == 'post_form')
     $cpage -> mod_author_id = $panthera -> user -> id;
     $cpage -> mod_time = 'NOW()';
     $cpage -> html = $_POST['page_content_custom'];
+    
     //$cpage -> url_id = seoUrl($cpage -> title);
     
     if ($cpage -> url_id != $_POST['url_id'] and $_POST['url_id'] != '')
@@ -92,8 +93,6 @@ if ($_GET['action'] == 'post_form')
     
         $cpage -> url_id = seoUrl($_POST['url_id']);
     }
-        
-        
 
     $i = 0;
     $iMax = 15;
@@ -119,7 +118,7 @@ if ($_GET['action'] == 'post_form')
     $cpage -> meta_tags = serialize($tags);
     $cpage -> save();
 
-    ajax_exit(array('status' => 'success', 'message' => localize('Saved')));
+    ajax_exit(array('status' => 'success', 'message' => localize('Saved', 'custompages')));
 }
 
 /**
