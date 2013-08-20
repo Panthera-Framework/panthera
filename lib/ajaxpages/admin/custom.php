@@ -396,7 +396,7 @@ if ($_GET['lang'])
 // search query
 if ($_GET['query'])
 {
-    $filter['title*LIKE*'] = '%' .$_GET['query']. '%';
+    $filter['title*LIKE*'] = '%' .trim(strtolower($_GET['query'])). '%';
 }
 
 // only pages created by current user
@@ -405,33 +405,45 @@ if (isset($_GET['only_mine']))
     $filter['author_id'] = $panthera -> user -> id;
 }
 
-if (count($filter))
-    $p = customPage::fetch($filter);
-else
-    $p = customPage::fetch();
+$page = intval($_GET['page'])+1;
+$sid = hash('md4', 'search.custom:' .http_build_query($filter).$page);
 
-if (count($p) > 0) 
+if ($panthera->cache)
 {
-    $array = array();
-
-    foreach ($p as $page) 
+    if ($panthera -> cache -> exists($sid))
     {
-        // dont show pages user dont have rights
-        if (!$rightsViewAll and $page->author_id != $panthera->user->id and !getUserRightAttribute($user, 'can_manage_custompage_' . $page->id) and !$rightsManagement)
-            continue;
+        list($tmp, $itemsCount) = $panthera -> cache -> get($sid);
+        $panthera -> logging -> output('Loaded list of ' .$itemsCount. ' pages from cache sid:' .$sid, 'customPages');
+    }
+}
+
+// if does not exists in cache, regenerate it
+if (!isset($tmp))
+{
+    $itemsCount = customPage::fetch($filter, False);
     
+    if (count($filter))
+        $p = customPage::fetch($filter);
+    else
+        $p = customPage::fetch();
+        
+    $tmp = array();
+        
+    foreach ($p as $page)
+    {
         $languages = array($page->language => True);
     
         if (isset($array[$page->unique]))
         {
-            $languages = $array[$page->unique]['languages'];
+            $languages = $tmp[$page->unique]['languages'];
             $languages[$page->language] = True;
         }
     
-        $array[$page->unique] = array(
+        $tmp[$page->unique] = array(
             'id' => $page -> id, 
             'unique' => $page -> unique, 
             'url_id' => $page -> url_id, 
+            'author_id' => $page -> author_id,
             'modified' => $page -> mod_time, 
             'created' => $page -> created, 
             'title' => $page -> title, 
@@ -442,8 +454,29 @@ if (count($p) > 0)
             'managementRights' => ($page->author_id == $panthera->user->id or getUserRightAttribute($user, 'can_manage_custompage_' . $page->id) or $rightsManagement)
         );
     }
+        
+    if ($panthera->cache)
+    {
+        $panthera -> cache -> set($sid, array($tmp, $itemsCount), 'customPages.list');
+        $panthera -> logging -> output('Updating Custom Pages list cache sid:' .$sid, 'customPages');
+    }
+}
+
+if (count($tmp) > 0) 
+{
+    foreach ($tmp as $pageUnique => $page) 
+    {
+        // dont show pages user dont have rights
+        if (!$rightsViewAll and $page['author_id'] != $panthera->user->id and !getUserRightAttribute($user, 'can_manage_custompage_' . $page['id']) and !$rightsManagement)
+        {
+            unset($tmp[$pageUnique]);
+            continue;
+        }
+        
+        $tmp[$pageUnique]['managementRights'] = ($page['author_id'] == $panthera->user->id or getUserRightAttribute($user, 'can_manage_custompage_' . $page['id']) or $rightsManagement);
+    }
     
-    $template -> push('pages_list', $array);
+    $template -> push('pages_list', $tmp);
 }
 
 $panthera -> template -> push('rightsToCreate', ($rightsCreate or $rightsManagement)); 
