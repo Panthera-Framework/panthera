@@ -16,14 +16,8 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
     </thead>
         <tfoot>
             <tr>
-            <td colspan="7"><em>{function="localize('Users')"} {$users_from}-{$users_to},
-            {loop="$pager"}
-                {if="$value == true"}
-                <a href="#" onclick="jumpToAjaxPage({$key}); return false;"><b>{$key+1}</b></a>
-                {else}
-                <a href="#" onclick="jumpToAjaxPage({$key}); return false;">{$key+1}</a>
-                {/if}
-            {/loop}
+            <td colspan="7"><em>{$uiPagerName="users"}
+            {include="ui.pager"}
             </em></td>
             </tr>
         </tfoot>

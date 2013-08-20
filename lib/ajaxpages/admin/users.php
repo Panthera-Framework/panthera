@@ -525,9 +525,17 @@ if ($_GET['action'] == 'account') {
             $usersTotal = getUsers($w, False, False, $order);
         }
         
-        $pager = new Pager($usersTotal, $maxOnPage);
-        $pager -> maxLinks = 6;
-        $limit = $pager -> getPageLimit($usersPage);
+        // uiPager
+        $panthera -> importModule('admin/ui.pager');
+        $uiPager = new uiPager('users', $usersTotal, $maxOnPage);
+        $uiPager -> setActive($usersPage);
+        
+        $args = $_GET;
+        $args['usersPage'] = '{$page}';
+        unset($args['_']);
+        
+        $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .http_build_query($args). '\');');
+        $limit = $uiPager -> getPageLimit();
 
         // this we will pass to template
         if (!isset($users))
@@ -589,7 +597,4 @@ if ($_GET['action'] == 'account') {
 
         $panthera -> template -> push('users_list', $users);
         $panthera -> template -> push('view_users', True);
-        $panthera -> template -> push('pager', $pager->getPages($usersPage));
-        $panthera -> template -> push('users_from', $limit[0]);
-        $panthera -> template -> push('users_to', $limit[1]);
 }
