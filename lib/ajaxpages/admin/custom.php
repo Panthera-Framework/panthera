@@ -439,7 +439,7 @@ if (count($p) > 0)
             'mod_author_name' => $page -> mod_author_name, 
             'language' => $page -> language, 
             'languages' => $languages, 
-            'managementRights' => !($page->author_id != $panthera->user->id and !getUserRightAttribute($user, 'can_manage_custompage_' . $page->id) and !$rightsManagement)
+            'managementRights' => ($page->author_id == $panthera->user->id or getUserRightAttribute($user, 'can_manage_custompage_' . $page->id) or $rightsManagement)
         );
     }
     

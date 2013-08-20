@@ -29,16 +29,21 @@ $('#add_page').submit(function () {
 
 function removeCustomPage(id)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=custom&cat=admin&action=delete_page&pid='+id, data: '', success: function (response) {
-            if (response.status == "success")
-                jQuery('#custompage_row_'+id).remove();
+    w2confirm('{function="localize('Are you sure you want delete this page?', 'custompages')"}', function (responseText) {
+        if (responseText == 'Yes')
+        {
+            panthera.jsonPOST({ url: '{$AJAX_URL}?display=custom&cat=admin&action=delete_page&pid='+id, data: '', success: function (response) {
+                    if (response.status == "success")
+                        jQuery('#custompage_row_'+id).remove();
+                }
+            });
         }
     });
 }
 
 function uiTop_callback(response)
 {
-    alert(response);
+    //alert(response);
 }
 
 
@@ -95,7 +100,12 @@ function getOtherCustomPages()
                             {/loop}
                         </select>
                     </td>
-                    <td>{if="$managementRights"}<input type="button" value="{function="localize('Delete', 'messages')"}" onclick="removeCustomPage({$value.id});">{/if}</td>
+                    <td>{if="$value.managementRights"}
+                        <a href="#" onclick="removeCustomPage({$value.id});">
+                            <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove', 'messages')"}">
+                        </a>
+                        {/if}
+                    </td>
                 </tr>
               {/loop}
               {else}
