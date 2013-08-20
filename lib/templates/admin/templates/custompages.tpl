@@ -81,8 +81,7 @@ function getOtherCustomPages()
 
             <tfoot>
                 <tr>
-                    <td colspan="7" class="rounded-foot-left"><em>
-                    Panthera - {function="localize('Custom pages', 'custompages')"}</em></td>
+                    <td colspan="7" class="rounded-foot-left"><em>{$uiPagerName="customPages"}{include="ui.pager"}</em></td>
                 </tr>
             </tfoot>
 

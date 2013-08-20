@@ -73,6 +73,11 @@ class uiPager
     public function setActive($pageID)
     {
         self::$pagers[$this->name]['active'] = intval($pageID);
+        
+        if (self::$pagers[$this->name]['active'] < 0)
+        {
+            self::$pagers[$this->name]['active'] = 0;
+        }
     }
     
     /**

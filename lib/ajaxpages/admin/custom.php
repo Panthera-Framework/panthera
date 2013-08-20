@@ -405,27 +405,39 @@ if (isset($_GET['only_mine']))
     $filter['author_id'] = $panthera -> user -> id;
 }
 
-$page = intval($_GET['page'])+1;
+$page = intval($_GET['page']);
 $sid = hash('md4', 'search.custom:' .http_build_query($filter).$page);
 
 if ($panthera->cache)
 {
     if ($panthera -> cache -> exists($sid))
     {
-        list($tmp, $itemsCount) = $panthera -> cache -> get($sid);
+        //list($tmp, $itemsCount) = $panthera -> cache -> get($sid);
         $panthera -> logging -> output('Loaded list of ' .$itemsCount. ' pages from cache sid:' .$sid, 'customPages');
     }
 }
 
+if (!isset($itemsCount))
+{
+    $itemsCount = customPage::fetch($filter, False);
+}
+
+$panthera -> importModule('admin/ui.pager');
+$uiPager = new uiPager('customPages', $itemsCount, 12);
+$uiPager -> setActive($page);
+$args = $_GET;
+$args['page'] = '{$page}';
+unset($args['_']);
+$uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .http_build_query($args). '\');');
+$limit = $uiPager -> getPageLimit();
+
 // if does not exists in cache, regenerate it
 if (!isset($tmp))
 {
-    $itemsCount = customPage::fetch($filter, False);
-    
     if (count($filter))
-        $p = customPage::fetch($filter);
+        $p = customPage::fetch($filter, $limit[1], $limit[0]);
     else
-        $p = customPage::fetch();
+        $p = customPage::fetch('', $limit[1], $limit[0]);
         
     $tmp = array();
         
