@@ -3,6 +3,13 @@ panthera
 
 Simple web framework written in PHP, designed to be simple as possible, modular and easy to use. Inspired by Wordpress.
 
+Our Team
+=======
+- Damian Kęska - co-founder, main programmer, translator, website maintainer
+- Mateusz Warzyński - co-founder, programmer, translator, website maintainer
+- Ricky Reed - main graphics designer, author of project's logo
+- Dawid Niedźwiedzki - tester
+
 Notice
 =======
 
