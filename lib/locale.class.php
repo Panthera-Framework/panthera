@@ -252,7 +252,7 @@ class pantheraLocale
         // dont load same domains multiple times
         if (array_key_exists($domain, $this->domains) and $force == False)
             return False;
-
+            
         $dirs = array(SITE_DIR. '/content/locales/' .$this->locale, PANTHERA_DIR. '/locales/' .$this->locale);
 
         foreach ($dirs as $dir)
@@ -262,8 +262,8 @@ class pantheraLocale
                 if ($dir == PANTHERA_DIR. '/locales/' .$this->locale)
                     $this->domains[$domain] = 'lib';
                 else
-                    $this->domains[$domain] = 'lib';
-
+                    $this->domains[$domain] = 'content';
+                    
                 $this->panthera->logging->output('Adding domain "' .$domain. '" from ' .$dir, 'pantheraLocale');
 
                 // read file from cache (to avoid IO read)

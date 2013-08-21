@@ -9,7 +9,7 @@
   */
 
 if (!defined('IN_PANTHERA'))
-      exit;
+    exit;
 
 if (!getUserRightAttribute($user, 'can_see_dash')) {
     $template->display('no_access.tpl');
@@ -18,7 +18,6 @@ if (!getUserRightAttribute($user, 'can_see_dash')) {
 
 $panthera -> locale -> loadDomain('dash');
 $panthera -> template -> push('widgetsUnlocked', 0);
-
 /**
   * Remove widget from dashboard
   *
@@ -64,7 +63,7 @@ $menu = array();
 
 switch ($_GET['menu'])
 {
-    case 'settings':
+    case 'more':
         $menu[] = array('link' => '?display=dash&cat=admin', 'name' => localize('Back'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/home.png', 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=users&cat=admin', 'name' => localize('Users'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png', 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=users&cat=admin&action=my_account', 'name' => localize('My account', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/user.png', 'linkType' => 'ajax');
@@ -88,7 +87,7 @@ switch ($_GET['menu'])
 
         // main menu, there are predefined variables
         $menu[] = array('link' => '{$PANTHERA_URL}', 'name' => localize('Front page', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/home.png');
-        $menu[] = array('link' => '?display=dash&cat=admin&menu=settings', 'name' => localize('Settings', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/settings.png' , 'linkType' => 'ajax');
+        $menu[] = array('link' => '?display=dash&cat=admin&menu=more', 'name' => localize('Settings', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/settings.png' , 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=debug&cat=admin', 'name' => localize('Debugging center'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/developement.png', 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=users&cat=admin', 'name' => localize('Users'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png', 'linkType' => 'ajax');
         $menu[] = array('link' => '?display=mailing&cat=admin', 'name' => localize('Mailing', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/mail-replied.png', 'linkType' => 'ajax');

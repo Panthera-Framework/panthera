@@ -35,6 +35,16 @@ if (@$_GET['display'] == 'langtool') {
 
             if (localesManagement::getLocaleDir($locale) == FALSE)
                 ajax_exit(array('status' => 'failed', 'message' => localize('Locale does not exist')));
+            
+            // setting correct icon   
+            $icon = pantheraUrl('{$PANTHERA_URL}/images/admin/flags/unknown.png');
+                
+            if (is_file(SITE_DIR. '/images/admin/flags/' .$_GET['locale']. '.png'))
+            {
+                $icon = pantheraUrl('{$PANTHERA_URL}/images/admin/flags/' .$_GET['locale']. '.png');
+            }
+            
+            $panthera -> template -> push ('flag', $icon);
 
             if ($_GET['subaction'] == 'add_domain')
             {
@@ -140,7 +150,7 @@ if (@$_GET['display'] == 'langtool') {
         // check if locale exists
         if (localesManagement::getLocaleDir($locale) == FALSE)
             ajax_exit(array('status' => 'failed', 'message' => localize('Locale does not exist')));
-
+            
         // get domain name
         $name = str_replace('.phps', '', $_GET['domain']);
         $domain = new localeDomain($locale, $name);
@@ -148,8 +158,7 @@ if (@$_GET['display'] == 'langtool') {
         // check if domain and/or language exists
         if (!$domain -> exists())
             ajax_exit(array('status' => 'failed', 'message' => localize('Selected domain and/or locale does not exists')));
-
-
+            
         // save changed string to locale file
         if ($_GET['subaction'] == 'set_string')
         {
@@ -191,6 +200,16 @@ if (@$_GET['display'] == 'langtool') {
 
             ajax_exit(array('status' => 'failed'));
         }
+        
+        // setting correct icon   
+        $icon = pantheraUrl('{$PANTHERA_URL}/images/admin/flags/unknown.png');
+                
+        if (is_file(SITE_DIR. '/images/admin/flags/' .$_GET['locale']. '.png'))
+        {
+             $icon = pantheraUrl('{$PANTHERA_URL}/images/admin/flags/' .$_GET['locale']. '.png');
+        }
+        
+        $panthera -> template -> push ('flag', $icon);
 
         // send data to template
         $template -> push('locale', $locale);
@@ -246,7 +265,20 @@ if (@$_GET['display'] == 'langtool') {
         $template -> push('translates', $translates);
     }
 
-    $template -> push('locales', localesManagement::getLocales());
+    $locales = array();
+    
+    foreach (localesManagement::getLocales() as $name => $dir)
+    {
+        if (is_file(SITE_DIR. '/images/admin/flags/' .$name. '.png'))
+        {
+            $locales[$name] = array('icon' => pantheraUrl('{$PANTHERA_URL}/images/admin/flags/' .$name. '.png'), 'place' => $dir);
+            continue;
+        }
+        
+        $locales[$name] = array('icon' => pantheraUrl('{$PANTHERA_URL}/images/admin/flags/unknown.png'), 'place' => $dir);
+    }
+    
+    $template -> push('locales', $locales);
 }
 
 ?>

@@ -10,7 +10,7 @@
                    {/loop}
                 {else}
                    <tr>
-                        <td colspan="3">{function="localize('No sheduled jobs found', 'dash')"}!</td>
+                        <td colspan="3" style="text-align: center;">{function="localize('There are no sheduled tasks, is the crontab module enabled?', 'dash')"}</td>
                    </tr>
                 {/if}
                </table>

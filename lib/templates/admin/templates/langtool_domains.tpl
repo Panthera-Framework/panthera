@@ -10,7 +10,7 @@ spinner = new panthera.ajaxLoader($('#langtoolWindow'));
 function createDomain(locale)
 {
     var name = $("#domain_name").val();
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=langtool&cat=admin&action=domains&subaction=add_domain&domain_name='+name+'&locale='+locale, data: '', spinner: spinner, messageBox: 'userinfoBox', success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=langtool&cat=admin&action=domains&subaction=add_domain&domain_name='+name+'&locale='+locale, data: '', spinner: spinner, messageBox: 'w2ui', success: function (response) {
             if (response.status == "success")
                 navigateTo('?display=langtool&cat=admin&action=domains&locale='+locale);
         }
@@ -59,9 +59,6 @@ function removeDomain(name, locale, n)
 
         <div class="titlebar">{function="localize('Languages', 'langtool')"} - {function="localize('Manage domains', 'langtool')"}{include="_navigation_panel"}</div><br>
 
-        <div class="msgSuccess" id="userinfoBox_success"></div>
-        <div class="msgError" id="userinfoBox_failed"></div>
-
         <div class="grid-1" id="langtoolWindow" style="position: relative;">
 
           <h1><a onclick="navigateTo('?display=langtool&cat=admin');" href="#">{function="localize('Back')"}</a></h1> <br>
@@ -79,7 +76,7 @@ function removeDomain(name, locale, n)
             <tfoot>
                 <tr>
                     <td colspan="3" class="rounded-foot-left">
-                      <em> Panthera - {function="localize('List of available domains', 'langtool')"}
+                      <em>
                         <input type="button" value="{function="localize('Add domain', 'langtool')"}" onclick="createDomain('{$locale}');" style="float: right;">
                         <input type="text" name="domain_name" id="domain_name" style="float: right; margin-right: 7px;">
                       </em>
@@ -88,11 +85,12 @@ function removeDomain(name, locale, n)
             </tfoot>
 
             <tbody>
+              {if="count($domains) > 0"}
               {$j=0}
               {loop="$domains"}
               {$j=$j+1}
                 <tr id="domain_row_{$j}">
-                    <td style="width: 1%;"><img src="{$PANTHERA_URL}/images/admin/flags/{$locale}.png"></td>
+                    <td style="width: 1%;"><img src="{$flag}"></td>
                     <td id="domain_name_{$j}"><a href="#" onclick="navigateTo('?display=langtool&cat=admin&action=view_domain&locale={$locale}&domain={$value}');">{$value}</a></td>
                     <td style="width: 230px;">
                         <input type="text" name="domain_new_name" value="{$value}" id="domain_new_name_{$j}" style="margin-right: 5px;"><input type="button" value="{function="localize('Remove')"}" onclick="removeDomain('{$value}', '{$locale}', '{$j}');">
@@ -105,6 +103,9 @@ function removeDomain(name, locale, n)
                     });
                 </script>
               {/loop}
+              {else}
+              <tr><td colspan="3" style="text-align: center;">{function="localize('Cannot find any domains for this locale, please use button below to create a new domain', 'langtool')"}</td></tr>
+              {/if}
             </tbody>
           </table>
         </div>

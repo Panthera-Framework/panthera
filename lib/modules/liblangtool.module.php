@@ -28,7 +28,7 @@ class localesManagement
 
     public static function getLocales()
     {
-        $dirs = array(PANTHERA_DIR. '/locales', SITE_DIR. 'content/locales');
+        $dirs = array(PANTHERA_DIR. '/locales', SITE_DIR. '/content/locales');
         $languages = array();
 
         foreach ($dirs as $dir)

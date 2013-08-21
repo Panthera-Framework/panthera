@@ -130,7 +130,7 @@ $(function(){
         <div class="grid-2">
         	<div class="title-grid">{function="localize('Gallery')"}<span id="widgetRemoveButtons" class="widgetRemoveButtons"><a href="#" onclick="removeWidget('gallery')"><img src="{$PANTHERA_URL}/images/admin/list-remove.png" style="height: 15px;"></a></span></div>
         	<div class="content-gird">
-        		<p>{function="localize('There is not any items in gallery', 'dash')"}!</p>
+        		<p style="text-align: center;">{function="localize('No any items found, nothing to display', 'dash')"}.</p>
         	</div>
         </div>
         {else}

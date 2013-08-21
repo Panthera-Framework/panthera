@@ -89,7 +89,7 @@ function addOtherString(j, locale, domain, id)
                 <tbody>
                     <tr>
                         <td style="width: 40%; border-bottom: 0px;"><img src="{$PANTHERA_URL}/images/admin/flags/english.png">&nbsp;&nbsp;&nbsp;<input type="text" name="id" style="width: 80%;"></td>
-                        <td id="string" style="border-bottom: 0px; border-right: 0px;"><img src="{$PANTHERA_URL}/images/admin/flags/{$locale}.png">&nbsp;&nbsp;&nbsp;<input type="text" name="string" style="width: 80%;"> <input type="button" value="{function="localize('Add')"}" style="margin-left: 10px;" onclick="addString('?display=langtool&cat=admin&action=view_domain&locale={$locale}&domain={$domain}');"></td>
+                        <td id="string" style="border-bottom: 0px; border-right: 0px;"><img src="{$flag}">&nbsp;&nbsp;&nbsp;<input type="text" name="string" style="width: 80%;"> <input type="button" value="{function="localize('Add')"}" style="margin-left: 10px;" onclick="addString('?display=langtool&cat=admin&action=view_domain&locale={$locale}&domain={$domain}');"></td>
                     </tr>
                 </tbody>
                 </form>
@@ -118,13 +118,13 @@ function addOtherString(j, locale, domain, id)
                 {loop="$value"}
                   <tr>
                   {if="$key == $locale"}
-                        <td style="width: 30px;"><img src="{$PANTHERA_URL}/images/admin/flags/{$locale}.png"></td>
+                        <td style="width: 30px;"><img src="{$flag}"></td>
                         <td id="string_{$j}" style="border-right: 0px;"><input type="text" name="string" id="string_value_{$j}" value="{$value}" style="width: 80%;"> <input type="button" value="{function="localize('Change')"}" style="margin-left: 10px;" onclick="saveString({$j}, '{$key}', '{$domain}', '{$k}');"> </td>
                   {elseif="$value == ''"}
                         <td style="width: 30px;"><img src="{$PANTHERA_URL}/images/admin/flags/{$lang}.png"></td>
                         <td id="td_{$j}_{$lang}"><input type="text" name="string" id="string_{$j}_{$lang}"style="width: 80%;"> <input type="button" value="{function="localize('Add')"}" style="float: right; margin-right: 6px;" onclick="addOtherString({$j}, '{$key}', '{$domain}', '{$k}')"> </td>
                   {else}
-                        <td style="width: 30px;"><img src="{$PANTHERA_URL}/images/admin/flags/{$key}.png"></td>
+                        <td style="width: 30px;"><img src="{$flag}"></td>
                         <td><a href="?display=langtool&cat=admin&action=view_domain&locale={$key}&domain={$domain}">{$value}</a></td>
                   {/if}
                   </tr>
