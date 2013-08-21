@@ -249,6 +249,22 @@ class simpleMenu
         $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}menu_categories` WHERE `id` = :id', array('id' => $id));
         return (bool)$SQL->rowCount();
     }
+    
+    /**
+      * Update category elements counter
+      *
+      * @param string $categoryName eg. admin
+      * @return void 
+      * @author Damian Kęska
+      */
+    
+    public static function updateItemsCount($categoryName)
+    {
+        global $panthera;
+        $SQL = $panthera -> db -> query ('SELECT count(*) FROM `{$db_prefix}menus` WHERE `type` = :type', array('type' => $categoryName));
+        $fetch = $SQL -> fetch(PDO::FETCH_ASSOC);
+        $panthera -> db -> query('UPDATE `{$db_prefix}menu_categories` SET `elements` = :elements WHERE `type_name` = :categoryName', array('elements' => $fetch['count(*)'], 'categoryName' => $categoryName));
+    }
 
     /**
      * Get menu categories

@@ -64,15 +64,18 @@ function saveMenuOrder(id)
 
 function removeItem(id)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=menuedit&cat=admin&action=remove_item&item_id='+id, data: '', messageBox: 'userinfoBox', spinner: spinner, success: function (response) {
-            if (response.status == "success") {
-                jQuery('#item_'+id).slideUp();
-                jQuery('#item_'+id).remove();
-            }
+    w2confirm('{function="localize('Are you sure you want delete this item?', 'menuedit')"}', function (responseText) {
+        if (responseText == 'Yes')
+        {
+            panthera.jsonPOST({ url: '{$AJAX_URL}?display=menuedit&cat=admin&action=remove_item&item_id='+id, data: '', messageBox: 'userinfoBox', spinner: spinner, success: function (response) {
+                    if (response.status == "success") {
+                        jQuery('#item_'+id).slideUp();
+                        jQuery('#item_'+id).remove();
+                    }
+                }
+            });
         }
     });
-
-    return false;
 }
 </script>
 
@@ -98,14 +101,17 @@ function removeItem(id)
             <tfoot>
                   <tr>
                       <td colspan="8" class="rounded-foot-left"><em>Panthera menuedit - {function="localize('List of items', 'menuedit')"}</em><span>
-                        <input type="button" value="{function="localize('Add new link', 'menuedit')"}" style="float: right;" onclick="navigateTo('_ajax.php?display=menuedit&cat=admin&action=new_item&category={$category}');">
-                        <input type="button" value="{function="localize('Save order', 'menuedit')"}" style="float: right;" onclick="saveMenuOrder('{$category}');">
-                        <input type="button" value="{function="localize('Back', 'messages')"}" onclick="navigateTo('?display=menuedit&cat=admin');" style="float: right;"></td>
+                          <span style="float: right;">
+                                <input type="button" value="{function="localize('Back', 'messages')"}" onclick="navigateTo('?display=menuedit&cat=admin');">
+                                <input type="button" value="{function="localize('Save order', 'menuedit')"}" onclick="saveMenuOrder('{$category}');">
+                                <input type="button" value="{function="localize('Add new link', 'menuedit')"}" onclick="navigateTo('_ajax.php?display=menuedit&cat=admin&action=new_item&category={$category}');">
+                          </span>
                       </td>
                   </tr>
             </tfoot>
 
             <tbody>
+                {if="count($menus) > 0"}
                 {loop="$menus"}
                   <tr id="item_{$value.id}">
                       <td><a href="{$AJAX_URL}?display=menuedit&cat=admin&action=item&id={$value.id}" class="ajax_link">{$value.title}</a><input type="hidden" id="sortable_{$value.id}" class="sortable_hidden" value="{$value.id}"></td>
@@ -116,10 +122,15 @@ function removeItem(id)
                       <td>{$value.icon}</td>
                       <td>{$value.attributes}</td>
                       <td>
-                        <input type="button" value="{function="localize('Delete')"}" onclick="removeItem({$value.id})">
+                        <a href="#" onclick="removeItem({$value.id})">
+                            <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Delete')"}">
+                        </a>
                       </td>
                   </tr>
                 {/loop}
+                {else}
+                <tr><td colspan="8" style="text-align: center;">{function="localize('No any menu items found, you can add new links using button below', 'menuedit')"}</td></tr>
+                {/if}
             </tbody>
       </table>
     </div>

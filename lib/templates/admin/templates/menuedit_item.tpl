@@ -9,7 +9,14 @@ var spinner = new panthera.ajaxLoader($('#menu_item'));
       */
 
     $('#save_form').submit(function () {
-        panthera.jsonPOST({ data: '#save_form', spinner: spinner, messageBox: 'userinfoBox'});
+        panthera.jsonPOST({ data: '#save_form', spinner: spinner, messageBox: 'userinfoBox', success: function (response) {
+                if (response.status == 'success')
+                {
+                    navigateTo('?display=menuedit&cat=admin&action=category&category={$cat_type}');
+                }
+        
+            }
+        });
 
         return false;
 
