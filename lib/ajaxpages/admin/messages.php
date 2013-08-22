@@ -321,8 +321,61 @@ if (!getUserRightAttribute($user, 'can_view_qmsg'))
 
 $template -> push('action', '');
 
+// Search bar
+$panthera -> importModule('admin/ui.searchbar');
+$sBar = new uiSearchbar('uiTop');
+$sBar -> navigate(True);
+$sBar -> setQuery($_GET['query']);
+$sBar -> setAddress('?display=messages&cat=admin');
+$sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_see_qmsg_all,can_manage_qmsg_all', localize('Manage permissions'));
+
+$sBar -> addSetting('order', localize('Order by', 'custompages'), 'select', array(
+    'category_id' => array('title' => 'id', 'selected' => ($_GET['order'] == 'id')),
+    'category_name' => array('title' => 'name', 'selected' => ($_GET['order'] == 'category_name')),
+    'title' => array('title' => 'title', 'selected' => ($_GET['order'] == 'title'))
+));
+
+$sBar -> addSetting('direction', localize('Direction', 'custompages'), 'select', array(
+    'ASC' => array('title' => localize('Ascending'), 'selected' => ($_GET['direction'] == 'ASC')),
+    'DESC' => array('title' => localize('Descending'), 'selected' => ($_GET['direction'] == 'DESC'))
+));
+
+$page = intval($_GET['page']);
+$order = 'category_id'; $orderColumns = array('category_id', 'category_name', 'title');
+$direction = 'DESC';
+
+$w = new whereClause();
+        
+if ($_GET['query'])
+{
+    $_GET['query'] = trim(strtolower($_GET['query'])); // strip unneeded spaces and make it lowercase
+    $w -> add( 'AND', 'title', 'LIKE', '%' .$_GET['query']. '%');
+    $w -> add( 'OR', 'description', 'LIKE', '%' .$_GET['query']. '%');
+}
+        
+// order by
+if (in_array($_GET['order'], $orderColumns))
+{
+    $order = $_GET['order'];
+ }
+        
+if ($_GET['direction'] == 'DESC' or $_GET['direction'] == 'ASC')
+{
+    $direction = $_GET['direction'];
+}
+
+$total = quickCategory::getCategories($w, False, False, $order, $direction);
+
+// Pager stuff
+$panthera -> importModule('admin/ui.pager');
+$uiPager = new uiPager('quickMessages', $total, 16);
+$uiPager -> setActive($page);
+$uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\');');
+$limit = $uiPager -> getPageLimit();
+
 // get all categories
-$categories = quickCategory::getCategories('');
-$template -> push('categories', $categories);
-$template -> display('messages.tpl');
+$categories = quickCategory::getCategories($w, $limit[1], $limit[0], $order, $direction);
+
+$panthera -> template -> push('categories', $categories);
+$panthera -> template -> display('messages.tpl');
 pa_exit();

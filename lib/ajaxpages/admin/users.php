@@ -457,20 +457,6 @@ if ($_GET['action'] == 'account') {
         else
             $tpl = "users.tpl";
 
-        /*
-            // count pages
-            $pager = new Pager($count, $panthera->config->getKey('max_qmsg', 10));
-            $pager -> maxLinks = 6;
-            $limit = $pager -> getPageLimit($page);
-
-            // pager display
-            $template -> push('pager', $pager->getPages($page));
-            $template -> push('page_from', $limit[0]);
-            $template -> push('page_to', $limit[1]);
-        */
-
-        // $count = getQuickMessages(array('language' => $user->language), False);
-
         $usersPage = (intval(@$_GET['usersPage']));
         $order = 'id'; $orderColumns = array('id', 'login', 'full_name', 'joined', 'lastlogin', 'lastip', 'mail', 'primary_group');
         $direction = 'DESC';
@@ -529,12 +515,7 @@ if ($_GET['action'] == 'account') {
         $panthera -> importModule('admin/ui.pager');
         $uiPager = new uiPager('users', $usersTotal, $maxOnPage);
         $uiPager -> setActive($usersPage);
-        
-        $args = $_GET;
-        $args['usersPage'] = '{$page}';
-        unset($args['_']);
-        
-        $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .http_build_query($args). '\');');
+        $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\');');
         $limit = $uiPager -> getPageLimit();
 
         // this we will pass to template

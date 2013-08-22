@@ -519,7 +519,7 @@ class pantheraDB
         $what = '*';
 
         if (is_bool($limit))
-            $what = '`id`';
+            $what = '`' .$orderColumn. '`';
 
         $SQL = $this->panthera->db->query('SELECT ' .$what. ' FROM `{$db_prefix}' .$db. '`'.$whereClause. ' ORDER BY `' .$orderColumn. '` ' .$order.@$sqlLimit, @$q[1]);
         

@@ -186,7 +186,7 @@ class quickMessage extends pantheraFetchDB
 
         if ($SQL)
             return True;
-
+        
         return False;
     }
 }

@@ -1918,124 +1918,6 @@ function seoUrl($string) {
 }
 
 /**
-  * Universal pager for all purporses
-  *
-  * @author Damian Kęska
-  */
-
-class Pager
-{
-    public $max, $perPage, $pages, $maxLinks=4;
-
-    /**
-	 * Constructor
-	 *
-     * @param int $max Count of all avaliable elements
-     * @param int $perPage How many elements show on one page
-	 * @return void
-	 * @author Damian Kęska
-	 */
-
-    public function __construct($max, $perPage)
-    {
-        $this->max = $max;
-        $this->perPage = intval($perPage);
-
-        if (gettype($this->max) == "array")
-            $this->max = 5;
-
-        if (gettype($this->perPage) == "array")
-            $this->perPage = 5;
-
-        $this->pages = ceil(($this->max / $this->perPage));
-    }
-
-    /**
-	 * Get limit for SQL query eg. array(10, 5) => LIMIT 5,10. Returns False or array.
-	 *
-     * @param int $page Number of page we want to get limit for
-	 * @return array|bool
-	 * @author Damian Kęska
-	 */
-
-    public function getPageLimit($page)
-    {
-        if ($page <= $this->pages)
-        {
-            return array(($page * $this->perPage), $this->perPage);
-        }
-
-        return False;
-    }
-
-    /**
-	 * Get array with all pages, this array can be passed to template manager to display links or buttons
-	 *
-     * @param int $currentPage Current page we are on
-	 * @return array|bool
-	 * @author Damian Kęska
-	 */
-
-    public function getPages($currentPage)
-    {
-        $m = (($this->maxLinks/2)-1); // max links in left direction
-        $left = ($currentPage-$m);
-
-        if ($left < 0)
-            $left = 0;
-
-        $pages = array();
-
-        for ($i=$left; $i<$currentPage; $i++)
-        {
-            $pages[(string)$i] = False;
-        }
-
-        $right = ($currentPage+$m+1);
-
-        if (count($pages) < $m)
-            $right += ($m-count($pages));
-
-        $pages[(string)$currentPage] = True;
-
-        if ($right > $this->pages)
-            $right = $this->pages;
-
-        for ($i=$currentPage+1; $i<$right; $i++)
-        {
-            $pages[(string)$i] = False;
-        }
-
-        return $pages;
-    }
-}
-
-/**
- * Filter input removing tags, quotes etc.
- *
- * @param string $input Input string
- * @param string $filtersList Separated by comma eg. quotehtml,quotes
- * @return bool
- * @author Damian Kęska
- */
-
-function filterInput($input, $filtersList)
-{
-    $filters = explode(',', $filtersList);
-
-    if(in_array('quotehtml', $filters))
-        $input = htmlspecialchars($input);
-
-    if (in_array('quotes', $filters))
-    {
-        $input = str_replace('"', '', $input);
-        $input = str_replace("'", '', $input);
-    }
-
-    return $input;
-}
-
-/**
  * Convert Panthera special variables in urls with reverse function
  *
  * @param string $url URL to be parsed
@@ -2095,29 +1977,6 @@ function isDebugging()
 {
     global $panthera;
     return $panthera->logging->debug;
-}
-
-/**
- * Sort multidimensional array by value inside of array
- *
- * @param array $array Input array
- * @param string $key Key in array to sort by
- * @return void
- * @author Lohoris <http://stackoverflow.com/questions/2699086/sort-multidimensional-array-by-value-2>
- */
-
-function aasort (&$array, $key) {
-    $sorter=array();
-    $ret=array();
-    reset($array);
-    foreach ($array as $ii => $va) {
-        $sorter[$ii]=$va[$key];
-    }
-    asort($sorter);
-    foreach ($sorter as $ii => $va) {
-        $ret[$ii]=$array[$ii];
-    }
-    $array=$ret;
 }
 
 /**
@@ -2184,97 +2043,6 @@ function strCut($string, $maxLen)
 }
 
 /**
-  * Closes all unclosed tags
-  *
-  * @param string $string HTML code
-  * @return string
-  * @author Damian Kęska
-  */
-
-function closeHTMLTags($html)
-{
-    if (class_exists('DOMDocument'))
-    {
-        $doc = new DOMDocument();
-        $doc -> loadHTML('<?xml encoding="UTF-8">' .$html);
-        return $doc->saveHTML();
-    } else
-        return __HTML__closetags($html);
-}
-
-/**
- * close all open xhtml tags at the end of the string (use closeHTMLTags() instead of this function)
- *
- * @param string $html
- * @return string
- * @author Milian Wolff <mail@milianw.de>
- */
-
-function __HTML__closetags($html) {
-      #put all opened tags into an array
-      preg_match_all('#<([a-z]+)(?: .*)?(?<![/|/ ])>#iU', $html, $result);
-      $openedtags = $result[1];
-
-      #put all closed tags into an array
-      preg_match_all('#</([a-z]+)>#iU', $html, $result);
-      $closedtags = $result[1];
-      $len_opened = count($openedtags);
-      # all tags are closed
-      if (count($closedtags) == $len_opened) {
-        return $html;
-      }
-      $openedtags = array_reverse($openedtags);
-      # close tags
-      for ($i=0; $i < $len_opened; $i++) {
-        if (!in_array($openedtags[$i], $closedtags)){
-          $html .= '</'.$openedtags[$i].'>';
-        } else {
-          unset($closedtags[array_search($openedtags[$i], $closedtags)]);
-        }
-      }
-      return $html;
-}
-
-/**
-  * Reset array keys (example of input: 5 => 'first', 6 => 'second', example of output: 0 => 'first', 1 => 'second')
-  *
-  * @param array $array Input array
-  * @return array
-  * @author Damian Kęska
-  */
-
-function array_reset_keys($array)
-{
-    $newArray = array();
-
-    foreach ($array as $value)
-        $newArray[] = $value;
-
-    return $newArray;
-}
-
-/**
-  * Check if given string is an URL adress (if you want precise check use $panthera->types instead)
-  *
-  * @param string $url
-  * @return bool
-  * @author Damian Kęska
-  */
-
-if (!function_exists('is_url'))
-{
-    function is_url($url)
-    {
-        $url = strtolower($url);
-
-        if (substr($url, 0, 7) == 'http://' or substr($url, 0, 3) == "www" or substr($url, 0, 8) == "https://")
-            return True;
-
-        return False;
-    }
-}
-
-/**
   * Get numbers from a string and return as an array
   *
   * @param string $str Input string
@@ -2333,7 +2101,7 @@ function getContentDir($dir)
   * @author Damian Kęska
   */
 
-function maketmp()
+/*function maketmp()
 {
     global $panthera;
 
@@ -2346,7 +2114,7 @@ function maketmp()
     @mkdir(SITE_DIR. '/content/tmp/_' .$seed);
 
     return SITE_DIR. '/content/tmp/_' .$seed;
-}
+}*/
 
 /**
   * Print object informations
@@ -2490,19 +2258,19 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
     
     if ($days == True)
     {
-        if ($diff->format('%d') > 0)
+        if ($diff->format('%a') > 0)
         {
-            $array['days'] = $diff->format('%d');
-            $output .= $diff->format('%d'). ' ' .localize('days'). ' ';
+            $array['days'] = $diff->format('%a');
+            $output .= $diff->format('%a'). ' ' .localize('days'). ' ';
         }
     }
     
     if ($hours == True)
     {
-        if ($diff->format('%h') > 0)
+        if ($diff->format('%H') > 0)
         {
-            $array['hours'] = $diff->format('%h');
-            $output .= $diff->format('%h'). ' ' .localize('hours'). ' ';
+            $array['hours'] = $diff->format('%H');
+            $output .= $diff->format('%H'). ' ' .localize('hours'). ' ';
         }
     }
     
@@ -2530,6 +2298,44 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
     } else {
         return $output;
     }
+}
+
+/**
+  * Show elapsed time in human-friendly format
+  *
+  * @param string|int $time
+  * @return string 
+  * @author Damian Kęska
+  */
+
+function elapsedTime($time)
+{
+    return date_calc_diff(time(), $time);
+}
+
+/**
+ * Filter input removing tags, quotes etc.
+ *
+ * @param string $input Input string
+ * @param string $filtersList Separated by comma eg. quotehtml,quotes
+ * @return bool
+ * @author Damian Kęska
+ */
+
+function filterInput($input, $filtersList)
+{
+    $filters = explode(',', $filtersList);
+
+    if(in_array('quotehtml', $filters))
+        $input = htmlspecialchars($input);
+
+    if (in_array('quotes', $filters))
+    {
+        $input = str_replace('"', '', $input);
+        $input = str_replace("'", '', $input);
+    }
+
+    return $input;
 }
 
 /**
@@ -2579,4 +2385,52 @@ function verifyPassword($password, $hash)
         return ( $hash === hash('sha512', $salted) );
     else
         return ( $hash === md5($salted) );
+}
+
+/**
+  * Get query string form GET/POST or other array, supports exceptions (some arguments can be skipped)
+  *
+  * @param array|string $array Array of elements, or a string value "GET" or "POST"
+  * @param array|string $mix Elements to add (useful if using "GET" or "POST" in first but want to add something) eg. "aaa=test&bbb=ccc" or array('aaa' => 'test', 'bbb' => 'ccc')
+  * @param array|string $except List of parameters to skip eg. "display,cat" or array('display', 'cat')
+  * @return string 
+  * @author Damian Kęska
+  */
+
+function getQueryString($array=null, $mix=null, $except=null)
+{
+    if ($array === null)
+        $array = $_GET;
+    elseif ($array == 'GET')
+        $array = $_GET;
+    elseif ($array == 'POST')
+        $array = $_POST;
+    else {
+        parse_str($array, $array);
+    }
+        
+    if ($mix != null) {
+        if (is_string($mix)) {
+            parse_str($mix, $mix);
+        }
+        
+        if (is_array($mix)) {
+            $array = array_merge($array, $mix);
+        }
+    }
+        
+    if ($except !== null)
+    {
+        if (!is_array($except))
+        {
+            $except = explode(',', $except);
+        }
+        
+        foreach ($except as $exception)
+        {
+            unset($array[trim($exception)]);
+        }
+    }
+    
+    return http_build_query($array);
 }

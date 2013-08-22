@@ -37,8 +37,7 @@ function removeCategory(categoryName)
 </script>
 
     <div class="titlebar">{function="localize('Message categories', 'qmessages')"} - {function="localize('Articles, quick messages, news etc.', 'qmessages')"}{include="_navigation_panel"}</div>
-
-    <br>
+    {$uiSearchbarName="uiTop"}{include="ui.searchbar"}
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>
 
@@ -56,7 +55,7 @@ function removeCategory(categoryName)
             <tfoot>
                 <tr>
                     <td colspan="5">
-                        Pager do zaimplementowania
+                        {$uiPagerName="quickMessages"}{include="ui.pager"}
                     </td>
                 </tr>
             </tfoot>
@@ -70,7 +69,7 @@ function removeCategory(categoryName)
                     </td>
                     
                     <td>
-                        {$value.description}
+                        {if="strlen($value.description) > 0"}<i>{$value.description}</i>{else}{function="localize('no description', 'qmessages')"}{/if}
                     </td>
                     
                     <td>
