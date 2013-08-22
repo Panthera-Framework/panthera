@@ -686,12 +686,12 @@ abstract class pantheraFetchDB
             $this->cache = $panthera->db->cache;
         
         // caching
-        if ($this->cache > 0)
+        if ($this->cache > 0 and is_string($by) and $by != 'array')
             $this->cacheID = $panthera->db->prefix.$this->_tableName. '.' .serialize($by). '.' .$value;
         else
-            $panthera -> logging -> output('Cache disabled for ' .get_class($this). ' class', 'pantheraFetchDB');
+            $panthera -> logging -> output('Cache disabled for this ' .get_class($this). ' object', 'pantheraFetchDB');
             
-        if ($this->cacheID != "" and !is_object($by))
+        if ($this->cacheID)
         {
             if ($panthera->cache->exists($this->cacheID))
             {
@@ -713,7 +713,7 @@ abstract class pantheraFetchDB
         if ($by == 'array' and in_array('array', $this->_constructBy))
         {
             if ($panthera -> logging -> debug == True)
-                $panthera -> logging -> output(get_class($this). '::Creating object from array ' .json_encode($value));
+                $panthera -> logging -> output(get_class($this). '::Creating object from array ' .json_encode($value), 'pantheraFetchDB');
             
             $this->_data = $value;
             $panthera -> add_option('session_save', array($this, 'save'));
@@ -777,10 +777,7 @@ abstract class pantheraFetchDB
                     $this->_data = $SQL -> fetch(PDO::FETCH_ASSOC);
                     
                     // write to cache
-                    if ($this->cache > 0 and !is_object($by))
-                    {
-                        $this -> updateCache();
-                    }
+                    $this -> updateCache();
                     
                     if($panthera->logging->debug == True)
                         $panthera->logging->output(get_class($this). '::Found a record by "' .json_encode($by). '" (value=' .json_encode($value). ')', 'pantheraFetchDB');
@@ -809,7 +806,7 @@ abstract class pantheraFetchDB
             return False;
         }
         
-        if (!$this -> panthera -> cache)
+        if (!$this -> panthera -> cache or !$this->cacheID)
         {
             $this -> panthera -> logging -> output ('Cannot clear cache if cache is disabled', 'pantheraFetchDB');
             return False;
@@ -869,6 +866,9 @@ abstract class pantheraFetchDB
                 $this -> panthera->cache->set($cacheIndex, $index, $this->panthera->db->cache);
             }
         }*/
+        
+        if (!$this->cacheID)
+            return False;
         
         $this -> clearCache();
         
@@ -988,12 +988,9 @@ abstract class pantheraFetchDB
             $SQL = $panthera->db->query('UPDATE `{$db_prefix}' .$this->_tableName. '` SET ' .$set[0]. ' WHERE `' .$this->_idColumn. '` = :' .$this->_idColumn. ';', $set[1]);
             
             // update cache
-            if ($this->cache > 0)
-            {
-                $this -> updateCache();
-                //$panthera->logging->output('Updated cache id=' .$this->cacheID, 'pantheraFetchDB');
-                //$panthera->cache->set($this->cacheID, $this->_data, $panthera->db->cache);
-            }
+            $this -> updateCache();
+            //$panthera->logging->output('Updated cache id=' .$this->cacheID, 'pantheraFetchDB');
+            //$panthera->cache->set($this->cacheID, $this->_data, $panthera->db->cache);
                  
             $this->_dataModified = False;
         }
