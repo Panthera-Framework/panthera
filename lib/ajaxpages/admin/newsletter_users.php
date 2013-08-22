@@ -40,11 +40,10 @@ if ($_GET['action'] == 'remove_subscriber')
 }
 
 $panthera -> template -> push ('nid', $_GET['nid']);
+$panthera -> template -> push ('action', '');
 
 if ($_GET['action'] == 'show_table')
     $panthera -> template -> push ('action', 'show_table');
-else
-    $panthera -> template -> push ('action', '');
 
 // get count of newsletter users
 $usersCount = $newsletter -> getUsers(False); // false means we dont want to get records but it's count
@@ -64,6 +63,7 @@ if ($page < 0)
     $page = 0;
 
 // get records only for current page
+$panthera -> importModule('pager');
 $pager = new Pager($usersCount, $panthera->config->getKey('pager_newsletter', 25, 'int'));
 $pager -> maxLinks = 6; // max links in pager
 $limit = $pager -> getPageLimit($page);

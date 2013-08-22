@@ -214,7 +214,77 @@ class quickCategory extends pantheraFetchDB
 
     public static function getCategories($by, $limit=0, $limitFrom=0, $orderBy='category_id', $order='DESC')
     {
-          global $panthera;
-          return $panthera->db->getRows('qmsg_categories', $by, $limit, $limitFrom, '', $orderBy, $order);
+        global $panthera;
+        return $panthera->db->getRows('qmsg_categories', $by, $limit, $limitFrom, '', $orderBy, $order);
+    }
+    
+    /**
+      * Create a new category
+      *
+      * @param string $title of a new category
+      * @param string $description
+      * @param string $categoryName (optional) if not specified it will be generated from $title
+      * @param int $authorId (optional) ID of person who creates this category, will be taken from current session if not specified, if there is no user session it will set id to -1
+      * @return object|bool 
+      * @author Damian Kęska
+      */
+    
+    public static function create($title, $description, $categoryName='', $authorId='')
+    {
+        global $panthera;
+        
+        if (strlen($title) == 0)
+        {
+            return false;
+        }
+    
+        // generate new category name if there is no providen any
+        if (!$categoryName)
+        {
+            $categoryName = substr(seoUrl($title), 0, 32);
+        }
+        
+        // get current user id from session if not provided manually
+        if (!is_int($authorId))
+        {
+            $authorId = -1; // can be just "nobody"
+        
+            if($panthera->user)
+            {
+                $authorId = $panthera->user->id;
+            }
+        }
+        
+        $check = new quickCategory('category_name', $categoryName);
+        
+        if ($check->exists())
+        {
+            return false;
+        }
+        
+        $array = array(
+            'title' => $title,
+            'description' => $description,
+            'category' => $categoryName,
+            'author' => $authorId
+        );
+        
+        $panthera -> db -> query ('INSERT INTO `{$db_prefix}qmsg_categories` (`category_id`, `title`, `description`, `category_name`, `created`, `author_id`) VALUES (NULL, :title, :description, :category, NOW(), :author)', $array);
+        
+        return new quickCategory('category_name', $categoryName);
+    }
+
+    /**
+      * Remove a category
+      *
+      * @param string $categoryName
+      * @return void 
+      * @author Damian Kęska
+      */
+    
+    public static function remove($categoryName)
+    {
+        global $panthera;
+        $panthera -> db -> query('DELETE FROM `{$db_prefix}qmsg_categories` WHERE `category_name` = :categoryName', array('categoryName' => $categoryName));
     }
 }

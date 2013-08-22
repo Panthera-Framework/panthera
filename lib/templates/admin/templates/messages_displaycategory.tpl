@@ -74,9 +74,14 @@ function editMessage(id)
 
 function deleteMessage(id)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=messages&cat=admin&action=remove_msg&msgid='+id, data: '', messageBox: 'userinfoBox', success: function (response) {
-            if (response.status == "success")
-                jQuery('#msg_'+id+'_row').remove();
+    w2confirm('{function="localize('Are you sure you want delete this message?', 'qmessages')"}', function (responseText) {
+        if (responseText == 'Yes')
+        {
+            panthera.jsonPOST({ url: '{$AJAX_URL}?display=messages&cat=admin&action=remove_msg&msgid='+id, data: '', messageBox: 'userinfoBox', success: function (response) {
+                    if (response.status == "success")
+                        jQuery('#msg_'+id+'_row').remove();
+                }
+            });
         }
     });
 
@@ -285,11 +290,9 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
             <table class="gridTable">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>{function="localize('Thumbnail', 'qmessages')"}</td>
+                    <th colspan="2">id</th>
                     <th>{function="localize('Title', 'qmessages')"}</th>
-                    <th>{function="localize('Author', 'qmessages')"}</th>
-                    <th>{function="localize('Last modification', 'qmessages')"}</th>
+                    <th>{function="localize('Created', 'qmessages')"}</th>
                     <th>{function="localize('Visibility', 'qmessages')"}</th>
                     <th>{function="localize('Options', 'messages')"}</th>
                 </tr>
@@ -311,17 +314,36 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
                 </tr>
             </tfoot>
             <tbody id="all_messages_window">
+                {if="count($messages_list) > 0"}
                 {loop="$messages_list"}
                 <tr id="msg_{$value.id}_row"{if="$value.special == True} class='message_special'{/if"}>
                     <td style="width: 28px;">{$value.id}</td>
-                    <td style="width: 60px;">{if="!empty($value.icon)"}<img src='{$value.icon}' class='quickMsgIcon'>{/if}</td>
+                    <td style="width: 40px; border-right: 0px;">{if="!empty($value.icon)"}<img src='{$value.icon}' class='quickMsgIcon'>{/if}</td>
                     <td id="msg_{$value.id}_title"><a href="#" onclick="editMessage({$value.id}); return false;">{$value.title}</a></td>
-                    <td>{$value.author_login}</td>
-                    <td id="msg_{$value.id}_mod_time">{$value.mod_time}</td>
+                    <td>
+                        <a><span class="tooltip">{$value.mod_time}</span>{function="slocalize('Posted %s ago by %s', 'qmessages', elapsedTime($value['mod_time']), $value['author_login'])"}</a>
+                    </td>
                     <td id="msg_{$value.id}_visibility">{$value.visibility}</td>
-                    <td><input type="button" value="{function="localize('Delete', 'messages')"}" onclick="deleteMessage({$value.id}); return false;"> <input type="button" value="{function="localize('Edit', 'qmessages')"}" onclick="editMessage({$value.id}); return false;"> <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_qmsg_edit_{$value.id}', 1024, 'upload_popup');"></td>
+                    <td>
+                        <a style="cursor: pointer;" onclick="editMessage({$value.id})">
+                            <img src="{$PANTHERA_URL}/images/admin/ui/edit.png" style="max-height: 22px;" alt="{function="localize('Edit', 'qmessages')"}">
+                        </a>
+                        
+                        <a style="cursor: pointer;" onclick="deleteMessage({$value.id})">
+                            <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
+                        </a>
+                        
+                        {if="$isAdmin"}
+                        <a style="cursor: pointer;" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_qmsg_edit_{$value.id}', 1024, 'upload_popup')">
+                            <img src="{$PANTHERA_URL}/images/admin/ui/permissions.png" style="max-height: 22px;" alt="{function="localize('Manage permissions')"}">
+                        </a>
+                        {/if}
+                    </td>
                 </tr>
                 {/loop}
+                {else}
+                <tr><td colspan="7" style="text-align: center;">{function="localize('No items to display in this category and language', 'qmessages')"}</td></tr>
+                {/if}
             </tbody>
         </table>
       </div>

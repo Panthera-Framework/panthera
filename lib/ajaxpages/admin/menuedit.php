@@ -36,6 +36,12 @@ if ($_GET['action'] == 'save_order')
 }
 
 if ($_GET['action'] == 'quickAddFromPopup') {
+    if (substr($_GET['link'], 0, 5) == 'data:')
+    {
+        $_GET['link'] = base64_decode(substr($_GET['link'], strpos($_GET['link'], 'base64,')+7, strlen($_GET['link'])));    
+    }
+
+
     $language = $panthera -> locale -> getFromOverride($_GET['language']);
     $categories = simpleMenu::getCategories('');
     $panthera -> template -> push('link', $_GET['link']);

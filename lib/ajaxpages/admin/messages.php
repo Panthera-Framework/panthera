@@ -16,8 +16,11 @@ $panthera -> locale -> loadDomain('qmessages');
 
 // get active locale with override if avaliable
 $language = $panthera -> locale -> getFromOverride($_GET['language']);
-
 $panthera -> template -> push ('language', $language);
+
+// rights
+$isAdmin = checkUserPermissions($panthera->user, True); $panthera -> template -> push('isAdmin', $isAdmin);
+$canManageAll = getUserRightAttribute($user, 'can_qmsg_manage_all');
 
 /**
   * Creating a new message
@@ -34,6 +37,12 @@ if ($_GET['action'] == 'new_msg')
     $categoryName = $_GET['category'];
     $category = new quickCategory('category_name', $categoryName);
     $icon = filterInput($_POST['message_icon'], 'quotehtml');
+    
+    // check user rights
+    if (!getUserRightAttribute($user, 'can_qmsg_manage_' .$categoryName) and !getUserRightAttribute($user, 'can_qmsg_manage_all'))
+    {
+        ajax_exit(array('status' => 'failed', 'message' => localize('Permission denied. You dont have access to this action', 'messages')));
+    }
     
     // set other language than active
     if ($_POST['language'] != $language)
@@ -53,13 +62,6 @@ if ($_GET['action'] == 'new_msg')
             ajax_exit(array('status' => 'failed', 'message' => localize('A message with specified SEO name already exists', 'qmessages')));    
     }
 
-    // check user rights
-    if (!getUserRightAttribute($user, 'can_qmsg_manage_' .$categoryName) and !getUserRightAttribute($user, 'can_qmsg_manage_all'))
-    {
-        print(json_encode(array('status' => 'failed', 'message' => localize('Permission denied. You dont have access to this action', 'messages'))));
-        pa_exit();
-    }
-
     if(strlen($title) < 4)
         ajax_exit(array('status' => 'failed', 'message' => localize('Title is too short', 'qmessages')));
 
@@ -71,7 +73,45 @@ if ($_GET['action'] == 'new_msg')
 
     quickMessage::create($title, $content, $user->login, $user->full_name, $url_id, $language, $categoryName, $visibility, $icon);
     ajax_exit(array('status' => 'success'));
-}
+    
+/**
+  * Create a new category
+  *
+  * @author Damian Kęska
+  */
+    
+} elseif ($_GET['action'] == 'newCategory') {
+
+    // only if user have full permissions to quick messages module
+    if (!getUserRightAttribute($user, 'can_qmsg_manage_all'))
+    {
+        ajax_exit(array('status' => 'failed', 'message' => localize('Permission denied. You dont have access to this action', 'messages')));
+    }
+    
+    if (strlen($_POST['title']) < 3 or strlen($_POST['title']) > 32)
+    {
+        ajax_exit(array('status' => 'failed', 'message' => localize('Category title should be 3 to 32 characters long', 'qmessages')));
+    }
+    
+    $qmsg = quickCategory::create($_POST['title'], $_POST['description'], $_POST['category_name']);
+    
+    if ($qmsg -> exists())
+    {
+        ajax_exit(array('status' => 'success'));
+    }
+    
+    ajax_exit(array('status' => 'failed', 'message' => localize('Cannot create new category, maybe there is already another with same id', 'qmessages')));
+
+} elseif ($_GET['action'] == 'deleteCategory') {
+
+    // category can be deleted only if user has full permissions to quick messages module
+    if (!getUserRightAttribute($user, 'can_qmsg_manage_all'))
+    {
+        ajax_exit(array('status' => 'failed', 'message' => localize('Permission denied. You dont have access to this action', 'messages')));
+    }
+    
+    quickCategory::remove($_POST['category_name']);
+    ajax_exit(array('status' => 'success'));
 
 /**
   * Editing a message
@@ -79,8 +119,7 @@ if ($_GET['action'] == 'new_msg')
   * @author Damian Kęska
   */
 
-if (@$_GET['action'] == 'edit_msg') 
-{
+} elseif (@$_GET['action'] == 'edit_msg')  {
     $title = filterInput(trim($_POST['edit_msg_title']), 'quotehtml');
     $message = $_POST['edit_msg_content'];
     $msgid = intval($_POST['edit_msg_id']);
@@ -213,6 +252,7 @@ if ($_GET['action'] == 'display_category')
     $count = quickMessage::getQuickMessages(array('language' => $language, 'category_name' => $categoryName), False);
 
     // count pages
+    $panthera -> importModule('pager');
     $pager = new Pager($count, $panthera->config->getKey('max_qmsg', 10, 'int'));
     $pager -> maxLinks = 6;
     $limit = $pager -> getPageLimit($page);

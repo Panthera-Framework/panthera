@@ -24,6 +24,8 @@ class uiPager
         global $panthera;
         $this -> panthera = $panthera;
         $this -> name = $name;
+        $panthera -> importModule('pager');
+        
         self::$pagers[$this->name] = array(
             'links' => array(),
             'active' => 1,
