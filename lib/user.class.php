@@ -99,7 +99,7 @@ class pantheraUser extends pantheraFetchDB
     
     public function getName($getLogin=False)
     {
-        if (!$this->__get('full_name') and $getLogin == False)
+        if ($this->__get('full_name') and !$getLogin)
             return $this->__get('full_name');
         
         return $this->__get('login');
