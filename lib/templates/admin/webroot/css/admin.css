@@ -441,28 +441,25 @@ h1, h2, h3, h4, h5, h6 {
 
 	.picturesBox {
 		list-style:none;
-		margin-left:-10px;
-		margin-right:-10px;
-		margin-top:-10px;
 	}
 
 	.picturesBox li {
 		float:left;
-		margin-left:15px;
-		margin-top:10px;
+		margin-left:4px;
+		margin-top:4px;
 		padding-bottom:4px;
 		padding-top:5px;
 		padding-left:5px;
 		padding-right:5px;
 		display: inline-block;
 		position: relative;
-		width:112px;
-		height:112px;
+		width:84px;
+		height:84px;
 	}
 
 	.picturesBox li img {
 		margin:auto;
-		height:110px;
+		height:84px;
 		background-color: #f3f3f4;
 		-webkit-border-radius: 3px;
 		-moz-border-radius: 3px;
@@ -491,14 +488,13 @@ h1, h2, h3, h4, h5, h6 {
 	.picturesBox li:hover .picturesBoxItem {
 	    display: block;
 	    background:#000;
-	    width:110px;
+	    width:84px;
 
-	    height:40px;
-	    margin-top:64px;
+	    height:68px;
 	    margin-left:0px;
-	    -webkit-border-radius: 2px;
-	    -moz-border-radius: 2px;
-	    border-radius: 2px;
+	    -webkit-border-radius: 4px;
+	    -moz-border-radius: 4px;
+	    border-radius: 4px;
 	    filter:progid:DXImageTransform.Microsoft.Alpha(opacity=60);
         -moz-opacity: 0.6;
         -khtml-opacity: 0.6;
@@ -507,17 +503,20 @@ h1, h2, h3, h4, h5, h6 {
 
 	.picturesBox .picturesBoxItem {
 	    position: absolute;
-	    z-index: 99;
-	    padding-top:10px;
+	    z-index: 100;
+	    padding-top:25%;
 	    top:2px;
 	    display: none;
 	    color: white;
 	    text-align: center;
+	    font-weight: 700;
+	    
 	 }
 
 	 .picturesBox a {
 	    color:white;
         text-decoration: none;
+        z-index: 2;
 	 }
 
 	 .menuBg {

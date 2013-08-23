@@ -324,10 +324,10 @@ class pantheraConfig
       * @author Damian Kęska
       */
 
-    public function getKey($key, $default='__none', $type='__none', $section='')
+    public function getKey($key, $default='__none', $type='__none', $section=null)
     {
         // load configuration section first
-        if ($section !== '')
+        if ($section !== null)
             $this->loadSection($section);
 
         if(array_key_exists($key, $this->config))
@@ -356,7 +356,7 @@ class pantheraConfig
 
     public function loadSection($section)
     {
-        if (!array_key_exists($section, $this->sections) and $section !== '')
+        if (!isset($this->sections[$section]) and $section !== '')
         {
             $this->loadOverlay($section);
             return True;
@@ -388,21 +388,21 @@ class pantheraConfig
       * @author Damian Kęska
       */
 
-    public function setKey($key, $value='__none', $type='__none', $section='')
+    public function setKey($key, $value='__none', $type='__none', $section=null)
     {
-        if($key == NuLL and $value == '__none')
+        if(!$key or $value == '__none')
             return False;
 
 
         if (array_key_exists((string)$key, $this->overlay))
         {
             // if section changed tell the framework that overlay changed
-            if ($this->overlay[(string)$key][2] !== $section)
+            if ($this->overlay[(string)$key][2] !== $section and $section !== null)
             {
                 $this->overlay_modified[(string)$key] = True;
                 $this->overlay[(string)$key][2] = $section;
             }
-
+            
             // mark overlay as modified on value modification
             if ($this -> getKey($key) != $value)
             {
@@ -420,7 +420,7 @@ class pantheraConfig
         {
             if ($this->panthera->types->exists($type))
             {
-                $this->panthera->logging->output('config -> setKey( ' .$key. ', ' .str_replace("\n", " ", print_r($value, True)). ', ' .$type. ' )', 'pantheraConfig');
+                $this->panthera->logging->output('config -> setKey( ' .$key. ', ' .str_replace("\n", " ", print_r($value, True)). ', ' .$type. ', \'' .$section. '\' )', 'pantheraConfig');
                 $this->overlay[(string)$key][0] = $type;
             }
         }
@@ -475,7 +475,7 @@ class pantheraConfig
         $array = null;
         $cacheLoaded = False;
 
-        if ($this->panthera->cache and $section == '')
+        if ($this->panthera->cache and !$section)
         {
             if ($this->panthera->cache->exists('config_overlay'))
             {
@@ -518,6 +518,12 @@ class pantheraConfig
         {
             $this->overlay['debug'] = array('bool', False);
             $this->overlay_modified['debug'] = 'created';
+        }
+        
+        // mark section as loaded
+        if ($section)
+        {
+            $this->sections[$section] = True;
         }
 
         $this->panthera->logging->output('Overlay loaded, total ' .count($this->overlay). ' keys', 'pantheraCore');
@@ -599,7 +605,7 @@ class pantheraConfig
             // update cache
             if ($this->panthera->cache)
             {
-                $this->panthera->logging->output('Updating config_overlay', 'pantheraConfig');
+                $this->panthera->logging->output('Updating config_overlay cache', 'pantheraConfig');
                 $this->panthera->cache->set('config_overlay', $this->overlay, 3600);
             }
 
