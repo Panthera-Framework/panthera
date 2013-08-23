@@ -8,6 +8,7 @@ Our Team
 - Damian Kęska - co-founder, main programmer, translator, website maintainer
 - Mateusz Warzyński - co-founder, programmer, translator, website maintainer
 - Ricky Reed - main graphics designer, author of project's logo
+- The-Error - graphics designer, giving us helpful tips about project design
 - Dawid Niedźwiedzki - tester
 
 Notice
