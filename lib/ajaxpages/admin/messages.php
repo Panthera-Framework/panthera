@@ -165,6 +165,7 @@ if ($_GET['action'] == 'new_msg')
         $m -> mod_author_login = $user->login;
         $m -> mod_author_full_name = $user->full_name;
         $m -> url_id = seoUrl($title);
+        $m -> save();
 
         // message found, return in ajax response
         ajax_exit(array('status' => 'success', 'title' => $m->title, 'message' => $m->message, 'id' => $m->id, 'mod_time' => $m->mod_time, 'visibility' => $visibility[$m->visibility]));
