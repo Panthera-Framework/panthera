@@ -4,6 +4,8 @@
     	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     	<title>{$site_title}</title>
     	<link rel='stylesheet' href='{$PANTHERA_URL}/css/admin/login.css' type='text/css' media='all' />
+    	<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
         <meta name='robots' content='noindex,nofollow' />
     </head>
 
@@ -33,9 +35,10 @@
 
         <div class="footer">
         <input type="submit" class="button" value="{function="localize('Sign in', 'login')"}" />
+        <input type="hidden" name="recovery" id="recovery">
         {if="$mobileTemplate == True"} <input type="button" class="recover" onclick="window.location = 'pa-login.php?__switchdevice=mobile'" value="Mobile" style="float: left;"/> {/if}
         {if="$tabletTemplate == True"} <input type="button" class="recover" onclick="window.location = 'pa-login.php?__switchdevice=tablet'" value="Tablet" style="float: left;"/> {/if}
-        <input type="submit" class="recover" onclick="setRecovery();" value="{function="localize('Recover password', 'login')"}" />
+        <input type="submit" class="recover" onclick="$('#recovery').val('1');" value="{function="localize('Recover password', 'login')"}" />
         </div>
 
     </form>
