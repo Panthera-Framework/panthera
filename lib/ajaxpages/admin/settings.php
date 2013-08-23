@@ -15,11 +15,6 @@ if (!defined('IN_PANTHERA'))
 
     $panthera -> locale -> loadDomain('settings');
 
-    $template -> push('action', '');
-    $template -> push('user_uid', '');
-    $template -> push('locales', $panthera -> locale -> getLocales());
-    $template -> push('locale', $panthera -> locale -> getActive());
-
     if (@$_GET['action'] == 'system_info')
     {
         if (!getUserRightAttribute($user, 'can_see_system_info'))
@@ -27,8 +22,11 @@ if (!defined('IN_PANTHERA'))
             $template->display('no_access.tpl');
             pa_exit();
         }
-
-        $tpl = "settings_systeminfo.tpl";
+        
+        $template -> push('action', '');
+        $template -> push('user_uid', '');
+        $template -> push('locales', $panthera -> locale -> getLocales());
+        $template -> push('locale', $panthera -> locale -> getActive());
 
         $yn = array(0 => localize('False'), 1 => localize('True'));
 
@@ -89,4 +87,127 @@ if (!defined('IN_PANTHERA'))
         $template -> push('settings_list', $options);
         $template -> push('acl_list', $user->acl->listAll());
         $template -> push('action', 'system_info');
+        
+        $panthera -> template -> display('settings_systeminfo.tpl');
+        pa_exit();
     }
+    
+$defaults = array();
+$defaults['system'] = array();
+$defaults['system'][] = array(
+    'link' => '?display=database&cat=admin', 
+    'name' => localize('Database management', 'dash'), 
+    'description' => localize('Monitor connection status, create backups', 'settings'), 
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/db.png' , 
+    'linkType' => 'ajax'
+);
+
+$defaults['system'][] = array(
+    'link' => '?display=cache&cat=admin', 
+    'name' => localize('Cache management', 'dash'),
+    'description' => localize('Monitor and manage cache settings', 'settings'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/cache.png' , 
+    'linkType' => 'ajax'
+);
+
+$defaults['system'][] = array(
+    'link' => '?display=leopard&cat=admin', 
+    'name' => localize('Package management', 'dash'),
+    'description' => localize('Install or remove Panthera packages', 'settings'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/package.png' , 
+    'linkType' => 'ajax'
+);
+
+$defaults['system'][] = array(
+    'link' => '?display=conftool&cat=admin', 
+    'name' => localize('Configuration editor', 'dash'), 
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/config.png', 
+    'linkType' => 'ajax'
+);
+
+$defaults['system'][] = array(
+    'link' => '?display=locales&cat=admin',
+    'name' => localize('Language settings', 'dash'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/locales.png',
+    'linkType' => 'ajax'
+);
+
+$defaults['system'][] = array(
+    'link' => '?display=plugins&cat=admin',
+    'name' => ucfirst(localize('plugins', 'dash')),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/Apps-preferences-plugin-icon.png',
+    'linkType' => 'ajax'
+);
+
+$defaults['system'][] = array(
+    'link' => '?display=templates&cat=admin',
+    'name' => ucfirst(localize('templates', 'dash')),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/Icon-template.png',
+    'linkType' => 'ajax'
+);
+
+// Content section
+$defaults['content'] = array();
+
+$defaults['content'][] = array(
+    'link' => '?display=users&cat=admin',
+    'name' => ucfirst(localize('users', 'dash')),
+    'description' => localize('Manage system translations', 'settings'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png',
+    'linkType' => 'ajax'
+);
+
+$defaults['content'][] = array(
+    'link' => '?display=mailing&cat=admin',
+    'name' => localize('Mailing', 'dash'),
+    'description' => localize('Manage system translations', 'settings'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/mail-replied.png',
+    'linkType' => 'ajax'
+);
+
+$defaults['content'][] = array(
+    'link' => '?display=menuedit&cat=admin',
+    'name' => localize('Menu editor', 'dash'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png',
+    'linkType' => 'ajax'
+);
+
+$defaults['content'][] = array(
+    'link' => '?display=langtool&cat=admin',
+    'name' => ucfirst(localize('translates', 'dash')),
+    'description' => localize('Manage system translations', 'settings'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/langtool.png',
+    'linkType' => 'ajax'
+);
+
+$panthera -> importModule('admin/ui.searchbar');
+$sBar = new uiSearchbar('uiTop');
+//$sBar -> setMethod('POST');
+$sBar -> setQuery($_GET['query']);
+$sBar -> setAddress('?display=settings&cat=admin');
+$sBar -> navigate(True);
+    
+// settings main menu
+$listDB = $panthera -> config -> getKey('settings.items', $defaults, 'array', 'settings');
+
+if (!$_GET['query'])
+{
+    $list = $listDB;
+} else {
+    $list = array();
+
+    foreach ($listDB as $sectionName => $section)
+    {
+        foreach ($section as $item)
+        {
+            if (stripos($item['name'], $_GET['query']) !== False or stripos($item['description'], $_GET['query']) !== False)
+            {
+                $list[$sectionName][] = $item;
+            }
+        }
+    }
+}
+
+$panthera -> template -> push('items', $list);
+$panthera -> template -> display('settings.tpl');
+pa_exit();

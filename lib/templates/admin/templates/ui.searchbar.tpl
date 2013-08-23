@@ -9,7 +9,7 @@
         height: 22px;
         line-height: 1.2em;
         padding: 4px 10px 4px 28px;
-        width: 50%;
+        width: 80%;
         height: 28px;
         
         -webkit-transition-duration: 400ms;
@@ -63,9 +63,11 @@ $(document).ready(function () {
 <div style="margin-left: 25px; margin-top: 15px; margin-bottom: 15px; width: 92%; position: relative;">
         <div style="margin: 0 auto; max-width: 40%; position: relative; height: 30px;">
                 <span style="float: right;">
+                    {if="count($bar['settings']) > 0"}
                     <span data-dropdown="#searchDropdown" id="searchDropdownSpan" style="position: relative; cursor: pointer;">
                         <img src="{$PANTHERA_URL}/images/admin/ui/search-settings.png" style="max-height: 13px;">
                     </span>
+                    {/if}
 
                 
                 {loop="$bar['icons']"}
@@ -80,7 +82,8 @@ $(document).ready(function () {
                 </span>
                 <form action="{$bar.formAction}" method="{$bar.formMethod}" id="{$uiSearchbarName}_form">
                     <input type="text" id="searchField" value="{$bar.query}" name="query" placeholder="{function="localize('Search')"}" style="float: right; margin-right: 5px;"> 
-                    
+
+                    {if="count($bar['settings']) > 0"}
                     <div id="searchDropdown" class="dropdown dropdown-tip dropdown-relative">
                         <ul class="dropdown-menu">
                         {loop="$bar['settings']"}
@@ -108,6 +111,7 @@ $(document).ready(function () {
                         {/loop}
                         </ul>
                     </div>
+                    {/if}
                 </form>
         </div>
 </div>
