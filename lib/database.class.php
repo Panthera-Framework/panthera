@@ -691,7 +691,7 @@ abstract class pantheraFetchDB
         else
             $panthera -> logging -> output('Cache disabled for this ' .get_class($this). ' object', 'pantheraFetchDB');
             
-        if ($this->cacheID)
+        if ($this->cacheID and $this->cache)
         {
             if ($panthera->cache->exists($this->cacheID))
             {
@@ -867,7 +867,7 @@ abstract class pantheraFetchDB
             }
         }*/
         
-        if (!$this->cacheID)
+        if (!$this->cacheID or !$this->panthera->cache)
             return False;
         
         $this -> clearCache();
