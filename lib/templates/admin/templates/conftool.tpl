@@ -15,7 +15,7 @@ function saveVariable(id)
     value = $('#value_'+id).val();
     section = $('#section_'+id).val();
 
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&cat=admin&action=change', data: 'id='+id+'&value='+value+'&section='+section, messageBox: 'userinfoBox', spinner: spinner, success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&cat=admin&action=change', data: 'id='+id+'&value='+value+'&section='+section, messageBox: 'w2ui', spinner: spinner, success: function (response) {
             if (response.status == "success")
             {
                jQuery('#button_'+id).attr("disabled", "disabled");
@@ -32,7 +32,7 @@ function removeKey(id)
     w2confirm('{function="localize('Are you sure you want to delete this key?', 'conftool')"}', function callbackBtn(btn) { 
         if (btn == "Yes")
         {
-            panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&cat=admin&action=remove', data: 'key='+id, messageBox: 'userinfoBox', spinner: spinner, success: function (response) {
+            panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&cat=admin&action=remove', data: 'key='+id, messageBox: 'w2ui', spinner: spinner, success: function (response) {
                     if (response.status == "success")
                     {
                        $('#tr_'+id).remove();
@@ -60,9 +60,9 @@ function conftool_array(k, value)
 </script>
 
         <div class="titlebar">{function="localize('Configuration editor', 'conftool')"} - {function="localize('Administration tool for developers and administrators.', 'conftool')"}{include="_navigation_panel"}</div><br>
-
-        <div class="msgSuccess" id="userinfoBox_success"></div>
-        <div class="msgError" id="userinfoBox_failed"></div>
+        
+        {$uiSearchbarName="uiTop"}
+        {include="ui.searchbar"}
 
         <div class="grid-1" style="position: relative;" id="conftoolTable">
          <table class="gridTable">

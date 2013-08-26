@@ -74,6 +74,20 @@ if (@$_GET['display'] == 'conftool') {
         // the key propably does not exists
         ajax_exit(array('status' => 'failed', 'message' => localize('The key propably does not exists', 'conftool')));
       }
+	  
+	  $panthera -> importModule('admin/ui.searchbar');
+	  
+	  $sBar = new uiSearchbar('uiTop');
+      
+      //$sBar -> setMethod('POST');
+      $sBar -> setQuery($_GET['query']);
+      $sBar -> setAddress('?display=conftool&cat=admin');
+      $sBar -> navigate(True);
+      $sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_update_config_overlay', localize('Manage permissions'));
+      $sBar -> addSetting('order', localize('Order by', 'custompages'), 'select', array(
+            'key' => array('title' => localize('Key'), 'selected' => ($_GET['order'] == 'key')),
+            'section' => array('title' => localize('Section', 'conftool'), 'selected' => ($_GET['order'] == 'section')),
+        ));
 
       $panthera -> config -> loadOverlay('*');
       $overlay = $panthera -> config -> getOverlay();
@@ -82,14 +96,29 @@ if (@$_GET['display'] == 'conftool') {
       foreach ($overlay as $key => $value)
       {
           $value[3] = '';
-      
-          if (is_array($value[1]))
-          {
-              $value[1] = serialize($value[1]);
-              $value[3] = base64_encode($value[1]);
+		  $add = True;
+	  	  
+		  // check if query is defined
+	  	  if ($_GET['query']) {
+	  	  	  $add = False;
+			  
+	  	  	  if ($_GET['order'] == 'key')
+			  	$find = $key;
+			  if ($_GET['order'] == 'section')
+			  	$find = $value[2];
+			  
+			  if (stripos($find, $_GET['query']) !== False)
+	  	  	  		  $add = True;
+	  	  } 
+		  
+		  if ($add == True) {
+		      if (is_array($value[1])) {
+	              $value[1] = serialize($value[1]);
+	              $value[3] = base64_encode($value[1]);
+	          }
+	          
+	          $array[$key] = array($value[0], $value[1], 'b64' => $value[3], 'section' => $value[2]);
           }
-          
-          $array[$key] = array($value[0], $value[1], 'b64' => $value[3], 'section' => $value[2]);
       }
 
       $array = $panthera -> get_filters('conftool_array', $array);
