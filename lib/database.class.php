@@ -682,6 +682,7 @@ abstract class pantheraFetchDB
           *
           */
         
+        // get cache life time from database class
         if ($panthera->cacheType('cache') == 'memory' and $panthera->db->cache > 0)
             $this->cache = $panthera->db->cache;
         
@@ -691,7 +692,7 @@ abstract class pantheraFetchDB
         else
             $panthera -> logging -> output('Cache disabled for this ' .get_class($this). ' object', 'pantheraFetchDB');
             
-        if ($this->cacheID and $this->cache)
+        if ($this->cacheID)
         {
             if ($panthera->cache->exists($this->cacheID))
             {
@@ -867,7 +868,7 @@ abstract class pantheraFetchDB
             }
         }*/
         
-        if (!$this->cacheID or !$this->panthera->cache)
+        if (!$this->cacheID)
             return False;
         
         $this -> clearCache();
