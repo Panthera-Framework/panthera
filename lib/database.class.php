@@ -684,14 +684,18 @@ abstract class pantheraFetchDB
         
         // get cache life time from database class
         if ($panthera->cacheType('cache') == 'memory' and $panthera->db->cache > 0)
+        {
             $this->cache = $panthera->db->cache;
+        }
         
-        // caching
-        if ($this->cache > 0 and is_string($by) and $by != 'array')
+        // create a content cacheID, but at first check if caching is possible (we cant cache complicated objects like those constructed by array or object)
+        if ($this->cache > 0 and is_string($by) and $by != 'array' and $this->panthera->cache)
+        {    
             $this->cacheID = $panthera->db->prefix.$this->_tableName. '.' .serialize($by). '.' .$value;
-        else
+        } else {
             $panthera -> logging -> output('Cache disabled for this ' .get_class($this). ' object', 'pantheraFetchDB');
-            
+        }   
+         
         if ($this->cacheID)
         {
             if ($panthera->cache->exists($this->cacheID))
@@ -702,6 +706,7 @@ abstract class pantheraFetchDB
             }
         }
         
+        // check if child class has met requirements - if the table name is provided
         if ($this->_tableName == NuLL)
             throw new Exception('$this->_tableName was not specified, cannot construct object of ' .get_class($this). ' extended by pantheraFetchDB');
             
