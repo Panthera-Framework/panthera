@@ -17,7 +17,7 @@ function selectLanguage (language, iconAvaliable)
     }
 
     $('#language').html(icon+' '+ucfirst(language));
-    navigateTo('?_locale='+language);
+    window.location.href = '?_locale='+language;
 }
 </script>
 
