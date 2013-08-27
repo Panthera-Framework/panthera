@@ -429,6 +429,7 @@ if ($_GET['action'] == 'account') {
         }
         
         $panthera -> importModule('admin/ui.searchbar');
+		$panthera -> locale -> loadDomain('search');
 
         $sBar = new uiSearchbar('uiTop');
         //$sBar -> setMethod('POST');
