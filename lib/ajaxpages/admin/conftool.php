@@ -76,6 +76,7 @@ if (@$_GET['display'] == 'conftool') {
       }
 	  
 	  $panthera -> importModule('admin/ui.searchbar');
+	  $panthera -> locale -> loadDomain('search');
 	  
 	  $sBar = new uiSearchbar('uiTop');
       
@@ -84,7 +85,7 @@ if (@$_GET['display'] == 'conftool') {
       $sBar -> setAddress('?display=conftool&cat=admin');
       $sBar -> navigate(True);
       $sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_update_config_overlay', localize('Manage permissions'));
-      $sBar -> addSetting('order', localize('Order by', 'custompages'), 'select', array(
+      $sBar -> addSetting('order', localize('Order by', 'search'), 'select', array(
             'key' => array('title' => localize('Key'), 'selected' => ($_GET['order'] == 'key')),
             'section' => array('title' => localize('Section', 'conftool'), 'selected' => ($_GET['order'] == 'section')),
         ));

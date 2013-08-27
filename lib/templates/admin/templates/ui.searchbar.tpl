@@ -81,7 +81,7 @@ $(document).ready(function () {
                 {/loop}
                 </span>
                 <form action="{$bar.formAction}" method="{$bar.formMethod}" id="{$uiSearchbarName}_form">
-                    <input type="text" id="searchField" value="{$bar.query}" name="query" placeholder="{function="localize('Search')"}" style="float: right; margin-right: 5px;"> 
+                    <input type="text" id="searchField" value="{$bar.query}" name="query" placeholder="{function="localize('Search', 'search')"}" style="float: right; margin-right: 5px;"> 
 
                     {if="count($bar['settings']) > 0"}
                     <div id="searchDropdown" class="dropdown dropdown-tip dropdown-relative">
