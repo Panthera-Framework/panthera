@@ -15,16 +15,7 @@ function saveVariable(id)
     value = $('#value_'+id).val();
     section = $('#section_'+id).val();
 
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&cat=admin&action=change', data: 'id='+id+'&value='+value+'&section='+section, messageBox: 'w2ui', spinner: spinner, success: function (response) {
-            if (response.status == "success")
-            {
-               jQuery('#button_'+id).attr("disabled", "disabled");
-               jQuery('#button_'+id).animate({ height:'toggle'});
-               setTimeout("jQuery('#button_"+id+"').removeAttr('disabled');", 2500);
-               setTimeout("jQuery('#button_"+id+"').animate({ height:'toggle' });", 2500);
-            }
-        }
-    });
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&cat=admin&action=change', data: 'id='+id+'&value='+value+'&section='+section, messageBox: 'w2ui', spinner: spinner});
 }
 
 function removeKey(id)
@@ -125,7 +116,9 @@ function addRecord()
                     </td>
                     
                     <td>
-                    	<input type="button" value="{function="localize('Save', 'messages')"}" id="button_{$key}" onclick="saveVariable('{$key}');">&nbsp;
+                    	<a href="#" onclick="saveVariable('{$key}');">
+                        	<img src="{$PANTHERA_URL}/images/admin/ui/save.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
+                    	</a>
                         <a href="#" onclick="removeKey('{$key}');">
                         	<img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
                     	</a>
