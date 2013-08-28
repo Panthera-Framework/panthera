@@ -10,6 +10,8 @@
 
 if (!defined('IN_PANTHERA'))
     exit;
+    
+$panthera -> config -> loadOverlay('*');
       
 if (@$_GET['display'] == 'conftool') {
 
@@ -97,7 +99,6 @@ if (@$_GET['display'] == 'conftool') {
             'section' => array('title' => localize('Section', 'conftool'), 'selected' => ($_GET['order'] == 'section')),
         ));
 
-      $panthera -> config -> loadOverlay('*');
       $overlay = $panthera -> config -> getOverlay();
       $array = array();
 
