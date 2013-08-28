@@ -91,12 +91,6 @@ function addRecord()
                 </tr>
             </thead>
 
-            <tfoot>
-                <tr>
-                    <td colspan="5" class="rounded-foot-left"><em>Panthera - {function="localize('Configuration editor', 'conftool')"} <input type="button" value="{function="localize('Manage permissions')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_update_config_overlay', 1024, 'upload_popup');" style="float: right; margin-right: 7px;"></em></td>
-                </tr>
-            </tfoot>
-
             <tbody>
               {loop="$a"}
                 <tr id="tr_{$key}">
