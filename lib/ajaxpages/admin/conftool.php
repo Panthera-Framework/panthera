@@ -72,8 +72,15 @@ if (@$_GET['display'] == 'conftool') {
             ajax_exit(array('status' => 'success'));
             
         // the key propably does not exists
-        ajax_exit(array('status' => 'failed', 'message' => localize('The key propably does not exists', 'conftool')));
-      }
+        ajax_exit(array('status' => 'failed', 'message' => localize('The key propably does not exist', 'conftool')));
+      } elseif ($_GET['action'] == 'add') {
+      	if ($_POST['key'] != '' and $_POST['value'] != '' and $_POST['type'] != '') {
+			if ($panthera -> config -> setKey($_POST['key'], $_POST['value'], $_POST['type'], $_POST['section']))
+				ajax_exit(array('status' => 'success'));
+		}
+		
+      	ajax_exit(array('status' => 'failed', 'message' => 'Check your type of value!'));
+	  }
 	  
 	  $panthera -> importModule('admin/ui.searchbar');
 	  $panthera -> locale -> loadDomain('search');
