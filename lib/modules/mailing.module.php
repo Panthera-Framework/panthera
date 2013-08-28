@@ -12,6 +12,8 @@ if (!defined('IN_PANTHERA'))
   
 // include phpmailer liblary
 require_once(PANTHERA_DIR. '/share/phpmailer/class.phpmailer.php');
+require_once(PANTHERA_DIR. '/share/phpmailer/class.smtp.php');
+
 
 class mailMessage
 {
@@ -20,11 +22,12 @@ class mailMessage
     /**
 	 * Pre-configuration of mailing system
 	 *
+	 * @param bool $debug
 	 * @return void
 	 * @author Damian Kęska
 	 */
 
-    public function __construct()
+    public function __construct($debug=False)
     {
         global $panthera;
         $this->panthera = $panthera;
@@ -33,6 +36,9 @@ class mailMessage
         $this -> mailer = new PHPMailer();
         $this -> mailer ->IsSMTP();
         $this -> mailer -> CharSet = "UTF-8";
+        
+        if ($debug)
+            $this -> mailer -> SMTPDebug = 2;
 
         // are we using SSL connection?
         if ($panthera -> config -> getKey('mailing_smtp_ssl', 'bool'))
@@ -83,7 +89,7 @@ class mailMessage
                 ini_set('SMTP', $panthera -> config -> getKey('mailing_server'));*/
         }
     }
-
+    
     /**
 	 * Set mail subject
 	 *
@@ -173,7 +179,6 @@ class mailMessage
 
         // set mail body
         $this->mailer->Body = $message;
-
         return $this->mailer->Send();
     }
 }

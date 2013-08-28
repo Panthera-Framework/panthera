@@ -553,6 +553,9 @@ class pantheraTemplate extends pantheraClass
             throw new Exception('Cannot find template "' .$template. '" in both /content/templates/' .$this->name. '/templates and /lib/templates/' .$this->name. '/templates directories');
             
         $this->panthera->logging->output('Displaying ' .$file, 'pantheraTemplate');
+        
+        // turn off output control
+        $this->panthera->outputControl->flushAndFinish();
 
         // assign all variables        
         foreach ($this->vars as $var => $value)
@@ -564,8 +567,6 @@ class pantheraTemplate extends pantheraClass
             return $render;        
         else
             print($render);
-            
-        @ob_end_flush();
         
         // generate template execution time
         $this -> timer = (microtime_float() - $this -> timer);
@@ -790,4 +791,105 @@ class pantheraTemplate extends pantheraClass
         return $changes;
         
     }
+}
+
+/**
+ * Output control for Panthera Framework
+ *
+ * @package Panthera\core\templates
+ * @author Damian Kęska
+ */
+
+class outputControl extends pantheraClass
+{
+    protected $log = '';
+    
+    /**
+      * Save output buffer to variable that can be added to Panthera Logging
+      *
+      * @return void 
+      * @author Damian Kęska
+      */
+
+    public function startBuffering($handler='')
+    {
+        global $panthera;
+    
+        @ob_flush();
+
+        if ($handler == 'log')
+        {
+            @ob_start('obLogHandler');
+        } elseif (!$handler) {
+            ob_start();
+        } else {
+            ob_start($handler);
+        }
+        
+        $panthera->logging->output('Setting output buffering with "' .$handler. '" handler', 'outputControl');
+    }
+    
+    /**
+      * Handle write from PHP's ob
+      *
+      * @param string $string
+      * @param int $phase
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public function handle($string, $phase)
+    {
+        $this->log .= $string;
+        return True;
+    }
+    
+    /**
+      * Get saved output
+      *
+      * @return string 
+      * @author Damian Kęska
+      */
+    
+    public function getLog()
+    {
+        return $this->log;
+    }
+    
+    /**
+      * Flush output to browser and finish output buffering
+      *
+      * @param string name
+      * @return mixed 
+      * @author Damian Kęska
+      */
+    
+    public function flushAndFinish()
+    {
+        global $panthera;
+        
+        ob_end_flush();
+    
+        while (ob_get_level() > 0) {
+            ob_end_flush();
+        }
+        
+        $panthera->logging->output('Flushing buffers and stopping output buffering', 'outputControl');
+    }
+}
+
+/**
+  * Used to handle output buffering in PHP
+  *
+  * @package Panthera\core\templates
+  * @param string $string
+  * @param string $phase
+  * @return bool
+  * @author Damian Kęska
+  */
+
+function obLogHandler($string, $phase)
+{
+    global $panthera;
+    return $panthera->outputControl->handle($string, $phase);
 }

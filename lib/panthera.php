@@ -690,8 +690,8 @@ class pantheraCore
 	 */
 
     public function __construct($config) {
-
-        if (!$config['SITE_DIR'])
+        // this should be definitely done in app.php 
+        /*if (!$config['SITE_DIR'])
         {
             // try to find site root directory
             if (!defined('SITE_DIR'))
@@ -724,7 +724,7 @@ class pantheraCore
 
                 $config['SITE_DIR'] = $path;
             }
-        }
+        }*/
         
         define('SITE_DIR', $config['SITE_DIR']); // get SITE_DIR from configuration if avaliable
 
@@ -737,6 +737,7 @@ class pantheraCore
 
         $this->types = new pantheraTypes($this); // data types
         $this->logging = new pantheraLogging($this);
+        $this->outputControl = new outputControl($this);
 
         if (isset($config['varCache']) and isset($config['cache']))
         {
@@ -752,8 +753,8 @@ class pantheraCore
         /** Debugging **/
         $this -> logging -> toVarCache = (bool)$config['debug_to_varcache'];
         $this -> logging -> tofile = (bool)$config['debug_to_file'];
+        $this -> logging -> debug = (bool)$this->config->getKey('debug');
         
-
         /** Cryptography support **/
         if (!function_exists('password_hash'))
         {
@@ -994,52 +995,6 @@ class pantheraCore
     {
         return $this->permissionsTable;
     }
-
-    /* ==== PLUGINS CONTEXT ==== */
-
-    /*public function get_context($plugin)
-    {
-        $u = $this->config->getKey('pluginsContext');
-
-        if (@array_key_exists($plugin, $u))
-            return $u[$plugin];
-
-        return False;
-    }
-
-    public function append_context($plugin, $file)
-    {
-        $context = $this->config->getKey('pluginsContext');
-
-        $old = @in_array($file, @$context[$plugin]);
-
-        if(!array_key_exists($plugin, $context))
-        {
-            $this -> logging -> output ('panthera::Creating new context table for ' .$plugin);
-            $context[$plugin] = array($file);
-        } else {
-            $this -> logging -> output ('panthera::Adding '.$file. ' to ' .$plugin. ' context');
-            $context[$plugin][] = $file;
-        }
-
-        if(!$old)
-            $this->config->setKey('pluginsContext', $context);
-
-        return True;
-    }
-
-    public function remove_context($plugin, $file)
-    {
-        $context = $this->config->getKey('pluginsContext');
-        $search = array_search($context[$plugin], $file);
-
-        if(in_array($context[$plugin], $file))
-        {
-            unset($context[$plugin][$search]);
-            $this->config->setKey('pluginsContext', $context);
-            return True;
-        }
-    }*/
 
     /**
       * Return cache type
@@ -1437,7 +1392,7 @@ class pantheraCore
 
 abstract class pantheraClass
 {
-    protected $panthera;
+    protected $panthera = '';
 
     public function __construct()
     {
@@ -1831,6 +1786,14 @@ function ajax_exit($array)
 
     if ($panthera -> logging -> debug == True)
         $panthera -> logging -> output('ajax_exit: ' .json_encode($array), 'pantheraCore');
+        
+    $panthera -> outputControl -> flushAndFinish();
+    
+    // insert buffered log if avaliable to "message" element
+    if (isset($array['message']))
+    {
+        $array['message'] = str_ireplace('{$bufferedOutput}', $panthera -> outputControl -> getLog(), $array['message']);
+    }
 
     print(json_encode($array));
     pa_exit('', True);
@@ -1853,7 +1816,9 @@ function pa_exit($string='', $ajaxExit=False)
 
     // execute all hooks to save data
     $panthera -> get_options('page_load_ends', $ajaxExit);
-    $panthera->finish();
+    $panthera -> finish();
+
+    ob_start();
 
     die($string);
 }
