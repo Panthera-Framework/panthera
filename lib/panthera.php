@@ -399,6 +399,9 @@ class pantheraConfig
             // if section changed tell the framework that overlay changed
             if ($this->overlay[(string)$key][2] !== $section and $section !== null)
             {
+                if ($section === null)
+                    $section = '';
+            
                 $this->overlay_modified[(string)$key] = True;
                 $this->overlay[(string)$key][2] = $section;
             }
@@ -410,6 +413,9 @@ class pantheraConfig
             } else
                 return True;
         } else {
+            if ($section === null)
+                $section = '';
+        
             // new entry in overlay
             $this->overlay[(string)$key] = array(0 => 'string'); // default type
             $this->overlay[(string)$key][2] = $section;
