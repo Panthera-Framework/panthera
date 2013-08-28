@@ -177,6 +177,10 @@ if (isset($_POST['db_prefix']))
             ajax_exit(array('status' => 'failed', 'errors' => $errors));
         }
         
+        // set database variables
+        $panthera -> db = $db;
+        $panthera -> importModule('installer/preconfigure.database');
+        preconfigureDatabase();
         $installer -> enableNextStep();
         $app -> save();
         ajax_exit(array('status' => 'success'));
