@@ -89,11 +89,70 @@ if ($_GET['action'] == 'send')
     }
 
     ajax_exit(array('status' => 'failed', 'message' => localize('Please specify at least one recipient')));
-} elseif ($_GET['action'] == 'select') {
-    // TODO: list users and groups
 
-    $template -> push('action', 'select');
-    $template -> display($tpl);
+/**
+  * Select users and groups as recipients in sending window
+  *
+  * @author Mateusz Warzyński, Damian Kęska
+  */
+
+} elseif ($_GET['action'] == 'select') {
+	$groups = pantheraGroup::listGroups();
+    $groupsTpl = array();
+
+    foreach ($groups as $group) {
+    	if (isset($_GET['query'])) {
+	    	if (stripos($group->name, $_GET['query']) !== False)
+	        	$groupsTpl[] = array('name' => $group->name);
+		} else {
+			$groupsTpl[] = array('name' => $group->name);
+		}
+    }
+	
+	// uiPager
+    $panthera -> importModule('admin/ui.pager');
+    $uiPager = new uiPager('users', $usersTotal, $maxOnPage);
+    $uiPager -> setActive($usersPage);
+    $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\');');
+    $limit = $uiPager -> getPageLimit();
+	
+	$w = new whereClause();
+	if ($_GET['query']) {
+        $_GET['query'] = trim(strtolower($_GET['query'])); // strip unneeded spaces and make it lowercase
+        $w -> add( 'AND', 'login', 'LIKE', '%' .$_GET['query']. '%');
+    	$w -> add( 'OR', 'full_name', 'LIKE', '%' .$_GET['query']. '%');
+    }
+	
+    $users = array();
+    $usersData = getUsers($w, $limit[1], $limit[0]);
+
+    foreach ($usersData as $w) {
+    	// superuser cant be listed, it must be hidden
+        if ($w -> attributes -> superuser and !$user->attributes->superuser)
+        	continue;
+
+		if($w->mail) {
+	        $users[] = array(
+	        	'login' => $w->login, 
+	            'name' => $w->getName(),
+	            'avatar' => pantheraUrl($w->profile_picture),
+	        );
+		}
+    }
+	
+	$panthera -> importModule('admin/ui.searchbar');
+	$panthera -> locale -> loadDomain('search');
+	
+	$sBar = new uiSearchbar('uiTop');
+    
+    //$sBar -> setMethod('POST');
+    $sBar -> setQuery($_GET['query']);
+    $sBar -> setAddress('?display=mailing&cat=admin&action=select');
+    $sBar -> navigate(True);
+	
+	$panthera -> template -> push('groups', $groupsTpl);
+	$panthera -> template -> push('users', $users);
+	$panthera -> template -> display('mailing_select.tpl');
     pa_exit();
     
 /**
