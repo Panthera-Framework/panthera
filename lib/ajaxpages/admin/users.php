@@ -429,6 +429,7 @@ if ($_GET['action'] == 'account') {
         }
         
         $panthera -> importModule('admin/ui.searchbar');
+		$panthera -> locale -> loadDomain('search');
 
         $sBar = new uiSearchbar('uiTop');
         //$sBar -> setMethod('POST');
@@ -436,7 +437,7 @@ if ($_GET['action'] == 'account') {
         $sBar -> setAddress('?display=users&cat=admin');
         $sBar -> navigate(True);
         $sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_see_users_table', localize('Manage permissions'));
-        $sBar -> addSetting('order', localize('Order by', 'custompages'), 'select', array(
+        $sBar -> addSetting('order', localize('Order by', 'search'), 'select', array(
             'id' => array('title' => 'id', 'selected' => ($_GET['order'] == 'id')),
             'login' => array('title' => localize('Login', 'users'), 'selected' => ($_GET['order'] == 'login')),
             'full_name' => array('title' => localize('Full name', 'users'), 'selected' => ($_GET['order'] == 'full_name')),
@@ -447,9 +448,9 @@ if ($_GET['action'] == 'account') {
             'primary_group' => array('title' => localize('Group', 'users'), 'selected' => ($_GET['order'] == 'primary_group'))
         ));
         
-        $sBar -> addSetting('direction', localize('Direction', 'custompages'), 'select', array(
-            'ASC' => array('title' => localize('Ascending'), 'selected' => ($_GET['direction'] == 'ASC')),
-            'DESC' => array('title' => localize('Descending'), 'selected' => ($_GET['direction'] == 'DESC'))
+        $sBar -> addSetting('direction', localize('Direction', 'search'), 'select', array(
+            'ASC' => array('title' => localize('Ascending', 'search'), 'selected' => ($_GET['direction'] == 'ASC')),
+            'DESC' => array('title' => localize('Descending', 'search'), 'selected' => ($_GET['direction'] == 'DESC'))
         ));
 
         if (@$_GET['subaction'] == 'show_table')
