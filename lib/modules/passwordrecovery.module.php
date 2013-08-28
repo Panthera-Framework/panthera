@@ -29,28 +29,44 @@ function recoveryCreate($login)
 
     if ($SQL -> rowCount() > 0)
         return False;
+        
+    // default password length
+    if ($panthera->config->getKey('recovery.passwd.length', 16, 'int', 'passwordrecovery') < 3)
+        $panthera -> config -> setKey('recovery.passwd.length', 16, 'int', 'passwordrecovery');
+    
+    // default recovery key length
+    if ($panthera->config->getKey('recovery.key.length', 32, 'int', 'passwordrecovery') < 16)
+        $panthera -> config -> setKey('recovery.key.length', 32, 'int', 'passwordrecovery');
 
-    $newPassword = generateRandomString(16);
-    $recoveryKey = generateRandomString(32);
+    $newPassword = generateRandomString($panthera->config->getKey('recovery.passwd.length'));
+    $recoveryKey = generateRandomString($panthera->config->getKey('recovery.key.length'));
+    
+    // check if selected key is unique, if not generate a new one until it isnt unique
+    $SQL = $panthera -> db -> query('SELECT `id` FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key', array('key' => $recoveryKey));
+
+    while ($SQL -> rowCount() > 0)
+    {
+        $recoveryKey = generateRandomString($panthera->config->getKey('recovery.key.length'));
+        $SQL = $panthera -> db -> query('SELECT `id` FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key', array('key' => $recoveryKey));
+    }
+
     $values = array('recovery_key' => $recoveryKey, 'login' => $login, 'passwd' => $newPassword);
 
     // plugins support
-    $values = $panthera -> get_filters('recovery_values', $values);
+    $values = $panthera -> get_filters('recovery.values', $values);
 
     $SQL = $panthera -> db -> query('INSERT INTO `{$db_prefix}password_recovery` (`id`, `recovery_key`, `user_login`, `date`, `new_passwd`) VALUES (NULL, :recovery_key, :login, NOW(), :passwd)', $values);
 
-    $message = $panthera->config->getKey('recovery_password_content', 'You requested a new password. If you want to change your current password to "{$recovery_passwd}" please visit this url: {$PANTHERA_URL}/pa-login.php?key={$recovery_key}', 'string');
+    $message = $panthera->config->getKey('recovery.mail.content', 'You requested a new password. If you want to change your current password to "{$recovery_passwd}" please visit this url: {$PANTHERA_URL}/pa-login.php?key={$recovery_key}', 'string', 'passwordrecovery');
     $message = str_replace('{$recovery_key}', $recoveryKey, str_replace('{$recovery_passwd}', $newPassword, pantheraUrl($message)));
     
+    // send a mail
     $panthera -> importModule('mailing');
-    
     $mailRecovery = new mailMessage();
-    $mailRecovery -> setSubject($panthera->config->getKey('recovery_password_title', 'Password recovery', 'string'));
+    $mailRecovery -> setSubject($panthera->config->getKey('recovery.mail.title', 'Password recovery', 'string', 'passwordrecovery'));
     $mailRecovery -> addRecipient($user->mail);
     $mailRecovery -> send($message, 'html');
     
-    //mail($user->mail, $panthera->config->getKey('recovery_password_title', 'Password recovery', 'string'), $message);
-
     if ($SQL -> rowCount() > 0)
         return True;
 
@@ -80,7 +96,7 @@ function recoveryChangePassword($key)
         $user -> save();
 
         // maybe any plugin will use this data
-        $panthera -> get_options('recovery_done', array($key, $array['user_login'], $array['new_passwd']));
+        $panthera -> get_options('recovery.done', array($key, $array['user_login'], $array['new_passwd']));
 
         // remove recovery option
         $panthera -> db -> query ('DELETE FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key', array('key' => $key));
