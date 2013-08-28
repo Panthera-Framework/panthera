@@ -13,6 +13,7 @@ if (!defined('IN_PANTHERA'))
 
 $panthera -> importModule('filesystem');
 $panthera -> importModule('simpleImage');
+$panthera -> importModule('pager');
 $panthera -> locale -> loadDomain('files');
 
 if (isset($_GET['popup']))
