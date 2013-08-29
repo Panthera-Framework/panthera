@@ -272,15 +272,15 @@ function createGalleryItem($title, $description, $link, $gallery_id, $visibility
         $size = 240;
 
     $thumb = pantheraUrl('{$upload_dir}/_thumbnails/' .$size. '_' .$fileInfo['filename']. '.jpg');
-
+	
     if (!is_file($thumb))
     {
         $panthera -> logging -> output('createGalleryItem::Creating thumbnail for file "' .pantheraUrl($upload->location). '", width=' .$size);
         $simpleImage = new simpleImage();
         $simpleImage -> load(pantheraUrl($upload->location));
         $simpleImage -> resizeToWidth($size);
-        $simpleImage -> save(PANTHERA_DIR. '/' .$thumb, IMAGETYPE_JPEG, 85);
-        $panthera -> logging -> output('createGalleryItem::Saving thumbnail to file "' .PANTHERA_DIR. '/' .$thumb. '"');
+        $simpleImage -> save(SITE_DIR. '/' .$thumb);
+        $panthera -> logging -> output('createGalleryItem::Saving thumbnail to file "' .SITE_DIR. '/' .$thumb. '"');
     }
 
     $thumbnail = $panthera->config->getKey('url'). '/' .$thumb;

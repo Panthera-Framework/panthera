@@ -139,9 +139,9 @@ $(function(){
            <div class="content-gird">
            <ul class="picturesBox">
                    {loop="$galleryItems"}
-            	   <li><a href="{$value->link|pantheraUrl}">  <img src="{$value->thumbnail|pantheraUrl}" alt="" style="max-width: 110px;"></a>
+            	   <li><a href="#edit" onclick="navigateTo('?display=gallery&cat=admin&action=edit_item_form&itid={$value->id}');">  <img src="{$value->thumbnail|pantheraUrl}" alt="" style="max-width: 110px;"></a>
             	         <ul class="picturesBoxItem">
-                         		<a href="{$value->link|pantheraUrl}">{$value->title}</a>
+                         		<a href="#edit" onclick="navigateTo('?display=gallery&cat=admin&action=edit_item_form&itid={$value->id}');">{$value->title}</a>
                          </ul>
                    </li>
                    {/loop}
