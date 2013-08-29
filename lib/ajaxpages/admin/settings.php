@@ -146,6 +146,14 @@ $defaults['system']['templates'] = array(
     'linkType' => 'ajax'
 );
 
+$defaults['system']['session'] = array(
+    'link' => '?display=settings.session&cat=admin',
+    'name' => ucfirst(localize('session', 'dash')),
+    'description' => localize('Session, cookies and browser security settings', 'settings'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/session-icon.png',
+    'linkType' => 'ajax'
+);
+
 // Content section
 $defaults['content'] = array();
 

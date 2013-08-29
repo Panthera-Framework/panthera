@@ -163,7 +163,7 @@ class pantheraSession
 
     public function lifetimeCheck()
     {
-        $max = (int)$this->panthera->config->getKey('session_lifetime', '3600', 'int');
+        $max = (int)$this->panthera->config->getKey('session_lifetime', 86400, 'int');
 
         if ((time() - $this->get('time')) >= $max)
             return False;

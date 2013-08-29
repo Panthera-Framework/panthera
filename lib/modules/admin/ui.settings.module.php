@@ -57,7 +57,8 @@ class uiSettings
             'label' => $label, 
             'validator' => $validator,
             'key' => $setting,
-            'customSaveHandler' => null
+            'customSaveHandler' => null,
+            'description' => ''
         );
     }
     
@@ -76,6 +77,24 @@ class uiSettings
             return str_ireplace('_-_', '.', $string);
         else
             return str_ireplace('.', '_-_', $string);
+    }
+    
+    /**
+      * Describe a key
+      *
+      * @param string $field
+      * @param string $description
+      * @return bool|null 
+      * @author Damian Kęska
+      */
+    
+    public function setDescription($field, $description)
+    {
+        if (isset($this->settingsList[$field]))
+        {
+            $this->settingsList[$field]['description'] = $description;
+            return True;
+        }
     }
     
     /**

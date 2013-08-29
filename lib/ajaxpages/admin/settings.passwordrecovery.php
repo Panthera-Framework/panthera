@@ -33,7 +33,7 @@ $panthera -> importModule('admin/ui.settings');
 
 // load uiSettings with "passwordrecovery" config section
 $config = new uiSettings('passwordrecovery');
-$config -> add('recovery.passwd.length', localize('New password length', 'passwordrecovery'), new integerRange(4, 32)); // please not that "." is replaced to "_-_"
+$config -> add('recovery.passwd.length', localize('New password length', 'passwordrecovery'), new integerRange(4, 32)); // please note that "." is replaced to "_-_"
 $config -> add('recovery.key.length', localize('Recovery id length', 'passwordrecovery'), new integerRange(4, 32));
 $config -> add('recovery.mail.content', localize('Mail content', 'passwordrecovery'));
 $config -> add('recovery.mail.title', localize('Mail message title', 'passwordrecovery'));

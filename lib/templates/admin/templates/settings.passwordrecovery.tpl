@@ -43,13 +43,9 @@
         <form action="?{function="getQueryString('GET', '', '_')"}" method="POST" id="settingsFormSave">
         <div class="grid-1" style="position: relative;" id="settingsFormSaveDiv">
          <table class="gridTable">
-            <thead>
-                <tr><th colspan="2">{function="localize('Settings', 'password recovery')"}</th></tr>
-            </thead>
-         
             <tbody>
                 <tr>
-                    <td>{function="localize('Laguage')"}: </td>
+                    <td>{function="localize('Language')"}: </td>
                     <td>
                         <select name="language" id="languageSelection">
                             {loop="$languages"}
