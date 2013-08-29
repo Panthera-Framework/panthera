@@ -83,7 +83,7 @@ $defaults['users'] = array('link' => '?display=users&cat=admin', 'name' => local
 $defaults['database'] = array('link' => '?display=database&cat=admin', 'name' => localize('Database management', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/db.png' , 'linkType' => 'ajax');
 $defaults['cache'] = array('link' => '?display=cache&cat=admin', 'name' => localize('Cache management', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/cache.png' , 'linkType' => 'ajax');
 $defaults['leopard'] = array('link' => '?display=leopard&cat=admin', 'name' => localize('Package management', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/package.png' , 'linkType' => 'ajax');
-$defaults['settings'] = array('link' => '?display=settings&cat=admin&action=system_info', 'name' => localize('Informations about system', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/system.png', 'linkType' => 'ajax');
+$defaults['system_info'] = array('link' => '?display=settings&cat=admin&action=system_info', 'name' => localize('Informations about system', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/system.png', 'linkType' => 'ajax');
 $defaults['conftool'] = array('link' => '?display=conftool&cat=admin', 'name' => localize('Configuration editor', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/config.png', 'linkType' => 'ajax');
 $defaults['ajaxpages'] = array('link' => '?display=ajaxpages&cat=admin', 'name' => localize('Index of ajax pages', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Actions-tab-detach-icon.png', 'linkType' => 'ajax');
 $defaults['shellutils'] = array('link' => '?display=shellutils&cat=admin', 'name' => localize('Shell utils', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Apps-yakuake-icon.png', 'linkType' => 'ajax');
@@ -118,15 +118,18 @@ switch ($_GET['menu'])
 
     case '':
         $_GET['menu'] = 'main';
+        $num=0;
         
-        foreach ($menuDB as $num => $item)
+        foreach ($menuDB as $key => $item)
         {
+            $num++;
+            
             if ($num == $maxItems)
             {
                 break;
             }
             
-            $menu[] = $item;
+            $menu[$key] = $item;
         }
         
         $menu[] = array('link' => '?display=dash&cat=admin&menu=more', 'name' => localize('More', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/tango-icon-theme/Go-next.svg' , 'linkType' => 'ajax');

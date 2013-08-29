@@ -94,7 +94,7 @@ if (!defined('IN_PANTHERA'))
     
 $defaults = array();
 $defaults['system'] = array();
-$defaults['system'][] = array(
+$defaults['system']['database'] = array(
     'link' => '?display=database&cat=admin', 
     'name' => localize('Database management', 'dash'), 
     'description' => localize('Monitor connection status, create backups', 'settings'), 
@@ -102,7 +102,7 @@ $defaults['system'][] = array(
     'linkType' => 'ajax'
 );
 
-$defaults['system'][] = array(
+$defaults['system']['cache'] = array(
     'link' => '?display=cache&cat=admin', 
     'name' => localize('Cache management', 'dash'),
     'description' => localize('Monitor and manage cache settings', 'settings'),
@@ -110,7 +110,7 @@ $defaults['system'][] = array(
     'linkType' => 'ajax'
 );
 
-$defaults['system'][] = array(
+$defaults['system']['leopard'] = array(
     'link' => '?display=leopard&cat=admin', 
     'name' => localize('Package management', 'dash'),
     'description' => localize('Install or remove Panthera packages', 'settings'),
@@ -118,28 +118,28 @@ $defaults['system'][] = array(
     'linkType' => 'ajax'
 );
 
-$defaults['system'][] = array(
+$defaults['system']['conftool'] = array(
     'link' => '?display=conftool&cat=admin', 
     'name' => localize('Configuration editor', 'dash'), 
     'icon' => '{$PANTHERA_URL}/images/admin/menu/config.png', 
     'linkType' => 'ajax'
 );
 
-$defaults['system'][] = array(
+$defaults['system']['locales'] = array(
     'link' => '?display=locales&cat=admin',
     'name' => localize('Language settings', 'dash'),
     'icon' => '{$PANTHERA_URL}/images/admin/menu/locales.png',
     'linkType' => 'ajax'
 );
 
-$defaults['system'][] = array(
+$defaults['system']['plugins'] = array(
     'link' => '?display=plugins&cat=admin',
     'name' => ucfirst(localize('plugins', 'dash')),
     'icon' => '{$PANTHERA_URL}/images/admin/menu/Apps-preferences-plugin-icon.png',
     'linkType' => 'ajax'
 );
 
-$defaults['system'][] = array(
+$defaults['system']['templates'] = array(
     'link' => '?display=templates&cat=admin',
     'name' => ucfirst(localize('templates', 'dash')),
     'icon' => '{$PANTHERA_URL}/images/admin/menu/Icon-template.png',
@@ -149,7 +149,7 @@ $defaults['system'][] = array(
 // Content section
 $defaults['content'] = array();
 
-$defaults['content'][] = array(
+$defaults['content']['users'] = array(
     'link' => '?display=users&cat=admin',
     'name' => ucfirst(localize('users', 'dash')),
     'description' => localize('Manage system translations', 'settings'),
@@ -157,7 +157,7 @@ $defaults['content'][] = array(
     'linkType' => 'ajax'
 );
 
-$defaults['content'][] = array(
+$defaults['content']['mailing'] = array(
     'link' => '?display=mailing&cat=admin',
     'name' => localize('Mailing', 'dash'),
     'description' => localize('Manage system translations', 'settings'),
@@ -165,18 +165,26 @@ $defaults['content'][] = array(
     'linkType' => 'ajax'
 );
 
-$defaults['content'][] = array(
+$defaults['content']['menuedit'] = array(
     'link' => '?display=menuedit&cat=admin',
     'name' => localize('Menu editor', 'dash'),
     'icon' => '{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png',
     'linkType' => 'ajax'
 );
 
-$defaults['content'][] = array(
+$defaults['content']['langtool'] = array(
     'link' => '?display=langtool&cat=admin',
     'name' => ucfirst(localize('translates', 'dash')),
     'description' => localize('Manage system translations', 'settings'),
     'icon' => '{$PANTHERA_URL}/images/admin/menu/langtool.png',
+    'linkType' => 'ajax'
+);
+
+$defaults['content']['passwordrecovery'] = array(
+    'link' => '?display=settings.passwordrecovery&cat=admin',
+    'name' => ucfirst(localize('password recovery', 'dash')),
+    'description' => localize('Default mail title, content, password length', 'settings'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/password-recovery.png',
     'linkType' => 'ajax'
 );
 
@@ -187,8 +195,19 @@ $sBar -> setQuery($_GET['query']);
 $sBar -> setAddress('?display=settings&cat=admin');
 $sBar -> navigate(True);
     
+$panthera -> logging -> startTimer();
+$defaultsSum = hash('md4', serialize($defaults));
+
 // settings main menu
 $listDB = $panthera -> config -> getKey('settings.items', $defaults, 'array', 'settings');
+
+if ($panthera -> config -> getKey('settings.items.checksum') != $defaultsSum)
+{
+    $listDB = array_merge($listDB, $defaults);
+    $panthera -> config -> setKey('settings.items', $defaults, 'array', 'settings');
+    $panthera -> config -> setKey('settings.items.checksum', $defaultsSum, 'string', 'settings');
+    $panthera -> logging -> output ('Updated default settings items', 'settings');
+}
 
 if (!$_GET['query'])
 {
@@ -198,11 +217,11 @@ if (!$_GET['query'])
 
     foreach ($listDB as $sectionName => $section)
     {
-        foreach ($section as $item)
+        foreach ($section as $key => $item)
         {
             if (stripos($item['name'], $_GET['query']) !== False or stripos($item['description'], $_GET['query']) !== False)
             {
-                $list[$sectionName][] = $item;
+                $list[$sectionName][$key] = $item;
             }
         }
     }
