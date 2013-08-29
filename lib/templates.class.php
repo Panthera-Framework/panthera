@@ -703,8 +703,8 @@ class pantheraTemplate extends pantheraClass
     
     public function webrootMerge($customTemplates=array())
     {
-        //$lastMod = $this -> panthera -> varCache -> get('webroot_checktime'); // last file modification
         $mainTemplate = $this -> panthera -> config -> getKey('template');
+        $this -> panthera -> logging -> startTimer();
         
         $roots = array (
                       PANTHERA_DIR.'/templates/admin/webroot', 
@@ -729,8 +729,6 @@ class pantheraTemplate extends pantheraClass
         // array with list of changes
         $changes = array();
         
-        $this -> panthera -> logging -> output ('Starting webrootMerge', 'pantheraTemplate');
-
         foreach ($roots as $dir)
         {
             if (is_dir($dir))
@@ -787,6 +785,8 @@ class pantheraTemplate extends pantheraClass
                 }
             }
         }   
+        
+        $this -> panthera -> logging -> output ('WebrootMerge done', 'pantheraTemplate');
         
         return $changes;
         

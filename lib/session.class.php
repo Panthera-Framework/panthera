@@ -335,7 +335,7 @@ class pantheraCookie
         $this->cookieKey = substr(md5($cookieKey), 0, 6);
 
         // Security: Encrypt cookies with AES-128 bit in CBC mode if possible
-        if ($panthera->config->getKey('cookie_encrypt', "False", 'bool') and function_exists('mcrypt_encrypt'))
+        if ($panthera->config->getKey('cookie_encrypt', 0, 'bool') and function_exists('mcrypt_encrypt'))
         {
             $this->encryptionKey = base64_decode($panthera->config->getKey('cookie_encrypt_key'));
 

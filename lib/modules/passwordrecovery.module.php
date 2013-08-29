@@ -30,6 +30,9 @@ function recoveryCreate($login)
     if ($SQL -> rowCount() > 0)
         return False;
         
+    $panthera -> config -> loadSection('paswordrecovery');
+    $language = $user -> language;
+        
     // default password length
     if ($panthera->config->getKey('recovery.passwd.length', 16, 'int', 'passwordrecovery') < 3)
         $panthera -> config -> setKey('recovery.passwd.length', 16, 'int', 'passwordrecovery');
@@ -50,20 +53,46 @@ function recoveryCreate($login)
         $SQL = $panthera -> db -> query('SELECT `id` FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key', array('key' => $recoveryKey));
     }
 
-    $values = array('recovery_key' => $recoveryKey, 'login' => $login, 'passwd' => $newPassword);
+    $values = array(
+        'recovery_key' => $recoveryKey,
+        'login' => $login,
+        'passwd' => $newPassword
+    );
 
     // plugins support
     $values = $panthera -> get_filters('recovery.values', $values);
 
     $SQL = $panthera -> db -> query('INSERT INTO `{$db_prefix}password_recovery` (`id`, `recovery_key`, `user_login`, `date`, `new_passwd`) VALUES (NULL, :recovery_key, :login, NOW(), :passwd)', $values);
 
-    $message = $panthera->config->getKey('recovery.mail.content', 'You requested a new password. If you want to change your current password to "{$recovery_passwd}" please visit this url: {$PANTHERA_URL}/pa-login.php?key={$recovery_key}', 'string', 'passwordrecovery');
-    $message = str_replace('{$recovery_key}', $recoveryKey, str_replace('{$recovery_passwd}', $newPassword, pantheraUrl($message)));
+    $messages = $panthera->config->getKey('recovery.mail.content');
+    $titles = $panthera->config->getKey('recovery.mail.title');
+    
+    if (isset($messages[$language]))
+    {
+        $message = $messages[$language];
+        $title = $titles[$language];
+    } elseif (isset($messages['english'])) {
+        $message = $messages['english'];
+        $title = $titles['english'];
+    } else {
+        $message = end($messages);
+        $title = end($titles);
+    }
+    
+    $message = str_replace('{$recovery_key}', $recoveryKey, 
+               str_replace('{$recovery_passwd}', $newPassword, 
+               str_replace('{$userName}', $user->getName(),
+               str_replace('{$userID}', $user->id, pantheraUrl($message)))));
+               
+    $title = str_replace('{$recovery_key}', $recoveryKey, 
+               str_replace('{$recovery_passwd}', $newPassword, 
+               str_replace('{$userName}', $user->getName(),
+               str_replace('{$userID}', $user->id, pantheraUrl($title)))));
     
     // send a mail
     $panthera -> importModule('mailing');
     $mailRecovery = new mailMessage();
-    $mailRecovery -> setSubject($panthera->config->getKey('recovery.mail.title', 'Password recovery', 'string', 'passwordrecovery'));
+    $mailRecovery -> setSubject($title);
     $mailRecovery -> addRecipient($user->mail);
     $mailRecovery -> send($message, 'html');
     
@@ -86,7 +115,7 @@ function recoveryChangePassword($key)
     global $panthera;
 
     $SQL = $panthera -> db -> query('SELECT `user_login`, `new_passwd` FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key', array('key' => $key));
-
+    
     if ($SQL -> rowCount() > 0)
     {
         $array = $SQL -> fetch();

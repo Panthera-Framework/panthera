@@ -130,6 +130,7 @@ class pantheraLogging
     public $filter = array();
     private $_output = array();
     private $panthera;
+    protected $timer = 0;
 
     /**
       * Constructor
@@ -182,7 +183,8 @@ class pantheraLogging
         // plugins support eg. firebug
         $this->panthera -> get_options('logging.output', $msg);
 
-        $this->_output[] = array($msg, $type, $time);
+        $this->_output[] = array($msg, $type, $time, $this->timer);
+        $this->timer = 0;
 
         return True;
     }
@@ -197,6 +199,18 @@ class pantheraLogging
     public function clear()
     {
         $this->_output = array();
+    }
+    
+    /**
+      * Start timer to count execution time of fragment of code
+      *
+      * @return void 
+      * @author Damian Kęska
+      */
+    
+    public function startTimer()
+    {
+        $this->timer = microtime_float();
     }
 
     /**
@@ -226,7 +240,17 @@ class pantheraLogging
         foreach ($this->_output as $line)
         {
             $time = microtime_float($line[2])-$_SERVER['REQUEST_TIME_FLOAT'];
-            $msg .= "[".substr($time, 0, 9).", ".substr(($time-$lastTime)*1000, 0, 9)."ms] [".$line[1]."] ".$line[0]. "\n";
+            $real = '';
+            
+            if ($line[3] > 0)
+            {
+                $executionTime = (microtime_float($line[2])-$line[3])*1000;
+                $real = ' real';
+            } else {
+                $executionTime = ($time-$lastTime)*1000;
+            }
+            
+            $msg .= "[".substr($time, 0, 9).", ".substr($executionTime, 0, 9)."ms".$real."] [".$line[1]."] ".$line[0]. "\n";
             $lastTime = $time;
         }
 
@@ -926,16 +950,18 @@ class pantheraCore
             include_once PANTHERA_DIR. '/share/phpQuery.php';
             $this->modules[$module] = True;
         }
+        
+        $this->logging->startTimer();
 
         if(is_file(PANTHERA_DIR. '/modules/' .$module. '.module.php'))
         {
+            @include_once PANTHERA_DIR. '/modules/' .$module. '.module.php';
             $this->logging->output('Importing "' .$module. '" from /lib/modules', 'pantheraCore');
-            include_once PANTHERA_DIR. '/modules/' .$module. '.module.php';
-
             $this->modules[$module] = True;
+            
         } elseif (is_file(SITE_DIR. '/content/modules/' .$module. '.module.php')) {
+            @include_once SITE_DIR. '/content/modules/' .$module. '.module.php';
             $this->logging->output('Importing "' .$module. '" from /content/modules', 'pantheraCore');
-            include_once SITE_DIR. '/content/modules/' .$module. '.module.php';
 
             $this->modules[$module] = True;
         } else {
@@ -2410,4 +2436,20 @@ function getQueryString($array=null, $mix=null, $except=null)
     }
     
     return http_build_query($array);
+}
+
+/**
+  * Strip new lines
+  *
+  * @param string $string
+  * @return string 
+  * @author Damian Kęska
+  */
+
+function stripNewLines($str)
+{
+    $str = str_replace("\n", '\\n', $str);
+    $str = str_replace("\r", '\\r', $str);
+    
+    return $str;
 }

@@ -172,9 +172,8 @@ class pantheraDB
         {
             $query = $this->translateToSQLite($query);
         }
-
-        if ($this->panthera->logging->debug == True)
-            $this->panthera->logging->output('SQL::query( ' .$query. ' , ' .json_encode($values). ' )', 'pantheraDB');
+        
+        $this->panthera->logging->startTimer();
 
         // try to import missing tables if enabled
         if ($this->fixMissing == True)
@@ -207,6 +206,11 @@ class pantheraDB
                 
             if (!$sth -> execute())
                 return False;
+        }
+        
+        if ($this->panthera->logging->debug == True)
+        {
+            $this->panthera->logging->output('query( ' .$query. ' , ' .json_encode($values). ' )', 'pantheraDB');
         }
             
         return $sth;
