@@ -11,7 +11,7 @@ require 'content/app.php';
 
 if (!checkUserPermissions($user, True))
 {
-    pa_redirect($panthera->config->getKey('redirect_after_login', 'index.php', 'string', 'pa-login'));
+    pa_redirect('pa-login.php');
 }
 
 $panthera -> template -> setTemplate('admin');
