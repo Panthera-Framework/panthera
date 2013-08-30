@@ -38,7 +38,7 @@ function removeMenuCategory(id)
           <tfoot>
               <tr>
                   <td colspan="5" class="rounded-foot-left"><em>Panthera menuedit - {function="localize('List of categories', 'menuedit')"}</em>
-                       <input type="button" value="{function="localize('Add new menu category', 'menuedit')"}" style="float: right;" onclick="navigateTo('?display=menuedit&cat=admin&action=new_category')">
+                       <a onclick="navigateTo('?display=menuedit&cat=admin&action=new_category');" style="cursor: pointer; float: right;"><img src="{$PANTHERA_URL}/images/admin/list-add.png" style="height: 15px;"></a>
                   </td>
               </tr>
           </tfoot>
@@ -55,7 +55,11 @@ function removeMenuCategory(id)
                   <td>{$value.title}</td>
                   <td>{$value.description}</td>
                   <td>{$value.elements}</td>
-                  <td><input type="button" value="{function="localize('Delete')"}" onclick="removeMenuCategory({$value.id});"></td>
+                  <td>
+                  	<a href="#" onclick="removeMenuCategory({$value.id});">
+                        <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
+                    </a>
+                  </td>
               </tr>
              {/loop}
             {/if}

@@ -102,9 +102,8 @@ function removeItem(id)
                   <tr>
                       <td colspan="8" class="rounded-foot-left"><em>Panthera menuedit - {function="localize('List of items', 'menuedit')"}</em><span>
                           <span style="float: right;">
-                                <input type="button" value="{function="localize('Back', 'messages')"}" onclick="navigateTo('?display=menuedit&cat=admin');">
-                                <input type="button" value="{function="localize('Save order', 'menuedit')"}" onclick="saveMenuOrder('{$category}');">
-                                <input type="button" value="{function="localize('Add new link', 'menuedit')"}" onclick="navigateTo('_ajax.php?display=menuedit&cat=admin&action=new_item&category={$category}');">
+                          		<a href="#add" onclick="navigateTo('_ajax.php?display=menuedit&cat=admin&action=new_item&category={$category}');" style="cursor: pointer; float: right;"><img src="{$PANTHERA_URL}/images/admin/list-add.png" style="max-height: 22px;" alt="{function="localize('Add new link', 'menuedit')"}"></a>
+                          		<a href="#save_order" onclick="saveMenuOrder('{$category}');" style="cursor: pointer; float: right; margin-right: 7px;"><img src="{$PANTHERA_URL}/images/admin/ui/save.png" style="max-height: 22px;" alt="{function="localize('Save order', 'menuedit')"}"></a>
                           </span>
                       </td>
                   </tr>

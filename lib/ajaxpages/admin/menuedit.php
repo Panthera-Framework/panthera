@@ -273,6 +273,9 @@ if ($_GET['action'] == 'item') {
 }
 
 if ($_GET['action'] == 'new_category') {
+	$titlebar = new uiTitlebar(localize('Adding category', 'menuedit'));
+	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png', 'left');
+	
     $template -> display('menuedit_newcategory.tpl');
     pa_exit();
 }

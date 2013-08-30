@@ -7,7 +7,7 @@
   */
 
 $('#add_category_form').submit(function () {
-    panthera.jsonPOST({ data: '#add_category_form', messageBox: 'userinfoBox', success: function (response) {
+    panthera.jsonPOST({ data: '#add_category_form', messageBox: 'w2ui', success: function (response) {
             if (response.status == "success")
                 navigateTo('?display=menuedit&cat=admin');
         }
@@ -19,10 +19,7 @@ $('#add_category_form').submit(function () {
 
 </script>
 
-    <div class="titlebar">{function="localize('Menu editor', 'menuedit')"} - {function="localize('Adding category', 'menuedit')"}{include="_navigation_panel"}</div><br>
-
-    <div class="msgSuccess" id="userinfoBox_success"></div>
-    <div class="msgError" id="userinfoBox_failed"></div>
+    {include="ui.titlebar"}
 
     <div class="grid-1">
       <form id="add_category_form" method="POST" action="?display=menuedit&cat=admin&action=add_category">
@@ -37,7 +34,7 @@ $('#add_category_form').submit(function () {
             <tfoot>
                   <tr>
                       <td colspan="7" class="rounded-foot-left"><em>Panthera menuedit - {function="localize('Adding category', 'menuedit')"}</em><span>
-                      <input type="submit" value="{function="localize('Add')"}" style="float: right;">
+                      <input type="submit" value="" style="background-image: url({$PANTHERA_URL}/images/admin/list-add.png); background-position:  0px 0px; background-repeat: no-repeat; width: 50px; height: 50px; float: right;">
                   </tr>
             </tfoot>
 
