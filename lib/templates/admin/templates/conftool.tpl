@@ -73,7 +73,7 @@ function editArray(keyID)
 
 </script>
 
-        <div class="titlebar">{function="localize('Configuration editor', 'conftool')"} - {function="localize('Administration tool for developers and administrators.', 'conftool')"}{include="_navigation_panel"}</div><br>
+        {include="ui.titlebar"}
         
         {$uiSearchbarName="uiTop"}
         {include="ui.searchbar"}

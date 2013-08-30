@@ -135,5 +135,8 @@ if (@$_GET['display'] == 'conftool') {
       $template -> push('a', $array);
 }
 
+$titlebar = new uiTitlebar(localize('Configuration editor', 'conftool')." - ".localize('Administration tool for developers and administrators.', 'conftool'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/config.png', 'left');
+
 $panthera -> template -> display('conftool.tpl');
 pa_exit();
