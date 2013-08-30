@@ -1,4 +1,4 @@
-<div class="titlebar">{function="localize('Informations about system', 'settings')"} - {function="localize('Panel with main settings and informations about Panthera', 'settings')"}</div>
+{include="ui.titlebar"}
 
         <div class="grid-1">
             <h1>{function="localize('Developer informations', 'settings')"}</h1><br><br>

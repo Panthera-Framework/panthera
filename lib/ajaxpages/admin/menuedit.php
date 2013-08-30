@@ -263,6 +263,10 @@ if ($_GET['action'] == 'item') {
 
         $template -> push('item_language', $locales);
         $template -> push('action', 'item');
+		
+		$titlebar = new uiTitlebar(localize('Editing item', 'menuedit'). " - ". $item -> title);
+		$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png', 'left');
+	
         $template -> display($tpl);
         pa_exit();
     }
@@ -288,6 +292,9 @@ if ($_GET['action'] == 'category') {
 
     $template -> push('menus', $array);
     $template -> push('category', $_GET['category']);
+	
+	$titlebar = new uiTitlebar(localize('Edit menu', 'menuedit')." (".localize('To change sequence of items in the category, you can drag & drop them', 'menuedit').")");
+	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png', 'left');
     $template -> display($tpl);
     pa_exit();
 }
@@ -313,6 +320,10 @@ if ($_GET['action'] == 'new_item') {
 
     $template -> push('item_language', $locales);
     $template -> push('cat_type', $_GET['category']);
+	
+	$titlebar = new uiTitlebar(localize('Adding item', 'menuedit'));
+	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png', 'left');
+	
     $template -> display($tpl);
     pa_exit();
 }
@@ -329,3 +340,6 @@ foreach ($categories as $key => $value) {
 }
 
 $template -> push('menu_categories', $c);
+
+$titlebar = new uiTitlebar(localize('Menu management for site and administration panel', 'menuedit'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png', 'left');

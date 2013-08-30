@@ -233,5 +233,9 @@ if($panthera->session->exists('leopard.build.last'))
 $panthera -> template -> push ('SITE_DIR', SITE_DIR);
 $panthera -> template -> push ('installedPackages', leopard::getInstalledPackages());
 $panthera -> template -> push ('consoleOutput', nl2br($panthera -> logging -> getOutput()));
+
+$titlebar = new uiTitlebar(localize('Packages management', 'leopard'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/package.png', 'left');
+
 $panthera -> template -> display('leopard.tpl');
 pa_exit();

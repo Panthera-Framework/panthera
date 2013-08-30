@@ -88,6 +88,9 @@ if (!defined('IN_PANTHERA'))
         $template -> push('acl_list', $user->acl->listAll());
         $template -> push('action', 'system_info');
         
+		$titlebar = new uiTitlebar(localize('Panel with main settings and informations about Panthera', 'settings'));
+		$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/settings.png', 'left');
+		
         $panthera -> template -> display('settings_systeminfo.tpl');
         pa_exit();
     }

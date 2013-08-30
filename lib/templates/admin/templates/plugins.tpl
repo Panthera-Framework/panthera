@@ -9,7 +9,7 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
 
 function togglePlugin(name, value)
 {
-    panthera.jsonPOST({ url: '?display=plugins&cat=admin&action=toggle&plugin='+name+'&value='+value, messageBox: 'userinfoBox', success: function (response) {
+    panthera.jsonPOST({ url: '?display=plugins&cat=admin&action=toggle&plugin='+name+'&value='+value, messageBox: 'w2ui', success: function (response) {
             if (response.status == "success")
                 navigateTo("?display=plugins&cat=admin");
         }
@@ -28,10 +28,7 @@ function togglePlugin(name, value)
 }
 </style>
 
-	 	<div class="titlebar">{function="localize('Plugins', 'plugins')"} - {function="localize('Manage plugins', 'plugins')"}{include="_navigation_panel"}</div><br>
-
-        <div class="msgSuccess" id="userinfoBox_success"></div>
-        <div class="msgError" id="userinfoBox_failed"></div>
+	 	{include="ui.titlebar"}
 
         <div class="grid-1">
           <table class="gridTable">

@@ -208,7 +208,7 @@ if ($panthera->config->getKey('dash.enableWidgets', 1, 'bool', 'dash'))
     if ($settings['gallery'] === True)
     {
         $panthera -> importModule('gallery');
-        $panthera -> template -> push ('galleryItems', gallery::getRecentPicture('', 9));
+        $panthera -> template -> push ('galleryItems', gallery::getRecentPicture('', 12));
     }
 
     // last logged in users

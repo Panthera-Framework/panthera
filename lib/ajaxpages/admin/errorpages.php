@@ -64,4 +64,7 @@ $pages['db_error'] = array('name' => 'Database error', 'file' => getErrorPageFil
 $pages['error'] = array('name' => 'Error', 'file' => $errorFile, 'testname' => 'exception', 'notice' => !(bool)getErrorPageFile('error'), 'visibility' => localize("Public"));
 $pages['exception'] = array('name' => 'Exception', 'file' => $exceptionsFile, 'testname' => 'exception', 'notice' => !(bool)getErrorPageFile('exception'), 'visibility' => localize("Public"));
 $panthera -> template -> push ('errorPages', $pages);
+
+$titlebar = new uiTitlebar(localize('Test system error pages in one place', 'errorpages'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-process-stop-icon.png', 'left');
 ?>

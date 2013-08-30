@@ -105,4 +105,7 @@ switch ($_GET['exec'])
 }
 
 $panthera -> template -> push('commands', $shellCommands);
+
+$titlebar = new uiTitlebar(localize('Shell utils', 'debug'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Apps-yakuake-icon.png', 'left');
 ?>
