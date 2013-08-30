@@ -1,6 +1,6 @@
 <?php
 /**
-  * Admin UI: Title bar/toolbar
+  * Admin UI: No access dialog
   * 
   * @package Panthera\adminUI
   * @author Damian Kęska
@@ -8,7 +8,7 @@
   */
   
 /**
-  * Admin UI: Title bar/toolbar
+  * Admin UI: No access dialog
   *
   * @package Panthera\adminUI
   * @author Damian Kęska
@@ -29,6 +29,16 @@ class uiNoAccess
         if ($panthera->user)
         {
             $this->settings['loggedIn'] = True;
+        }
+        
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' and $_SERVER['HTTP_X_REQUESTED_WITH'])
+        {
+            if ($panthera -> user)
+            {
+                ajax_exit(array('status' => 'failed', 'message' => localize('No permissions to execute this action', 'login')));
+            } else {
+                ajax_exit(array('status' => 'failed', 'message' => localize('You\'r session propably expired, please re-sign in', 'login')));
+            }
         }
         
         $panthera -> add_option('template.display', array($this, 'applyToTemplate'));
