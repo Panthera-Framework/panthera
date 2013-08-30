@@ -136,6 +136,10 @@ $config = array ('template_caching' => $panthera -> config -> getKey('template_c
 $panthera -> template -> push ('config', $config);
 $panthera -> template -> push ('current_template', $panthera -> config -> getKey('template'));
 $panthera -> template -> push ('templates_list', $panthera -> template -> listTemplates());
+
+$titlebar = new uiTitlebar(localize('Templates management', 'templates'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Icon-template.png', 'left');
+
 $panthera -> template -> display('templates.tpl');
 pa_exit();
 

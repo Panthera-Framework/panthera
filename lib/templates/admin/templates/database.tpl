@@ -1,11 +1,6 @@
 <script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
 
-
-    <div class="titlebar">{function="localize('Database management', 'database')"}</div>
-
-    <br>
-    <div class="msgSuccess" id="userinfoBox_success"></div>
-    <div class="msgError" id="userinfoBox_failed"></div>
+	{include="ui.titlebar"}
 
     <div class="grid-1">
        <table class="gridTable">

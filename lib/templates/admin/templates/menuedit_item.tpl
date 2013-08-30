@@ -23,8 +23,7 @@ var spinner = new panthera.ajaxLoader($('#menu_item'));
     });
 </script>
 
-
-<div class="titlebar">{function="localize('Menu editor', 'menuedit')"} - {function="localize('Editing item', 'menuedit')"}: {$item_title}</div><br>
+{include="ui.titlebar"}
 
     <div class="msgError" id="userinfoBox_failed"></div>
 

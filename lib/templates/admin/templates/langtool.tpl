@@ -19,8 +19,8 @@ $(document).ready(function () {
     })
 });
 </script>
-
-        <div class="titlebar">{function="localize('Languages', 'langtool')"} - {function="localize('Manage languages', 'langtool')"}{include="_navigation_panel"}</div><br>
+		
+		{include="ui.titlebar"}
 
         <table class="gridTable">
             <thead>

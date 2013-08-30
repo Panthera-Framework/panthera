@@ -84,4 +84,6 @@ $template -> push('locales_added', $locales);
 $template -> push('loaded_domains', $panthera->locale->getLoadedDomains());
 $template -> push('action', $_GET['action']);
 
+$titlebar = new uiTitlebar(localize('Manage site localization', 'locales'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/locales.png', 'left');
 ?>

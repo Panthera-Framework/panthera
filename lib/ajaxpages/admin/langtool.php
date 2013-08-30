@@ -110,6 +110,12 @@ if (@$_GET['display'] == 'langtool') {
 
             $template -> push('locale', $_GET['locale']);
             $template -> push('domains', $domains);
+			
+			$titlebar = new uiTitlebar(localize('Manage domains', 'langtool'));
+			$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/langtool.png', 'left');
+			
+			$template -> display($tpl);
+			pa_exit();
         }
     }
     
@@ -263,6 +269,12 @@ if (@$_GET['display'] == 'langtool') {
 
         // send data to template
         $template -> push('translates', $translates);
+		
+		$titlebar = new uiTitlebar(localize('Translates for', 'langtool')." ".$_GET['domain']);
+		$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/langtool.png', 'left');
+		
+		$template -> display($tpl);
+		pa_exit();
     }
 
     $locales = array();
@@ -279,6 +291,9 @@ if (@$_GET['display'] == 'langtool') {
     }
     
     $template -> push('locales', $locales);
+	
+	$titlebar = new uiTitlebar(localize('Manage languages', 'langtool'));
+	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/langtool.png', 'left');
 }
 
 ?>

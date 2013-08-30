@@ -57,7 +57,7 @@ function removeDomain(name, locale, n)
 }
 </script>
 
-        <div class="titlebar">{function="localize('Languages', 'langtool')"} - {function="localize('Manage domains', 'langtool')"}{include="_navigation_panel"}</div><br>
+		{include="ui.titlebar"}
 
         <div class="grid-1" id="langtoolWindow" style="position: relative;">
 

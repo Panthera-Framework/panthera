@@ -26,7 +26,7 @@ function saveString(j, locale, domain, id)
 
 function addString(backURL)
 {
-    panthera.jsonPOST({ data: '#add_string', messageBox: 'userinfoBox', success: function (response) {
+    panthera.jsonPOST({ data: '#add_string', messageBox: 'w2ui', success: function (response) {
 
         // return string from server (just in case)
         if (response.status == "success")
@@ -45,7 +45,7 @@ function addString(backURL)
 function removeString(j, locale, domain)
 {
 	string = $('#id_'+j).val();
-    panthera.jsonPOST({ url: "?display=langtool&cat=admin&action=view_domain&locale="+locale+"&domain="+domain+"&subaction=remove_string&id="+string, data: "", messageBox: 'userinfoBox', success: function (response) {
+    panthera.jsonPOST({ url: "?display=langtool&cat=admin&action=view_domain&locale="+locale+"&domain="+domain+"&subaction=remove_string&id="+string, data: "", messageBox: 'w2ui', success: function (response) {
 
         // return string from server (just in case)
         if (response.status == "success")
@@ -75,10 +75,7 @@ function addOtherString(j, locale, domain, id)
     });
 }
 </script>
-        <div class="titlebar">{function="localize('Locales', 'langtool')"} - {function="localize('Translates for', 'langtool')"} {$domain}{include="_navigation_panel"}</div><br>
-
-        <div class="msgSuccess" id="userinfoBox_success"></div>
-        <div class="msgError" id="userinfoBox_failed"></div>
+		{include="ui.titlebar"}
 
        <div class="grid-1" id="translate">
           <h1><a onclick="navigateTo('?display=langtool&cat=admin&action=domains&locale={$locale}');" href="#">{function="localize('Back')"}</a></h1> <br/>

@@ -66,4 +66,8 @@ if ($panthera->db->getSocketType() == 'mysql')
 
 $template -> push('sql_attributes', $attributesTpl);
 $template -> push('panthera_attributes', $pantheraAttributes);
+
+$titlebar = new uiTitlebar(localize('Database management', 'database'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/db.png', 'left');
+
 ?>

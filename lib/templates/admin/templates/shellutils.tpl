@@ -11,7 +11,7 @@ function executeShellCommand()
 {
     command = jQuery('#command_selection').val();
 
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=shellutils&cat=admin&exec='+command, data: '', messageBox: 'userinfoBox'});
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=shellutils&cat=admin&exec='+command, data: '', messageBox: 'w2ui'});
     return false;
 
 }
@@ -34,11 +34,7 @@ function executeShellCommand()
 
 <script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
 
-    <div class="titlebar">{function="localize('Shell utils', 'debug')"} - {function="localize('Developer tools', 'debug')"}{include="_navigation_panel"}</div>
-
-    <br>
-    <div class="msgSuccess" id="userinfoBox_success"></div>
-    <div class="msgError" id="userinfoBox_failed"></div>
+	{include="ui.titlebar"}
 
     <div class="grid-1">
 

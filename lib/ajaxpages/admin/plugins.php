@@ -85,6 +85,10 @@ foreach ($plugins as $key => $value)
 $panthera -> locale -> loadDomain('plugins');
 
 $template -> push('plugins', $pluginsTpl);
+
+$titlebar = new uiTitlebar(localize('Manage plugins', 'plugins'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Apps-preferences-plugin-icon.png', 'left');
+
 $template -> display('plugins.tpl');
 pa_exit();
 ?>

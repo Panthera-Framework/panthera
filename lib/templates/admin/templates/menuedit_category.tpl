@@ -79,7 +79,7 @@ function removeItem(id)
 }
 </script>
 
-    <div class="titlebar">{function="localize('Menu editor', 'menuedit')"} - {function="localize('Edit menu', 'menuedit')"} ({function="localize('To change sequence of items in the category, you can drag & drop them', 'menuedit')"}).{include="_navigation_panel"}</div><br>
+	{include="ui.titlebar"}
 
     <div class="msgError" id="userinfoBox_failed"></div>
 
