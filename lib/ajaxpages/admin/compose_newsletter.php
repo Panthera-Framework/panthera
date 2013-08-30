@@ -26,8 +26,7 @@ $newsletter = new newsletter('nid', $_GET['nid']);
 // display error page if newsletter category does not exists
 if (!$newsletter->exists())
 {
-    $panthera -> template -> push('error_message', localize('Selected newsletter does not exists'));
-    $panthera -> template -> display('error.tpl');
+    $template->display('no_access.tpl');
     pa_exit();
 }
 
