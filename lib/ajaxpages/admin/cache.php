@@ -506,6 +506,10 @@ else
 // allow plugins modyfing list
 $cacheList = $panthera -> get_filters('cache.list', $cacheList);
 
+// titlebar
+$titlebar = new uiTitlebar(localize('Cache management', 'cache'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/cache.png', 'left');
+
 $panthera -> template -> push('sessionSerializer', ini_get('session.serialize_handler'));
 $panthera -> template -> push('cache', $panthera -> config -> getKey('cache_type'));
 $panthera -> template -> push('varcache', $panthera -> config -> getKey('varcache_type'));

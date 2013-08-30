@@ -1,6 +1,3 @@
-<script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
-</script>
-
         <div class="titlebar">{function="localize('File browser')"} - {$file_path}{include="_navigation_panel"}</div>
         
 {if="$action == 'view'"}

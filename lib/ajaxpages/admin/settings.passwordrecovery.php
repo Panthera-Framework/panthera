@@ -29,7 +29,9 @@ $panthera -> config -> getKey('recovery.mail.content', array(
     'english' => 'You requested a new password. If you want to change your current password to "{$recovery_passwd}" please visit this url: {$PANTHERA_URL}/pa-login.php?key={$recovery_key}'
 ), 'array', 'passwordrecovery');
  
-$panthera -> importModule('admin/ui.settings');
+// include a title bar
+$titlebar = new uiTitlebar(localize('Password recovery settings', 'passwordrecovery'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/password-recovery.png', 'left');
 
 // load uiSettings with "passwordrecovery" config section
 $config = new uiSettings('passwordrecovery');

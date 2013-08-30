@@ -12,7 +12,7 @@ jQuery(document).ready(function($) {
 
 </script>
 
-<div class="titlebar">{"Newsletter"|localize} - {"Compose a new message"|localize}</div>
+{include="ui.titlebar"}
 
 <div class="grid-1">
     <!-- messages box -->
@@ -20,48 +20,48 @@ jQuery(document).ready(function($) {
     <div class="msgError" id="userinfoBox_failed"></div>
 
         <form id="newsletter_form" action="{$AJAX_URL}?display=compose_newsletter&cat=admin&nid={$nid}" method="POST">
-        <div class="title-grid">{"Title"|localize}: <input type="text" value="" name="title"><span></span></div>
+        <div class="title-grid">{function="localize('Title', 'newsletter')"}: <input type="text" value="" name="title"><span></span></div>
         <div class="content-gird">
              <textarea name="content" id="content_textarea"></textarea><br><br>
-             <input type="button" value="{"Subscribers"|localize}" onclick="createPopup('?display=newsletter_users&cat=admin&nid={$nid}', 1024);"> <input type="submit" value="{"Send"|localize}">
+             <input type="button" value="{function="localize('Subscribers', 'newsletter')"}" onclick="createPopup('?display=newsletter_users&cat=admin&nid={$nid}', 1024);"> <input type="submit" value="{function="localize('Send', 'newsletter')"}">
         </div>
         </form>
 </div>
 
 <div class="grid-2">
-    <div class="title-grid">{"Recently subscribed by"|localize}</div>
+    <div class="title-grid">{function="localize('Recently subscribed by', 'newsletter')"}</div>
     
      <div class="content-gird">
-        {if count($recent_subscribers) > 0}
+        {if="count($recent_subscribers) > 0"}
             <table class="gridTable" style="border: 0px">
             <tbody>
-                {foreach from=$recent_subscribers key=k item=v}
-                    <tr><td>{$v.address}</td><td>{$v.added}</td></tr>
-                {/foreach}
+                {loop="$recent_subscribers"}
+                    <tr><td>{$value.address}</td><td>{$value.added}</td></tr>
+                {/loop}
                 </tbody>
             </table>
         
         {else}
-            {"There no any users subscribing this newsletter"|localize}
+            {function="localize('There no any users subscribing this newsletter', 'newsletter')"}
         {/if}
      </div>
 </div>
 
 <div class="grid-2">
-    <div class="title-grid">{"Queued messages to send"|localize}</div>
+    <div class="title-grid">{function="localize('Queued messages to send', 'newsletter')"}</div>
     
      <div class="content-gird">
      
-        {if count($messages_queue) > 0}
+        {if="count($messages_queue) > 0"}
                 <table class="gridTable" style="border: 0px">
                     <tbody>
-                    {foreach from=$messages_queue key=k item=v}
-                        <tr><td>{$v.title|strCut:20}</td><td>{$v.created}</td></tr>
-                    {/foreach}
+                    {loop="$messages_queue"}
+                        <tr><td>{$value.title|strCut:20}</td><td>{$value.created}</td></tr>
+                    {/loop}
                     </tbody>
                 </table>
         {else}
-            {"No messages queued to send"|localize}
+            {function="localize('No messages queued to send', 'newsletter')"}
         {/if}
      
      </div>

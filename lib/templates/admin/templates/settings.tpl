@@ -1,5 +1,5 @@
 <script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
-<div class="titlebar">{function="localize('Settings', 'settings')"}{include="_navigation_panel"}</div>
+{include="ui.titlebar"}
 
 {$uiSearchbarName="uiTop"}
 {include="ui.searchbar"}

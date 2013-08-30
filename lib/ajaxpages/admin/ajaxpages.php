@@ -20,6 +20,11 @@ if (!getUserRightAttribute($user, 'can_see_ajax_pages')) {
 
 $panthera -> locale -> loadDomain('ajaxpages');
 
+// titlebar
+$titlebar = new uiTitlebar(localize('Index of ajax pages', 'ajaxpages'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-tab-detach-icon.png', 'left');
+
+// scan both lib and content
 $lib = scandir(PANTHERA_DIR. '/ajaxpages/admin');
 $content = scandir(SITE_DIR. '/content/ajaxpages/admin');
 $pages = array();

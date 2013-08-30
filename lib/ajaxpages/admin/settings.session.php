@@ -23,7 +23,7 @@ $panthera -> locale -> loadDomain('installer');
 
 // titlebar
 $titlebar = new uiTitlebar(localize('Session, cookies and browser security settings', 'session'));
-$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/session-icon.png', 'left');
 
 // load uiSettings with "passwordrecovery" config section
 $config = new uiSettings;

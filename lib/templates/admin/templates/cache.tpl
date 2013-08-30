@@ -2,8 +2,6 @@
 <script src="{$PANTHERA_URL}/js/admin/raphael-min.js"></script>
 <script src="{$PANTHERA_URL}/js/admin/charts.min.js"></script>
 <script type="text/javascript">
-$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
-
 // Spinners
 var spinner = new panthera.ajaxLoader($('#cacheVariables'));
 var apc_cache = new panthera.ajaxLoader($('#apc_window'));
@@ -230,7 +228,7 @@ $(document).ready(function () {
 });
 </script>
 
-    <div class="titlebar">{function="localize('Cache management', 'cache')"} {include="_navigation_panel"}</div><br>
+    {include="ui.titlebar"}<br>
 
     <div class="grid-1" style="position: relative;" id="cacheVariables">
          <table class="gridTable">

@@ -1,8 +1,9 @@
-{if="$uiTitlebar.backButton"}
 <script type="text/javascript">
-    $("#navigationBackBtn").bind('mouseheld', function(e) { createPopup('?display=navigation_history&cat=admin', 1024, 620); })
+    {if="$uiTitlebar.backButton"}
+    $("#navigationBackBtn").bind('mouseheld', function(e) { createPopup('?display=navigation_history&cat=admin', 1024, 620); });
+    {/if}
+    $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
 </script>
-{/if}
 
 <div class="titlebar">
     <span class="titleBarIcons">

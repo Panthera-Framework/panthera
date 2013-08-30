@@ -11,8 +11,6 @@
 if (!defined('IN_PANTHERA'))
       exit;
 
-$tpl = 'compose_newsletter.tpl';
-
 if (!getUserRightAttribute($user, 'can_compose_newsletters')) {
     $template->display('no_access.tpl');
     pa_exit();
@@ -75,3 +73,10 @@ if(isset($_POST['content']))
 
     ajax_exit(array('status' => 'success', 'message' => localize('Sent')));
 }
+
+// titlebar
+$titlebar = new uiTitlebar(localize('Newsletter', 'newsletter'). ' - ' .localize('Compose a new message', 'newsletter'));
+//$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/newsletter-icon.png', 'left');
+
+$panthera -> template -> display('compose_newsletter.tpl');
+pa_exit();

@@ -196,7 +196,10 @@ $defaults['content']['passwordrecovery'] = array(
     'linkType' => 'ajax'
 );
 
-$panthera -> importModule('admin/ui.searchbar');
+// titlebar
+$titlebar = new uiTitlebar(localize('Settings', 'settings'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/settings.png', 'left');
+
 $sBar = new uiSearchbar('uiTop');
 //$sBar -> setMethod('POST');
 $sBar -> setQuery($_GET['query']);
