@@ -841,6 +841,11 @@ class leopard
         
         // post-installation hooks
         $panthera -> logging -> output ('Running post-installation hooks', 'leopard');
+        
+        // update Panthera autoloader cache
+        $panthera -> importModule('autoloader.tools');
+        pantheraAutoloader::updateCache();
+        
         $panthera -> get_options('leopard.postinstall', $packageName);
         $panthera -> get_options('leopard.postinstall.' .$packageName, '');
         
@@ -913,6 +918,11 @@ class leopard
         
         // post-remove hooks
         $panthera -> logging -> output('Running post-remove hooks', 'leopard');
+        
+        // update Panthera autoloader cache
+        $panthera -> importModule('autoloader.tools');
+        pantheraAutoloader::updateCache();
+        
         $package = $panthera -> get_filters('leopard.postremove', $package);
         $package = $panthera -> get_filters('leopard.postremove.' .$packageName, $package);
 
