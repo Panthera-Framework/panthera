@@ -17,10 +17,13 @@ if (!getUserRightAttribute($user, 'can_update_config_overlay') and !getUserRight
     pa_exit();
 }
 
-$panthera -> importModule('admin/ui.settings');
 $panthera -> config -> getKey('cookie_encrypt', 1, 'bool');
 $panthera -> locale -> loadDomain('session');
 $panthera -> locale -> loadDomain('installer');
+
+// titlebar
+$titlebar = new uiTitlebar(localize('Session, cookies and browser security settings', 'session'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
 
 // load uiSettings with "passwordrecovery" config section
 $config = new uiSettings;
@@ -60,6 +63,5 @@ if (is_array($result))
     ajax_exit(array('status' => 'success'));
 }
 
-$panthera -> template -> push ('title', localize('Session, cookies and browser security settings', 'session'));
 $panthera -> template -> display('settings.generic_template.tpl');
 pa_exit();

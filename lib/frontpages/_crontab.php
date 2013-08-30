@@ -36,6 +36,9 @@ try {crontab::createJob('expired_subscriptions', array('cronjobs', 'removeExpire
 // Removing expired password recoveries
 try {crontab::createJob('expired_passwd_recovery', array('cronjobs', 'removeExpiredPasswdRecovery'), '', '0', '0', '*/1'); } catch (Exception $e) {}
 
+// Update Panthera Autoloader cache at 23:00 everyday
+try {crontab::createJob('autoloader_cache', array('pantheraAutoloader', 'updateCache'), '', '0', '23', '*/1'); } catch (Exception $e) {}
+
 // removeExpiredSubscriptions
 
 $key = $_GET['_appkey'];

@@ -1434,6 +1434,43 @@ abstract class pantheraClass
 }
 
 /**
+  * Class autoloader for Panthera Framework
+  *
+  * @package Panthera\core
+  * @param string $class name
+  * @return mixed 
+  * @author Damian Kęska
+  */
+
+function __pantheraAutoloader($class)
+{
+    global $panthera;
+
+    if ($panthera)
+    {
+        $panthera -> logging -> output ('Requested ' .$class. ' class', 'pantheraCore');
+    
+        // defaults
+        $cachedClasses = $panthera -> config -> getKey('autoloader');
+        
+        // update autoloader cache if not generated yet
+        if (!$cachedClasses)
+        {
+            $panthera -> importModule('autoloader.tools');
+            pantheraAutoloader::updateCache();
+            $cachedClasses = $panthera -> config -> getKey('autoloader');
+        }
+        
+        if (isset($cachedClasses[$class]))
+        {
+            $panthera -> importModule($cachedClasses[$class]);
+        }
+    }
+}
+
+spl_autoload_register('__pantheraAutoloader');
+
+/**
  * Panthera data validation class. Strings, numbers, urls, ip adresses and other data can be validated here.
  *
  * @package Panthera\core

@@ -10,7 +10,7 @@
     
     </script>
 
-        <div class="titlebar">{$title}{include="_navigation_panel"}</div><br>
+        {include="ui.titlebar"}<br>
         
         <form action="?{function="getQueryString('GET', '', '_')"}" method="POST" id="settingsFormSave">
         <div class="grid-1" style="position: relative;" id="settingsFormSaveDiv">
