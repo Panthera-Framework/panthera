@@ -169,7 +169,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
     height: 50px;
 }
 </style>
-    <div class="titlebar">{$category_title|localize} ({$language}){include="_navigation_panel"}</div><br>
+	{include="ui.titlebar"}
 
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>

@@ -303,6 +303,9 @@ if ($_GET['action'] == 'display_category')
     if ($_GET['type'] == 'ajax')
         ajax_exit(array('status' => 'success', 'response' => $array, 'pager' => $pager->getPages($page), 'page_from' => $limit[0], 'page_to' => $limit[1]));
 
+	$titlebar = new uiTitlebar(localize($category->title)." (".$language.")");
+	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/messages.png', 'left');
+
     $template -> display('messages_displaycategory.tpl');
     pa_exit();
 }
@@ -378,5 +381,9 @@ $limit = $uiPager -> getPageLimit();
 $categories = quickCategory::getCategories($w, $limit[1], $limit[0], $order, $direction);
 
 $panthera -> template -> push('categories', $categories);
+
+$titlebar = new uiTitlebar(localize('Articles, quick messages, news etc.', 'qmessages'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/messages.png', 'left');
+
 $panthera -> template -> display('messages.tpl');
 pa_exit();

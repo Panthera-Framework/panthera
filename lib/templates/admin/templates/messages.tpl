@@ -36,7 +36,8 @@ function removeCategory(categoryName)
 }
 </script>
 
-    <div class="titlebar">{function="localize('Message categories', 'qmessages')"} - {function="localize('Articles, quick messages, news etc.', 'qmessages')"}{include="_navigation_panel"}</div>
+    {include="ui.titlebar"}
+    
     {$uiSearchbarName="uiTop"}{include="ui.searchbar"}
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>
