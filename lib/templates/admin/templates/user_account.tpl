@@ -75,7 +75,11 @@ function aclModify(id, name)
 
              <tfoot>
                 <tr>
-                    <td colspan="2" class="rounded-foot-left"><em>{function="localize('Informations about user', 'users')"}<input type="button" value="{function="localize('Edit', 'users')"}" onclick="navigateTo('?display=users&cat=admin&action=editUser&uid={$id}')" style="float: right;"></em></td>
+                    <td colspan="2" class="rounded-foot-left"><em>{function="localize('Informations about user', 'users')"}
+                    	<a href="#" onclick="navigateTo('?display=users&cat=admin&action=editUser&uid={$id}')">
+                        	<img src="{$PANTHERA_URL}/images/admin/ui/edit.png" style="max-height: 22px; float: right;" alt="{function="localize('Edit', 'users')"}">
+                    	</a>
+                    </em></td>
                 </tr>
              </tfoot>
 

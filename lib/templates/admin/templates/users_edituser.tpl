@@ -82,7 +82,8 @@ $(document).ready(function () {
 
              <tfoot>
                 <tr>
-                    <td colspan="2" class="rounded-foot-left"><em>Panthera - {if="$action == 'edit'"}{function="localize('Edit user form', 'users')"}{else}{function="localize('Add user form', 'users')"}{/if}<input type="submit" value="{if="$action == 'edit'"}{function="localize('Save')"}{else}{function="localize('Add user', 'users')"}{/if}" style="float: right;"></em></td>
+                    <td colspan="2" class="rounded-foot-left"><em>Panthera - {if="$action == 'edit'"}{function="localize('Edit user form', 'users')"}{else}{function="localize('Add user form', 'users')"}{/if}
+                    	<input type="submit" value="" style="{if="$action == 'edit'"}background-image: url({$PANTHERA_URL}/images/admin/ui/save.png);{else}background-image: url({$PANTHERA_URL}/images/admin/list-add.png);{/if} float: right; background-position:  0px 0px; background-repeat: no-repeat; width: 50px; height: 50px;"></em></td>
                 </tr>
              </tfoot>
 
