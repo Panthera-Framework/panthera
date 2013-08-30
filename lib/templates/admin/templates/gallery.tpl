@@ -113,8 +113,8 @@ function addGallery()
 }
 
 </script>
-
-        <div class="titlebar">{function="localize('Gallery', 'messages')"}{include="_navigation_panel"}</div><br>
+		
+		{include="ui.titlebar"}
 
         <div class="msgSuccess" id="userinfoBox_success"></div>
         <div class="msgError" id="userinfoBox_failed"></div>

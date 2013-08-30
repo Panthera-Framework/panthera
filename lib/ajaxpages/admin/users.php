@@ -170,6 +170,9 @@ if ($_GET['action'] == 'account') {
         }
 
     $template -> push('aclList', $aclList);
+	
+	$titlebar = new uiTitlebar(localize('Panel with informations about user.', 'users'));
+	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
 
 /**
   * Create a new group
@@ -315,6 +318,9 @@ if ($_GET['action'] == 'account') {
 	
 	$template -> push('action', 'edit');
 	
+	$titlebar = new uiTitlebar(localize('Edit existing user', 'users'));
+	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
+	
 
 /**
   * Remove an user (by id)
@@ -369,6 +375,9 @@ if ($_GET['action'] == 'account') {
     $panthera -> template -> push('groups', $groupsTpl);
     $panthera -> template -> push('locales_added', $panthera->locale->getLocales());
 	$panthera -> template -> push('avatar_dimensions', explode('x', $panthera -> config -> getKey('avatar_dimensions', '80x80', 'string')));
+	
+	$titlebar = new uiTitlebar(localize('Add new user.', 'users'));
+	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
 
 
 } elseif ($_GET['action'] == 'add_user') {
@@ -579,4 +588,7 @@ if ($_GET['action'] == 'account') {
 
         $panthera -> template -> push('users_list', $users);
         $panthera -> template -> push('view_users', True);
+		
+		$titlebar = new uiTitlebar(localize('All registered users on this website', 'users'));
+		$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
 }

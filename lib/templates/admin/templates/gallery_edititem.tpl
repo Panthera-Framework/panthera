@@ -3,7 +3,7 @@ var progress = new panthera.ajaxLoader($('#change_item_form'));
 
 $(document).ready(function () {
     $("#change_item_form").submit(function () {
-        panthera.jsonPOST({ data: '#change_item_form', async: true, url: '{$AJAX_URL}?display=gallery&cat=admin&action=edit_item_form&subaction=edit_item&id={$id}', messageBox: 'userinfoBox', spinner: progress,
+        panthera.jsonPOST({ data: '#change_item_form', async: true, url: '{$AJAX_URL}?display=gallery&cat=admin&action=edit_item_form&subaction=edit_item&id={$id}', messageBox: 'w2ui', spinner: progress,
             success: function (response) {
                 if (response.status == "success")
                     navigateTo('{$AJAX_URL}?display=gallery&cat=admin&action=display_category&unique={$unique}&language={$language}');
@@ -68,10 +68,7 @@ sliderChangeImage('{$link}');
 </style>
 
 <article>
-  <div class="titlebar">{function="localize('Editing gallery image', 'gallery')"}{include="_navigation_panel"}</div>
-  <br>
-  <div class="msgSuccess" id="userinfoBox_success"></div>
-  <div class="msgError" id="userinfoBox_failed"></div>
+  {include="ui.titlebar"}
 
  <form action="?display=gallery&cat=admin&action=edit_item_form&subaction=edit_item&id={$id}" method="POST" id="change_item_form">
   <table class="gridTable">

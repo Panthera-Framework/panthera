@@ -270,5 +270,9 @@ if ($panthera->config->getKey('dash.enableWidgets', 1, 'bool', 'dash'))
 $template -> push ('dash_menu', $menu);
 $template -> push ('dash_messages', $panthera -> get_filters('ajaxpages.dash.msg', array()));
 
-$panthera -> template -> display ('dash.tpl');
+// titlebar
+$titlebar = new uiTitlebar(localize('Everything is here', 'dash'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/dashboard.png', 'left');
+
+$panthera -> template -> display('dash.tpl');
 pa_exit();

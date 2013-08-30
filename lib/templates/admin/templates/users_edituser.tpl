@@ -66,7 +66,7 @@ $(document).ready(function () {
 </script>
 
 
-<div class="titlebar">{if="$action == edit"}{function="localize('Edit existing user', 'users')"}{else}{function="localize('Add new user', 'users')"}{/if}.{include="_navigation_panel"}</div>
+{include="ui.titlebar"}
 
             <br>
       <div id="editUser" style="position: relative;">

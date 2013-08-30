@@ -115,7 +115,7 @@
     });
 </script>
 
-<div class="titlebar">{function="localize('Gallery', 'messages')"}: &nbsp;{$category_title} ({$langauge}){include="_navigation_panel"}</div>
+{include="ui.titlebar"}
 
     <div class="msgSuccess" id="userinfoBox_success"></div>
     <div class="msgError" id="userinfoBox_failed"></div>

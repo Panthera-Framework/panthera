@@ -72,8 +72,8 @@ function setServerDetails(server, port, ssl)
     $('#value_mailing_smtp_ssl').val(ssl.toString());
 }
 </script>
-
-    <div class="titlebar">{function="localize('Mail management', 'mailing')"} - {function="localize('Mail server settings, mass mailing, single mail sending', 'mailing')"}</div>
+	
+	{include="ui.titlebar"}
 
     {if="$canModifySettings"}
     <div class="grid-1">

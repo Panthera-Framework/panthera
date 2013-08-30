@@ -57,7 +57,7 @@ function aclModify(id, name)
 }
 </script>
 
-<div class="titlebar"><span class="titleBarIcons"><img src="{$PANTHERA_URL}/images/default_avatar.png" style="width: 28px"></a></span>{function="localize('Panel with informations about user.', 'users')"}{include="_navigation_panel"}</div>
+{include="ui.titlebar"}
 
             <br>
 

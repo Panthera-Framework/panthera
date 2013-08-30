@@ -309,6 +309,9 @@ if ($_GET['action'] == 'display_category')
     $c = getGalleryCategories(array('language' => $user->language), $count, 0);
 
     $template -> push('category_list', $c);*/
+    
+    $titlebar = new uiTitlebar($category->title . " (". $category->language.")");
+	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');
 
     $template -> display('gallery_displaycategory.tpl');
     pa_exit();
@@ -381,6 +384,9 @@ if ($_GET['action'] == 'edit_item_form')
         $template -> push('unique', $category->unique);
         $template -> push('language', $category->language);
 
+		$titlebar = new uiTitlebar(localize('Editing gallery image', 'gallery'));
+		$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');
+		
         $template -> display('gallery_edititem.tpl');
         pa_exit();
     } else {
@@ -441,6 +447,10 @@ if ($_GET['action'] == 'edit_item_form')
             $template -> push('gallery_name', $category->title);
             $template -> push('unique', $category->unique);
             $template -> push('language', $category->language);
+			
+			$titlebar = new uiTitlebar(localize('Adding gallery image', 'gallery'));
+			$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');
+			
             $template -> display('gallery_additem.tpl');
             pa_exit();
         }
@@ -603,5 +613,9 @@ if ($_GET['action'] == 'edit_item_form')
         $template -> push('category_filter', $_GET['filter']);
 
     $template -> push('category_list', $categoriesFiltered);
+	
+	$titlebar = new uiTitlebar(localize('Gallery'));
+	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');
+	
     $template -> display($tpl);
     pa_exit();
