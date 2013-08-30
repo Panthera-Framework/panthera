@@ -12,7 +12,7 @@ if (!defined('IN_PANTHERA'))
     exit;
 
 if (!getUserRightAttribute($user, 'can_see_dash')) {
-    $template->display('no_access.tpl');
+    $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
 }
 

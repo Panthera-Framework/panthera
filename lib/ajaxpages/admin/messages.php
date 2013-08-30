@@ -316,7 +316,7 @@ if ($_GET['action'] == 'display_category')
 // ==== DISPLAY ALL QUICK MESSAGES
 if (!getUserRightAttribute($user, 'can_view_qmsg'))
 {
-    $template->display('no_access.tpl');
+    $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
 }
 

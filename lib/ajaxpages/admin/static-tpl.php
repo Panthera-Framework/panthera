@@ -13,7 +13,7 @@ if (!defined('IN_PANTHERA'))
 
 if (!checkUserPermissions($user, True))
 {
-    $template->display('no_access.tpl');
+    $noAccess = new uiNoAccess; $noAccess -> display();
     $panthera->finish();
     pa_exit();
 }

@@ -12,7 +12,7 @@ if (!defined('IN_PANTHERA'))
 
 // check if user have right meta attributes to see this page
 if (!getUserRightAttribute($panthera->user, 'can_manage_cache')) {
-    $template->display('no_access.tpl');
+    $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
 }
 

@@ -359,7 +359,7 @@ if ($_GET['action'] == 'account') {
     // check permissions
     if (!checkUserPermissions($panthera->user, True))
     {
-        $template->display('no_access.tpl');
+        $noAccess = new uiNoAccess; $noAccess -> display();
         pa_exit();
     }
 
@@ -433,7 +433,7 @@ if ($_GET['action'] == 'account') {
 } else {
         if (!getUserRightAttribute($user, 'can_see_users_table'))
         {
-            $template->display('no_access.tpl');
+            $noAccess = new uiNoAccess; $noAccess -> display();
             pa_exit();
         }
         

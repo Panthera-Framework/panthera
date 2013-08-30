@@ -13,7 +13,7 @@ if (!defined('IN_PANTHERA'))
 $tpl = 'shellutils.tpl';
 
 if (!getUserRightAttribute($user, 'can_execute_shell_commands')) {
-    $template->display('no_access.tpl');
+    $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
 }
 

@@ -13,7 +13,7 @@ if (!defined('IN_PANTHERA'))
 
 if (!getUserRightAttribute($user, 'can_edit_contact'))
 {
-    $template->display('no_access.tpl');
+    $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
 }
 

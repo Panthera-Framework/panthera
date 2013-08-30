@@ -14,7 +14,7 @@ if (!defined('IN_PANTHERA'))
 
 
 if (!getUserRightAttribute($user, 'can_see_debug')) {
-    $template->display('no_access.tpl');
+    $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
 }
 
@@ -35,7 +35,7 @@ $panthera -> logging -> tofile = False;
  
 if ($_GET['action'] == 'toggle_debug_value') {
       if (!getUserRightAttribute($user, 'can_manage_debug')) {
-          $template->display('no_access.tpl');
+          $noAccess = new uiNoAccess; $noAccess -> display();
           pa_exit();
       }
 

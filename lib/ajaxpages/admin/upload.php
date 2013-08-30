@@ -20,7 +20,7 @@ if (isset($_GET['popup']))
 {
     if (!checkUserPermissions($user))
     {
-        $template->display('no_access.tpl');
+        $noAccess = new uiNoAccess; $noAccess -> display();
         $panthera->finish();
         pa_exit();
     }

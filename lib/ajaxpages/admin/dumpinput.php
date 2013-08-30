@@ -14,7 +14,7 @@ if (!defined('IN_PANTHERA'))
 $tpl = 'dumpinput.tpl';
 
 if (!getUserRightAttribute($user, 'can_dump_input')) {
-    $template->display('no_access.tpl');
+    $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
 }
 

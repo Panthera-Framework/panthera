@@ -11,7 +11,7 @@ if (!defined('IN_PANTHERA'))
       exit;
 
 if (!getUserRightAttribute($user, 'can_manage_packages')) {
-    $template->display('no_access.tpl');
+    $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
 }
 

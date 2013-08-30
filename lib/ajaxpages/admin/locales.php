@@ -14,7 +14,7 @@ if (!defined('IN_PANTHERA'))
 $tpl = 'locales.tpl';
 
 if (!getUserRightAttribute($user, 'can_update_locales')) {
-    $template->display('no_access.tpl');
+    $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
 }
 

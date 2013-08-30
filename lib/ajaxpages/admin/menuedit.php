@@ -14,7 +14,7 @@ if (!defined('IN_PANTHERA'))
 $tpl = 'menuedit.tpl';
 
 if (!getUserRightAttribute($user, 'can_update_menus')) {
-    $template -> display('no_access.tpl');
+    $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
 }
 

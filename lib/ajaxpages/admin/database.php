@@ -14,8 +14,7 @@ if (!defined('IN_PANTHERA'))
 $tpl = 'database.tpl';
 
 if (!getUserRightAttribute($user, 'can_manage_databases')) {
-    $template->display('no_access.tpl');
-    pa_exit();
+    $noAccess = new uiNoAccess; $noAccess -> display();
 }
 
 $panthera -> locale -> loadDomain('database');

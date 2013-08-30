@@ -13,7 +13,7 @@ if (!defined('IN_PANTHERA'))
 
 if (!getUserRightAttribute($user, 'can_update_config_overlay') and !getUserRightAttribute($user, 'can_edit_password_recovery'))
 {
-    $template->display('no_access.tpl');
+    $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
 }
 

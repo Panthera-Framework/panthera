@@ -16,7 +16,7 @@ if (!defined('IN_PANTHERA'))
 $tpl = 'debhook.tpl';
 
 if (!getUserRightAttribute($user, 'can_see_debhook')) {
-    $template->display('no_access.tpl');
+    $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
 }
 

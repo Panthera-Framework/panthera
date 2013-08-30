@@ -13,8 +13,7 @@ if (!defined('IN_PANTHERA'))
 
 // rights
 if (!getUserRightAttribute($user, 'can_view_custompages') and !getUserRightAttribute($user, 'can_manage_custompage_' . $id)) {
-    $template -> display('no_access.tpl');
-    pa_exit();
+    $noAccess = new uiNoAccess; $noAccess -> display();
 }
 
 // right to see pages created by other users
@@ -155,7 +154,7 @@ if ($_GET['action'] == "edit_page")
         // is author or can manage this page or can manage all pages or can view all pages (but not edit)
         if ($cpage->author_id != $panthera->user->id and !getUserRightAttribute($user, 'can_manage_custompage_' . $cpage->id) and !$rightsManagement and !$rightsViewAll)
         {
-            $template -> display('no_access.tpl');
+            $noAccess = new uiNoAccess; $noAccess -> display();
             pa_exit();
         }
     }
@@ -187,7 +186,7 @@ if ($_GET['action'] == "edit_page")
             // (is owner or can manage this page and can create new pages) or (just can manage all pages)
             if (($ppage->author_id != $panthera->user->id and !getUserRightAttribute($user, 'can_manage_custompage_' . $ppage->id and $rightsCreate)) or !$rightsManagement)
             {
-                $template -> display('no_access.tpl');
+                $noAccess = new uiNoAccess; $noAccess -> display();
                 pa_exit();
             }
         }

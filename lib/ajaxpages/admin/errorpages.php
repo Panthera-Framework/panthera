@@ -14,7 +14,7 @@ if (!defined('IN_PANTHERA'))
 $tpl = 'errorpages.tpl';
 
 if (!getUserRightAttribute($user, 'can_test_error_pages')) {
-    $template->display('no_access.tpl');
+    $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
 }
 

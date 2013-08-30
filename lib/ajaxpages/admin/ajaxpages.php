@@ -14,7 +14,7 @@ if (!defined('IN_PANTHERA'))
 $tpl = 'ajaxpages.tpl';
 
 if (!getUserRightAttribute($user, 'can_see_ajax_pages')) {
-    $template->display('no_access.tpl');
+    $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
 }
 

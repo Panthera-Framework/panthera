@@ -14,7 +14,7 @@ if (!defined('IN_PANTHERA'))
 $tpl = 'browsefile.tpl';
 
 if (!getUserRightAttribute($user, 'can_see_site_files')) {
-    $template->display('no_access.tpl');
+    $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
 }
 

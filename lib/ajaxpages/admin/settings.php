@@ -19,7 +19,7 @@ if (!defined('IN_PANTHERA'))
     {
         if (!getUserRightAttribute($user, 'can_see_system_info'))
         {
-            $template->display('no_access.tpl');
+            $noAccess = new uiNoAccess; $noAccess -> display();
             pa_exit();
         }
         
