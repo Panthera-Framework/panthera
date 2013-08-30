@@ -117,5 +117,9 @@ if (!defined('CONTACT_SKIP_MAP'))
 $template -> push ('gmapsApiKey', $panthera -> config -> getKey('gmaps_key', '', 'string'));
 $template -> push ('contact_mail', $contactData['mail']);
 $template -> push ('adress_text', htmlspecialchars(str_replace("\n", ' ', $contactData['text'])));
+
+$titlebar = new uiTitlebar(localize('Street adress, phone number, location etc.', 'contactpage') ." (".$language.")");
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/contact.png', 'left');
+
 $template -> display('contact.tpl');
 pa_exit();
