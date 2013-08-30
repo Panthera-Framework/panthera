@@ -59,10 +59,8 @@ function getOtherCustomPages()
     navigateTo("?display=custom&cat=admin&lang="+value);
 }
 </script>
-
-    <div class="titlebar">{function="localize('Static pages', 'custompages')"}
-        {include="_navigation_panel"}
-    </div>
+	
+	{include="ui.titlebar"}
 
     {$uiSearchbarName="uiTop"}
     {include="ui.searchbar"}

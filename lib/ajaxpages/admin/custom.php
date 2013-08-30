@@ -298,6 +298,9 @@ if ($_GET['action'] == "edit_page")
         }
     }
     
+	$titlebar = new uiTitlebar($cpage->title." (".$cpage->language.")");
+	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/custom-pages.png', 'left');
+	
     $template -> display($tpl);
     pa_exit();
     
@@ -492,5 +495,9 @@ if (count($tmp) > 0)
 
 $panthera -> template -> push('rightsToCreate', ($rightsCreate or $rightsManagement)); 
 $panthera -> template -> push('locales', $panthera -> locale -> getLocales());
+
+$titlebar = new uiTitlebar(localize('Static pages', 'custompages'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/custom-pages.png', 'left');
+
 $panthera -> template -> display($tpl);
 pa_exit();

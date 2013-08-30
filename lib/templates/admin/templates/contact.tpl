@@ -85,8 +85,8 @@ jQuery(document).ready(function() {
     panthera.forms.checkboxToggleLayer({ input: '#oneContactCheckbox', layer: '#contactLanguage', reversed: true });
 });
 </script>
-
-        <div class="titlebar">{function="localize('Contact', 'contactpage')"} - {function="localize('Street adress, phone number, location etc.', 'contactpage')"} ({$selected_language}){include="_navigation_panel"}</div><br>
+		
+		{include="ui.titlebar"}
 
         <div class="msgSuccess" id="userinfoBox_success"></div>
         <div class="msgError" id="userinfoBox_failed"></div>
