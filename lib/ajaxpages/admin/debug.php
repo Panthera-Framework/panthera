@@ -164,5 +164,9 @@ $panthera -> template -> push ('logHandlers', implode(', ', $logHandlers));
 $panthera -> template -> push ('current_log', explode("\n", $panthera -> logging -> getOutput()));
 $panthera -> template -> push ('debug', $panthera -> config -> getKey('debug'));
 $panthera -> template -> push ('tools', $tools);
+
+$titlebar = new uiTitlebar(localize('Debugging center'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/developement.png', 'left');
+
 $panthera -> template -> display('debug.tpl');
 pa_exit();

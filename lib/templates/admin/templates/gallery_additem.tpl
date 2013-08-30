@@ -71,8 +71,8 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
         float: right;
     }
 </style>
-
-  <div class="titlebar">{function="localize('Adding gallery image', 'gallery')"}{include="_navigation_panel"}</div>
+  
+  {include="ui.titlebar"}
   <br>
   <div class="msgSuccess" id="userinfoBox_success"></div>
   <div class="msgError" id="userinfoBox_failed"></div>

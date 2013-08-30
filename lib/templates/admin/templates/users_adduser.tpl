@@ -50,8 +50,7 @@ $(document).ready(function () {
 
 </script>
 
-
-<div class="titlebar">{function="localize('Add new user.', 'settings')"}{include="_navigation_panel"}</div>
+{include="ui.titlebar"}
 
             <br>
       <div id="userAdd" style="position: relative;">

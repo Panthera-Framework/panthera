@@ -224,5 +224,8 @@ $panthera -> template -> push ('last_body', $panthera->session->get('mailing_las
 $panthera -> template -> push ('last_from', $panthera->session->get('mailing_last_from'));
 $panthera -> template -> push ('mail_attributes', $mailAttributes);
 
+$titlebar = new uiTitlebar(localize('Mail server settings, mass mailing, single mail sending', 'mailing'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/mail-replied.png', 'left');
+
 $panthera -> template -> display('mailing.tpl');
 pa_exit();
