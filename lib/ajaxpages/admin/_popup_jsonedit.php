@@ -46,8 +46,8 @@ if (isset($_POST['jsonedit_content']))
     
     ajax_exit(array('status' => 'success', 'result' => stripslashes($response)));
 }
-   
-$array = unserialize(base64_decode($_GET['input']));
+
+$array = unserialize(stripslashes(base64_decode($_GET['input'])));
 
 if (version_compare(phpversion(), '5.4.0', '>'))
     $code = json_encode($array, JSON_PRETTY_PRINT);

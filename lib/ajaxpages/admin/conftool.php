@@ -42,9 +42,10 @@ if (@$_GET['display'] == 'conftool') {
 
             $type = $panthera->config->getKeyType($key);
 
+           
             if ($type == 'array')
                 $value = unserialize($value);
-
+                
             $modified = $panthera -> get_filters('conftool_change', array($key, $value));
 
             if (!is_array($modified))

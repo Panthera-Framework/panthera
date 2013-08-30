@@ -10,23 +10,25 @@ var spinner = new panthera.ajaxLoader($('#conftoolTable'));
   * @author Mateusz Warzyński
   */
 
-function saveVariable(id)
+function saveVariable(jid)
 {
-    value = $('#value_'+id).val();
-    section = $('#section_'+id).val();
+    id = jid.replace('_-_', '.');
+    value = $('#value_'+jid).val();
+    section = $('#section_'+jid).val();
 
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&cat=admin&action=change', data: 'id='+id+'&value='+value+'&section='+section, messageBox: 'w2ui', spinner: spinner});
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&cat=admin&action=change', data: 'id='+id+'&value='+escape(value)+'&section='+section, messageBox: 'w2ui', spinner: spinner});
 }
 
-function removeKey(id)
+function removeKey(jid)
 {
+    id = jid.replace('_-_', '.');
     w2confirm('{function="localize('Are you sure you want to delete this key?', 'conftool')"}', function callbackBtn(btn) { 
         if (btn == "Yes")
         {
             panthera.jsonPOST({ url: '{$AJAX_URL}?display=conftool&cat=admin&action=remove', data: 'key='+id, messageBox: 'w2ui', spinner: spinner, success: function (response) {
                     if (response.status == "success")
                     {
-                       $('#tr_'+id).remove();
+                       $('#tr_'+jid).remove();
                     }
                 }
             });
@@ -64,6 +66,11 @@ function addRecord()
     });
 }
 
+function editArray(keyID)
+{
+    createPopup('?display=_popup_jsonedit&cat=admin&popup=True&input='+Base64.encode($('#value_'+keyID).val())+'&output=serialize&callback=conftool_array&callback_arg='+keyID, 1024, 550);
+}
+
 </script>
 
         <div class="titlebar">{function="localize('Configuration editor', 'conftool')"} - {function="localize('Administration tool for developers and administrators.', 'conftool')"}{include="_navigation_panel"}</div><br>
@@ -84,17 +91,20 @@ function addRecord()
 
             <tbody>
               {loop="$a"}
-                <tr id="tr_{$key}">
+                {$escapedKey=str_replace('.', '_-_', $key)}
+                
+                <tr id="tr_{$escapedKey}">
                     <td>
-
                         <small>{$value[0]}</small> &nbsp;<b>{if="isset($value[2])"}{$value[2]}{else}{$key}{/if}</b>
-
                     </td>
+                    
                     <td>
                         {if="$value[0] == 'bool'"}
-                            <select id="value_{$key}" style="width: 95%;"><option value="0">{function="localize('No')"}</option><option value="1"{if="$value[1] == '1'"} selected{/if}>{function="localize('Yes')"}</option></select>
+                            <select id="value_{$escapedKey}" style="width: 95%;">
+                                <option value="0">{function="localize('No')"}</option>
+                                <option value="1"{if="$value[1] == '1'"} selected{/if}>{function="localize('Yes')"}</option>
+                            </select>
                         {else}
-                        
                             {if="$value[0] == 'int'"}
                                 {$type = "number"}
                             {else}
@@ -102,27 +112,27 @@ function addRecord()
                             {/if}
                             
                             {if="$value[0] == 'array'"}
-                            <input type="{$type}" value='{$value[1]}' id="value_{$key}" readonly style="width: 80%;">
-                            <input type="button" value="{function="localize('Edit')"}" style="width: 49px;" onclick="createPopup('?display=_popup_jsonedit&cat=admin&popup=True&input={$value['b64']}&output=serialize&callback=conftool_array&callback_arg={$key}', 1024, 550);">
+                            <input type="{$type}" value='{function="htmlspecialchars($value[1], ENT_QUOTES)"}' id="value_{$escapedKey}" readonly style="width: 80%;">
+                            <input type="button" value="{function="localize('Edit')"}" style="width: 49px;" onclick="editArray('{$escapedKey}')">
                             {else}
-                            <input type="{$type}" value='{$value[1]}' id="value_{$key}" style="width: 95%;">
+                            <input type="{$type}" value='{function="htmlspecialchars($value[1], ENT_QUOTES)"}' id="value_{$escapedKey}" style="width: 95%;">
                             {/if}
                         {/if}
                         
                     </td>
                     
                     <td>
-                        <input type="text" value="{$value['section']}" id="section_{$key}" style="width: 95%;">
+                        <input type="text" value="{$value['section']}" id="section_{$escapedKey}" style="width: 95%;">
                     </td>
                     
                     <td>
-                    	<a href="#" onclick="saveVariable('{$key}');">
+                    	<a href="#" onclick="saveVariable('{$escapedKey}');">
                         	<img src="{$PANTHERA_URL}/images/admin/ui/save.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
                     	</a>
-                        <a href="#" onclick="removeKey('{$key}');">
+                        <a href="#" onclick="removeKey('{$escapedKey}');">
                         	<img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
                     	</a>
-                        <span style="font-color: red;"><div id="errmsg_{$key}" style="display: none;"></div></span>
+                        <span style="font-color: red;"><div id="errmsg_{$escapedKey}" style="display: none;"></div></span>
                     </td>
                 </tr>
               {/loop}
