@@ -71,4 +71,6 @@ foreach ($dumps as $dump)
 }
 
 $template -> push('dumps', $dumpsTpl);
+
+$titlebar = new uiTitlebar(localize('Backup your database to prevent data loss', 'database'));
 ?>

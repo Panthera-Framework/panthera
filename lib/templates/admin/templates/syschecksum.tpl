@@ -13,7 +13,7 @@ $(document).ready(function(){
 
 </script>
 <div id="syschecksum_window">
-    <div class="titlebar" style="height: 45px;">{function="localize('Checksum of system files', 'debug')"} - {function="localize('Useful tool showing diffirences between local and remote files', 'debug')"}</div>
+	{include="ui.titlebar"}
     <div class="grid-1">
        <table class="gridTable">
             <thead>

@@ -190,5 +190,8 @@ if ($panthera -> session -> get('mergephps_type') == 'json')
 $panthera -> template -> push('popup', $_GET['popup']);
 $panthera -> template -> push('files', $fileNames);
 $panthera -> template -> push('result', $html);
+
+$titlebar = new uiTitlebar(localize('Merge serialized arrays and json files', 'debug'));
+
 $panthera -> template -> display('mergephps.tpl');
 pa_exit();

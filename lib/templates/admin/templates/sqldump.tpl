@@ -8,7 +8,7 @@
 
 function makeDump()
 {
-    panthera.jsonPOST({ url: '?display=sqldump&cat=admin', data: 'dump=True', messageBox: 'userinfoBox', success: function (response) {
+    panthera.jsonPOST({ url: '?display=sqldump&cat=admin', data: 'dump=True', messageBox: 'w2ui', success: function (response) {
             if (response.status == "success")
                 navigateTo('?display=sqldump&cat=admin');
         }
@@ -18,12 +18,8 @@ function makeDump()
 
 </script>
 
-    <div class="titlebar">{function="localize('Database backup', 'database')"} - {function="localize('Backup your database to prevent data loss', 'database')"}{include="_navigation_panel"}</div>
-
-    <br>
-    <div class="msgSuccess" id="userinfoBox_success"></div>
-    <div class="msgError" id="userinfoBox_failed"></div>
-
+	{include="ui.titlebar"}
+	
     <div class="grid-1">
          <table class="gridTable">
 

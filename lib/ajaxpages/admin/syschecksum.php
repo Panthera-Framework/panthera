@@ -98,4 +98,6 @@ if (isset($_GET['export']))
 
 $template -> push('files', $filesTpl);
 
+$titlebar = new uiTitlebar(localize('Checksum of system files', 'debug'));
+
 ?>
