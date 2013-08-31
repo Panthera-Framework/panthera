@@ -9,17 +9,20 @@
 
 function synchronizeData()
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=facebook&cat=admin&action=synchronize', data: '', messageBox: 'userinfoBox'});
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=facebook&cat=admin&action=synchronize', data: '', messageBox: 'w2ui'});
     return false;
 }
 </script>
 
-    <div class="titlebar">{function="localize('Facebook', 'facebook')"} - {function="localize('Facebook integration.', 'facebook')"}</div>
-
-    <br>
-    <div class="msgSuccess" id="userinfoBox_success"></div>
-    <div class="msgError" id="userinfoBox_failed"></div>
-
+	{include="ui.titlebar"}
+{if="$error == True"}
+	<div class="grid-2">
+        	<div class="title-grid">{function="localize('Error', 'facebook')"}</div>
+        	<div class="content-gird">
+        		<p style="text-align: center;"><a href="#settings" onclick="navigateTo('?display=facebook&action=settings&cat=admin');">{function="localize('Please, check your Facebook settings', 'facebook')"}.</a></p>
+        	</div>
+    </div>
+{else}
     <div class="grid-1">
         <table class="gridTable">
             <thead>
@@ -72,3 +75,4 @@ function synchronizeData()
             </tbody>
         </table>
     </div>
+{/if}

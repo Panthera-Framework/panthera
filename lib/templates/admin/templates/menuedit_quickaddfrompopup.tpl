@@ -36,8 +36,7 @@ $('#add_item_form').submit(function () {
             <tr>
                 <td colspan="7" class="rounded-foot-left"><em>Panthera menuedit - {function="localize('Adding item', 'menuedit')"}</em><span>
                 <span style="float: right;">
-                    <input type="button" value="{function="localize('Back')"}" onclick="closePopup();">&nbsp;&nbsp;
-                    <input type="submit" value="{function="localize('Save', 'messages')"}">
+                    <input type="submit" value="" style="background-image: url({$PANTHERA_URL}/images/admin/list-add.png); background-position:  0px 0px; background-repeat: no-repeat; width: 50px; height: 50px; float: right;">
                 </span>
             </tr>
         </tfoot>

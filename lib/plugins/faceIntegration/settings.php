@@ -49,11 +49,24 @@ if ($_GET['display'] == 'facebook')
         
         $template -> push('appid', $panthera -> config -> getKey('facebook_appid'));
         $template -> push('secret', $panthera -> config -> getKey('facebook_secret'));
+		
+		$titlebar = new uiTitlebar(localize('Settings', 'facebook'));
+		$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/facebook.png', 'left');
+		
         $template -> display($tpl);
         pa_exit();
     }
 
+	$titlebar = new uiTitlebar(localize('Facebook', 'facebook'));
+	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/facebook.png', 'left');
+
     // Initialize Facebook session
+    if ($panthera->config->getKey('facebook_appid') == '' or $panthera->config->getKey('facebook_secret') == '') {
+		$template -> push('error', true);
+		$template -> display($tpl);
+		pa_exit();
+	}
+	
     $facebook = new facebookWrapper();
 
     $facebook->loginUser(array('scope' => 'user_about_me'), 'script');

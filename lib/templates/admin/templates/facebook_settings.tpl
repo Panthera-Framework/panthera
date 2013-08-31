@@ -30,7 +30,7 @@ function saveFacebook()
 
 </script>
 
-    <div class="titlebar">Facebook - {function="localize('Settings')"}{include="_navigation_panel"}</div><br>
+	{include="ui.titlebar"}
     
     <div class="grid-1" style="position: relative;" id="facebookSettings">
          <table class="gridTable">
@@ -44,7 +44,11 @@ function saveFacebook()
 
             <tfoot>
                 <tr>
-                    <td colspan="2" class="rounded-foot-left"><em>Panthera - {function="localize('App configuration', 'facebook')"} <input type="button" value="{function="localize('Save')"}" onclick="saveFacebook();" id="save_button" style="float: right; margin-right: 7px;"></em></td>
+                    <td colspan="2" class="rounded-foot-left"><em>Panthera - {function="localize('App configuration', 'facebook')"}
+                    	<a href="#" onclick="saveFacebook();">
+                        	<img src="{$PANTHERA_URL}/images/admin/ui/save.png" style="max-height: 50px; float: right;" alt="{function="localize('Save')"}">
+                    	</a>
+                    </em></td>
                 </tr>
             </tfoot>
             
