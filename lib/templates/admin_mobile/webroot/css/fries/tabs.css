@@ -15,7 +15,6 @@
 }
 
 .tab-fixed {
-  margin-top: 48px;
   height: 48px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.25);
 }
@@ -72,7 +71,7 @@ ul.tab-inner li:last-child a {
   line-height: 52px;
 }
 
-/**
+/** 
  * Note: There seems to be a bug where a strange gap appears
  * between the tabs. This could only be visible on the desktop
  * version, but it's still annoying when testing. And it appears

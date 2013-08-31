@@ -1,10 +1,10 @@
 @font-face {
 	font-family: 'icomoon';
-	src:url('../font/fries/icomoon.eot');
-	src:url('../font/fries/icomoon.eot?#iefix') format('embedded-opentype'),
-		url('../font/fries/icomoon.woff') format('woff'),
-		url('../font/fries/icomoon.ttf') format('truetype'),
-		url('../font/fries/icomoon.svg#icomoon') format('svg');
+	src:url('../fonts/icomoon.eot');
+	src:url('../fonts/icomoon.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/icomoon.woff') format('woff'),
+		url('../fonts/icomoon.ttf') format('truetype'),
+		url('../fonts/icomoon.svg#icomoon') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -465,8 +465,4 @@ you can use the generic selector below, but it's slower:
 }
 .icon-keyboard:before {
 	content: "\e0f5";
-}
-
-.icon-debug:before {
-	content: "http://panthera.kablownia.org/lnxmen_site/images/admin/menu/developement.png";
 }

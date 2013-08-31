@@ -15,6 +15,7 @@ input[type="password"].input-text {
 }
 
 .input-text {
+  display: block;
   outline: none;
   border: none;
   border-bottom: 1px solid #333;
@@ -30,12 +31,6 @@ input[type="password"].input-text {
      -moz-transition: border ease-out 0.2s;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   vertical-align: middle;
-}
-
-.inline {
-  max-width: calc(100% - 116px);
-  height:43px; 
-  display: inline;
 }
 
 .input-text:focus {

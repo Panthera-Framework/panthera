@@ -14,7 +14,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  bottom: 48px;
+  bottom: 0;
   left: 0;
   overflow: auto;
   overflow-x: hidden; /* Not sure if this is really required here */
@@ -43,7 +43,7 @@
 
 .action-bar ~ .content,
 .tab-fixed ~ .content  {
-  top: 96px;
+  top: 48px;
 }
 
 .action-bar.fixed-bottom ~ .content {
