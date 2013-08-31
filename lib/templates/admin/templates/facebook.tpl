@@ -62,7 +62,7 @@ function synchronizeData()
                 </tr>
                 <tr>
                     <td>{function="localize('Gender', 'facebook')"}</td>
-                    <td>{function="localize('$user.gender', 'facebook')"}</td>
+                    <td>{function="localize($user.gender, 'facebook')"}</td>
                 </tr>
                 <tr>
                     <td>{function="localize('Timezone', 'facebook')"}</td>
