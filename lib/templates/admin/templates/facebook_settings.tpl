@@ -14,8 +14,9 @@ function saveFacebook()
 {
     appID = $('#appID_value').val();
     Secret = $('#secret_value').val();
+    scope = $('#scope_value').val();
     
-    panthera.jsonPOST({ url: '?display=facebook&cat=admin&action=settings&subaction=save', data: 'appid='+appID+'&secret='+Secret, spinner: spinner, success: function (response) {
+    panthera.jsonPOST({ url: '?display=facebook&cat=admin&action=settings&subaction=save', data: 'appid='+appID+'&secret='+Secret+'&scope='+scope, messageBox: 'w2ui', spinner: spinner, success: function (response) {
           if (response.status == "success")
           {
                    jQuery('#save_button').attr("disabled", "disabled");
@@ -61,6 +62,11 @@ function saveFacebook()
                 <tr>
                     <td>Secret</td>
                     <td><input type="text" id="secret_value" value="{$secret}" style="width: 500px;"></td>
+                </tr>
+                
+                <tr>
+                    <td>Permissions</td>
+                    <td><input type="text" id="scope_value" value="{$scope}" style="width: 500px;"></td>
                 </tr>
             </tbody>
          </table>

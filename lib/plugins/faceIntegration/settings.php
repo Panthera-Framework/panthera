@@ -33,22 +33,26 @@ if ($_GET['display'] == 'facebook')
         {
             $appID = $_POST['appid'];
             $secret = $_POST['secret'];
+			
+			if ($_POST['scope'] != '' AND strlen($_POST['scope']) > 4)
+				$scope['scope'] = $_POST['scope'];
             
             if (gettype($appID) != 'string' OR gettype($secret) != 'string')
                 ajax_exit(array('status' => 'failed', 'message' => 'Invalid type of variables'));
             
-            if (!$panthera->config->setKey("facebook_appid", $appID) OR !$panthera->config->setKey("facebook_secret", $secret))
+            if (!$panthera->config->setKey("facebook_appid", $appID) OR !$panthera->config->setKey("facebook_secret", $secret) OR !$panthera->config->setKey("facebook_scope", $scope))
             {
                 ajax_exit(array('status' => 'failed', 'message' => localize('Invalid value for this data type')));
                 pa_exit();
             } else {
-                ajax_exit(array('status' => 'success', 'message' => localize('AppID and Secret have been saved!')));
+                ajax_exit(array('status' => 'success', 'message' => localize('AppID, Secret and Permissions have been saved!')));
                 pa_exit();
             }
         }
         
         $template -> push('appid', $panthera -> config -> getKey('facebook_appid'));
         $template -> push('secret', $panthera -> config -> getKey('facebook_secret'));
+		$template -> push('scope', $panthera -> config -> getKey('facebook_scope')['scope']);
 		
 		$titlebar = new uiTitlebar(localize('Settings', 'facebook'));
 		$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/facebook.png', 'left');
