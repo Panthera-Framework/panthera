@@ -43,6 +43,9 @@
       <script src="{$PANTHERA_URL}/js/fries/action-bars.js"></script>
       <script src="{$PANTHERA_URL}/js/fries/spinners.js"></script>
       <script src="{$PANTHERA_URL}/js/fries/tabs.js"></script>
+      
+      <!-- Include our styles -->
+      <link rel="stylesheet" href="{$PANTHERA_URL}/css/admin_mobile.css">
 
       <script type="text/javascript">
             $(document).ready(function() {
