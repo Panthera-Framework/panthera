@@ -7,6 +7,7 @@
         <link rel='stylesheet' href='{$PANTHERA_URL}/css/admin/login.css' type='text/css' media='all' />
         <link rel='stylesheet' href='{$PANTHERA_URL}/css/admin/jquery.dropdown.css' type='text/css' media='all' />
         <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/w2ui-1.2.min.css" />
+        <link href='http://fonts.googleapis.com/css?family=Oxygen:700' rel='stylesheet' type='text/css'>
         <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
         <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery.dropdown.js"></script>
@@ -242,6 +243,10 @@
 		    background: linear-gradient(top, #DBDBDB 0%,rgb(240, 240, 240) 100%);
             padding-top: 3px;
         }
+        
+        h1 {
+			font-family: 'Oxygen', sans-serif;
+		}
         </style>
     </head>
     
