@@ -35,9 +35,13 @@ function makeDump()
             </tfoot>
 
             <tbody>
+              {if="count($dumps) < 1"}
+              	<tr><td colspan="5"><p style="text-align: center;">{function="localize('Sorry, you have not any backups', 'database')"}!</p></td>
+              {else}
                 {loop="$dumps"}
                 <tr><td><a href="{$AJAX_URL}?display=sqldump&cat=admin&get={$value.name}&_bypass_x_requested_with">{$value.name}</a></td><td>{$value.size}</td><td>{$value.date}</td></tr>
                 {/loop}
+              {/if}
             </tbody>
          </table>
 
