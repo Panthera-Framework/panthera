@@ -16,7 +16,7 @@
     <tbody>
         {loop="$pages"}
         <tr>
-            <td>{$value.location} / <a href="{$value.link}" class="ajax_link">{$value.name}</a></td>
+            <td>{$value.location} / <a href="{$value.link}&cat=admin" class="ajax_link">{$value.name}</a></td>
         </tr>
         {/loop}
     </tbody>
