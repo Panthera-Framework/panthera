@@ -203,7 +203,7 @@ $mailAttributes['mailing_use_php'] = array('value' => (bool)$panthera -> config 
 
 // mailing server
 $mailAttributes['mailing_server'] = array('name' => 'Server',  'value' => $panthera -> config -> getKey('mailing_server', null, null, 'mailing'));
-$mailAttributes['mailing_server_port'] = array('name' => 'Port', 'value' => $panthera -> config -> getKey('mailing_server_port', 'int', 465, 'mailing'));
+$mailAttributes['mailing_server_port'] = array('name' => 'Port', 'value' => $panthera -> config -> getKey('mailing_server_port', 465, 'int', 'mailing'));
 
 // auth data
 $mailAttributes['mailing_user'] = array('name' => 'Login', 'value' => $panthera -> config -> getKey('mailing_user', 'email', 'mailing'));
