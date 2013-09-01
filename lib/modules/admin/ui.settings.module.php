@@ -128,7 +128,15 @@ class uiSettings
                 
                 if ($this->settingsList[$key]['customSaveHandler'])
                 {
-                    $value = $this->settingsList[$key]['customSaveHandler']('save', $rKey, $value);
+                    try {
+                        $value = $this->settingsList[$key]['customSaveHandler']('save', $rKey, $value);
+                    } catch (Exception $e) {
+                        return array(
+                            'message' => $e -> getMessage(), 
+                            'field' => $key, 
+                            'fieldTitle' => $this->settingsList[$key]['label']
+                        );
+                    }
                 }
                 
                 if (is_object($this->settingsList[$key]['validator']))
