@@ -88,7 +88,7 @@ class newsletterManagement
     public static function search($by='', $limit=0, $limitFrom=0, $orderBy='nid', $order='DESC')
     {
           global $panthera;
-          return $panthera->db->getRows('newsletters', $by, $limit, $limitFrom, 'newsletter', $orderBy, $order);
+          return $panthera->db->getRows('newsletters', $by, $limit, $limitFrom, 'newsletters', $orderBy, $order);
     }
     
     /**
