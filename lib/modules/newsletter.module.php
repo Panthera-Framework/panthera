@@ -26,7 +26,7 @@ interface newsletterType
 /**
   * Newsletters management
   *
-  * @author Damian Kęska
+  * @author Damian Kęska, Mateusz Warzyński
   */
 
 class newsletterManagement
@@ -40,7 +40,7 @@ class newsletterManagement
       * @author Damian Kęska
       */
 
-    public function create($title, $users=null)
+    public static function create($title, $users=null)
     {
         global $panthera;
     
@@ -85,7 +85,7 @@ class newsletterManagement
       * @author Damian Kęska
       */
     
-    public static function search($by='', $limit=0, $limitFrom=0, $orderBy='id', $order='DESC')
+    public static function search($by='', $limit=0, $limitFrom=0, $orderBy='nid', $order='DESC')
     {
           global $panthera;
           return $panthera->db->getRows('newsletters', $by, $limit, $limitFrom, 'newsletter', $orderBy, $order);
@@ -238,6 +238,7 @@ class newsletterManagement
         
         return False;
     }
+	
 }
 
 /**
@@ -287,7 +288,7 @@ class newsletterType_mail implements newsletterType
 }
 
 /**
-  * Single newsletter category management
+  * Newsletter categories management
   *
   * @author Damian Kęska
   */
