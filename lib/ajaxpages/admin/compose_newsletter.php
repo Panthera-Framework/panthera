@@ -75,7 +75,7 @@ if(isset($_POST['content']))
 
 // titlebar
 $titlebar = new uiTitlebar(localize('Newsletter', 'newsletter'). ' - ' .localize('Compose a new message', 'newsletter'));
-//$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/newsletter-icon.png', 'left');
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/newsletter.png', 'left');
 
 $panthera -> template -> display('compose_newsletter.tpl');
 pa_exit();
