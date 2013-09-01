@@ -26,7 +26,9 @@ function removeSubscriber(id)
     });
 }
 </script>
-<div class="titlebar">{"Newsletter subscribers"|localize} - {"List of users subscribing this newsletter"|localize}</div>
+
+{include="ui.titlebar"}
+
 <div class="text-section" id="newsletter_users_window">
 {/if}
 {if $action == '' or $action == 'show_table'}

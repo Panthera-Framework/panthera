@@ -18,6 +18,7 @@ if (!getUserRightAttribute($panthera->user, 'can_manage_newsletter_users')) {
 
 // import /lib/modules/newsletter.module.php file to access its classes and functions
 $panthera -> importModule('newsletter');
+$panthera -> locale -> loadDomain('newsletter');
 
 // GET newsletter by `nid` (from GET parameter)
 $newsletter = new newsletter('nid', $_GET['nid']);
@@ -81,6 +82,9 @@ if (count($users) == 0)
     $panthera -> template -> display('error.tpl');
     pa_exit();
 }
+
+$titlebar = new uiTitlebar(localize('List of users subscribing this newsletter', 'newsletter'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/newsletter.png', 'left');
 
 $panthera -> template -> push ('newsletter_users', $users);
 $panthera -> template -> display('newsletter_users.tpl');
