@@ -374,6 +374,46 @@ class pantheraLocale
 
         return $language;
     }
+    
+    /**
+      * Select a translated string from array with a translation priority
+      *
+      * @param string name
+      * @return mixed 
+      * @author Damian Kęska
+      */
+    
+    public static function selectStringFromArray($input)
+    {
+        global $panthera;
+        
+        if (!is_array($input))
+        {
+            return $input;
+        }
+        
+        $language = $panthera -> locale -> getActive();
+        
+        if (isset($input[$language]))
+        {
+            return $input[$language];
+        }
+        
+        if ($panthera->user)
+        {
+            if (isset($input[$panthera->user->language]))
+            {
+                return $input[$panthera->user->lantguage];
+            }
+        }
+        
+        if (isset($input['english']))
+        {
+            return $input['english'];
+        }
+        
+        return end($input);
+    }
 }
 
 /**

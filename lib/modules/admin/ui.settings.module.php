@@ -17,6 +17,9 @@
 class uiSettings
 {
     protected $settingsList = array();
+    protected $options = array(
+        'languageSelector' => False
+    );
     protected $panthera;
     
     /**
@@ -60,6 +63,21 @@ class uiSettings
             'customSaveHandler' => null,
             'description' => ''
         );
+    }
+    
+    /**
+      * Enable or disable language selector
+      *
+      * @param bool $value
+      * @return void 
+      * @author Damian Kęska
+      */
+    
+    public function languageSelector($value=False)
+    {
+        $this->options['defaultLanguage'] = pantheraLocale::getFromOverride(@$_GET['language']);
+        $this->options['languages'] = $this->panthera->locale->getLocales();
+        $this->options['languageSelector'] = (bool)$value;
     }
     
     /**
@@ -132,7 +150,7 @@ class uiSettings
                         $value = $this->settingsList[$key]['customSaveHandler']('save', $rKey, $value);
                     } catch (Exception $e) {
                         return array(
-                            'message' => $e -> getMessage(), 
+                            'message' => array($e->getCode(), $e -> getMessage()), 
                             'field' => $key, 
                             'fieldTitle' => $this->settingsList[$key]['label']
                         );
@@ -193,12 +211,13 @@ class uiSettings
     
     public function applyToTemplate()
     {
+        $this->panthera->template->push('uiSettings', $this->options);
         $this->panthera->template->push('variables', $this->settingsList);
     }
 }
 
 /**
-  * Custom field handler - recovery.mail.title
+  * Custom field handler - multilanguage
   *
   * @param string $action
   * @param string $key
@@ -222,6 +241,64 @@ function uiSettingsMultilanguageField($action, $key, $value='')
         $v = $panthera -> config -> getKey($key);
         return $v[$language];
     }
+}
+
+/**
+  * Custom field handler - pantheraUrl (automaticaly parses Panthera URLs)
+  *
+  * @param string $action
+  * @param string $key
+  * @param mixed $value
+  * @package Panthera\adminUI
+  * @return mixed 
+  * @author Damian Kęska
+  */
+
+function uiSettingsPantheraURLField($action, $key, $value)
+{
+    global $panthera;
+
+    if ($action == 'save')
+    {
+        return pantheraUrl($value, True);
+    }
+    
+    return pantheraUrl($panthera->config->getKey($key));
+}
+
+/**
+  * Custom field handler - URL field (with URL validation)
+  *
+  * @param string $action
+  * @param string $key
+  * @param mixed $value
+  * @package Panthera\adminUI
+  * @return mixed 
+  * @author Damian Kęska
+  */
+
+function uiSettingsURLField($action, $key, $value)
+{
+    global $panthera;
+
+    if ($action == 'save')
+    {
+        $ctx = stream_context_create(array( 
+            'http' => array( 
+                'timeout' => 5 
+                ) 
+            ) 
+        ); 
+    
+        if (!file_get_contents($value, 0, $ctx))
+        {
+            throw new Exception('Cannot connect to selected URL, it\'s propably invalid');
+        }
+        
+        return $value;
+    }
+    
+    return $panthera->config->getKey($key);
 }
 
 /**

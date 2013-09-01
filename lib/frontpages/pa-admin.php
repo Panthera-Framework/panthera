@@ -15,7 +15,7 @@ if (!checkUserPermissions($user, True))
 }
 
 $panthera -> template -> setTemplate('admin');
-$panthera -> template -> setTitle($panthera -> config -> getKey('site_title', 'Panthera', 'string'));
+//$panthera -> template -> setTitle(pantheraLocale::selectStringFromArray($panthera->config->getKey('site_title')));
 
 if (!isset($_GET['display']))
     $_GET['display'] = 'dash';

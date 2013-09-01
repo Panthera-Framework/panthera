@@ -88,6 +88,11 @@ class uiTitlebar
     
     public function applyToTemplate()
     {
+        if ($this->settings['title'])
+        {
+            $this->panthera->template->setTitle($this->settings['title']);
+        }
+        
         $this->panthera->template->push('uiTitlebar', $this->settings);
     }
 }

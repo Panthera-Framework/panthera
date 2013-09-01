@@ -207,6 +207,14 @@ $defaults['content']['mce'] = array(
     'linkType' => 'ajax'
 );
 
+$defaults['content']['sitesettings'] = array(
+    'link' => '?display=settings.site&cat=admin',
+    'name' => localize('Site configuration', 'settings'),
+    'description' => localize('Website URL address, title', 'settings'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/site-settings.png',
+    'linkType' => 'ajax'
+);
+
 // titlebar
 $titlebar = new uiTitlebar(localize('Settings', 'settings'));
 $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/settings.png', 'left');

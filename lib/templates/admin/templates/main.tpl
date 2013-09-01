@@ -77,7 +77,7 @@
 		    
 		    <div class="flagsInHeader">
             {loop="$flags"}
-                <a href="?display=dash&cat=admin&_locale={$value}"><img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 12px; margin: 1px;"></a>
+                <a href="?{function="getQueryString('GET', '', array('_', '_locale'))"}&_locale={$value}"><img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 12px; margin: 1px;"></a>
             {/loop}
             </div>
            </span>
@@ -128,7 +128,7 @@
 
         <footer>
             <div class="footer">
-                <p style="float: left; margin-left: 275px;">{if="$mobileTemplate == True"}<a href="{$PANTHERA_URL}/pa-admin.php?display=dash&cat=admin&__switchdevice=mobile">Mobile</a>{/if} | {if="$tabletTemplate == True"}<a href="{$PANTHERA_URL}/pa-admin.php?display=dash&cat=admin&__switchdevice=tablet">Tablet</a>{/if} | <a href="{$PANTHERA_URL}/pa-admin.php?display=dash&cat=admin&__switchdevice=desktop">Desktop</a></p>
+                <p style="float: left; margin-left: 275px;">{if="$mobileTemplate == True"}<a href="{$PANTHERA_URL}/pa-admin.php?{function="getQueryString('GET', '', array('_', '__switchdevice'))"}&__switchdevice=mobile">Mobile</a>{/if} | {if="$tabletTemplate == True"}<a href="{$PANTHERA_URL}/pa-admin.php?{function="getQueryString('GET', '', array('_', '__switchdevice'))"}&__switchdevice=tablet">Tablet</a>{/if} | <a href="{$PANTHERA_URL}/pa-admin.php?{function="getQueryString('GET', '', array('_', '__switchdevice'))"}&__switchdevice=desktop">Desktop</a></p>
             
                 <p>Powered by <a href="http://github.com/webnull/panthera" target="_blank">Panthera Framework</a> {$PANTHERA_VERSION}</p>
             </div>

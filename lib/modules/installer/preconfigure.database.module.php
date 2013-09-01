@@ -12,10 +12,12 @@ function preconfigureDatabase()
     global $panthera;
     $panthera -> config -> loadOverlay('*');
     $panthera -> config -> setKey('ajax_url', $_SERVER['HTTP_HOST'].str_ireplace('install.php', '_ajax.php', $_SERVER['SCRIPT_NAME']), 'string'); 
+    $panthera -> config -> setKey('site_title', array('english' => 'Panthera Framework'), 'array');
+    $panthera -> config -> setKey('site_description', array('english' => 'Another site based on Panthera Framework'), 'array');
+    $panthera -> config -> setKey('site_metas', array('english' => 'another, panthera, framework, based, site'), 'array');
     $panthera -> config -> setKey('language_default', 'english', 'string');
     $panthera -> config -> setKey('template', 'example', 'string');
     $panthera -> config -> setKey('debug', true, 'bool');
-    $panthera -> config -> setKey('site_title', 'Example title', 'string');
     $panthera -> config -> setKey('upload_max_size', 3145728, 'int');
     $panthera -> config -> setKey('salt', md5(generateRandomString(8096)), 'string');
     $panthera -> config -> setKey('template_debugging', true, 'bool');

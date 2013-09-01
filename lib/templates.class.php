@@ -161,14 +161,6 @@ class pantheraTemplate extends pantheraClass
             // cache configuration files?
             $this->cacheConfig = True;
         }
-        
-        // automatic generate site header from config informations
-        if (!defined('TPL_NO_AUTO_HEADER'))
-        {
-            $this -> setTitle($this->panthera->config->getKey('site_title'));
-            $this -> addMetaTag('description', $this->panthera->config->getKey('site_description'));
-            $this -> putKeywords(explode(',', $this->panthera->config->getKey('site_meta')));
-        }
         //$this->tpl->plugins_dir = array(PANTHERA_DIR.'/smarty/sysplugins/', PANTHERA_DIR.'/share/smarty/plugins/', SITE_DIR.'/content/smartyplugins/', PANTHERA_DIR.'/share/smartyplugins/');
         
         // automatic webroot merge (for debugging purposes)
@@ -467,6 +459,14 @@ class pantheraTemplate extends pantheraClass
 
         if ($this->generateHeader == True)
         {
+            // automatic generate site header from config informations
+            if (!defined('TPL_NO_AUTO_HEADER'))
+            {
+                $this -> setTitle(pantheraLocale::selectStringFromArray($this->panthera->config->getKey('site_title')));
+                $this -> addMetaTag('description', pantheraLocale::selectStringFromArray($this->panthera->config->getKey('site_description')));
+                $this -> putKeywords(explode(',', pantheraLocale::selectStringFromArray($this->panthera->config->getKey('site_metas'))));
+            }
+        
             $header = $this->header;
 
             if ($this->generateLinks == True)
