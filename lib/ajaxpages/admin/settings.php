@@ -199,6 +199,14 @@ $defaults['content']['passwordrecovery'] = array(
     'linkType' => 'ajax'
 );
 
+$defaults['content']['mce'] = array(
+    'link' => '?display=settings.mce&cat=admin',
+    'name' => ucfirst(localize('mce settings', 'dash')),
+    'description' => localize('Text editor settings', 'settings'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/mce.png',
+    'linkType' => 'ajax'
+);
+
 // titlebar
 $titlebar = new uiTitlebar(localize('Settings', 'settings'));
 $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/settings.png', 'left');

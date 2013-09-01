@@ -90,9 +90,9 @@ class uiSettings
     
     public function setDescription($field, $description)
     {
-        if (isset($this->settingsList[$field]))
+        if (isset($this->settingsList[$this->filter($field)]))
         {
-            $this->settingsList[$field]['description'] = $description;
+            $this->settingsList[$this->filter($field)]['description'] = $description;
             return True;
         }
     }
@@ -113,16 +113,16 @@ class uiSettings
             $input = $_POST;
         }
         
-        end($this->settingsList);
-        
-        if (isset($input[key($this->settingsList)]))
-        {
+        //if (isset($input[key($this->settingsList)]))
+        //{
             foreach ($input as $key => $value)
             {
                 if (!isset($this->settingsList[$key]))
                 {
                     continue;
                 }
+                
+                $i++;
 
                 $rKey = $this->filter($key, True);
                 
@@ -153,10 +153,15 @@ class uiSettings
                 $this->panthera->config->setKey($rKey, $value);
             }
             
-            return True;
-        } else {
+            if ($i > 0)
+            {
+                return True;
+            }
+            
             return False;
-        }
+        //} else {
+        //    return False;
+        //}
     }
     
     public function setFieldSaveHandler($field, $callback)

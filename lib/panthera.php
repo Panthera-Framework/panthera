@@ -155,12 +155,13 @@ class pantheraLogging
       *
       * @param string $msg Message
       * @param string $type Identifier for group of messages
+      * @param bool $dontResetTimer Don't reset timer to keep real execution time
       * @hook logging.output
       * @return bool
       * @author Damian Kęska
       */
 
-    public function output($msg, $type='')
+    public function output($msg, $type='', $dontResetTimer=False)
     {
         if(!$this->debug)
             return False;
@@ -184,7 +185,9 @@ class pantheraLogging
         $this->panthera -> get_options('logging.output', $msg);
 
         $this->_output[] = array($msg, $type, $time, $this->timer);
-        $this->timer = 0;
+        
+        if ($dontResetTimer == False)
+            $this->timer = 0;
 
         return True;
     }

@@ -13,22 +13,20 @@ function deleteTag (htmlid)
     $('#'+htmlid).remove();
 }
 
+/**
+  * Init MCE editor
+  *
+  * @author Mateusz Warzyński
+  */
 
+function initEditor()
+{
+    mceSetContent('page_content', htmlspecialchars_decode("{$custompage_html}"));
+}
+</script>
+{function="uiMce::display()"}
+<script type="text/javascript">
 jQuery(document).ready(function($) {
-
-    /**
-      * Init MCE editor
-      *
-      * @author Mateusz Warzyński
-      */
-
-    function initEditor()
-    {
-        mceSetContent('page_content', htmlspecialchars_decode("{$custompage_html}"));
-    }
-
-    {$mce_init = "init_instance_callback: initEditor,"}
-    {include="mce"}
 
     mceInit('page_content');
     
@@ -67,7 +65,7 @@ jQuery(document).ready(function($) {
 
         spanClicked = true;
 
-        jQuery('#page_title_editor').html('<input type="text" name="content_title" value="{$custompage_title_escaped}">');
+        $('#page_title_editor').html('<input type="text" name="content_title" value="{$custompage_title_escaped}">');
     });
 
 });

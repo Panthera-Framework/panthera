@@ -31,7 +31,7 @@
                             {if="is_bool($value.value)"}
                             <input type="radio" name="{$key}" value="1"{if="$value.value"} checked{/if}> {function="localize('True')"} &nbsp;<input type="radio" name="{$key}" value="0"{if="!$value.value"} checked{/if}> {function="localize('False')"}
                             {else}
-                            <input type="text" value="{$value.value}">
+                            <input type="text" name="{$key}" value="{$value.value}">
                             {/if}
                         {/if}
                     

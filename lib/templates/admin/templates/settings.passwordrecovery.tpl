@@ -1,20 +1,20 @@
 {$site_header}
 
+<script type="text/javascript">
+/**
+  * Init MCE editor
+  *
+  * @author Damian Kęska
+  */
+
+function initEditor()
+{
+    mceSetContent('recovery_mail_content', htmlspecialchars_decode("{function="stripNewLines(htmlspecialchars($variables['recovery_-_mail_-_content']['value'], ENT_QUOTES))"}"));
+}
+</script>
+
+{function="uiMce::display()"}
     <script type="text/javascript">
-    /**
-      * Init MCE editor
-      *
-      * @author Damian Kęska
-      */
-
-    function initEditor()
-    {
-        mceSetContent('recovery_mail_content', htmlspecialchars_decode("{function="stripNewLines(htmlspecialchars($variables['recovery_-_mail_-_content']['value'], ENT_QUOTES))"}"));
-    }
-    
-    {$mce_init = "init_instance_callback: initEditor,"}
-    {include="mce"}
-
     mceInit('recovery_mail_content');
     
     $(document).ready(function () {

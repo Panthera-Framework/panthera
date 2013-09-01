@@ -1,4 +1,5 @@
 {$site_header}
+{function="uiMce::display()"}
 <script type="text/javascript">
 var gmap = "";
 var map = "";
@@ -20,9 +21,7 @@ jQuery(document).ready(function() {
       *
       * @author Mateusz Warzyński
       */
-
-    {include="mce"}
-
+    
     mceInit('address_text');
 
     //setTimeout(initEditor, 500);

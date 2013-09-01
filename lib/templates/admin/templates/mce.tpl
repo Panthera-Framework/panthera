@@ -1,3 +1,5 @@
+<script type="text/javascript" src="{$PANTHERA_URL}/js/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript">
     function mcePantheraInsertFile(link, mime, type, directory, id, description, author)
     {
         if (type == "image")
@@ -23,32 +25,32 @@
     function mcePantheraSetup(ed)
     {
         // Add a custom button
-        ed.addButton('pantheraUpload', { title : '{"Upload file"|localize}', image : '{$PANTHERA_URL}/images/file-explorer.png', onclick : function() {
+        ed.addButton('pantheraUpload', { title : '{function="localize('Upload file', 'mce')"}', image : '{$PANTHERA_URL}/images/file-explorer.png', onclick : function() {
                 ed.focus();
-                createPopup('_ajax.php?display=upload&cat=admin&popup=true&callback=mcePantheraInsertFile', 1024, 'upload_popup');
+                createPopup('{$AJAX_URL}?display=upload&cat=admin&popup=true&callback=mcePantheraInsertFile', 1024, 'upload_popup');
                 tinyMCE.execInstanceCommand(ed,"mceInsertContent",false,'Test');
             }
         });
     }    
-
+    
     var mceSettings = {
-        {$mce_init}
+        init_instance_callback: initEditor,
         mode : "textareas",
-            theme : "advanced",
-            skin : "thebigreason",
-            plugins : "emotions,spellchecker,advhr,insertdatetime,preview", 
+            theme : "{$mceSettings['theme']}",
+            skin : "{$mceSettings['skin']}",
+            plugins : "{$mceSettings['plugins']}", 
                     
             // Theme options - button# indicated the row# only
-            theme_advanced_buttons1 :"bold,italic,underline,|,justifyleft,justifycenter,justifyright,fontselect,fontsizeselect,formatselect",
-            theme_advanced_buttons2 : "outdent,indent,|,bullist,numlist,|,outdent,indent,link,image,|,code,|,forecolor,backcolor,sub,sup,|,charmap,|,pantheraUpload",      
+            theme_advanced_buttons1 :"{$mceSettings['tollbar1']}",
+            theme_advanced_buttons2 : "{$mceSettings['tollbar2']}",      
             theme_advanced_toolbar_location : "top",
             theme_advanced_toolbar_align : "top",
             theme_advanced_statusbar_location : "bottom",
-            content_css : "{$site_template_css}",
-            theme_advanced_resizing : true,
+            content_css : "{$mceSettings['css']}",
+            theme_advanced_resizing : {$mceSettings['resizable']|intval},
             setup: function (ed) { mcePantheraSetup(ed); }
     }
-
+    
     function mceInit(id)
     {
         tinyMCE.settings = mceSettings;
@@ -70,4 +72,4 @@
     {
         tinyMCE.execCommand('mceFocus', true, id);
     }
-
+</script>

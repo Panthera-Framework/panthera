@@ -417,12 +417,12 @@ class cloned_images extends cloned_plugin
 $panthera -> add_option('cloned_parsers', array('cloned_images', 'detect'));
 
 /* SOME TESTS */
-$test = new cloned();
+/*$test = new cloned();
 $test -> addLink('http://kwejk.pl/', 'images');
 $test -> setField('http://kwejk.pl/', 'min-width', 100);
 
 //var_dump($test->getLinks());
 
-$test -> run();
+$test -> run();*/
 
-print_r($test->getResults());
+/*print_r($test->getResults());*/

@@ -1,5 +1,6 @@
+
 <script type="text/javascript">
-{include="mce"}
+function initEditor() {}
 
 /**
   * Jump to ajax page
@@ -94,15 +95,15 @@ function deleteMessage(id)
   * @author Mateusz Warzyński
   */
 
-jQuery(document).ready(function($) {
+$(document).ready(function($) {
     mceInit('edit_msg_content');
     mceInit('message_content');
 
-    jQuery('#message_window_trigger').click(function () {
+    $('#message_window_trigger').click(function () {
          if (windowLocks['message_window'] == true)
             return false;
 
-        jQuery('#message_window').slideToggle('slow');
+        $('#message_window').slideToggle('slow');
     });
 
     $('#post_new').submit(function () {
@@ -162,6 +163,8 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
 }
 
 </script>
+
+{function="uiMce::display()"}
 
 <style>
 .quickMsgIcon {

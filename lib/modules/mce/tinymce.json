@@ -1,0 +1,42 @@
+{
+    "name": "TinyMCE 3",
+    "template": "mce.tpl",
+    "website": "http://www.tinymce.com",
+    "configuration": {
+        "theme": {
+            "default": "advanced",
+            "type": "string",
+            "values": {
+                "advanced": "advanced",
+                "simple": "simple"
+            }
+        },
+        "skin": {
+            "default": "thebigreason",
+            "type": "string",
+            "values": {
+                "thebigreason": "thebigreason",
+                "o2k7": "o2k7",
+                "default": "default"
+            }
+        },
+        "resizable": {
+            "default": 1,
+            "type": "bool"
+        },
+        "plugins": {
+            "default": "emotions,spellchecker,advhr,insertdatetime,preview",
+            "type": "string"
+        },
+        
+        "tollbar1": {
+            "default": "bold,italic,underline,|,justifyleft,justifycenter,justifyright,fontselect,fontsizeselect,formatselect",
+            "type": "string"
+        },
+        
+        "tollbar2": {
+            "default": "outdent,indent,|,bullist,numlist,|,outdent,indent,link,image,|,code,|,forecolor,backcolor,sub,sup,|,charmap,|,pantheraUpload",
+            "type": "string"
+        }
+    }
+}

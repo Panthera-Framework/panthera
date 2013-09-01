@@ -704,23 +704,35 @@ class pantheraTemplate extends pantheraClass
     public function webrootMerge($customTemplates=array())
     {
         $mainTemplate = $this -> panthera -> config -> getKey('template');
+        
+        // example data: array('admin' => True) so the /lib will be merged or array('admin' => False) for /content only merging
+        $configTemplates = $this -> panthera -> config -> getKey('webroot.templates', array(), 'array', 'webroot'); 
+        
+        // example data: array('admin', 'admin_mobile')
+        $configExcluded = $this -> panthera -> config -> getKey('webroot.excluded', array(), 'array', 'webroot');
+        
         $this -> panthera -> logging -> startTimer();
         
         $roots = array (
-                      PANTHERA_DIR.'/templates/admin/webroot', 
-                      SITE_DIR. '/content/templates/admin/webroot', 
-                      PANTHERA_DIR.'/templates/admin_mobile/webroot', 
-                      SITE_DIR. '/content/templates/admin_mobile/webroot',
-                      PANTHERA_DIR.'/templates/' .$mainTemplate. '/webroot', 
-                      SITE_DIR. '/content/templates/' .$mainTemplate. '/webroot'
+                      PANTHERA_DIR.'/templates/admin/webroot' => 'admin', 
+                      SITE_DIR. '/content/templates/admin/webroot' => 'admin', 
+                      PANTHERA_DIR.'/templates/admin_mobile/webroot' => 'admin_mobile', 
+                      SITE_DIR. '/content/templates/admin_mobile/webroot' => 'admin_mobile',
+                      PANTHERA_DIR.'/templates/' .$mainTemplate. '/webroot' => $mainTemplate, 
+                      SITE_DIR. '/content/templates/' .$mainTemplate. '/webroot' => $mainTemplate,
+                      PANTHERA_DIR. '/templates/_libs_webroot' => '_libs_webroot',
+                      SITE_DIR. '/templates/_libs_webroot' => '_libs_webroot'
                     );
+                    
+        // add templates from site configuration
+        $customTemplates = array_merge($customTemplates, $configTemplates);  
                     
         if (!empty($customTemplates))
         {
             foreach ($customTemplates as $template)
             {
-                $roots[] = PANTHERA_DIR. '/templates/' .$template. '/webroot';
-                $roots[] = SITE_DIR. '/content/templates/' .$template. '/webroot';
+                $roots[ PANTHERA_DIR. '/templates/' .$template. '/webroot' ] = $template;
+                $roots[ SITE_DIR. '/content/templates/' .$template. '/webroot' ] = $template;
             }
         }
                             
@@ -729,8 +741,11 @@ class pantheraTemplate extends pantheraClass
         // array with list of changes
         $changes = array();
         
-        foreach ($roots as $dir)
+        foreach ($roots as $dir => $templateName)
         {
+            if (isset($configExcluded[$templateName]))
+                continue;
+        
             if (is_dir($dir))
             {
                 $files = scandirDeeply($dir, False);
@@ -748,7 +763,7 @@ class pantheraTemplate extends pantheraClass
                             
                         if (!is_dir(SITE_DIR. '/' .$chroot))
                         {
-                            $this->panthera->logging->output('Creating a directory ' .SITE_DIR. '/' .$chroot, 'pantheraTemplate');
+                            $this->panthera->logging->output('Creating a directory ' .SITE_DIR. '/' .$chroot, 'pantheraTemplate', True);
                             mkdir(SITE_DIR. '/' .$chroot);
                             $changes[] = array('status' => True, 'path' => SITE_DIR. '/' .$chroot, 'type' => 'dir', 'chrootname' => $chroot, 'source' => $file);
                         } else
@@ -767,7 +782,7 @@ class pantheraTemplate extends pantheraClass
                         // copy file if it does not exists
                         if (!is_file(SITE_DIR. '/' .$chroot))
                         {
-                            $this->panthera->logging->output('Creating file ' .SITE_DIR. '/' .$chroot, 'pantheraTemplate');
+                            $this->panthera->logging->output('Creating file ' .SITE_DIR. '/' .$chroot, 'pantheraTemplate', True);
                             copy($file, SITE_DIR. '/'.$chroot);
                             $changes[] = array('status' => True, 'path' => SITE_DIR. '/' .$chroot, 'type' => 'file', 'chrootname' => $chroot, 'source' => $file);
                         } else {
@@ -775,7 +790,7 @@ class pantheraTemplate extends pantheraClass
                             // compare file dates
                             if (filemtime($file) > filemtime(SITE_DIR. '/' .$chroot))
                             {
-                                $this->panthera->logging->output('Copying outdated file ' .SITE_DIR. '/' .$chroot, 'pantheraTemplate');
+                                $this->panthera->logging->output('Copying outdated file ' .SITE_DIR. '/' .$chroot, 'pantheraTemplate', True);
                                 copy($file, SITE_DIR. '/'.$chroot);
                                 $changes[] = array('status' => True, 'path' => SITE_DIR. '/' .$chroot, 'type' => 'file', 'chrootname' => $chroot, 'source' => $file);
                             } else

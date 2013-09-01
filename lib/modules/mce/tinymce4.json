@@ -1,0 +1,23 @@
+{
+    "name": "TinyMCE 4",
+    "template": "tinymce4.tpl",
+    "website": "http://www.tinymce.com",
+    "configuration": {
+        "toolbar": {
+            "default": "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+            "type": "string"
+        },
+        
+        "theme": {
+            "default": "modern",
+            "type": "string",
+            "values": {"modern": "modern"}
+        },
+        
+        "skin": {
+            "default": "lightgray",
+            "type": "string",
+            "values": {"lightgray": "lightgray"}
+        }
+    }
+}
