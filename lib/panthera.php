@@ -867,6 +867,12 @@ class pantheraCore
     
     public function getCacheTime($cacheObjectType)
     {
+        if ($cacheObjectType === '')
+        {
+            $this->logging->output('Warning, an empty cache object type passed to getCacheTime', 'pantheraCore');
+            return 120;
+        }
+        
         $array = $this -> config -> getKey('cache_timing', array(
             'usersTable' => 60
         ), 'array');
