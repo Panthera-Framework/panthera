@@ -71,11 +71,11 @@ $defaults['settings'] = array('link' => '?display=settings&cat=admin', 'name' =>
 $defaults['debug'] = array('link' => '?display=debug&cat=admin', 'name' => localize('Debugging center'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/developement.png', 'linkType' => 'ajax');
 $defaults['users'] = array('link' => '?display=users&cat=admin', 'name' => localize('Users'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png', 'linkType' => 'ajax');
 $defaults['mailing'] = array('link' => '?display=mailing&cat=admin', 'name' => localize('Mailing', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/mail-replied.png', 'linkType' => 'ajax');
+$defaults['newsletter'] = array('link' => '?display=newsletter&cat=admin', 'name' => localize('Newsletter'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/newsletter.png', 'linkType' => 'ajax');
 $defaults['gallery'] = array('link' => '?display=gallery&cat=admin', 'name' => localize('Gallery'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/gallery.png', 'linkType' => 'ajax');
 $defaults['upload'] = array('link' => 'createPopup(\'_ajax.php?display=upload&cat=admin&popup=true&callback=upload_file_callback\', 1300, 550);', 'name' => localize('Uploads', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/uploads.png', 'linkType' => 'onclick');
 $defaults['contact'] = array('link' => '?display=contact&cat=admin', 'name' => localize('Contact'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/contact.png', 'linkType' => 'ajax');
 $defaults['custom'] = array('link' => '?display=custom&cat=admin', 'name' => localize('Custom pages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/custom-pages.png', 'linkType' => 'ajax');
-//$menu[] = array('link' => '?display=newsletter&cat=admin', 'name' => localize('Newsletter'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Newsletter.png', 'linkType' => 'ajax');
 $defaults['messages'] = array('link' => '?display=messages&cat=admin', 'name' => localize('Quick messages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/messages.png', 'linkType' => 'ajax');
 
 $defaults['users'] = array('link' => '?display=users&cat=admin', 'name' => localize('Users'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png', 'linkType' => 'ajax');
