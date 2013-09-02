@@ -22,7 +22,7 @@ function gmapsCallback ()
 
 function initEditor()
 {
-    mceSetContent('page_content', htmlspecialchars_decode("{$adress_text}"));
+    mceSetContent('address_text', htmlspecialchars_decode("{$adress_text}"));
 }
 
 jQuery(document).ready(function() {
