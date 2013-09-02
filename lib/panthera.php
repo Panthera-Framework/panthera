@@ -872,9 +872,12 @@ class pantheraCore
         ), 'array');
         
         if (isset($array[$cacheObjectType]))
-            return $cacheObjectType;
-            
-        return 120; // default is 120 seconds if not found
+            return $array[$cacheObjectType];
+        else {
+            $array[$cacheObjectType] = 120;
+            $this -> config -> setKey('cache_timing', $array, 'array');
+            return 120; // default is 120 seconds if not found
+        }
     }
 
     /**
@@ -1039,10 +1042,10 @@ class pantheraCore
     {
         if ($cache == 'cache')
         {
-            if ($this->cache != False)
+            if ($this->cache)
                 return $this->cache->type;
         } else {
-            if ($this->varCache != False )
+            if ($this->varCache)
                 return $this->varCache->type;
         }
     }
@@ -1095,12 +1098,32 @@ class pantheraCore
         $this->hooks[$hookName][] = $function;
         return True;
     }
+    
+    /**
+      * Execute all hooks without returning output
+      * WARNING: To avoid problems remember one important rule - always return args you get in modified or in unmodified form
+      *
+      * @param string $hookName
+      * @param mixed $args Args to pass to hook
+      * @return bool 
+      * @author Damian Kęska
+      */
 
     public function get_options($hookName, $args='')
     {
         $this->get_filters($hookName, $args);
         return False;
     }
+    
+    /**
+      * Execute all hooks and return parsed data
+      * WARNING: To avoid problems remember one important rule - always return args you get in modified or in unmodified form
+      *
+      * @param string $hookName
+      * @param mixed $args Args to pass to hook
+      * @return mixed 
+      * @author Damian Kęska
+      */
 
     public function get_filters($hookName, $args='')
     {
