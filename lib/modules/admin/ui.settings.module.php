@@ -61,7 +61,8 @@ class uiSettings
             'validator' => $validator,
             'key' => $setting,
             'customSaveHandler' => null,
-            'description' => ''
+            'description' => '',
+            'type' => 'string'
         );
     }
     
@@ -78,6 +79,32 @@ class uiSettings
         $this->options['defaultLanguage'] = pantheraLocale::getFromOverride(@$_GET['language']);
         $this->options['languages'] = $this->panthera->locale->getLocales();
         $this->options['languageSelector'] = (bool)$value;
+    }
+    
+    /**
+      * Set field type
+      *
+      * @param string $field
+      * @param string $type eg. multipleboolselect, string, select
+      * @return mixed 
+      * @author Damian Kęska
+      */
+    
+    public function setFieldType ($field, $type)
+    {
+        if (!isset($this->settingsList[$this->filter($field)]))
+        {
+            return false;
+        }
+
+        if (!in_array($type, array('string', 'multipleboolselect', 'select')))
+        {
+            return false;
+        }
+        
+        $this->settingsList[$this->filter($field)]['type'] = $type;
+        return True;
+    
     }
     
     /**
@@ -264,6 +291,41 @@ function uiSettingsPantheraURLField($action, $key, $value)
     }
     
     return pantheraUrl($panthera->config->getKey($key));
+}
+
+/**
+  * Custom field handler - multiple bool selection field
+  *
+  * @param string $action
+  * @param string $key
+  * @param mixed $value
+  * @package Panthera\adminUI
+  * @return mixed 
+  * @author Damian Kęska
+  */
+
+function uiSettingsMultipleSelectBoolField($action, $key, $value)
+{
+    global $panthera;
+    
+    if ($action == 'save')
+    {
+        $newValues = array();
+        
+        foreach ($panthera -> config -> getKey($key) as $key => $val)
+        {
+            $newValues[$key] = False;
+        
+            if (in_array($key, $value))
+            {
+                $newValues[$key] = True;
+            }
+        }
+        
+        return $newValues;
+    } else {
+        return $panthera->config->getKey($key);
+    }
 }
 
 /**

@@ -454,6 +454,9 @@ class pantheraTemplate extends pantheraClass
     {
         $this->timer = microtime_float();
         
+        // execute hooks
+        $this->panthera->get_options('template.display', $template);
+        
         #foreach ($this->vars as $key => $value)
             #$this->tpl->assign($key, $value);
 
@@ -462,7 +465,9 @@ class pantheraTemplate extends pantheraClass
             // automatic generate site header from config informations
             if (!defined('TPL_NO_AUTO_HEADER'))
             {
-                $this -> setTitle(pantheraLocale::selectStringFromArray($this->panthera->config->getKey('site_title')));
+                if (!$this->attributes['title'])
+                    $this -> setTitle(pantheraLocale::selectStringFromArray($this->panthera->config->getKey('site_title')));
+                    
                 $this -> addMetaTag('description', pantheraLocale::selectStringFromArray($this->panthera->config->getKey('site_description')));
                 $this -> putKeywords(explode(',', pantheraLocale::selectStringFromArray($this->panthera->config->getKey('site_metas'))));
             }
@@ -527,7 +532,7 @@ class pantheraTemplate extends pantheraClass
                     $header .= "\n";
                 }
             }
-
+            
             // parse Panthera internal urls
             $header = pantheraUrl($header);
             
@@ -536,16 +541,18 @@ class pantheraTemplate extends pantheraClass
             $header = $this->panthera->get_filters('site_header', $header);
 
             // push headers to template
-            $this->push('site_title', $this->attributes['title']);
+            //$this->push('site_title', $this->attributes['title']);
+            
+            if ($this->attributes['title'])
+                $header .= "\n<title>".$this->attributes['title']."</title>";
+            
+            
             $this->push('site_header', $header);
         }
 
 
         if ($template == NuLL)
             $template = $this->template['index'];
-            
-        // execute hooks
-        $this->panthera->get_options('template.display', $template);
             
         $file = getContentDir('/templates/' .$this->name. '/templates/' .$template);
 

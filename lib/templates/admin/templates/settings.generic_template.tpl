@@ -48,7 +48,17 @@
                             {if="is_bool($value.value)"}
                             <input type="radio" name="{$key}" value="1"{if="$value.value"} checked{/if}> {function="localize('True')"} &nbsp;<input type="radio" name="{$key}" value="0"{if="!$value.value"} checked{/if}> {function="localize('False')"}
                             {else}
-                            <input type="text" name="{$key}" value="{$value.value}" style="width: 95%;">
+                            
+                                {if="$value.type == 'multipleboolselect'"}
+                                    <select name="{$key}[]" id="{$key}" multiple style="width: 95%;">
+                                        {loop="$value.value"}
+                                            <option value="{$key}"{if="$value"} selected{/if}>{$key}</option>
+                                        {/loop}
+                                    </select>
+                                {else}
+                            
+                                    <input type="text" name="{$key}" value="{$value.value}" style="width: 95%;">
+                                {/if}
                             {/if}
                         {/if}
                     

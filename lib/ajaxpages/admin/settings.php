@@ -157,6 +157,22 @@ $defaults['system']['session'] = array(
     'linkType' => 'ajax'
 );
 
+$defaults['system']['mce'] = array(
+    'link' => '?display=settings.mce&cat=admin',
+    'name' => ucfirst(localize('mce settings', 'dash')),
+    'description' => localize('Text editor settings', 'settings'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/mce.png',
+    'linkType' => 'ajax'
+);
+
+$defaults['system']['dash'] = array(
+    'link' => '?display=settings.dash&cat=admin',
+    'name' => localize('Dashboard', 'settings'),
+    'description' => localize('Configure Admin Panel main screen', 'settings'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/dashboard.png',
+    'linkType' => 'ajax'
+);
+
 // Content section
 $defaults['content'] = array();
 
@@ -171,7 +187,7 @@ $defaults['content']['users'] = array(
 $defaults['content']['mailing'] = array(
     'link' => '?display=mailing&cat=admin',
     'name' => localize('Mailing', 'dash'),
-    'description' => localize('Manage system translations', 'settings'),
+    'description' => localize('Send e-mails, manage it\'s configuration', 'settings'),
     'icon' => '{$PANTHERA_URL}/images/admin/menu/mail-replied.png',
     'linkType' => 'ajax'
 );
@@ -196,14 +212,6 @@ $defaults['content']['passwordrecovery'] = array(
     'name' => ucfirst(localize('password recovery', 'dash')),
     'description' => localize('Default mail title, content, password length', 'settings'),
     'icon' => '{$PANTHERA_URL}/images/admin/menu/password-recovery.png',
-    'linkType' => 'ajax'
-);
-
-$defaults['content']['mce'] = array(
-    'link' => '?display=settings.mce&cat=admin',
-    'name' => ucfirst(localize('mce settings', 'dash')),
-    'description' => localize('Text editor settings', 'settings'),
-    'icon' => '{$PANTHERA_URL}/images/admin/menu/mce.png',
     'linkType' => 'ajax'
 );
 

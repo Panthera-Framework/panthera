@@ -2182,12 +2182,13 @@ function getContentDir($dir)
   * Print object informations
   *
   * @param object $obj Input object
+  * @param bool $returnAsString
   * @debug
   * @return void
   * @author Damian Kęska
   */
 
-function object_dump($obj)
+function object_dump($obj, $returnAsString=False)
 {
     if (!is_object($obj))
         return False;
@@ -2199,9 +2200,29 @@ function object_dump($obj)
                   'methods' => $class->getMethods(),
                   'properties' => $class->getProperties(),
                   'constants' => $class->getConstants()
-                   );
+    );
 
-   var_dump($data);
+    if ($returnAsString)
+    {
+        return r_dump($data);
+    } else {
+        var_dump($data);
+    }
+}
+
+/**
+  * Make a var_dump and return result
+  *
+  * @return array
+  * @author Damian Kęska
+  */
+
+function r_dump()
+{
+    ob_start();
+    $var = func_get_args(); 
+    call_user_func_array('var_dump', $var);
+    return ob_get_clean();
 }
 
 /**

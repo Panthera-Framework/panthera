@@ -1,4 +1,3 @@
-
 <script type="text/javascript">
 function initEditor() {}
 
@@ -88,7 +87,9 @@ function deleteMessage(id)
 
     return false;
 }
-
+</script>
+{function="uiMce::display()"}
+<script type="text/javascript">
 /**
   * Init some functionality
   *
@@ -163,8 +164,6 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
 }
 
 </script>
-
-{function="uiMce::display()"}
 
 <style>
 .quickMsgIcon {

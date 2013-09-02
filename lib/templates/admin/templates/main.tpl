@@ -1,7 +1,6 @@
 <html>
     <head>
 	    <meta charset="utf-8">
-	    <title>{$site_title}</title>
 	    {$site_header}
 
         <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/admin.css" />
