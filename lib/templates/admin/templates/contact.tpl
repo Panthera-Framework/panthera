@@ -1,5 +1,4 @@
 {$site_header}
-{function="uiMce::display()"}
 <script type="text/javascript">
 var gmap = "";
 var map = "";
@@ -13,6 +12,17 @@ function gmapsCallback ()
     };
     
     gmap.createMap("map", mapOptions);
+}
+
+/**
+  * Init MCE editor
+  *
+  * @author Mateusz Warzyński
+  */
+
+function initEditor()
+{
+    mceSetContent('page_content', htmlspecialchars_decode("{$adress_text}"));
 }
 
 jQuery(document).ready(function() {
@@ -84,6 +94,8 @@ jQuery(document).ready(function() {
     panthera.forms.checkboxToggleLayer({ input: '#oneContactCheckbox', layer: '#contactLanguage', reversed: true });
 });
 </script>
+
+{function="uiMce::display()"}
 		
 		{include="ui.titlebar"}
 
