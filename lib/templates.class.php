@@ -565,8 +565,15 @@ class pantheraTemplate extends pantheraClass
             
         if ($renderOnly == True)
             return $render;        
-        else
+        else {
+            // gzip compression
+            if ($this->panthera->config->getKey('gzip_compression', False, 'bool'))
+                $this->panthera->outputControl->startBuffering('ob_gzhandler');
+
             print($render);
+            
+            $this->panthera->outputControl->flushAndFinish();
+        }
         
         // generate template execution time
         $this -> timer = (microtime_float() - $this -> timer);
@@ -841,7 +848,8 @@ class outputControl extends pantheraClass
             ob_start($handler);
         }
         
-        $panthera->logging->output('Setting output buffering with "' .$handler. '" handler', 'outputControl');
+        if ($panthera)
+            $panthera->logging->output('Setting output buffering with "' .$handler. '" handler', 'outputControl');
     }
     
     /**

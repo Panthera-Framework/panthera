@@ -86,7 +86,7 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
 {
     global $panthera;
 
-    if (error_get_last() != NuLL)
+    if (error_get_last())
     {
         $details = error_get_last();
 
@@ -853,10 +853,6 @@ class pantheraCore
         // Security: this should reduce some drive-by-download attacks
         if ($this->config->getKey('header_nosniff'))
             header('X-Content-Type-Options: nosniff');
-
-        // gzip compression
-        if ($this->config->getKey('gzip_compression', False, 'bool') == True)
-            ob_start("ob_gzhandler");
 
         $this->pluginsDir = array(PANTHERA_DIR. '/plugins', SITE_DIR. '/content/plugins');
     }
