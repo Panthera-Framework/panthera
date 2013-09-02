@@ -51,18 +51,22 @@ class uiSettings
       * @author Damian Kęska
       */
     
-    public function add($setting, $label, $validator='')
+    public function add($setting, $label, $validator='', $value=null)
     {
         $fKey = $this->filter($setting);
         
+        if ($value == null)
+            $value = $this->panthera->config->getKey($setting);
+        
         $this->settingsList[$fKey] = array(
-            'value' => $this->panthera->config->getKey($setting),
+            'value' => $value,
             'label' => $label, 
             'validator' => $validator,
             'key' => $setting,
             'customSaveHandler' => null,
             'description' => '',
-            'type' => 'string'
+            'type' => 'string',
+            'hide' => false
         );
     }
     
@@ -85,7 +89,7 @@ class uiSettings
       * Set field type
       *
       * @param string $field
-      * @param string $type eg. multipleboolselect, string, select
+      * @param string $type eg. multipleboolselect, string, select, packaged
       * @return mixed 
       * @author Damian Kęska
       */
@@ -97,9 +101,24 @@ class uiSettings
             return false;
         }
 
-        if (!in_array($type, array('string', 'multipleboolselect', 'select')))
+        if (!in_array($type, array('string', 'multipleboolselect', 'select', 'packaged')))
         {
             return false;
+        }
+        
+        if ($type == 'packaged')
+        {
+            $values = $this->panthera -> config -> getKey($field);
+            
+            foreach ($values as $key => $value)
+            {
+                if (!$key)
+                    continue;
+            
+                $this->add('__pkg_' .$field. '__field_' .$key, $key, '', $value);
+            }
+            
+            $this->settingsList[$this->filter($field)]['hide'] = True;
         }
         
         $this->settingsList[$this->filter($field)]['type'] = $type;
@@ -120,8 +139,8 @@ class uiSettings
     {
         if ($unFilter)
             return str_ireplace('_-_', '.', $string);
-        else
-            return str_ireplace('.', '_-_', $string);
+        
+        return str_ireplace('.', '_-_', $string);
     }
     
     /**
@@ -157,6 +176,8 @@ class uiSettings
         {
             $input = $_POST;
         }
+        
+        $packaged = array();
         
         //if (isset($input[key($this->settingsList)]))
         //{
@@ -203,7 +224,28 @@ class uiSettings
                     $this->settingsList[$key]['value'] = $value; // update cache
                 }
                 
+                if (substr($rKey, 0, 6) == '__pkg_')
+                {
+                    $exp = explode('__field_', substr($rKey, 6));
+                    
+                    if (!isset($packaged[$exp[0]]))
+                    {
+                        $packaged[$exp[0]] = array();
+                    }
+                    
+                    if (is_numeric($value))
+                        $value = intval($value);
+
+                    $packaged[$exp[0]][$exp[1]] = $value; 
+                    continue;
+                }
+                
                 $this->panthera->config->setKey($rKey, $value);
+            }
+            
+            foreach ($packaged as $field => $values)
+            {
+                $this -> panthera -> config -> setKey($field, $values);           
             }
             
             if ($i > 0)

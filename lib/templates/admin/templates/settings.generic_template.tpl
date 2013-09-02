@@ -34,6 +34,8 @@
                 
                 {/if}
                 {loop="$variables"}
+                {if="!$value.hide"}
+                
                 <tr>
                     <td valign="top"><b>{$value.label}:</b> {if="$value.description"}<br><small>{$value.description}</small>{/if}</td>
                     <td>
@@ -55,6 +57,8 @@
                                             <option value="{$key}"{if="$value"} selected{/if}>{$key}</option>
                                         {/loop}
                                     </select>
+                                {elseif="is_int($value.value)"}
+                                    <input type="number" name="{$key}" value="{$value.value}" style="width: 95%;">
                                 {else}
                             
                                     <input type="text" name="{$key}" value="{$value.value}" style="width: 95%;">
@@ -63,6 +67,7 @@
                         {/if}
                     
                 </tr>
+                {/if}
                 {/loop}
             </tbody>
             
