@@ -379,6 +379,17 @@ class newsletter extends pantheraFetchDB
             $m = new $f();
             $content = pantheraLocale::selectStringFromArray($this->panthera->config->getKey('nletter.confirm.content', array('english' => 'Hi, {$userName}. <br>Please confirm your newsletter subscription at {$PANTHERA_URL}/newsletter.php?confirm={$activateKey} <br>Your unsubscribe url: {$PANTHERA_URL}/newsletter.php?unsubscribe={$unsubscribeKey}'), 'array', 'newsletter'));
             $topic = pantheraLocale::selectStringFromArray($this->panthera->config->getKey('nletter.confirm.topic', array('english' => 'Please confirm your newsletter subscription'), 'array', 'newsletter'));
+            $userName = 'Guest';
+            
+            if ($userid !== -1)
+            {
+                $u = new pantheraUser('id', $userid);
+                
+                if ($u -> exists())
+                {
+                    $userName = $u -> getName();
+                }
+            }
             
             $topic = str_ireplace('{$userName}', $userName,
                      str_ireplace('{$unsubscribeKey}', $unsubscribe_id,
