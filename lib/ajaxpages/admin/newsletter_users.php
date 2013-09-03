@@ -40,6 +40,19 @@ if ($_GET['action'] == 'remove_subscriber')
     ajax_exit(array('status' => 'failed', 'messsage' => localize('Cannot find subscriber')));
 }
 
+if ($_GET['action'] == 'add_subscriber')
+{
+	if (strlen($_GET['email']) > 4 and strpos('@', $_GET['email']) !== false)
+		$email = $_GET['email'];
+	else
+		ajax_exit(array('status' => 'failed', 'message' => localize('Check email address!')));
+	
+	if ($newsletter -> registerUser($email, 'mail', -1, '', True, True))
+		ajax_exit(array('status' => 'success'));
+	else
+		ajax_exit(array('status' => 'failed', 'message' => localize('Cannot add subscriber!')));
+}
+
 $panthera -> template -> push ('nid', $_GET['nid']);
 $panthera -> template -> push ('action', '');
 
@@ -48,14 +61,6 @@ if ($_GET['action'] == 'show_table')
 
 // get count of newsletter users
 $usersCount = $newsletter -> getUsers(False); // false means we dont want to get records but it's count
-
-// show error information that there are no users in current newsletter
-if ($usersCount == 0)
-{
-    $panthera -> template -> push ('error_message', localize('There no any users subscribing this newsletter'));
-    $panthera -> template -> display('error.tpl');
-    pa_exit();
-}
 
 $page = intval($_GET['pagenum']);
 
@@ -75,16 +80,6 @@ $panthera -> template -> push('page_to', $limit[1]);
 
 // get all users from current page
 $users = $newsletter -> getUsers($limit[0], $limit[1]);
-
-if (count($users) == 0)
-{
-    $panthera -> template -> push ('error_message', localize('There no any users subscribing this newsletter'));
-    $panthera -> template -> display('error.tpl');
-    pa_exit();
-}
-
-$titlebar = new uiTitlebar(localize('List of users subscribing this newsletter', 'newsletter'));
-$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/newsletter.png', 'left');
 
 $panthera -> template -> push ('newsletter_users', $users);
 $panthera -> template -> display('newsletter_users.tpl');
