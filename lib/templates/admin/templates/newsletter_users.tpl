@@ -1,4 +1,4 @@
-{if $action == ''}
+{if="$action == ''"}
 <script>
 $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
 
@@ -27,38 +27,36 @@ function removeSubscriber(id)
 }
 </script>
 
-{include="ui.titlebar"}
-
 <div class="text-section" id="newsletter_users_window">
 {/if}
-{if $action == '' or $action == 'show_table'}
+{if="$action == '' OR $action == 'show_table'"}
           <br>
           <table class="gridTable">
             <thead>
-                <tr><th>{"Type"|localize}</th><th>{"Address"|localize}</th><th>{"Added"|localize}</th><th>{"Options"|localize}</th></tr>
+                <tr><th>{function="localize('Type')"}</th><th>{function="localize('Address')"}</th><th>{function="localize('Added')"}</th><th>{function="localize('Options')"}</th></tr>
              </thead>            
             
             <tfoot>
                 <tr>
-                    <td colspan="3" class="rounded-foot-left"><em>Panthera newsletter, {"pages"|localize}:
-                    {foreach from=$pager key=page item=active}
-                            {if $active == true}
-                            <a href="#" onclick="jumpToAjaxPage({$page}); return false;"><b>{$page+1}</b></a>
+                    <td colspan="3" class="rounded-foot-left"><em>Panthera newsletter, {function="localize('pages')"}:
+                    {loop="$pager"}
+                            {if="$value == True"}
+                            <a href="#" onclick="jumpToAjaxPage({$key}); return false;"><b>{$key+1}</b></a>
                             {else}
-                            <a href="#" onclick="jumpToAjaxPage({$page}); return false;">{$page+1}</a>
+                            <a href="#" onclick="jumpToAjaxPage({$key}); return false;">{$key+1}</a>
                             {/if}
-                        {/foreach}
+                    {/loop}
                     </em></td>
                 </tr>
             </tfoot>
             
             <tbody>
-                {foreach from=$newsletter_users key=k item=v}
-                <tr id="sub_{$v.id}"><td>{$v.type}</td><td>{$v.address}</td><td>{$v.added}</td><td><input type="button" value="{"Delete"|localize}" onclick="removeSubscriber('{$v.id}');"></td></tr>
-                {/foreach}
+                {loop="$newsletter_users"}
+                <tr id="sub_{$value.id}"><td>{$value.type}</td><td>{$value.address}</td><td>{$value.added}</td><td><input type="button" value="{function="localize('Delete')"}" onclick="removeSubscriber('{$value.id}');"></td></tr>
+                {/loop}
             </tbody>
            </table>
 {/if}
-{if $action == ''}
+{if="$action == ''"}
          </div>
 {/if}
