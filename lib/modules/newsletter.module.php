@@ -335,12 +335,14 @@ class newsletter extends pantheraFetchDB
       * @param string $type Contact address type eg. e-mail, jabber or any other if supported
       * @param int $userid Userid (optional)
       * @param string $cookied Cookie or session id used to identify user (optional)
+      * @param bool $activated by default false, but can be activated immediately
+      * @param bool $dontSendConfirmation Send a confirmation message, true by default
       * @throws UnexpectedValueException
       * @return mixed
       * @author Damian Kęska
       */
     
-    public function registerUser($address, $type='', $userid=-1, $cookieid='')
+    public function registerUser($address, $type='', $userid=-1, $cookieid='', $activated='', $dontSendConfirmation='')
     {
         if ($type == '')
             $type = $this->default_type;
@@ -361,13 +363,24 @@ class newsletter extends pantheraFetchDB
         
         // unsubscribe id should be random
         $unsubscribe_id = md5(rand(9999999, 99999999));
-        $activate_id = md5(rand(9999999, 99999999));
+        $activate_id = '';
+        
+        if ($activated == False)
+            $activate_id = md5(rand(9999999, 99999999));
         
         
         $values = array('nid' => $this->nid, 'address' => $address, 'type' => strtolower($type), 'cookieid' => $cookieid, 'userid' => intval($userid), 'unsubscribe_id' => $unsubscribe_id, 'activate_id' => $activate_id);
         $SQL = $this->panthera->db->query('INSERT INTO `{$db_prefix}newsletter_users` (`id`, `nid`, `address`, `type`, `added`, `cookieid`, `userid`, `unsubscribe_id`, `activate_id`) VALUES (NULL, :nid, :address, :type, NOW(), :cookieid, :userid, :unsubscribe_id, :activate_id)', $values);
         
         $this->panthera->get_options('newsletter_registered', array('address' => $address, 'nid' => $this->nid, 'type' => $type));
+        
+        if (!$dontSendConfirmation)
+        {
+            $m = new $f();
+            $content = pantheraLocale::selectStringFromArray($this->panthera->config->getKey('nletter.confirm.content', array('english' => 'Hi, {$userName}. <br>Please confirm your newsletter subscription at {$PANTHERA_URL}/newsletter.php?confirm={$activateKey} <br>Your unsubscribe url: {$PANTHERA_URL}/newsletter.php?unsubscribe={$unsubscribeKey}'), 'array', 'newsletter'));
+            $topic = pantheraLocale::selectStringFromArray($this->panthera->config->getKey('nletter.confirm.topic', array('english' => 'Please confirm your newsletter subscription'), 'array', 'newsletter'));
+            $m -> send($address, $content, $topic);
+        }
         
         return (bool)$SQL->rowCount();
     }
