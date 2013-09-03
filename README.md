@@ -1,14 +1,17 @@
 panthera
 ========
 
-Simple web framework written in PHP, designed to be simple as possible, modular and easy to use. Inspired by Wordpress.
+Our project bet on simplicity, we don't want to have complicated interfaces, data models - we are creating everything in KISS rule. Of course, we have data models but they are more 
+easier to understand than data models in other frameworks. 
+
+Panthera is built on a monolithic kernel, all core elements ale built-in, we don't store every class in a single file.
+Performance and and fexibility is very important - there are serval mechanisms making Panthera based application ready to use in big environments.
 
 Our Team
 =======
 - Damian Kęska - co-founder, main programmer, translator, website maintainer
 - Mateusz Warzyński - co-founder, programmer, translator, website maintainer
-- Ricky Reed - main graphics designer, author of project's logo
-- The-Error - graphics designer, giving us helpful tips about project design
+- The-Error - main graphics designer, giving us helpful tips about project design
 - Dawid Niedźwiedzki - tester
 
 Notice
