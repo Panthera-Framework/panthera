@@ -55,13 +55,14 @@ function createCategory()
 	         	<thead>
 	                <tr>
 	                    <th scope="col" class="rounded-company">{function="localize('Category')"}</th>
-	                    <th>{function="localize('Options')"}</th>
+	                    <th>{function="localize('Users')"}</th>
+	                    <th style="width: 70px;">{function="localize('Options')"}</th>
 	                </tr>
 	            </thead>
 	            
 	            <tfoot>
 		            <tr>
-		            <td colspan="2"><em>{$uiPagerName="newsletters"}
+		            <td colspan="3"><em>{$uiPagerName="newsletters"}
 		            {include="ui.pager"}
 		            </em></td>
 		            </tr>
@@ -71,6 +72,7 @@ function createCategory()
 	              {loop="$categories"}
 	                <tr id="nid_{$value.nid}">
 	                    <td><a href="#{$value.title}" onclick="navigateTo('?display=compose_newsletter&cat=admin&nid={$value.nid}')">{$value.title}</a></td>
+	                    <td>{$value.users}</td>
 	                    <td>
 	                    	<a href="#" onclick="removeCategory('{$value.nid}');">
 	                        	<img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
@@ -79,7 +81,7 @@ function createCategory()
 	                </tr>
 	              {/loop}
 	              	<tr>
-	                    <td><input type="text" id="new_category" placeholder="{function="localize('New newsletter category', 'newsletter')"}" style="width: 90%;"></td>
+	                    <td colspan="2"><input type="text" id="new_category" placeholder="{function="localize('New newsletter category', 'newsletter')"}" style="width: 90%;"></td>
 	                    <td>
 	                    	<a onclick="createCategory();" style="cursor: pointer;">
 	                    		<img src="{$PANTHERA_URL}/images/admin/list-add.png" style="height: 22px;">
