@@ -77,7 +77,7 @@
                                         {/loop}
                                     </select>
                                 {elseif="$value.type == 'wysiwyg'"}
-                                    <textarea id="{$key}" style="width: 95%; min-height: 200px;">{$value.value}</textarea>
+                                    <textarea id="{$key}" name="{$key}" style="width: 95%; min-height: 200px;">{$value.value}</textarea>
                                 {elseif="is_int($value.value)"}
                                     <input type="number" name="{$key}" value="{$value.value}" style="width: 95%;">
                                 {else}
