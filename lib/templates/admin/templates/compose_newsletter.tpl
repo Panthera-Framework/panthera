@@ -20,7 +20,7 @@ jQuery(document).ready(function($) {
     <div class="msgError" id="userinfoBox_failed"></div>
 
         <form id="newsletter_form" action="{$AJAX_URL}?display=compose_newsletter&cat=admin&nid={$nid}" method="POST">
-        <div class="title-grid">{function="localize('Title', 'newsletter')"}: <input type="text" value="" name="title"><span></span></div>
+        <div class="title-grid" style="height: 25px;">{function="localize('Title', 'newsletter')"}: <input type="text" value="" name="title"><span></span></div>
         <div class="content-gird">
              <textarea name="content" id="content_textarea"></textarea><br><br>
              <input type="button" value="{function="localize('Subscribers', 'newsletter')"}" onclick="createPopup('?display=newsletter_users&cat=admin&nid={$nid}', 1024);"> <input type="submit" value="{function="localize('Send', 'newsletter')"}">
