@@ -523,7 +523,7 @@ if ($_GET['action'] == 'account') {
         
         // uiPager
         $panthera -> importModule('admin/ui.pager');
-        $uiPager = new uiPager('users', $usersTotal, $maxOnPage);
+        $uiPager = new uiPager('users', 'adminUsersList');
         $uiPager -> setActive($usersPage);
         $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\');');
         $limit = $uiPager -> getPageLimit();

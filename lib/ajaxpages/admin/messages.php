@@ -254,7 +254,7 @@ if ($_GET['action'] == 'display_category')
 
     // count pages
     $panthera -> importModule('pager');
-    $pager = new Pager($count, $panthera->config->getKey('max_qmsg', 10, 'int'));
+    $pager = new Pager($count, 'adminQuickMessages');
     $pager -> maxLinks = 6;
     $limit = $pager -> getPageLimit($page);
 

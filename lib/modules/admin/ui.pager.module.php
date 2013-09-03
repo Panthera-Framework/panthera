@@ -19,7 +19,7 @@ class uiPager
     protected static $pagers;
     protected $barName = "";
     
-    public function __construct ($name, $totalItems, $maxOnPage)
+    public function __construct ($name, $totalItems, $maxOnPage='')
     {
         global $panthera;
         $this -> panthera = $panthera;

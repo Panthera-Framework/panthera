@@ -28,10 +28,18 @@ class Pager
 	 * @author Damian Kęska
 	 */
 
-    public function __construct($max, $perPage)
+    public function __construct($max, $perPage='')
     {
         $this->max = $max;
         $this->perPage = intval($perPage);
+        
+        if (is_string($max))
+        {
+            $pager = $this->getPagerFromTable($max);
+            $this->max = $pager['max'];
+            $this->perPage = $pager['perPage'];
+            $this->maxLinks = $pager['maxLinks'];
+        }
 
         if (gettype($this->max) == "array")
             $this->max = 5;
@@ -40,6 +48,29 @@ class Pager
             $this->perPage = 5;
 
         $this->pages = ceil(($this->max / $this->perPage));
+    }
+    
+    /**
+      * Get pager informations from database
+      *
+      * @param string $name
+      * @return array
+      * @author Damian Kęska
+      */
+    
+    public function getPagerFromTable($name)
+    {
+        global $panthera;
+        $panthera -> logging -> output ('Getting pager name "' .$name. '" from pager table', 'Pager');
+        $pagerData = $panthera -> config -> getKey('pager', array(), 'array', 'ui');
+        
+        if (!isset($pagerData[$name]))
+        {
+            $pagerData[$name] = array('max' => 10, 'perPage' => 5, 'maxLinks' => 6);
+            $panthera -> config -> setKey('pager', $pagerData, 'array', 'ui');
+        }
+        
+        return $pagerData[$name];
     }
 
     /**
