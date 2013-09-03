@@ -173,6 +173,14 @@ $defaults['system']['dash'] = array(
     'linkType' => 'ajax'
 );
 
+$defaults['system']['pager'] = array(
+    'link' => '?display=settings.pager&cat=admin',
+    'name' => localize('Pager settings', 'settings'),
+    'description' => localize('Setup all pagers used in Panthera Framework', 'settings'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/pager.png',
+    'linkType' => 'ajax'
+);
+
 // Content section
 $defaults['content'] = array();
 

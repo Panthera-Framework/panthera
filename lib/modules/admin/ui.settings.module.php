@@ -114,11 +114,27 @@ class uiSettings
             {
                 if (!$key)
                     continue;
-            
-                $this->add('__pkg_' .$field. '__field_' .$key, $key, '', $value);
+                    
+                if (is_array($value))
+                {
+                    $this -> add ('w_' .$key, $key, '', '');
+                    $this->settingsList['w_' .$key]['separator'] = True;
+                
+                    foreach ($value as $subKey => $subValue)
+                    {
+                        // field -> key -> subkey
+                        $this -> add('__p_' .$field. '__f_' .$key. '__f_' .$subKey, $subKey, '', $subValue);
+                        $this -> setDescription('__p_' .$field. '__f_' .$key. '__f_' .$subKey, $key);
+                    }
+                    
+                    continue;
+                }
+                
+                $this->add('__p_' .$field. '__f_' .$key, $key, '', $value);
             }
             
-            $this->settingsList[$this->filter($field)]['hide'] = True;
+            $this->settingsList[$this->filter($field)]['separator'] = True;
+            //$this->settingsList[$this->filter($field)]['hide'] = True;
         }
         
         $this->settingsList[$this->filter($field)]['type'] = $type;
@@ -224,9 +240,9 @@ class uiSettings
                     $this->settingsList[$key]['value'] = $value; // update cache
                 }
                 
-                if (substr($rKey, 0, 6) == '__pkg_')
+                if (substr($rKey, 0, 4) == '__p_')
                 {
-                    $exp = explode('__field_', substr($rKey, 6));
+                    $exp = explode('__f_', substr($rKey, 4));
                     
                     if (!isset($packaged[$exp[0]]))
                     {
@@ -235,8 +251,14 @@ class uiSettings
                     
                     if (is_numeric($value))
                         $value = intval($value);
-
-                    $packaged[$exp[0]][$exp[1]] = $value; 
+                        
+                    if (count($exp) > 1)
+                    {
+                        $packaged[$exp[0]][$exp[1]][$exp[2]] = $value;                         
+                    } else {
+                        $packaged[$exp[0]][$exp[1]] = $value; 
+                    }
+                    
                     continue;
                 }
                 

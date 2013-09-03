@@ -37,7 +37,9 @@
                 {if="!$value.hide"}
                 
                 <tr>
-                    <td valign="top"><b>{$value.label}:</b> {if="$value.description"}<br><small>{$value.description}</small>{/if}</td>
+                    <td valign="top"{if="$value.separator"} colspan="2"{/if} style="{if="!$value.separator"}padding-left: 25px; {/if}"><b>{$value.label}:</b> {if="$value.description"}<br><small>{$value.description}</small>{/if}</td>
+                    
+                    {if="!$value.separator"}
                     <td>
                         {if="is_array($value.validator)"}
                         <select name="{$key}">
@@ -65,6 +67,8 @@
                                 {/if}
                             {/if}
                         {/if}
+                    </td>
+                    {/if}
                     
                 </tr>
                 {/if}

@@ -129,7 +129,7 @@ if (isset($_GET['popup']))
         $page = 0;
 
     $count = getUploadedFiles('', False);
-    $pager = new Pager($count, $panthera->config->getKey('uploads_per_page', 12, 'int'));
+    $pager = new Pager($count, 'adminUpload');
     $pager -> maxLinks = $panthera->config->getKey('uploads_pager_links', 6, 'int');
     $limit = $pager -> getPageLimit($page);
     

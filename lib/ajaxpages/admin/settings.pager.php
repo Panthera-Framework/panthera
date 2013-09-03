@@ -11,28 +11,25 @@
 if (!defined('IN_PANTHERA'))
     exit;
 
-if (!getUserRightAttribute($user, 'can_update_config_overlay') and !getUserRightAttribute($user, 'can_edit_session_settings'))
+if (!getUserRightAttribute($user, 'can_update_config_overlay') and !getUserRightAttribute($user, 'can_edit_pager_settings'))
 {
     $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
 }
 
-$panthera -> locale -> loadDomain('cache');
+$panthera -> locale -> loadDomain('settings');
 
 // titlebar
-$titlebar = new uiTitlebar(localize('Cache life time settings', 'cache'));
-$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/cache.png', 'left');
+$titlebar = new uiTitlebar(localize('Pager settings', 'settings'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/pager.png', 'left');
 
 // load uiSettings with "passwordrecovery" config section
-$config = new uiSettings('dash');
-$config -> add('cache_timing', localize('Cache life time for selected elements', 'cache'));
-$config -> setFieldType('cache_timing', 'packaged');
-
-// descriptions
-//$config -> setDescription('site_title', localize('Default site title displayed on every page', 'settings'));
+$config = new uiSettings('ui');
+$config -> add('pager', localize('Pager settings per element', 'settings'));
+$config -> setFieldType('pager', 'packaged');
 
 // handlers
-$config -> setFieldSaveHandler('dash.widgets', 'uiSettingsMultipleSelectBoolField');
+$config -> setFieldSaveHandler('pager', 'uiSettingsMultipleSelectBoolField');
 
 $result = $config -> handleInput($_POST);
 

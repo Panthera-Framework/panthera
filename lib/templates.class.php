@@ -546,7 +546,6 @@ class pantheraTemplate extends pantheraClass
             if ($this->attributes['title'])
                 $header .= "\n<title>".$this->attributes['title']."</title>";
             
-            
             $this->push('site_header', $header);
         }
 
