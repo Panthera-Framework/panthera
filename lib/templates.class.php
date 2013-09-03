@@ -71,7 +71,7 @@ class pantheraTemplate extends pantheraClass
                 
             if ($this->cacheConfig == True)
             {
-                $this->panthera->cache->set('tpl.cfg.' .$template, $tpl, 3600); // 1 hour by default (for debugging please just disable caching option)
+                $this->panthera->cache->set('tpl.cfg.' .$template, $tpl, 'templates'); // 1 hour by default (for debugging please just disable caching option)
                 $this->panthera->logging->output('Wrote id=tpl.cfg.' .$template. ' to cache', 'pantheraTemplate');
             }
         }

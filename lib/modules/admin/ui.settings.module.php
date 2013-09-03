@@ -252,7 +252,7 @@ class uiSettings
                     if (is_numeric($value))
                         $value = intval($value);
                         
-                    if (count($exp) > 1)
+                    if (count($exp) > 2)
                     {
                         $packaged[$exp[0]][$exp[1]][$exp[2]] = $value;                         
                     } else {

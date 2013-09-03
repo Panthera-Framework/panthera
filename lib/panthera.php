@@ -867,7 +867,7 @@ class pantheraCore
     
     public function getCacheTime($cacheObjectType)
     {
-        if ($cacheObjectType === '')
+        if (!$cacheObjectType)
         {
             $this->logging->output('Warning, an empty cache object type passed to getCacheTime', 'pantheraCore');
             return 120;
@@ -882,6 +882,7 @@ class pantheraCore
         else {
             $array[$cacheObjectType] = 120;
             $this -> config -> setKey('cache_timing', $array, 'array');
+            $this -> config -> save();
             return 120; // default is 120 seconds if not found
         }
     }
