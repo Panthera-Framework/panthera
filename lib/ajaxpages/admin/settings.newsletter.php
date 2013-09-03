@@ -31,8 +31,11 @@ $panthera->config->getKey('nletter.confirm.topic', array('english' => 'Please co
 // load uiSettings with "passwordrecovery" config section
 $config = new uiSettings('newsletter');
 $config -> languageSelector(True);
-$config -> add('nletter.confirm.content', localize('Message content', 'newsletter'));
 $config -> add('nletter.confirm.topic', localize('Topic', 'newsletter'));
+$config -> add('nletter.confirm.content', localize('Message content', 'newsletter'));
+
+$config -> setDescription('nletter.confirm.content', '{$userName}, {$activateKey}, {$unsubscribeKey}');
+$config -> setDescription('nletter.confirm.topic', '{$userName}, {$activateKey}, {$unsubscribeKey}');
 $config -> setFieldType('nletter.confirm.content', 'wysiwyg');
 $config -> setFieldSaveHandler('nletter.confirm.content', 'uiSettingsMultilanguageField');
 $config -> setFieldSaveHandler('nletter.confirm.topic', 'uiSettingsMultilanguageField');

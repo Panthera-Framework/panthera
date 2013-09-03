@@ -200,6 +200,13 @@ $defaults['content']['mailing'] = array(
     'linkType' => 'ajax'
 );
 
+$defaults['content']['newsletter'] = array(
+    'link' => '?display=settings.newsletter&cat=admin',
+    'name' => localize('Newsletter settings', 'settings'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/newsletter.png',
+    'linkType' => 'ajax'
+);
+
 $defaults['content']['menuedit'] = array(
     'link' => '?display=menuedit&cat=admin',
     'name' => localize('Menu editor', 'dash'),
@@ -265,7 +272,7 @@ if (!$_GET['query'])
     {
         foreach ($section as $key => $item)
         {
-            if (stripos($item['name'], $_GET['query']) !== False or stripos($item['description'], $_GET['query']) !== False)
+            if (stripos($item['name'], $_GET['query']) !== False or stripos($item['description'], $_GET['query']) !== False or stripos($item['link'], 'display='.$_GET['query']) !== False)
             {
                 $list[$sectionName][$key] = $item;
             }
