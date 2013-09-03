@@ -1,6 +1,17 @@
 {$site_header}
 
     <script type="text/javascript">
+    function initEditor()
+    {
+        {loop="$variables"}
+            {if="$value.type == 'wysiwyg'"}
+                mceSetContent('{$key}', htmlspecialchars_decode("{$value.value}"));
+            {/if}
+        {/loop}
+    }
+    </script>
+    {function="uiMce::display()"}
+    <script type="text/javascript">
     $(document).ready(function () {
         $('#settingsFormSave').submit(function () {
             panthera.jsonPOST( { data: '#settingsFormSave', spinner: new panthera.ajaxLoader($('#settingsFormSaveDiv')), messageBox: 'w2ui', mce: 'tinymce_all' });
@@ -12,7 +23,13 @@
         });
     });
     
+    {loop="$variables"}
+    {if="$value.type == 'wysiwyg'"}mceInit('{$key}');{/if}
+    {/loop}
+    
     </script>
+    
+    
 
         {include="ui.titlebar"}<br>
         
@@ -59,6 +76,8 @@
                                             <option value="{$key}"{if="$value"} selected{/if}>{$key}</option>
                                         {/loop}
                                     </select>
+                                {elseif="$value.type == 'wysiwyg'"}
+                                    <textarea id="{$key}" style="width: 95%; min-height: 200px;">{$value.value}</textarea>
                                 {elseif="is_int($value.value)"}
                                     <input type="number" name="{$key}" value="{$value.value}" style="width: 95%;">
                                 {else}

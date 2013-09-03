@@ -1,6 +1,6 @@
 <?php
 /**
-  * Session configuration page
+  * Pager configuration page
   *
   * @package Panthera\core\ajaxpages\settings.session
   * @author Damian Kęska

@@ -336,7 +336,7 @@ class newsletter extends pantheraFetchDB
       * @param int $userid Userid (optional)
       * @param string $cookied Cookie or session id used to identify user (optional)
       * @param bool $activated by default false, but can be activated immediately
-      * @param bool $dontSendConfirmation Send a confirmation message, true by default
+      * @param bool $dontSendConfirmation Send a confirmation message, false by default
       * @throws UnexpectedValueException
       * @return mixed
       * @author Damian Kęska
@@ -379,6 +379,19 @@ class newsletter extends pantheraFetchDB
             $m = new $f();
             $content = pantheraLocale::selectStringFromArray($this->panthera->config->getKey('nletter.confirm.content', array('english' => 'Hi, {$userName}. <br>Please confirm your newsletter subscription at {$PANTHERA_URL}/newsletter.php?confirm={$activateKey} <br>Your unsubscribe url: {$PANTHERA_URL}/newsletter.php?unsubscribe={$unsubscribeKey}'), 'array', 'newsletter'));
             $topic = pantheraLocale::selectStringFromArray($this->panthera->config->getKey('nletter.confirm.topic', array('english' => 'Please confirm your newsletter subscription'), 'array', 'newsletter'));
+            
+            $topic = str_ireplace('{$userName}', $userName,
+                     str_ireplace('{$unsubscribeKey}', $unsubscribe_id,
+                     str_ireplace('{$activateKey}', $activate_id, 
+                     pantheraUrl($topic)
+            )));
+            
+            $content = str_ireplace('{$userName}', $userName,
+                     str_ireplace('{$unsubscribeKey}', $unsubscribe_id,
+                     str_ireplace('{$activateKey}', $activate_id, 
+                     pantheraUrl($content)
+            )));
+            
             $m -> send($address, $content, $topic);
         }
         

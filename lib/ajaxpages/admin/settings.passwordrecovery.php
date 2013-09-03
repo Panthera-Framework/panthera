@@ -1,6 +1,6 @@
 <?php
 /**
-  * Configuration tool to change values in config overlay
+  * Password recovery settings
   *
   * @package Panthera\core\ajaxpages\settings.passwordrecovery
   * @author Damian Kęska
@@ -49,15 +49,6 @@ if (is_array($result))
 } elseif ($result === True) {
     ajax_exit(array('status' => 'success'));
 }
-
-//$panthera -> config -> loadOverlay('passwordrecovery');
-
-/*$variables = array(
-    'recovery_passwd_length' => $panthera -> config -> getKey('recovery.passwd.length'),
-    'recovery_key_length' => $panthera -> config -> getKey('recovery.key.length'),
-    'recovery_mail_content' => htmlspecialchars(nl2br($panthera -> config -> getKey('recovery.mail.content'))),
-    'recovery_mail_title' => $panthera -> config -> getKey('recovery.mail.title')
-);*/
 
 $panthera -> template -> display('settings.passwordrecovery.tpl');
 pa_exit();
