@@ -41,6 +41,8 @@ class uiMce
     
     public static function getAvaliableEditors()
     {
+        global $panthera;
+    
         if ($editors)
             return self::$editors;
     
@@ -48,6 +50,8 @@ class uiMce
             PANTHERA_DIR. '/modules/mce',
             SITE_DIR. '/content/modules/mce'
         );
+        
+        $dirs = $panthera->get_filters('ui.mce.getAvaliableEditors', $dirs);
         
         foreach ($dirs as $dir)
         {
@@ -73,8 +77,7 @@ class uiMce
     /**
       * Get editor's configuration
       *
-      * @param string name
-      * @return mixed 
+      * @return array 
       * @author Damian Kęska
       */
     

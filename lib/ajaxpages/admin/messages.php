@@ -270,9 +270,6 @@ if ($_GET['action'] == 'display_category')
     $template -> push('category_id', $categoryName);
     $template -> push('languages', $panthera -> locale -> getLocales());
 
-    // special items
-    $specialItemsMax = intval($panthera->config->getKey('qmsg_special_count', 4, 'int'));
-
     // get limited results
     $m = quickMessage::getQuickMessages(array('language' => $language, 'category_name' => $categoryName), $limit[1], $limit[0]);
 
@@ -283,17 +280,12 @@ if ($_GET['action'] == 'display_category')
 
         foreach ($m as $message)
         {
-            $special = False;
-                
-            if ($message->visibility == 1 and $page == 0)
+            if ($message->visibility and !$page)
             {
                 $i++;
-
-                if ($i < $specialItemsMax)
-                    $special = True;
             }
 
-            $array[] = array('id' => $message->id, 'title' => $message->title, 'mod_time' => $message->mod_time, 'visibility' => $visibility[$message->visibility], 'author_login' => $message->author_login, 'special' => $special, 'icon' => $message->icon);
+            $array[] = array('id' => $message->id, 'title' => $message->title, 'mod_time' => $message->mod_time, 'visibility' => $visibility[$message->visibility], 'author_login' => $message->author_login, 'icon' => $message->icon);
         }
 
         $template->push('messages_list', $panthera->get_filters('quick_messages_list', $array));
