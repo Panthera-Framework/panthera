@@ -481,23 +481,23 @@ class newsletter extends pantheraFetchDB
         $this->panthera->importModule('crontab');
         
         // check if we have any users to send newsletter to
-        if (count($this->getUsers()) == 0)
+        if (!count($this->getUsers()))
         {
-            $this->panthera->logging->output('newsletter::No users to send message for nid=' .$this->nid, 'newsletter');
+            $this->panthera->logging->output('No users to send message for nid=' .$this->nid, 'newsletter');
             return False;
         }
         
         $time = 0;
         
         // verify date
-        if(is_string($date) and $date != '')
+        if(is_string($date) and $date)
         {
             $time = strtotime($date);
         } elseif (is_int($date))
             $time = $date;
             
         // avoid dates in past
-        if ($time > 0)
+        if ($time < 0)
         {
             if ($time < time())
                 $time = 0;

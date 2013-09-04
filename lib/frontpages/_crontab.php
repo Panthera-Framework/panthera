@@ -19,7 +19,7 @@ $panthera -> config -> loadOverlay('crontab');
 $panthera -> importModule('crontab');
 
 // dont mess debug.log file
-$panthera -> logging -> tofile = False;
+$panthera -> logging -> tofile = true;
 
 // Cleaning up the crashed jobs
 //try {crontab::createJob('fix_cron_crash', array('cronjobs', 'unlockCrashedJobs'), '', '*/1'); } catch (Exception $e) {}
@@ -65,10 +65,15 @@ function startJob($job)
             print("Cannot execute job: ".$job->jobname."\n");
         }
 
-        if ($text != '')
+        if ($text)
             print("Job returned code: ".$text."\n");
+            
+        // mark finished job as done
+        if (strtolower($text) == 'job_finished')
+            $job -> finish();
 
         $job->unlock();
+        $job->save();
         
      } else
         print("Job already locked: ".$job->jobname."\n");
@@ -84,9 +89,6 @@ if ($key == $panthera -> config -> getKey('crontab_key', generateRandomString(64
     
     // create Panthera socket to show in "process list"
     run::openSocket('crontab', intval(getmypid()), array('client' => $_SERVER['REMOTE_ADDR'], 'url' => $_SERVER['REQUEST_URI'], 'user' => 'system'));
-    
-    // unlock all crashed jobs
-    cronjobs::unlockCrashedJobs();
     
     // get all expired jobs to start working
     $jobs = crontab::getJobsForWork();
@@ -117,6 +119,9 @@ if ($key == $panthera -> config -> getKey('crontab_key', generateRandomString(64
                 print("ERROR: CANNOT SAVE LOG! NO WRITE PERMISSIONS IN " .SITE_DIR. "/content/tmp/crontab.log\n");
         }
     }
+    
+    // unlock all crashed jobs
+    cronjobs::unlockCrashedJobs();
 
     // mark job as done
     run::closeSocket('crontab', intval(getmypid()));

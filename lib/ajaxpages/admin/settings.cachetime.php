@@ -24,7 +24,7 @@ $titlebar = new uiTitlebar(localize('Cache life time settings', 'cache'));
 $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/cache.png', 'left');
 
 // load uiSettings with "passwordrecovery" config section
-$config = new uiSettings('dash');
+$config = new uiSettings('*');
 $config -> add('cache_timing', localize('Cache life time for selected elements', 'cache'));
 $config -> setFieldType('cache_timing', 'packaged');
 

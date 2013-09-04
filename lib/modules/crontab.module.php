@@ -231,6 +231,18 @@ class crontab extends pantheraFetchDB
         // execute save function
         parent::save();
     }
+    
+    /**
+      * Mark job for deletion (set count_left to 0)
+      *
+      * @return void 
+      * @author Damian Kęska
+      */
+    
+    public function finish()
+    {
+        $this->count_left = 0;
+    }
 
     /**
 	 * Get locked jobs with lock timeout set in first argument (this function should be used to cleanup jobs that just crashed)

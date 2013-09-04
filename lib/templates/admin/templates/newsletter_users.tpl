@@ -2,19 +2,6 @@
 <script>
 $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
 
-function jumpToAjaxPage(id)
-{
-    $.ajax({
-            url: '{$AJAX_URL}?display=newsletter_users&cat=admin&action=show_table&nid={$nid}&pagenum='+id,
-            data: '',
-            async: false,
-            success: function (response) { 
-                jQuery('#newsletter_users_window').html(response);
-            },
-            dataType: 'html'
-           });
-}
-
 function removeSubscriber(id)
 {
     panthera.jsonPOST({ url: '{$AJAX_URL}?display=newsletter_users&cat=admin&nid={$nid}&action=remove_subscriber', data: 'id='+id, success: function (response) {
@@ -33,20 +20,13 @@ function removeSubscriber(id)
           <br>
           <table class="gridTable">
             <thead>
-                <tr><th>{function="localize('Type')"}</th><th>{function="localize('Address')"}</th><th>{function="localize('Added')"}</th><th>{function="localize('Options')"}</th></tr>
+                <tr><th>{function="localize('Type', 'newsletter')"}</th><th>{function="localize('Address', 'newsletter')"}</th><th>{function="localize('Added', 'newsletter')"}</th><th>{function="localize('Options', 'newsletter')"}</th></tr>
              </thead>            
             
             <tfoot>
                 <tr>
-                    <td colspan="3" class="rounded-foot-left"><em>Panthera newsletter, {function="localize('pages')"}:
-                    {loop="$pager"}
-                            {if="$value == True"}
-                            <a href="#" onclick="jumpToAjaxPage({$key}); return false;"><b>{$key+1}</b></a>
-                            {else}
-                            <a href="#" onclick="jumpToAjaxPage({$key}); return false;">{$key+1}</a>
-                            {/if}
-                    {/loop}
-                    </em></td>
+                    <td colspan="3" class="rounded-foot-left">Panthera newsletter
+                    </td>
                 </tr>
             </tfoot>
             
