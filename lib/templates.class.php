@@ -563,11 +563,12 @@ class pantheraTemplate extends pantheraClass
         // turn off output control
         $this->panthera->outputControl->flushAndFinish();
 
-        // assign all variables        
+        // assign all variables from pantheraTemplate to template engine
         foreach ($this->vars as $var => $value)
             $this -> tpl -> assign($var, $value);
             
         $render = $this -> tpl -> draw(str_replace('.tpl', '', $file), True, True);
+        $this -> timer = (microtime_float() - $this -> timer);
             
         if ($renderOnly == True)
             return $render;        
@@ -575,14 +576,14 @@ class pantheraTemplate extends pantheraClass
             // gzip compression
             if ($this->panthera->config->getKey('gzip_compression', False, 'bool'))
                 $this->panthera->outputControl->startBuffering('ob_gzhandler');
-
+                
             print($render);
             
             $this->panthera->outputControl->flushAndFinish();
         }
         
         // generate template execution time
-        $this -> timer = (microtime_float() - $this -> timer);
+        
     }
     
     /**

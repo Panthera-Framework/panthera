@@ -20,7 +20,7 @@ $(document).ready(function () {
 });
 </script>
 		
-		{include="ui.titlebar"}
+		{include="ui.titlebar"}<br>
 
         <table class="gridTable">
             <thead>

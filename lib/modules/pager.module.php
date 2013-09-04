@@ -36,7 +36,6 @@ class Pager
         if (is_string($max))
         {
             $pager = $this->getPagerFromTable($max);
-            $this->max = $pager['max'];
             $this->perPage = $pager['perPage'];
             $this->maxLinks = $pager['maxLinks'];
         }
@@ -66,7 +65,7 @@ class Pager
         
         if (!isset($pagerData[$name]))
         {
-            $pagerData[$name] = array('max' => 10, 'perPage' => 5, 'maxLinks' => 6);
+            $pagerData[$name] = array('perPage' => 5, 'maxLinks' => 6);
             $panthera -> config -> setKey('pager', $pagerData, 'array', 'ui');
         }
         

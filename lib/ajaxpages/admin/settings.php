@@ -238,6 +238,13 @@ $defaults['content']['sitesettings'] = array(
     'linkType' => 'ajax'
 );
 
+$defaults['content']['custompages'] = array(
+    'link' => '?display=settings.custompages&cat=admin',
+    'name' => localize('Static pages configuration', 'settings'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/custom-pages.png',
+    'linkType' => 'ajax'
+);
+
 // titlebar
 $titlebar = new uiTitlebar(localize('Settings', 'settings'));
 $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/settings.png', 'left');

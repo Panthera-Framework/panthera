@@ -51,7 +51,7 @@ class uiSettings
       *
       * @param string $setting Name
       * @hook ui.settings.add this, fKey, setting, label, validator, value
-      * @return void 
+      * @return bool 
       * @author Damian Kęska
       */
     
@@ -64,6 +64,11 @@ class uiSettings
             
         list($_a, $fKey, $setting, $label, $validator, $value) = $this->panthera->get_filters('ui.settings.add', array($this, $fKey, $setting, $label, $validator, $value));
         
+        if (!$_a or !$fKey or !$setting)
+        {
+            return false;
+        }
+        
         $this->settingsList[$fKey] = array(
             'value' => $value,
             'label' => $label, 
@@ -74,6 +79,8 @@ class uiSettings
             'type' => 'string',
             'hide' => false
         );
+        
+        return True;
     }
     
     /**
@@ -127,7 +134,9 @@ class uiSettings
                 if (is_array($value))
                 {
                     $this -> add ('w_' .$key, $key, '', '');
-                    $this->settingsList['w_' .$key]['separator'] = True;
+                    
+                    if (isset($this->settingsList['w_' .$key]))
+                        $this->settingsList['w_' .$key]['separator'] = True;
                 
                     foreach ($value as $subKey => $subValue)
                     {
@@ -142,7 +151,8 @@ class uiSettings
                 $this->add('__p_' .$field. '__f_' .$key, $key, '', $value);
             }
             
-            $this->settingsList[$this->filter($field)]['separator'] = True;
+            if (isset($this->settingsList[$this->filter($field)]))
+                $this->settingsList[$this->filter($field)]['separator'] = True;
             //$this->settingsList[$this->filter($field)]['hide'] = True;
         }
         
@@ -284,7 +294,8 @@ class uiSettings
             
             foreach ($packaged as $field => $values)
             {
-                $this -> panthera -> config -> setKey($field, $values);           
+                $oldValues = $this -> panthera -> config -> getKey($field);
+                $this -> panthera -> config -> setKey($field, array_merge($oldValues, $values));           
             }
             
             if ($i > 0)
