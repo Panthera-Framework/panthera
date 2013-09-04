@@ -424,8 +424,11 @@ class cronjobs
             }
 
             if ($job->next_interation < $currentTime)
+            {
+                $job -> regenerateInterationTime();
                 print("Found a job with bad `next_interation` time\n");
-
+            }
+            
             // regenerateInterationTime and save
             $job->save();
         }
