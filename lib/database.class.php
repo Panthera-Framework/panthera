@@ -883,7 +883,7 @@ abstract class pantheraFetchDB
         $this -> clearCache();
         
         // update single record
-        $this -> panthera -> cache -> set($this->cacheID, $this->_data, $this->panthera->db->cache);
+        $this -> panthera -> cache -> set($this->cacheID, $this->_data, 'pantheraFetchDB_' .get_class($this));
         $this -> panthera->logging->output('Updated cache id=' .$this->cacheID, 'pantheraFetchDB');
     }
     

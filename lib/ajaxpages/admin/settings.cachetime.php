@@ -28,9 +28,6 @@ $config = new uiSettings('dash');
 $config -> add('cache_timing', localize('Cache life time for selected elements', 'cache'));
 $config -> setFieldType('cache_timing', 'packaged');
 
-// descriptions
-//$config -> setDescription('site_title', localize('Default site title displayed on every page', 'settings'));
-
 // handlers
 $config -> setFieldSaveHandler('dash.widgets', 'uiSettingsMultipleSelectBoolField');
 

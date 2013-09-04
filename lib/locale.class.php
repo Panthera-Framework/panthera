@@ -32,8 +32,8 @@ class pantheraLocale
         $this->defaultLocale = $panthera->config->getKey('language_default', 'english', 'string');
 
         // cache support
-        if ($this->panthera->cache != False)
-            $this->cache = intval($panthera->config->getKey('cache_locale', 120, 'int'));
+        if ($this->panthera->cache)
+            $this->cache = $panthera->getCacheTime('locales');
     }
 
     /**
@@ -113,7 +113,7 @@ class pantheraLocale
 
     public function addLocale($locale)
     {
-        if(is_dir(SITE_DIR. '/content/locales/' .$locale. '/') or $locale == 'english' and $locale != '') // english should be hardcoded
+        if(is_dir(SITE_DIR. '/content/locales/' .$locale. '/') or $locale == 'english' and $locale) // english should be hardcoded
         {
             $locales = $this->panthera->config->getKey('languages');
             $locales[$locale] = False;
@@ -204,7 +204,7 @@ class pantheraLocale
         if (@array_key_exists($string, $this->memory[$domain]))
             $string = $this->memory[$domain][$string];
 
-        if ($this->panthera->logging->debug == True) {
+        if ($this->panthera->logging->debug) {
             $this->panthera->logging->output('localize -> "' .$orig. '", result="' .$string. '" domain='.$domain. ' (global: ' .$this->currentDomain. ')', 'pantheraLocale');
         }
 
@@ -250,7 +250,7 @@ class pantheraLocale
     public function loadDomain($domain, $force=False)
     {
         // dont load same domains multiple times
-        if (array_key_exists($domain, $this->domains) and $force == False)
+        if (array_key_exists($domain, $this->domains) and !$force)
             return False;
             
         $dirs = array(SITE_DIR. '/content/locales/' .$this->locale, PANTHERA_DIR. '/locales/' .$this->locale);
@@ -267,7 +267,7 @@ class pantheraLocale
                 $this->panthera->logging->output('Adding domain "' .$domain. '" from ' .$dir, 'pantheraLocale');
 
                 // read file from cache (to avoid IO read)
-                if ($this->cache > 0)
+                if ($this->cache)
                 {
                     if ($this->panthera->cache->exists('locale.'.$this->locale.'.'.$domain))
                     {
@@ -279,9 +279,9 @@ class pantheraLocale
 
                 $this->memory[$domain] = unserialize(file_get_contents($dir. '/' .$domain. '.phps'));
 
-                if ($this->cache > 0)
+                if ($this->cache)
                 {
-                    $this->panthera->cache->set('locale.'.$this->locale.'.'.$domain, $this->memory[$domain], $this->cache);
+                    $this->panthera->cache->set('locale.'.$this->locale.'.'.$domain, $this->memory[$domain], 'locales');
 
                     if ($this->panthera->logging->debug == True)
                         $this->panthera->logging->output('Wrote id=locale.' .$this->locale. '.' .$domain. ' to cache', 'pantheraLocale');

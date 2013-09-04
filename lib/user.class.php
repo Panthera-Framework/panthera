@@ -586,7 +586,7 @@ class metaAttributes
             // update cache
             if ($this -> _cache > 0 and $panthera -> cache)
             {
-                $panthera -> cache -> set ($this->_cacheID, $this->_metas, $this->cache);
+                $panthera -> cache -> set ($this->_cacheID, $this->_metas, 'metaAttributes');
                 $panthera -> logging -> output ('Wrote meta to cache id=' .$this->_cacheID, 'metaAttributes');
             }
         }
@@ -790,7 +790,7 @@ class metaAttributes
 
             if ($this -> _cache > 0 and $this -> panthera -> cache)
             {
-                $this -> panthera -> cache -> set ($cacheID, $Array, $this->_cache);
+                $this -> panthera -> cache -> set ($cacheID, $Array, 'metaAttributes');
                 $this -> panthera -> logging -> output ('Wrote to cache id=' .$cacheID, 'metaAttributes');
             }
         }
@@ -884,7 +884,7 @@ class metaAttributes
             // write changes to cache too
             if ($this -> _cache > 0 and $panthera -> cache)
             {
-                $panthera -> cache -> set ($this->_cacheID, $this->_metas, $this->cache);
+                $panthera -> cache -> set ($this->_cacheID, $this->_metas, 'metaAttributes');
                 $panthera -> logging -> output ('Saved meta to cache id=' .$this->_cacheID, 'metaAttributes');
             }
 
