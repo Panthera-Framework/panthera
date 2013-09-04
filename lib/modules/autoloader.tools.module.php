@@ -72,7 +72,7 @@ class pantheraAutoloader
         $panthera -> config -> setKey('autoloader', $autoload, 'array');
         $panthera -> logging -> output ('Updated autoloader cache, counting ' .count($autoload). ' elements', 'pantheraAutoLoader');
         
-        return $data;
+        return $autoload;
     }
     
     /**
