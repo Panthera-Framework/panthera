@@ -22,7 +22,7 @@ $panthera -> importModule('crontab');
 $panthera -> logging -> tofile = False;
 
 // Cleaning up the crashed jobs
-try {crontab::createJob('fix_cron_crash', array('cronjobs', 'unlockCrashedJobs'), '', '*/1'); } catch (Exception $e) {}
+//try {crontab::createJob('fix_cron_crash', array('cronjobs', 'unlockCrashedJobs'), '', '*/1'); } catch (Exception $e) {}
 
 // Cleaning up run sockets
 try {crontab::createJob('clean_run_sockets', array('cronjobs', 'cleanRunSockets'), '', '*/1'); } catch (Exception $e) {}
@@ -84,6 +84,9 @@ if ($key == $panthera -> config -> getKey('crontab_key', generateRandomString(64
     
     // create Panthera socket to show in "process list"
     run::openSocket('crontab', intval(getmypid()), array('client' => $_SERVER['REMOTE_ADDR'], 'url' => $_SERVER['REQUEST_URI'], 'user' => 'system'));
+    
+    // unlock all crashed jobs
+    cronjobs::unlockCrashedJobs();
     
     // get all expired jobs to start working
     $jobs = crontab::getJobsForWork();

@@ -417,7 +417,7 @@ class cronjobs
                 continue;
             }
 
-            if (intval($job->lock) <= $timeout)
+            if (intval($job->lock) <= $timeout and $job -> lock)
             {
                 echo "Unlock: ".$job->jobname."\n";
                 $job->unlock();
