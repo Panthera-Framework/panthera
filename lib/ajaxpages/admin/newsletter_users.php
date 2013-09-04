@@ -42,7 +42,7 @@ if ($_GET['action'] == 'remove_subscriber')
 
 if ($_GET['action'] == 'add_subscriber')
 {
-	if (strlen($_GET['email']) > 4 and strpos('@', $_GET['email']) !== false)
+	if (strlen($_GET['email']) > 4)
 		$email = $_GET['email'];
 	else
 		ajax_exit(array('status' => 'failed', 'message' => localize('Check email address!')));
