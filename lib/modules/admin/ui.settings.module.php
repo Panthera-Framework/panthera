@@ -25,6 +25,7 @@ class uiSettings
     /**
       * Constructor
       *
+      * @hook ui.settings.construct
       * @param string $section Optional configuration section to load for this configuration page
       * @author Damian Kęska
       */
@@ -33,6 +34,8 @@ class uiSettings
     {
         global $panthera;
         $this->panthera = $panthera;
+        
+        list($_a, $section) = $this->panthera->get_filters('ui.settings.construct', array($this, $section));
     
         if ($section)
         {
@@ -47,6 +50,7 @@ class uiSettings
       * Please note that "." character will be replaced with "_-_" because of compatibility with RainTPL template engine
       *
       * @param string $setting Name
+      * @hook ui.settings.add this, fKey, setting, label, validator, value
       * @return void 
       * @author Damian Kęska
       */
@@ -57,6 +61,8 @@ class uiSettings
         
         if ($value == null)
             $value = $this->panthera->config->getKey($setting);
+            
+        list($_a, $fKey, $setting, $label, $validator, $value) = $this->panthera->get_filters('ui.settings.add', array($this, $fKey, $setting, $label, $validator, $value));
         
         $this->settingsList[$fKey] = array(
             'value' => $value,
@@ -88,6 +94,7 @@ class uiSettings
     /**
       * Set field type
       *
+      * @hook ui.settings.setFieldType this, field, type
       * @param string $field
       * @param string $type eg. multipleboolselect, string, select, packaged
       * @return mixed 
@@ -96,6 +103,8 @@ class uiSettings
     
     public function setFieldType ($field, $type)
     {
+        list($a_, $field, $type) = $this->panthera->get_filters('ui.settings.setFieldType', array($this, $field, $type));
+    
         if (!isset($this->settingsList[$this->filter($field)]))
         {
             return false;
@@ -170,6 +179,8 @@ class uiSettings
     
     public function setDescription($field, $description)
     {
+        list($a_, $field, $description) = $this->panthera->get_filters('ui.settings.setDescription', array($this, $field, $description));
+    
         if (isset($this->settingsList[$this->filter($field)]))
         {
             $this->settingsList[$this->filter($field)]['description'] = $description;
@@ -180,6 +191,8 @@ class uiSettings
     /**
       * Handle input variables and save them
       *
+      * @hook ui.settings.handleInput this, input
+      * @hook ui.settings.handleInput.item this, key, rKey, value
       * @param string $input
       * @return bool|string 
       * @author Damian Kęska
@@ -195,6 +208,8 @@ class uiSettings
         
         $packaged = array();
         
+        list($a_, $input) = $this->panthera->get_filters('ui.settings.handleInput', array($this, $input));
+        
         //if (isset($input[key($this->settingsList)]))
         //{
             foreach ($input as $key => $value)
@@ -207,6 +222,8 @@ class uiSettings
                 $i++;
 
                 $rKey = $this->filter($key, True);
+                
+                list($a_, $key, $rKey, $value) = $this->panthera->get_filters('ui.settings.handleInput.item', array($this, $key, $rKey, $value));
                 
                 if ($this->settingsList[$key]['customSaveHandler'])
                 {
@@ -281,6 +298,15 @@ class uiSettings
         //}
     }
     
+    /**
+      * Set an external field save handler
+      *
+      * @param string $field
+      * @param string $callback
+      * @return mixed 
+      * @author Damian Kęska
+      */
+    
     public function setFieldSaveHandler($field, $callback)
     {
         $fKey = $this->filter($field);
@@ -302,6 +328,7 @@ class uiSettings
     
     public function applyToTemplate()
     {
+        $this->panthera->get_options('ui.settings.applyToTemplate', array($this));
         $this->panthera->template->push('uiSettings', $this->options);
         $this->panthera->template->push('variables', $this->settingsList);
     }
