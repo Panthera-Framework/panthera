@@ -2,7 +2,7 @@
 /**
   * Custom pages configuration
   *
-  * @package Panthera\core\ajaxpages\settings.session
+  * @package Panthera\core\ajaxpages\settings.custompages
   * @author Damian Kęska
   * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
@@ -20,6 +20,15 @@ if (!getUserRightAttribute($user, 'can_update_config_overlay') and !getUserRight
 $panthera -> locale -> loadDomain('settings');
 $panthera -> locale -> loadDomain('custompages');
 
+/**
+  * Filter pager and cache timing variables to show only custom pages related entries
+  *
+  * @package Panthera\core\ajaxpages\settings.custompages
+  * @param string $input
+  * @return array 
+  * @author Damian Kęska
+  */
+
 function filterUiSettingsAdd ($input)
 {
     // input = $_a, $fKey, $setting, $label, $validator, $value
@@ -32,7 +41,16 @@ function filterUiSettingsAdd ($input)
     
     if (strpos($input[1], '__p_pager') !== False)
     {
-        if (!stripos($input[1], 'custompages') !== False)
+        if (!stripos($input[1], 'custompage') !== False)
+        {
+            $input[0] = False; // return false
+            return $input;
+        }
+    }
+    
+    if (strpos($input[1], '__p_cache_timing') !== False)
+    {
+        if (!stripos($input[1], 'custompage') !== False)
         {
             $input[0] = False; // return false
             return $input;
@@ -57,6 +75,10 @@ $config -> setDescription('custompage', localize('{$id} tag will be replaced to 
 // add pager configuration
 $config -> add('pager', localize('Admin Panel pager settings', 'settings'));
 $config -> setFieldType('pager', 'packaged');
+
+// cache timing
+$config -> add('cache_timing', localize('Cache life time', 'custompages'));
+$config -> setFieldType('cache_timing', 'packaged');
 
 
 $result = $config -> handleInput($_POST);

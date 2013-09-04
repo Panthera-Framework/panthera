@@ -28,9 +28,6 @@ $config = new uiSettings('dash');
 $config -> add('cache_timing', localize('Cache life time for selected elements', 'cache'));
 $config -> setFieldType('cache_timing', 'packaged');
 
-// handlers
-$config -> setFieldSaveHandler('dash.widgets', 'uiSettingsMultipleSelectBoolField');
-
 $result = $config -> handleInput($_POST);
 
 if (is_array($result))
