@@ -32,7 +32,7 @@ function addSubscriber()
             
             <tfoot>
                 <tr>
-                    <td colspan="3" class="rounded-foot-left"><em>Panthera newsletter, {function="localize('pages')"}:
+                    <td colspan="4" class="rounded-foot-left"><em>Panthera newsletter, {function="localize('pages')"}:
                     {loop="$pager"}
                             {if="$value == True"}
                             <a href="#" onclick="jumpToAjaxPage({$key}); return false;"><b>{$key+1}</b></a>
