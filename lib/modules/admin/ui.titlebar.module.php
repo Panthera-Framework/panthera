@@ -82,13 +82,16 @@ class uiTitlebar
     /**
       * Apply everything to template
       *
+      * @hook ui.titlebar.applyToTemplate this, settings, moveToPageTitle
       * @return void 
       * @author Damian Kęska
       */
     
     public function applyToTemplate()
     {
-        if ($this->settings['title'])
+        list($_a, $this->settings, $moveToPageTitle) = $this->panthera->get_filters('ui.titlebar.applyToTemplate', array($this, $this->settings, True));
+    
+        if ($this->settings['title'] and $moveToPageTitle)
         {
             $this->panthera->template->setTitle($this->settings['title']);
         }
