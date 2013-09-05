@@ -42,11 +42,6 @@ if (isset($_POST['log']) or isset($_GET['key']))
     } else {
         $result = userCreateSession($_POST['log'], $_POST['pwd']);
         
-        if ($result === 'BANNED')
-        {
-            $template -> push('message', localize('This account has been suspended, please contact administrator for details', 'messages'));
-        }
-    
         if($result and is_bool($result))
         {
             // if user cannot access Admin Panel, redirect to other location (specified in redirect_after_login config section)
@@ -64,8 +59,13 @@ if (isset($_POST['log']) or isset($_GET['key']))
         
             pa_redirect('pa-admin.php');
             pa_exit();
-        } else
+        } elseif ($result === 'BANNED') {
+            $template -> push('message', localize('This account has been suspended, please contact administrator for details', 'messages'));
+            
+        } elseif ($result === False) {
             $template -> push('message', localize('Invalid user name or password', 'messages'));
+            
+        }
     }
 }
 
