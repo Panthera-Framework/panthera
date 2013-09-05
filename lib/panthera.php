@@ -1852,6 +1852,11 @@ class _arrayObject
 
     public function __set($var, $value)
     {
+        if ($value === $this->__data[$var])
+        {
+            return False;
+        }
+        
         $this->__changed = True;
         $this->__data[$var] = $value;
     }

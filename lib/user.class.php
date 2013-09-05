@@ -90,6 +90,24 @@ class pantheraUser extends pantheraFetchDB
     }
     
     /**
+      * Ban, unban or check ban status
+      *
+      * @param bool $value Set this value to True or False to ban or unban user
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public function isBanned($value='')
+    {
+        if ($value !== '')
+        {
+            $this -> attributes -> banned = intval((bool)$value);
+        }
+        
+        return $this -> attributes -> banned;
+    }
+    
+    /**
       * Return user's login or full name depends on if full name is provided in user profile
       *
       * @param string $getLogin Get user login instead of full name
@@ -127,6 +145,23 @@ class pantheraUser extends pantheraFetchDB
             return False;
 
         return parent::__set($var, $value);
+    }
+    
+    /**
+      * Save all data back to database, including user attributes
+      *
+      * @return void 
+      * @author Damian Kęska
+      */
+    
+    public function save()
+    {
+        if ($this->attributes->changed())
+        {
+            $this->__set('attributes', serialize($this->attributes->listAll()));
+        }
+        
+        parent::save();
     }
 }
 
@@ -380,7 +415,7 @@ function removeUser($login)
 /**
  * A simple login method
  *
- * @return bool
+ * @return bool|string True if success, false on failure and string with error id on error (eg. "BANNED")
  * @package Panthera\core\user
  * @author Damian Kęska
  */
@@ -393,6 +428,11 @@ function userCreateSession($user, $passwd)
 
     if ($usr->exists())
     {
+        if ($usr->isBanned())
+        {
+            return 'BANNED';
+        }
+    
         if ($usr -> checkPassword($passwd))
         {
             $panthera -> user = $usr;
