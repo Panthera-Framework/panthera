@@ -1,13 +1,13 @@
 {if="$action == ''"}
-<script>
+<script type="text/javascript">
 $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
 
-function removeSubscriber(id)
+function removeSubscriber(id, elementID)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=newsletter_users&cat=admin&nid={$nid}&action=remove_subscriber', data: 'id='+id, messageBox: 'w2ui', success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=newsletter_users&cat=admin&nid={$nid}&action=removeSubscriber', data: 'id='+id, messageBox: 'w2ui', success: function (response) {
             if (response.status == "success")
             {
-                $("#sub_"+id).remove();
+                $("#sub_"+elementID).remove();
             }
         }
     });
@@ -15,9 +15,13 @@ function removeSubscriber(id)
 
 function addSubscriber()
 {
-	email = $("#add_user_email").val();
-	
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=newsletter_users&cat=admin&nid={$nid}&action=add_subscriber&email='+email, data: '', messageBox: 'w2ui'});
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=newsletter_users&cat=admin&nid={$nid}&action=addSubscriber', data: 'email='+$("#add_user_email").val(), messageBox: 'w2ui', success: function (response) {
+            if (response.status == 'success')
+            {
+                $('#newsletterUsers').prepend('<tr id="sub_'+response.id+'"><td>'+response.type+'</td><td>'+response.address+'</td><td>'+response.added+'</td></tr>');
+            }
+        }
+    });
 }
 </script>
 
@@ -32,44 +36,30 @@ function addSubscriber()
             
             <tfoot>
                 <tr>
-<<<<<<< HEAD
-                    <td colspan="3" class="rounded-foot-left">{$uiPagerName="adminNewsletter"}{include="ui.pager"}
-                    </td>
-=======
-                    <td colspan="4" class="rounded-foot-left"><em>Panthera newsletter, {function="localize('pages')"}:
-                    {loop="$pager"}
-                            {if="$value == True"}
-                            <a href="#" onclick="jumpToAjaxPage({$key}); return false;"><b>{$key+1}</b></a>
-                            {else}
-                            <a href="#" onclick="jumpToAjaxPage({$key}); return false;">{$key+1}</a>
-                            {/if}
-                    {/loop}
-                    </em></td>
->>>>>>> 07e8622114de2af78fda02ce2933a35eaaf777a6
+                    <td colspan="4" class="rounded-foot-left">{$uiPagerName="adminNewsletter"}{include="ui.pager"}</td>
                 </tr>
             </tfoot>
             
-            <tbody>
+            <tbody id="newsletterUsers">
               {loop="$newsletter_users"}
                 <tr id="sub_{$value.id}">
                 	<td>{$value.type}</td>
                 	<td>{$value.address}</td>
                 	<td>{$value.added}</td>
                 	<td>
-	                	<a href="#" onclick="removeSubscriber('{$value.id}');">
-	                        	<img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 20px;" alt="{function="localize('Remove')"}">
+	                	<a href="#" onclick="removeSubscriber('{$value.id}', '{$value.id}');">
+	                        <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 20px;" alt="{function="localize('Remove')"}">
 	                    </a>
 	                </td>
                 </tr>
               {/loop}
-                
-				<tr>
-					<td colspan="3"><input type="text" id="add_user_email" placeholder="{function="localize('Email', 'newsletter')"}" style="width: 90%;"></td>	                
-	                <td>
-	                   	<a onclick="addSubscriber();" style="cursor: pointer;">
-	                   		<img src="{$PANTHERA_URL}/images/admin/list-add.png" style="height: 20px;">
-	                  	</a>
-					</td>
+                <tr>
+                    <td colspan="2"> </td><td><input type="text" id="add_user_email" placeholder="{function="localize('Address', 'newsletter')"}" style="width: 95%;"></td>                  
+                    <td>
+                        <a onclick="addSubscriber();" style="cursor: pointer;">
+                            <img src="{$PANTHERA_URL}/images/admin/list-add.png" style="height: 20px;">
+                        </a>
+                    </td>
                 </tr>
             </tbody>
            </table>

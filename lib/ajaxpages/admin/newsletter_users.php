@@ -31,26 +31,54 @@ if (!$newsletter->exists())
     pa_exit();
 }
 
-// removing subscriber
-if ($_GET['action'] == 'remove_subscriber')
+/**
+  * Remove a subscriber
+  *
+  * @author Mateusz Warzyński
+  * @author Damian Kęska
+  */
+  
+if ($_GET['action'] == 'removeSubscriber')
 {
     if(newsletterManagement::removeSubscriber($_POST['id']))
         ajax_exit(array('status' => 'success'));
 
-    ajax_exit(array('status' => 'failed', 'messsage' => localize('Cannot find subscriber')));
+    ajax_exit(array('status' => 'failed', 'messsage' => localize('Cannot find subscriber', 'newsletter')));
 }
 
-if ($_GET['action'] == 'add_subscriber')
+/**
+  * Add a new anonymous subscriber
+  *
+  * @author Mateusz Warzyński
+  * @author Damian Kęska
+  */
+
+if ($_GET['action'] == 'addSubscriber')
 {
-	if (strlen($_GET['email']) > 4)
-		$email = $_GET['email'];
-	else
-		ajax_exit(array('status' => 'failed', 'message' => localize('Check email address!')));
+	if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
+	{
+		ajax_exit(array('status' => 'failed', 'message' => localize('Check email address', 'newsletter')));
+	}
 	
-	if ($newsletter -> registerUser($email, 'mail', -1, '', True, True))
-		ajax_exit(array('status' => 'success'));
-	else
-		ajax_exit(array('status' => 'failed', 'message' => localize('Cannot add subscriber!')));
+	$userID = -1; // guest
+	
+	if (isset($_POST['user']))
+	{
+	    $u = new pantheraUser('login', $_POST['user']);
+	    
+	    if ($u->exists())
+	    {
+	        $userID = $u->id;
+	    }
+	}
+	
+	if ($newsletter -> registerUser($_POST['email'], '', $userID, '', True, True))
+    {
+        $subscription = $newsletter -> getSubscription($_POST['email']);
+	    ajax_exit(array('status' => 'success', 'id' => $subscription['id'], 'type' => $subscription['type'], 'address' => $subscription['address'], 'added' => $subscription['added']));
+	} else {
+		ajax_exit(array('status' => 'failed', 'message' => localize('Cannot add subscriber', 'newsletter')));
+    }
 }
 
 $panthera -> template -> push ('nid', $_GET['nid']);

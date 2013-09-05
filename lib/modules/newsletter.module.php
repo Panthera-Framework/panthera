@@ -162,9 +162,12 @@ class newsletterManagement
         {
             foreach ($users as $user)
             {
+                $userMessage = str_ireplace('{$userName}', $user, pantheraUrl($jobData['data']['message']));
+                $userTitle = str_ireplace('{$userName}', $user, pantheraUrl($jobData['data']['title']));
+            
                 // finally send a user a message
                 try {
-                    newsletterManagement::send($user, $jobData['data']['message'], $jobData['data']['title']);
+                    newsletterManagement::send($user, $userMessage, $userTitle);
                 } catch (Exception $e) { 
                     $panthera -> logging -> output('Cannot send message: ' .print_r($e, True), 'newsletter');
                 }
