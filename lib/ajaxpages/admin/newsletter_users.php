@@ -62,21 +62,17 @@ if ($_GET['action'] == 'show_table')
 // get count of newsletter users
 $usersCount = $newsletter -> getUsers(False); // false means we dont want to get records but it's count
 
-$page = intval($_GET['pagenum']);
+$page = intval($_POST['pagenum']);
 
 // pages are only > -1 (we are counting from 0, so the real page is page-1 means page 1 is 0 in code)
 if ($page < 0)
     $page = 0;
 
 // get records only for current page
-$panthera -> importModule('pager');
-$pager = new Pager($usersCount, $panthera->config->getKey('pager_newsletter', 25, 'int'));
-$pager -> maxLinks = 6; // max links in pager
-$limit = $pager -> getPageLimit($page);
-
-$panthera -> template -> push('pager', $pager->getPages($page));
-$panthera -> template -> push('page_from', $limit[0]);
-$panthera -> template -> push('page_to', $limit[1]);
+$uiPager = new uiPager('adminNewsletter', $usersCount, 'adminNewsletter');
+$uiPager -> setActive($page); 
+$uiPager -> setLinkTemplates('#', 'createPopup(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\', 1024);');
+$limit = $uiPager -> getPageLimit();
 
 // get all users from current page
 $users = $newsletter -> getUsers($limit[0], $limit[1]);

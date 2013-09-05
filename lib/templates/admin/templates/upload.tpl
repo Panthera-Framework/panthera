@@ -340,14 +340,8 @@ function getUploadsPage(data)
 
       <div style="clear:both;"></div>
 
-      <div class="optionsBox">&lsaquo;
-                        {loop="$pager"}
-                            {if="$value == true"}
-                            <a href="#" onclick="getUploadsPage('page={$key}'); return false;"><b>{$key+1}</b></a>
-                            {else}
-                            <a href="#" onclick="getUploadsPage('page={$key}'); return false;">{$key+1}</a>
-                            {/if}
-                        {/loop}&rsaquo; {if="$upload_files == True"}<input type='button' value="{function="localize('Add new file', 'files')"}" style="float: right;" id="_upl_add_file">{/if}</div>
+      <div class="optionsBox">{$uiPagerName="adminUpload"}{include="ui.pager"}
+        {if="$upload_files == True"}<input type='button' value="{function="localize('Add new file', 'files')"}" style="float: right;" id="_upl_add_file">{/if}</div>
   </div>
 
   <!-- UPLOAD BOX -->
@@ -358,15 +352,15 @@ function getUploadsPage(data)
         <form action="?display=upload&cat=admin&action=handle_file&popup=true" method="POST" enctype="multipart/form-data" id="upload_form">
             <table class="gridTable">
                 <thead>
-                    <tr><th colspan="5">{function="localize('Upload a new file')"}</th></tr>
+                    <tr><th colspan="5">{function="localize('Upload a new file', 'upload')"}</th></tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>{function="localize('Select a file')"}</td><td><input type="file" name="input_file"> <input type="hidden" name="MAX_FILE_SIZE" value="{$max_file_size}" /></td>
+                        <td>{function="localize('Select a file', 'upload')"}</td><td><input type="file" name="input_file"> <input type="hidden" name="MAX_FILE_SIZE" value="{$max_file_size}" /></td>
                     </tr>
 
                     <tr>
-                        <td>{function="localize('Description')"}</td><td><input type="text" name="input_description" style="width: 95%;"></td>
+                        <td>{function="localize('Description', 'upload')"}</td><td><input type="text" name="input_description" style="width: 95%;"></td>
                     </tr>
                 </tbody>
 

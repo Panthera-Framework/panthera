@@ -26,7 +26,7 @@ if ($_GET['action'] == 'createCategory')
 		if (newsletterManagement::create($_GET['title']))
 			ajax_exit(array('status' => 'success'));
 		else
-			ajax_exit(array('status' => 'failed', 'message' => localize('Cannot add newsletter category! Check title.', 'newsletter')));
+			ajax_exit(array('status' => 'failed', 'message' => localize('Cannot add newsletter category, check the title.', 'newsletter')));
 	} else {
 		ajax_exit(array('status' => 'failed', 'message' => localize('Title should contain at least 3 letters.', 'newsletter')));
 	}
@@ -38,13 +38,21 @@ if ($_GET['action'] == 'removeCategory')
 		if (newsletterManagement::remove('nid', $_GET['nid']))
 			ajax_exit(array('status' => 'success'));
 		else
-			ajax_exit(array('status' => 'failed', 'message' => localize('Cannot remove newsletter category!', 'newsletter')));
+			ajax_exit(array('status' => 'failed', 'message' => localize('Cannot remove a newsletter category', 'newsletter')));
 	} else {
-		ajax_exit(array('status' => 'failed', 'message' => localize('Cannot remove newsletter category! ID is missing.', 'newsletter')));
+		ajax_exit(array('status' => 'failed', 'message' => localize('Cannot remove newsletter category, ID is missing', 'newsletter')));
 	}
 }
 
-$newsletters = newsletterManagement::search();
+$page = intval($_GET['page']);
+$count = newsletterManagement::search('', False);
+
+// pager
+$uiPager = new uiPager('adminNewsletterCategories', $count, 'adminNewsletterCategories');
+$uiPager -> setActive($page);
+$uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\');');
+$limit = $uiPager -> getPageLimit();
+$newsletters = newsletterManagement::search('', $limit[1], $limit[0]);
 
 if ($_GET['query'] != '') {
 	foreach ($newsletters as $key => $newsletter) {

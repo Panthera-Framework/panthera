@@ -25,7 +25,7 @@ function removeSubscriber(id)
             
             <tfoot>
                 <tr>
-                    <td colspan="3" class="rounded-foot-left">Panthera newsletter
+                    <td colspan="3" class="rounded-foot-left">{$uiPagerName="adminNewsletter"}{include="ui.pager"}
                     </td>
                 </tr>
             </tfoot>

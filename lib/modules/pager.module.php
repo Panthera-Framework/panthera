@@ -33,9 +33,9 @@ class Pager
         $this->max = $max;
         $this->perPage = intval($perPage);
         
-        if (is_string($max))
+        if (is_string($perPage))
         {
-            $pager = $this->getPagerFromTable($max);
+            $pager = $this->getPagerFromTable($perPage);
             $this->perPage = $pager['perPage'];
             $this->maxLinks = $pager['maxLinks'];
         }

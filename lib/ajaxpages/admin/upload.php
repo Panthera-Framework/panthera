@@ -113,37 +113,30 @@ if (isset($_GET['popup']))
     }
 
 
-
-
-    $tpl = 'upload.tpl';
-
     if ($_GET['action'] == 'display_list')
         $template -> push('action', 'display_list');
 
 
     // ==== LIST OF UPLOADED FILES
 
-    $page = (intval(@$_POST['page']));
+    $page = intval(@$_POST['page']);
+    $count = getUploadedFiles('', False);
 
     if ($page < 0)
         $page = 0;
-
-    $count = getUploadedFiles('', False);
-    $pager = new Pager($count, 'adminUpload');
-    $pager -> maxLinks = $panthera->config->getKey('uploads_pager_links', 6, 'int');
-    $limit = $pager -> getPageLimit($page);
     
-    // pager display
-    $template -> push('pager', $pager->getPages($page));
-    $template -> push('page_from', $limit[0]);
-    $template -> push('page_to', $limit[1]);
+    // pager
+    $uiPager = new uiPager('adminUpload', $count, 'adminUpload');
+    $uiPager -> setActive($page); // ?display=upload&cat=admin&popup=true&action=display_list
+    $uiPager -> setLinkTemplates('#', 'getUploadsPage(\'page={$page}\', 1300, 550);');
+    $limit = $uiPager -> getPageLimit();
 
     $files = getUploadedFiles('', $limit[1], $limit[0]); // raw list
     $filesTpl = array(); // list passed to template
 
     foreach ($files as $key => $value)
     {
-        if ($value -> uploader_id != $user -> id and !getUserRightAttribute($user, 'can_manage_all_uploads') and $value -> __get('public') == (int)0)
+        if ($value -> uploader_id != $user -> id and !getUserRightAttribute($user, 'can_manage_all_uploads') and !$value -> __get('public'))
             continue;
 
         // get site url
@@ -168,9 +161,11 @@ if (isset($_GET['popup']))
     if (getUserRightAttribute($user, 'can_upload_files'))
         $template -> push('upload_files', True);
 
-    $template -> push('max_file_size', $panthera -> config -> getKey('upload_max_size', 3145728, 'int')); // default 3 mbytes
-    $template -> push('files', $filesTpl);
-    $template -> push('callback_name', $_GET['callback']);
-    $template -> push('user_login', $user->login);
+    $panthera -> template -> push('max_file_size', $panthera -> config -> getKey('upload_max_size', 3145728, 'int')); // default 3 mbytes
+    $panthera -> template -> push('files', $filesTpl);
+    $panthera -> template -> push('callback_name', $_GET['callback']);
+    $panthera -> template -> push('user_login', $user->login);
+    $panthera -> template -> display('upload.tpl');
 }
-?>
+
+pa_exit();

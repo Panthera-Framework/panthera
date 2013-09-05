@@ -16,10 +16,8 @@ if (!getUserRightAttribute($user, 'can_compose_newsletters')) {
     pa_exit();
 }
 
-$panthera -> template -> setTitle(localize('Compose a new message'));
-$panthera -> template -> push('site_template_css', '');
-
 $panthera -> importModule('newsletter');
+$panthera -> template -> setTitle(localize('Compose a new message', 'newsletter'));
 
 $newsletter = new newsletter('nid', $_GET['nid']);
 
@@ -62,15 +60,15 @@ $panthera -> template -> push ('messages_queue', $jobsTpl);
 if(isset($_POST['content']))
 {
     // content cannot be shorten than 10 characters
-    if (strlen($_POST['content']) < 10)
-        ajax_exit(array('status' => 'failed', 'message' => localize('Message is too short')));
+    if (strlen($_POST['content']) < 5)
+        ajax_exit(array('status' => 'failed', 'message' => localize('Message is too short', 'newsletter')));
 
-    if (strlen($_POST['title']) < 5)
-        ajax_exit(array('status' => 'failed', 'message' => localize('Title is too short')));
+    if (strlen($_POST['title']) < 3)
+        ajax_exit(array('status' => 'failed', 'message' => localize('Title is too short', 'newsletter')));
 
     $newsletter -> execute($_POST['content'], htmlspecialchars($_POST['title']));
 
-    ajax_exit(array('status' => 'success', 'message' => localize('Sent')));
+    ajax_exit(array('status' => 'success', 'message' => localize('Sent', 'newsletter')));
 }
 
 // titlebar

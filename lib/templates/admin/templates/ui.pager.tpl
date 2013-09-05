@@ -6,7 +6,7 @@
 
 {loop="$pager['links']"}
     &nbsp;
-    <a href="{$value.link}" {if="$value.active"}style="color: blue;"{/if} {if="$value.onclick"} onclick="{$value.onclick}"{/if}><b>{$value.id}</b></a>
+    <a href="{$value.link}" class="pagerLink" {if="$value.active"}style="color: blue;"{/if} onclick="$('.pagerLink').css({'color': 'black'}); $(this).css({'color': 'blue'}); {if="$value.onclick"}{$value.onclick}{/if}"><b>{$value.id}</b></a>
     &nbsp;{if="!isset($value.last)"}|{/if}
 {/loop}
 

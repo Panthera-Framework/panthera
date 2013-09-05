@@ -62,7 +62,7 @@ function createCategory()
 	            
 	            <tfoot>
 		            <tr>
-		            <td colspan="3"><em>{$uiPagerName="newsletters"}
+		            <td colspan="3"><em>{$uiPagerName="adminNewsletterCategories"}
 		            {include="ui.pager"}
 		            </em></td>
 		            </tr>

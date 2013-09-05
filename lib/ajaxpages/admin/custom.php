@@ -425,7 +425,7 @@ if (!isset($itemsCount))
 }
 
 $panthera -> importModule('admin/ui.pager');
-$uiPager = new uiPager('customPages', 'adminCustomPages');
+$uiPager = new uiPager('customPages', $itemsCount, 'adminCustomPages');
 $uiPager -> setActive($page);
 $args = $_GET;
 $args['page'] = '{$page}';
