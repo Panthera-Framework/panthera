@@ -15,10 +15,9 @@ class memcached_dashWidget extends pantheraClass
 {
     public function display()
     {
-			
-		if (class_exists('Memcached'))
+        if (class_exists('Memcached'))
         {
-		    $this -> panthera -> importModule('filesystem');
+            $this -> panthera -> importModule('filesystem');
             $this -> panthera -> importModule('memcached');
 
             $memcached = new pantheraMemcached($this -> panthera);
@@ -28,11 +27,11 @@ class memcached_dashWidget extends pantheraClass
             $servers = array();
             $i=0;
             foreach ($stats as $server => $attributes)
-		    {
-		        $servers[$server] = array();
+            {
+                $servers[$server] = array();
                 $servers[$server]['num'] = $i++;
-		
-		        // percent of memory usage
+
+                // percent of memory usage
                 $usage = strval(bytesToSize($attributes['bytes']) / bytesToSize($attributes['limit_maxbytes']));
 
                 if (!$usage)
@@ -40,8 +39,7 @@ class memcached_dashWidget extends pantheraClass
                 else
                     $servers[$server]['memory_usage'] = substr($usage, 0, 4)."%";
             } 
-		
-			$this -> panthera -> template -> push ('memcachedServers', $servers);
+            $this -> panthera -> template -> push ('memcachedServers', $servers);
         }
     }
 }
