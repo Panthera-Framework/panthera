@@ -1,6 +1,6 @@
 <?php
 /**
-  * Cronjobs widget
+  * Memcached widget
   *
   * @param string 
   * @return mixed 
@@ -15,12 +15,7 @@ class memcached_dashWidget extends pantheraClass
 {
     public function display()
     {
-		/*
-		   1. Displaying load of all servers
-		   2. If there are no servers configured or memcached is disabled - display information
-	       3. Clickable links to cache configuration page 
-		 */
-		
+			
 		if (class_exists('Memcached'))
 		{
 		    $this -> panthera -> importModule('filesystem');
@@ -37,8 +32,13 @@ class memcached_dashWidget extends pantheraClass
 		        $servers[$server] = array();
 		        $servers[$server]['num'] = $i++;
 		
-		        // memory usage
-		        $servers[$server]['memory_usage'] = substr(strval(bytesToSize($attributes['bytes']) / bytesToSize($attributes['limit_maxbytes'])), 0, 4)."%";
+		        // percent of memory usage
+		        $usage = strval(bytesToSize($attributes['bytes']) / bytesToSize($attributes['limit_maxbytes']));
+				
+				if (!$usage)
+					$servers[$server]['memory_usage'] = localize('Not connected', 'dash');
+				else
+		        	$servers[$server]['memory_usage'] = substr($usage, 0, 4)."%";
 		    } 
 		
 			$this -> panthera -> template -> push ('memcachedServers', $servers);
