@@ -32,7 +32,7 @@ class uiPager
             'total' => $totalItems,
             'pageMax' => $maxOnPage,
             'maxLinks' => 6,
-            'linkTemplate' => '?page={$page}',
+            'linkTemplate' => getQueryString('GET', 'page={$page}', '_'),
             'onclickTemplate' => False,
             'backBtn' => False,
             'nextBtn' => False,

@@ -553,6 +553,44 @@ class pantheraDB
     }
     
     /**
+      * Create an unique value for database column
+      *
+      * @param string $table
+      * @param string $column
+      * @param string $title Optional title to parse and create an unique url
+      * @return mixed 
+      * @author Damian Kęska
+      */
+    
+    public function createUniqueData($table, $column, $title='')
+    {
+        if ($title)
+        {
+            $unique = $seoUrl = $title;
+        } else {
+            $unique = $seroUrl = generateRandomString(8);
+        }
+        
+        $i = 0;
+            
+        do {
+            $i++;
+                
+            if ($i > 1)
+            {
+                $unique = $seoUrl.$i;
+            }
+                
+            if ($i > 10)
+                $unique = hash('md4', rand(9999, 999999));
+                
+            $SQL = $this -> query('SELECT `' .$column. '` FROM `{$db_prefix}' .$table. '` WHERE `' .$column. '` = :unique', array('unique' => $unique));
+        } while ( $SQL -> rowCount() > 0);
+        
+        return $unique;
+    }
+    
+    /**
       * Bind array of values
       *
       * @param object $req

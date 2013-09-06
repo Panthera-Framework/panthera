@@ -1,232 +1,145 @@
 {$site_header}
-
 <script type="text/javascript">
-$('#sliderCode').tinycarousel({ controls: true, pager: true, animation: true });
-
-function editGallery(id, titleOfCategory)
-{
-    checkbox = { header: "{function="localize('Visibility', 'gallery')"}", type: "checkbox", name: "visibility", value: "visibility"}
-
-    if ($('#visibility_'+id).html() == "{function="localize('Visible', 'gallery')"}")
-        checkbox.checked = "checked"
-
-    $.msgBox({ type: "prompt", opacity: 0.6,
-      title: "{function="localize('Editing category')"}",
-      inputs: [
-      { header: "{function="localize('Editing category', 'gallery')"}", type: "text", name: "new_title", value: titleOfCategory}, checkbox],
-      buttons: [
-      { value: "{function="localize('Save', 'messages')"}" }, { value:"{function="localize('Cancel', 'messages')"}" }],
-      success: function (result, values) { if (result == '{function="localize('Cancel', 'messages')"}') { return false; }
-
-        $(values).each(function (index, input) {
-
-            if (input.name == 'new_title') {
-                  v = input.name + "=" + input.value;
-                  new_title = input.value;
+    $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
+    
+    function toggleGalleryVisibility(id)
+    {
+        panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggleGalleryVisibility&ctgid='+id, messageBox: 'w2ui', success: function (response) {
+                if (response.status == 'success')
+                {
+                    if (response.visible)
+                    {
+                        $('#galleryCategory_row_'+id).css({'opacity': '1'});
+                    } else {
+                        $('#galleryCategory_row_'+id).css({'opacity': '0.5'});
+                    }
+                }
             }
-
-            if (input.checked == 'checked' && input.name == 'visibility')
-                  v += "&visibility=show";
-            if (input.checked != 'checked' && input.name == 'visibility')
-                  v += "&visibility=hide";
         });
-
-
-        $.ajax({
-             url: '{$AJAX_URL}?display=gallery&cat=admin&action=edit_category&ctgid='+id+'&'+v,
-             data: '',
-             async: false,
-             success: function (response) {
-
-                  if (response.status == "success") {
-
-                      jQuery('#gallery_title_'+id).html(response.title);
-
-                      if (response.visibility == 'show') {
-                              $('#hide_btn_'+id).val('{function="localize('Hide', 'gallery')"}');
-                              $('#galleryCategory_row_'+id).css("background", "");
-                              $('#visibility_'+id).html('{function="localize('Visible', 'gallery')"}');
-                      }
-
-                      if (response.visibility == 'hide') {
-                              $('#galleryCategory_row_'+id).css("background", "rgba(172, 172, 172, 0.5)");
-                              $('#visibility_'+id).html('{function="localize('Hidden', 'gallery')"}');
-                              $('#hide_btn_'+id).val('{function="localize('Show', 'gallery')"}');
-                      }
-
-                      jQuery('#change_category_error').hide();
-                      jQuery('#change_category_success').slideDown();
-                      setTimeout('jQuery(\'#change_category_success\').slideUp();', 5000);
-
-                  } else {
-                      jQuery('#change_category_success').hide();
-                      jQuery('#change_category_error').slideDown();
-                      jQuery('#change_category_error').html(response.error);
-                      setTimeout('jQuery(\'#change_category_error\').slideUp();', 5000);
-                  }
-             },
-            dataType: 'json'
-        });
-      }
-    });
-}
-
-function addGallery()
-{
-    $.msgBox({ type: "prompt", opacity: 0.6,
-      title: "{function="localize('Adding category', 'gallery')"}",
-      inputs: [
-      { header: "{function="localize('Title', 'gallery')"}", type: "text", name: "new_title"},
-      { header: "{function="localize('Publish', 'gallery')"}", type: "checkbox", name: "visibility", value: "visibility"}],
-      buttons: [
-      { value: "{function="localize('Add category', 'gallery')"}" }, { value:"{function="localize('Cancel', 'messages')"}" }],
-      success: function (result, values) { if (result == '{function="localize('Cancel', 'messages')"}') { return false; }
-
-        $(values).each(function (index, input) {
-
-            if (input.name == 'new_title') {
-                  v = input.name + "=" + input.value;
-                  new_title = input.value;
+    }
+    
+    function removeGalleryCategory(id)
+    {
+        w2confirm('{function="localize('Are you sure you want delete this gallery?', 'gallery')"}', function (responseText) {
+        
+            if (responseText == 'Yes')
+            {
+                panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=deleteCategory&id='+id, messageBox: 'w2ui', success: function (response) {
+                        if (response.status == 'success')
+                        {
+                            navigateTo('?display=gallery&cat=admin&filter={$category_filter}');
+                        }
+                
+                    }
+                });
             }
-
-            if (input.checked == 'checked' && input.name == 'visibility')
-                  v += "&visibility=1";
-            if (input.checked != 'checked' && input.name == 'visibility')
-                  v += "&visibility=0";
+        
         });
-
-
-        $.ajax({
-             url: '{$AJAX_URL}?display=gallery&cat=admin&action=add_category&filter={$category_filter}&'+v,
-             data: '',
-             async: false,
-             success: function (response) {
-
-                  if (response.status == "success") {
+    }
+    
+    $(document).ready(function () {
+        $('#newGalleryForm').submit(function () {
+            panthera.jsonPOST( { data: '#newGalleryForm', messageBox: 'w2ui', success: function (response) {
+                    if (response.status == 'success')
+                    {
                         navigateTo('?display=gallery&cat=admin&filter={$category_filter}');
-                  }
-             },
-            dataType: 'json'
+                    }
+                } 
+            });
+            
+            return false;
         });
-      }
     });
-}
-
+    
 </script>
-		
-		{include="ui.titlebar"}
 
-        <div class="msgSuccess" id="userinfoBox_success"></div>
-        <div class="msgError" id="userinfoBox_failed"></div>
+{include="ui.titlebar"}
+{$uiSearchbarName="uiTop"}
+{include="ui.searchbar"}
 
-        <div class="grid-1">
-        <div class="msgSuccess" style="display: none;" id="change_category_success">{function="localize('Category has been successfully changed', 'gallery')"}</div>
-        <div class="msgError" style="display: none;" id="change_category_error"></div>
-
-        <div id="all_categories_window">
-            <table class="gridTable">
+<div class="grid-1">
+    <div id="all_categories_window">
+        <table class="gridTable">
             <thead>
                 <tr>
-                  <th>{function="localize('Title', 'gallery')"}</th>
-                  <th>{function="localize('Created', 'gallery')"}</th>
-                  <th>{function="localize('Language', 'gallery')"}</th>
-                  <th>&nbsp;</th>
+                    <th>&nbsp;</th>
+                    <th>{function="localize('Title', 'gallery')"}</th>
+                    <th>{function="localize('Created', 'gallery')"}</th>
+                    <th>{function="localize('Language', 'gallery')"}</th>
+                    <th>&nbsp;</th>
                 </tr>
             </thead>
-
+            
             <tfoot>
-            	<tr>
-                	<td colspan="8"><em>{function="localize('Gallery categories', 'gallery')"}<input type="button" value="{function="localize('Add category', 'gallery')"}" style="float: right;" onclick="addGallery();" >
-                    <input type="button" value="{function="localize('View permissions', 'gallery')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_view_galleryItem', 1024, 'upload_popup');" style="float: right;">
-                    <input type="button" value="{function="localize('Edit permissions', 'gallery')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_edit_galleryItem', 1024, 'upload_popup');" style="float: right;"></em></td>
+                <tr>
+                    <td colspan="8">
+                        {$uiPagerName="galleryCategories"}{include="ui.pager"}
+                    </td>
                 </tr>
             </tfoot>
+            
             <tbody>
                 {loop="$category_list"}
-                <tr id="galleryCategory_row_{$value->id}" {if="$value>visibility == 0"} style="background: rgba(172, 172, 172, 0.5);"{/if}>
-                  <td><a href="?display=gallery&cat=admin&action=display_category&unique={$value->unique}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value->id}'>
-                        <img src="{$value->thumb_url|pantheraUrl}" width="50" height="50"> {$value->title}
-                      </a></td>
-                  <td>{$value->created} {function="localize('by')"} {$value->author_login}</td>
-                  <td>{$value->language}</td>
-                  <td>
-                      {if="$value->visibility == 1"}
-                      <input type="button" value="{function="localize('Hide', 'messages')"}" onclick="toggleGalleryVisibility({$value->id});" id="hide_btn_{$value->id}">
-                      {elseif="$value->visibility == 0"}
-                      <input type="button" value="{function="localize('Show', 'messages')"}" onclick="toggleGalleryVisibility({$value->id});" id="hide_btn_{$value->id}">
-                      {/if}
-                      <input type="button" value="{function="localize('Edit', 'messages')"}" onclick="editGallery({$value->id}, '{$value->title|addslashes}');">
-                      <input type="button" value="{function="localize('Delete', 'messages')"}" onclick="removeGalleryCategory({$value->id}); return false;">
-                      <input type="button" value="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=gallery_manage_cat_{$value->id}', 1024, 'upload_popup');"></td>
+                <tr id="galleryCategory_row_{$value->id}" style="{if="!$value->visibility"}opacity: 0.5;{/if}">
+                    {if="$value->thumb_url"}
+                    <td style="width: 60px;">
+                        <a href="?display=gallery&cat=admin&action=displayCategory&unique={$value->unique}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value->id}'>
+                        <img src="{$value->thumb_url|pantheraUrl}" style="width: 50px; height: 50px;">
+                        </a>
+                    </td>
+                    
+                    {/if}
+                    <td {if="!$value->thumb_url"}colspan="2"{/if}>
+                    <a href="?display=gallery&cat=admin&action=displayCategory&unique={$value->unique}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value->id}'>
+                    {$value->title}
+                    </a>
+                    </td>
+                    
+                    <td>{$value->created} {function="localize('by')"} {$value->author_login}</td>
+                    
+                    <td>{$value->language}</td>
+                    
+                    <td>
+                        <a href="#" onclick="toggleGalleryVisibility({$value->id});">
+                        <img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/System-search.svg" style="max-height: 22px;" id="hide_btn_{$value->id}" title="{function="localize('Show or hide', 'messages')"}">
+                        </a>
+                        <a href="#" onclick="removeGalleryCategory({$value->id});">
+                        <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" title="Remove">
+                        </a>
+                        <a href="#" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=gallery_manage_cat_{$value->id}', 1024, 'upload_popup');">
+                        <img src="{$PANTHERA_URL}/images/admin/menu/users.png" style="max-height: 22px;" title="{function="localize('Manage permissions', 'messages')"}">
+                        </a>
+                    </td>
                 </tr>
                 {/loop}
             </tbody>
         </table>
-        </div>
-
     </div>
-</article>
-
-
-
-<script>
-$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
-
-function toggleGalleryVisibility(id)
-{
-    $.ajax({
-            url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggle_gallery_visibility&ctgid='+id,
-            data: '',
-            async: false,
-            success: function (response) {
-
-                if (response.status == "success")
-                {
-                    if (response.visible == true)
-                    {
-                        $('#hide_btn_'+id).val('{function="localize('Hide', 'gallery')"}');
-                        $('#galleryCategory_row_'+id).css("background", "");
-                        $('#visibility_'+id).html('{function="localize('Visible', 'gallery')"}');
-                    } else {
-                        $('#galleryCategory_row_'+id).css("background", "rgba(172, 172, 172, 0.5)");
-                        $('#visibility_'+id).html('{function="localize('Hidden', 'gallery')"}');
-                        $('#hide_btn_'+id).val('{function="localize('Show', 'gallery')"}');
-                    }
-                }
-
-            },
-            dataType: 'json'
-           });
-}
-
-function removeGalleryCategory(id)
-{
-    $.msgBox({
-        title: "{function="localize('Are you sure?')"}",
-        content: "{function="localize('Do you really want to delete this category?')"}",
-        type: "confirm",
-        autoClose: true,
-        opacity: 0.6,
-        buttons: [{ value: "{function="localize('Yes', 'messages')"}" }, { value: "{function="localize('No', 'messages')"}" }, { value: "{function="localize('Cancel', 'messages')"}"}],
-        success: function (result) { if (result == '{function="localize('Yes', 'messages')"}') {
-                $.ajax({
-                    url: '{$AJAX_URL}?display=gallery&cat=admin&action=delete_category&id='+id,
-                    data: '',
-                    async: false,
-                    success: function (response) {
-
-                        if (response.status == "success")
-                        {
-                            navigateTo('?display=gallery&cat=admin&filter={$category_filter}');
-                        }
-
-                    },
-                    dataType: 'json'
-                   });
-            }
-        }
-    });
-
-
-}
-</script>
+    
+    <form action="?{function="getQueryString('GET', 'action=createCategory', '_')"}" method="POST" id="newGalleryForm">
+    <table class="gridTable" style="margin-top: 30px; width: 40%;">
+        <thead>
+            <tr>
+                <th colspan="2">{function="localize('Create new gallery', 'gallery')"}</th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            <tr>
+                <td>{function="localize('Name', 'gallery')"}:</td>
+                <td><input type="text" name="name" style="width: 95%;">
+            </tr>
+            
+            <tr>
+                <td>{function="localize('Visibility', 'gallery')"}:</td>
+                <td><input type="radio" name="visibility" value="1" checked> {function="localize('Yes')"} <input type="radio" name="visibility" value="0"> {function="localize('No')"}</td>
+            </tr>
+            
+            <tr>
+                <td colspan="2" style="text-align: right;">
+                    <input type="submit" value=" {function="localize('Create', 'gallery')"} " style="margin-right: 15px;">
+                </td>
+            </tr>
+    </table>
+    </form>
+</div>

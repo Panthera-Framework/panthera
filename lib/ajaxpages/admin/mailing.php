@@ -191,15 +191,10 @@ if ($_GET['action'] == 'send')
     ajax_exit(array('status' => 'success'));
 }
 
-/*$message = new mailMessage();
-$message -> setSubject('Testowa wiadomość');
-$message -> addRecipient('xyz@gmail.com');
-$message -> send('No to lecimy', 'plain');*/
-
 $yn = array(0 => localize('No'), 1 => localize('Yes'));
 
 $mailAttributes = array();
-$mailAttributes['mailing_use_php'] = array('value' => (bool)$panthera -> config -> getKey('mailing_use_php', True, 'bool'));
+$mailAttributes['mailing_use_php'] = array('value' => (bool)$panthera -> config -> getKey('mailing_use_php', True, 'bool', 'mailing'));
 
 // mailing server
 $mailAttributes['mailing_server'] = array('name' => 'Server',  'value' => $panthera -> config -> getKey('mailing_server', null, null, 'mailing'));

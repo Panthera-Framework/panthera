@@ -95,6 +95,30 @@ class galleryItem extends pantheraFetchDB
 
         return $url. '/images/mimes/unknown.png';
     }
+    
+    /**
+      * Get gallery ID
+      *
+      * @return int 
+      * @author Damian Kęska
+      */
+    
+    public function getGalleryID()
+    {
+        return intval($this->gallery_id);
+    }
+    
+    /**
+      * Get item's gallery object
+      *
+      * @return object 
+      * @author Damian Kęska
+      */
+    
+    public function getGallery()
+    {
+        return new galleryCategory('id', $this->gallery_id);
+    }
 }
 
 class galleryCategory extends pantheraFetchDB
@@ -125,6 +149,18 @@ class galleryCategory extends pantheraFetchDB
             $this->_meta[$meta] = new metaAttributes($this->panthera, 'gallery_c_' .$meta, $this->unique);
 
         return $this->_meta[$meta];
+    }
+    
+    /**
+      * Get author informations
+      *
+      * @return array with id and login 
+      * @author Damian Kęska
+      */
+    
+    public function getAuthor()
+    {
+        return array('id' => $this->author_id, 'login' => $this->author_login);
     }
 }
 
@@ -198,9 +234,15 @@ class gallery
       * @author Damian Kęska
       */
     
-    public static function createCategory($title, $login, $user_id, $language, $visibility, $user_full_name, $unique)
+    public static function createCategory($title, $login, $user_id, $language, $visibility, $user_full_name, $unique='')
     {
         global $panthera;
+        
+        if (!$unique)
+        {
+            $unique = seoUrl($panthera->db->createUniqueData('gallery_categories', 'unique', $title));
+        }
+        
         $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}gallery_categories` (`id`, `title`, `author_login`, `author_id`, `language`, `created`, `modified`, `visibility`, `author_full_name`, `thumb_id`, `thumb_url`, `unique`) VALUES (NULL, :title, :author_login, :author_id, :language, NOW(), NOW(), :visibility, :author_full_name, "", "", :unique);', array('title' => $title, 'author_login' => $login, 'language' => $language, 'author_id' => $user_id, 'visibility' => $visibility, 'author_full_name' => $user_full_name, 'unique' => $unique));
         
         return (bool)$SQL->rowCount();
@@ -237,18 +279,30 @@ class gallery
         
         return $category;
     }
+    
+    /**
+      * Get gallery categories
+      *
+      * @param mixed $by
+      * @param int $limit
+      * @param int $limitFrom
+      * @param $orderBy
+      * @param $orderDirection
+      * @return mixed
+      * @author Damian Kęska
+      */
+    
+    public static function fetch($by, $limit=0, $limitFrom=0, $orderBy='id', $orderDirection='DESC')
+    {
+        global $panthera;
+        return $panthera->db->getRows('gallery_categories', $by, $limit, $limitFrom, 'galleryCategory', $orderBy, $orderDirection);
+    }
 }
 
 function getGalleryItems($by, $limit=0, $limitFrom=0)
 {
       global $panthera;
       return $panthera->db->getRows('gallery_items', $by, $limit, $limitFrom, 'galleryItem', 'id', 'DESC');
-}
-
-function getGalleryCategories($by, $limit=0, $limitFrom=0)
-{
-      global $panthera;
-      return $panthera->db->getRows('gallery_categories', $by, $limit, $limitFrom, 'galleryCategory', 'id', 'DESC');
 }
 
 function removeGalleryCategory($id)

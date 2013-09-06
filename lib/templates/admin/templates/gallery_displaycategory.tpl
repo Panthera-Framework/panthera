@@ -13,7 +13,7 @@
             buttons: [{ value: "{function="localize('Yes', 'messages')"}" }, { value: "{function="localize('No', 'messages')"}" }, { value: "{function="localize('Cancel', 'messages')"}"}],
             success: function (result) { if (result == '{function="localize('Yes')"}') {
 
-                    panthera.jsonGET({ url: '{$AJAX_URL}?display=gallery&cat=admin&action=delete_item&image_id='+id, success: function (response) {
+                    panthera.jsonGET({ url: '{$AJAX_URL}?display=gallery&cat=admin&action=deleteItem&image_id='+id, success: function (response) {
                             if (response.status == "success")
                             {
                                 $('#gallery_item_'+id).remove();
@@ -30,7 +30,7 @@
 
     function toggleItemVisibility(id)
     {
-        panthera.jsonGET({ url: '?display=gallery&cat=admin&action=toggle_item_visibility&itid='+id, success: function (response) {
+        panthera.jsonPOST({ url: '?display=gallery&cat=admin&action=toggleItemVisibility', data: 'ctgid='+id, success: function (response) {
 
                     if (response.status == "success")
                     {
@@ -90,7 +90,7 @@
                 
                     // refresh the page
                     if (response.status == "success")
-                        setTimeout("navigateTo('?display=gallery&cat=admin&action=display_category&unique="+response.unique+"&language="+response.language+"');", 800);
+                        setTimeout("navigateTo('?display=gallery&cat=admin&action=displayCategory&unique="+response.unique+"&language="+response.language+"');", 800);
 
                 } 
             });
@@ -134,7 +134,7 @@
                 <tbody>
                     {loop="$languages"}
                         <tr>
-                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$key}" onclick="navigateTo('?display=gallery&cat=admin&action=display_category&unique={$unique}&language={$key}');">{$key}</a></td>
+                            <td style="padding: 10px; border-right: 0px; width: 1%;"><a href="#{$key}" onclick="navigateTo('?display=gallery&cat=admin&action=displayCategory&unique={$unique}&language={$key}');">{$key}</a></td>
                             <td style="width: 60px; padding: 10px; border-right: 0px;"></td>
                         </tr>
                     {/loop}

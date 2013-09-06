@@ -79,7 +79,7 @@ function getOtherCustomPages()
 
             <tfoot>
                 <tr>
-                    <td colspan="7" class="rounded-foot-left"><em>{$uiPagerName="customPages"}{include="ui.pager"}</em></td>
+                    <td colspan="7" class="rounded-foot-left">{$uiPagerName="customPages"}{include="ui.pager"}</td>
                 </tr>
             </tfoot>
 

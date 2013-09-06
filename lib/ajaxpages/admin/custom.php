@@ -358,8 +358,6 @@ if (@$_GET['action'] == "delete_page")
   * @author Damian Kęska
   */
   
-$panthera -> importModule('admin/ui.searchbar');
-
 $sBar = new uiSearchbar('uiTop');
 //$sBar -> setMethod('POST');
 $sBar -> setQuery($_GET['query']);
@@ -424,13 +422,12 @@ if (!isset($itemsCount))
     $itemsCount = customPage::fetch($filter, False);
 }
 
-$panthera -> importModule('admin/ui.pager');
 $uiPager = new uiPager('customPages', $itemsCount, 'adminCustomPages');
 $uiPager -> setActive($page);
 $args = $_GET;
 $args['page'] = '{$page}';
 unset($args['_']);
-$uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .http_build_query($args). '\');');
+$uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString('GET', 'page={$page}', '_'). '\');');
 $limit = $uiPager -> getPageLimit();
 
 // if does not exists in cache, regenerate it

@@ -28,7 +28,7 @@ class uiSearchbar
         self::$searchBars[$this->barName] = array(
             'icons' => array(), 
             'settings' => array(), 
-            'formAction' => '?', 
+            'formAction' => getQueryString('GET', '', '_'), 
             'formMethod' => 'POST', 
             'navigate' => False, 
             'query' => @$_GET['query']

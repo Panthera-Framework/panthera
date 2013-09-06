@@ -16,21 +16,31 @@ $language = $panthera -> locale -> getFromOverride($_GET['language']);
 
 $panthera -> importModule('simpleImage');
 $panthera -> importModule('gallery');
-
-$tpl = 'gallery.tpl';
-
 $panthera -> locale -> loadDomain('gallery');
 
-error_reporting(E_ALL);
+$viewOnly = getUserRightAttribute($user, 'can_read_own_galleries');
+$viewOnlyAll = getUserRightAttribute($user, 'can_read_all_gallaries');
+$manageAll = getUserRightAttribute($user, 'can_manage_galleries');
 
-if (!getUserRightAttribute($user, 'can_view_galleryItem'))
-{
-    $panthera -> template -> display('no_access.tpl');
-    pa_exit();
-}
+/**
+  * Save category details
+  *
+  * @author Damian Kęska
+  */
 
 if ($_GET['action'] == 'saveCategoryDetails')
 {
+    if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gallery_' .$_GET['id']))
+    {
+        $noAccess = new uiNoAccess();
+        
+        $noAccess -> addMetas (array(
+            'can_manage_gallery_' .$_GET['id']
+        ));
+        
+        $noAccess -> display();
+    }
+
     $gallery = new galleryCategory('id', intval($_GET['id']));
 
     if (!$gallery -> exists())
@@ -62,6 +72,17 @@ if ($_GET['action'] == 'saveCategoryDetails')
 
 if ($_GET['action'] == 'adduploads')
 {
+    if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gallery_' .$_GET['gid']))
+    {
+        $noAccess = new uiNoAccess();
+        
+        $noAccess -> addMetas (array(
+            'can_manage_gallery_' .$_GET['gid']
+        ));
+        
+        $noAccess -> display();
+    }
+
     // here are all files-related functions
     $panthera -> importModule('filesystem');
 
@@ -97,18 +118,35 @@ if ($_GET['action'] == 'adduploads')
   * @author Mateusz Warzyński
   */
 
-if ($_GET['action'] == 'delete_item')
+if ($_GET['action'] == 'deleteItem')
 {
     $id = intval($_GET['image_id']);
-
-    // check user rights
-    if (!getUserRightAttribute($user, 'can_edit_galleryItem') and !getUserRightAttribute($user, 'gallery_manage_img_' .$id))
-        ajax_exit(array('status' => 'failed', 'error' => localize('Permission denied. You dont have access to this action', 'messages')));
+    
+    $item = new galleryItem('id', $id);
+    
+    // display that there is no access when there is no such item
+    if (!$item -> exists())
+    {
+        $noAccess = new uiNoAccess();
+        $noAccess -> display();
+    }
+    
+    // manage all galleries and images, manage selected gallery, manage selected image
+    if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gallery_' .$item->getGalleryID()) and !getUserRightAttribute($user, 'can_manage_gimage_' .$id))
+    {
+        $noAccess = new uiNoAccess;
+        $noAccess -> addMetas(array(
+            'can_manage_gallery_' .$item->getGalleryID(),
+            'can_manage_gimage_' .$id,
+            'can_manage_galleries'
+        ));
+        $noAccess -> display();
+    }
 
     if (gallery::removeImage($id))
         ajax_exit(array('status' => 'success'));
     else
-        ajax_exit(array('status' => 'failed', 'error' => localize('Unknown error', 'messages')));
+        ajax_exit(array('status' => 'failed', 'error' => localize('Databse error, please refresh the page and try again', 'messages')));
 }
 
 /**
@@ -118,13 +156,21 @@ if ($_GET['action'] == 'delete_item')
   * @author Mateusz Warzyński
   */
 
-if ($_GET['action'] == 'delete_category')
+if ($_GET['action'] == 'deleteCategory')
 {
     $id = intval($_GET['id']);
-
-    // check user rights
-    if (!getUserRightAttribute($user, 'can_edit_galleryItem') and !getUserRightAttribute($user, 'gallery_manage_cat_' .$id))
-        ajax_exit(array('status' => 'failed', 'error' => localize('Permission denied. You dont have access to this action', 'messages')));
+    
+    if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gallery_' .$id))
+    {
+        $noAccess = new uiNoAccess;
+        
+        $noAccess -> addMetas(array(
+            'can_manage_galleries',
+            'can_manage_gallery_' .$id
+        ));
+        
+        $noAccess -> display();
+    }
 
     if (removeGalleryCategory($id))
         ajax_exit(array('status' => 'success'));
@@ -139,7 +185,7 @@ if ($_GET['action'] == 'delete_category')
   * @author Mateusz Warzyński
   */
 
-if ($_GET['action'] == 'toggle_gallery_visibility')
+if ($_GET['action'] == 'toggleGalleryVisibility')
 {
     if (!isset($_GET['ctgid']))
         pa_exit();
@@ -149,7 +195,21 @@ if ($_GET['action'] == 'toggle_gallery_visibility')
 
     if ($item -> exists())
     {
+        // rights: manage all galleries, manage selected gallery
+        if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gallery_' .$id))
+        {
+            $noAccess = new uiNoAccess;
+            
+            $noAccess -> addMetas(array(
+                'can_manage_galleries', 
+                'can_manage_gallery_' .$id
+            ));
+            
+            $noAccess -> display();
+        }
+    
         $item -> visibility = !(bool)$item->visibility;
+        $item -> save();
         ajax_exit(array('status' => 'success', 'visible' => $item->visibility));
     } else
         ajax_exit(array('status' => 'failed', 'error' => localize('Category does not exists')));
@@ -162,17 +222,29 @@ if ($_GET['action'] == 'toggle_gallery_visibility')
   * @author Mateusz Warzyński
   */
 
-if (@$_GET['action'] == 'toggle_item_visibility')
+if (@$_GET['action'] == 'toggleItemVisibility')
 {
-    if (!isset($_GET['itid']))
+    if (!isset($_POST['ctgid']))
         pa_exit();
 
-    $id = intval($_GET['itid']);
-
+    $id = intval($_POST['ctgid']);
     $item = new galleryItem('id', $id);
 
     if ($item -> exists())
     {
+        if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gallery_' .$item->getGalleryID()) and !getUserRightAttribute($user, 'can_manage_gimage_' .$id))
+        {
+            $noAccess = new uiNoAccess;
+            
+            $noAccess -> addMetas(array(
+                'can_manage_galleries', 
+                'can_manage_gallery_' .$item->getGalleryID(),
+                'can_manage_gimage_' .$id
+            ));
+            
+            $noAccess -> display();
+        }
+    
         $item -> visibility = !(bool)$item->visibility;
         ajax_exit(array('status' => 'success', 'visible' => $item -> visibility));
     } else
@@ -186,32 +258,41 @@ if (@$_GET['action'] == 'toggle_item_visibility')
   * @author Mateusz Warzyński
   */
 
-if ($_GET['action'] == 'create_category')
+if ($_GET['action'] == 'createCategory')
 {
-    // check if user can edit gallery items
-    if (!getUserRightAttribute($user, 'can_edit_galleryItem'))
-        ajax_exit(array('status' => 'failed', 'error' => localize('Permission denied. You dont have access to this action', 'messages')));
-
-    if ($_POST['title'] != '')
+    if (!$manageAll)
     {
-        if (isset($_POST['visibility']))
-        {
-            if (createGalleryCategory($_POST['title'], $user->login, $user->id, $user->language, intval($_POST['visibility']), $user->full_name))
-                ajax_exit(array('status' => 'success'));
-            else
-                ajax_exit(array('status' => 'failed', 'error' => localize('Unknown error', 'gallery')));
-        }
+        $noAccess = new uiNoAccess;
+        
+        $noAccess -> addMetas(array(
+            'can_manage_galleries'
+        ));
+            
+        $noAccess -> display();
+    }
+
+    if (!$_POST['name'] or !isset($_POST['visibility']))
+    {
+        ajax_exit(array('status' => 'failed', 'message' => localize('Please fill all form fields', 'gallery')));
+    }
+    
+    if (isset($_POST['visibility']))
+    {
+        if (gallery::createCategory(htmlspecialchars($_POST['name']), $panthera->user->login, $panthera->user->id, $panthera->user->language, intval($_POST['visibility']), $panthera->user->full_name))
+            ajax_exit(array('status' => 'success'));
+        else
+            ajax_exit(array('status' => 'failed', 'error' => localize('Unknown error', 'gallery')));
     }
 }
 
 /**
-  * Display list with gallery categories
+  * Display list with gallery items
   *
   * @author Damian Kęska
   * @author Mateusz Warzyński
   */
 
-if ($_GET['action'] == 'display_category')
+if ($_GET['action'] == 'displayCategory')
 {
     if (!isset($_GET['unique']))
         pa_exit();
@@ -236,7 +317,18 @@ if ($_GET['action'] == 'display_category')
                 $category = new galleryCategory('id', $newID);
                 unset($ctg);
             } else {
+            
                 // create a category in a new language
+                if (!$manageAll)
+                {
+                    $noAccess = new uiNoAccess;
+                    
+                    $noAccess -> addMetas(array(
+                        'can_manage_galleries'
+                    ));
+                        
+                    $noAccess -> display();
+                }
 
                 gallery::createCategory($ctg->title, $panthera->user->login, $panthera->user->id, $language, 0, $panthera->user->full_name, $ctg->unique);
                 $statement = new whereClause();
@@ -248,6 +340,20 @@ if ($_GET['action'] == 'display_category')
                 unset($ctg);
             }
         }
+    }
+    
+    $author = $category->getAuthor();
+    
+    if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gallery_' .$category->id) and !($author['id'] == $panthera->user->id or $viewOnlyAll))
+    {
+        $noAccess = new uiNoAccess;
+        
+        $noAccess -> addMetas(array(
+            'can_manage_galleries',
+            'can_manage_gallery_' .$ctg->id
+        ));
+            
+        $noAccess -> display();
     }
 
     // check language
@@ -285,6 +391,7 @@ if ($_GET['action'] == 'display_category')
     if ($category->meta('id')->get('site_header') != null)
         $header = array_merge($header, $category->meta('unique')->get('site_header'));
 
+    // manually add a css style
     //$header = unserialize('a:2:{s:7:"scripts";a:0:{}s:6:"styles";a:1:{i:0;s:49:"{$PANTHERA_URL}/css/admin/gallery_no_settings.css";}}');
     //$category->meta('unique')->set('site_header', $header);
     //$category->meta('unique')->save();
@@ -312,7 +419,6 @@ if ($_GET['action'] == 'display_category')
     
     $titlebar = new uiTitlebar($category->title . " (". $category->language.")");
 	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');
-
     $template -> display('gallery_displaycategory.tpl');
     pa_exit();
 }
@@ -331,9 +437,21 @@ if ($_GET['action'] == 'edit_item_form')
 
     if ($_GET['subaction'] == 'edit_item')
     {
-        $id = intval($_GET['id']);
         $item = new galleryItem('id', $id);
         $_POST['upload_id'] = intval($_POST['upload_id']);
+        
+        if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gimage_' .$id) and !getUserRightAttribute($user, 'can_manage_gallery_' .$item->getGalleryID()))
+        {
+            $noAccess = new uiNoAccess;
+            
+            $noAccess -> addMetas(array(
+                'can_manage_galleries',
+                'can_manage_gimage_' .$id,
+                'can_manage_gallery_' .$item->getGalleryID()
+            ));
+            
+            $noAccess -> display();
+        }
 
         if ($item -> exists())
         {
@@ -368,6 +486,19 @@ if ($_GET['action'] == 'edit_item_form')
 
     if ($item -> exists())
     {
+        if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gimage_' .$id) and !getUserRightAttribute($user, 'can_manage_gallery_' .$item->getGalleryID()))
+        {
+            $noAccess = new uiNoAccess;
+            
+            $noAccess -> addMetas(array(
+                'can_manage_galleries',
+                'can_manage_gimage_' .$id,
+                'can_manage_gallery_' .$item->getGalleryID()
+            ));
+            
+            $noAccess -> display();
+        }
+    
         $template -> push('id', $item -> id);
         $template -> push('title', $item -> title);
         $template -> push('description', $item -> description);
@@ -394,182 +525,243 @@ if ($_GET['action'] == 'edit_item_form')
     }
 }
 
-    if (@$_GET['action'] == 'add_item') {
+/**
+  * Adding item form
+  *
+  * @author Mateusz Warzyński
+  * @author Damian Kęska
+  */
 
-        if (!getUserRightAttribute($user, 'gallery_manage_img') and !getUserRightAttribute($user, 'gallery_manage_img_' .$id))
+if (@$_GET['action'] == 'add_item') 
+{
+   if ($_GET['subaction'] == 'add') 
+   {
+        $panthera -> importModule('filesystem');
+
+        if ($_POST['title'] and $_POST['gallery_id'] and $_POST['upload_id'])   
         {
-              print(json_encode(array('status' => 'failed', 'error' => localize('Permission denied. You dont have access to this action', 'messages'))));
-              pa_exit();
-        }
-
-        if ($_GET['subaction'] == 'add') {
-
-            $panthera -> importModule('filesystem');
-
-            if ($_POST['title'] != '' and $_POST['gallery_id'] != '' and $_POST['upload_id'] != '')   {
-
-        if ($_POST['visibility'] == '1')
-              $visibility = 1;
-        else
-              $visibility = 0;
-
-        $_POST['title'] = filterInput($_POST['title'], 'quotehtml');
-        $_POST['description'] = filterInput($_POST['description'], 'quotehtml');
-        $uploadID = intval($_POST['upload_id']);
-        $file = new uploadedFile('id', $uploadID);
-
-        if (!$file -> exists())
-            ajax_exit(array('status' => 'failed', 'message' => localize('Selected file doesnt exists in upload list', 'gallery')));
-
-        $link = pantheraUrl($file->getLink(), True);
-
-        if (createGalleryItem($_POST['title'], $_POST['description'], $link, intval($_POST['gallery_id']), $visibility, $file))
-              ajax_exit(array('status' => 'success', 'ctgid' => $_POST['gallery_id']));
-        else
-              ajax_exit(array('status' => 'failed', 'message' => localize('Unknown error', 'messages')));
-
-            } else {
-                ajax_exit(array('status' => 'failed', 'message' => localize('Please fill all form inputs', 'gallery')));
-            }
-
-            pa_exit();
-        }
-
-        $template -> push('action', 'add_item');
-        $c = getGalleryCategories('');
-
-        $category = new galleryCategory('id', $_GET['ctgid']);
-
-        if ($category -> exists())
-        {
-            $template -> push('category_list', $c);
-            $template -> push('category_id', $_GET['ctgid']);
-            $template -> push('gallery_name', $category->title);
-            $template -> push('unique', $category->unique);
-            $template -> push('language', $category->language);
-			
-			$titlebar = new uiTitlebar(localize('Adding gallery image', 'gallery'));
-			$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');
-			
-            $template -> display('gallery_additem.tpl');
-            pa_exit();
-        }
-
-    }
-
-    /**
-      * Creating new category
-      *
-      * @author Mateusz Warzyński
-      */
-
-    if ($_GET['action'] == 'add_category')
-    {
-        // check user rights
-        if (!getUserRightAttribute($user, 'manage_gallery_categ') and !getUserRightAttribute($user, 'gallery_manage_cat_' .$id))
-        {
-            print(json_encode(array('status' => 'failed', 'error' => localize('Permission denied. You dont have access to this action', 'messages'))));
-            pa_exit();
-        }
-
-        if ($_GET['new_title'] != '')
-        {
-            gallery::createCategory($_GET['filter'].$_GET['new_title'], $user->login, $user->id, $user->language, intval($_GET['visibility']), $user->full_name, md5(rand(999, 9999)));
-            print(json_encode(array('status' => 'success')));
-        } else {
-            print(json_encode(array('status' => 'failed', 'error' => localize('Title cannot be empty', 'gallery'))));
-        }
-
-        pa_exit();
-    }
-
-    /**
-      * Setting gallery thumbnail from gallery image
-      *
-      * @author Mateusz Warzyński
-      */
-
-    if ($_GET['action'] == 'set_category_thumb')
-    {
-        if (!getUserRightAttribute($user, 'manage_gallery_categ') and !getUserRightAttribute($user, 'gallery_manage_cat_' .$id))
-        {
-              print(json_encode(array('status' => 'failed', 'error' => localize('Permission denied. You dont have access to this action', 'gallery'))));
-              pa_exit();
-        }
-
-        $id = intval($_GET['itid']);
-        $ctgid = intval($_GET['ctgid']);
-
-        $item = new galleryItem('id', $id);
-        $category = new galleryCategory('id', $ctgid);
-
-        if ($item -> exists() and $category -> exists())
-        {
-             $category -> thumb_id = $item -> id;
-             $category -> thumb_url = $item -> link;
-             print(json_encode(array('status' => 'success')));
-        } else {
-             print(json_encode(array('status' => 'failed', 'error' => localize('Error with changing gallery thumbnail!', 'gallery'))));
-              pa_exit();
-        }
-        pa_exit();
-    }
-
-    /**
-      * Editing category title and visibility
-      *
-      * @author Mateusz Warzyński
-      */
-
-    if ($_GET['action'] == 'edit_category')
-    {
-
-        if (!getUserRightAttribute($user, 'manage_gallery_categ') and !getUserRightAttribute($user, 'gallery_manage_cat_' .$id))
-        {
-              print(json_encode(array('status' => 'failed', 'error' => localize('Permission denied. You dont have access to this action', 'gallery'))));
-              pa_exit();
-        }
-
-        $id = intval($_GET['ctgid']);
-
-        $item = new galleryCategory('id', $id);
-
-        if ($item -> exists())
-        {
-            $response = array('status' => 'success');
-
-            if (isset($_GET['new_title']) and $_GET['new_title'] != '') {
-                $item -> title = filterInput($_GET['new_title'], 'quotehtml');
-                $response['title'] = filterInput($_GET['new_title'], 'quotehtml');
-            } else {
-                print(json_encode(array('status' => 'failed', 'error' => localize("Title can't be empty", 'gallery'))));
-                pa_exit();
-            }
-
-            if (isset($_GET['visibility']))
+            // validate input
+            $_POST['title'] = filterInput($_POST['title'], 'quotehtml');
+            $_POST['description'] = filterInput($_POST['description'], 'quotehtml');
+            $uploadID = intval($_POST['upload_id']);
+            $visibility = intval((bool)intval($_POST['visibility']));
+            $galleryID = intval($_POST['gallery_id']);
+            
+            // check permissions
+            if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gallery_' .$galleryID))
             {
-
-                if ($_GET['visibility'] == 'show')
-                {
-                    $item -> visibility = True;
-                    $response['visibility'] = 'show';
-                }
-
-                if ($_GET['visibility'] == 'hide')
-                {
-                    $item -> visibility = False;
-                    $response['visibility'] = 'hide';
-                }
+                $noAccess = new uiNoAccess;
+                    
+                $noAccess -> addMetas(array(
+                    'can_manage_galleries',
+                    'can_manage_gallery_' .$galleryID
+                 ));
+                    
+                $noAccess -> display();
             }
 
-            ajax_exit($response);
+            // validate category            
+            $category = new galleryCategory('id', $galleryID);
+            
+            if (!$category->exists())
+            {
+                ajax_exit(array('status' => 'failed', 'message' => localize('Cannot find destination category you want to save image to', 'gallery')));
+            }
+            
+            // check if uploaded file exists
+            $file = new uploadedFile('id', $uploadID);
 
+            if (!$file -> exists())
+            {
+                ajax_exit(array('status' => 'failed', 'message' => localize('Selected file does not exists in list of uploaded files', 'gallery')));
+            }
+            
+            $link = pantheraUrl($file->getLink(), True);
+
+            if (createGalleryItem($_POST['title'], $_POST['description'], $link, $galleryID, $visibility, $file))
+            {
+                ajax_exit(array('status' => 'success', 'ctgid' => $galleryID));
+            } else {
+                ajax_exit(array('status' => 'failed', 'message' => localize('Database error, please refresh this page and try again', 'messages')));
+            }
+            
         } else {
-              ajax_exit(array('status' => 'failed', 'error' => localize('Category does not exists')));
-              pa_exit();
+            ajax_exit(array('status' => 'failed', 'message' => localize('Please fill all form inputs', 'gallery')));
         }
+
         pa_exit();
     }
+    
+    $id = intval($_GET['ctgid']);
+    
+    if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gallery_' .$id))
+    {
+        $noAccess = new uiNoAccess;
+                    
+        $noAccess -> addMetas(array(
+            'can_manage_galleries',
+            'can_manage_gallery_' .$id
+        ));
+                    
+        $noAccess -> display();
+    }
+
+    $template -> push('action', 'add_item');
+    $c = getGalleryCategories('');
+
+    $category = new galleryCategory('id', $id);
+
+    if ($category -> exists())
+    {
+        $template -> push('category_list', $c);
+        $template -> push('category_id', $_GET['ctgid']);
+        $template -> push('gallery_name', $category->title);
+        $template -> push('unique', $category->unique);
+        $template -> push('language', $category->language);
+			
+        $titlebar = new uiTitlebar(localize('Adding gallery image', 'gallery'));
+        $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');
+			
+        $template -> display('gallery_additem.tpl');
+        pa_exit();
+    }
+
+}
+
+/**
+  * Creating new category
+  *
+  * @author Mateusz Warzyński
+  * @author Damian Kęska
+  */
+
+if ($_GET['action'] == 'add_category')
+{
+    // check user rights
+    if (!$manageAll)
+    {
+        $noAccess = new uiNoAccess;
+                    
+        $noAccess -> addMetas(array(
+            'can_manage_galleries'
+        ));
+                    
+        $noAccess -> display();
+    }
+
+    if ($_GET['new_title'])
+    {
+        gallery::createCategory($_GET['filter'].$_GET['new_title'], $user->login, $user->id, $user->language, intval($_GET['visibility']), $user->full_name, md5(rand(999, 9999)));
+        ajax_exit(array('status' => 'success'));
+    } else {
+        ajax_exit(array('status' => 'failed', 'error' => localize('Title cannot be empty', 'gallery')));
+    }
+}
+
+/**
+  * Setting gallery thumbnail from gallery image
+  *
+  * @author Mateusz Warzyński
+  * @author Damian Kęska
+  */
+
+if ($_GET['action'] == 'set_category_thumb')
+{
+    $id = intval($_GET['itid']);
+    $ctgid = intval($_GET['ctgid']);
+
+    // check user rights
+    if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gallery_' .$ctgid))
+    {
+        $noAccess = new uiNoAccess;
+                    
+        $noAccess -> addMetas(array(
+            'can_manage_galleries',
+            'can_manage_gallery_' .$ctgid
+        ));
+                    
+        $noAccess -> display();
+    }
+
+    $item = new galleryItem('id', $id);
+    $category = new galleryCategory('id', $ctgid);
+
+    if ($item -> exists() and $category -> exists())
+    {
+         $category -> thumb_id = $item -> id;
+         $category -> thumb_url = $item -> link;
+         ajax_exit(array('status' => 'success'));
+    } else {
+         ajax_exit(array(
+            'status' => 'failed',
+            'error' => localize('Error with changing gallery thumbnail!', 'gallery')
+         ));
+    }
+}
+
+/**
+  * Editing category title and visibility
+  *
+  * @author Mateusz Warzyński
+  * @author Damian Kęska
+  */
+
+if ($_GET['action'] == 'edit_category')
+{
+    $id = intval($_GET['ctgid']);
+
+    if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gallery_' .$id))
+    {
+        $noAccess = new uiNoAccess;
+                    
+        $noAccess -> addMetas(array(
+            'can_manage_galleries',
+            'can_manage_gallery_' .$id
+        ));
+                    
+        $noAccess -> display();
+    }
+
+
+    $item = new galleryCategory('id', $id);
+
+    if ($item -> exists())
+    {
+        $response = array('status' => 'success');
+
+        if (isset($_GET['new_title']) and $_GET['new_title'] != '') 
+        {
+            $item -> title = filterInput($_GET['new_title'], 'quotehtml');
+            $response['title'] = filterInput($_GET['new_title'], 'quotehtml');
+            
+        } else {
+            ajax_exit(array(
+                'status' => 'failed',
+                'error' => localize("Title can't be empty", 'gallery')
+            ));
+        }
+
+        if (isset($_GET['visibility']))
+        {
+
+            if ($_GET['visibility'] == 'show')
+            {
+                $item -> visibility = True;
+                $response['visibility'] = 'show';
+            } else {
+                $item -> visibility = False;
+                $response['visibility'] = 'hide';
+            }
+        }
+
+        ajax_exit($response);
+
+    } else {
+          ajax_exit(array('status' => 'failed', 'error' => localize('Category does not exists')));
+          pa_exit();
+    }
+    pa_exit();
+}
 
     /*$conditions = '';
 
@@ -587,35 +779,65 @@ if ($_GET['action'] == 'edit_item_form')
             $conditions = array('language' => $panthera -> session -> get('admin_gallery_locale'));
     }*/
 
-    // get categories
-    $conditions = array('language' => $language);
-    $categories = getGalleryCategories($conditions);
+// here we will store query and other filter params
+$filter = array();
 
-    // with title filter
-    $categoriesFiltered = array();
+$sBar = new uiSearchbar('uiTop');
+//$sBar -> setMethod('POST');
+$sBar -> setQuery($_GET['query']);
+$sBar -> setAddress('?' .getQueryString('GET', '', array('_', 'page', 'query')));
+$sBar -> navigate(True);
+$sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_galleries,can_read_own_galleries,can_read_all_galleries', localize('Manage permissions'));
 
-    foreach ($categories as $category)
+// only in selected language
+if ($_GET['lang']) 
+{
+    $filter['language'] = $_GET['lang'];
+    $template -> push('current_lang', $_GET['lang']);
+}
+
+// search query
+if ($_GET['query'])
+{
+    $filter['title*LIKE*'] = '%' .trim(strtolower($_GET['query'])). '%';
+}
+
+$page = intval($_GET['page']);
+$itemsCount = gallery::fetch($filter, False);
+
+// pager
+$uiPager = new uiPager('galleryCategories', $itemsCount, 'adminGalleryCategories');
+$uiPager -> setActive($page);
+$uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString('GET', 'page={$page}', '_'). '\');');
+$limit = $uiPager -> getPageLimit();
+
+// get categories for current page
+$categories = gallery::fetch($filter, $limit[1], $limit[2]);
+
+// with title filter
+$categoriesFiltered = array();
+
+foreach ($categories as $category)
+{
+    if ($_GET['filter'] != '')
     {
-        if ($_GET['filter'] != '')
-        {
-            if (!stristr($category->title, $_GET['filter']))
-                continue;
-        }
-
-        $categoriesFiltered[$category->unique] = $category;
+        if (!stristr($category->title, $_GET['filter']))
+            continue;
     }
 
-    if (defined('GALLERY_FILTER'))
-    {
-        $template -> push('category_filter', $_GET['filter'].GALLERY_FILTER);
-        $template -> push('category_filter_complete', $_GET['filter'].GALLERY_FILTER);
-    } else
-        $template -> push('category_filter', $_GET['filter']);
+    $categoriesFiltered[$category->unique] = $category;
+}
 
-    $template -> push('category_list', $categoriesFiltered);
-	
-	$titlebar = new uiTitlebar(localize('Gallery'));
-	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');
-	
-    $template -> display($tpl);
-    pa_exit();
+if (defined('GALLERY_FILTER'))
+{
+    $template -> push('category_filter', $_GET['filter'].GALLERY_FILTER);
+    $template -> push('category_filter_complete', $_GET['filter'].GALLERY_FILTER);
+} else
+    $template -> push('category_filter', $_GET['filter']);
+
+$template -> push('category_list', $categoriesFiltered);
+
+$titlebar = new uiTitlebar(localize('Gallery'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');
+$panthera -> template -> display('gallery.tpl');
+pa_exit();

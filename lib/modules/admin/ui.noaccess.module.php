@@ -20,6 +20,7 @@ class uiNoAccess
     protected $settings = array(
         'loggedIn' => False,
         'message' => '',
+        'metas' => array()
     );
     
     public function __construct($message='')
@@ -33,6 +34,33 @@ class uiNoAccess
             $this->settings['loggedIn'] = True;
         }
     }
+    
+    /**
+      * Add meta attributes to list
+      *
+      * @param array $array of attributes eg. array('test', 'aaa')
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public function addMetas($array, $overwrite=False)
+    {
+        if ($overwrite)
+        {
+            $this->settings['metas'] = $array;
+            return True;
+        }
+        
+        $this->settings['metas'] = array_merge($this->settings['metas'], $array);
+        return True;
+    }
+    
+    /**
+      * Generate data and display no_access.tpl
+      *
+      * @return void 
+      * @author Damian Kęska
+      */
     
     public function display()
     {
