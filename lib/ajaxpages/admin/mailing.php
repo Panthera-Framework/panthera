@@ -206,17 +206,17 @@ $mailAttributes['mailing_server'] = array('name' => 'Server',  'value' => $panth
 $mailAttributes['mailing_server_port'] = array('name' => 'Port', 'value' => $panthera -> config -> getKey('mailing_server_port', 465, 'int', 'mailing'));
 
 // auth data
-$mailAttributes['mailing_user'] = array('name' => 'Login', 'value' => $panthera -> config -> getKey('mailing_user', 'email', 'mailing'));
+$mailAttributes['mailing_user'] = array('name' => 'Login', 'value' => $panthera -> config -> getKey('mailing_user', 'user@example.com', 'string', 'mailing'));
 $mailAttributes['mailing_password'] = array('name' => 'Password', 'value' => $panthera -> config -> getKey('mailing_password', '', 'string', 'mailing'));
 
 // ssl
 $mailAttributes['mailing_smtp_ssl'] = array('name' => 'SSL', 'value' => (bool)$panthera -> config -> getKey('mailing_smtp_ssl', True, 'bool', 'mailing'));
 
 // From header
-$mailAttributes['mailing_from'] = array('value' => $panthera -> config -> getKey('mailing_from', 'email', '', 'mailing'));
+$mailAttributes['mailing_from'] = array('value' => $panthera -> config -> getKey('mailing_from', 'example@example.com', 'string', 'mailing'));
 
 if (!$panthera->session->exists('mailing_last_from'))
-    $panthera -> session -> set('mailing_last_from', $panthera -> config -> getKey('mailing_from', 'email', '', 'mailing'));
+    $panthera -> session -> set('mailing_last_from', $panthera -> config -> getKey('mailing_from', 'example@example.com', 'string', 'mailing'));
 
 $panthera -> template -> push ('last_subject', $panthera->session->get('mailing_last_subject'));
 $panthera -> template -> push ('last_recipients', $panthera->session->get('mailing_last_recipients'));

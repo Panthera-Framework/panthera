@@ -282,7 +282,7 @@ class newsletterType_mail implements newsletterType
         
         $mail = new mailMessage(true);
         $mail -> setSubject($topic);
-        $mail -> setFrom($panthera -> config -> getKey('mailing_from', 'email', '', 'mailing'));
+        $mail -> setFrom($panthera -> config -> getKey('mailing_from', 'example@example.com', 'string', 'mailing'));
         $mail -> addRecipient(trim($address), 'html');
         return $mail -> send($content);
     }
