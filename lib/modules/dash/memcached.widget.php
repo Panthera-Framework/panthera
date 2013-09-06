@@ -32,7 +32,7 @@ class memcached_dashWidget extends pantheraClass
                 $servers[$server]['num'] = $i++;
 
                 // percent of memory usage
-                $usage = strval(bytesToSize($attributes['bytes']) / bytesToSize($attributes['limit_maxbytes']));
+                $usage = strval($attributes['bytes'] / $attributes['limit_maxbytes']);
 
                 if (!$usage)
                     $servers[$server]['memory_usage'] = localize('Not connected', 'dash');
