@@ -33,6 +33,7 @@ class mailMessage
         $this->panthera = $panthera;
 
         // initialize phpmailer
+        $panthera -> config -> loadSection('mailing');
         $this -> mailer = new PHPMailer();
         $this -> mailer ->IsSMTP();
         $this -> mailer -> CharSet = "UTF-8";

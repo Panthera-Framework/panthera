@@ -127,13 +127,10 @@ function addGallery()
             <table class="gridTable">
             <thead>
                 <tr>
-            	<th>&nbsp;</th>
                   <th>{function="localize('Title', 'gallery')"}</th>
-                  <th>{function="localize('Created by', 'gallery')"}</th>
-                  <th>{function="localize('Language', 'gallery')"}</th>
                   <th>{function="localize('Created', 'gallery')"}</th>
-                  <th>{function="localize('Visibility', 'gallery')"}</th>
-                  <th>{function="localize('Options', 'messages')"}</th>
+                  <th>{function="localize('Language', 'gallery')"}</th>
+                  <th>&nbsp;</th>
                 </tr>
             </thead>
 
@@ -147,22 +144,17 @@ function addGallery()
             <tbody>
                 {loop="$category_list"}
                 <tr id="galleryCategory_row_{$value->id}" {if="$value>visibility == 0"} style="background: rgba(172, 172, 172, 0.5);"{/if}>
-                  <td><img src="{$value->thumb_url|pantheraUrl}" width="50" height="50"></td>
                   <td><a href="?display=gallery&cat=admin&action=display_category&unique={$value->unique}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value->id}'>
-                        {$value->title}
+                        <img src="{$value->thumb_url|pantheraUrl}" width="50" height="50"> {$value->title}
                       </a></td>
-                  <td>{$value->author_login}</td>
+                  <td>{$value->created} {function="localize('by')"} {$value->author_login}</td>
                   <td>{$value->language}</td>
-                  <td>{$value->created}</td>
-
                   <td>
                       {if="$value->visibility == 1"}
                       <input type="button" value="{function="localize('Hide', 'messages')"}" onclick="toggleGalleryVisibility({$value->id});" id="hide_btn_{$value->id}">
                       {elseif="$value->visibility == 0"}
                       <input type="button" value="{function="localize('Show', 'messages')"}" onclick="toggleGalleryVisibility({$value->id});" id="hide_btn_{$value->id}">
                       {/if}
-                  </td>
-                  <td>
                       <input type="button" value="{function="localize('Edit', 'messages')"}" onclick="editGallery({$value->id}, '{$value->title|addslashes}');">
                       <input type="button" value="{function="localize('Delete', 'messages')"}" onclick="removeGalleryCategory({$value->id}); return false;">
                       <input type="button" value="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=gallery_manage_cat_{$value->id}', 1024, 'upload_popup');"></td>

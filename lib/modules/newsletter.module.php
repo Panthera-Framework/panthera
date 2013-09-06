@@ -280,12 +280,10 @@ class newsletterType_mail implements newsletterType
     {
         global $panthera;
         
-        // module will be imported only one time
-        $panthera -> importModule('mailing');
-        
-        $mail = new mailMessage();
+        $mail = new mailMessage(true);
         $mail -> setSubject($topic);
-        $mail -> addRecipient($address);
+        $mail -> setFrom($panthera -> config -> getKey('mailing_from', 'email', '', 'mailing'));
+        $mail -> addRecipient(trim($address), 'html');
         return $mail -> send($content);
     }
 }
