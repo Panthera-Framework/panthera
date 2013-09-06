@@ -29,29 +29,33 @@ if ($_GET['action'] == 'account') {
 
     $panthera -> importModule('meta');
 
-    $tpl = "user_account.tpl";
-
-    if (isset($_GET['uid']) AND ($user->attributes->admin OR $user->attributes->superuser)) {
+    if (isset($_GET['uid']) and checkUserPermissions($panthera->user, True)) {
         $u = getUserById($_GET['uid']);
         $template -> push('user_uid', '&uid=' .$_GET['uid']);
     } else {
-        $u = $user;
+        $u = $panthera->user;
     }
 
     if ($u != $user)
         $panthera -> template -> push ('dontRequireOld', True);
 
     // if we arent superuser we cannot view superuser profiles
-    if (($u -> attributes -> superuser and !$user->attributes->superuser) or !$u->exists()) {
-        $template -> display('no_page.tpl');
-        pa_exit();
+    if (($u -> acl -> get('superuser') and !$user->acl->get('superuser')) or !$u->exists()) 
+    {
+        $noAccess = new uiNoAccess;
+        $noAccess -> addMetas(array('superuser'));
+        $noAccess -> display();
     }
 
-    if (isset($_POST['aclname'])) {
+    if (isset($_POST['aclname'])) 
+    {
         if (strlen($_POST['aclname']) < 3)
-            ajax_exit(array('status' => 'failed', 'message' => localize('Too short ACL attribute name')));
-
-        if ($user->attributes->admin or $user->attributes->superuser) {
+        {
+            ajax_exit(array('status' => 'failed', 'message' => localize('Too short ACL attribute name', 'users')));
+        }
+        
+        if (checkUserPermissions($panthera->user, True)) 
+        {
             if ($_POST['value'] == "1")
                 $aclValue = True;
             else
@@ -73,19 +77,17 @@ if ($_GET['action'] == 'account') {
 
                 if ($u->changePassword($_POST['new_passwd'])) {
                     $u->save();
-                    ajax_exit(array('status' => 'success', 'message' => localize('Password has been successfully changed')));
-                    pa_exit();
+                    ajax_exit(array('status' => 'success', 'message' => localize('Password has been successfully changed', 'users')));
                 } else {
-                    print(json_encode(array('status' => 'failed', 'message' => localize('Error with changing password'))));
-                    pa_exit();
+                    ajax_exit(array('status' => 'failed', 'message' => localize('Error with changing password', 'users')));
                 }
             } else {
-                print(json_encode(array('status' => 'failed', 'message' => localize('Passwords are not identical'))));
+                ajax_exit(array('status' => 'failed', 'message' => localize('Passwords are not identical', 'users')));
                 pa_exit();
             }
 
         } else {
-            print(json_encode(array('status' => 'failed', 'message' => localize('Incorrect old password'))));
+            ajax_exit(array('status' => 'failed', 'message' => localize('Incorrect old password', 'users')));
             pa_exit();
         }
     }
@@ -133,7 +135,7 @@ if ($_GET['action'] == 'account') {
     $aclList = array();
     $userTable = $u->acl->listAll();
 
-    if ($user -> attributes -> admin or $user -> attributes -> superuser )
+    if (checkUserPermissions($panthera->user, True))
         $template -> push('allow_edit_acl', True);
 
     $permissionsTable = $panthera->listPermissions();
@@ -151,7 +153,7 @@ if ($_GET['action'] == 'account') {
                 $aclList[$key] = array('name' => $name, 'value' => localize('No'), 'active' => 0);
     }
 
-    if ($panthera->config->getKey('usr_view_acl_table', false, 'bool') or $user->attributes->admin or $user->attributes->superuser) {
+    if ($panthera->config->getKey('usr_view_acl_table', false, 'bool') or checkUserPermissions($panthera->user, True)) {
         foreach ($permissionsTable as $key => $value) {
 
             if (isset($aclList[$key]))
@@ -173,6 +175,9 @@ if ($_GET['action'] == 'account') {
 	
 	$titlebar = new uiTitlebar(localize('Panel with informations about user.', 'users'));
 	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
+	
+	$panthera -> template -> display('user_account.tpl');
+	pa_exit();
 
 /**
   * Create a new group
