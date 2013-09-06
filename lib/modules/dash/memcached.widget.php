@@ -6,16 +6,7 @@
   * @return mixed 
   * @author Mateusz Warzyński
   */
-  
-  /*
- 
-   		The widget should show load of all Memcached servers connected to Panthera.
 
-	Displaying load of all servers
-	If there are no servers configured or memcached is disabled - display information
-	Clickable links to cache configuration page
- 
-   */
   
 if (!defined('IN_PANTHERA'))
     exit;
