@@ -117,7 +117,6 @@ if ($_GET['action'] == 'account') {
     if ($u->profile_picture == '')
         $u->profile_picture = '{$PANTHERA_URL}/images/default_avatar.png';
 
-
     $template -> push('locales_added', $localesActive);
     $template -> push('action', 'my_account');
 	$template -> push('id', $u->id);
@@ -128,6 +127,7 @@ if ($_GET['action'] == 'account') {
     $template -> push('primary_group', $u->primary_group);
     $template -> push('joined', $u->joined);
     $template -> push('language', $u->language);
+    $template -> push('isBanned', $u->isBanned());
 
         // custom fields
     $template -> push('user_fields', $panthera -> get_filters('user.fields', array()));
