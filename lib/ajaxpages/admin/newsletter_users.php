@@ -40,9 +40,11 @@ if (!$newsletter->exists())
   
 if ($_GET['action'] == 'removeSubscriber')
 {
-    if(newsletterManagement::removeSubscriber($_POST['id']))
+    if(newsletterManagement::removeSubscriber($_POST['id'])) {
+        newsletterManagement::updateUsersCount($_GET['nid']);
         ajax_exit(array('status' => 'success'));
-
+    }
+    
     ajax_exit(array('status' => 'failed', 'messsage' => localize('Cannot find subscriber', 'newsletter')));
 }
 
@@ -74,6 +76,7 @@ if ($_GET['action'] == 'addSubscriber')
 	
 	if ($newsletter -> registerUser($_POST['email'], '', $userID, '', True, True))
     {
+        newsletterManagement::updateUsersCount($_GET['nid']);
         $subscription = $newsletter -> getSubscription($_POST['email']);
 	    ajax_exit(array('status' => 'success', 'id' => $subscription['id'], 'type' => $subscription['type'], 'address' => $subscription['address'], 'added' => $subscription['added']));
 	} else {
