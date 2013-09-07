@@ -104,7 +104,9 @@ $(function(){
 	                <ul class="list" style="left: -300px;">
 	                    <b>{function="localize('Add new widget', 'dash')"}</b>
 		                {loop="$dashAvaliableWidgets"}
+		                  {if="$value == False"}
 		                    <li>{$key}</li>
+		                  {/if}
 		                {/loop}
 	                </ul>
                 </div>
