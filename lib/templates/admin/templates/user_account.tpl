@@ -43,6 +43,23 @@ $('#changepasswd_form').submit(function () {
 
 });
 
+/**
+  * Toggle value of ban in user attributes
+  *
+  * @author Mateusz Warzyński
+  */
+
+function toggleBan()
+{
+    panthera.jsonPOST({ url: '?display=users&cat=admin&action=account{$user_uid}', data: 'ban=true', spinner: spinner, messageBox: 'w2ui', success: function (response) {
+          if (response.status == "success")
+          {
+              navigateTo("?display=users&cat=admin&action=account&uid={$id}");
+          }
+        }
+    });
+}
+
 function aclModify(id, name)
 {
     panthera.jsonPOST({ url: '?display=users&cat=admin&action=account{$user_uid}', data: 'aclname='+name+'&value='+$('#'+id).val(), spinner: acl, success: function (response) {
@@ -148,6 +165,13 @@ function aclModify(id, name)
                 <tr>
                   <td>{function="localize('Joined', 'users')"}</td>
                   <td>{$joined}</td>
+                </tr>
+                
+                <tr>
+                  <td>{function="localize('Status', 'users')"}</td>
+                  <td>
+                      <a href="#" onclick="toggleBan();">{if="$isBanned == 0"}<span style="color: green;"> {function="localize('Normal', 'users')"} </span> {else} <span style="color: red;"> {function="localize('Blocked  ', 'users')"} </span> {/if} </a>
+                  </td>
                 </tr>
 
                 <tr>
