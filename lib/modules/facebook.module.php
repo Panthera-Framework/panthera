@@ -7,7 +7,7 @@
   * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
   */
-
+  
 if (!defined('IN_PANTHERA'))
     exit;
   
@@ -53,21 +53,7 @@ class facebookWrapper
         } 
         
         $this->sdk = new Facebook(array('appId'  => $appid, 'secret' => $secret));
-        
-        // get stored access token
-        if ($panthera->session->exists('facebook.token'))
-            $this->sdk->setAccessToken($panthera->session->get('facebook.token'));
-            
-        if (isset($_GET['code']) and isset($_GET['state']))
-        {
-            $panthera -> logging -> output('facebookWrapper::Detected code=' .$_GET['code']. ' and state=' .$_GET['state']. ' in url, saving access token', 'facebook');
-            $panthera -> session -> set('facebook.token', $this->sdk->getAccessToken());
-        }
-
         $panthera -> logging -> output('Using appid=' .$appid. ' and secret=' .$secret, 'facebook');
-        
-        //$_REQUEST['code'] = $panthera->session->get('facebook_code');
-        //$_REQUEST['state'] = $panthera->session->get('facebook_state');
     }
 
     /**
@@ -142,10 +128,13 @@ class facebookWrapper
 
     public function loginUser($scope, $redirect=False)
     {
-        try {
-            $this -> user = $this->sdk->api('/me');
+        $user = $this->sdk->getUser();
+        var_dump($user);
+        if ($user) {
+            $user_profile = $facebook->api('/me');
+            var_dump($user_profile);
             return True;
-        } catch (FacebookApiException $e) {
+        } else {
             $url = $this->sdk->getLoginUrl(array('scope' => $scope));
             $this -> panthera -> logging -> output('facebookWrapper::Redirecting user to url=' .$url, 'facebook');
             return $this->panthera->template->redirect($url, $redirect);

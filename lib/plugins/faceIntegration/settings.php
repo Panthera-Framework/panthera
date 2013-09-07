@@ -6,7 +6,7 @@
   * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
   */
-
+  
 global $panthera, $user, $template;
 
 if (!defined('IN_PANTHERA'))
