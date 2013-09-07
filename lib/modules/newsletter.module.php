@@ -255,7 +255,6 @@ class newsletterManagement
         global $panthera;
         $SQL = $panthera -> db -> query ('SELECT count(*) FROM `{$db_prefix}newsletter_users` WHERE `nid` = :nid', array('nid' => $categoryID));
         $fetch = $SQL -> fetch(PDO::FETCH_ASSOC);
-        var_dump($fetch);
         $panthera -> db -> query('UPDATE `{$db_prefix}newsletters` SET `users` = :users WHERE `nid` = :categoryID', array('users' => $fetch['count(*)'], 'categoryID' => $categoryID));
     }
 	
