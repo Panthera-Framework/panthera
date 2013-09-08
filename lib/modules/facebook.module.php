@@ -128,17 +128,32 @@ class facebookWrapper
 
     public function loginUser($scope, $redirect=False)
     {
-        $user = $this->sdk->getUser();
-        var_dump($user);
-        if ($user) {
-            $user_profile = $facebook->api('/me');
-            var_dump($user_profile);
+        $this->cleanURI();
+        if ($this->sdk->getUser()) {
             return True;
         } else {
             $url = $this->sdk->getLoginUrl(array('scope' => $scope));
             $this -> panthera -> logging -> output('facebookWrapper::Redirecting user to url=' .$url, 'facebook');
             return $this->panthera->template->redirect($url, $redirect);
         }
+    }
+    
+    /**
+      * Clean URI
+      *
+      * @return bool
+      * @author Mateusz Warzyński
+      */
+    
+    public function cleanURI()
+    {
+        $request = explode("&_=", $_SERVER['REQUEST_URI']);
+        $_SERVER['REQUEST_URI'] = $request[0].substr($request[1], 13);
+        
+        if (!strpos($_SERVER['REQUEST_URI'], "&_="))
+            return True;
+            
+        return False;
     }
 
     /**
