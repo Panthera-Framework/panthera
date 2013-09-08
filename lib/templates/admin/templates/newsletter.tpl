@@ -54,9 +54,9 @@ function createCategory()
 	    <table class="gridTable">
 	         	<thead>
 	                <tr>
-	                    <th scope="col" class="rounded-company">{function="localize('Category')"}</th>
-	                    <th>{function="localize('Users')"}</th>
-	                    <th style="width: 70px;">{function="localize('Options')"}</th>
+	                    <th scope="col" class="rounded-company">{function="localize('Category', 'newsletter')"}</th>
+	                    <th>{function="localize('Users', 'newsletter')"}</th>
+	                    <th style="width: 70px;">{function="localize('Options', 'newsletter')"}</th>
 	                </tr>
 	            </thead>
 	            

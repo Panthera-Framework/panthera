@@ -31,7 +31,7 @@ function addSubscriber()
           <br>
           <table class="gridTable">
             <thead>
-                <tr><th>{function="localize('Type')"}</th><th>{function="localize('Address', 'newsletter')"}</th><th>{function="localize('Added', 'newsletter')"}</th><th>{function="localize('Options', 'newsletter')"}</th></tr>
+                <tr><th>{function="localize('Type', 'newsletter')"}</th><th>{function="localize('Address', 'newsletter')"}</th><th>{function="localize('Added', 'newsletter')"}</th><th>{function="localize('Options', 'newsletter')"}</th></tr>
              </thead>            
             
             <tfoot>

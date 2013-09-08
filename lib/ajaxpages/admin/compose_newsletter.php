@@ -16,6 +16,7 @@ if (!getUserRightAttribute($user, 'can_compose_newsletters')) {
     pa_exit();
 }
 
+$panthera -> locale -> loadDomain('newsletter');
 $panthera -> importModule('newsletter');
 $panthera -> template -> setTitle(localize('Compose a new message', 'newsletter'));
 
