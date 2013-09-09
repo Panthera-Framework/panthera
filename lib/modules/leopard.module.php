@@ -554,7 +554,7 @@ class leopard
         
         $fetch = $panthera -> get_filters('leopard.rebuilddb.packages', $fetch);
         
-        $panthera -> logging -> output ('Read ' .$SQL->rowCount(). ' packages from database', 'leopard');
+        $panthera -> logging -> output ('Read ' .count($fetch). ' packages from database', 'leopard');
         
         foreach ($fetch as $row)
         {
@@ -572,7 +572,7 @@ class leopard
                 self::$database[$row['package']]['files'][$row['path']] = $row;
             } 
             
-            $panthera -> logging -> output ('Found ' .$SQL->rowCount(). ' managed files', 'leopard');
+            $panthera -> logging -> output ('Found ' .count($fetch). ' managed files', 'leopard');
         }
     }
     
@@ -639,10 +639,12 @@ class leopard
     {
         if (self::$database == null)
             self::rebuildDB();
-
-        if (array_key_exists($package, self::$database))
+            
+        $package = self::packageName($package);
+            
+        if (isset(self::$database[$package]))
             return True;
-        
+
         return False;
     }
     
@@ -679,8 +681,8 @@ class leopard
         
         if ($returnMatches == False)
             return $matches[1];
-        else
-            return $matches;
+        
+        return $matches;
     }
     
     /**
@@ -810,7 +812,9 @@ class leopard
             $dontBackup = True; // dont overwrite old backup after package reinstall, etc.
             
         // copy package file
+        $panthera -> logging -> startTimer();
         copy($packageFile, $backupDir. '/' .$packageName. '.phar');
+        $panthera -> logging -> output('Copying package file to ' .$backupDir. '/' .$packageName. '.phar', 'leopard');
             
         // installing files
         foreach ((array)$packageMeta->files as $file => $sum)
@@ -818,7 +822,8 @@ class leopard
             if ($file == 'leopard.hooks.php')
                 continue;
         
-            $panthera -> logging -> output('Installing "' .$file. '"', 'leopard');
+            $panthera -> logging -> output('Installing "' .$file. '" to ' .SITE_DIR. '/' .$file, 'leopard');
+            $panthera -> logging -> output('path=' .$package->phar[$file]->getPathName(), 'leopard');
             $contents = file_get_contents($package->phar[$file]->getPathName());
             
             // first make a backup of file that will be overwritten
@@ -826,6 +831,15 @@ class leopard
             {
                 $panthera -> logging -> output ('Copying original file to backup "' .SITE_DIR. '/' .$file. '" -> "' .$backupDir. '/' .md5($file). '"', 'leopard');
                 copy(SITE_DIR. '/' .$file, $backupDir. '/' .md5($file));
+            }
+            
+            if (!is_dir(dirname(SITE_DIR. '/' .$file)))
+            {
+                if (!mkdir(dirname(SITE_DIR. '/' .$file), 0755, true)) // recursive mkdir
+                {
+                    $panthera -> logging -> output ('Cannot create "' .SITE_DIR. '/' .$file. '" directory', 'leopard');
+                    continue;
+                }
             }
             
             $fp = fopen(SITE_DIR. '/' .$file, 'w');
@@ -871,6 +885,8 @@ class leopard
         global $panthera;
         
         // TODO: Dependency support and option to remove only single package without its dependencies
+        
+        $packageName = self::packageName($packageName);
         
         $panthera -> logging -> output('Preparing to remove "' .$packageName. '" package', 'leopard');
     
