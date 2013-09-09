@@ -38,9 +38,9 @@ if ($_GET['action'] == 'removeCategory')
 		if (newsletterManagement::remove('nid', $_GET['nid']))
 			ajax_exit(array('status' => 'success'));
 		else
-			ajax_exit(array('status' => 'failed', 'message' => localize('Cannot remove a newsletter category', 'newsletter')));
+			ajax_exit(array('status' => 'failed', 'message' => localize('Cannot remove a newsletter category.', 'newsletter')));
 	} else {
-		ajax_exit(array('status' => 'failed', 'message' => localize('Cannot remove newsletter category, ID is missing', 'newsletter')));
+		ajax_exit(array('status' => 'failed', 'message' => localize('Cannot remove newsletter category, ID is missing.', 'newsletter')));
 	}
 }
 

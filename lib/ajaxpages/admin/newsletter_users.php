@@ -26,7 +26,7 @@ $newsletter = new newsletter('nid', $_GET['nid']);
 // exit if newsletter does not exists (exists method is a built-in method of pantheraFetchDB's abstract class)
 if (!$newsletter->exists())
 {
-    $panthera -> template -> push('error_message', localize('Selected newsletter does not exists'));
+    $panthera -> template -> push('error_message', localize('Selected newsletter does not exist.', 'newsletter'));
     $panthera -> template -> display('_ajax_admin_error.tpl');
     pa_exit();
 }
@@ -59,7 +59,7 @@ if ($_GET['action'] == 'addSubscriber')
 {
 	if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
 	{
-		ajax_exit(array('status' => 'failed', 'message' => localize('Check email address', 'newsletter')));
+		ajax_exit(array('status' => 'failed', 'message' => localize('Check email address.', 'newsletter')));
 	}
 	
 	$userID = -1; // guest
