@@ -412,11 +412,6 @@ if ($_GET['action'] == 'displayCategory')
         }
     }
 
-    /*$count = getGalleryCategories(array('language' => $user->language), False);
-    $c = getGalleryCategories(array('language' => $user->language), $count, 0);
-
-    $template -> push('category_list', $c);*/
-    
     $titlebar = new uiTitlebar($category->title . " (". $category->language.")");
 	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');
     $template -> display('gallery_displaycategory.tpl');
@@ -508,7 +503,7 @@ if ($_GET['action'] == 'edit_item_form')
         $template -> push('visibility', !$item -> visibility);
         $template -> push('upload_id', $item -> upload_id);
 
-        $c = getGalleryCategories('');
+        $c = gallery::fetch('');
         $template -> push('category_list', $c);
 
         $category = new galleryCategory('id', $item->gallery_id);
@@ -607,7 +602,7 @@ if (@$_GET['action'] == 'add_item')
     }
 
     $template -> push('action', 'add_item');
-    $c = getGalleryCategories('');
+    $c = gallery::fetch('');
 
     $category = new galleryCategory('id', $id);
 

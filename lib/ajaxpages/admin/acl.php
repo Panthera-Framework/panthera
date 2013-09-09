@@ -235,12 +235,40 @@ if (isset($_GET['name']))
 {
     $aclId = $aclName = $_GET['name'];
     $permissionsTable = $panthera->listPermissions();
-
+    
+    if (strpos($aclName, ',') !== False)
+    {
+        $multiplePermissions = explode(',', $aclName);
+        $permissions = array();
+        
+        foreach ($multiplePermissions as $permission)
+        {
+            $permission = trim($permission);
+        
+            if (!$permission)
+                continue;
+        
+            $permissions[$permission] = $permission;
+        
+            if (isset($permissionsTable[$permission]))
+                $permissions[$permission] = $permissionsTable[$permission]['desc'];
+        }
+        
+        $panthera -> template -> push('multiplePermissions', $permissions);
+        
+        if (isset($_GET['current']))
+        {
+            $aclId = $aclName = $_GET['current'];
+        } else {
+            $aclId = $aclName = $multiplePermissions[0];
+        }
+    }
+    
     if (isset($permissionsTable[$aclId]))
         $aclName = $permissionsTable[$aclId]['desc'];
 
     // groups with required permissions we are looking for
-    $groupsWhoCan = meta::getUsers($_GET['name'], True);
+    $groupsWhoCan = meta::getUsers($aclId, True);
     $groupList = array();
 
     foreach ($groupsWhoCan as $key => $gid)
@@ -266,11 +294,10 @@ if (isset($_GET['name']))
     $template -> push('acl_name', $aclId);
     $template -> push('group_list', $groupList);
     $template -> push('user_list', $userList);
-    $template -> push('action_title', 'Manage global permissions for single variable');
+    $template -> push('action_title', 'Manage user\'s permissions');
     $template -> push('action', 'manage_variable');
     $template -> push('acl_title', $aclName);
 }
 
 $template -> display('acl.tpl');
 pa_exit();
-?>

@@ -106,7 +106,7 @@
                         <a href="#" onclick="removeGalleryCategory({$value->id});">
                         <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" title="Remove">
                         </a>
-                        <a href="#" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=gallery_manage_cat_{$value->id}', 1024, 'upload_popup');">
+                        <a href="#" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_manage_gallery_{$value->id}', 1024, 'upload_popup');">
                         <img src="{$PANTHERA_URL}/images/admin/menu/users.png" style="max-height: 22px;" title="{function="localize('Manage permissions', 'messages')"}">
                         </a>
                     </td>

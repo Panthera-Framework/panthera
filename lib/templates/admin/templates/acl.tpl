@@ -48,10 +48,19 @@ function addGroup(acl)
             }
         });
 }
-
 </script>
 
 <h2 class="popupHeading">{function="localize('Manage permissions', 'acl')"} - {$action_title|localize}</h2>
+
+{if="count($multiplePermissions) > 0"}
+<div style="margin-left: 20px;">{function="localize('Switch permission', 'acl')"}: 
+{$i=0}
+{loop="$multiplePermissions"}
+    {$i=$i+1}
+    <a href="#" onclick="panthera.popup.navigate('?{function="getQueryString('GET', 'current=$target', '_')"}'.replace('%24target', '{$key}'))">{$value}</a>{if="$i < count($multiplePermissions)"},{/if} 
+{/loop}
+</div>
+{/if}
 
 <br>
 
@@ -65,14 +74,6 @@ function addGroup(acl)
             <th scope="col" colspan="5" style="width: 250px;"><b>{function="localize('Editing permissions', 'acl')"}:</b> &nbsp;<i>{$acl_title}</i></th>
         </tr>
     </thead>
-
-    <tfoot>
-        <tr>
-            <td colspan="5" class="rounded-foot-left">
-                <em>Panthera - Access Control Lists</em>
-            </td>
-        </tr>
-    </tfoot>
 
     <tbody id="user_list_tbody">
     {loop="$user_list"}
