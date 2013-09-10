@@ -574,7 +574,8 @@ if ($_GET['action'] == 'account') {
                     'id' => $w->id, 
                     'avatar' => pantheraUrl($w->profile_picture),
                     'lastip' => $w->getRaw('lastip'),
-                    'lastlogin' => $w->lastlogin
+                    'lastlogin' => $w->lastlogin,
+                    'banned' => $w->isBanned()
                 );
             }
             

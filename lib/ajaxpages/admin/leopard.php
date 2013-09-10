@@ -186,8 +186,19 @@ if ($_GET['action'] == 'upload')
         deleteDirectory($tmpDir); // clean up
     
     // save to session for future reuse
-    $panthera->session->set('leopard.build.last', array($packageName, $packageDirectory, $_POST['branch']));
-    ajax_exit(array('status' => 'success', 'url' => $url, 'log' => nl2br($panthera -> logging -> getOutput())));
+    $panthera->session->set('leopard.build.last', array($packageName, $packageDirectory, $_POST['branch'], $_POST['buildMode']));
+    
+    if ($_POST['buildMode'] == 'install')
+    {
+        $url = False;
+        leopard::install(SITE_DIR. '/content/tmp/' .$packageID. '.phar');
+    } elseif ($_POST['buildMode'] == 'reinstall') {
+        $url = False;
+        leopard::remove($package->manifest()->name);
+        leopard::install(SITE_DIR. '/content/tmp/' .$packageID. '.phar');
+    }
+    
+    ajax_exit(array('status' => 'success', 'url' => $url, 'log' => nl2br($panthera -> logging -> getOutput()), 'packages' => leopard::getInstalledPackages()));
    
 /**
   * Download built package file
@@ -226,8 +237,10 @@ if($panthera->session->exists('leopard.build.last'))
     $panthera -> template -> push('buildName', $last[0]);
     $panthera -> template -> push('buildPath', $last[1]);
     
-    if ($last[2] != '')
+    if ($last[2])
         $panthera -> template -> push('buildBranch', $last[2]);
+       
+    $panthera -> template -> push('buildMode', $last[3]);
 }
 
 $panthera -> template -> push ('SITE_DIR', SITE_DIR);

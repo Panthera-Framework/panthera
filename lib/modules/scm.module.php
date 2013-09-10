@@ -103,10 +103,13 @@ class scm
                 deleteDirectory($destination);
         
             $panthera -> logging -> output ('Unpacking zipped archive', 'scm');
-            $phar = new PharData($localFilePath);
-            $phar -> extractTo($destination, null, true);
-            unset($phar);
-            unlink($localFilePath); // clean up
+            $zip = new ZipArchive;
+            $zip -> open($localFilePath);
+            $zip -> extractTo($destination);
+            $zip -> close();
+            
+            // clean up
+            unlink($localFilePath);
             
             $files = scandir($destination);
             $dirName = end($files);
@@ -174,10 +177,14 @@ class scm
                 deleteDirectory($destination);
         
             $panthera -> logging -> output ('Unpacking zipped archive', 'scm');
-            $phar = new PharData($localFilePath);
-            $phar -> extractTo($destination, null, true);
-            unset($phar);
-            unlink($localFilePath); // clean up
+            
+            $zip = new ZipArchive;
+            $zip -> open($localFilePath);
+            $zip -> extractTo($destination);
+            $zip -> close();
+            
+            // clean up
+            unlink($localFilePath);
             
             // do a directory move
             $destinationTmp = str_ireplace(basename($destination), basename($destination). '-tmp', $destination);

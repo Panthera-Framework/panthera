@@ -34,17 +34,21 @@ class leopardPackage
         global $panthera;
         
         // default manifest
-        $this->manifest = array ('title' => '', 
-                                'description' => '', 
-                                'author' => '', 
-                                'contact' => array(), 
-                                'url' => '', 
-                                'files' => array(), 
-                                'version' => 0.1, 
-                                'release' => 1, 
-                                'requirements' => array('dependencies' => array(), 
-                                                        'environment' => array())
-                                );
+        $this->manifest = array (
+            'name' => '',
+            'title' => '', 
+            'description' => '', 
+            'author' => '', 
+            'contact' => array(), 
+            'url' => '', 
+            'files' => array(), 
+            'version' => 0.1, 
+            'release' => 1, 
+            'requirements' => array(
+                'dependencies' => array(), 
+                'environment' => array()
+            )
+        );
     
         $this->destination = $destination;
         $this->packageName = leopard::packageName($this->destination);
@@ -62,9 +66,14 @@ class leopardPackage
         {
             try {
                 $this -> manifest = json_decode(file_get_contents($this->phar['manifest.json']->getPathName()), True);
-            } catch (Exception $e) { }
+            } catch (Exception $e) { 
+                $panthera -> logging -> output('Cannot open manifest.json file', 'leopard');
+            }
         }
-        
+
+        if (!$this->manifest['name'])
+            $this->manifest['name'] = $this->packageName;
+            
         // TODO: Manifest integrity check
         
         if (!is_array($this->manifest))
@@ -81,6 +90,22 @@ class leopardPackage
     public function manifest()
     {
         return (object)$this->manifest;
+    }
+    
+    /**
+      * Set package name
+      *
+      * @param string $name
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public function setPackageName($name)
+    {
+        $name = str_replace('-', '', $name);
+    
+        $this->manifest['name'] = leopard::packageName($name);
+        return True;
     }
     
     /**
@@ -361,7 +386,7 @@ class leopardPackage
         // import manifest file if present
         if (is_file($directory. '/manifest.json'))
         {
-            $panthera -> logging -> output ('Adding manifest.json', 'leopard');
+            $panthera -> logging -> output ('Adding manifest.json from "' .$directory. '/manifest.json"', 'leopard');
             $this->importManifest($directory. '/manifest.json');
         }
         
@@ -383,7 +408,7 @@ class leopardPackage
                 
             // make sure the name will be correct
             if (strtolower($elementName) == 'leopard.hooks.php')
-                $elementName = strtolower('leopard.hooks.php');
+                $elementName = 'leopard.hooks.php';
                 
             $panthera -> logging -> output ('Adding element "' .$elementName. '" to archive', 'leopard');
             
@@ -701,6 +726,11 @@ class leopard
 
         $packageMeta = $package -> manifest();
         
+        if ($packageMeta->name)
+        {
+            $packageName = $packageMeta->name;
+        }
+
         if (self::checkInstalled($packageName))
         {
             // TODO: Package upgrades
@@ -769,6 +799,13 @@ class leopard
             $panthera -> logging -> output ('Cannot read package, got exception - ' .$e -> getMessage(), 'leopard');
             return False;
         }
+        
+        $packageMeta = $package -> manifest();
+        
+        if ($packageMeta->name)
+        {
+            $packageName = $packageMeta->name;
+        }
     
         // pre installation check
         if (!self::preInstallCheck($packageName, $package, $overwriteFS, $overwritePKGS))
@@ -791,8 +828,6 @@ class leopard
         $panthera -> get_options('leopard.preinstall.' .$packageName, '');
         
         // TODO: Dependency support
-        
-        $packageMeta = $package -> manifest();
         
         // create package record
         $array = array('name' => $packageName, 'manifest' => file_get_contents($package -> phar['manifest.json']), 'installed_as' => 'manual', 'version' => $packageMeta->version, 'release' => $packageMeta->release, 'status' => 'broken');

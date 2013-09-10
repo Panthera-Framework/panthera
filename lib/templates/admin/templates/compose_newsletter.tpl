@@ -1,6 +1,8 @@
 <script type="text/javascript">
 function initEditor () {}
-
+</script>
+{function="uiMce::display()"}
+<script type="text/javascript">
 jQuery(document).ready(function($) {
     //{include file="mce.tpl"}
     mceInit('content_textarea');
@@ -17,7 +19,6 @@ jQuery(document).ready(function($) {
     });
 });
 </script>
-{function="uiMce::display()"}
 {include="ui.titlebar"}
 
 <div class="grid-1">

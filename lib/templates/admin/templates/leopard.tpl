@@ -117,7 +117,12 @@ $(document).ready(function () {
         panthera.jsonPOST({ data: '#buildPackageForm', async: true, spinner: buildSpinner, success: function (response) {
                 if (response.status == "success")
                 {
-                    window.location = response.url;
+                    if (response.url)
+                    {
+                        window.location = response.url;
+                    }
+                    
+                    updatePackagesList(response.packages);
                 } else {
                     if (response.message != undefined)
                         w2alert(response.message, '{function="localize('Error', 'leopard')"}');
@@ -174,6 +179,11 @@ $(document).ready(function () {
             
             <tr>
                 <td>{function="localize('Directory or repository to build from', 'leopard')"}:</td><td><input type="text" name="directory" id="repositoryUrl" value="{if="isset($buildPath)"}{$buildPath}{else}{$SITE_DIR}/example{/if}" style="width: 95%;"> <input type="text" name="branch" id="repositoryBranch" style="display: none;" value="{if="isset($buildBranch)"}{$buildBranch}{else}master{/if}"></td>
+            </tr>
+            
+            <tr>
+                <td>{function="localize('Mode', 'leopard')"}:</td>
+                <td><input type="radio" name="buildMode" value="justBuild"{if="$buildMode == 'justBuild'"} checked{/if}> {function="localize('Download', 'leopard')"} <input type="radio" name="buildMode" value="install" {if="$buildMode == 'install'"} checked{/if}> {function="localize('Install', 'leopard')"} <input type="radio" name="buildMode" value="reinstall" {if="$buildMode == 'reinstall'"} checked{/if}> {function="localize('Reinstall', 'leopard')"}</td>
             </tr>
             
             <tr>

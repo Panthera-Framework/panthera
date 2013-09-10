@@ -26,7 +26,7 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
         {loop="$users_list"}
             <tr id="user_{$value.login}"}>
                 <td style="width: 32px;"><img src="{$value.avatar}" style="max-height: 30px; max-width: 23px;"></td>
-                <td>{if="$view_users == True"}<a href='?display=users&cat=admin&action=account&uid={$value.id}' class='ajax_link'>{$value.name}</a>{else}{$value.name}{/if}</td>
+                <td {if="$value.banned"}style="text-decoration: line-through;"{/if}>{if="$view_users == True"}<a href='?display=users&cat=admin&action=account&uid={$value.id}' class='ajax_link'>{$value.name}</a>{else}{$value.name}{/if}</td>
                 <td><a href="?display=acl&cat=admin&action=listGroup&group={$value.primary_group}" class="ajax_link">{$value.primary_group}</a></td>
                 <td>{$value.joined}</td>
                 <td>{$value.language|ucfirst}</td>
