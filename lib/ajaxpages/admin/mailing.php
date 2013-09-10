@@ -31,8 +31,34 @@ if ($_GET['action'] == 'send')
     if (!$panthera->types->validate($_POST['from'], 'email'))
         ajax_exit(array('status' => 'failed', 'message' => localize('Please type a valid e-mail adress in "from" input')));
 
-    $recipients = explode(',', $_POST['recipients']);
-
+    $exp = explode(',', $_POST['recipients']);
+    $recipients = array();
+    
+    foreach ($exp as $recipient)
+    {
+        if (strpos($recipient, 'group:') !== False)
+        {
+            $recipient = trim(str_ireplace('group:', '', $recipient));
+            
+            $group = new pantheraGroup('name', $recipient);
+            
+            foreach ($group->findUsers() as $user)
+            {
+                $recipients[] = $user['mail'];
+            }
+        } elseif(strpos($recipient, 'user:') !== False) {
+            $recipient = trim(str_ireplace('user:', '', $recipient));
+            $user = new pantheraUser('login', $recipient);
+            
+            if ($user->exists())
+            {
+                $recipients[] = $user->mail;
+            }
+        } else {
+            $recipients[] = trim($recipient);
+        }
+    }
+    
     $r = 0;
 
     $mail = new mailMessage();
@@ -50,26 +76,6 @@ if ($_GET['action'] == 'send')
         {
             $mail -> addRecipient($recipient);
             $r++;
-            
-        } elseif (substr($recipient, 0, 4) == 'gid:') {
-            // groups support here
-
-        } elseif (substr($recipient, 0, 4) == 'uid:') { // get user by id
-            $mailUser = new pantheraUser('id', $recipient);
-
-            if ($mailUser->exists())
-            {
-                $mail -> addRecipient($mailUser->mail);
-                $r++;
-            }
-        } elseif (substr($recipient, 0, 2) == 'u:') { // get user by login
-            $mailUser = new pantheraUser('login', $recipient);
-
-            if ($mailUser->exists())
-            {
-                $mail -> addRecipient($mailUser->mail);
-                $r++;
-            }
         }
     }
 
@@ -93,7 +99,8 @@ if ($_GET['action'] == 'send')
 /**
   * Select users and groups as recipients in sending window
   *
-  * @author Mateusz Warzyński, Damian Kęska
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
   */
 
 } elseif ($_GET['action'] == 'select') {
@@ -108,27 +115,31 @@ if ($_GET['action'] == 'send')
 			$groupsTpl[] = array('name' => $group->name);
 		}
     }
-	
-	// uiPager
-    $panthera -> importModule('admin/ui.pager');
-    $uiPager = new uiPager('users', $usersTotal, $maxOnPage);
-    $uiPager -> setActive($usersPage);
-    $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\');');
-    $limit = $uiPager -> getPageLimit();
-	
+    
 	$w = new whereClause();
+	$w -> add( 'AND', 'mail', '!=', '');
+	
 	if ($_GET['query']) {
         $_GET['query'] = trim(strtolower($_GET['query'])); // strip unneeded spaces and make it lowercase
         $w -> add( 'AND', 'login', 'LIKE', '%' .$_GET['query']. '%');
     	$w -> add( 'OR', 'full_name', 'LIKE', '%' .$_GET['query']. '%');
     }
-	
+    
+     $usersTotal = getUsers($w, False);
+    
+    // uiPager
+    $panthera -> importModule('admin/ui.pager');
+    $uiPager = new uiPager('users', $usersTotal, 10);
+    $uiPager -> setActive($_GET['page']);
+    $uiPager -> setLinkTemplatesFromConfig('mailing_select.tpl');
+    $limit = $uiPager -> getPageLimit();
+    
     $users = array();
     $usersData = getUsers($w, $limit[1], $limit[0]);
-
+    
     foreach ($usersData as $w) {
     	// superuser cant be listed, it must be hidden
-        if ($w -> attributes -> superuser and !$user->attributes->superuser)
+        if ($w -> acl -> superuser and !$panthera -> user -> acl -> superuser)
         	continue;
 
 		if($w->mail) {
@@ -147,9 +158,10 @@ if ($_GET['action'] == 'send')
     
     //$sBar -> setMethod('POST');
     $sBar -> setQuery($_GET['query']);
+    $sBar -> setMethod('GET');
     $sBar -> setAddress('?display=mailing&cat=admin&action=select');
-    $sBar -> navigate(True);
 	
+	$panthera -> template -> push('callback', htmlspecialchars($_GET['callback']));
 	$panthera -> template -> push('groups', $groupsTpl);
 	$panthera -> template -> push('users', $users);
 	$panthera -> template -> display('mailing_select.tpl');
@@ -190,6 +202,8 @@ if ($_GET['action'] == 'send')
 
     ajax_exit(array('status' => 'success'));
 }
+
+
 
 $yn = array(0 => localize('No'), 1 => localize('Yes'));
 

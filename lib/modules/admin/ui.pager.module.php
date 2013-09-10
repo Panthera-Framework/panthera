@@ -16,7 +16,7 @@
   
 class uiPager
 {
-    protected static $pagers;
+    public static $pagers;
     protected $barName = "";
     
     public function __construct ($name, $totalItems, $maxOnPage='')
@@ -36,7 +36,8 @@ class uiPager
             'onclickTemplate' => False,
             'backBtn' => False,
             'nextBtn' => False,
-            'pages' => 0
+            'pages' => 0,
+            'object' => $this
         );
         
         $panthera -> add_option('template.display', array($this, 'applyToTemplate'));
@@ -54,14 +55,51 @@ class uiPager
     public function setLinkTemplates($link, $onclick=False)
     {
         $link = str_replace('%7B%24', '{$', str_replace('%7D', '}', $link));
+        
+        if (stripos($link, '{$queryString}') !== False)
+        {
+            $link = str_ireplace('{$queryString}', getQueryString($_GET, 'page={$page}', '_'), $link);
+            $link = str_replace('%7B%24', '{$', str_replace('%7D', '}', $link));
+        }
     
         self::$pagers[$this->name]['linkTemplate'] = $link;
         
         if (is_string($onclick)) // cannot set true, null or integer
         {
             $onclick = str_replace('%7B%24', '{$', str_replace('%7D', '}', $onclick));
+            
+            if (stripos($onclick, '{$queryString}') !== False)
+            {
+                $onclick = str_ireplace('{$queryString}', getQueryString($_GET, 'page={$page}', '_'), $onclick);
+                $onclick = str_replace('%7B%24', '{$', str_replace('%7D', '}', $onclick));
+            }
+            
             self::$pagers[$this->name]['onclickTemplate'] = $onclick;
         }
+        
+        return True;
+    }
+    
+    /**
+      * Set template links from template file configuration
+      *
+      * @param $templateName Template file name
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public function setLinkTemplatesFromConfig($templateName)
+    {
+        $config = $this->panthera->template->getFileConfig($templateName);
+        
+        if (!$config)
+        {
+            return False;
+        }
+        
+        $this->setLinkTemplates($config->pagerLink, $config->pagerOnClick);
+        
+        return True;
     }
     
     /**
@@ -166,6 +204,8 @@ class uiPager
                 'onclick' => str_ireplace('{$page}', (self::$pagers[$this->name]['active']+1), self::$pagers[$this->name]['onclickTemplate'])
             );
         }
+        
+        return self::$pagers[$this->name];
     }
     
     /**
@@ -177,11 +217,6 @@ class uiPager
     
     public function getPageLimit()
     {
-        if (count(self::$pagers[$this->name]['links']) == 0)
-        {
-            $this->build();
-        }
-        
         return self::$pagers[$this->name]['pageLimit'];
     }
     
@@ -195,6 +230,14 @@ class uiPager
     public static function applyToTemplate()
     {
         global $panthera;
+        
+        foreach (self::$pagers as $pager)
+        {
+            if (!$pager['links'])
+            {
+                $pager['object']->build();
+            }
+        }
         
         if ($panthera -> logging -> debug)
             $panthera -> logging -> output ('Adding ui.Pagers to template: ' .json_encode(self::$pagers), 'pantheraAdminUI');

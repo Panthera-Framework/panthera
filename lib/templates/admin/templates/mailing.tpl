@@ -71,6 +71,21 @@ function setServerDetails(server, port, ssl)
     $('#value_mailing_server_port').val(port);
     $('#value_mailing_smtp_ssl').val(ssl.toString());
 }
+
+function callback_getContactData(data)
+{
+    var postString = '';
+
+    for (objectID in data)
+    {
+        if (postString != '')
+            postString += ', ';
+
+        postString += objectID;
+    }
+    
+    $('#recipients').val(postString);
+}
 </script>
 	
 	{include="ui.titlebar"}
@@ -139,7 +154,7 @@ function setServerDetails(server, port, ssl)
             
             <tfoot>
                 <tr>
-                    <td colspan="5" class="rounded-foot-left">
+                    <td colspan="5">
                         <span style="float: right;">
                             <a href="#" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_edit_mailing', 1024, 600);" title="{function="localize('Manage permissions')"}">
                                 <img src="{$PANTHERA_URL}/images/admin/ui/permissions.png" style="max-height: 23px; margin-left: 3px; vertical-align: middle; padding-bottom: 5px;">
@@ -181,7 +196,11 @@ function setServerDetails(server, port, ssl)
 
             <tbody>
                <tr><td>{function="localize('Subject', 'mailing')"}:</td><td colspan="2"><input type="text" style="width: 98%;" name="subject" value="{$last_subject}"></td></tr>
-               <tr><td>{function="localize('Recipients', 'mailing')"}:</td><td><input type="text" style="width: 100%;" name="recipients" value="{$last_recipients}"></td><td style="width: 30px;"> <input type="button" value="{function="localize('Select', 'messages')"}" onclick="createPopup('_ajax.php?display=mailing&cat=admin&action=select', 1024, 'upload_popup');"></td></tr>
+               <tr>
+                   <td>{function="localize('Recipients', 'mailing')"}:</td>
+                   <td style="border-right: 0px;"><input type="text" style="width: 100%;" name="recipients" id="recipients" value="{$last_recipients}"></td>
+                   <td style="width: 30px; border-left: 0px; padding-right: 10px;"> <input type="button" value="{function="localize('Select', 'messages')"}" onclick="createPopup('_ajax.php?display=mailing&cat=admin&action=select&callback=getContactData', 1024, 'upload_popup');"></td>
+               </tr>
                <tr><td>{function="localize('From', 'mailing')"}:</td><td colspan="2"><input type="text" style="width: 98%;" name="from" value="{$last_from}"></td></tr>
                <tr><td>{function="localize('Content', 'mailing')"}:</td><td colspan="2"><textarea style="width: 98%;" name="body">{$last_body}</textarea></td></tr>
                </form>

@@ -854,7 +854,10 @@ class pantheraCore
         if ($this->config->getKey('header_nosniff'))
             header('X-Content-Type-Options: nosniff');
 
-        $this->pluginsDir = array(PANTHERA_DIR. '/plugins', SITE_DIR. '/content/plugins');
+        $this->pluginsDir = array(
+            PANTHERA_DIR. '/plugins', 
+            SITE_DIR. '/content/plugins'
+        );
     }
     
     /**
@@ -1240,7 +1243,7 @@ class pantheraCore
                 $this->logging->output('Cannot find plugins directory "'.$dir.'"!', 'pantheraCore');
 
             $directoryListing = scandir($dir);
-
+            
             foreach ($directoryListing as $file)
             {
                 if ($file == "." or $file == ".." or is_file($file))
@@ -1248,7 +1251,7 @@ class pantheraCore
 
                 $enabled = False;
 
-                if (array_key_exists($file, $configPlugins))
+                if (isset($configPlugins[$file]))
                 {
                     if ($configPlugins[$file] == True)
                         $enabled = True;

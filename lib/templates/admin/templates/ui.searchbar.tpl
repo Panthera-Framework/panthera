@@ -42,17 +42,22 @@
 $(document).ready(function () {
     $('#{$uiSearchbarName}_form').submit(function () {
         {if="$bar.navigate"}
-        navigateTo('{$bar.formAction}&'+$('#uiTop_form').serialize());
+            navigateTo('{$bar.formAction}&'+$('#uiTop_form').serialize());
         {else}
-        panthera.jsonPOST( { 'data': '#{$uiSearchbarName}_form', method: '{$bar.formMethod}', success: function (response) {
-                panthera.logging.output('Looking for callback {$uiSearchbarName}_callback', 'searchBar');
         
-                if (typeof {$uiSearchbarName}_callback != undefined)
-                {
-                    {$uiSearchbarName}_callback(response);
-                }
-            }
-        });
+            {if="$bar.formMethod == 'POST'"}
+                panthera.jsonPOST( { 'data': '#{$uiSearchbarName}_form', method: '{$bar.formMethod}', success: function (response) {
+                        panthera.logging.output('Looking for callback {$uiSearchbarName}_callback', 'searchBar');
+                
+                        if (typeof {$uiSearchbarName}_callback == "function")
+                        {
+                            {$uiSearchbarName}_callback(response);
+                        }
+                    }
+                });
+            {else}
+                {$uiSearchbarName}_callback('{$bar.formAction}', $('#{$uiSearchbarName}_form').serialize());
+            {/if}
         {/if}
         
         return false;

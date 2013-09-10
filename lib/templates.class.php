@@ -124,7 +124,7 @@ class pantheraTemplate extends pantheraClass
 	 * @author Damian Kęska
 	 */
 
-    function __construct($panthera)
+    public function __construct($panthera)
     {
         parent::__construct($panthera);
    
@@ -177,7 +177,7 @@ class pantheraTemplate extends pantheraClass
 	 * @author Damian Kęska
 	 */
 
-    function push ($key, $value)
+    public function push ($key, $value)
     {
         //$this->tpl->assign($key, $value, 'nocache');
         $this->vars[$key] = $value;
@@ -192,7 +192,7 @@ class pantheraTemplate extends pantheraClass
 	 * @author Damian Kęska
 	 */
 
-    function setTitle($title)
+    public function setTitle($title)
     {
         $this->attributes['title'] = $title;
         return True;
@@ -206,7 +206,7 @@ class pantheraTemplate extends pantheraClass
 	 * @author Damian Kęska
 	 */
 
-    function putKeywords($keywords)
+    public function putKeywords($keywords)
     {
         if (!is_array($keywords))
             return False;
@@ -222,7 +222,7 @@ class pantheraTemplate extends pantheraClass
 	 * @author Damian Kęska
 	 */
 
-    function getKeywords()
+    public function getKeywords()
     {
         return $this->attributes['keywords'];
     }
@@ -235,7 +235,7 @@ class pantheraTemplate extends pantheraClass
 	 * @author Damian Kęska
 	 */
 
-    function removeKeyword($keyword)
+    public function removeKeyword($keyword)
     {
         if(($key = array_search($keyword, $this->attributes['keywords'])) !== false) {
             unset($this->attributes['keywords'][$key]);
@@ -254,7 +254,7 @@ class pantheraTemplate extends pantheraClass
 	 * @author Damian Kęska
 	 */
 
-    function addMetaTag($meta, $content)
+    public function addMetaTag($meta, $content)
     {
         $this->attributes['metas'][$meta] = $content;
         return True;
@@ -267,7 +267,7 @@ class pantheraTemplate extends pantheraClass
 	 * @author Damian Kęska
 	 */
 
-    function getMetaTags()
+    public function getMetaTags()
     {
         return $this->attributes['metas'];
     }
@@ -280,7 +280,7 @@ class pantheraTemplate extends pantheraClass
 	 * @author Damian Kęska
 	 */
 
-    function removeMetaTag($tagName)
+    public function removeMetaTag($tagName)
     {
         unset($this->attributes['metas'][$tagName]);
         return True;
@@ -294,7 +294,7 @@ class pantheraTemplate extends pantheraClass
 	 * @author Damian Kęska
 	 */
 
-    function googleSiteVerification($key)
+    public function googleSiteVerification($key)
     {
         $this->addMetaTag('google-site-verification', $key);
         return True;
@@ -393,7 +393,7 @@ class pantheraTemplate extends pantheraClass
 	 * @author Damian Kęska
 	 */
 
-    function removeLink($href)
+    public function removeLink($href)
     {
         if(($key = array_search($href, $this->attributes['links'])) !== false) {
             unset($this->attributes['links'][$key]);
@@ -412,16 +412,17 @@ class pantheraTemplate extends pantheraClass
 	 *
      * @param string $location URL where to redirect browser
      * @param string $type Type of redirection, avaliable types: header, meta, script
+     * @param int $code Optional header response code, default is 302
 	 * @return bool
 	 * @author Damian Kęska
 	 */
 
-    function redirect($location, $type)
+    public function redirect($location, $type, $code=302)
     {
         switch ($type)
         {
             case 'header':
-                header('Location: ' .$location);
+                header('Location: ' .$location, True, $code);
                 pa_exit();
             break;
 
@@ -441,16 +442,62 @@ class pantheraTemplate extends pantheraClass
             break;
         }
     }
+    
+    /**
+      * Get template file configuration stored in "configs" directory
+      *
+      * @param string $template name
+      * @return array|bool 
+      * @author Damian Kęska
+      */
+    
+    public function getFileConfig($template)
+    {
+        $this->panthera->logging->output('Looking for template file config for ' .$this->name. '/templates/' .$template, 'pantheraTemplate');
+    
+        if ($this->panthera->cache)
+        {
+            if ($this->panthera->cache->exists('tpl.filecfg.' .$template))
+            {
+                return (object)$this -> panthera -> cache -> get ('tpl.filecfg.' .$template);
+            }
+        }
+        
+        $configDir = getContentDir('/templates/' .$this->name. '/configs/' .$template. '.json');
+        
+        if ($configDir)
+        {
+            $contents = json_decode(file_get_contents($configDir), True);
+            
+            if (!$contents)
+            {
+                $this -> panthera -> logging -> output ('Invalid JSON syntax or empty file in ' .$configDir, 'pantheraTemplate');
+                return False;
+            }
+        
+            // update cache
+            if ($this->panthera->cache)
+            {
+                $this -> panthera -> cache -> set('tpl.filecfg.' .$template, $contents, 'templates');
+            }
+            
+            return (object)$contents;
+        }
+        
+        // if nothing loaded
+        return False;
+    }
 
     /**
 	 * Display template
 	 *
+	 * @hook template.display $template
      * @param string (variable name), mixed (value)
 	 * @return bool
 	 * @author Damian Kęska
 	 */
 
-    function display($template=NuLL, $renderOnly=False)
+    public function display($template=NuLL, $renderOnly=False)
     {
         $this->timer = microtime_float();
         

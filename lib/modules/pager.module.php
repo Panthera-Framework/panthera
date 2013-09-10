@@ -45,7 +45,7 @@ class Pager
 
         if (gettype($this->perPage) == "array")
             $this->perPage = 5;
-
+            
         $this->pages = ceil(($this->max / $this->perPage));
     }
     
