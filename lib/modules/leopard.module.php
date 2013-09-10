@@ -21,6 +21,7 @@ class leopardPackage
     public $phar;
     protected $destination;
     protected $packageName = "";
+    protected $panthera;
     
     /**
       * Constructor
@@ -32,6 +33,7 @@ class leopardPackage
     public function __construct($destination)
     {
         global $panthera;
+        $this -> panthera = $panthera;
         
         // default manifest
         $this->manifest = array (
@@ -44,6 +46,7 @@ class leopardPackage
             'files' => array(), 
             'version' => 0.1, 
             'release' => 1, 
+            'ignoredfiles' => array(),
             'requirements' => array(
                 'dependencies' => array(), 
                 'environment' => array()
@@ -90,6 +93,31 @@ class leopardPackage
     public function manifest()
     {
         return (object)$this->manifest;
+    }
+    
+    /**
+      * Add file to ignore list
+      *
+      * @param string $fileName
+      * @return bool 
+      * @author Damian Kęska
+      */
+    
+    public function addIgnoredFile($fileName)
+    {
+        if ($fileName[0] == '.' or $fileName[0] == '/')
+        {
+            throw new Exception('Slashes and dots are not allowed at beigning destination path in archive');
+        }
+        
+        if (in_array($fileName, $this->manifest['ignoredfiles']))
+        {
+            return True;
+        }
+    
+        $this->manifest['ignoredfiles'][] = $fileName;
+        
+        return True;
     }
     
     /**
@@ -348,7 +376,13 @@ class leopardPackage
     public function addFile($local, $inArchive)
     {
         if(!is_file($local))
-            throw new Exception('Cannot open "' .$local. ' in read mode"');
+            throw new Exception('Cannot open "' .$local. '" in read mode"');
+            
+        if (in_array($inArchive, $this->manifest['ignoredfiles']))
+        {
+            $this -> panthera -> logging -> output('Ignoring file "' .$inArchive. '"', 'leopard');
+            return False;
+        }
             
         if ($inArchive[0] == '/' or $inArchive[0] == '.')
             throw new Exception('Slashes and dots are not allowed at beigning destination path in archive');
@@ -700,7 +734,7 @@ class leopard
     
     public static function packageName($inputPath, $returnMatches=False)
     {
-        $pathinfo = pathinfo($inputPath);
+        $pathinfo = pathinfo(strtolower($inputPath));
         
         preg_match('/^([A-Za-z0-9_]+)\-?([0-9.]+)?\-?([0-9]+)?/', strtolower($pathinfo['filename']), $matches);
         
@@ -730,6 +764,8 @@ class leopard
         {
             $packageName = $packageMeta->name;
         }
+        
+        $packageName = strtolower($packageName);
 
         if (self::checkInstalled($packageName))
         {
@@ -806,6 +842,8 @@ class leopard
         {
             $packageName = $packageMeta->name;
         }
+        
+        $packageName = strtolower($packageName);
     
         // pre installation check
         if (!self::preInstallCheck($packageName, $package, $overwriteFS, $overwritePKGS))
@@ -870,6 +908,22 @@ class leopard
             
             if (!is_dir(dirname(SITE_DIR. '/' .$file)))
             {
+                $exp = explode('/', dirname($file));
+                $absolute = SITE_DIR. '/';
+                $relative = '';
+                
+                foreach ($exp as $dir)
+                {
+                    $absolute .= $dir. '/';
+                    $relative .= $dir .'/';
+                    
+                    if (!is_dir($absolute))
+                    {
+                        $array = array('path' => $relative, 'sum' => '*DIRECTORY*', 'package' => $packageName, 'dependencies' => serialize(array()));
+                        $panthera -> db -> query('INSERT INTO `{$db_prefix}leopard_files` (`id`, `path`, `md5`, `package`, `created`, `dependencies`) VALUES (NULL, :path, :sum, :package, NOW(), :dependencies)', $array);
+                    }
+                }
+            
                 if (!mkdir(dirname(SITE_DIR. '/' .$file), 0755, true)) // recursive mkdir
                 {
                     $panthera -> logging -> output ('Cannot create "' .SITE_DIR. '/' .$file. '" directory', 'leopard');
@@ -955,6 +1009,13 @@ class leopard
         
         foreach ((array)$package->files as $file => $sum)
         {
+            if (is_dir($file))
+            {
+                $dirsToRemove[] = $file;
+                continue;
+            }
+        
+        
             $panthera -> logging -> output('Removing "' .$file. '" file from filesystem', 'leopard');
             unlink($file);
             
@@ -965,6 +1026,16 @@ class leopard
                 if (is_file($backupDir. '/' .$sum))
                     copy($backupDir. '/' .$sum, $file);
             }
+        }
+        
+        $panthera -> logging -> output('Cleaning up empty directories', 'leopard');
+        
+        rsort($dirsToRemove);
+        
+        foreach ($dirsToRemove as $dir)
+        {
+            $panthera -> logging -> output('Removing directory "' .$dir. '"', 'leopard');
+            rmdir($dir);
         }
         
         // post-remove hooks
