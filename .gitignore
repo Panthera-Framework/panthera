@@ -9,6 +9,7 @@ lib/share/phpQuery
 lib/share/password-compat
 lib/share/vendor
 lib/share/mobiledetectlib
+lib/share/php-markdown
 
 example-app/css
 example-app/images
