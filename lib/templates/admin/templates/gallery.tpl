@@ -1,7 +1,5 @@
 {$site_header}
 <script type="text/javascript">
-    $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
-    
     function toggleGalleryVisibility(id)
     {
         panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggleGalleryVisibility&ctgid='+id, messageBox: 'w2ui', success: function (response) {

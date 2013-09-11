@@ -1,9 +1,5 @@
 {function="localizeDomain('qmessages')"}
 <script type="text/javascript">
-$(document).ready(function(){
-    $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
-});
-
 $(document).ready(function () {
     $('#newCategoryForm').submit (function () {
         panthera.jsonPOST( { data: '#newCategoryForm', messageBox: 'w2ui', success: function (response) {

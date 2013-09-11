@@ -1,7 +1,5 @@
-{if="$action == ''"}
+{if="!$action"}
 <script type="text/javascript">
-$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
-
 function removeSubscriber(id, elementID)
 {
     panthera.jsonPOST({ url: '{$AJAX_URL}?display=newsletter_users&cat=admin&nid={$nid}&action=removeSubscriber', data: 'id='+id, messageBox: 'w2ui', success: function (response) {
@@ -27,7 +25,7 @@ function addSubscriber()
 
 <div class="text-section" id="newsletter_users_window">
 {/if}
-{if="$action == '' OR $action == 'show_table'"}
+{if="!$action or $action == 'show_table'"}
           <br>
           <table class="gridTable">
             <thead>

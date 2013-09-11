@@ -1,7 +1,5 @@
 {$site_header}
 <script>
-$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
-
 var spinner = new panthera.ajaxLoader($('#conftoolTable'));
 
 /**

@@ -1,6 +1,4 @@
 <script type="text/javascript">
-$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
-
 var uploadSpinner = new panthera.ajaxLoader($('#packageInfoWindow'));
 var buildSpinner = new panthera.ajaxLoader($('#buildPackageWindow'));
 var packageSpinner = new panthera.ajaxLoader($('#packageInfoWindow'));

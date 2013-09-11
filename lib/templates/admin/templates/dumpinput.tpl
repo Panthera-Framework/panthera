@@ -1,5 +1,3 @@
-<script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
-
     <div class="titlebar">Dump input - {function="localize('Get all input variables listed', 'debug')"}{include="_navigation_panel"}</div>
 
     <div class="grid-1">

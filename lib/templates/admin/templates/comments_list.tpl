@@ -1,9 +1,5 @@
 {"comments"|localizeDomain}
 <script type="text/javascript">
-$(document).ready(function(){
-    $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
-});
-
 function removeComment(id)
 {
     // poput is needed

@@ -32,7 +32,6 @@ $(document).ready(function () {
 </script>
 {/if}
 
-<script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
 <div id="locale_window">
     
     {include="ui.titlebar"}

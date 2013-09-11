@@ -1,5 +1,3 @@
-<script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
-
 {if="$action == 'list'"}
 <table class="gridTable">
 <tbody>

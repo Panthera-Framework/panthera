@@ -1,8 +1,6 @@
 {$site_header}
 {function="localizeDomain('cpages')"}
 <script type="text/javascript">
-$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
-
 /**
   * Submit add_page form
   *

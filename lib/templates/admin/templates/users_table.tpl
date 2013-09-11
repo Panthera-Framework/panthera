@@ -1,7 +1,3 @@
-<script type="text/javascript">
-$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
-</script>
-
 <table class="gridTable">
     <thead>
         <tr>

@@ -1,6 +1,4 @@
 <script type="text/javascript">
-$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
-
 $(document).ready(function() {
     $('#debug_log_trigger').click(function () {
         $('#debug_log_window').slideToggle('slow');

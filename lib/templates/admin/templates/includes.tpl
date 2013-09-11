@@ -1,6 +1,3 @@
-<script>$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});</script>
-
-
         <div class="titlebar">{function="localize('Included files', 'includes')"} - {function="localize('List of all included files in current code execution', 'includes')"}</div>
 
         <br>

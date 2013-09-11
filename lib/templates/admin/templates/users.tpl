@@ -1,6 +1,4 @@
 <script type="text/javascript">
-$('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
-
 /**
   * Jump to other page in a table
   *
