@@ -1,6 +1,4 @@
-SET FOREIGN_KEY_CHECKS=0;
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
+DROP TABLE IF EXISTS `{$db_prefix}private_messages`;
 
 CREATE TABLE `{$db_prefix}private_messages` (
   id int(8) NOT NULL AUTO_INCREMENT,
@@ -17,4 +15,3 @@ CREATE TABLE `{$db_prefix}private_messages` (
   seen tinyint(1) NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
-SET FOREIGN_KEY_CHECKS=1;
