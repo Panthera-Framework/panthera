@@ -76,7 +76,7 @@
 		    
 		    <div class="flagsInHeader">
             {loop="$flags"}
-                <a href="?{function="getQueryString('GET', '', array('_', '_locale'))"}&_locale={$value}"><img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 12px; margin: 1px;"></a>
+                <a href="?{function="getQueryString('GET', '', array('_', '_locale'))"}&_locale={$value}&cat=admin"><img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 12px; margin: 1px;"></a>
             {/loop}
             </div>
            </span>
