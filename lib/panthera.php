@@ -960,7 +960,9 @@ class pantheraCore
         if ($module == 'phpquery')
         {
             include_once PANTHERA_DIR. '/share/phpQuery.php';
+            $this->logging->output('Imported "phpquery" from /lib/modules', 'pantheraCore');
             $this->modules[$module] = True;
+            return True;
         }
         
         $this->logging->startTimer();
@@ -968,12 +970,12 @@ class pantheraCore
         if(is_file(PANTHERA_DIR. '/modules/' .$module. '.module.php'))
         {
             @include_once PANTHERA_DIR. '/modules/' .$module. '.module.php';
-            $this->logging->output('Importing "' .$module. '" from /lib/modules', 'pantheraCore');
+            $this->logging->output('Imported "' .$module. '" from /lib/modules', 'pantheraCore');
             $this->modules[$module] = True;
             
         } elseif (is_file(SITE_DIR. '/content/modules/' .$module. '.module.php')) {
             @include_once SITE_DIR. '/content/modules/' .$module. '.module.php';
-            $this->logging->output('Importing "' .$module. '" from /content/modules', 'pantheraCore');
+            $this->logging->output('Imported "' .$module. '" from /content/modules', 'pantheraCore');
 
             $this->modules[$module] = True;
         } else {
@@ -1999,15 +2001,29 @@ function seoUrl($string) {
  *
  * @param string $url URL to be parsed
  * @param bool $reverse Set to true if you want to convert complete URL back to Panthera internal url eg. input: http://example.com/index output: {$PANTHERA_URL}/index
+ * @param string $type Convert only "frontend" or "system" variables
  * @return string
  * @author Damian Kęska
  */
 
-function pantheraUrl($url, $reverse=False)
+function pantheraUrl($url, $reverse=False, $type='')
 {
     global $panthera;
 
-    $var = array('{$AJAX_URL}' => $panthera->config->getKey('ajax_url'), '{$PANTHERA_DIR}' => PANTHERA_DIR, '{$SITE_DIR}' => SITE_DIR, '{$PANTHERA_URL}' => $panthera->config->getKey('url'), '{$upload_dir}' => $panthera->config->getKey('upload_dir'));
+    $var = array( );
+    
+    if (!$type or $type == 'frontend')
+    {
+        $var['{$AJAX_URL}'] = $panthera->config->getKey('ajax_url');
+        $var['{$PANTHERA_URL}'] = $panthera->config->getKey('url');
+    }
+    
+    if (!$type or $type == 'system')
+    {
+        $var['{$PANTHERA_DIR}'] = PANTHERA_DIR;
+        $var['{$SITE_DIR}'] = SITE_DIR;
+        $var['{$upload_dir}'] = $panthera->config->getKey('upload_dir');
+    }
 
     //if (!defined('SKIP_LOCALE'))
     //    $var['{$language}'] = $panthera->locale->getActive();

@@ -675,10 +675,10 @@ class pantheraTemplate extends pantheraClass
         {
             $path = $template;
         } else
-            $path = getContentDir('templates/' .$template);
+            $path = getContentDir('templates/' .$template. '/config.json');
             
         if ($path)
-            return json_decode(file_get_contents($path. '/config.json'), true);
+            return json_decode(file_get_contents($path), true);
 
         return null;
     }
