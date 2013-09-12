@@ -16,7 +16,7 @@ global $panthera;
 /**
   * Quick messsages data model
   *
-  * @package Panthera\modules\messages
+  * @package Panthera\modules\quickmessages
   * @author Damian Kęska
   */
 
@@ -195,7 +195,7 @@ class quickMessage extends pantheraFetchDB
 /**
   * Quick messsages category data model
   *
-  * @package Panthera\modules\messages
+  * @package Panthera\modules\quickmessages
   * @author Damian Kęska
   */
 
