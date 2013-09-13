@@ -1,6 +1,6 @@
 <?php
 /**
-  * Custom pages example action handler
+  * Example contact action handler
   *
   * @package Panthera\core\pages
   * @author Damian Kęska
