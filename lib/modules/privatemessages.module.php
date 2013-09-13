@@ -70,9 +70,11 @@ class privateMessage extends pantheraFetchDB
         
         return $panthera->db->getRows('private_messages', $by, $limit, $limitFrom, '', $orderBy, $order);
     }
+    
+    
 
     /**
-      * Change visible of (or remove) message
+      * Change visiblity of (or remove) message
       *
       * @return bool
       * @author Mateusz Warzyński
@@ -80,15 +82,40 @@ class privateMessage extends pantheraFetchDB
     
     public function remove()
     {
-        // Remove message if pm.remove is True and recipient removed this message
-        if (!$this->visibility_recipient and $this->panthera->config->getKey('pm.remove', 1, 'bool', 'pm')) {
-                
-            if ($this->panthera->db->query('DELETE FROM `{$db_prefix}private_messages` WHERE `id` = :id', array('id' => $this->id)))
-                return True;
-            
-        // Set visibility_sender to False
-        } else {
+        // Set visibility for current user to False
+        if ($this->recipient_id == $this->panthera->user->id)
+            $this->visibility_recipient = 0;
+        
+        elseif ($this->sender_id == $this->panthera->user->id)
             $this->visibility_sender = 0;
+        
+        else
+            return False;
+        
+        
+        // Remove message if pm.remove is True and recipient removed this message
+        if (!$this->visibility_recipient and !$this->visibiliy_sender and $this->panthera->config->getKey('pm.remove', 1, 'bool', 'pm')) {
+            if (!$this->panthera->db->query('DELETE FROM `{$db_prefix}private_messages` WHERE `id` = :id', array('id' => $this->id)))
+                return False;
+        }
+        
+        return True;
+    }
+    
+    /**
+      * Seen message
+      *
+      * @return bool
+      * @author Mateusz Warzyński
+      */
+    
+    public function seen()
+    {
+        if (!$this->seen and $this->recipient_id == $this->panthera->user->id) {
+            
+            // Change value of `seen` (user displayed message) and save it
+            $this -> seen = 1;
+            $this -> save();
             return True;
         }
         

@@ -64,6 +64,19 @@ function pMessagesAjax()
                   ajax_exit(array('status' => 'failed', 'error' => localize('Message does not exists', 'privatemessages')));
             }
         }
+        
+        // seen message
+        if ($_GET['action'] == 'seen_message') {
+            
+            $message = new privateMessage('id', intval($_GET['messageid']));
+            
+            if ($message -> exists()) {
+                if ($message->seen())
+                    ajax_exit(array('status' => 'success'));
+            }
+
+            ajax_exit(array('status' => 'failed'));
+        }
 
         /** END OF JSON PAGES **/
 
@@ -98,13 +111,33 @@ function pMessagesAjax()
 
         // get messages by recipient_id
         $count = privateMessage::getMessages(array('recipient_id' => $user->id), False, False, 'recipient_id');
-        $m = privateMessage::getMessages(array('recipient_id' => $user->id), $count, 0, 'recipient_id');
-        $template -> push('pmessages_list_received', $m);
+        $received = privateMessage::getMessages(array('recipient_id' => $user->id), $count, 0, 'recipient_id');
+        
+        // check if user didn't remove message
+        foreach ($received as $key => $message)
+        {
+            if ($message['visibility_recipient'])
+                $m[] = $message;
+        }
+        
+        $template -> push('received', $m);
+        
+        // clear memory
+        unset($m);
 
         // get messages by sender_id
         $count = privateMessage::getMessages(array('sender_id' => $user->id), False);
-        $m = privateMessage::getMessages(array('sender_id' => $user->id), $count, 0);
-        $template -> push('pmessages_list_sent', $m);
+        $sent = privateMessage::getMessages(array('sender_id' => $user->id), $count, 0);
+        
+        // check if user didn't remove message
+        foreach ($sent as $key => $message)
+        {
+            if ($message['visibility_recipient'])
+                $m[] = $message;
+        }
+        
+        $template -> push('sent', $m);
+        unset($m);
         
         $titlebar = new uiTitlebar(localize('Private Messages', 'pmessages'));
         $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/messages.png', 'left');

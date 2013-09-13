@@ -1,77 +1,46 @@
 <script type="text/javascript">
-function removeSentPrivateMessage(id)
+
+function removeMessage(id)
 {
-    $.msgBox({
-        title: "{"Are you sure?"|localize}",
-        content: "{"Do you really want to delete this message?"|localize}",
-        type: "confirm",
-        autoClose: true,
-        opacity: 0.6,
-        buttons: [{ value: "{"Yes"|localize:messages}" }, { value: "{"No"|localize:messages}" }, { value: "{"Cancel"|localize:messages}"}],
-        success: function (result) {
-            if (result == "{"Yes"|localize:messages}") {
-                $.ajax({
-                    url: '{$AJAX_URL}?display=privatemessages&cat=admin&action=remove_message_sent&messageid='+id,
-                    data: '',
-                    async: false,
-                    success: function (response) { 
-
-                        if (response.status == "success")
-                        {
-                            jQuery('#message_row_sent_'+id).remove();
-                        }
-
-                    },
-                    dataType: 'json'
-                   });
-            }
+    w2confirm('{function="localize('Are you sure you want to delete this message?', 'pmessages')"}', function (responseText) {
+        
+        if (responseText == 'Yes') {
+            panthera.jsonGET( { url: '{$AJAX_URL}?display=privatemessages&cat=admin&action=remove_message&messageid='+id, messageBox: 'w2ui', success: function (response) {
+                    if (response.status == 'success') {
+                        jQuery('#message_row_received_'+id).remove();
+                    }
+                
+                }
+            });
         }
-    });    
+        
+    });
 }
 
-function removeReceivedPrivateMessage(id)
+function seenMessage(id)
 {
-    $.msgBox({
-        title: "{"Are you sure?"|localize}",
-        content: "{"Do you really want to delete this message?"|localize}",
-        type: "confirm",
-        autoClose: true,
-        opacity: 0.6,
-        buttons: [{ value: "{"Yes"|localize:messages}" }, { value: "{"No"|localize:messages}" }, { value: "{"Cancel"|localize:messages}"}],
-        success: function (result) {
-            if (result == "{"Yes"|localize:messages}") {
-                $.ajax({
-                    url: '{$AJAX_URL}?display=privatemessages&cat=admin&action=remove_message_received&messageid='+id,
-                    data: '',
-                    async: false,
-                    success: function (response) { 
-
-                        if (response.status == "success")
-                        {
-                            jQuery('#message_row_received_'+id).remove();
-                        }
-
-                    },
-                    dataType: 'json'
-                   });
-            }
-        }
-    });    
+    panthera.jsonGET( { url: '{$AJAX_URL}?display=privatemessages&cat=admin&action=seen_message&messageid='+id, messageBox: 'w2ui'});
 }
 
-jQuery(document).ready(function($) {
-    jQuery('#inbox_window_trigger').click(function () {
-        jQuery('#inbox').slideToggle('slow');
+$(document).ready(function () {
+    $('#send_message').submit(function () {
+        panthera.jsonPOST( { data: '#send_message', success: function (response) {
+                if (response.status == "success")
+                {
+                    navigateTo('?display=privatemessages&cat=admin');
+                    jQuery("#new_pmessage").hide();
+                    jQuery("#fade").hide();
+                } else {
+                    jQuery('#message_error').slideDown();
+                    jQuery('#message_error').html(response.message);
+                }
+            }
+        });
     });
-    
-    jQuery('#outbox_window_trigger').click(function () {
-        jQuery('#outbox').slideToggle('slow');
-    });
-
 });
 </script>
 
-    {include="ui.titlebar"}
+{include="ui.titlebar"}
        
        <div class="grid-1">
         <table class="gridTable">
@@ -90,16 +59,18 @@ jQuery(document).ready(function($) {
                 </tr>
             </tfoot>
             <tbody>
-             {if="count($pmessages_list_received) < 1"}
+             {if="count($received) < 1"}
+                
                 <tr>
-                  <td colspan="4"><p style="text-align: center;">No messages in inbox</p></td>
+                  <td colspan="4"><p style="text-align: center;">{function="localize('No messages in inbox', 'pmessages')"}</p></td>
                 </tr>
+                
              {else}
                 
-              {loop="$pmessages_list_received"}
-                <tr id="message_row_received_{$i->id}">
-                    <td><a onclick="createPopup('_ajax.php?display=privatemessages&cat=admin&action=show_message&messageid={$value.id}', 900, 'show_pmessage')" style="cursor: hand; cursor: pointer;">{$value.title}</a></td>
-                    <td>{$value.sender}</td>
+              {loop="$received"}
+                <tr id="received_{$value.id}" {if="!$value.seen"}style="font-weight: bold;{/if}">
+                  <td><a onclick="{if="!$value.seen"}seenMessage({$value.id});{/if}navigateTo('{$AJAX_URL}?display=privatemessages&cat=admin&action=show_message&messageid={$value.id}')" style="cursor: hand; cursor: pointer;">{$value.title}</a></td>
+                  <td>{$value.sender}</td>
                   <td>{$value.sent}</td>
                   <td><input type="button" value="{function="localize('Remove', 'pmessages')"}" onclick="removeMessage({$value.id})"></td>
                 </tr>
@@ -127,14 +98,16 @@ jQuery(document).ready(function($) {
                 </tr>
             </tfoot>
             <tbody>
-             {if="count($pmessages_list_sent) < 1"}
+             {if="count($sent) < 1"}
+                
                 <tr>
-                  <td colspan="4"><p style="text-align: center;">No messages in outbox</p></td>
+                  <td colspan="4"><p style="text-align: center;">{function="localize('No messages in outbox', 'pmessages')"}</p></td>
                 </tr>
+                
              {else}
                 
-              {loop="$pmessages_list_sent"}
-                <tr id="message_row_sent_{$i->id}">
+              {loop="$sent"}
+                <tr id="sent_{$value.id}">
                     <td><a onclick="createPopup('_ajax.php?display=privatemessages&cat=admin&action=show_message&messageid={$value.id}', 900, 'show_pmessage')" style="cursor: hand; cursor: pointer;">{$value.title}</a></td>
                     <td>{$value.sender}</td>
                   <td>{$value.sent}</td>
@@ -145,4 +118,14 @@ jQuery(document).ready(function($) {
              {/if}
             </tbody>
          </table>
-      </div> 
+      </div>
+      
+<div class="grid-2">
+        <form id="send_message" action="{$AJAX_URL}?display=privatemessages&cat=admin&action=send_message" method="POST">
+        <div class="title-grid" style="height: 25px;">{function="localize('Title', 'pmessages')"}: <input type="text" name="title"><span></span></div>
+        <div class="content-gird">
+             <textarea name="content" style="width: 99%; height: 150px;"></textarea><br><br>
+             <input type="text" name="recipient_login" placeholder="{function="localize('Recipient login', 'pmessages')"}"> <input type="submit" value="{function="localize('Send', 'pmessages')"}">
+        </div>
+        </form>
+</div> 
