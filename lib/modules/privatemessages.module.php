@@ -32,21 +32,21 @@ class privateMessage extends pantheraFetchDB
       *
       * @param string $title of a private message
       * @param string $content
-      * @param int $recipient_id ID of recipient
+      * @param string $recipient_login of recipient
       * @return bool 
       * @author Mateusz Warzyński
       */
     
-    public static function sendMessage($title, $content, $recipient_id)
+    public static function sendMessage($title, $content, $recipient_login)
     {
         global $panthera;
         
-        $recipient = new pantheraUser('id', intval($recipient_id));
+        $recipient = new pantheraUser('login', $recipient_login);
         
         if (!$panthera->user or !$recipient->exists() or !$content)
             return False;
         
-        $array = array('title' => htmlspecialchars($title), 'sender' => $panthera->user->full_name, 'sender_id' => $panthera->user->id, 'recipient' => $recipient->full_name, 'recipient_id' => $recipient->id, 'content' => htmlspecialchars($content));
+        $array = array('title' => htmlspecialchars($title), 'sender' => $panthera->user->full_name, 'sender_id' => $panthera->user->id, 'recipient' => $recipient->full_name, 'recipient_id' => intval($recipient->id), 'content' => htmlspecialchars($content));
 
         if (!$panthera->db->query('INSERT INTO `{$db_prefix}private_messages` (`id`, `title`, `sender`, `sender_id`, `recipient`, `recipient_id`, `content`, `sent`, `visibility_sender`, `visibility_recipient`, `seen`) VALUES (NULL, :title, :sender, :sender_id, :recipient, :recipient_id, :content, NOW(), 1, 1, 0);', $array))
             return False;
@@ -55,37 +55,20 @@ class privateMessage extends pantheraFetchDB
     }
     
     /**
-      * Get sent private messages
+      * Get private messages
       *
       * @return array|bool
       * @author Mateusz Warzyński
       */
     
-    public static function getSentMessages($limit=0, $limitFrom=0, $order='DESC')
+    public static function getMessages($by, $limit=0, $limitFrom=0, $orderBy='sender_id', $order='DESC')
     {
         global $panthera;
         
         if (!$panthera->user)
             return False;
         
-        return $panthera->db->getRows('private_messages', $panthera->user->id, $limit, $limitFrom, '', 'sender_id', $order);
-    }
-    
-    /**
-      * Get received private messages
-      *
-      * @return array|bool
-      * @author Mateusz Warzyński
-      */
-    
-    public static function getReceivedMessages($limit=0, $limitFrom=0, $order='DESC')
-    {
-        global $panthera;
-        
-        if (!$panthera->user)
-            return False;
-        
-        return $panthera->db->getRows('private_messages', $panthera->user->id, $limit, $limitFrom, '', 'recipient_id', $order);
+        return $panthera->db->getRows('private_messages', $by, $limit, $limitFrom, '', $orderBy, $order);
     }
 
     /**
