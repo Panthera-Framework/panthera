@@ -61,7 +61,7 @@ class privateMessage extends pantheraFetchDB
       * @author Mateusz Warzyński
       */
     
-    public static function getMessages($by, $limit=0, $limitFrom=0, $orderBy='sender_id', $order='DESC')
+    public static function getMessages($by, $limit=0, $limitFrom=0, $orderBy='sender_id', $order='ASC')
     {
         global $panthera;
         

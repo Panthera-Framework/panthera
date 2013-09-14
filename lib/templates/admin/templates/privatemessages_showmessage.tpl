@@ -1,25 +1,37 @@
-<style>
-#message_window {
-      width: 91%;
-      background-color: rgb(221, 243, 255);
-      padding: 5px;
-      border: 1px solid #d4d4d4;
-      font-size: 11px;
-      font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
-      padding: 20px;
-      margin: 20px;
-}
-</style>
+<script type="text/javascript">
+$(document).ready(function () {
+    $('#reply_message').submit(function () {
+        panthera.jsonPOST( { data: '#reply_message', success: function (response) {
+                if (response.status == "success")
+                {
+                    navigateTo('?display=privatemessages&cat=admin');
+                }
+            }
+        });
+    });
+});
+</script>
 
-    <div>{$message->sender} {function="localize(' sent a message to ', 'pmessages')"} {$message->recipient}.</div>
+{include="ui.titlebar"}
 
-    <div class="grid1">
-        <center><h2>{$message->title}</h2></center>
-          <div id="message_window">
-           <table>
-             <tr> 
-                 <td>{$message_content}</td>
-             </tr>
-           </table> 
-          </div>
-    </div>
+<div class="grid-1">
+     <div class="title-grid"><h3><b>{$message->sender}</b></h3></div>
+     
+     <div class="content-gird">
+         <div class="message-content">
+             {$message_content}
+         </div>
+     </div>
+</div>
+
+<div class="grid-1">
+        <form id="reply_message" action="{$AJAX_URL}?display=privatemessages&cat=admin&action=send_message" method="POST">
+        <div class="title-grid">{if="$reply == 1"}{function="localize('Reply', 'pmessages')"}{else}{function="localize('Send more', 'pmessages')"}{/if}</div>
+      <input type="text" name="title" value="{$message->title}" style="display: none;">
+        <div class="content-gird">
+             <textarea name="content" style="width: 99%; height: 150px;"></textarea><br><br>
+             <input type="text" name="recipient_id" value="{if="$reply == 1"}{$message->sender_id}{else}{$message->recipient_id}{/if}" style="display: none;">
+             <input type="submit" value="{function="localize('Send', 'pmessages')"}" style="float: right; margin-right: 7px;"><br>
+        </div>
+        </form>
+</div> 

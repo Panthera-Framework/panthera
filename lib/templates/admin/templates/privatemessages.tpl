@@ -7,7 +7,7 @@ function removeMessage(id)
         if (responseText == 'Yes') {
             panthera.jsonGET( { url: '{$AJAX_URL}?display=privatemessages&cat=admin&action=remove_message&messageid='+id, messageBox: 'w2ui', success: function (response) {
                     if (response.status == 'success') {
-                        jQuery('#message_row_received_'+id).remove();
+                        navigateTo('{$AJAX_URL}?display=privatemessages&cat=admin');
                     }
                 
                 }
@@ -24,15 +24,10 @@ function seenMessage(id)
 
 $(document).ready(function () {
     $('#send_message').submit(function () {
-        panthera.jsonPOST( { data: '#send_message', success: function (response) {
+        panthera.jsonPOST( { data: '#send_message', messageBox: 'w2ui', success: function (response) {
                 if (response.status == "success")
                 {
-                    navigateTo('?display=privatemessages&cat=admin');
-                    jQuery("#new_pmessage").hide();
-                    jQuery("#fade").hide();
-                } else {
-                    jQuery('#message_error').slideDown();
-                    jQuery('#message_error').html(response.message);
+                    navigateTo('{$AJAX_URL}?display=privatemessages&cat=admin');
                 }
             }
         });
@@ -55,7 +50,7 @@ $(document).ready(function () {
             
             <tfoot>
                 <tr>
-                    <td colspan="4" class="rounded-foot-left"><em>{function="localize('Received messages', 'pmessages')"}</em></td>
+                    <td colspan="4" class="rounded-foot-left"><em>{function="localize('Inbox', 'pmessages')"}</em></td>
                 </tr>
             </tfoot>
             <tbody>
@@ -69,7 +64,7 @@ $(document).ready(function () {
                 
               {loop="$received"}
                 <tr id="received_{$value.id}" {if="!$value.seen"}style="font-weight: bold;{/if}">
-                  <td><a onclick="{if="!$value.seen"}seenMessage({$value.id});{/if}navigateTo('{$AJAX_URL}?display=privatemessages&cat=admin&action=show_message&messageid={$value.id}')" style="cursor: hand; cursor: pointer;">{$value.title}</a></td>
+                  <td><a onclick="{if="!$value.seen"}seenMessage({$value.id});{/if}navigateTo('{$AJAX_URL}?display=privatemessages&cat=admin&action=show_message&messageid={$value.id}&reply=1')" style="cursor: hand; cursor: pointer;">{$value.title}</a></td>
                   <td>{$value.sender}</td>
                   <td>{$value.sent}</td>
                   <td><input type="button" value="{function="localize('Remove', 'pmessages')"}" onclick="removeMessage({$value.id})"></td>
@@ -94,7 +89,7 @@ $(document).ready(function () {
             
             <tfoot>
                 <tr>
-                    <td colspan="4" class="rounded-foot-left"><em>{function="localize('Sent messages', 'pmessages')"} <button onclick="createPopup('_ajax.php?display=privatemessages&cat=admin&action=new_message', 900, 'new_pmessage')">Compose new one</button></em></td>
+                    <td colspan="4" class="rounded-foot-left"><em>{function="localize('Outbox', 'pmessages')"}</em></td>
                 </tr>
             </tfoot>
             <tbody>
@@ -108,8 +103,8 @@ $(document).ready(function () {
                 
               {loop="$sent"}
                 <tr id="sent_{$value.id}">
-                    <td><a onclick="createPopup('_ajax.php?display=privatemessages&cat=admin&action=show_message&messageid={$value.id}', 900, 'show_pmessage')" style="cursor: hand; cursor: pointer;">{$value.title}</a></td>
-                    <td>{$value.sender}</td>
+                    <td><a onclick="navigateTo('{$AJAX_URL}?display=privatemessages&cat=admin&action=show_message&messageid={$value.id}&reply=0');" style="cursor: hand; cursor: pointer;">{$value.title}</a></td>
+                    <td>{$value.recipient}</td>
                   <td>{$value.sent}</td>
                   <td><input type="button" value="{function="localize('Remove', 'pmessages')"}" onclick="removeMessage({$value.id})"></td>
                 </tr>
@@ -120,12 +115,14 @@ $(document).ready(function () {
          </table>
       </div>
       
-<div class="grid-2">
+<div class="grid-1">
         <form id="send_message" action="{$AJAX_URL}?display=privatemessages&cat=admin&action=send_message" method="POST">
         <div class="title-grid" style="height: 25px;">{function="localize('Title', 'pmessages')"}: <input type="text" name="title"><span></span></div>
         <div class="content-gird">
              <textarea name="content" style="width: 99%; height: 150px;"></textarea><br><br>
-             <input type="text" name="recipient_login" placeholder="{function="localize('Recipient login', 'pmessages')"}"> <input type="submit" value="{function="localize('Send', 'pmessages')"}">
+             <input type="text" name="recipient_login" placeholder="{function="localize('Recipient login', 'pmessages')"}">
+             <input type="button" value="{function="localize('Search', 'pmessages')"}">
+             <input type="submit" value="{function="localize('Send', 'pmessages')"}" style="float: right; margin-right: 7px;">
         </div>
         </form>
 </div> 

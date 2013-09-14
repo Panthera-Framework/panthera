@@ -41,8 +41,20 @@ function pMessagesAjax()
             // filter input values
             $title= filterInput($title, 'quotehtml');
 
+            $recipient = @$_POST['recipient_login'];
+            
+            if (isset($_POST['recipient_id'])) {
+                    
+                $recipient_ = new pantheraUser('id', $_POST['recipient_id']);
+                
+                if ($recipient_->exists())
+                    $recipient = $recipient_->login;
+                else
+                    ajax_exit(array('status' => 'failed', 'error' => localize('Cannot get recipient user!', 'pmessages')));
+            }
+
             // send new message
-            if (privateMessage::sendMessage($_POST['title'], $_POST['content'], $_POST['recipient_login']))
+            if (privateMessage::sendMessage($_POST['title'], $_POST['content'], $recipient))
                   ajax_exit(array('status' => 'success'));
             
             ajax_exit(array('status' => 'failed'));
@@ -91,7 +103,7 @@ function pMessagesAjax()
         }
 
         if (@$_GET['action'] == 'show_message') {
-
+            
             $message = new privateMessage('id', $_GET['messageid']);
             if ($message -> exists()) {
                   $template -> push('message', $message);
@@ -100,6 +112,10 @@ function pMessagesAjax()
                   ajax_exit(array('status' => 'failed'));
             }
 
+            $titlebar = new uiTitlebar(strval($message->title)." (".strval($message->sender)." - ".strval($message->recipient).")");
+            $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-mail-flag-icon.png', 'left');
+            
+            $template -> push('reply', intval($_GET['reply']));
             $template -> display('privatemessages_showmessage.tpl');
             pa_exit();
         }
@@ -117,23 +133,24 @@ function pMessagesAjax()
         foreach ($received as $key => $message)
         {
             if ($message['visibility_recipient'])
-                $m[] = $message;
+                // overwrite old message
+                $m[$message['title']] = $message;
         }
-        
         $template -> push('received', $m);
         
         // clear memory
         unset($m);
 
         // get messages by sender_id
-        $count = privateMessage::getMessages(array('sender_id' => $user->id), False);
+        $count = privateMessage::getMessages(array('sender_id' => $user->id), False, False);
         $sent = privateMessage::getMessages(array('sender_id' => $user->id), $count, 0);
         
         // check if user didn't remove message
         foreach ($sent as $key => $message)
         {
-            if ($message['visibility_recipient'])
-                $m[] = $message;
+            if ($message['visibility_sender'])
+                // overwrite old message
+                $m[$message['title']] = $message;
         }
         
         $template -> push('sent', $m);
