@@ -94,14 +94,6 @@ function pMessagesAjax()
 
         /** Ajax-HTML PAGES **/
 
-        if (@$_GET['action'] == 'new_message') {
-            $titlebar = new uiTitlebar(localize('Private Messages', 'pmessages')." - ".localize('Send message', 'pmessages'));
-            $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/messages.png', 'left');
-            
-            $template -> display('privatemessages_newmessage.tpl');
-            pa_exit();
-        }
-
         if (@$_GET['action'] == 'show_message') {
             
             $message = new privateMessage('id', $_GET['messageid']);
