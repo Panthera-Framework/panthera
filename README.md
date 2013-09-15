@@ -10,7 +10,7 @@ Performance and and fexibility is very important - there are serval mechanisms m
 ## Our Team
 - Damian Kęska - co-founder, main programmer, translator, website maintainer
 - Mateusz Warzyński - co-founder, programmer, translator, website maintainer
-- The-Error - main graphics designer, giving us helpful tips about project design
+- Zoran Karavla - main graphics designer, giving us helpful tips about project design
 - Dawid Niedźwiedzki - tester
 
 ## Notice
