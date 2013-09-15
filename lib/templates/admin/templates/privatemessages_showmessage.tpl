@@ -18,7 +18,7 @@ $(document).ready(function () {
      <div class="title-grid"><h3><b>{$message->sender}</b></h3></div>
      
      <div class="content-gird">
-         <div class="message-content">
+         <div class="message-content" style="font-family: Helvetica; font-size: 13px;">
              {$message_content}
          </div>
      </div>
