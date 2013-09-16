@@ -19,6 +19,9 @@ require 'content/app.php';
 // include custom functions to default front controller
 if (is_file('content/front.php'))
     require 'content/front.php';
+    
+// enable frontside panels
+frontsidePanels::init();
 
 $display = str_replace('/', '', addslashes($_GET['display']));
 $template -> setTemplate($panthera->config->getKey('template'));

@@ -414,6 +414,44 @@ class pantheraLocale
         
         return end($input);
     }
+    
+    /**
+      * Localize by array, string or serialized array example input: array('this is a string', 'domain_name') or serialize(array('this is a string', 'domain_name')) or jst "this is a string"
+      *
+      * @param string|array $input Serialized array, normal array or string
+      * @param bool $getOriginalString Don't localize extracted string, just return it
+      * @return string 
+      * @author Damian Kęska
+      */
+    
+    public function localizeFromArray($input, $getOriginalString=False)
+    {
+        if (is_string($input))
+        {
+            if (substr($input, 0, 2) == 'a:')
+            {
+                $tmp = unserialize($input);
+                
+                if ($getOriginalString)
+                    return $tmp[0];
+                
+                return localize($tmp[0], $tmp[1]);
+            }
+            
+            if ($getOriginalString)
+                return $input;
+        
+            return localize($input); // localize using default domain
+        }
+           
+        if (is_array($input))
+        {
+            if ($getOriginalString)
+                return $input[0];
+        
+            return localize($input[0], $input[1]);
+        }
+    }
 }
 
 /**

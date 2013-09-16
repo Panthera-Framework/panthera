@@ -26,11 +26,33 @@ require PANTHERA_DIR. '/share/raintpl3/library/Rain/autoload.php';
 
 class pantheraTemplate extends pantheraClass
 {
-    protected $attributes = array('title' => '', 'keywords' => array(), 'metas' => array(), 'scripts' => array()), $panthera, $vars = array(), $cacheConfig = False;
-    public $tpl, $name, $template, $generateScripts = True, $generateHeader = True, $generateMeta = True, $generateKeywords = True, $generateLinks = True, $header = '', $deviceType = 'desktop', $forceKeepTemplate = False, $timer = 0, $engine = 'raintpl3';
+    protected $attributes = array(
+        'title' => '',
+        'keywords' => array(),
+        'metas' => array(),
+        'scripts' => array()
+    );
+    protected $panthera;
+    protected $vars = array();
+    protected $cacheConfig = False;
+    public $tpl;
+    public $name;
+    public $template;
+    public $generateScripts = True;
+    public $generateHeader = True;
+    public $generateMeta = True;
+    public $generateKeywords = True;
+    public $generateLinks = True;
+    public $header = '';
+    public $deviceType = 'desktop';
+    public $forceKeepTemplate = False;
+    public $timer = 0;
+    public $engine = 'raintpl3';
     
     // configurable options
-    protected $debugging, $caching, $cache_lifetime;
+    protected $debugging;
+    protected $caching;
+    protected $cache_lifetime;
 
     /**
 	 * Set template as active (not a single template eg. index.tpl but a set of templates in directory eg. admin => /content/templates/admin)
@@ -493,16 +515,20 @@ class pantheraTemplate extends pantheraClass
 	 *
 	 * @hook template.display $template
      * @param string (variable name), mixed (value)
+     * @param bool $renderOnly Render template to string
+     * @param bool $skipHooking
+     * @param array $vars Variables to pass to template
 	 * @return bool
 	 * @author Damian Kęska
 	 */
 
-    public function display($template=NuLL, $renderOnly=False)
+    public function display($template=NuLL, $renderOnly=False, $skipHooking=False, $vars='')
     {
         $this->timer = microtime_float();
         
         // execute hooks
-        $this->panthera->get_options('template.display', $template);
+        if (!$skipHooking)
+            $this->panthera->get_options('template.display', $template);
         
         #foreach ($this->vars as $key => $value)
             #$this->tpl->assign($key, $value);
@@ -609,9 +635,12 @@ class pantheraTemplate extends pantheraClass
         
         // turn off output control
         $this->panthera->outputControl->flushAndFinish();
+        
+        if (!$vars)
+            $vars = $this->vars;
 
         // assign all variables from pantheraTemplate to template engine
-        foreach ($this->vars as $var => $value)
+        foreach ($vars as $var => $value)
             $this -> tpl -> assign($var, $value);
             
         $render = $this -> tpl -> draw(str_replace('.tpl', '', $file), True, True);
