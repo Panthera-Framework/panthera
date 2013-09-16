@@ -29,9 +29,9 @@ $(document).ready(function () {
         <div class="title-grid">{if="$reply == 1"}{function="localize('Reply', 'pmessages')"}{else}{function="localize('Send more', 'pmessages')"}{/if}</div>
       <input type="text" name="title" value="{$message->title}" style="display: none;">
         <div class="content-gird">
-             <textarea name="content" style="width: 99%; height: 150px;"></textarea><br><br>
+             <textarea name="content" style="width: 99%; height: 150px; font-family: Helvetica;"></textarea><br><br>
              <input type="text" name="recipient_id" value="{if="$reply == 1"}{$message->sender_id}{else}{$message->recipient_id}{/if}" style="display: none;">
-             <input type="submit" value="{function="localize('Send', 'pmessages')"}" style="float: right; margin-right: 7px;"><br>
+             <input type="submit" onclick="" value="{function="localize('Send', 'pmessages')"}" style="float: right; margin-right: 7px;"><br>
         </div>
         </form>
 </div> 
