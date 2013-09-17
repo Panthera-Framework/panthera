@@ -42,19 +42,14 @@ $(document).ready(function () {
             <thead>
                 <tr>
                     <th>{function="localize('Title', 'pmessages')"}</th>
-                    <th>{function="localize('From', 'pmessages')"}</th>
-                    <th>{function="localize('Sent', 'pmessages')"}</th>
+                    <th>{function="localize('With', 'pmessages')"}</th>
+                    <th>{function="localize('Date', 'pmessages')"}</th>
                     <th>{function="localize('Options', 'pmessages')"}</th>
                 </tr>
             </thead>
             
-            <tfoot>
-                <tr>
-                    <td colspan="4" class="rounded-foot-left"><em>{function="localize('Inbox', 'pmessages')"}</em></td>
-                </tr>
-            </tfoot>
             <tbody>
-             {if="count($received) < 1"}
+             {if="count($messages) < 1"}
                 
                 <tr>
                   <td colspan="4"><p style="text-align: center;">{function="localize('No messages in inbox', 'pmessages')"}</p></td>
@@ -62,11 +57,11 @@ $(document).ready(function () {
                 
              {else}
                 
-              {loop="$received"}
-                <tr id="received_{$value.id}" {if="!$value.seen"}style="font-weight: bold;{/if}">
-                  <td><a onclick="{if="!$value.seen"}seenMessage({$value.id});{/if}navigateTo('{$AJAX_URL}?display=privatemessages&cat=admin&action=show_message&messageid={$value.id}&reply=1')" style="cursor: hand; cursor: pointer;">{$value.title}</a></td>
-                  <td>{$value.sender}</td>
-                  <td>{$value.sent}</td>
+              {loop="$messages"}
+                <tr id="messages_{$value.id}" {if="!$value.seen"}style="font-weight: bold;{/if}">
+                  <td><a onclick="{if="!$value.seen"}seenMessage({$value.id});{/if}navigateTo('{$AJAX_URL}?display=privatemessages&cat=admin&action=show_message&messageid={$value.id}')" style="cursor: hand; cursor: pointer;">{$value.title} ({$value.count})</a></td>
+                  <td>{$value.interlocutor}</td>
+                  <td>{$value.sent} {function="localize('ago')"}</td>
                   <td><input type="button" value="{function="localize('Remove', 'pmessages')"}" onclick="removeMessage({$value.id})"></td>
                 </tr>
               {/loop}
@@ -75,45 +70,6 @@ $(document).ready(function () {
             </tbody>
          </table>
        </div>
-       
-       <div class="grid-1">
-        <table class="gridTable">
-            <thead>
-                <tr>
-                    <th>{function="localize('Title', 'pmessages')"}</th>
-                    <th>{function="localize('To', 'pmessages')"}</th>
-                    <th>{function="localize('Sent', 'pmessages')"}</th>
-                    <th>{function="localize('Options', 'pmessages')"}</th>
-                </tr>
-            </thead>
-            
-            <tfoot>
-                <tr>
-                    <td colspan="4" class="rounded-foot-left"><em>{function="localize('Outbox', 'pmessages')"}</em></td>
-                </tr>
-            </tfoot>
-            <tbody>
-             {if="count($sent) < 1"}
-                
-                <tr>
-                  <td colspan="4"><p style="text-align: center;">{function="localize('No messages in outbox', 'pmessages')"}</p></td>
-                </tr>
-                
-             {else}
-                
-              {loop="$sent"}
-                <tr id="sent_{$value.id}">
-                    <td><a onclick="navigateTo('{$AJAX_URL}?display=privatemessages&cat=admin&action=show_message&messageid={$value.id}&reply=0');" style="cursor: hand; cursor: pointer;">{$value.title}</a></td>
-                    <td>{$value.recipient}</td>
-                  <td>{$value.sent}</td>
-                  <td><input type="button" value="{function="localize('Remove', 'pmessages')"}" onclick="removeMessage({$value.id})"></td>
-                </tr>
-              {/loop}
-              
-             {/if}
-            </tbody>
-         </table>
-      </div>
       
 <div class="grid-1">
         <form id="send_message" action="{$AJAX_URL}?display=privatemessages&cat=admin&action=send_message" method="POST">

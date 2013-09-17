@@ -61,18 +61,40 @@ class privateMessage extends pantheraFetchDB
       * @author Mateusz Warzyński
       */
     
-    public static function getMessages($by, $limit=0, $limitFrom=0, $orderBy='sender_id', $order='ASC')
+    public static function getMessages($limit=0, $limitFrom=0, $orderBy='sent', $order='DESC')
     {
         global $panthera;
         
         if (!$panthera->user)
             return False;
         
-        return $panthera->db->getRows('private_messages', $by, $limit, $limitFrom, '', $orderBy, $order);
+        $where = new whereClause;
+        $where -> add('AND', 'recipient_id', '=', $panthera->user->id);
+        $where -> add('OR', 'sender_id', '=', $panthera->user->id);
+        
+        return $panthera->db->getRows('private_messages', $where, $limit, $limitFrom, '', $orderBy, $order);
     }
     
+    /**
+      * Get conversation between two users
+      *
+      * @param int $interlocutor
+      * @param string $title of messages 
+      * @return array|bool
+      * @author Mateusz Warzyński
+      */
     
-
+    public static function getConversation($interlocutor, $title)
+    {
+        global $panthera;
+        
+        if (!$panthera->user)
+            return False;
+        
+        $SQL = $panthera -> db -> query("SELECT * FROM `pa_private_messages` WHERE `title` = :title AND ((`recipient_id` = :interlocutor AND `sender_id` = :user_id) OR (`recipient_id` = :user_id AND `sender_id` = :interlocutor))", array('interlocutor' => $interlocutor, 'user_id' => $panthera->user->id, 'title' => $title));
+        return $SQL -> fetchAll(PDO::FETCH_ASSOC);
+    }
+    
     /**
       * Change visiblity of (or remove) message
       *
