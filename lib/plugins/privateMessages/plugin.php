@@ -60,8 +60,25 @@ function pMessagesAjax()
             ajax_exit(array('status' => 'failed'));
         }
 
-
-        // hide message sent by user or remove it if recipient hide it
+        // hide group of messages or remove them if recipient hide them
+        if (@$_GET['action'] == 'remove_messages') {
+            
+            $message = new privateMessage('id', intval($_POST['messageid']));
+            
+            if ($message->exists()) {
+                if ($message->recipient_id == $panthera->user->id)
+                    $interlocutor = $message->sender_id;
+                else
+                    $interlocutor = $message->recipient_id;
+                
+                if (privateMessage::removeGroup($interlocutor, $message->title))
+                    ajax_exit(array('status' => 'success'));
+                else
+                    ajax_exit(array('status' => 'failed', 'message' => 'Cannot remove messages!'));
+            }
+        }            
+        
+        // hide message or remove it if recipient hide it
         if (@$_GET['action'] == 'remove_message') {
             
             $message = new privateMessage('id', intval($_GET['messageid']));
@@ -96,23 +113,36 @@ function pMessagesAjax()
 
         if (@$_GET['action'] == 'show_message') {
             
-            $message = new privateMessage('id', $_GET['messageid']);
-            if ($message -> exists()) {
-                  $template -> push('message', $message);
+            $getMessage = new privateMessage('id', $_GET['messageid']);
+            
+            if ($getMessage -> exists()) {
+                  $template -> push('message', $getMessage);
                   
                   // get ID of interlocutor
-                  if ($message->recipient_id == $panthera->user->id)
-                      $interlocutor = $message->sender_id;
+                  if ($getMessage->recipient_id == $panthera->user->id)
+                      $interlocutor = $getMessage->sender_id;
                   else
-                      $interlocutor = $message->recipient_id;
+                      $interlocutor = $getMessage->recipient_id;
+                  
+                  $messages = privateMessage::getConversation($interlocutor, $getMessage->title);
+                  
+                  // check if there are removed messages
+                  $m = array();
+                  foreach ($messages as $key => $message) {
+                      if (($message['visibility_recipient'] and $message['recipient_id'] == $panthera->user->id) OR ($message['visibility_sender'] and $message['sender_id'] == $panthera->user->id))
+                          $m[] = $message;
+                  } 
                   
                   $template -> push('interlocutor', $interlocutor);
-                  $template -> push('messages', privateMessage::getConversation($interlocutor, $message->title));
+                  
+                  if (count($m))
+                    $template -> push('messages', $m);
+                  
             } else {
                   ajax_exit(array('status' => 'failed', 'message' => localize('Cannot get messages!', 'pmessages')));
             }
 
-            $titlebar = new uiTitlebar(strval($message->title));
+            $titlebar = new uiTitlebar(strval($getMessage->title));
             $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-mail-flag-icon.png', 'left');
             
             $template -> push('user_id', $panthera->user->id);

@@ -1,25 +1,25 @@
 <script type="text/javascript">
 
-function removeMessage(id)
-{
-    w2confirm('{function="localize('Are you sure you want to delete this message?', 'pmessages')"}', function (responseText) {
-        
-        if (responseText == 'Yes') {
-            panthera.jsonGET( { url: '{$AJAX_URL}?display=privatemessages&cat=admin&action=remove_message&messageid='+id, messageBox: 'w2ui', success: function (response) {
-                    if (response.status == 'success') {
-                        navigateTo('{$AJAX_URL}?display=privatemessages&cat=admin');
-                    }
-                
-                }
-            });
-        }
-        
-    });
-}
-
 function seenMessage(id)
 {
     panthera.jsonGET( { url: '{$AJAX_URL}?display=privatemessages&cat=admin&action=seen_message&messageid='+id, messageBox: 'w2ui'});
+}
+
+function removeMessages(id)
+{
+    w2confirm('{function="localize('Are you sure you want delete this group of messages?', 'pmessages')"}', function (responseText) {
+        if (responseText == 'Yes')
+        {
+            panthera.jsonPOST( { url: '?{function="getQueryString('GET', 'action=remove_messages', '_')"}', data: 'messageid='+id, messageBox: 'w2ui', success: function (response) {
+                    if (response.status == 'success')
+                    {
+                        navigateTo('?display=privatemessages&cat=admin');
+                    }
+                
+                } 
+            });
+        }
+    });
 }
 
 $(document).ready(function () {
@@ -62,7 +62,11 @@ $(document).ready(function () {
                   <td><a onclick="{if="!$value.seen"}seenMessage({$value.id});{/if}navigateTo('{$AJAX_URL}?display=privatemessages&cat=admin&action=show_message&messageid={$value.id}')" style="cursor: hand; cursor: pointer;">{$value.title} ({$value.count})</a></td>
                   <td>{$value.interlocutor}</td>
                   <td>{$value.sent} {function="localize('ago')"}</td>
-                  <td><input type="button" value="{function="localize('Remove', 'pmessages')"}" onclick="removeMessage({$value.id})"></td>
+                  <td>
+                      <a href="#" onclick="removeMessages({$value.id})">
+                         <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
+                      </a>
+                  </td>
                 </tr>
               {/loop}
               

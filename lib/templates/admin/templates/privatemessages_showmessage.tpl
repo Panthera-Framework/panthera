@@ -1,4 +1,22 @@
 <script type="text/javascript">
+
+function removeMessage(id)
+{
+    w2confirm('{function="localize('Are you sure you want to delete this message?', 'pmessages')"}', function (responseText) {
+        
+        if (responseText == 'Yes') {
+            panthera.jsonGET( { url: '{$AJAX_URL}?display=privatemessages&cat=admin&action=remove_message&messageid='+id, messageBox: 'w2ui', success: function (response) {
+                    if (response.status == 'success') {
+                        $("#message_"+id).slideUp();
+                    }
+                
+                }
+            });
+        }
+        
+    });
+}
+
 $(document).ready(function () {
     $('#reply_message').submit(function () {
         panthera.jsonPOST( { data: '#reply_message', success: function (response) {
@@ -15,8 +33,8 @@ $(document).ready(function () {
 {include="ui.titlebar"}
 
 {loop="$messages"}
-    <div class="grid-1">
-         <div class="title-grid"><h3><b><a href="#{$value.sender}" onclick="navigateTo('?display=users&cat=admin&action=account&uid={$interlocutor}');">{$value.sender}</a></b>&nbsp;-&nbsp;{function="elapsedTime($value.sent)"}{function="localize('ago')"}</h3></div>
+    <div class="grid-1" id="message_{$value.id}">
+         <div class="title-grid"><b><a href="#{$value.sender}" onclick="navigateTo('?display=users&cat=admin&action=account&uid={$interlocutor}');">{$value.sender}</a></b>&nbsp;-&nbsp;{function="elapsedTime($value.sent)"}{function="localize('ago')"}<span id="widgetRemoveButtons" class="widgetRemoveButtons"><a href="#" onclick="removeMessage('{$value.id}')"><img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="height: 10px;"></a></span></div>
          
          <div class="content-gird" {if="$value.sender_id == $user_id"} style="background-color: #F3F3F3;" {/if}>
              <div class="message-content" style="font-family: Helvetica; font-size: 13px;">

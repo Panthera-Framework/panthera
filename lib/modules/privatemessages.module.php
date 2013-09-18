@@ -94,6 +94,61 @@ class privateMessage extends pantheraFetchDB
         $SQL = $panthera -> db -> query("SELECT * FROM `pa_private_messages` WHERE `title` = :title AND ((`recipient_id` = :interlocutor AND `sender_id` = :user_id) OR (`recipient_id` = :user_id AND `sender_id` = :interlocutor))", array('interlocutor' => $interlocutor, 'user_id' => $panthera->user->id, 'title' => $title));
         return $SQL -> fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+      * Remove group of messages
+      *
+      * @param int $interlocutor id
+      * @param string $title of messages 
+      * @return array|bool
+      * @author Mateusz Warzyński
+      */
+
+    public static function removeGroup($interlocutor, $title)
+    {
+        global $panthera;
+        
+        if (!$panthera->user)
+            return False;
+        
+        $user2 = new pantheraUser('id', $interlocutor);
+        
+        // check if interlocutor exists
+        if (!$user2->exists())
+            return False;
+        
+        // get array with messages
+        $SQL = $panthera -> db -> query("SELECT * FROM `pa_private_messages` WHERE `title` = :title AND ((`recipient_id` = :interlocutor AND `sender_id` = :user_id) OR (`recipient_id` = :user_id AND `sender_id` = :interlocutor))", array('interlocutor' => $user2->id, 'user_id' => $panthera->user->id, 'title' => $title));
+        $messages = $SQL -> fetchAll(PDO::FETCH_ASSOC);
+        
+        // check if thera are any messages
+        if (count($messages)) {
+            foreach ($messages as $key => $message)
+            {
+                // set visibility to false
+                if ($message['visibility_sender'] and $message['sender_id'] == $panthera->user->id) {
+                    $toHide = new privateMessage('id', intval($message['id']));
+                    $toHide->visibility_sender = 0;
+                    $toHide->save();
+                } elseif ($message['visibility_recipient'] and $message['recipient_id'] == $panthera->user->id) {
+                    $toHide = new privateMessage('id', intval($message['id']));
+                    $toHide->visibility_recipient = 0;
+                    $toHide->save();
+                }
+                
+                // remove message from database
+                if (((!$message['visibility_sender'] and $message['sender_id'] == $panthera->user->id) OR (!$message['visibility_recipient'] and $message['recipient_id'] == $panthera->user->id)) AND $panthera->config->getKey('pm.remove', 1, 'bool', 'pm')) {
+                    $toRemove = new privateMessage('id', intval($message['id']));
+                    $toRemove->remove();
+                    $toRemove->save();
+                }
+            }
+        } else {
+            return False;
+        }
+
+        return True;
+    }
     
     /**
       * Change visiblity of (or remove) message
