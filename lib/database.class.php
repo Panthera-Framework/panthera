@@ -482,12 +482,14 @@ class pantheraDB
     public function buildInsertString($array, $multipleRows=False, $tableName='')
     {
         $columns = '';
+        $queryTable = '';
         
-        if (!$tableName)
+        if ($tableName)
         {
             $queryTable = 'INSERT INTO `{$db_prefix}' .$tableName. '` ';
         }
         
+        // single row code
         if (!$multipleRows)
         {
             $dataRow = '';
