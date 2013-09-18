@@ -125,22 +125,11 @@ class privateMessage extends pantheraFetchDB
         if (count($messages)) {
             foreach ($messages as $key => $message)
             {
-                // set visibility to false
-                if ($message['visibility_sender'] and $message['sender_id'] == $panthera->user->id) {
-                    $toHide = new privateMessage('id', intval($message['id']));
-                    $toHide->visibility_sender = 0;
-                    $toHide->save();
-                } elseif ($message['visibility_recipient'] and $message['recipient_id'] == $panthera->user->id) {
-                    $toHide = new privateMessage('id', intval($message['id']));
-                    $toHide->visibility_recipient = 0;
-                    $toHide->save();
-                }
-                
-                // remove message from database
-                if (((!$message['visibility_sender'] and $message['sender_id'] == $panthera->user->id) OR (!$message['visibility_recipient'] and $message['recipient_id'] == $panthera->user->id)) AND $panthera->config->getKey('pm.remove', 1, 'bool', 'pm')) {
-                    $toRemove = new privateMessage('id', intval($message['id']));
-                    $toRemove->remove();
-                    $toRemove->save();
+                // remove message
+                if ((!$message['visibility_sender'] and $message['sender_id'] == $panthera->user->id) OR (!$message['visibility_recipient'] and $message['recipient_id'] == $panthera->user->id)) {
+                    $remove = new privateMessage('id', intval($message['id']));
+                    $remove->remove();
+                    $remove->save();
                 }
             }
         } else {
