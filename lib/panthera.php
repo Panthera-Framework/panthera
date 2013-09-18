@@ -499,7 +499,7 @@ class pantheraConfig
     /**
       * Load configuration overlay from database
       *
-      * @return void
+      * @return int
       * @author Damian Kęska
       */
 
@@ -526,7 +526,7 @@ class pantheraConfig
                 $SQL = $this->panthera->db->query('SELECT `key`, `value`, `type`, `section` FROM `{$db_prefix}config_overlay` WHERE `section` = :section', array('section' => trim($section)));
 
             $array = $SQL -> fetchAll(PDO::FETCH_ASSOC);
-
+            
             if (count($array) > 0)
             {
                 foreach ($array as $key => $value)
@@ -560,6 +560,8 @@ class pantheraConfig
         }
 
         $this->panthera->logging->output('Overlay loaded, total ' .count($this->overlay). ' keys', 'pantheraCore');
+        
+        return count($this->overlay);
     }
 
 
@@ -777,15 +779,17 @@ class pantheraCore
             $this->logging -> output('Initializing cache configured in app.php', 'pantheraCore');
             $this->loadCache($config['varCache'], $config['cache'], $config['session_key']);
         }
+        
+        /** Debugging **/
+        $this -> logging -> toVarCache = (bool)$config['debug_to_varcache'];
+        $this -> logging -> tofile = (bool)$config['debug_to_file'];
 
         $this -> logging -> output('Loading configuration', 'pantheraCore');
         $this->config = new pantheraConfig($this, $config);
         $this->db = new pantheraDB($this);
         $this->config->loadOverlay();
         
-        /** Debugging **/
-        $this -> logging -> toVarCache = (bool)$config['debug_to_varcache'];
-        $this -> logging -> tofile = (bool)$config['debug_to_file'];
+        // debugging part two
         $this -> logging -> debug = (bool)$this->config->getKey('debug');
         
         /** Cryptography support **/

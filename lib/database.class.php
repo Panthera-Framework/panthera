@@ -471,6 +471,75 @@ class pantheraDB
     }
     
     /**
+      * Build a SQL insert query string with single or multiple rows
+      *
+      * @param array $array Input array containing keys and values eg. array('id' => 1, 'title' => 'Test'), and for multiple rows: array(array('id' => 1, 'title' => 'First'), array('id' => 2, 'title' => 'Second'))
+      * @param bool $multipleRows If $array contains multiple rows please set it to true
+      * @return array with query and values
+      * @author Damian Kęska
+      */
+    
+    public function buildInsertString($array, $multipleRows=False, $tableName='')
+    {
+        $columns = '';
+        
+        if (!$tableName)
+        {
+            $queryTable = 'INSERT INTO `{$db_prefix}' .$tableName. '` ';
+        }
+        
+        if (!$multipleRows)
+        {
+            $dataRow = '';
+           
+            foreach ($array as $key => $value)
+            {
+                $columns .= '`' .$key. '`, ';
+                $dataRow .= ':' .$key. ', ';
+            }
+            
+            $columns = rtrim($columns, ', ');
+            $dataRow = rtrim($dataRow, ', ');
+            
+            
+            return array('query' => $queryTable. '(' .$columns. ') VALUES (' .$dataRow. ')', 'values' => $array);
+        } else {
+            // multiple rows code
+            
+            foreach ($array[0] as $key => $value)
+            {
+                $columns .= '`' .$key. '`, ';
+            }
+            
+            $dataRows = '';
+            $i = 0;
+            $values = array();
+            
+            foreach ($array as $row)
+            {
+                $i++;
+                $dataRow = '(';
+                
+                foreach ($row as $key => $value)
+                {
+                    $dataRow .= ':' .$key. '_r' .$i. ', ';
+                    $values[$key. '_r' .$i] = $value;
+                }
+                
+                $dataRow = rtrim($dataRow, ', ');
+                $dataRow .= ')';
+                
+                $dataRows .= $dataRow. ', ';
+            }
+            
+            $dataRows = rtrim($dataRows, ', ');
+        
+            return array('query' => $queryTable. '(' .$columns. ') VALUES ' .$dataRows, 'values' => $values);
+        }
+    }
+    
+    
+    /**
       * Get rows from selected database and return as array of data or array of specified class's objects
       *
       * @param string $db name
@@ -484,7 +553,7 @@ class pantheraDB
       * @author Damian Kęska
       */
 
-    function getRows($db, $by, $limit, $offset, $returnAs='', $orderColumn='id', $order='DESC')
+    public function getRows($db, $by, $limit, $offset, $returnAs='', $orderColumn='id', $order='DESC')
     {
         if (is_numeric($limit))
         {
@@ -537,7 +606,7 @@ class pantheraDB
 
         if ($SQL->rowCount() > 0)
         {
-            $array = $SQL->fetchAll();
+            $array = $SQL->fetchAll(PDO::FETCH_ASSOC);
 
             foreach ($array as $item)
             {
