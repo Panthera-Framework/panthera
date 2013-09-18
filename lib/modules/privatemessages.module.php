@@ -111,14 +111,8 @@ class privateMessage extends pantheraFetchDB
         if (!$panthera->user)
             return False;
         
-        $user2 = new pantheraUser('id', $interlocutor);
-        
-        // check if interlocutor exists
-        if (!$user2->exists())
-            return False;
-        
         // get array with messages
-        $SQL = $panthera -> db -> query("SELECT * FROM `pa_private_messages` WHERE `title` = :title AND ((`recipient_id` = :interlocutor AND `sender_id` = :user_id) OR (`recipient_id` = :user_id AND `sender_id` = :interlocutor))", array('interlocutor' => $user2->id, 'user_id' => $panthera->user->id, 'title' => $title));
+        $SQL = $panthera -> db -> query("SELECT * FROM `pa_private_messages` WHERE `title` = :title AND ((`recipient_id` = :interlocutor AND `sender_id` = :user_id) OR (`recipient_id` = :user_id AND `sender_id` = :interlocutor))", array('interlocutor' => $interlocutor, 'user_id' => $panthera->user->id, 'title' => $title));
         $messages = $SQL -> fetchAll(PDO::FETCH_ASSOC);
         
         // check if thera are any messages
@@ -126,11 +120,9 @@ class privateMessage extends pantheraFetchDB
             foreach ($messages as $key => $message)
             {
                 // remove message
-                if ((!$message['visibility_sender'] and $message['sender_id'] == $panthera->user->id) OR (!$message['visibility_recipient'] and $message['recipient_id'] == $panthera->user->id)) {
-                    $remove = new privateMessage('id', intval($message['id']));
-                    $remove->remove();
-                    $remove->save();
-                }
+                $remove = new privateMessage('id', intval($message['id']));
+                $remove->remove();
+                $remove->save();
             }
         } else {
             return False;
