@@ -717,10 +717,51 @@ class pantheraDB
 
 class whereClause
 {
-	protected $SQL=NuLL, $vals = array();
-
-	public function add ( $Statement, $Column, $Equals, $Value )
+	protected $SQL=NuLL, $vals = array(), $groups = array();
+	
+	/**
+	  * Add statement before group of instructions
+	  *
+	  * @param int $group
+	  * @param string $statement "AND" or "OR"
+	  * @return void 
+	  * @author Damian Kęska
+	  */
+	
+	public function setGroupStatement($group, $statement)
 	{
+	    if ($statement != 'AND' and $statement != 'OR')
+	    {
+	        return False;
+	    }
+	    
+	    if (!isset($this->groups[$group]))
+	    {
+	        $this->groups[$group] = array('query' => '', 'statement' => 'AND');
+	    }
+	    
+	    $this->groups[$group]['statement'] = $statement;
+	}
+	
+	/**
+	  * Add new instruction
+	  *
+	  * @param string $Statement "OR", "AND", "", or ","
+	  * @param string $Column
+	  * @param string $Equals '=' , '!=', '<', '>', '<=', '>=', 'LIKE'
+	  * @param mixed $Value
+	  * @param int $group
+	  * @return bool 
+	  * @author Damian Kęska
+	  */
+
+	public function add ( $Statement, $Column, $Equals, $Value, $group = 1 )
+	{
+	    if (!isset($this->groups[$group]))
+	    {
+	        $this->groups[$group] = array('query' => '', 'statement' => 'AND');
+	    }
+	
         $this->Values = array();
 		$Equals_list = array ( '=' , '!=', '<', '>', '<=', '>=', 'LIKE' );
 
@@ -735,18 +776,34 @@ class whereClause
 		if ( !in_array ( $Statement, $Statement_list ) )
 			return false;
 
-		if ( $this -> SQL == NuLL )
+		if (!$this->groups[$group]['query'])
 		{
 			$Statement = '';	
 		}
-
-		$this->SQL .= $Statement. ' `' .$Column. '` ' .$Equals. ' :' .$Column. ' ';
+		
+		$this->groups[$group]['query'] .= $Statement. ' `' .$Column. '` ' .$Equals. ' :' .$Column. ' ';
         $this->vals[(string)$Column] = $Value;
 		return true;
 	}
+	
+	/**
+	  * Build and return query
+	  *
+	  * @return array with query and values 
+	  * @author Damian Kęska
+	  */
 
 	public function show ()
 	{
+	    $this->SQL = '';
+	
+	    foreach ($this->groups as $group)
+	    {
+	        $this->SQL .= ' ' .$group['statement']. ' (' .$group['query']. ')';
+	    }
+	    
+	    $this -> SQL = ltrim($this -> SQL, 'AND OR');
+	
 		return array($this->SQL, $this->vals);
 	}
 }
