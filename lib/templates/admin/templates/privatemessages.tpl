@@ -52,7 +52,7 @@ $(document).ready(function () {
              {if="count($messages) < 1"}
                 
                 <tr>
-                  <td colspan="4"><p style="text-align: center;">{function="localize('No messages in inbox', 'pmessages')"}</p></td>
+                  <td colspan="4"><p style="text-align: center;">{function="localize('There are no messages.', 'pmessages')"}</p></td>
                 </tr>
                 
              {else}
