@@ -135,17 +135,6 @@ function getOtherCustomPages()
                     <input type="submit" value="&nbsp;{function="localize('Add')"}&nbsp;"></td>
                 </tr>
                 {/if}
-                
-                <tr>
-                    <td>{function="localize('Filter by language', 'custompages')"}:</td>
-                    <td colspan="2"><select onChange="getOtherCustomPages()" id="language">
-                         {loop="$locales"}
-                           <option value="{$key}" {if="$current_lang == $key"} selected {/if}>{$key}</option>
-                         {/loop}
-                           <option value="" {if="$current_lang == ''"} selected {/if} >{function="localize('all', 'custompages')"}</option>
-                        </select>
-                   </td>
-                </tr>
             </tbody>
             </form>
         </table>

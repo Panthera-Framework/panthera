@@ -47,7 +47,7 @@ class pantheraTemplate extends pantheraClass
     public $deviceType = 'desktop';
     public $forceKeepTemplate = False;
     public $timer = 0;
-    public $engine = 'raintpl3';
+    public $engine = 'raintpl';
     
     // configurable options
     protected $debugging;
@@ -158,6 +158,8 @@ class pantheraTemplate extends pantheraClass
         //$cacheDir = False;
         //if ($this->caching == True)
         $cacheDir = SITE_DIR. '/content/tmp/templates_c/';
+        
+        // TODO: Add support for include_dir
         
         // configure RainTPL engine
         Rain\Tpl::configure(array("base_url" => null, "tpl_dir"	=> '/', "cache_dir"	=> $cacheDir, "tpl_ext" => 'tpl', "debug" => $this->debugging, 'auto_escape' => false, 'php_enabled' => true, 'sandbox' => false));

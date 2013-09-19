@@ -8,5 +8,5 @@ CREATE TABLE `{$db_prefix}config_overlay` (
   `section` varchar(16) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `key` (`key`)
-) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 
