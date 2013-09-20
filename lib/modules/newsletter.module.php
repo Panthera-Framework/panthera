@@ -141,23 +141,25 @@ class newsletterManagement
             $job->save();
             return 'FINISHED';
         }
-        
+
         if (!isset($jobData['data']['maxLimit']))
-            $jobData['data']['maxLimit'] = $panthera->config->getKey('cron_newsletter_limit', 15, 'int'); // every server should handle this tiny default
-            
+        {
+            $jobData['data']['maxLimit'] = $panthera->config->getKey('newsletter.cronlimit', 15, 'int', 'newsletter'); // every server should handle this tiny default
+        }
+
         // start from last position
         $users = $newsletter -> getUsers($jobData['data']['offset'], $jobData['data']['maxLimit']);
-        
+
         $panthera->logging->output('cronjob jobname=' .$job->jobname. ', offset=' .$jobData['data']['offset']. ', limit=' .$jobData['data']['maxLimit']. ', usersCount=' .$usersCount, 'newsletter');
-        
+
         // move our position
         $jobData['data']['offset'] = ($jobData['data']['offset']+$jobData['data']['maxLimit']);
         print("Changing offset and saving data...\n");
-        
+
         $job->setData($jobData);
         $job->save(); // just to be sure
         print("Saved...\n");
-        
+
         if (count($users) > 0)
         {
             foreach ($users as $user)
@@ -165,9 +167,9 @@ class newsletterManagement
                 $userMessage = str_ireplace('{$userName}', $user, pantheraUrl($jobData['data']['message']));
                 $userTitle = str_ireplace('{$userName}', $user, pantheraUrl($jobData['data']['title']));
             
-                // finally send a user a message
+                // finally send user a message
                 try {
-                    newsletterManagement::send($user, $userMessage, $userTitle);
+                    newsletterManagement::send($user, $userMessage, $userTitle, $jobData['data']['from']);
                 } catch (Exception $e) { 
                     $panthera -> logging -> output('Cannot send message: ' .print_r($e, True), 'newsletter');
                 }
@@ -268,6 +270,8 @@ class newsletterManagement
 
 class newsletterType_mail implements newsletterType
 {
+    protected static $connection = null;
+
     /**
       * Validating function, checking if address is correct
       *
@@ -292,15 +296,26 @@ class newsletterType_mail implements newsletterType
       * @author Damian Kęska
       */
     
-    public static function send($address, $content, $topic)
+    public static function send($address, $content, $topic, $from='')
     {
         global $panthera;
         
-        $mail = new mailMessage(true);
-        $mail -> setSubject($topic);
-        $mail -> setFrom($panthera -> config -> getKey('mailing_from', 'example@example.com', 'string', 'mailing'));
-        $mail -> addRecipient(trim($address), 'html');
-        return $mail -> send($content);
+        // initialize the connection only once
+        if (!self::$connection)
+        {
+            self::$connection = new mailMessage(true);
+        }
+        
+        self::$connection -> setSubject($topic);
+        
+        if (!$from)
+        {
+            $from = $panthera -> config -> getKey('mailing_from', 'example@example.com', 'string', 'mailing');
+        }
+        
+        self::$connection -> setFrom($from);
+        self::$connection -> addRecipient(trim($address), 'html');
+        return self::$connection -> send($content);
     }
 }
 
@@ -492,7 +507,7 @@ class newsletter extends pantheraFetchDB
       * @author Damian Kęska
       */
     
-    public function execute($message, $title, $date='')
+    public function execute($message, $title, $from='', $date='')
     {
         // crontab is required for newsletter to work
         $this->panthera->importModule('crontab');
@@ -520,8 +535,8 @@ class newsletter extends pantheraFetchDB
                 $time = 0;
         }
         
-        $jobName = $this->generateJobName($message, $title, $time);
-        $data = array('message' => $message, 'title' => $title, 'nid' => $this->nid, 'offset' => 0);
+        $jobName = $this->generateJobName($message.$from, $title, $time);
+        $data = array('message' => $message, 'from' => $from, 'title' => $title, 'nid' => $this->nid, 'offset' => 0);
 
         // create new cronjob
         try {

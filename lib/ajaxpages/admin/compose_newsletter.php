@@ -12,8 +12,9 @@ if (!defined('IN_PANTHERA'))
       exit;
 
 if (!getUserRightAttribute($user, 'can_compose_newsletters')) {
-    $noAccess = new uiNoAccess; $noAccess -> display();
-    pa_exit();
+    $noAccess = new uiNoAccess;
+    $noAccess -> addMetas(array('can_compose_newsletters'));
+    $noAccess -> display();
 }
 
 $panthera -> locale -> loadDomain('newsletter');
@@ -67,7 +68,7 @@ if(isset($_POST['content']))
     if (strlen($_POST['title']) < 3)
         ajax_exit(array('status' => 'failed', 'message' => localize('Title is too short', 'newsletter')));
 
-    $newsletter -> execute($_POST['content'], htmlspecialchars($_POST['title']));
+    $newsletter -> execute($_POST['content'], htmlspecialchars($_POST['title']), $_POST['from']);
 
     ajax_exit(array('status' => 'success', 'message' => localize('Sent', 'newsletter')));
 }

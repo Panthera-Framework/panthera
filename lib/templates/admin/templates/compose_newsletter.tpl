@@ -24,10 +24,29 @@ jQuery(document).ready(function($) {
 <div class="grid-1">
     <!-- messages box -->
         <form id="newsletter_form" action="{$AJAX_URL}?display=compose_newsletter&cat=admin&nid={$nid}" method="POST">
-        <div class="title-grid" style="height: 25px;">{function="localize('Title', 'newsletter')"}: <input type="text" value="" name="title"><span></span></div>
+        <div class="title-grid">{function="localize('Compose a new message', 'newsletter')"}</div>
         <div class="content-gird">
-             <textarea name="content" id="content_textarea" style="width: 99%; height: 400px;"></textarea><br><br>
-             <input type="button" value="{function="localize('Subscribers', 'newsletter')"}" onclick="createPopup('?display=newsletter_users&cat=admin&nid={$nid}', 1024);"> <input type="submit" value="{function="localize('Send', 'newsletter')"}">
+             <table style="border: 0px; width: 100%;">
+                <tr>
+                    <td style="width: 60px;">{function="localize('Title', 'newsletter')"}:</td><td><input type="text" value="" name="title"></td>
+                </tr>
+                
+                <tr>
+                    <td style="width: 60px; padding-bottom: 20px;">{function="localize('Sender', 'newsletter')"}:</td><td style="padding-bottom: 20px;"><input type="text" value="" name="from"></td>
+                </tr>
+                
+                 <tr>
+                    <td colspan="2">
+                        <textarea name="content" id="content_textarea" style="width: 99%; height: 400px;"></textarea><br><br>
+                    </td>
+                 </tr>
+                 
+                 <tr>
+                    <td colspan="2">
+                        <input type="button" value="{function="localize('Subscribers', 'newsletter')"}" onclick="createPopup('?display=newsletter_users&cat=admin&nid={$nid}', 1024);"> <input type="submit" value="{function="localize('Send', 'newsletter')"}">
+                    </td>
+                 </tr>
+             </table>
         </div>
         </form>
 </div>

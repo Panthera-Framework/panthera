@@ -724,51 +724,12 @@ class pantheraCore
 	 * @author Damian Kęska
 	 */
 
-    public function __construct($config) {
-        // this should be definitely done in app.php 
-        /*if (!$config['SITE_DIR'])
-        {
-            // try to find site root directory
-            if (!defined('SITE_DIR'))
-            {
-                if (MODE == 'CLI')
-                    $path = $_SERVER['PWD'];
-                else {
-                    $pathInfo = pathinfo($_SERVER['DOCUMENT_ROOT'].$_SERVER['PHP_SELF']);
-                    $path = $pathInfo['dirname'];
-                }
-
-                // if the main script is not executing in main directory but in any other directory on higher level in the tree eg. /pages/make_thumbnail.php (level = 1), /other/scripts/show_users.php (level = 2)
-                // so, the script should look back in parent directories and check if content/config.php exists at this level
-                if (!is_file($path. '/content/app.php'))
-                {
-                    $deep = 0;
-                    while (True)
-                    {
-                        $deep++;
-
-                        $path = dirname($path); // going to parent directory eg. /test/other-dir/ => /test/
-
-                        if (is_file($path. '/content/app.php'))
-                            break;
-
-                        if ($deep == 8)
-                            break;
-                    }
-                }
-
-                $config['SITE_DIR'] = $path;
-            }
-        }*/
-        
+    public function __construct($config) 
+    {
         define('SITE_DIR', $config['SITE_DIR']); // get SITE_DIR from configuration if avaliable
 
         if (!is_file(SITE_DIR. '/content/app.php'))
             throw new Exception('Cannot find /content/app.php, looking in SITE_DIR=' .SITE_DIR);
-
-        // best performance provides binary serializing
-//        if (function_exists('igbinary_serialize'))
-//            $this->qSerialize = 'binary';
 
         $this->types = new pantheraTypes($this); // data types
         $this->logging = new pantheraLogging($this);
