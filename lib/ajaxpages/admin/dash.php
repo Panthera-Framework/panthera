@@ -77,7 +77,6 @@ $defaults['contact'] = array('link' => '?display=contact&cat=admin', 'name' => a
 $defaults['custom'] = array('link' => '?display=custom&cat=admin', 'name' => array('Custom pages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/custom-pages.png', 'linkType' => 'ajax');
 $defaults['messages'] = array('link' => '?display=messages&cat=admin', 'name' => array('Quick messages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/messages.png', 'linkType' => 'ajax');
 $defaults['users'] = array('link' => '?display=users&cat=admin', 'name' => array('Users'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png', 'linkType' => 'ajax');
-$defaults['webcatalog'] = array('link' => '?display=webcatalog&cat=admin', 'name' => array('Webcatalog'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/webcatalog.png', 'linkType' => 'ajax');
 
 $panthera -> logging -> startTimer();
 $defaultsSum = hash('md4', serialize($defaults));
