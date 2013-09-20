@@ -41,7 +41,7 @@ class GooglePR
 	}
 
 	// Create a url hash
-	function createHash($string)
+	public static function createHash($string)
 	{
 		$check1 = self::stringToNumber($string, 0x1505, 0x21);
 		$check2 = self::stringToNumber($string, 0, 0x1003F);

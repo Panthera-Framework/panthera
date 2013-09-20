@@ -263,10 +263,34 @@ $listDB = $panthera -> config -> getKey('settings.items', $defaults, 'array', 's
 
 if ($panthera -> config -> getKey('settings.items.checksum') != $defaultsSum)
 {
-    $listDB = array_merge($listDB, $defaults);
+    // @feature: not overwriting entries that was marked as "edited"    
+    foreach ($defaults as $sectionName => $section)
+    {
+        foreach ($section as $key => $item)
+        {
+            if ($listDB[$sectionName][$key]['edited'])
+            {
+                continue;
+            }
+        
+            $listDB[$sectionName][$key] = $item;
+        }
+    }
+    
     $panthera -> config -> setKey('settings.items', $defaults, 'array', 'settings');
     $panthera -> config -> setKey('settings.items.checksum', $defaultsSum, 'string', 'settings');
     $panthera -> logging -> output ('Updated default settings items', 'settings');
+}
+
+foreach ($listDB as $sectionName => $section)
+{
+    foreach ($section as $key => $value)
+    {
+        if ($value['hidden'])
+        {
+            unset($listDB[$sectionName][$key]);
+        }
+    }
 }
 
 if (!$_GET['query'])
@@ -279,6 +303,11 @@ if (!$_GET['query'])
     {
         foreach ($section as $key => $item)
         {
+            if ($item['hidden'])
+            {
+                continue;
+            }
+        
             if (stripos($item['name'], $_GET['query']) !== False or stripos($item['description'], $_GET['query']) !== False or stripos($item['link'], 'display='.$_GET['query']) !== False)
             {
                 $list[$sectionName][$key] = $item;

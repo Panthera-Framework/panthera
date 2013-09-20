@@ -64,19 +64,20 @@ if ($_GET['action'] == 'remove')
     $panthera -> template -> push('widgetsUnlocked', 1);
 }
 
+// default list of pages displayed in dash
 $defaults = array();
-
-$defaults['frontpage'] = array('link' => '{$PANTHERA_URL}', 'name' => localize('Front page', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/home.png');
-$defaults['settings'] = array('link' => '?display=settings&cat=admin', 'name' => localize('Settings', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/settings.png' , 'linkType' => 'ajax');
-$defaults['debug'] = array('link' => '?display=debug&cat=admin', 'name' => localize('Debugging center'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/developement.png', 'linkType' => 'ajax');
-$defaults['mailing'] = array('link' => '?display=mailing&cat=admin', 'name' => localize('Mailing', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/mail-replied.png', 'linkType' => 'ajax');
-$defaults['newsletter'] = array('link' => '?display=newsletter&cat=admin', 'name' => localize('Newsletter'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/newsletter.png', 'linkType' => 'ajax');
-$defaults['gallery'] = array('link' => '?display=gallery&cat=admin', 'name' => localize('Gallery'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/gallery.png', 'linkType' => 'ajax');
+$defaults['frontpage'] = array('link' => '{$PANTHERA_URL}', 'name' => array('Front page', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/home.png');
+$defaults['settings'] = array('link' => '?display=settings&cat=admin', 'name' => array('Settings', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/settings.png' , 'linkType' => 'ajax');
+$defaults['debug'] = array('link' => '?display=debug&cat=admin', 'name' => array('Debugging center'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/developement.png', 'linkType' => 'ajax');
+$defaults['mailing'] = array('link' => '?display=mailing&cat=admin', 'name' => array('Mailing', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/mail-replied.png', 'linkType' => 'ajax');
+$defaults['newsletter'] = array('link' => '?display=newsletter&cat=admin', 'name' => array('Newsletter'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/newsletter.png', 'linkType' => 'ajax');
+$defaults['gallery'] = array('link' => '?display=gallery&cat=admin', 'name' => array('Gallery'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/gallery.png', 'linkType' => 'ajax');
 $defaults['upload'] = array('link' => 'createPopup(\'_ajax.php?display=upload&cat=admin&popup=true&callback=upload_file_callback\', 1300, 550);', 'name' => localize('Uploads', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/uploads.png', 'linkType' => 'onclick');
-$defaults['contact'] = array('link' => '?display=contact&cat=admin', 'name' => localize('Contact'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/contact.png', 'linkType' => 'ajax');
-$defaults['custom'] = array('link' => '?display=custom&cat=admin', 'name' => localize('Custom pages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/custom-pages.png', 'linkType' => 'ajax');
-$defaults['messages'] = array('link' => '?display=messages&cat=admin', 'name' => localize('Quick messages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/messages.png', 'linkType' => 'ajax');
-$defaults['users'] = array('link' => '?display=users&cat=admin', 'name' => localize('Users'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png', 'linkType' => 'ajax');
+$defaults['contact'] = array('link' => '?display=contact&cat=admin', 'name' => array('Contact'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/contact.png', 'linkType' => 'ajax');
+$defaults['custom'] = array('link' => '?display=custom&cat=admin', 'name' => array('Custom pages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/custom-pages.png', 'linkType' => 'ajax');
+$defaults['messages'] = array('link' => '?display=messages&cat=admin', 'name' => array('Quick messages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/messages.png', 'linkType' => 'ajax');
+$defaults['users'] = array('link' => '?display=users&cat=admin', 'name' => array('Users'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png', 'linkType' => 'ajax');
+$defaults['webcatalog'] = array('link' => '?display=webcatalog&cat=admin', 'name' => array('Webcatalog'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/webcatalog.png', 'linkType' => 'ajax');
 
 $panthera -> logging -> startTimer();
 $defaultsSum = hash('md4', serialize($defaults));
@@ -84,8 +85,18 @@ $menuDB = $panthera -> config -> getKey('dash.items', $defaults, 'array', 'dash'
 
 if ($panthera -> config -> getKey('dash.items.checksum') != $defaultsSum)
 {
-    $menuDB = array_merge($menuDB, $defaults);
-    $panthera -> config -> setKey('dash.items', $defaults, 'array', 'dash');
+    // @feature: not overwriting entries that was marked as "edited"    
+    foreach ($defaults as $key => $item)
+    {
+        if ($menuDB[$key]['edited'])
+        {
+            continue;
+        }
+        
+        $menuDB[$key] = $item;
+    }
+    
+    $panthera -> config -> setKey('dash.items', $menuDB, 'array', 'dash');
     $panthera -> config -> setKey('dash.items.checksum', $defaultsSum, 'string', 'dash');
     $panthera -> logging -> output ('Updated default dash items', 'dash');
 }
@@ -106,6 +117,12 @@ switch ($_GET['menu'])
         
         foreach ($menuDB as $key => $item)
         {
+            // @feature: hiding items
+            if ($item['hidden'])
+            {
+                continue;
+            }
+            
             $num++;
             
             if ($num == $maxItems)
@@ -113,6 +130,7 @@ switch ($_GET['menu'])
                 break;
             }
             
+            $item['name'] = $panthera -> locale -> localizeFromArray($item['name']);
             $menu[$key] = $item;
         }
         
