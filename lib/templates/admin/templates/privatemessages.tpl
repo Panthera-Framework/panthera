@@ -22,6 +22,21 @@ function removeMessages(id)
     });
 }
 
+function callback_getContactData(data)
+{
+    var postString = '';
+
+    for (objectID in data)
+    {
+        if (postString != '')
+            postString += ', ';
+
+        postString += objectID;
+    }
+    
+    $('#recipient').val(postString);
+}
+
 $(document).ready(function () {
     $('#send_message').submit(function () {
         panthera.jsonPOST( { data: '#send_message', messageBox: 'w2ui', success: function (response) {
@@ -80,8 +95,8 @@ $(document).ready(function () {
         <div class="title-grid" style="height: 25px;">{function="localize('Title', 'pmessages')"}: <input type="text" name="title"><span></span></div>
         <div class="content-gird">
              <textarea name="content" style="width: 99%; height: 150px;"></textarea><br><br>
-             <input type="text" name="recipient_login" placeholder="{function="localize('Recipient login', 'pmessages')"}">
-             <input type="button" value="{function="localize('Search', 'pmessages')"}">
+             <input type="text" name="recipient_login" id="recipient" placeholder="{function="localize('Recipient login', 'pmessages')"}">
+             <input type="button" value="{function="localize('Search', 'pmessages')"}" onclick="createPopup('_ajax.php?display=mailing&cat=admin&action=select&callback=getContactData', 1024, 'upload_popup');">
              <input type="submit" value="{function="localize('Send', 'pmessages')"}" style="float: right; margin-right: 7px;">
         </div>
         </form>
