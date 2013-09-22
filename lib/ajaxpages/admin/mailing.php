@@ -32,8 +32,8 @@ if ($_GET['action'] == 'send')
         ajax_exit(array('status' => 'failed', 'message' => localize('Please type a valid e-mail adress in "from" input')));
 
     $exp = explode(',', $_POST['recipients']);
-    $recipients = array();
     
+    $recipients = array();
     foreach ($exp as $recipient)
     {
         if (strpos($recipient, 'group:') !== False)
@@ -44,7 +44,8 @@ if ($_GET['action'] == 'send')
             
             foreach ($group->findUsers() as $user)
             {
-                $recipients[] = $user['mail'];
+                if (strlen($user['mail']) > 4 )
+                    $recipients[] = $user['mail'];
             }
         } elseif(strpos($recipient, 'user:') !== False) {
             $recipient = trim(str_ireplace('user:', '', $recipient));
@@ -52,7 +53,8 @@ if ($_GET['action'] == 'send')
             
             if ($user->exists())
             {
-                $recipients[] = $user->mail;
+                if (strlen($user->mail) > 4)
+                    $recipients[] = $user->mail;
             }
         } else {
             $recipients[] = trim($recipient);
@@ -67,6 +69,8 @@ if ($_GET['action'] == 'send')
     $mail -> setSubject($_POST['subject']);
     $mail -> setFrom($_POST['from']);
 
+    var_dump($recipients);
+    
     // all recipients
     foreach ($recipients as $recipient)
     {
@@ -94,7 +98,7 @@ if ($_GET['action'] == 'send')
             ajax_exit(array('status' => 'failed', 'message' => slocalize('Cannot send mail, please check mailing configuration', 'mailing')));
     }
 
-    ajax_exit(array('status' => 'failed', 'message' => localize('Please specify at least one recipient')));
+    ajax_exit(array('status' => 'failed', 'message' => localize('Please specify at least one recipient which has email', 'mailing')));
 
 /**
   * Select users and groups as recipients in sending window
