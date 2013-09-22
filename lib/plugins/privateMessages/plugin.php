@@ -37,16 +37,15 @@ function pMessagesAjax()
         /** JSON PAGES **/
 
         /**
-          * Send new private message
+          * Send new private message(s)
           *
           * @author Mateusz Warzyński
           */
           
         if ($_GET['action'] == 'send_message') {
-            // filter input values
-            $title= filterInput($title, 'quotehtml');
 
-            $recipient = @$_POST['recipient_login'];
+            $title = filterInput($_POST['title'], 'quotehtml');
+            $content = filterInput($_POST['content'], 'quotehtml');
             
             if (isset($_POST['recipient_id'])) {
                     
@@ -56,13 +55,29 @@ function pMessagesAjax()
                     $recipient = $recipient_->login;
                 else
                     ajax_exit(array('status' => 'failed', 'error' => localize('Cannot get recipient user!', 'pmessages')));
+            } else {
+                $recipient = $_POST['recipient_login'];
             }
-
-            // send new message
-            if (privateMessage::sendMessage($_POST['title'], $_POST['content'], $recipient))
-                  ajax_exit(array('status' => 'success'));
             
-            ajax_exit(array('status' => 'failed'));
+            // if we got more than one recipient
+            if (strpos($recipient, ','))
+            {
+                $recipients = explode(', ', $recipient);
+                
+                foreach ($recipients as $r)
+                {
+                    if (!privateMessage::sendMessage($title, $content, $r))
+                        ajax_exit(array('status' => 'failed', 'message' => localize('Error while sending message to some recipients!')));
+                }
+
+                ajax_exit(array('status' => 'success'));
+                
+            } else {
+                if (privateMessage::sendMessage($title, $content, $recipient))
+                    ajax_exit(array('status' => 'success'));
+                else
+                    ajax_exit(array('status' => 'failed', 'message' => "Cannot send a message"));
+            }
         }
 
         /**
@@ -201,7 +216,7 @@ function pMessagesAjax()
             $panthera -> importModule('admin/ui.pager');
             $uiPager = new uiPager('users', $usersTotal, 10);
             $uiPager -> setActive($_GET['page']);
-            $uiPager -> setLinkTemplatesFromConfig('mailing_select.tpl');
+            $uiPager -> setLinkTemplatesFromConfig('privatemessages_select.tpl');
             $limit = $uiPager -> getPageLimit();
             
             $users = array();
@@ -212,13 +227,13 @@ function pMessagesAjax()
                 if ($w -> acl -> superuser and !$panthera -> user -> acl -> superuser)
                     continue;
         
-                if($w->mail) {
-                    $users[] = array(
-                        'login' => $w->login, 
-                        'name' => $w->getName(),
-                        'avatar' => pantheraUrl($w->profile_picture),
-                    );
-                }
+            
+                $users[] = array(
+                   'login' => $w->login, 
+                   'name' => $w->getName(),
+                   'avatar' => pantheraUrl($w->profile_picture),
+                );
+                
             }
             
             $panthera -> importModule('admin/ui.searchbar');
@@ -226,10 +241,9 @@ function pMessagesAjax()
             
             $sBar = new uiSearchbar('uiTop');
             
-            //$sBar -> setMethod('POST');
             $sBar -> setQuery($_GET['query']);
             $sBar -> setMethod('GET');
-            $sBar -> setAddress('?display=mailing&cat=admin&action=select');
+            $sBar -> setAddress('?display=privatemessages&cat=admin&action=select');
             
             $panthera -> template -> push('callback', htmlspecialchars($_GET['callback']));
             $panthera -> template -> push('users', $users);
@@ -247,51 +261,7 @@ function pMessagesAjax()
         
         // get messages
         $count = privateMessage::getMessages(False, False, 'recipient_id');
-        $messages = privateMessage::getMessages($count, 0, 'recipient_id');
-        
-        // parse messages
-        $m = array();
-        foreach ($messages as $key => $message)
-        {
-            // check if user didn't remove message
-            if (($message['visibility_recipient'] and $message['recipient_id'] == $panthera->user->id) or ($message['visibility_sender'] and $message['sender_id'] == $panthera->user->id)) {
-                    
-                // check if title of message exists in array (have been parsed earlier) 
-                if (array_key_exists($message['title'], $m)) {
-                    
-                    // raise count
-                    $m[$message['title']]['count'] = $m[$message['title']]['count']+1;
-                    
-                } else {
-                    
-                    $m[$message['title']] = $message;
-                    
-                    // get interlocutor
-                    if ($message['sender_id'] == $panthera->user->id)
-                        $m[$message['title']]['interlocutor'] = $message['recipient'];
-                    else
-                        $m[$message['title']]['interlocutor'] = $message['sender'];
-                    
-                    $m[$message['title']]['count'] = 1;
-                }
-                
-                // check if user has seen message
-                if (!$message['seen'] and $message['recipient_id'] == $panthera->user->id)
-                    $m[$message['title']]['seen'] = 0;
-                else
-                    $m[$message['title']]['seen'] = 1;
-                
-                // get sent time 
-                $m[$message['title']]['sent'] = elapsedTime($message['sent']);
-                
-                // set actual ID
-                $m[$message['title']]['id'] = $message['id'];
-            }
-        }
-        $template -> push('messages', $m);
-        
-        // clear memory
-        unset($m);
+        $template -> push('messages', privateMessage::getMessages($count, 0, 'recipient_id'));
         
         $titlebar = new uiTitlebar(localize('Private Messages', 'pmessages'));
         $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/messages.png', 'left');

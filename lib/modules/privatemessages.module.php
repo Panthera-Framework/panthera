@@ -55,8 +55,12 @@ class privateMessage extends pantheraFetchDB
     }
     
     /**
-      * Get private messages
+      * Get private messages (or amount of them)
       *
+      * @param int $limit of messages
+      * @param int $limitFrom of messages 
+      * @param string $orderBy
+      * @param string $order (desc/asc) 
       * @return array|bool
       * @author Mateusz Warzyński
       */
@@ -71,8 +75,50 @@ class privateMessage extends pantheraFetchDB
         $where = new whereClause;
         $where -> add('AND', 'recipient_id', '=', $panthera->user->id);
         $where -> add('OR', 'sender_id', '=', $panthera->user->id);
+        $messages = $panthera->db->getRows('private_messages', $where, $limit, $limitFrom, '', $orderBy, $order);
         
-        return $panthera->db->getRows('private_messages', $where, $limit, $limitFrom, '', $orderBy, $order);
+        // return amount of messages
+        if ($limit === False and $limitFrom === False)
+            return $messages;
+        
+        // parse messages
+        $m = array();
+        foreach ($messages as $key => $message)
+        {
+            if (($message['visibility_recipient'] and $message['recipient_id'] == $panthera->user->id) or ($message['visibility_sender'] and $message['sender_id'] == $panthera->user->id)) {
+                
+                if ($message['sender_id'] == $panthera->user->id)
+                    $interlocutor = $message['recipient'];
+                else
+                    $interlocutor = $message['sender'];
+                
+                $name = $message['title'].$interlocutor;
+                
+                // check if title of message exists in array (have been parsed earlier) 
+                if (array_key_exists($name, $m)) {
+                    $m[$name]['count'] = $m[$name]['count']+1;
+                    
+                } else {
+                    $m[$name] = $message;
+                    $m[$name]['interlocutor'] = $interlocutor;
+                    $m[$name]['count'] = 1;
+                }
+                
+                // check if user has seen message
+                if (!$message['seen'] and $message['recipient_id'] == $panthera->user->id)
+                    $m[$name]['seen'] = 0;
+                else
+                    $m[$name]['seen'] = 1;
+                
+                // get sent time 
+                $m[$name]['sent'] = elapsedTime($message['sent']);
+                
+                // set actual ID
+                $m[$name]['id'] = $message['id'];
+            }
+        } 
+        
+        return $m;
     }
     
     /**
