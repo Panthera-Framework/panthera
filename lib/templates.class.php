@@ -57,7 +57,7 @@ class pantheraTemplate extends pantheraClass
     /**
 	 * Set template as active (not a single template eg. index.tpl but a set of templates in directory eg. admin => /content/templates/admin)
 	 *
-     * @param string (template name)
+     * @param string $template Template directory name eg. "admin"
 	 * @return bool
 	 * @author Damian Kęska
 	 */
@@ -133,6 +133,14 @@ class pantheraTemplate extends pantheraClass
         $this->template = $tpl;
         $this->name = $template;
         
+        //Rain\Tpl::configure('allow_compile', False);
+        
+        // reconfiguring RainTPL
+        Rain\Tpl::configure('include_path', array(
+            SITE_DIR. '/content/templates/' .$template. '/templates/',
+            PANTHERA_DIR. '/templates/' .$template. '/templates/',
+        ));
+        
         // switching device type
         if (isset($_GET['__switchdevice']) and !defined('DISABLE_DEVICES_SWITCH'))
             $this -> panthera -> importModule('boot/switchdevice');
@@ -162,10 +170,20 @@ class pantheraTemplate extends pantheraClass
         // TODO: Add support for include_dir
         
         // configure RainTPL engine
-        Rain\Tpl::configure(array("base_url" => null, "tpl_dir"	=> '/', "cache_dir"	=> $cacheDir, "tpl_ext" => 'tpl', "debug" => $this->debugging, 'auto_escape' => false, 'php_enabled' => true, 'sandbox' => false));
+        Rain\Tpl::configure(array(
+            "base_url" => null, 
+            "tpl_dir"	=> '/',
+            'include_path' => array(), 
+            "cache_dir"	=> $cacheDir, 
+            "tpl_ext" => 'tpl', 
+            "debug" => $this->debugging, 
+            'auto_escape' => false, 
+            'php_enabled' => true, 
+            'sandbox' => false
+        ));
+        
         $this->tpl = new Rain\Tpl;
         #\Rain\Tpl::registerTag('stringModifier', '{"([^}"]+)"|([a-zA-Z\"]+):?([A-Za-z0-9\"]+)?:?([A-Za-z0-9\"]+)?:?([A-Za-z0-9\"]+)?}', function( $params, $b ){ var_dump($params); } );
-                
         
         // Force keep default template
         if ($panthera->session->get('tpl_forceKeepTemplate'))
@@ -175,12 +193,12 @@ class pantheraTemplate extends pantheraClass
 
         if ($this->panthera->cacheType('cache') == 'memory' and $this->caching == True)
         {
-            if ($this->cache_lifetime > 0)
+            /*if ($this->cache_lifetime > 0)
             {
                 // dwoo
                 //$this->tpl->setCacheDir(SITE_DIR.'/content/tmp/cache/');
                 //$this->tpl->setCacheTime($this->cache_lifetime);
-            }
+            }*/
             
             // cache configuration files?
             $this->cacheConfig = True;
@@ -625,9 +643,11 @@ class pantheraTemplate extends pantheraClass
         }
 
 
-        if ($template == NuLL)
+        if (!$template)
+        {
             $template = $this->template['index'];
-            
+        }
+        
         $file = getContentDir('/templates/' .$this->name. '/templates/' .$template);
 
         if (!$file)
@@ -645,7 +665,7 @@ class pantheraTemplate extends pantheraClass
         foreach ($vars as $var => $value)
             $this -> tpl -> assign($var, $value);
             
-        $render = $this -> tpl -> draw(str_replace('.tpl', '', $file), True, True);
+        $render = $this -> tpl -> draw(str_replace('.tpl', '', $file), True);
         $this -> timer = (microtime_float() - $this -> timer);
             
         if ($renderOnly == True)
