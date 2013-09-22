@@ -36,7 +36,12 @@ function pMessagesAjax()
 
         /** JSON PAGES **/
 
-        // Send new private message
+        /**
+          * Send new private message
+          *
+          * @author Mateusz Warzyński
+          */
+          
         if ($_GET['action'] == 'send_message') {
             // filter input values
             $title= filterInput($title, 'quotehtml');
@@ -60,7 +65,12 @@ function pMessagesAjax()
             ajax_exit(array('status' => 'failed'));
         }
 
-        // hide group of messages or remove them if recipient hide them
+        /**
+          * Hide (or remove) group of messages
+          *
+          * @author Mateusz Warzyński
+          */
+          
         if (@$_GET['action'] == 'remove_messages') {
             
             $message = new privateMessage('id', intval($_POST['messageid']));
@@ -78,7 +88,12 @@ function pMessagesAjax()
             }
         }            
         
-        // hide message or remove it if recipient hide it
+        /**
+          * Hide (or remove) message
+          *
+          * @author Mateusz Warzyński
+          */
+          
         if (@$_GET['action'] == 'remove_message') {
             
             $message = new privateMessage('id', intval($_GET['messageid']));
@@ -94,7 +109,12 @@ function pMessagesAjax()
             }
         }
         
-        // seen message
+        /**
+          * Set 'seen' of message (as true)
+          *
+          * @author Mateusz Warzyński
+          */
+          
         if ($_GET['action'] == 'seen_message') {
             
             $message = new privateMessage('id', intval($_GET['messageid']));
@@ -109,8 +129,15 @@ function pMessagesAjax()
 
         /** END OF JSON PAGES **/
 
+        
         /** Ajax-HTML PAGES **/
-
+        
+        /**
+          * Get conversation between current user and interlocutor
+          *
+          * @author Mateusz Warzyński
+          */
+        
         if (@$_GET['action'] == 'show_message') {
             
             $getMessage = new privateMessage('id', $_GET['messageid']);
@@ -148,12 +175,75 @@ function pMessagesAjax()
             $template -> push('user_id', $panthera->user->id);
             $template -> display('privatemessages_showmessage.tpl');
             pa_exit();
+        } 
+        
+
+        /**
+          * Select user as recipient in sending window
+          *
+          * @author Mateusz Warzyński
+          * @author Damian Kęska
+          */
+        
+        if ($_GET['action'] == 'select') {
+            
+            $w = new whereClause();
+            
+            if ($_GET['query']) {
+                $_GET['query'] = trim(strtolower($_GET['query'])); // strip unneeded spaces and make it lowercase
+                $w -> add( 'AND', 'login', 'LIKE', '%' .$_GET['query']. '%');
+                $w -> add( 'OR', 'full_name', 'LIKE', '%' .$_GET['query']. '%');
+            }
+            
+            $usersTotal = getUsers($w, False);
+            
+            // uiPager
+            $panthera -> importModule('admin/ui.pager');
+            $uiPager = new uiPager('users', $usersTotal, 10);
+            $uiPager -> setActive($_GET['page']);
+            $uiPager -> setLinkTemplatesFromConfig('mailing_select.tpl');
+            $limit = $uiPager -> getPageLimit();
+            
+            $users = array();
+            $usersData = getUsers($w, $limit[1], $limit[0]);
+            
+            foreach ($usersData as $w) {
+                // superuser cant be listed, it must be hidden
+                if ($w -> acl -> superuser and !$panthera -> user -> acl -> superuser)
+                    continue;
+        
+                if($w->mail) {
+                    $users[] = array(
+                        'login' => $w->login, 
+                        'name' => $w->getName(),
+                        'avatar' => pantheraUrl($w->profile_picture),
+                    );
+                }
+            }
+            
+            $panthera -> importModule('admin/ui.searchbar');
+            $panthera -> locale -> loadDomain('search');
+            
+            $sBar = new uiSearchbar('uiTop');
+            
+            //$sBar -> setMethod('POST');
+            $sBar -> setQuery($_GET['query']);
+            $sBar -> setMethod('GET');
+            $sBar -> setAddress('?display=mailing&cat=admin&action=select');
+            
+            $panthera -> template -> push('callback', htmlspecialchars($_GET['callback']));
+            $panthera -> template -> push('users', $users);
+            $panthera -> template -> display('privatemessages_select.tpl');
+            pa_exit();
         }
 
         /** END OF Ajax-HTML PAGES **/
 
-
-        // Display main privateMessages site
+        /**
+          * Display main privateMessages site
+          *
+          * @author Mateusz Warzyński
+          */
         
         // get messages
         $count = privateMessage::getMessages(False, False, 'recipient_id');
@@ -211,7 +301,14 @@ function pMessagesAjax()
     }
 }
 
-// add privateMessages plugin to index list
+
+
+/**
+  * Add privateMessages plugin to index list
+  *
+  * @author Mateusz Warzyński
+  */
+
 function privateMessagesToAjaxList($list)
 {
     $list[] = array('location' => 'plugins', 'name' => 'privateMessages', 'link' => '?display=privatemessages');
@@ -219,7 +316,13 @@ function privateMessagesToAjaxList($list)
     return $list;
 }
 
-// Add 'privatemessages' item to admin menu
+
+/**
+  * Add 'privatemessages' item to admin menu
+  *
+  * @author Mateusz Warzyński
+  */
+
 function pMessagesToAdminMenu($menu) { $menu -> add('privatemessages', 'Private messages', '?display=privatemessages&cat=admin', '', '{$PANTHERA_URL}/images/admin/menu/Actions-mail-flag-icon.png', ''); }
 $panthera -> add_option('admin_menu', 'pMessagesToAdminMenu');
 
