@@ -121,6 +121,7 @@ $tools[] = array('link' => '?display=mergephps&cat=admin', 'name' => ucfirst(loc
 $tools[] = array('link' => '?display=ajaxpages&cat=admin', 'name' => localize('Complete list of all ajax avaliable subpages', 'ajaxpages'));
 $tools[] = array('link' => '?display=_popup_jsonedit&cat=admin', 'name' => localize('Array editor', 'debug'));
 $tools[] = array('link' => '?display=autoloader&cat=admin', 'name' => localize('Autoloader cache', 'debug'));
+$tools[] = array('link' => '?display=generate_password&cat=admin', 'name' => localize('Generate password', 'debug'));
 $tools = $panthera -> get_filters('ajaxpages.debug.tools', $tools);
 
 // Displaying main debug site
