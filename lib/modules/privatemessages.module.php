@@ -78,8 +78,9 @@ class privateMessage extends pantheraFetchDB
         $messages = $panthera->db->getRows('private_messages', $where, $limit, $limitFrom, '', $orderBy, $order);
         
         // return amount of messages
-        if ($limit === False and $limitFrom === False)
+        if ($limit === False and $limitFrom === False) {
             return $messages;
+        }
         
         // parse messages
         $m = array();
@@ -116,10 +117,44 @@ class privateMessage extends pantheraFetchDB
                 // set actual ID
                 $m[$name]['id'] = $message['id'];
             }
-        } 
+        }
         
         return $m;
     }
+    
+    /**
+      * Send messages to group
+      *
+      * @param array $group of users
+      * @param string $title of messages
+      * @param string $content of messages  
+      * @return array|bool
+      * @author Mateusz Warzyński
+      */
+      
+    public static function sendToGroup($groupName, $title, $content)
+    {
+        global $panthera;
+        
+        if (!$panthera->user)
+            return False;
+        
+        $group = new pantheraGroup('name', $groupName);
+        
+        if (!$group->exists())
+            return False;
+
+        $users = $group->findUsers();
+        
+        if (count($users)) {
+            foreach ($users as $user) {
+                if (!self::sendMessage($title, $content, $user['login']))
+                    return False;
+            }
+        }
+        
+        return True;
+    } 
     
     /**
       * Get conversation between two users
@@ -136,6 +171,8 @@ class privateMessage extends pantheraFetchDB
         
         if (!$panthera->user)
             return False;
+        
+        $panthera -> logging -> output('Get conversation with interlocutor='.$interlocutor, 'pmessages');
         
         $SQL = $panthera -> db -> query("SELECT * FROM `pa_private_messages` WHERE `title` = :title AND ((`recipient_id` = :interlocutor AND `sender_id` = :user_id) OR (`recipient_id` = :user_id AND `sender_id` = :interlocutor))", array('interlocutor' => $interlocutor, 'user_id' => $panthera->user->id, 'title' => $title));
         return $SQL -> fetchAll(PDO::FETCH_ASSOC);

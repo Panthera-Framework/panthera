@@ -47,18 +47,53 @@ if ($_GET['action'] == 'send_message') {
                 
         foreach ($recipients as $r)
         {
-            if (!privateMessage::sendMessage($title, $content, $r))
-                ajax_exit(array('status' => 'failed', 'message' => localize('Error while sending message to some recipients!')));
-        }
+            if (strpos($r, 'group:') !== False)
+            {
+                $r = trim(str_ireplace('group:', '', $r));
 
-        ajax_exit(array('status' => 'success'));
+                if (!privateMessages::sendToGroup($r, $title, $content))
+                    ajax_exit(array('status' => 'failed', 'message' => "Something went wrong with sending messages."));
                 
+            } elseif(strpos($r, 'user:') !== False) {
+                $r = trim(str_ireplace('user:', '', $r));
+                $user = new pantheraUser('login', $r);
+                
+                if ($user->exists())
+                {
+                    if (!privateMessage::sendMessage($title, $content, $r))
+                        ajax_exit(array('status' => 'failed', 'message' => localize('Error while sending message to some recipients!')));
+                    
+                }
+            }
+        }
+        ajax_exit(array('status' => 'success'));
+    
+    // if we got one recipient          
     } else {
-        if (privateMessage::sendMessage($title, $content, $recipient))
+        if (strpos($recipient, 'group:') !== False) {
+            
+            $recipient = trim(str_ireplace('group:', '', $recipient));
+            $group = new pantheraGroup('name', $recipient);
+            $users = $group->findUsers();
+            
+            if (!privateMessages::sendToGroup($users, $title, $content))
+                ajax_exit(array('status' => 'failed', 'message' => "Something went wrong with sending messages."));
+            
             ajax_exit(array('status' => 'success'));
-        else
-            ajax_exit(array('status' => 'failed', 'message' => "Cannot send a message"));
+        } elseif(strpos($recipient, 'user:') !== False) {
+            $recipient = trim(str_ireplace('user:', '', $recipient));
+            $user = new pantheraUser('login', $recipient);
+               
+            if ($user->exists()) {
+                if (!privateMessage::sendMessage($title, $content, $recipient))
+                    ajax_exit(array('status' => 'failed', 'message' => localize('Error while sending message to some recipients!')));
+                    
+                ajax_exit(array('status' => 'success'));
+            }
+        }
     }
+
+    ajax_exit(array('status' => 'failed'));
 }
 
 /**
@@ -177,7 +212,18 @@ if (@$_GET['action'] == 'show_message') {
 */
         
 if ($_GET['action'] == 'select') {
-            
+    $groups = pantheraGroup::listGroups();
+    $groupsTpl = array();
+
+    foreach ($groups as $group) {
+        if (isset($_GET['query'])) {
+            if (stripos($group->name, $_GET['query']) !== False)
+                $groupsTpl[] = array('name' => $group->name);
+        } else {
+            $groupsTpl[] = array('name' => $group->name);
+        }
+    }
+      
     $w = new whereClause();
 
     if ($_GET['query']) {
@@ -222,6 +268,7 @@ if ($_GET['action'] == 'select') {
 
     $panthera -> template -> push('callback', htmlspecialchars($_GET['callback']));
     $panthera -> template -> push('users', $users);
+    $panthera -> template -> push('groups', $groupsTpl);
     $panthera -> template -> display('privatemessages_select.tpl');
     pa_exit();
 }
@@ -231,7 +278,7 @@ if ($_GET['action'] == 'select') {
   *
   * @author Mateusz Warzyński
   */
-        
+
 // get messages
 $count = privateMessage::getMessages(False, False, 'recipient_id');
 $template -> push('messages', privateMessage::getMessages($count, 0, 'recipient_id'));
