@@ -37,8 +37,8 @@ $(document).ready(function () {
          <div class="title-grid"><b><a href="#{$value.sender}" onclick="navigateTo('?display=users&cat=admin&action=account&uid={$interlocutor}');">{$value.sender}</a></b>&nbsp;-&nbsp;{function="elapsedTime($value.sent)"}{function="localize('ago')"}<span id="widgetRemoveButtons" class="widgetRemoveButtons"><a href="#" onclick="removeMessage('{$value.id}')"><img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="height: 10px;"></a></span></div>
          
          <div class="content-gird" {if="$value.sender_id == $user_id"} style="background-color: #F3F3F3;" {/if}>
-             <div class="message-content" style="font-family: Helvetica; font-size: 13px;">
-                 {$value.content}
+             <div class="message-content" style="font-family: Helvetica; font-size: 13px; line-height: 18px;">
+                 {function="nl2br($value.content)"}
              </div>
          </div>
     </div>
