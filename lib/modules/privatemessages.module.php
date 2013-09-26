@@ -28,6 +28,34 @@ class privateMessage extends pantheraFetchDB
     protected $_constructBy = array('id', 'array');
     
     /**
+      * Move message to other layer
+      *
+      * @param int $messageId
+      * @param string $label 
+      * @return bool 
+      * @author Mateusz Warzyński
+      */
+    
+    public static function moveToLabel($messageId, $label)
+    {
+        global $panthera;
+        
+        if (!$panthera->user)
+            return False;
+        
+        $message = new privateMessage('id', $messageId);
+        
+        if (!$message->exists())
+            return False;
+        
+        $message -> label = strval($label);
+        $message -> save();
+        
+        return True;
+    }
+    
+    
+    /**
       * Block an user
       *
       * @param int $blockedUserId
