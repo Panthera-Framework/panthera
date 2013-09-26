@@ -48,7 +48,7 @@ class privateMessage extends pantheraFetchDB
         if (!$message->exists())
             return False;
         
-        $message -> label = strval($label);
+        $message -> directory = strval($label);
         $message -> save();
         
         return True;
