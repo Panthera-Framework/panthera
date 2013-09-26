@@ -27,7 +27,7 @@ if ($_GET['action'] == 'generatePassword') {
         ajax_exit(array('status' => 'failed', 'message' => localize('Permission denied. You dont have access to this action', 'messages')));
     
     // check lenght of password
-    if (strlen($_POST['password']) < 9)
+    if (strlen($_POST['password']) < 2)
         ajax_exit(array('status' => 'failed', 'message' => localize('Your password is too short!', 'debug')));
 
     $hash = encodePassword($_POST['password']);
@@ -52,14 +52,14 @@ if ($_GET['action'] == 'generatePassword') {
     
     // generate random string
     if ($_POST['lenght'] != null) {
-        if (intval($_POST['lenght']) > 9)  
+        if (intval($_POST['lenght']) > 1)  
             $string = generateRandomString(intval($_POST['lenght']));
         else
-            ajax_exit(array('status' => 'failed', 'message' => localize('Lenght must be at least 10!', 'debug')));
+            ajax_exit(array('status' => 'failed', 'message' => localize('Lenght must be at least 8!', 'debug')));
     } else
-        $string = generateRandomString(16);
+        $string = generateRandomString(2);
     
-    if (strlen($string) > 9)
+    if (strlen($string) > 1)
         ajax_exit(array('status' => 'success', 'random' => $string));
     
     ajax_exit(array('status' => 'failed', 'message' => localize('Cannot generate random string!', 'debug')));

@@ -28,6 +28,73 @@ class privateMessage extends pantheraFetchDB
     protected $_constructBy = array('id', 'array');
     
     /**
+      * Block an user
+      *
+      * @param int $blockedUserId
+      * @return bool 
+      * @author Mateusz Warzyński
+      */
+    
+    public static function blockUser($blockedUserId)
+    {
+        global $panthera;
+        
+        if (!$panthera->user)
+            return False;
+        
+        $blockedUser = new pantheraUser('id', $blockedUserId);
+        
+        if (!$blockedUser->exists())
+            return False;
+        
+        $array = array();
+        
+        if (!$panthera->db->query('INSERT INTO `{$db_prefix}pm_blocked_users` (`id`, `user_id`, `blocked_user_id`) VALUES (NULL, :user, :blocked);', array("user_id" => intval($panthera->user->id), "blocked_user_id" => intval($blockedUser->id))))
+            return False;
+        
+        return True;
+    }
+    
+    /**
+      * Unblock an user
+      *
+      * @param int $id of record
+      * @return bool 
+      * @author Mateusz Warzyński
+      */
+    
+    public static function unBlockUser($recordId)
+    {
+        global $panthera;
+        
+        if (!$panthera->user)
+            return False;
+        
+        if (!$this->panthera->db->query('DELETE FROM `{$db_prefix}pm_blocked_users` WHERE `id` = :id', array('id' => intval($recordId))))
+            return False;
+        
+        return True;
+    }
+    
+    /**
+      * Check blocked users
+      * 
+      * @return array
+      * @author Mateusz Warzyński
+      */
+    
+    public static function getBlockedUsers()
+    {
+        global $panthera;
+        
+        if (!$panthera->user)
+            return False;
+        
+        $SQL = $panthera -> db -> query("SELECT * FROM `{$db_prefix}pm_blocked_users` WHERE `user_id` = :user_id", array('user_id' => intval($panthera->user->id)));        
+        return $SQL -> fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /**
       * Send a private message
       *
       * @param string $title of a private message
@@ -78,8 +145,9 @@ class privateMessage extends pantheraFetchDB
         $messages = $panthera->db->getRows('private_messages', $where, $limit, $limitFrom, '', $orderBy, $order);
         
         // return amount of messages
-        if ($limit === False and $limitFrom === False)
+        if ($limit === False and $limitFrom === False) {
             return $messages;
+        }
         
         // parse messages
         $m = array();
@@ -116,10 +184,44 @@ class privateMessage extends pantheraFetchDB
                 // set actual ID
                 $m[$name]['id'] = $message['id'];
             }
-        } 
+        }
         
         return $m;
     }
+    
+    /**
+      * Send messages to group
+      *
+      * @param array $group of users
+      * @param string $title of messages
+      * @param string $content of messages  
+      * @return array|bool
+      * @author Mateusz Warzyński
+      */
+      
+    public static function sendToGroup($groupName, $title, $content)
+    {
+        global $panthera;
+        
+        if (!$panthera->user)
+            return False;
+        
+        $group = new pantheraGroup('name', strval($groupName));
+        
+        if (!$group->exists())
+            return True;
+
+        $users = $group->findUsers();
+        
+        if (count($users)) {
+            foreach ($users as $number => $user) {
+                if (!self::sendMessage($title, $content, $user['login']))
+                    return False;
+            }
+        }
+        
+        return True;
+    } 
     
     /**
       * Get conversation between two users
@@ -137,7 +239,9 @@ class privateMessage extends pantheraFetchDB
         if (!$panthera->user)
             return False;
         
-        $SQL = $panthera -> db -> query("SELECT * FROM `pa_private_messages` WHERE `title` = :title AND ((`recipient_id` = :interlocutor AND `sender_id` = :user_id) OR (`recipient_id` = :user_id AND `sender_id` = :interlocutor))", array('interlocutor' => $interlocutor, 'user_id' => $panthera->user->id, 'title' => $title));
+        $panthera -> logging -> output('Get conversation with interlocutor='.$interlocutor, 'pmessages');
+        
+        $SQL = $panthera -> db -> query("SELECT * FROM `{$db_prefix}private_messages` WHERE `title` = :title AND ((`recipient_id` = :interlocutor AND `sender_id` = :user_id) OR (`recipient_id` = :user_id AND `sender_id` = :interlocutor))", array('interlocutor' => $interlocutor, 'user_id' => $panthera->user->id, 'title' => $title));
         return $SQL -> fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -158,7 +262,7 @@ class privateMessage extends pantheraFetchDB
             return False;
         
         // get array with messages
-        $SQL = $panthera -> db -> query("SELECT * FROM `pa_private_messages` WHERE `title` = :title AND ((`recipient_id` = :interlocutor AND `sender_id` = :user_id) OR (`recipient_id` = :user_id AND `sender_id` = :interlocutor))", array('interlocutor' => $interlocutor, 'user_id' => $panthera->user->id, 'title' => $title));
+        $SQL = $panthera -> db -> query("SELECT * FROM `{$db_prefix}private_messages` WHERE `title` = :title AND ((`recipient_id` = :interlocutor AND `sender_id` = :user_id) OR (`recipient_id` = :user_id AND `sender_id` = :interlocutor))", array('interlocutor' => $interlocutor, 'user_id' => $panthera->user->id, 'title' => $title));
         $messages = $SQL -> fetchAll(PDO::FETCH_ASSOC);
         
         // check if thera are any messages
