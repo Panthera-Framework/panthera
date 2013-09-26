@@ -2396,7 +2396,7 @@ function elapsedTime($time)
  * Filter input removing tags, quotes etc.
  *
  * @param string $input Input string
- * @param string $filtersList Separated by comma eg. quotehtml,quotes
+ * @param string $filtersList Separated by comma eg. quotehtml,quotes,wysiwyg
  * @return bool
  * @author Damian Kęska
  */
@@ -2404,6 +2404,9 @@ function elapsedTime($time)
 function filterInput($input, $filtersList)
 {
     $filters = explode(',', $filtersList);
+    
+    if (in_array('wysiwyg', $filters))
+        $input = str_replace("\n", '\n', str_replace("\r", '\r', htmlspecialchars($input, ENT_QUOTES)));
 
     if(in_array('quotehtml', $filters))
         $input = htmlspecialchars($input);

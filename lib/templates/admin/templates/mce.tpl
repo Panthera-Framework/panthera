@@ -7,6 +7,11 @@
         else
             tinyMCE.activeEditor.setContent(tinyMCE.activeEditor.getContent()+' <a href="'+link+'">'+link+'</a>');
     }
+    
+    function callback_mceInsertContent(content)
+    {
+        tinyMCE.activeEditor.setContent(tinyMCE.activeEditor.getContent()+content);
+    }
 
     function stripslashes(str) {
         str=str.replace(/\\'/g,'\'');
@@ -27,8 +32,13 @@
         // Add a custom button
         ed.addButton('pantheraUpload', { title : '{function="localize('Upload file', 'mce')"}', image : '{$PANTHERA_URL}/images/file-explorer.png', onclick : function() {
                 ed.focus();
-                createPopup('{$AJAX_URL}?display=upload&cat=admin&popup=true&callback=mcePantheraInsertFile', 1024, 'upload_popup');
-                tinyMCE.execInstanceCommand(ed,"mceInsertContent",false,'Test');
+                createPopup('{$AJAX_URL}?display=upload&cat=admin&popup=true&callback=mcePantheraInsertFile', 1024);
+            }
+        });
+        
+        ed.addButton('pantheraDrafts', { title : '{function="localize('Paste a draft', 'mce')"}', image : '{$PANTHERA_URL}/images/admin/ui/mce-drafts.png', onclick : function() {
+                ed.focus();
+                createPopup('{$AJAX_URL}?display=editor_drafts&cat=admin&popup=true&callback=mceInsertContent', 1024);
             }
         });
     }    

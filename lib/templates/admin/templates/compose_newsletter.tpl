@@ -1,6 +1,10 @@
 <script type="text/javascript">
-function initEditor () {}
+function initEditor () 
+{
+    mceSetContent('content_textarea', htmlspecialchars_decode("{$mailFooter}"));
+}
 </script>
+
 {function="uiMce::display()"}
 <script type="text/javascript">
 jQuery(document).ready(function($) {
@@ -9,7 +13,7 @@ jQuery(document).ready(function($) {
     
     $('#newsletter_form').submit(function(event){
         event.preventDefault();
-        panthera.jsonPOST({ data: '#newsletter_form', messageBox: 'w2ui', success: function (response) {
+        panthera.jsonPOST({ data: '#newsletter_form', messageBox: 'w2ui', mce: 'tinymce_all', success: function (response) {
                 if (response.status == 'success')
                 {
                     $('#messagesQueueNoMessages').hide();
@@ -19,6 +23,7 @@ jQuery(document).ready(function($) {
     });
 });
 </script>
+
 {include="ui.titlebar"}
 
 <div class="grid-1">
@@ -43,7 +48,21 @@ jQuery(document).ready(function($) {
                  
                  <tr>
                     <td colspan="2">
-                        <input type="button" value="{function="localize('Subscribers', 'newsletter')"}" onclick="createPopup('?display=newsletter_users&cat=admin&nid={$nid}', 1024);"> <input type="submit" value="{function="localize('Send', 'newsletter')"}">
+                        <input type="checkbox" name="sendToAllUsers" value="1"> {function="localize('Send to all users in database', 'newsletter')"}
+                    </td>
+                 </tr>
+                 
+                 <tr>
+                    <td colspan="2">
+                        <input type="checkbox" name="putToDrafts" value="1"> {function="localize('Save message copy into message drafts', 'newsletter')"}
+                    </td>
+                 </tr>
+                 
+                 <tr>
+                    <td colspan="2" style="padding-top: 15px;">
+                        <input type="button" value="{function="localize('Subscribers', 'newsletter')"}" onclick="createPopup('?display=newsletter_users&cat=admin&nid={$nid}', 1024);"> 
+                        <input type="button" value="{function="localize('Edit footer', 'newsletter')"}" onclick="navigateTo('?display=compose_newsletter&cat=admin&nid={$nid}&action=editFooter');"> 
+                        <input type="submit" value="{function="localize('Send', 'newsletter')"}" style="float: right;">
                     </td>
                  </tr>
              </table>
@@ -77,12 +96,12 @@ jQuery(document).ready(function($) {
         <table class="gridTable" style="border: 0px">
             <tbody id="messagesQueue">
             {if="!count($messages_queue)"}
-                <tr id="messagesQueueNoMessages"><td colspan="2">{function="localize('No messages queued to send', 'newsletter')"}</td></tr>
+                <tr id="messagesQueueNoMessages"><td colspan="3">{function="localize('No messages queued to send', 'newsletter')"}</td></tr>
                 {else}
                 {loop="$messages_queue"}
-                <tr><td>{$value.title|strCut:20}</td><td>{$value.created}</td></tr>
+                <tr><td>{$value.title|strCut:20}</td><td>{$value.created}</td><td>{$value.position}/{$value.count}</td></tr>
                 {/loop}
-                {/if}
+            {/if}
             </tbody>
         </table>
      </div>

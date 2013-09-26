@@ -35,7 +35,7 @@
         },
         
         "tollbar2": {
-            "default": "outdent,indent,|,bullist,numlist,|,outdent,indent,link,image,|,code,|,forecolor,backcolor,sub,sup,|,charmap,|,pantheraUpload",
+            "default": "outdent,indent,|,bullist,numlist,|,outdent,indent,link,image,|,code,|,forecolor,backcolor,sub,sup,|,charmap,|,pantheraUpload,pantheraDrafts",
             "type": "string"
         }
     }

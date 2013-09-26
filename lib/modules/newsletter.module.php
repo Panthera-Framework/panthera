@@ -2,7 +2,7 @@
 /**
   * Newsletter module with support for multiple protocols like e-mail (smtp), jabber etc.
   *
-  * @package Panthera\modules\messages
+  * @package Panthera\modules\newsletter
   * @author Damian Kęska
   * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
@@ -14,6 +14,7 @@ if (!defined('IN_PANTHERA'))
 /**
   * Abstract interface for newsletter Type plugins
   *
+  * @package Panthera\modules\messages
   * @author Damian Kęska
   */
   
@@ -26,11 +27,34 @@ interface newsletterType
 /**
   * Newsletters management
   *
-  * @author Damian Kęska, Mateusz Warzyński
+  * @package Panthera\modules\newsletter
+  * @author Damian Kęska
   */
 
 class newsletterManagement
 {
+    /**
+      * Get all avaliable newsletter mailing methods
+      *
+      * @return array 
+      * @author Damian Kęska
+      */
+
+    public static function getTypes()
+    {
+        $types = array();
+    
+        foreach (get_declared_classes() as $className)
+        {
+            if (strpos($className, 'newsletterType_') === 0)
+            {
+                $types[] = substr($className, 15, strlen($className));
+            }
+        }
+        
+        return $types;
+    }
+
     /**
       * Create new newsletter category
       *
@@ -129,7 +153,17 @@ class newsletterManagement
         // create new newsletter instance to get informations about this newsletter category
         $newsletter = new newsletter('nid', $msg['nid']);
         
-        $usersCount = $newsletter -> getUsers(False);
+        if (!isset($jobData['data']['usersCount']))
+        {
+            if ($jobData['data']['options']['sendToAllUsers'])
+                $usersCount = $newsletter -> getUsers(False, False, 'added', 'DESC', False);
+            else
+                $usersCount = $newsletter -> getUsers(False);
+            
+            $jobData['data']['usersCount'] = $usersCount;
+        }
+        
+        $usersCount = $jobData['data']['usersCount'];
         
         if (!isset($jobData['data']['offset']))
             $jobData['data']['offset'] = 0;
@@ -148,13 +182,22 @@ class newsletterManagement
         }
 
         // start from last position
-        $users = $newsletter -> getUsers($jobData['data']['offset'], $jobData['data']['maxLimit']);
+        if ($jobData['data']['options']['sendToAllUsers'])
+            $users = $newsletter -> getUsers($jobData['data']['offset'], $jobData['data']['maxLimit'], 'added', 'DESC', False);
+        else
+            $users = $newsletter -> getUsers($jobData['data']['offset'], $jobData['data']['maxLimit']);
 
         $panthera->logging->output('cronjob jobname=' .$job->jobname. ', offset=' .$jobData['data']['offset']. ', limit=' .$jobData['data']['maxLimit']. ', usersCount=' .$usersCount, 'newsletter');
-
+        
         // move our position
         $jobData['data']['offset'] = ($jobData['data']['offset']+$jobData['data']['maxLimit']);
         print("Changing offset and saving data...\n");
+
+        // progress        
+        if (!isset($jobData['data']['done']))
+        {
+            $jobData['data']['done'] = 0;
+        }
 
         $job->setData($jobData);
         $job->save(); // just to be sure
@@ -162,8 +205,10 @@ class newsletterManagement
 
         if (count($users) > 0)
         {
+            $i=0;
             foreach ($users as $user)
             {
+                $i++;
                 $userMessage = str_ireplace('{$userName}', $user, pantheraUrl($jobData['data']['message']));
                 $userTitle = str_ireplace('{$userName}', $user, pantheraUrl($jobData['data']['title']));
             
@@ -174,6 +219,11 @@ class newsletterManagement
                     $panthera -> logging -> output('Cannot send message: ' .print_r($e, True), 'newsletter');
                 }
             }
+            
+            $jobData['data']['done'] += $i;
+            
+            $job->setData($jobData);
+            $job->save(); // just to be sure
         }
     }
     
@@ -265,6 +315,7 @@ class newsletterManagement
 /**
   * Newsletter datatype for sending e-mails
   *
+  * @package Panthera\modules\newsletter
   * @author Damian Kęska
   */
 
@@ -320,8 +371,23 @@ class newsletterType_mail implements newsletterType
 }
 
 /**
+  * Newsletter subscriber data model
+  *
+  * @package Panthera\modules\newsletter
+  * @author Damian Kęska
+  */
+
+class newsletterSubscriber extends pantheraFetchDB
+{
+    protected $_tableName = 'newsletter_users';
+    protected $_idColumn = 'id';
+    protected $_constructBy = array('id', 'array', 'address', 'unsubscribe_id', 'activate_id');
+}
+
+/**
   * Newsletter categories management
   *
+  * @package Panthera\modules\newsletter
   * @author Damian Kęska
   */
 
@@ -338,9 +404,19 @@ class newsletter extends pantheraFetchDB
       * @author Damian Kęska
       */
     
-    public function getUsers($offset='', $limitTo='', $orderBy='added', $direction='DESC')
+    public function getUsers($offset='', $limitTo='', $orderBy='added', $direction='DESC', $fromAllCategories=False)
     {
         $LIMIT = '';
+        
+        if (!$direction)
+        {
+            $direction = 'DESC';
+        }
+        
+        if (!$orderBy)
+        {
+            $orderBy = 'added';
+        }
     
         if (is_int($offset) and is_int($limitTo))
         {
@@ -349,14 +425,33 @@ class newsletter extends pantheraFetchDB
         
         if (is_bool($offset) and $offset === False)
         {
-            $SQL = $this->panthera->db->query('SELECT count(*) FROM `{$db_prefix}newsletter_users` WHERE `nid` = :nid and `activate_id` = ""', array('nid' => $this->nid));
-            $fetch = $SQL -> fetch();
+            $array = array();
+            $query = '';
+            
+            if (!$fromAllCategories)
+            {
+                $array = array('nid' => $this->nid);
+                $query = '`nid` = :nid and ';
+            }
+            
+            $SQL = $this->panthera->db->query('SELECT count(*) FROM `{$db_prefix}newsletter_users` WHERE ' .$query. '`activate_id` = ""', $array);
+            $fetch = $SQL -> fetch(PDO::FETCH_ASSOC);
+            
             return intval($fetch['count(*)']);
+            
         } else {
-            $SQL = $this->panthera->db->query('SELECT * FROM `{$db_prefix}newsletter_users` WHERE `nid` = :nid AND `activate_id` = "" ORDER BY :orderBy :direction ' .$LIMIT, array('nid' => $this->nid, 'orderBy' => $orderBy, 'direction' => $direction));
-            return $SQL -> fetchAll();
-        }
+            $array = array('nid' => $this->nid, 'orderBy' => $orderBy, 'direction' => $direction);
+            $query = '';
+            
+            if (!$fromAllCategories)
+            {
+                $array['nid'] = $this->nid;
+                $query = '`nid` = :nid and ';
+            }
         
+            $SQL = $this->panthera->db->query('SELECT * FROM `{$db_prefix}newsletter_users` WHERE ' .$query. '`activate_id` = "" ORDER BY :orderBy :direction ' .$LIMIT, $array);
+            return $SQL -> fetchAll(PDO::FETCH_ASSOC);
+        }
     }
     
     
@@ -507,13 +602,18 @@ class newsletter extends pantheraFetchDB
       * @author Damian Kęska
       */
     
-    public function execute($message, $title, $from='', $date='')
+    public function execute($message, $title, $from='', $options='', $date='')
     {
         // crontab is required for newsletter to work
         $this->panthera->importModule('crontab');
         
+        if ($options['sendToAllUsers'])
+            $usersCount = $this -> getUsers(False, False, 'added', 'DESC', False);
+        else
+            $usersCount = $this->getUsers(False);
+        
         // check if we have any users to send newsletter to
-        if (!count($this->getUsers()))
+        if (!$usersCount)
         {
             $this->panthera->logging->output('No users to send message for nid=' .$this->nid, 'newsletter');
             return False;
@@ -535,9 +635,23 @@ class newsletter extends pantheraFetchDB
                 $time = 0;
         }
         
+        if (!is_array($options))
+        {
+            $options = array();
+        }
+        
         $jobName = $this->generateJobName($message.$from, $title, $time);
-        $data = array('message' => $message, 'from' => $from, 'title' => $title, 'nid' => $this->nid, 'offset' => 0);
-
+        
+        $data = array(
+            'message' => $message,
+            'from' => $from,
+            'title' => $title,
+            'nid' => $this->nid,
+            'offset' => 0,
+            'options' => $options,
+            'usersCount' => $usersCount
+        );
+ 
         // create new cronjob
         try {
             crontab::createJob($jobName, array('newsletterManagement', 'cronjob'), $data, '*/1');

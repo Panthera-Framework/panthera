@@ -24,7 +24,7 @@ function toggleWidgetsLock(lock)
         widgetsUnlocked = 1;
     }
 }
-
+ 
 /**
   * Remove widget
   *

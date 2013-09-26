@@ -135,7 +135,7 @@ class pantheraUser extends pantheraFetchDB
         if($var == 'meta')
             return $this->acl;
 
-        if(array_key_exists($var, $this->_data))
+        if (isset($this->_data[$var]))
             return $this->_data[$var];
     }
 
@@ -162,6 +162,58 @@ class pantheraUser extends pantheraFetchDB
         }
         
         parent::save();
+    }
+    
+    /**
+      * Get user attribute by id, pantheraUser object, login or current logged in user
+      *
+      * @param string $attribute Attribute name to get eg. id, login
+      * @param string|int|pantheraUser $input Input data to find user by (integer input means id, string means login and pantheraUser object means user itself)
+      * @return  
+      * @author Damian Kęska
+      */
+    
+    public static function getAttribute($attribute, $input='')
+    {
+        global $panthera;
+        
+        if (!$input)
+        {
+            if ($panthera -> user -> exists())
+            {
+                return $panthera -> user -> __get($attribute);
+            }
+        }
+        
+        $user = null;
+        
+        // get by pantheraUser object
+        if ($input instanceof pantheraUser)
+        {
+            $user = $input;
+        }
+        
+        // get by login
+        if (is_string($input))
+        {
+            $user = new pantheraUser('login', $input);
+        }
+        
+        // get by id
+        if (is_int($input))
+        {
+            $user = new pantheraUser('id', $input);
+        }
+        
+        if ($user)
+        {
+            if ($user -> exists())
+            {
+                return $user->__get($attribute);
+            }
+        }
+        
+        return False;
     }
 }
 

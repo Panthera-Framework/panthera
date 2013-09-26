@@ -22,6 +22,7 @@ $panthera -> locale -> loadDomain('newsletter');
 
 // GET newsletter by `nid` (from GET parameter)
 $newsletter = new newsletter('nid', $_GET['nid']);
+$types = newsletterManagement::getTypes();
 
 // exit if newsletter does not exists (exists method is a built-in method of pantheraFetchDB's abstract class)
 if (!$newsletter->exists())
@@ -63,6 +64,7 @@ if ($_GET['action'] == 'addSubscriber')
 	}
 	
 	$userID = -1; // guest
+    $type = '';
 	
 	if (isset($_POST['user']))
 	{
@@ -74,11 +76,26 @@ if ($_GET['action'] == 'addSubscriber')
 	    }
 	}
 	
-	if ($newsletter -> registerUser($_POST['email'], '', $userID, '', True, True))
+	if (in_array($_POST['type'], $types))
+	{
+	    $type = $_POST['type'];
+	}
+	
+	if ($newsletter -> registerUser($_POST['email'], $type, $userID, '', True, True))
     {
         newsletterManagement::updateUsersCount($_GET['nid']);
         $subscription = $newsletter -> getSubscription($_POST['email']);
-	    ajax_exit(array('status' => 'success', 'id' => $subscription['id'], 'type' => $subscription['type'], 'address' => $subscription['address'], 'added' => $subscription['added']));
+        $notes = $subscription['notes'];
+        
+        if ($_POST['notes'])
+        {
+            $notes = strip_tags($_POST['notes']);
+            $subscriber = new newsletterSubscriber('id', $subscription['id']);
+            $subscriber -> notes = $notes;
+            $subscriber -> save();
+        }
+        
+	    ajax_exit(array('status' => 'success', 'id' => $subscription['id'], 'type' => $subscription['type'], 'address' => $subscription['address'], 'added' => $subscription['added'], 'notes' => $notes));
 	} else {
 		ajax_exit(array('status' => 'failed', 'message' => localize('Cannot add subscriber', 'newsletter')));
     }
@@ -105,9 +122,11 @@ $uiPager -> setActive($page);
 $uiPager -> setLinkTemplates('#', 'createPopup(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\', 1024);');
 $limit = $uiPager -> getPageLimit();
 
+// get all avaliable newsletter types
+$panthera -> template -> push ('newsletter_types', $types);
+
 // get all users from current page
 $users = $newsletter -> getUsers($limit[0], $limit[1]);
-
 $panthera -> template -> push ('newsletter_users', $users);
 $panthera -> template -> display('newsletter_users.tpl');
 pa_exit();

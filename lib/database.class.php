@@ -497,7 +497,14 @@ class pantheraDB
             foreach ($array as $key => $value)
             {
                 $columns .= '`' .$key. '`, ';
-                $dataRow .= ':' .$key. ', ';
+                
+                if ($value == '{$NOW()}')
+                {
+                    $dataRow .= 'NOW(), ';
+                    unset($array[$key]);
+                } else {
+                    $dataRow .= ':' .$key. ', ';
+                }
             }
             
             $columns = rtrim($columns, ', ');
@@ -505,6 +512,7 @@ class pantheraDB
             
             
             return array('query' => $queryTable. '(' .$columns. ') VALUES (' .$dataRow. ')', 'values' => $array);
+            
         } else {
             // multiple rows code
             
@@ -524,8 +532,13 @@ class pantheraDB
                 
                 foreach ($row as $key => $value)
                 {
-                    $dataRow .= ':' .$key. '_r' .$i. ', ';
-                    $values[$key. '_r' .$i] = $value;
+                    if ($value == '{$NOW()}')
+                    {
+                        $dataRow .= '{$NOW()}';
+                    } else {
+                        $dataRow .= ':' .$key. '_r' .$i. ', ';
+                        $values[$key. '_r' .$i] = $value;
+                    }
                 }
                 
                 $dataRow = rtrim($dataRow, ', ');

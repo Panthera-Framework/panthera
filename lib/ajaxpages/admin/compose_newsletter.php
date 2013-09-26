@@ -20,6 +20,7 @@ if (!getUserRightAttribute($user, 'can_compose_newsletters')) {
 $panthera -> locale -> loadDomain('newsletter');
 $panthera -> importModule('newsletter');
 $panthera -> template -> setTitle(localize('Compose a new message', 'newsletter'));
+$language = $panthera -> locale -> getActive();
 
 $newsletter = new newsletter('nid', $_GET['nid']);
 
@@ -51,24 +52,63 @@ foreach ($jobs as $job)
         if ($exp[1] == $_GET['nid'])
         {
             $jobData = $job->getData();
-            $jobsTpl[] = array('title' => $jobData['data']['title'], 'created' => $job->created);
+            
+            if (!$jobData['data']['done'])
+            {
+                $jobData['data']['done'] = '0';
+            }
+            
+            if (!$jobData['data']['count'])
+            {
+                $jobData['data']['count'] = '?';
+            }
+            
+            $jobsTpl[] = array(
+                'title' => $jobData['data']['title'],
+                'created' => $job->created,
+                'count' => $jobData['data']['usersCount'],
+                'offset' => $jobData['data']['offset'],
+                'limit' => $jobData['data']['maxLimit'],
+                'position' => $jobData['data']['done']
+            );
         }
     }
 }
 
 $panthera -> template -> push ('messages_queue', $jobsTpl);
 
-// posting a new message
+/**
+  * Posting a new message
+  *
+  * @author Damian Kęska
+  */
+
 if(isset($_POST['content']))
 {
+    if (!getUserRightAttribute($user, 'can_manage_newsletter') and !getUserRightAttribute($user, 'can_manage_newsletter_' .$newsletter->nid)) {
+        $noAccess = new uiNoAccess;
+        $noAccess -> addMetas(array('can_manage_newsletter', 'can_manage_newsletter_' .$newsletter->nid));
+        $noAccess -> display();
+    }
+
     // content cannot be shorten than 10 characters
     if (strlen($_POST['content']) < 5)
         ajax_exit(array('status' => 'failed', 'message' => localize('Message is too short', 'newsletter')));
 
     if (strlen($_POST['title']) < 3)
         ajax_exit(array('status' => 'failed', 'message' => localize('Title is too short', 'newsletter')));
+        
+    if ($_POST['putToDrafts'])
+    {
+        $panthera -> importModule('editordrafts');
+        editorDraft::createDraft($_POST['content'], $panthera->user->id);
+    }
+    
+    $options = array(
+        'sendToAllUsers' => (bool)$_POST['sendToAllUsers']
+    );
 
-    $newsletter -> execute($_POST['content'], htmlspecialchars($_POST['title']), $_POST['from']);
+    $newsletter -> execute($_POST['content'], htmlspecialchars($_POST['title']), $_POST['from'], $options);
 
     ajax_exit(array('status' => 'success', 'message' => localize('Sent', 'newsletter')));
 }
@@ -76,6 +116,49 @@ if(isset($_POST['content']))
 // titlebar
 $titlebar = new uiTitlebar(localize('Newsletter', 'newsletter'). ' - ' .localize('Compose a new message', 'newsletter'));
 $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/newsletter.png', 'left');
+
+$attr = unserialize($newsletter -> attributes);
+
+if (!$attr['footer'])
+{
+    $attr['footer'] = '';
+    $newsletter -> attributes = serialize($attr);
+    $newsletter -> save();
+}
+
+$panthera -> template -> push ('mailFooter', filterInput($attr['footer'], 'wysiwyg'));
+
+/**
+  * Footer editing page
+  *
+  * @author Damian Kęska
+  */
+
+if ($_GET['action'] == 'editFooter')
+{
+    if (!getUserRightAttribute($user, 'can_manage_newsletter') and !getUserRightAttribute($user, 'can_manage_newsletter_' .$newsletter->nid)) {
+        $noAccess = new uiNoAccess;
+        $noAccess -> addMetas(array('can_manage_newsletter', 'can_manage_newsletter_' .$newsletter->nid));
+        $noAccess -> display();
+    }
+    
+    /**
+      * Save newsletter footer
+      *
+      * @author Damian Kęska
+      */
+
+    if (isset($_POST['footerContent']))
+    {
+        $attr['footer'] = $_POST['footerContent'];
+        $newsletter -> attributes = serialize($attr);
+        $newsletter -> save();
+        ajax_exit(array('status' => 'success'));
+    }
+
+    $panthera -> template -> display('newsletter_footer.tpl');
+    pa_exit();
+}
 
 $panthera -> template -> display('compose_newsletter.tpl');
 pa_exit();
