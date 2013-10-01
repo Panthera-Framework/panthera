@@ -81,7 +81,7 @@ function firebugInfo($list)
     global $panthera;
 
     $panthera -> locale -> loadDomain('firebug');
-    $list[] = array('type' => 'info', 'message' => slocalize('Firebug is currently working only for those IP addresses: %s', 'firebug', $panthera -> config -> getKey('firebug_whitelist')));
+    $list[] = array('type' => 'info');
     return $list;
 }
 
@@ -97,7 +97,7 @@ function firebugAsDebugTool($list)
 {
     global $panthera;
 
-    $list[] = array('link' => '?display=firebugSettings', 'name' => localize('Firebug settings'));
+    $list[] = array('link' => '?display=firebugSettings', 'name' => 'Firebug', 'description' => localize('Firebug settings'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/firebug.png');
     return $list;
 }
 
