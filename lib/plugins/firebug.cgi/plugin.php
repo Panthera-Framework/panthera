@@ -97,7 +97,7 @@ function firebugAsDebugTool($list)
 {
     global $panthera;
 
-    $list[] = array('link' => '?display=firebugSettings', 'name' => localize('Firebug settings'));
+    $list[] = array('link' => '?display=firebugSettings', 'name' => 'Firebug', 'description' => localize('Firebug settings'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/firebug.png');
     return $list;
 }
 
