@@ -10,6 +10,7 @@ CREATE TABLE `{$db_prefix}newsletter_users` (
   `userid` int(6) NOT NULL DEFAULT '-1' COMMENT 'User id (if logged in, so its optional)',
   `unsubscribe_id` varchar(32) DEFAULT '' COMMENT 'Can be used to allow users removing their subscriptions',
   `activate_id` varchar(64) DEFAULT '' COMMENT 'Used to confirm subscription',
+  `notes` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 

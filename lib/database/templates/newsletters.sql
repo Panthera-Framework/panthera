@@ -9,5 +9,4 @@ CREATE TABLE `{$db_prefix}newsletters` (
   `default_type` varchar(8) NOT NULL DEFAULT 'mail' COMMENT 'Default contact type',
   PRIMARY KEY (`nid`),
   UNIQUE KEY `title` (`title`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
-
+) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
