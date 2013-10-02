@@ -40,7 +40,7 @@ if ($_GET['action'] == 'account') {
         $panthera -> template -> push ('dontRequireOld', True);
 
     // if we arent superuser we cannot view superuser profiles
-    if (($u -> acl -> get('superuser') and !$user->acl->get('superuser')) or !$u->exists()) 
+    if (($u -> acl -> get('superuser') and !$panthera->user->acl->get('superuser')) or !$u->exists()) 
     {
         $noAccess = new uiNoAccess;
         $noAccess -> addMetas(array('superuser'));
@@ -57,7 +57,7 @@ if ($_GET['action'] == 'account') {
             
             if ($u -> isBanned(!$banned) == !$banned) {
                 $u -> save();
-                ajax_exit(array('status' => 'success'));
+                ajax_exit(array('status' => 'success', 'value' => !$banned));
             } else
                 ajax_exit(array('status' => 'failed', 'message' => localize('Cannot use this function!', 'users')));
             
@@ -89,29 +89,6 @@ if ($_GET['action'] == 'account') {
         }
     }
 
-    if (isset($_GET['changepassword'])) {
-
-        if ($u->checkPassword($_POST['old_passwd']) == True or ($u != $panthera->user and checkUserPermissions($panthera->user, True))) {
-
-            if ($_POST['new_passwd'] == $_POST['retyped_newpasswd']) {
-
-                if ($u->changePassword($_POST['new_passwd'])) {
-                    $u->save();
-                    ajax_exit(array('status' => 'success', 'message' => localize('Password has been successfully changed', 'users')));
-                } else {
-                    ajax_exit(array('status' => 'failed', 'message' => localize('Error with changing password', 'users')));
-                }
-            } else {
-                ajax_exit(array('status' => 'failed', 'message' => localize('Passwords are not identical', 'users')));
-                pa_exit();
-            }
-
-        } else {
-            ajax_exit(array('status' => 'failed', 'message' => localize('Incorrect old password', 'users')));
-            pa_exit();
-        }
-    }
-
     $locales = $panthera->locale->getLocales();
     $localesActive = $panthera->locale->getLocales();
 
@@ -122,20 +99,15 @@ if ($_GET['action'] == 'account') {
             $localesActive[$Key] = $Value;
     }
 
-    if (isset($_GET['changelanguage'])) {
-
-        if (array_key_exists($_POST['language'], $localesActive)) {
-            $u -> language = $_POST['language'];
-            ajax_exit(array('status' => 'success'));
-
-        } else {
-            ajax_exit(array('status' => 'failed', 'message' => localize('Language variable is empty')));
-        }
-        pa_exit();
-    }
-
     if ($u->profile_picture == '')
         $u->profile_picture = '{$PANTHERA_URL}/images/default_avatar.png';
+        
+    $groups = pantheraGroup::listGroups();
+    $groupsTpl = array();
+
+    foreach ($groups as $group) {
+        $groupsTpl[] = array('name' => $group->name);
+    }
 
     $template -> push('locales_added', $localesActive);
     $template -> push('action', 'my_account');
@@ -148,6 +120,7 @@ if ($_GET['action'] == 'account') {
     $template -> push('joined', $u->joined);
     $template -> push('language', $u->language);
     $template -> push('isBanned', $u->isBanned());
+    $template -> push('groups', $groupsTpl);
 
     // custom fields
     $template -> push('user_fields', $panthera -> get_filters('user.fields', array()));
@@ -196,7 +169,7 @@ if ($_GET['action'] == 'account') {
     $titlebar = new uiTitlebar(localize('Panel with informations about user.', 'users'));
     $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
     
-    $panthera -> template -> display('user_account.tpl');
+    $panthera -> template -> display('users_account.tpl');
     pa_exit();
 
 /**
@@ -375,34 +348,10 @@ if ($_GET['action'] == 'account') {
     }
 
 /**
-  * Show add user form
+  * Add new user
   *
   * @author Mateusz Warzyński
   */
-
-} elseif ($_GET['action'] == 'new_user') {
-    // check permissions
-    if (!checkUserPermissions($panthera->user, True))
-    {
-        $noAccess = new uiNoAccess; $noAccess -> display();
-        pa_exit();
-    }
-
-    $tpl = "users_edituser.tpl";
-
-    $groups = pantheraGroup::listGroups();
-    $groupsTpl = array();
-
-    foreach ($groups as $group) {
-        $groupsTpl[] = array('name' => $group->name);
-    }
-
-    $panthera -> template -> push('groups', $groupsTpl);
-    $panthera -> template -> push('locales_added', $panthera->locale->getLocales());
-    $panthera -> template -> push('avatar_dimensions', explode('x', $panthera -> config -> getKey('avatar_dimensions', '80x80', 'string')));
-    
-    $titlebar = new uiTitlebar(localize('Add new user.', 'users'));
-    $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
 
 
 } elseif ($_GET['action'] == 'add_user') {
@@ -442,7 +391,7 @@ if ($_GET['action'] == 'account') {
     $language = $_POST['language'];
     $primary_group = $_POST['primary_group'];
 
-    $attributes = '';
+    $attributes = array();
 
     if (createNewUser($login, $password, $full_name, $primary_group, $attributes, $language, $mail, $jabber, $avatar))
         ajax_exit(array('status' => 'success', 'message' => localize('User has been successfully added!', 'users')));
@@ -612,6 +561,7 @@ if ($_GET['action'] == 'account') {
             $users[] = array('login' => 'test', 'full_name' => 'Testowy, nie istniejący user', 'primary_group' => 'non_existing', 'joined' => 'today', 'language' => 'Marsjański', 'id' => 1);
         }*/
 
+        $panthera -> template -> push('locales_added', $panthera->locale->getLocales());
         $panthera -> template -> push('users_list', $users);
         $panthera -> template -> push('view_users', True);
         
