@@ -329,6 +329,7 @@ class pantheraConfig
     protected $overlay = array();
     protected $overlay_modified = array();
     protected $sections = array();
+    protected $overlays = 0; // count of loaded overlays
 
     public function __construct($panthera, $config)
     {
@@ -507,6 +508,7 @@ class pantheraConfig
     {
         $array = null;
         $cacheLoaded = False;
+        $this->overlays++;
 
         if ($this->panthera->cache and !$section)
         {
@@ -602,9 +604,15 @@ class pantheraConfig
                 if ($this->overlay_modified[$key] == 'created' and is_string($this->overlay_modified[$key]))
                 {
                     $this->panthera->logging->output('Inserting ' .$key. ' variable (' .$value[0]. ')', 'pantheraConfig');
-
+                    
                     try {
-                        $q = $this->panthera->db->query('INSERT INTO `{$db_prefix}config_overlay` (`id`, `key`, `value`, `type`, `section`) VALUES (NULL, :key, :value, :type, :section);', array('key' => $key, 'value' => $value[1], 'type' => $value[0], 'section' => $value[2]));
+                        $q = $this->panthera->db->query('INSERT INTO `{$db_prefix}config_overlay` (`id`, `key`, `value`, `type`, `section`) VALUES (NULL, :key, :value, :type, :section);', array(
+                            'key' => $key, 
+                            'value' => $value[1], 
+                            'type' => $value[0], 
+                            'section' => @$value[2]
+                        ));
+                        
                     } catch (Exception $e) {
                         $this->panthera->logging->output('Cannot insert new key, SQL error: ' .print_r($e->getMessage(), True), 'pantheraConfig');
                     }
@@ -636,6 +644,9 @@ class pantheraConfig
                     $this->panthera->db->query('UPDATE `{$db_prefix}config_overlay` SET `value` = :value, `type` = :type, `section` = :section WHERE `key` = :key ', array('value' => $value[1], 'key' => $key, 'type' => $value[0], 'section' => $value[2]));
                 }
             }
+            
+            // reset list of modified items
+            $this->overlay_modified = array();
 
             // update cache
             if ($this->panthera->cache)

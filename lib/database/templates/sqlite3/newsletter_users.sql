@@ -9,5 +9,6 @@ CREATE TABLE "{$db_prefix}newsletter_users" (
   "cookieid" TEXT NOT NULL DEFAULT '',
   "userid" INTEGER NOT NULL DEFAULT '-1',
   "unsubscribe_id" TEXT DEFAULT '',
-  "activate_id" TEXT DEFAULT ''
+  "activate_id" TEXT DEFAULT '',
+  "notes" TEXT DEFAULT ''
 );
