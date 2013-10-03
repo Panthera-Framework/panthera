@@ -41,18 +41,12 @@ function removeGroup(name)
 
 function removeUser(id)
 {
-    w2confirm('{function="localize('Are you sure you want delete this user?', 'users')"}', function (responseText) {
-        if (responseText == 'Yes')
-        {
-            panthera.jsonPOST( { url: '?display=users&cat=admin&action=removeUser', data: 'id='+id, spinner: userSpinner, success: function (response) {
+            panthera.jsonPOST( { url: '?display=users&cat=admin&action=removeUser', data: 'id='+id, success: function (response) {
 
                     if (response.status == "success")
                         $('#user_'+id).remove();
                 }
             });
-        }
-
-    });
 }
 
 </script>
@@ -319,9 +313,6 @@ function removeUser(id)
                     <td><a href="?display=acl&cat=admin&action=listGroup&group={$value.primary_group}" class="ajax_link">{$value.primary_group}</a></td>
                     <td>{$value.language|ucfirst}</td>
                     <td>
-                        <a href="#" onclick="navigateTo('?display=users&cat=admin&action=editUser&uid={$value.id}')">
-                            <img src="{$PANTHERA_URL}/images/admin/ui/edit.png" style="max-height: 22px;" alt="{function="localize('Edit', 'users')"}">
-                        </a>
                         <a href="#" onclick="removeUser('{$value.login}');">
                             <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
                         </a>
