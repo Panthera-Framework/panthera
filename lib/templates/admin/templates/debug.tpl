@@ -1,3 +1,5 @@
+{$site_header}
+
 <script type="text/javascript">
 $(document).ready(function() {
     $('#debug_log_trigger').click(function () {
@@ -76,115 +78,89 @@ function saveVariable(id, value)
 
 {include="ui.titlebar"}
 
-      <table class="gridTable">
-        <tfoot>
-            <tr>
-                <td colspan="2" class="rounded-foot-left"><em>
-                 Panthera - debug
-                </em></td>
-            </tr>
-        </tfoot>
+<style>
+#ajax_content {
+    background-color: #56687b;
+}
 
-        <br>
+#topContent {
+    min-height: 55px;
+}
 
-        <thead>
-            <tr>
-                <th colspan="2">{function="localize('Debugging center')"}</th>
-            </tr>
-        </thead>
+</style>
 
-        <tbody>
-            {loop="$tools"}
-            <tr>
-                <td colspan="2"><a href="{$value.link}" class="ajax_link">{function="localize($value.name, 'debug')"}</a></td>
-            </tr>
-            {/loop}
-        </tbody>
-    </table>
+<div id="topContent">
+    
+    <div class="searchBarButtonArea">
+        <input type="button" value="{function="localize('Options')"}" onclick="panthera.popup.toggle('element:#options')">
+    </div>
+    
+</div>
 
-    <br>
+<div id="popupOverlay"></div>
 
-    <table class="gridTable" id="optionsTable" style="position: relative;">
-        <thead>
-            <tr>
-                <th colspan="2">{function="localize('Settings')"}</th>
-            </tr>
+<div class="settingsBackground">
+    <div id="section">
+        <div class="iconViewContainer">
+           {loop="$tools"}
+            <div class="iconViewItem">
+                <a href="{$value.link}" class="ajax_link"> <img src="{$value.icon|pantheraUrl}" style="width: 48px;">
+                <p>{function="localize($value.name, 'debug')"} <br><span>{function="localize($value.description, 'debug')"}</span></p></a>
+            </div>
+           {/loop}
+        </div>
+    </div>
+</div>
 
-        </thead>
-            <tr>
-                <td>{function="localize('Debugger state', 'debug')"}</td>
-                <td><a id='debug_value' onclick="toggleDebugValue();"  style="cursor: pointer;"> {if="$debug == true"} {function="localize('On')"} {else} {function="localize('Off')"} {/if} </a></td>
-            </tr>
-            
-            <tr>
-                <td>{function="localize('Log save handlers', 'debug')"}</td>
-                <td>{$logHandlers}</td>
-            </tr>
-            
-            <tr>
-                <td>{function="localize('Messages filter', 'debug')"}</td>
-                <td>
-                    <select id="messagesFilter">
-                        <option value="" {if="$messageFilterType == ''"}selected{/if}>{function="localize('all messages', 'debug')"}</option>
-                        <option value="blacklist" {if="$messageFilterType == 'blacklist'"}selected{/if}>{function="localize('blacklist', 'debug')"}</option>
-                        <option value="whitelist" {if="$messageFilterType == 'whitelist'"}selected{/if}>{function="localize('whitelist', 'debug')"}</option>
-                    </select>
-                </td>
-            </tr>
-            
-            <tr id="filterTr">
-                <td>
-                    {function="localize('Filter name (eg. pantheraLocale)', 'debug')"}
-                </td>
-                
-                <td>
-                    <input type="text" id="messagesFilterText"> <input type="button" value="{function="localize('Add')"}/{function="localize('Remove')"}" id="messagesFilterButton">
-                </td>
-            </tr>
-            
-            <tr id="filterListTr">
-                <td>
-                    {function="localize('Filter list', 'debug')"}
-                </td>
-                
-                <td id="filterList">
-                    {$filterList}
-                </td>
-            </tr>
-            
-            <tr>
-                <td>{function="localize('Small, incomplete list of example filters', 'debug')"}</td>
-                <td><small>
-                {loop="$exampleFilters"}
-                <a onclick="manageFilters('{$value}')" style="cursor: pointer;">{$value}</a>
-                {/loop}
-            </tr>
-        </tbody>
-      </table>
-
-   {if="$debug == true"}
-   <h1 id="current_log_trigger" style="cursor: hand; cursor: pointer; margin: 15px;">{function="localize('Current session log', 'debug')"}</h1>
-   <div id="current_log_window">
-     <table class="greenLog">
-        {loop="$current_log"}
-        <tr>
-              <td><strong>{$key+1}.</strong></td>
-              <td>{$value}</td>
-        </tr>
-      {/loop}
-     </table>
-   </div>
-
-   <h1 id="debug_log_trigger" style="cursor: hand; cursor: pointer; margin: 15px;">{function="localize('Debug.log content', 'debug')"}</h1>
-   <div id="debug_log_window">
-     <table class="blueLog">
-        {loop="$debug_log"}
-        <tr>
-              <td><strong>{$key+1}.</strong></td>
-              <td>{$value}</td>
-        </tr>
-      {/loop}
-     </table>
-   </div>
-   {/if}
-
+<!-- Options popup -->
+<div style="display: none;" id="options">
+        <table class="formTable" style="margin: 0 auto; color: #fff;">
+             <thead>
+                 <tr>
+                    <td colspan="2" class="formTableHeader" style="padding-top: 0px; padding-bottom: 30px;">
+                        <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px;">{function="localize('Options')"}</p>
+                    </td>
+                 </tr>
+             </thead>
+             
+              <tbody>
+                    <tr>
+                        <th>{function="localize('Debugger state', 'debug')"}</th>
+                        <td><a id='debug_value' onclick="toggleDebugValue();"  style="cursor: pointer; color: #fff;"> {if="$debug == true"} {function="localize('On')"} {else} {function="localize('Off')"} {/if} </a></td>
+                    </tr>
+                    
+                    <tr style="background-color: transparent;">
+                        <th>{function="localize('Log save handlers', 'debug')"}</th>
+                        <td>{$logHandlers}</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>{function="localize('Messages filter', 'debug')"}</th>
+                        <td>
+                            <select id="messagesFilter">
+                                <option value="" {if="$messageFilterType == ''"}selected{/if}>{function="localize('all messages', 'debug')"}</option>
+                                <option value="blacklist" {if="$messageFilterType == 'blacklist'"}selected{/if}>{function="localize('blacklist', 'debug')"}</option>
+                                <option value="whitelist" {if="$messageFilterType == 'whitelist'"}selected{/if}>{function="localize('whitelist', 'debug')"}</option>
+                            </select>
+                        </td>
+                    </tr>
+                    
+                    <tr id="filterTr" style="background-color: transparent;">
+                        <th>{function="localize('Filter name (eg. pantheraLocale)', 'debug')"}</th>
+                        <td><input type="text" id="messagesFilterText"> <input type="button" value="{function="localize('Add')"}/{function="localize('Remove')"}" id="messagesFilterButton"></td>
+                    </tr>
+                    
+                    <tr id="filterListTr">
+                        <th>{function="localize('Filter list', 'debug')"}:</th>
+                        <td id="filterList">{$filterList}</td>
+                    </tr>
+                    
+                    <tr style="background-color: transparent;">
+                        <th>{function="localize('Small, incomplete list of example filters', 'debug')"}:</th>
+                        <td style="max-width: 400px;">
+                            <small>{loop="$exampleFilters"} <a onclick="manageFilters('{$value}')" style="cursor: pointer; color: #fff;">{$value}</a> {/loop}</small>
+                        </td>
+                    </tr>
+              </tbody>
+        </table>
+</div>

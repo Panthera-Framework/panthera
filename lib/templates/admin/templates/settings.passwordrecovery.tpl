@@ -38,12 +38,24 @@ function initEditor()
     
     </script>
 
-        {include="ui.titlebar"}<br>
-        
-        <form action="?{function="getQueryString('GET', '', '_')"}" method="POST" id="settingsFormSave">
-        <div class="grid-1" style="position: relative;" id="settingsFormSaveDiv">
-         <table class="gridTable">
-            <tbody>
+{include="ui.titlebar"}
+
+<form action="?{function="getQueryString('GET', '', '_')"}" method="POST" id="settingsFormSave">
+
+<div id="topContent">
+    <div class="searchBarButtonArea">
+        <input type="submit" value="{function="localize('Save')"}">
+    </div>
+</div>
+
+<table style="margin: 0 auto; margin-top: 50px; margin-bottom: 50px;">
+    <thead>
+        <tr>
+            <th colspan="2">{$uiTitlebar.title}</th>
+        </tr>
+    </thead>
+
+    <tbody>
                 <tr>
                     <td>{function="localize('Language')"}: </td>
                     <td>
@@ -85,18 +97,5 @@ function initEditor()
                     </td>
                 </tr>
             </tbody>
-            
-            <tfoot>
-                <tr>
-                    <td colspan="2">
-                        <span style="float: right;">
-                            <input type="submit" value="{function="localize('Save')"}">
-                        </span>
-                    </td>
-                </tr>
-            </tfoot>
-           </table>
-           </form>
-      </div>
-</article>
-
+</table>
+</form>

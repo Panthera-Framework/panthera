@@ -5,36 +5,28 @@
     $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
 </script>
 
-<div class="titlebar">
-    <span class="titleBarIcons">
-        {loop="$uiTitlebar.icons.left"}
+<div class="titleBar">
+    <span class="textTitleBar">{$uiTitlebar.title}
+        <span class="titleBarIcons" style="float: right; align: right;">
+            {loop="$uiTitlebar.icons.right"}
             {if="$value.link or $value.onclick"}
-            <a href="{$value.link}"{if="$value.onclick"} onclick="{$value.onclick}"{/if}>
-                <img src="{$value}" style="width: 25px;">
+            <a href="{$value.link}"{if="$value.onclick"} onclick="{$value.onclick}"{/if} class="iconPopupLi" style="align: right;">
+                <img src="images/admin/pantheraUI/transparent.png" class="pantheraIcon icon-{$value.image}" alt="Icon">
             </a>
             {else}
-            <img src="{$value.image}" style="width: 25px;">
+            <img src="images/admin/pantheraUI/transparent.png" class="pantheraIcon icon-{$value.image}" alt="Icon" style="align: right;">
             {/if}
-        {/loop}
-    </span>
-    
-    {$uiTitlebar.title}
-    
-    <span style="float: right; margin-right: 10px; margin-top: -5px;">
-        {loop="$uiTitlebar.icons.right"}
-            {if="$value.link or $value.onclick"}
-            <a href="{$value.link}"{if="$value.onclick"} onclick="{$value.onclick}"{/if}>
-                <img src="{$value}" style="width: 25px;">
+            {/loop}
+            
+            {if="$titleBarInclude"}
+                {include="$titleBarInclude"}
+            {/if}
+            
+            {if="$uiTitlebar.backButton"}
+            <a href="#back-button" id="navigationBackBtn" onclick="navigateTo('{function="navigation::getBackButton()"}');" class="iconPopupLi" style="align: right;">
+                <img src="images/admin/pantheraUI/transparent.png" class="pantheraIcon icon-Back" alt="Icon">
             </a>
-            {else}
-            <img src="{$value.image}" style="width: 25px;">
             {/if}
-        {/loop}
-    
-        {if="$uiTitlebar.backButton"}
-        <a href="#back-button" id="navigationBackBtn" onclick="navigateTo('{function="navigation::getBackButton()"}');">
-            <img src="images/admin/tango-icon-theme/Go-previous.svg" style="width: 30px" title="{function="localize('Click and hold to see history')"}">
-        </a>
-        {/if}
+        </span>
     </span>
 </div>

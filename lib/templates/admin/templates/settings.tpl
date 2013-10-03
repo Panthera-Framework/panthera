@@ -1,46 +1,36 @@
 {include="ui.titlebar"}
 
-{$uiSearchbarName="uiTop"}
-{include="ui.searchbar"}
 <style>
-.hiddenTable tbody {
-    display: none;
+#ajax_content {
+    background-color: #56687b;
 }
+
+#topContent {
+    min-height: 55px;
+}
+
 </style>
 
-<div style="text-align: center; margin-top: 30px;">
-    <div style="display: inline-block; overflow: hidden; margin: 0 auto; min-height: 500px; width: 60%;">
-        {$j=0}
-        {loop="$items"}
-        {$j=$j+1}
-        <table class="gridTable" style="margin-bottom: 20px;" id="section_{$j}">
-        <thead>
-            <tr style="cursor: pointer;" onclick="$('#section_{$j}').find('tbody').toggle('slow');">
-                <th colspan="6">{$key|localize:settings|ucfirst}</th>
-            </tr>
-        </thead>
-        
-        <tbody>
-            {$i=0}
+<div id="topContent">
+    {$uiSearchbarName="uiTop"}
+    {include="ui.searchbar"}
+</div>
+
+<div id="popupOverlay"></div>
+
+<div class="settingsBackground">
+    {loop="$items"}
+    <div id="section_{$j}">
+        <div class="titledSeparator">{$key|localize:settings|ucfirst}</div>
+
+        <div class="iconViewContainer">
             {loop="$value"}
-            {$i=$i+1}
-            {if="$i%2"}
-            <tr style="cursor: pointer;">
-            {/if}
-                <td style="border-right: 0px; width: 20px; padding: 10px;">
-                    <a href="{$value.link}" class="ajax_link"><img src="{$value.icon|pantheraUrl}" style="width: 48px;"></a>       
-                </td>
-                
-                <td style="padding-right: 10px;">
-                    <a href="{$value.link}" class="ajax_link"><b>{$value.name}</b><br>
-                    <small><i>{$value.description}</i></small></a>
-                </td>
-            {if="$i%1"}
-            </tr>
-            {/if}
+            <div class="iconViewItem">
+                <a href="{$value.link}" class="ajax_link"><img src="{$value.icon|pantheraUrl}" style="width: 48px;">
+                <p>{$value.name} <br><span>{$value.description}</span></p></a>
+            </div>
             {/loop}
-        </tbody>
-        </table>
-        {/loop}
+        </div>
     </div>
+    {/loop}
 </div>

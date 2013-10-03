@@ -1,0 +1,819 @@
+@charset "UTF-8";
+
+body {
+    margin: 0px;
+    padding: 0px;
+    background-color: #f3f3f3;
+    font-family: arial;
+}
+
+.centerWithContent {
+    width: 80.35%;
+    margin: 0 auto;
+}
+
+/* Logo bar and menu */
+
+        
+#logoBar {
+    background-color: #404c5a;
+    height: 75px;
+    width: 100%;
+    margin-bottom: 14px;
+    color: white;
+}
+
+.pantheraLogo {
+    background-image: url('../images/admin/pantheraUI/logo.png');
+    background-repeat: no-repeat;
+    background-position: 0 2px;
+    height: 52px;
+    color: white;
+}
+
+.pantheraLogo span {
+    position: relative;
+    top: 10px;
+    margin-left: 78px;
+    font-family: 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 30px;
+}
+
+.pantheraLogo a, .pantheraLogo:visited {
+    color: white;
+}
+
+.userBar {
+    position: relative;
+    top: 10px;
+    float: right;
+    padding-right: 3px;
+}
+
+.userAvatar {
+    display: inline-block;
+    border: solid #6e8093 1px;
+    width: 28px;
+    height: 28px;
+    float: right;
+    margin-right: 5px;
+    
+    position: relative;
+    top: 10px;
+}
+
+.userMenu {
+    display: inline-block;
+}
+
+#menuBarVisibleLayer { /* Only just a visible layer, not a content, the content is in #menuBar */
+    position: relative;
+    background-color: #56687b;
+    height: 21px;
+    width: 100%;
+    border-bottom: solid #6a7b8f 1px;
+}
+
+#menuBar {
+    position: relative;
+    font-weight: 700;
+    font-size: 12px;
+    vertical-align: middle;  
+    padding-left: 5px; 
+    margin-bottom: 250px;
+}
+
+.menuIcon {
+    position: relative;
+    top: 2px;
+    margin-left: 2px;
+}
+
+.menuText {
+    position: relative;
+    top: -5px;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.menuItem {
+    display: inline-block;
+    height: 22px;
+    cursor: pointer;
+    color: white;
+}
+
+.menuItem a, .menuItem a:visited {
+    color: white;
+}
+
+.menuItem:hover {
+    background-color: #404c5a;
+}
+
+/* Content container */
+            
+.content {
+    position: relative;
+    background-color: #e5ebef;
+    border: solid #6a7b8f 1px;
+    min-height: 400px;
+    min-width: 864px;
+}
+            
+.titleBar {
+    position: relative;
+    width: 100%;
+    background-color: #404c5a;
+    border-bottom: solid #343e4a 1px;
+    height: 23px;
+    color: #ececec;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.textTitleBar {
+    position: relative;
+    padding: 7px;
+    top: 4px;
+}
+
+.titleBarIcons {
+    position: relative;
+    margin-left: 10px;
+    margin-right: 1px;
+    cursor: pointer;
+}
+
+.iconPopupLi {
+    width: 10px;
+    background-color: transparent;
+}
+
+.pantheraIcon {
+    background: url('../images/admin/pantheraUI/icons.png') no-repeat;
+    height: 20px;
+    width: 20px;
+    margin-right: 3px;
+    display: inline-block;
+}
+
+/* Icons */
+.icon-Configure {
+    background-position: -540px -22px;
+}
+
+.icon-Back {
+    background-position: -269px 0px;
+}
+
+.icon-Home {
+    background-position: -293px -24px;
+}
+
+.icon-Unlocked {
+    background-position: -23px -134px;
+}
+
+.icon-Locked {
+    background-position: 3px -134px;
+}
+
+.icon-Users {
+    background-position: -378px 0px;
+}
+
+.icon-Search {
+    background-position: -378px 0px;
+}
+
+.icon-Add {
+    background-position: -343px -133px;
+}
+
+.icon-Settings {
+    background-position: -536px -24px;
+}
+
+.icon-Arrow {
+    background-position: -72px -242px;
+}
+
+.icon-Language {
+    background-position: -430px -80px;
+}
+
+.icon-Search {
+    background-position: -347px -22px;
+}
+            
+#topContent {
+    position: relative;
+    min-height: 90px;
+    background: url('../images/admin/pantheraUI/searchbar-bg.png');
+    background-repeat: repeat;
+    border-bottom: solid #56687b 2px;
+    border-left: solid #6e8093 1px;
+    border-top: solid #6e8093 1px;
+    border-right: solid #6e8093 1px;
+}
+
+/* Footer */
+            
+#footer {
+    margin: 0 auto;
+    margin-top: 5px;
+    margin-bottom: 25px;
+    font-size: 12px;
+    color: #404c5a;
+}
+
+#footer a {
+    color: #404c5a;
+}
+
+/* Forms */
+
+select {
+    border: solid 1px #6e8093;
+}
+
+
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+a:active {
+    color: #404c5a;
+}
+
+/* Dash items */
+.dash {
+    text-align: center;
+    display: block;
+    min-width: 864px;
+}
+
+.dash .dashItem {
+    margin-top: 10px;
+    display: inline-block;
+    position: relative;
+    text-align: center;
+    width: 71px;
+    height: 85px;
+    vertical-align:top;
+    
+    top: 8px;
+    margin-bottom: 10px;
+}
+
+.dash .dashItem a {
+    color: #fff;
+    font-size: 10px;
+    line-height: 15px;
+    text-decoration: none;
+}
+
+.dash .dashItem a .icon {
+    position: relative;
+    width: 32px;
+    height: 32px;
+}
+
+.dash .dashItem a .text {
+    position: relative;
+}
+
+.dash .dashItem a:hover {
+    color: #f3f3f3;
+    font-size: 11px;
+    transition-duration: 0.2s;
+}
+
+.dash .separator {
+    margin-top: 10px;
+    display: inline-block;
+    height: 67px;
+    background: url('../images/admin/pantheraUI/pager.png');
+}
+
+/* Ajax content */
+
+.ajax-content {
+    padding-top: 30px;
+    padding-left: 100px;
+    padding-bottom: 200px;
+}
+
+/* Panthera table */
+
+table {
+    display:table;
+    vertical-align: top;
+    /* border: 1px solid #b8bcbf; */
+    border-bottom: 0px;
+    border-collapse: collapse;
+    text-align: left;
+    
+    /* min-width: 350px; */
+    
+    margin-right: 30px;
+    color: black;
+}
+
+thead {
+    background-color: #56687b;
+}
+
+th {
+    padding-left: 7px;
+    font-weight: 200;
+    color: #fff;
+    font-size: 12px;
+    height: 22px;
+}
+
+th a {
+    color: #fff;
+}
+
+tfoot {
+    border-bottom: 0px;
+    background-color: #56687b;
+}
+
+tfoot td, tfoot, tfoot th {
+    border: 0px;
+}
+
+tfoot th {
+    font-size: 11px;
+    color: #b8bcbf;
+}
+
+tbody {
+    background-color: #fff;
+}
+
+td {
+    border-right: 1px solid #b8bcbf;
+    border-bottom: 1px solid #b8bcbf;
+    border-left: 1px solid #b8bcbf;
+    height: 35px;
+    padding-right: 35px;
+    font-size: 13px;
+    font-weight:100;
+    padding-left: 20px;
+}
+
+.hovered tr:hover {
+    background-color: #e5ebef;
+    transition-duration: 0.15s;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f3f3f3;
+}
+
+/* Dash avatar */
+#dashAvatar {
+    width: 10px;
+    padding-left: 2.5px;
+    padding-top: 3px;
+    padding-right: 2px;
+    text-align: center;
+    min-width: 40px;
+}
+
+/* Form elements */
+
+input[type=button], input[type=submit] {
+    min-width: 100px;
+    height: 25px;
+    background: url('../images/admin/pantheraUI/button.png');
+    background-repeat: repeat-x;
+    color: #fff;
+    padding: 4px;
+    outline: 1px solid #3d4957;
+    border: solid 1px #7c8a98;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+input[type=button]:active, input[type=submit]:active {
+    background: url('../images/admin/pantheraUI/button2.png');
+}
+
+input[type="text"], input[type="number"], input[type="password"] {
+    background: #3d4957;
+    outline: 1px solid #3d4957;
+    border: solid 1px #7c8a98;
+    padding: 5px;
+    color: #fff;
+    font-size: 11px;
+    min-width: 200px;
+}
+
+input[type="text"]:hover, input[type="number"]:hover, input[type="password"]:hover {
+    background: #3d4957;
+}
+
+
+.pantheraCheck {
+    width: 18px;    
+    margin: 18px auto;
+    position: relative;
+}
+
+.pantheraCheck label {
+    cursor: pointer;
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    top: 0;
+
+    border: 1px solid #3d4957;
+    background: #6e8093;
+}
+
+.pantheraCheck label:after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    filter: alpha(opacity=0);
+    opacity: 0;
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 4px;
+    background: transparent;
+    top: 4px;
+    left: 4px;
+    border: 2px solid #ececec;
+    border-top: none;
+    border-right: none;
+
+    -webkit-transform: rotate(-52deg);
+    -moz-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+
+.pantheraCheck label:hover::after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+    filter: alpha(opacity=30);
+    opacity: 0.5;
+}
+
+.pantheraCheck input[type=checkbox]:checked + label:after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+    filter: alpha(opacity=100);
+    opacity: 1;
+}
+
+.menuArrow {
+    position: absolute;
+    top: -2px;
+    right: 7px;
+    padding: 0px;
+    margin: 0px;
+    font-size: 32px;
+}
+
+.menuArrowBackground {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    background: #6e8093;
+    width: 24px;
+    height: 28px;
+}
+
+ul.dropdown,
+ul.dropdown li,
+ul.dropdown ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul.dropdown {
+    position: relative;
+    z-index: 597;
+    float: left;
+}
+
+ul.dropdown li {
+    float: left;
+    min-height: 1px;
+    line-height: 1.3em;
+    vertical-align: middle;
+}
+
+ul.dropdown li:hover {
+    position: relative;
+    z-index: 599;
+    cursor: default;
+}
+
+ul.dropdown ul {
+    visibility: hidden;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 598;
+    width: 100%;
+}
+
+ul.dropdown ul li {
+    float: none;
+}
+
+ul.dropdown ul ul {
+    top: 1px;
+    left: 99%;
+    border: solid 1px #56687b;
+}
+
+ul.dropdown li:hover > ul {
+ visibility: visible;
+}
+
+ul.dropdown li {
+    padding: 7px 0;
+    background-color: #000;
+    color: #fff;
+    line-height: normal;
+}
+
+	ul.dropdown a:link,
+	ul.dropdown a:visited { color: #fff; text-decoration: none; }
+	ul.dropdown a:hover { color: #76b900; text-decoration: none; }
+	ul.dropdown a:active { color: #fff; }
+
+/* -- level mark -- */
+
+ul.dropdown ul {
+    background-color: #404c5a;
+    font-size: 11px;
+    text-transform: none;
+	/*filter: alpha(opacity=90);
+	-moz-opacity: .9;
+	KhtmlOpacity: .9;
+	opacity: .9;*/
+}
+
+ul.dropdown ul li {
+    background-color: transparent;
+    color: #000;
+    filter: none;
+}
+
+ul.dropdown ul a:link,
+ul.dropdown ul a:visited { color: #fff; }
+ul.dropdown ul a:hover { color: #fff; text-decoration: none; }
+ul.dropdown ul a:active { color: #fff; }
+
+
+ul.dropdown *.dir {
+    padding-right: 38px;
+    background-image: none;
+    background-position: 100% 50%;
+    background-repeat: no-repeat;
+    border: solid 1px #6e8093;
+    font-size: 11px;
+}
+
+ul.dropdown li a {
+    display: block;
+    padding: 7px 14px;
+}
+
+
+ul.dropdown li {
+    padding: 0;
+    background-color: #404c5a;
+}
+
+
+ul.dropdown li.dir {
+    padding: 7px 20px 7px 14px;
+}
+
+ul.dropdown ul li.dir {
+    padding-right: 15px;
+}
+
+
+ul.dropdown ul a {
+    padding: 4px 5px 4px 14px;
+}
+
+ul.dropdown ul a:hover {
+    background-color: #ffffff;
+    color: #404c5a;
+}
+
+ul.dropdown ul li:hover > a.dir {
+    background-color: white;
+    color: white;
+}
+
+ul.dropdown li:hover > a.dir {
+    color: white;
+    border-bottom: 0px;
+}
+
+#iconPopupA {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    padding: 0px;
+    margin: 0px;
+    cursor: pointer;
+}
+
+.dropdownFixed ul {
+    width: 400px;
+    margin-right: 25px;
+}
+
+#popupOverlay {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    padding-bottom: 15px;
+    width: 100%;
+    vertical-align: center;
+    
+    outline: solid 1px #6e8093;
+    border-top: solid 1px #404c5a;
+    background-color: #56687b;
+}
+
+
+.popupContainer {
+    padding-left: 50px;
+    padding-top: 50px;
+}
+
+.centeredObject {
+    position: relative;
+    margin: 0 auto;
+}
+
+.titledSeparator {
+    background-color: #404c5a;
+    height: 23px;
+    text-align: center;
+    color: #ffffff;
+    padding-top: 2px;
+    font-size: 16px;
+    font-weight: 700;
+    
+    outline: solid 1px #3d4957;
+    border-top: solid 1px #6e8093;
+    border-bottom: 0px;
+}
+
+.iconViewContainer {
+    padding-left: 150px;
+    padding-right: 150px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.iconViewItem {
+    display: inline-block;
+    position: relative;
+    width: 260px;
+    height: 70px;
+    margin-right: 30px;
+    margin-bottom: 2px;
+    color: #ffffff;
+}
+
+.iconViewItem img {
+    display: inline-block;
+    padding: 15px;
+    padding-right: 8px;
+    max-width: 36px;
+}
+
+.iconViewItem p {
+    display: inline-block;
+    position: absolute;
+    top: 1px;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.iconViewItem span {
+    display: inline-block;
+    margin-left: 1px;
+    font-weight: 100;
+    font-size: 10.5px;
+    font-style: italic;
+}
+
+.iconViewItem a, .iconViewItem a:visited {
+    color: white;
+}
+
+.iconViewItem a:active {
+    color: #e6e9f1;
+}
+
+.settingsBackground {
+    background-color: #56687b;
+}
+
+.pager {
+    margin-top: 8px;
+    margin-left: 8px;
+    color: #404c5a;
+    font-size: 12px;
+}
+
+.separatorHorizontal {
+    background-color: #6f8094;
+    border-top: solid 1px #3c4755;
+    width: 100%;
+    height: 1px;
+}
+
+.searchBarButtonArea {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: right;
+    padding-right: 10px;
+}
+
+.formTable {
+    background: transparent;
+    border: 0px;
+    padding: 5px;
+}
+
+.formTable th {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px;
+}
+
+.formTable td {
+    border: 0px;
+    padding: 0px;
+}
+
+.formTable tbody tr:nth-child(even) {
+    background-color: transparent;
+}
+
+.formTable tbody {
+    background: transparent;
+}
+
+.formTable tbody td {
+    padding-right: 90px;
+
+}
+
+.formTable tbody th {
+    padding-left: 90px;
+
+}
+
+.formTable tfoot {
+    padding: 0px;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.formTableHeader {
+    padding-top: 0px;
+    padding-bottom: 30px;
+}
+
+.formTableHeader p {
+    color: #E5EBEF;
+    font-size: 20px;
+    font-weight: 600;
+    padding: 0px;
+    margin: 0px;
+}
+
+.formTableHeader td {
+    padding-top: 0px;
+    padding-bottom: 30px;
+}
+
+.formTableHeader tr {
+    background-color: transparent;
+}
+
+.dashWidget {
+    display: inline-block;
+}

@@ -1,3 +1,5 @@
+{$site_header}
+
 <script type="text/javascript">
 function initEditor () 
 {
@@ -13,9 +15,10 @@ jQuery(document).ready(function($) {
     
     $('#newsletter_form').submit(function(event){
         event.preventDefault();
-        panthera.jsonPOST({ data: '#newsletter_form', messageBox: 'w2ui', mce: 'tinymce_all', success: function (response) {
+        panthera.jsonPOST({ data: '#newsletter_form', mce: 'tinymce_all', success: function (response) {
                 if (response.status == 'success')
                 {
+                    alert('Ok');
                     $('#messagesQueueNoMessages').hide();
                 }
             } 
@@ -26,83 +29,112 @@ jQuery(document).ready(function($) {
 
 {include="ui.titlebar"}
 
-<div class="grid-1">
-    <!-- messages box -->
-        <form id="newsletter_form" action="{$AJAX_URL}?display=compose_newsletter&cat=admin&nid={$nid}" method="POST">
-        <div class="title-grid">{function="localize('Compose a new message', 'newsletter')"}</div>
-        <div class="content-gird">
-             <table style="border: 0px; width: 100%;">
-                <tr>
-                    <td style="width: 60px;">{function="localize('Title', 'newsletter')"}:</td><td><input type="text" value="" name="title"></td>
-                </tr>
-                
-                <tr>
-                    <td style="width: 60px; padding-bottom: 20px;">{function="localize('Sender', 'newsletter')"}:</td><td style="padding-bottom: 20px;"><input type="text" value="" name="from"></td>
-                </tr>
-                
-                 <tr>
-                    <td colspan="2">
-                        <textarea name="content" id="content_textarea" style="width: 99%; height: 400px;"></textarea><br><br>
-                    </td>
-                 </tr>
-                 
-                 <tr>
-                    <td colspan="2">
-                        <input type="checkbox" name="sendToAllUsers" value="1"> {function="localize('Send to all users in database', 'newsletter')"}
-                    </td>
-                 </tr>
-                 
-                 <tr>
-                    <td colspan="2">
-                        <input type="checkbox" name="putToDrafts" value="1"> {function="localize('Save message copy into message drafts', 'newsletter')"}
-                    </td>
-                 </tr>
-                 
-                 <tr>
-                    <td colspan="2" style="padding-top: 15px;">
-                        <input type="button" value="{function="localize('Subscribers', 'newsletter')"}" onclick="createPopup('?display=newsletter_users&cat=admin&nid={$nid}', 1024);"> 
-                        <input type="button" value="{function="localize('Edit footer', 'newsletter')"}" onclick="navigateTo('?display=compose_newsletter&cat=admin&nid={$nid}&action=editFooter');"> 
-                        <input type="submit" value="{function="localize('Send', 'newsletter')"}" style="float: right;">
-                    </td>
-                 </tr>
-             </table>
-        </div>
-        </form>
+<div id="topContent">
+    <div class="searchBarButtonArea">
+        <input type="button" value="{function="localize('Edit footer', 'newsletter')"}" onclick="panthera.popup.toggle('?display=compose_newsletter&cat=admin&nid={$nid}&action=editFooter')">
+        <input type="button" value="{function="localize('New message', 'newsletter')"}" onclick="navigateTo('?display=compose_newsletter&cat=admin&nid={$nid}')">
+        <input type="button" value="{function="localize('Messages queue', 'newsletter')"}" onclick="panthera.popup.toggle('element:#messagesQueue')">
+        <input type="button" value="{function="localize('Manage subscribers', 'newsletter')"}" onclick="panthera.popup.toggle('?display=newsletter_users&cat=admin&nid={$nid}')">
+        <input type="button" value="{function="localize('Recent subscribers', 'newsletter')"}" onclick="panthera.popup.toggle('element:#lastSubscribed')">
+    </div>
 </div>
 
-<div class="grid-2">
-    <div class="title-grid">{function="localize('Recently subscribed by', 'newsletter')"}</div>
-    
-     <div class="content-gird">
-        {if="count($recent_subscribers) > 0"}
-            <table class="gridTable" style="border: 0px">
+<div id="popupOverlay" style="text-align: center; padding-top: 20px;"></div>
+
+<!-- Messages queue popup -->
+<div style="display: none;" id="messagesQueue">
+    <table style="margin: 0 auto;">
+            <thead>
+                <tr>
+                    <th colspan="3">{function="localize('Queued messages to send', 'newsletter')"}</th>
+                </tr>
+            </thead>
+            
             <tbody>
+                {if="count($messages_queue)"}
+                {loop="$messages_queue"}
+                    <tr>
+                        <td>{$value.title|strCut:20}</td>
+                        <td>{$value.created}</td>
+                        <td>{$value.position}/{$value.count}</td>
+                    </tr>
+                {/loop}
+                {else}
+                    <tr><td colspan="3">{function="localize('No messages queued to send', 'newsletter')"}</td></tr>
+                {/if}
+            </tbody>
+        </table>
+</div>
+
+<!-- Last subscriptions popup -->
+<div style="display: none;" id="lastSubscribed">
+    <table style="margin: 0 auto;">
+            <thead>
+                <tr>
+                    <th colspan="2">{function="localize('Recently subscribed by', 'newsletter')"}</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                {if="count($recent_subscribers) > 0"}
                 {loop="$recent_subscribers"}
                     <tr><td>{$value.address}</td><td>{$value.added}</td></tr>
                 {/loop}
-                </tbody>
-            </table>
-        
-        {else}
-            {function="localize('There no any users subscribing this newsletter', 'newsletter')"}
-        {/if}
-     </div>
-</div>
-
-<div class="grid-2">
-    <div class="title-grid">{function="localize('Queued messages to send', 'newsletter')"}</div>
-    
-     <div class="content-gird">
-        <table class="gridTable" style="border: 0px">
-            <tbody id="messagesQueue">
-            {if="!count($messages_queue)"}
-                <tr id="messagesQueueNoMessages"><td colspan="3">{function="localize('No messages queued to send', 'newsletter')"}</td></tr>
                 {else}
-                {loop="$messages_queue"}
-                <tr><td>{$value.title|strCut:20}</td><td>{$value.created}</td><td>{$value.position}/{$value.count}</td></tr>
-                {/loop}
-            {/if}
+                    <tr><td colspan="2">{function="localize('There no any users subscribing this newsletter', 'newsletter')"}</td></tr>
+                {/if}
             </tbody>
         </table>
-     </div>
+</div>
+
+<div class="ajax-content centeredObject" style="text-align: center; padding-left: 0px;">
+    <form id="newsletter_form" action="{$AJAX_URL}?display=compose_newsletter&cat=admin&nid={$nid}" method="POST">
+    <div style="display: inline-block;">
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th colspan="2">{function="localize('Create a new message', 'newsletter')"}</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                <tr>
+                    <td style="width: 60px;">{function="localize('Title', 'newsletter')"}:</td>
+                    <td><input type="text" value="" name="title"></td>
+                </tr>
+                
+                <tr>
+                    <td>{function="localize('Sender', 'newsletter')"}:</td>
+                    <td><input type="text" value="" name="from"></td>
+                </tr>
+                
+                <tr>
+                    <td colspan="2" style="width: 800px; padding: 0px;"><textarea name="content" id="content_textarea" style="height: 400px; width: 100%;"></textarea></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- Options -->
+        
+        <table style="margin-top: 25px; width: 100%;">
+            <thead>
+                <tr>
+                    <th colspan="2">{function="localize('Options', 'newsletter')"}</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                <tr>
+                    <td colspan="2"><input type="checkbox" name="sendToAllUsers" value="1"> {function="localize('Send to all users in database', 'newsletter')"}</td>
+                </tr>
+                
+                <tr>
+                    <td colspan="2"><input type="checkbox" name="putToDrafts" value="1"> {function="localize('Save message copy into message drafts', 'newsletter')"}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div style="text-align: right; margin-top: 10px;"><input type="submit" value="{function="localize('Send', 'newsletter')"}"></div>
+    </div>
+    </form>
 </div>

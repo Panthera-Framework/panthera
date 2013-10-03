@@ -90,24 +90,191 @@ function removeUser(id)
 
 {include="ui.titlebar"}
 
-        {$uiSearchbarName="uiTop"}
-        {include="ui.searchbar"}
+<div id="topContent">
+    {$uiSearchbarName="uiTop"}
+    {include="ui.searchbar"}
+    
+    <div class="separatorHorizontal"></div>
+    
+    <div class="searchBarButtonArea">
+        <input type="button" value="{function="localize('Add a new user', 'users')"}" onclick="panthera.popup.toggle('element:#newUserPopup')">
+        <input type="button" value="{function="localize('Add a new group', 'users')"}" onclick="panthera.popup.toggle('element:#newGroupPopup')">
+    </div>
+</div>
 
-        <div class="grid-1">
-            <div id="usersDiv" style="position: relative;">
-            {include="users_table"}
-             </div>
-        </div>
+<!-- Create user popup -->
 
-        <div class="grid-2" id="groupTable" style="position: relative;">
-        <table class="gridTable">
-        <thead>
-            <tr>
-                <th>{function="localize('Group name', 'acl')"}</th>
-                <th>{function="localize('Description', 'acl')"}</th>
-                <th><span style="float: right;"><a onclick="$('#groupsAddTr').show('slow');" style="cursor: pointer;"><img src="{$PANTHERA_URL}/images/admin/list-add.png" style="height: 15px;"></a></span></th>
-            </tr>
-        </thead>
+<div id="newUserPopup" style="display: none;">
+      <script type="text/javascript">
+        $(document).ready(function () {
+
+            /**
+              * Create a new user
+              *
+              * @author Mateusz Warzyński
+              */
+            
+            $('#addUserForm').submit(function () {
+                panthera.jsonPOST( { data: '#addUserForm', spinner: editUser, success: function (response) {
+        
+                        if (response.status == "success") {
+                            navigateTo('?display=users&cat=admin');
+        
+                        } else {
+        
+                            if (response.message != undefined)
+                                w2alert(response.message, '{function="localize('Warning', 'acl')"}');
+                        }
+                    }
+                });
+                return false;
+            });
+        });
+      </script>
+      <form action="?display=users&cat=admin&action=add_user" method="POST" id="addUserForm">
+         
+         <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
+
+             <thead>
+                 <tr>
+                     <td colspan="2" class="formTableHeader" style="padding-top: 0px; padding-bottom: 30px;">
+                         <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px;">{function="localize('Create new user', 'users')"}</p>
+                     </td>
+                 </tr>
+             </thead>
+             
+             <tfoot>
+                <tr>
+                    <td colspan="2" style="padding-top: 35px;">
+                        <input type="button" value="{function="localize('Cancel')"}" onclick="panthera.popup.close()" style="float: left; margin-left: 30px;">
+                        <input type="submit" value="{function="localize('Create', 'users')"}" style="float: right; margin-right: 30px;">
+                    </td>
+                </tr>
+            </tfoot>
+
+             <tbody>
+                <tr>
+                    <th>{function="localize('Login', 'users')"}</th>
+                    <th><input type="text" name="login"></th>
+                </tr>
+
+                <tr>
+                  <th>{function="localize('Password', 'users')"}</th>
+                  <th> 
+                       <input type="password" name="passwd" placeholder="{function="localize('Password', 'users')"}"><br>
+                       <input type="password" name="retyped_passwd" placeholder="{function="localize('Retype password', 'users')"}" style="margin-top:5px;" id="retype_passwd">
+                  </th>
+                </tr>
+                
+                <tr>
+                  <th>{function="localize('Avatar', 'users')"}</th>
+                  <th>
+                      <input type="button" value="{function="localize('Upload file', 'users')"}" onclick="createPopup('_ajax.php?display=upload&cat=admin&popup=true&callback=upload_file_callback', 1300, 550);" style="width: 160px;">
+                      <div class="galleryImageFrame" style="margin-top: 7px;">
+                        <div class="paGalleryFrameContent">
+                            <img src="{$PANTHERA_URL}/images/default_avatar.png" id="avatar_image" style="max-width: {$avatar_dimensions[0]}px; max-height: {$avatar_dimensions[1]}px;">
+                        </div>
+                      </div>
+
+                      <input type="text" name="avatar" id="avatar_link" style="display: none;">
+                  </th>
+                </tr>
+
+                <tr>
+                  <th>{function="localize('Full name', 'users')"}</th>
+                  <th><input type="text" name="full_name"></th>
+                </tr>
+
+                <tr>
+                  <th>{function="localize('Primary group', 'users')"}</th>
+                  <th>
+                    <select name="primary_group" style="width: 160px;">
+                        {loop="$groups"}
+                          <option value="{$value.name}">{$value.name}</option>
+                        {/loop}
+                    </select>
+                  </th>
+                </tr>
+
+                <tr>
+                  <th>{function="localize('Language', 'users')"}</th>
+                  <th>
+                    <select name="language" style="width: 160px;">
+                        {loop="$locales_added"}
+                          <option value="{$key}">{$key}</option>
+                        {/loop}
+                    </select>
+                 </th>
+                </tr>
+
+                <tr>
+                  <th>{function="localize('E-mail', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+                  <th><input type="text" name="email" placeholder="user@gmail.com"></th>
+                </tr>
+
+                <tr>
+                  <th>{function="localize('Jabber', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+                  <th><input type="text" name="jabber" placeholder="user@jabber.org"></th>
+                </tr>
+
+             </tbody>
+            </table>
+         </form>
+</div>
+
+<!-- New group popup -->
+
+<div id="newGroupPopup" style="display: none;">
+    <form action="?display=users&cat=admin&action=createGroup" method="POST" id="createGroupForm">
+         
+         <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
+            
+            <thead>
+                 <tr>
+                     <td colspan="2" class="formTableHeader" style="padding-top: 0px; padding-bottom: 30px;">
+                         <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px;">{function="localize('Create new group', 'users')"}</p>
+                     </td>
+                 </tr>
+            </thead>
+             
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="padding-top: 35px;">
+                        <input type="button" value="{function="localize('Cancel')"}" onclick="panthera.popup.close()" style="float: left; margin-left: 30px;">
+                        <input type="submit" value="{function="localize('Add', 'users')"}" style="float: right; margin-right: 30px;">
+                    </td>
+                </tr>
+            </tfoot>
+
+            <tbody>
+                <tr>
+                    <th>{function="localize('Name', 'users')"}</th>
+                    <th><input type="text" name="name" style="width: 95%;"></th>
+                </tr>
+                    <th>{function="localize('Description', 'users')"}</th>
+                    <th><input type="text" name="description" style="width: 95%;"></th>
+                </tr>
+            </tbody>
+         </table>
+    </form>
+</div>
+    
+<div id="popupOverlay" style="text-align: center; padding-top: 20px; padding-bottom: 0px;"></div>
+
+<!-- Ajax content -->
+
+<div class="ajax-content" style="text-align: center;">
+    <div>
+        
+      <!-- Groups -->
+        <table style="display: inline-block;">            
+            <thead>
+                <tr>
+                    <th>{function="localize('Group name', 'acl')"}</th>
+                    <th colspan="2">{function="localize('Description', 'acl')"}</th>
+                </tr>
+            </thead>
+            
             <tbody id="groupTableBody">
             {loop="$groups"}
                 <tr id="group_{$value.name}" class="groupTableItem">
@@ -127,5 +294,49 @@ function removeUser(id)
                 </tr>
                 </form>
             </tbody>
-    </table>
+        </table>
+        
+        
+      <!-- Users -->   
+        <table style="display: inline-block; border: 0;">
+            <thead>
+                 <tr>
+                     <th></th>
+                     <th>{function="localize('Name', 'users')"}</th>
+                     <th>{function="localize('Primary group', 'users')"}</th>
+                     <th colspan="2">{function="localize('Default language', 'users')"}</th>
+                 </tr>
+            </thead>
+            
+            <tfoot style="background-color: transparent;">
+               <tr>
+                 <td colspan="7" class="pager">{$uiPagerName="users"}
+                   {include="ui.pager"}
+                 </td>
+               </tr>
+            </tfoot>
+            
+            <tbody>
+              {loop="$users_list"}
+                 <tr id="user_{$value.login}"}>
+                    <td style="padding-left: 15px; padding-right: 15px;"><img src="{$value.avatar}" style="max-height: 30px; max-width: 23px;"></td>
+                    <td {if="$value.banned"}style="text-decoration: line-through;"{/if}>{if="$view_users == True"}<a href='?display=users&cat=admin&action=account&uid={$value.id}' class='ajax_link'>{$value.name}</a>{else}{$value.name}{/if}</td>
+                    <td><a href="?display=acl&cat=admin&action=listGroup&group={$value.primary_group}" class="ajax_link">{$value.primary_group}</a></td>
+                    <td>{$value.language|ucfirst}</td>
+                    <td>
+                        <a href="#" onclick="navigateTo('?display=users&cat=admin&action=editUser&uid={$value.id}')">
+                            <img src="{$PANTHERA_URL}/images/admin/ui/edit.png" style="max-height: 22px;" alt="{function="localize('Edit', 'users')"}">
+                        </a>
+                        <a href="#" onclick="removeUser('{$value.login}');">
+                            <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
+                        </a>
+                    </td>
+                 </tr>
+              {/loop}
+            </tbody>
+       </table>
+       
+      </div>
     </div>
+        
+<br><br>
