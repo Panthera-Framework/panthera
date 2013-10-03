@@ -120,6 +120,8 @@ if ($_GET['action'] == 'account') {
     $template -> push('joined', $u->joined);
     $template -> push('language', $u->language);
     $template -> push('isBanned', $u->isBanned());
+    $template -> push('jabber', $u->jabber);
+    $template -> push('email', $u->mail);
     $template -> push('groups', $groupsTpl);
 
     // custom fields
@@ -243,7 +245,7 @@ if ($_GET['action'] == 'account') {
     else
         ajax_exit(array('status' => 'failed', 'message' => localize('Cannot find UID of user!', 'users')));
     
-    if ($_POST['passwd'] != '********') {
+    if ($_POST['passwd'] != '') {
         if (strlen($_POST['passwd']) > 6) {
             if ($_POST['passwd'] == $_POST['retyped_passwd']) {
                 if ($u->changePassword($_POST['passwd'])) {
@@ -276,50 +278,7 @@ if ($_GET['action'] == 'account') {
     $u -> save();
     
     ajax_exit(array('status' => 'success', 'message' => 'Information about user has been saved successfully!'));
-
-/**
-  * Redirect to users_edituser template
-  *
-  * @author Mateusz Warzyński
-  */
-
-} elseif ($_GET['action'] == 'editUser') {
-    $tpl = "users_edituser.tpl";
     
-    if (isset($_GET['uid']) AND checkUserPermissions($panthera->user, True)) {
-        $u = getUserById($_GET['uid']);
-        $template -> push('user_uid', '&uid=' .$_GET['uid']);
-    } else {
-        $u = $user;
-    }
-    
-    $groups = pantheraGroup::listGroups();
-    $groupsTpl = array();
-
-    foreach ($groups as $group) {
-        $groupsTpl[] = array('name' => $group->name);
-    }
-    
-    $template -> push('id', $u->id);
-    $template -> push('user_login', $u->login);
-    $template -> push('avatar_dimensions', explode('x', $panthera -> config -> getKey('avatar_dimensions', '80x80', 'string')));
-    $template -> push('profile_picture', pantheraUrl($u->profile_picture));
-    $template -> push('full_name', $u->full_name);
-    $template -> push('primary_group', $u->primary_group);
-    $template -> push('joined', $u->joined);
-    $template -> push('language', $u->language);
-    $template -> push('email', $u->mail);
-    $template -> push('jabber', $u->jabber);
-    
-    $template -> push('groups', $groupsTpl);
-    $template -> push('locales_added', $panthera->locale->getLocales());
-    
-    $template -> push('action', 'edit');
-    
-    $titlebar = new uiTitlebar(localize('Edit existing user', 'users'));
-    $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
-    
-
 /**
   * Remove an user (by id)
   *

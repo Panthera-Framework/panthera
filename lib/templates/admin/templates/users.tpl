@@ -1,4 +1,5 @@
 <script type="text/javascript">
+
 /**
   * Jump to other page in a table
   *
@@ -9,38 +10,6 @@ function jumpToAjaxPage(id)
 {
     panthera.htmlGET({ url: '?display=users&cat=admin&subaction=show_table&usersPage='+id, success: '#usersDiv' });
 }
-
-var groupSpinner = new panthera.ajaxLoader($('#groupTable'));
-var userSpinner = new panthera.ajaxLoader($('#usersDiv'));
-
-// when page becomes ready
-$(document).ready(function () {
-
-    /**
-      * Add a new group
-      *
-      * @author Damian Kęska
-      */
-
-    $('#createGroupForm').submit(function () {
-        panthera.jsonPOST( { data: '#createGroupForm', spinner: groupSpinner, success: function (response) {
-
-                if (response.status == "success")
-                {
-                    //$('.groupTableItem').remove();
-                    $('#groupTableBody').prepend('<tr id="group_'+response.name+'" class="groupTableItem"><td><a href="?display=acl&cat=admin&action=listGroup&group='+response.name+'" class="ajax_link">'+response.name+'</a></td><td>'+response.description+'</td><td><input type="button" value="{function="localize('Remove', 'acl')"}" onclick="removeGroup(\''+response.name+'\');"></td>');
-                } else {
-                    if (response.message != undefined)
-                    {
-                        w2alert(response.message, '{function="localize('Warning', 'acl')"}');
-                    }
-
-                }
-            }
-        });
-        return false;
-    });
-});
 
 /**
   * Remove group
@@ -97,8 +66,8 @@ function removeUser(id)
     <div class="separatorHorizontal"></div>
     
     <div class="searchBarButtonArea">
-        <input type="button" value="{function="localize('Add a new user', 'users')"}" onclick="panthera.popup.toggle('element:#newUserPopup')">
-        <input type="button" value="{function="localize('Add a new group', 'users')"}" onclick="panthera.popup.toggle('element:#newGroupPopup')">
+        <input type="button" value="{function="localize('Create user', 'users')"}" onclick="panthera.popup.toggle('element:#newUserPopup')">
+        <input type="button" value="{function="localize('Create group', 'users')"}" onclick="panthera.popup.toggle('element:#newGroupPopup')">
     </div>
 </div>
 
@@ -106,6 +75,7 @@ function removeUser(id)
 
 <div id="newUserPopup" style="display: none;">
       <script type="text/javascript">
+      
         $(document).ready(function () {
 
             /**
@@ -115,15 +85,10 @@ function removeUser(id)
               */
             
             $('#addUserForm').submit(function () {
-                panthera.jsonPOST( { data: '#addUserForm', spinner: editUser, success: function (response) {
+                panthera.jsonPOST( { data: '#addUserForm', success: function (response) {
         
                         if (response.status == "success") {
                             navigateTo('?display=users&cat=admin');
-        
-                        } else {
-        
-                            if (response.message != undefined)
-                                w2alert(response.message, '{function="localize('Warning', 'acl')"}');
                         }
                     }
                 });
@@ -264,10 +229,40 @@ function removeUser(id)
 <!-- Ajax content -->
 
 <div class="ajax-content" style="text-align: center;">
+    <script type="text/javascript">
+      $(document).ready(function () {
+
+            /**
+              * Add a new group
+              *
+              * @author Damian Kęska
+              */
+        
+            $('#createGroupForm').submit(function () {
+                panthera.jsonPOST( { data: '#createGroupForm', spinner: groupSpinner, success: function (response) {
+        
+                        if (response.status == "success")
+                        {
+                            //$('.groupTableItem').remove();
+                            $('#groupTableBody').prepend('<tr id="group_'+response.name+'" class="groupTableItem"><td><a href="?display=acl&cat=admin&action=listGroup&group='+response.name+'" class="ajax_link">'+response.name+'</a></td><td>'+response.description+'</td><td><input type="button" value="{function="localize('Remove', 'acl')"}" onclick="removeGroup(\''+response.name+'\');"></td>');
+                        } else {
+                            if (response.message != undefined)
+                            {
+                                w2alert(response.message, '{function="localize('Warning', 'acl')"}');
+                            }
+        
+                        }
+                    }
+                });
+                return false;
+            });
+      });
+    </script>
+    
     <div>
         
       <!-- Groups -->
-        <table style="display: inline-block;">            
+        <table style="display: inline-block; position: relative;" id="groupsTable">            
             <thead>
                 <tr>
                     <th>{function="localize('Group name', 'acl')"}</th>
@@ -298,7 +293,7 @@ function removeUser(id)
         
         
       <!-- Users -->   
-        <table style="display: inline-block; border: 0;">
+        <table style="display: inline-block; position: relative;" id="usersTable">
             <thead>
                  <tr>
                      <th></th>
