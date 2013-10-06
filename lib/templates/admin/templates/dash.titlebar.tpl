@@ -6,7 +6,7 @@
     <img src="{$PANTHERA_URL}/images/admin/pantheraUI/transparent.png" class="pantheraIcon icon-Add" alt="{function="localize('Add new widget', 'dash')"}">
 </span>
 
-<div id="searchDropdown" class="searchBarDropdown searchBarDropdown-tip searchBarDropdown-relative" style="display: block; left: 519.53125px; top: 21px;">
+<div id="searchDropdown" class="searchBarDropdown searchBarDropdown-tip searchBarDropdown-relative">
     <ul class="searchBarDropdown-menu">
     {loop="$dashAvaliableWidgets"}{if="!$value and $key"}
         <li><a href="?display=dash&cat=admin&widget={$key}&action=add" class="ajax_link">{$key}</a></li>

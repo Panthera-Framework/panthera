@@ -165,6 +165,23 @@ class pantheraUser extends pantheraFetchDB
     }
     
     /**
+      * Get user's avatar link
+      *
+      * @return string 
+      * @author Damian Kęska
+      */
+    
+    public function getAvatar()
+    {
+        if (!$this->__get('profile_picture'))
+        {
+            return pantheraUrl('{$PANTHERA_URL}/images/default_avatar.png', False, 'frontend');
+        } else {
+            return pantheraUrl($this->__get('profile_picture'), False, 'frontend');
+        }
+    }
+    
+    /**
       * Get user attribute by id, pantheraUser object, login or current logged in user
       *
       * @param string $attribute Attribute name to get eg. id, login

@@ -354,6 +354,10 @@ tfoot th {
     color: #b8bcbf;
 }
 
+thead th {
+    padding-right: 5px;
+}
+
 tbody {
     background-color: #fff;
 }
@@ -642,6 +646,9 @@ ul.dropdown li:hover > a.dir {
 
 #popupOverlay {
     display: none;
+}
+
+#popupOverlay, .popupOverlay {
     position: absolute;
     z-index: 100;
     padding-bottom: 15px;
@@ -653,6 +660,29 @@ ul.dropdown li:hover > a.dir {
     background-color: #56687b;
 }
 
+.popupHeader {
+    color: #e5ebef;
+    padding: 0px;
+    margin: 0px;
+    margin-left: 30px;
+    margin-right: 30px;
+    margin-bottom: 10px;
+}
+
+.popupQuestion {
+    display: inline-block;
+    margin: 0 auto;
+    margin-top: 60px;
+    min-width: 400px;
+}
+
+.popupQuestionOverlay {
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 0px;
+    height: 100%;
+    opacity: 0.95;
+}
 
 .popupContainer {
     padding-left: 50px;

@@ -11,8 +11,6 @@
 if (!defined('IN_PANTHERA'))
       exit;
 
-$tpl = 'dumpinput.tpl';
-
 if (!getUserRightAttribute($user, 'can_dump_input')) {
     $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
@@ -32,4 +30,7 @@ $template -> push('SESSION', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($
 $template -> push('GET', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($_GET, True))));
 $template -> push('POST', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($_POST, True))));
 $template -> push('SERVER', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($_SERVER, True))));
-?>
+
+$titlebar = new uiTitlebar(localize('dumpinput', 'settings'));
+$panthera -> template -> display('dumpinput.tpl');
+pa_exit();

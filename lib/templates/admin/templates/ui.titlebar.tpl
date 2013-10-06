@@ -5,7 +5,7 @@
     $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
 </script>
 
-<div class="titleBar">
+<div class="titleBar" id="titleBar">
     <span class="textTitleBar">{$uiTitlebar.title}
         <span class="titleBarIcons" style="float: right; align: right;">
             {loop="$uiTitlebar.icons.right"}

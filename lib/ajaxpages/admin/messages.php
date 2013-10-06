@@ -39,9 +39,12 @@ if ($_GET['action'] == 'new_msg')
     $icon = filterInput($_POST['message_icon'], 'quotehtml');
     
     // check user rights
-    if (!getUserRightAttribute($user, 'can_qmsg_manage_' .$categoryName) and !getUserRightAttribute($user, 'can_qmsg_manage_all'))
+    if (!getUserRightAttribute($panthera->user, 'can_qmsg_manage_' .$categoryName) and !getUserRightAttribute($panthera->user, 'can_qmsg_manage_all'))
     {
-        ajax_exit(array('status' => 'failed', 'message' => localize('Permission denied. You dont have access to this action', 'messages')));
+        ajax_exit(array(
+            'status' => 'failed',
+            'message' => localize('Permission denied. You dont have access to this action', 'messages'
+        )));
     }
     
     // set other language than active
@@ -251,18 +254,13 @@ if ($_GET['action'] == 'display_category')
 
     // here we will list all messages on default page (listing)
     $count = quickMessage::getQuickMessages(array('language' => $language, 'category_name' => $categoryName), False);
-
+    
     // count pages
-    $panthera -> importModule('pager');
-    $pager = new Pager($count, 'adminQuickMessages');
+    $pager = new uiPager('adminQuickMessages', $count, 'adminQuickMessages');
+    $pager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\');');
     $pager -> maxLinks = 6;
     $limit = $pager -> getPageLimit($page);
-
-    // pager display
-    $template -> push('pager', $pager->getPages($page));
-    $template -> push('page_from', $limit[0]);
-    $template -> push('page_to', $limit[1]);
-
+    
     // category title and description
     $template -> push('category_title',  $category->title);
     $template -> push('category_description', $category->description);
@@ -295,7 +293,7 @@ if ($_GET['action'] == 'display_category')
     if ($_GET['type'] == 'ajax')
         ajax_exit(array('status' => 'success', 'response' => $array, 'pager' => $pager->getPages($page), 'page_from' => $limit[0], 'page_to' => $limit[1]));
 
-	$titlebar = new uiTitlebar(localize($category->title)." (".$language.")");
+	$titlebar = new uiTitlebar(localize('Messages category', 'qmessages'). ' - ' .localize($category->title). ' (' .slocalize('only in %s', 'qmessages', $language). ')');
 	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/messages.png', 'left');
 
     $template -> display('messages_displaycategory.tpl');
@@ -364,7 +362,7 @@ $total = quickCategory::getCategories($w, False, False, $order, $direction);
 
 // Pager stuff
 $panthera -> importModule('admin/ui.pager');
-$uiPager = new uiPager('quickMessages', $total, 16);
+$uiPager = new uiPager('quickMessages', $total, 'quickMessages');
 $uiPager -> setActive($page);
 $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\');');
 $limit = $uiPager -> getPageLimit();

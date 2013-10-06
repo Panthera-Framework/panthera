@@ -22,5 +22,16 @@ if ($_GET['action'] == 'iframe')
     pa_exit();
 }
 
+$panthera -> importModule('phpquery');
+ob_start();
+phpinfo();
+$html = ob_get_clean();
+$phpQuery = phpQuery::newDocument($html);
+$body = $phpQuery['body'];
+$panthera -> template -> push('phpinfoContent', $body->html());
+
+
+$titlebar = new uiTitlebar(localize('phpinfo', 'settings'));
+
 $panthera -> template -> display('phpinfo.tpl');
 pa_exit();

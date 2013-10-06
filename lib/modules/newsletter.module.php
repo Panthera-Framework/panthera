@@ -60,23 +60,42 @@ class newsletterManagement
       *
       * @param string $title Title of a newsletter
       * @param int $users Initial users count (optional)
+      * @param string $type Default newsletter type eg. mail
       * @return bool 
       * @author Damian Kęska
       */
 
-    public static function create($title, $users=null)
+    public static function create($title, $users=null, $type=null)
     {
         global $panthera;
     
         // convert to integer, just to be safe
-        if ($users != null)
+        if ($users)
             $users = intval($users);
         else
             $users = 0;
             
+        if (!$type)
+        {
+            $type = 'mail';
+        }
+
+        if (!class_exists('newsletterType_' .$type))
+        {
+            $type = 'mail';
+        }
+
         // values for SQL query
-        $values = array('title' => trim($title), 'users' => $users, 'attributes' => serialize(array()));
-        $SQL = $panthera -> db -> query('INSERT INTO `{$db_prefix}newsletters` (`nid`, `title`, `users`, `attributes`, `created`) VALUES (NULL, :title, :users, :attributes, NOW())', $values);
+        $values = array(
+            'title' => trim($title),
+            'users' => $users,
+            'attributes' => serialize(array()),
+            'created' => '{$NOW()}',
+            'default_type' => $type
+        );
+        
+        $query = $panthera -> db -> buildInsertString($values, False, 'newsletters');
+        $SQL = $panthera -> db -> query($query['query'], $query['values']);
 
         return (bool)$SQL->rowCount(); // returns True if any rows was inserted    
     }

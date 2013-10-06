@@ -23,6 +23,9 @@ $panthera -> locale -> loadDomain('settings');
 $titlebar = new uiTitlebar(localize('Pager settings', 'settings'));
 $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/pager.png', 'left');
 
+// defaults
+$panthera -> config -> getKey('pager', array(), 'array', 'ui');
+
 // load uiSettings with "passwordrecovery" config section
 $config = new uiSettings('ui');
 $config -> add('pager', localize('Pager settings per element', 'settings'));

@@ -35,7 +35,7 @@ class Pager
         
         if (is_string($perPage))
         {
-            $pager = $this->getPagerFromTable($perPage);
+            $pager = self::getPagerFromTable($perPage);
             $this->perPage = $pager['perPage'];
             $this->maxLinks = $pager['maxLinks'];
         }
@@ -46,7 +46,7 @@ class Pager
         if (gettype($this->perPage) == "array")
             $this->perPage = 5;
             
-        $this->pages = ceil(($this->max / $this->perPage));
+        $this->pages = (int)ceil(($this->max / $this->perPage));
     }
     
     /**
@@ -57,7 +57,7 @@ class Pager
       * @author Damian Kęska
       */
     
-    public function getPagerFromTable($name)
+    public static function getPagerFromTable($name)
     {
         global $panthera;
         $panthera -> logging -> output ('Getting pager name "' .$name. '" from pager table', 'Pager');
@@ -67,6 +67,7 @@ class Pager
         {
             $pagerData[$name] = array('perPage' => 5, 'maxLinks' => 6);
             $panthera -> config -> setKey('pager', $pagerData, 'array', 'ui');
+            $panthera -> config -> save(); // just in case...
         }
         
         return $pagerData[$name];
@@ -100,16 +101,27 @@ class Pager
 
     public function getPages($currentPage)
     {
+        // don't allow currentpage to be higher than pages max count  
+        if ($currentPage > $this->pages)
+        {
+            $currentPage = $this->pages;
+        }
+        
         $m = (($this->maxLinks/2)-1); // max links in left direction
         $left = ($currentPage-$m);
-
+        
         if ($left < 0)
-            $left = 0;
+            $left = 1;
 
         $pages = array();
 
         for ($i=$left; $i<$currentPage; $i++)
         {
+            if (($i+1) > $this->pages)
+            {
+                continue;
+            }
+        
             $pages[(string)$i] = False;
         }
 
@@ -118,13 +130,19 @@ class Pager
         if (count($pages) < $m)
             $right += ($m-count($pages));
 
+        // set current page as active
         $pages[(string)$currentPage] = True;
-
+        
         if ($right > $this->pages)
             $right = $this->pages;
 
         for ($i=$currentPage+1; $i<$right; $i++)
         {
+            if (($i+1) > $this->pages)
+            {
+                continue;
+            }
+        
             $pages[(string)$i] = False;
         }
 

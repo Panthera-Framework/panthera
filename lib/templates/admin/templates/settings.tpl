@@ -1,3 +1,4 @@
+{$site_header}
 {include="ui.titlebar"}
 
 <style>

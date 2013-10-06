@@ -79,6 +79,7 @@ if (isset($_GET['id']))
             $author = $u->id;
         }
         
+        $panthera -> template -> push ('callback', $_GET['callback']);
         $panthera -> template -> push('content', filterInput($draft->content, 'wysiwyg'));
         $panthera -> template -> push('date', $draft->date);
         $panthera -> template -> push('author', $author);

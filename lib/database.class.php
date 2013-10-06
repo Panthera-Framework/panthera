@@ -498,7 +498,7 @@ class pantheraDB
             {
                 $columns .= '`' .$key. '`, ';
                 
-                if ($value == '{$NOW()}')
+                if ($value === '{$NOW()}')
                 {
                     $dataRow .= 'NOW(), ';
                     unset($array[$key]);
@@ -532,7 +532,7 @@ class pantheraDB
                 
                 foreach ($row as $key => $value)
                 {
-                    if ($value == '{$NOW()}')
+                    if ($value === '{$NOW()}')
                     {
                         $dataRow .= '{$NOW()}';
                     } else {

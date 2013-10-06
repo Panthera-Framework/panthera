@@ -108,20 +108,20 @@ if ($_GET['action'] == 'toggle_debug_value') {
 
 // list of links (editable via @hook ajaxpages.debug.tools)
 $tools = array();
-$tools[] = array('link' => '?display=settings&cat=admin&action=system_info', 'name' => localize('Informations about system and session'));
-$tools[] = array('link' => '?display=debhook&cat=admin', 'name' => localize('Plugins debugger'));
-$tools[] = array('link' => '?display=includes&cat=admin', 'name' => localize('List of all included files in current code execution'));
-$tools[] = array('link' => '?display=errorpages&cat=admin', 'name' => localize('Test system error pages in one place'));
-$tools[] = array('link' => '?display=syschecksum&cat=admin', 'name' => localize('Checksum of system files'));
-$tools[] = array('link' => '?display=shellutils&cat=admin', 'name' => localize('Shell utils'));
-$tools[] = array('link' => '?display=phpinfo&cat=admin', 'name' => localize('phpinfo'));
-$tools[] = array('link' => '?display=database&cat=admin', 'name' => localize('Database management'));
-$tools[] = array('link' => '?display=dumpinput&cat=admin', 'name' => localize('DumpInput'));
-$tools[] = array('link' => '?display=mergephps&cat=admin', 'name' => ucfirst(localize('merge phps and json arrays', 'dash')));
-$tools[] = array('link' => '?display=ajaxpages&cat=admin', 'name' => localize('Complete list of all ajax avaliable subpages', 'ajaxpages'));
-$tools[] = array('link' => '?display=_popup_jsonedit&cat=admin', 'name' => localize('Array editor', 'debug'));
-$tools[] = array('link' => '?display=autoloader&cat=admin', 'name' => localize('Autoloader cache', 'debug'));
-$tools[] = array('link' => '?display=generate_password&cat=admin', 'name' => localize('Generate password', 'debug'));
+$tools[] = array('link' => '?display=settings&cat=admin&action=system_info', 'name' => localize('System'), 'description' => localize('Informations about system and session'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/system_info.png');
+$tools[] = array('link' => '?display=debhook&cat=admin', 'name' => localize('Debhook'), 'description' => localize('Plugins debugger'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/debhook.png');
+$tools[] = array('link' => '?display=includes&cat=admin', 'name' => localize('Includes'), 'description' => localize('List of all included files in current code execution'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/includes.png');
+$tools[] = array('link' => '?display=errorpages&cat=admin', 'name' => localize('Errorpages'), 'description' => localize('Test system error pages in one place'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/errorpages.png');
+$tools[] = array('link' => '?display=syschecksum&cat=admin', 'name' => localize('Checksum'), 'description' => localize('Checksum of system files'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/syschecksum.png');
+$tools[] = array('link' => '?display=shellutils&cat=admin', 'name' => localize('Shell'), 'description' => localize('Shell utils'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/shell.png');
+$tools[] = array('link' => '?display=phpinfo&cat=admin', 'name' => localize('PHP'), 'description' => localize('phpinfo'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/blank.png');
+$tools[] = array('link' => '?display=database&cat=admin', 'name' => localize('Database'), 'description' => localize('Database management'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/db.png');
+$tools[] = array('link' => '?display=dumpinput&cat=admin', 'name' => localize('Input'), 'description' => localize('DumpInput'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/input.png');
+$tools[] = array('link' => '?display=mergephps&cat=admin', 'name' => localize('Merge phps'), 'description' => ucfirst(localize('merge phps and json arrays', 'dash')), 'icon' => '{$PANTHERA_URL}/images/admin/menu/mergephps.png');
+$tools[] = array('link' => '?display=ajaxpages&cat=admin', 'name' => localize('Ajaxpages'), 'description' => localize('Complete list of all ajax avaliable subpages', 'ajaxpages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/ajaxpages.png');
+$tools[] = array('link' => '?display=_popup_jsonedit&cat=admin', 'name' => localize('JSON popup'), 'description' => localize('Array editor', 'debug'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/array_editor.png');
+$tools[] = array('link' => '?display=autoloader&cat=admin', 'name' => localize('Autoloader'), 'description' => localize('Autoloader cache', 'debug'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/autoloader.png');
+$tools[] = array('link' => '?display=generate_password&cat=admin', 'name' => localize('Password'), 'description' => localize('Generate password', 'debug'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/generate_password.png');
 $tools = $panthera -> get_filters('ajaxpages.debug.tools', $tools);
 
 // Displaying main debug site

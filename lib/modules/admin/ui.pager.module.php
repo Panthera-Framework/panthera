@@ -22,13 +22,17 @@ class uiPager
     public function __construct ($name, $totalItems, $maxOnPage='')
     {
         global $panthera;
-        $this -> panthera = $panthera;
         $this -> name = $name;
         $panthera -> importModule('pager');
         
+        if ($maxOnPage === '')
+        {
+            $maxOnPage = $name;
+        }
+        
         self::$pagers[$this->name] = array(
             'links' => array(),
-            'active' => 1,
+            'active' => 0,
             'total' => $totalItems,
             'pageMax' => $maxOnPage,
             'maxLinks' => 6,
@@ -90,7 +94,9 @@ class uiPager
     
     public function setLinkTemplatesFromConfig($templateName)
     {
-        $config = $this->panthera->template->getFileConfig($templateName);
+        global $panthera;
+    
+        $config = $panthera->template->getFileConfig($templateName);
         
         if (!$config)
         {

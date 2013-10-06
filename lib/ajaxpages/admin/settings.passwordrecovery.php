@@ -21,10 +21,12 @@ $locales = $panthera -> locale -> getLocales();
 $panthera -> template -> push ('languages', $locales);
 $panthera -> template -> push ('activeLanguage', $panthera -> locale -> getFromOverride($_GET['language']));
 
+// some defaults
 $panthera -> config -> getKey('recovery.mail.title', array (
     'english' => 'Password recovery'
 ), 'array', 'passwordrecovery');
-
+$panthera -> config -> getKey('recovery.passwd.length', 12, 'int', 'passwordrecovery');
+$panthera -> config -> getKey('recovery.key.length', 32, 'int', 'passwordrecovery');
 $panthera -> config -> getKey('recovery.mail.content', array(
     'english' => 'You requested a new password. If you want to change your current password to "{$recovery_passwd}" please visit this url: {$PANTHERA_URL}/pa-login.php?key={$recovery_key}'
 ), 'array', 'passwordrecovery');
