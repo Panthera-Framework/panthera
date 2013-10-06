@@ -737,6 +737,7 @@ class pantheraCore
 
     public function __construct($config) 
     {
+        $config['SITE_DIR'] = realpath($config['SITE_DIR']);
         define('SITE_DIR', $config['SITE_DIR']); // get SITE_DIR from configuration if avaliable
 
         if (!is_file(SITE_DIR. '/content/app.php'))
