@@ -50,11 +50,19 @@ function getOtherCustomPages()
     <div class="separatorHorizontal"></div>
     
     <div class="searchBarButtonArea">
+        <input type="button" value="{function="localize('Test', 'custompages')"}" onclick="panthera.popup.toggle('element:#aaaaaaaaaaaa', 'aaaa')">
         <input type="button" value="{function="localize('Add new custom page', 'custompages')"}" onclick="panthera.popup.toggle('element:#addNewPagePopup')">
     </div>
 </div>
 
 <div id="popupOverlay" style="text-align: center; padding-top: 20px; padding-bottom: 0px;"></div>
+
+<!-- Adding new page -->
+<div style="display: none;" id="aaaaaaaaaaaa">
+
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+</div>
 
 <!-- Adding new page -->
 <div style="display: none;" id="addNewPagePopup">
