@@ -23,4 +23,4 @@ $panthera -> locale -> loadDomain('includes');
 $files = get_included_files();
 $template -> push('files', $files);
 
-?>
+$titlebar = new uiTitlebar(localize('Included files', 'includes'). ' - ' .localize('List of all included files in current code execution', 'includes'));

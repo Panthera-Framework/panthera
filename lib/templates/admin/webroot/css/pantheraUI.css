@@ -305,6 +305,7 @@ a:active {
 .ajax-content {
     padding-top: 30px;
     padding-left: 100px;
+    padding-right: 100px;
     padding-bottom: 200px;
 }
 

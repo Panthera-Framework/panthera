@@ -1,6 +1,6 @@
 <script type="text/javascript">
     {if="$uiTitlebar.backButton"}
-    $("#navigationBackBtn").bind('mouseheld', function(e) { createPopup('?display=navigation_history&cat=admin', 1024, 620); });
+    $("#navigationBackBtn").bind('mouseheld', function(e) { panthera.popup.toggle('?display=navigation_history&cat=admin'); });
     {/if}
     $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
 </script>

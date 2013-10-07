@@ -10,16 +10,16 @@
 
 function removeCustomPage(id)
 {
-    //w2confirm('{function="localize('Are you sure you want delete this page?', 'custompages')"}', function (responseText) {
-        //if (responseText == 'Yes')
-        //{
+    panthera.confirmBox.create('{function="localize('Are you sure you want delete this page?', 'custompages')"}', function (responseText) {
+        if (responseText == 'Yes')
+        {
             panthera.jsonPOST({ url: '{$AJAX_URL}?display=custom&cat=admin&action=delete_page&pid='+id, data: '', success: function (response) {
                     if (response.status == "success")
                         jQuery('#custompage_row_'+id).remove();
                 }
             });
-        //}
-    //});
+        }
+    });
 }
 
 function uiTop_callback(response)
@@ -50,19 +50,11 @@ function getOtherCustomPages()
     <div class="separatorHorizontal"></div>
     
     <div class="searchBarButtonArea">
-        <input type="button" value="{function="localize('Test', 'custompages')"}" onclick="panthera.popup.toggle('element:#aaaaaaaaaaaa', 'aaaa')">
         <input type="button" value="{function="localize('Add new custom page', 'custompages')"}" onclick="panthera.popup.toggle('element:#addNewPagePopup')">
     </div>
 </div>
 
 <div id="popupOverlay" style="text-align: center; padding-top: 20px; padding-bottom: 0px;"></div>
-
-<!-- Adding new page -->
-<div style="display: none;" id="aaaaaaaaaaaa">
-
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-
-</div>
 
 <!-- Adding new page -->
 <div style="display: none;" id="addNewPagePopup">

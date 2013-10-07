@@ -20,47 +20,63 @@ if (!getUserRightAttribute($user, 'can_see_ajax_pages')) {
 }
 
 $panthera -> locale -> loadDomain('ajaxpages');
+$panthera -> importModule('filesystem');
 
 // titlebar
 $titlebar = new uiTitlebar(localize('Index of ajax pages', 'ajaxpages'));
 $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-tab-detach-icon.png', 'left');
 
 // scan both lib and content
-$lib = scandir(PANTHERA_DIR. '/ajaxpages/admin');
-$content = scandir(SITE_DIR. '/content/ajaxpages/admin');
+$files = array_merge(
+    scandirDeeply(PANTHERA_DIR. '/ajaxpages/admin'), 
+    scandirDeeply(SITE_DIR. '/content/ajaxpages/admin')
+);
+
 $pages = array();
 
-foreach ($lib as $file)
+$pages[] = array(
+    'location' => 'lib',
+    'directory' => 'admin',
+    'path' => PANTHERA_DIR. '/ajaxpages/admin/settings.php',
+    'modtime' => date('G:i:s d.m.Y', filemtime(PANTHERA_DIR. '/ajaxpages/admin/settings.php')),
+    'name' => 'system_info',
+    'link' => '?display=settings&cat=admin&action=system_info'
+);
+
+$pages[] = array(
+    'location' => 'lib',
+    'directory' => 'admin',
+    'path' => PANTHERA_DIR. '/ajaxpages/admin/users.php',
+    'modtime' => date('G:i:s d.m.Y', filemtime(PANTHERA_DIR. '/ajaxpages/admin/users.php')),
+    'name' => 'my_account',
+    'link' => '?display=users&cat=admin&action=my_account'
+);
+
+foreach ($files as $file)
 {
     $pathinfo = pathinfo($file);
 
     if (strtolower($pathinfo['extension']) != 'php')
         continue;
 
-    if (!is_file(PANTHERA_DIR. '/ajaxpages/admin/' .$file))
+    if (!is_file($file))
         continue;
 
-    $name = str_ireplace('.php', '', $file);
+    $location = 'unknown';
+    
+    if (strpos($file, SITE_DIR) !== False)
+    {
+        $location = 'content';
+        $name = str_replace(SITE_DIR, '', str_ireplace('/content/ajaxpages/', '', $file));
+    } elseif (strpos($file, PANTHERA_DIR) !== False) {
+        $location = 'lib';
+        $name = str_replace(PANTHERA_DIR, '', str_ireplace('/content/ajaxpages/', '', $file));
+    }
+    
+    $directory = str_replace('/ajaxpages/', '', dirname($name));
+    $name = str_ireplace('.php', '', basename($name));
 
-    $pages[] = array('location' => 'lib', 'name' => $name, 'link' => '?display=' .$name);
-}
-
-$pages[] = array('location' => 'lib', 'name' => 'system_info', 'link' => '?display=settings&cat=admin&action=system_info');
-$pages[] = array('location' => 'lib', 'name' => 'my_account', 'link' => '?display=users&cat=admin&action=my_account');
-
-foreach ($content as $file)
-{
-    $pathinfo = pathinfo($file);
-
-    if (strtolower($pathinfo['extension']) != 'php')
-        continue;
-
-    if (!is_file(SITE_DIR. '/content/ajaxpages/admin/' .$file))
-        continue;
-
-    $name = str_ireplace('.php', '', $file);
-
-    $pages[] = array('location' => 'content', 'name' => $name, 'link' => '?display=' .$name);
+    $pages[] = array('location' => $location, 'directory' => $directory, 'modtime' => date('G:i:s d.m.Y', filemtime($file)), 'name' => $name, 'path' => $file, 'link' => '?display=' .$name);
 }
 
 $pages = $panthera->get_filters('ajaxpages_list', $pages);

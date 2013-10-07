@@ -1,4 +1,5 @@
 {$site_header}
+
 {function="localizeDomain('qmessages')"}
 <script type="text/javascript">
 $(document).ready(function () {
