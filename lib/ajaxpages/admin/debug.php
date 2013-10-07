@@ -33,16 +33,22 @@ $panthera -> logging -> tofile = False;
  * @author Damian Kęska
  */
  
-if ($_GET['action'] == 'toggle_debug_value') {
-      if (!getUserRightAttribute($user, 'can_manage_debug')) {
-          $noAccess = new uiNoAccess; $noAccess -> display();
-          pa_exit();
-      }
-
-      if ($panthera -> config -> setKey('debug', !(bool)$panthera -> config -> getKey('debug', False, 'bool'), 'bool'))
-            ajax_exit(array('status' => 'success'));
-
-      ajax_exit(array('status' => 'failed'));
+if ($_GET['action'] == 'toggle_debug_value') 
+{
+    if (!getUserRightAttribute($user, 'can_manage_debug')) 
+    {
+        $noAccess = new uiNoAccess; 
+        $noAccess -> display();
+    }
+    
+    $value = intval(!(bool)$panthera -> config -> getKey('debug', 0, 'bool'));
+    
+    if ($panthera -> config -> setKey('debug', $value, 'bool'))
+    {
+        ajax_exit(array('status' => 'success'));
+    }
+    
+    ajax_exit(array('status' => 'failed'));
       
 /**
   * Set messages filtering mode

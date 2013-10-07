@@ -31,7 +31,7 @@ $menu = new simpleMenu();
 $menu -> add('dash', localize('Dash'), '?display=dash&cat=admin', '', '{$PANTHERA_URL}/images/admin/menu/dashboard.png', '');
 
 // other built-in pages
-if (getUserRightAttribute($panthera->user, 'can_see_debug')) {
+if (getUserRightAttribute($panthera->user, 'can_see_debug') and $panthera -> logging -> debug) {
     $menu -> add('debug', localize('Debugging center'), '?display=debug&cat=admin', '', '{$PANTHERA_URL}/images/admin/menu/developement.png', '');
     $menu -> add('settings', localize('Settings'), '?display=settings&cat=admin', '', '{$PANTHERA_URL}/images/admin/menu/settings.png', '');
 }
