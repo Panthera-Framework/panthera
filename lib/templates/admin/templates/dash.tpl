@@ -62,8 +62,8 @@ $(function(){
         
         {loop="$dash_menu"}
         <div class="dashItem">
-            <a href="#">
-                <img src="{$value.icon|pantheraUrl}" alt="Avatar" class="icon{if="$value.linkType == 'ajax'"} ajax_link{/if}"{if="$value.linkType == 'onclick'"} onclick="{$value.link}"{else} href="{$value.link|pantheraUrl}"{/if}>
+            <a class="{if="$value.linkType == 'ajax'"}ajax_link{/if}"{if="$value.linkType == 'onclick'"} onclick="{$value.link}"{else} href="{$value.link|pantheraUrl}"{/if}>
+                <img src="{$value.icon|pantheraUrl}" alt="Avatar" class="icon">
                 <p>{$value.name}</p>
             </a>
         </div>
