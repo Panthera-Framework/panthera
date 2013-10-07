@@ -1,3 +1,5 @@
+{$site_header}
+
 <script type="text/javascript">
 
 // spinners
@@ -31,7 +33,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
     <div class="separatorHorizontal"></div>
     
     <div class="searchBarButtonArea">
-        <input type="button" value="{function="localize('Status', 'users')"}" onclick="panthera.popup.toggle('element:#banUser')">
+        <input type="button" value="{function="localize('Ban', 'users')"}" onclick="panthera.popup.toggle('element:#banUser')">
         <input type="button" value="{function="localize('Permissions', 'users')"}" onclick="panthera.popup.toggle('element:#managePermissions')">
         <input type="button" value="{function="localize('Edit', 'users')"}" onclick="panthera.popup.toggle('element:#editPopup')">
     </div>
