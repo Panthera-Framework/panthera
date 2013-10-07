@@ -4,8 +4,8 @@
 <div class="ajax-content" style="text-align: center;">
     <div style="margin: 0 auto; display: inline-block; width: 80%;">
         <h1>{function="localize('Pages index', 'ajaxpages')"}</h1>
-        <br><br>
-        <table style="width: 100%;">
+    </div><br>
+    <table style="display: inline-block;">
             <thead>
                 <tr>
                     <th>
@@ -40,6 +40,5 @@
                     </tr>
                  {/loop}
             </tbody>
-        </table>
-    </div>
+    </table>
 </div>

@@ -21,7 +21,7 @@
             $('.ajaxLinkMain').click(function (event) { event.preventDefault(); navigateTo(jQuery(this).attr('href')); return false;});
         });
         
-        panthera.locale.add({'Yes': '{function="localize('Yes')"}', 'No': '{function="localize('No')"}'});
+        panthera.locale.add({'Yes': '{function="localize('Yes')"}', 'No': '{function="localize('No')"}', 'Close': '{function="localize('Close')"}'});
         </script>
     </head>
     

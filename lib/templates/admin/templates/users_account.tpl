@@ -1,5 +1,8 @@
 {$site_header}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9e13b93d56dc20106ac51ea7011a3c404c7594bd
 <script type="text/javascript">
 
 // spinners
