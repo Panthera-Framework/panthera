@@ -1,3 +1,4 @@
+{$site_header}
 <script type="text/javascript">
 
 /**
@@ -19,8 +20,8 @@ function jumpToAjaxPage(id)
 
 function removeGroup(name)
 {
-    w2confirm('{function="localize('Are you sure you want delete this group?', 'acl')"}', function (responseText) {
-        if (responseText == 'Yes')
+    panthera.confirmBox.create('{function="localize('Are you sure you want delete this group?', 'users')"}', function (responseText) {
+       if (responseText == 'Yes')
         {
             panthera.jsonPOST( { url: '?display=users&cat=admin&action=removeGroup', data: 'group='+name, spinner: groupSpinner, success: function (response) {
 
@@ -41,12 +42,18 @@ function removeGroup(name)
 
 function removeUser(id)
 {
+    panthera.confirmBox.create('{function="localize('Are you sure you want delete this user?', 'users')"}', function (responseText) {
+       if (responseText == 'Yes')
+        {
             panthera.jsonPOST( { url: '?display=users&cat=admin&action=removeUser', data: 'id='+id, success: function (response) {
 
                     if (response.status == "success")
                         $('#user_'+id).remove();
                 }
             });
+        }
+
+    });
 }
 
 </script>

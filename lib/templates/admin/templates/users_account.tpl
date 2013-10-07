@@ -1,3 +1,4 @@
+{$site_header}
 <script type="text/javascript">
 
 // spinners
