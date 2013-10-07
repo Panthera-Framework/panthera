@@ -53,6 +53,24 @@
                 <!-- Userbar: avatar -->
                 
                 <div class="userAvatar"><img src="{$user->getAvatar()}" style="max-width: 28px; max-height: 28px; background: #56687b; position: absolute; top: 0; bottom: 0; margin: auto;"></div>
+                
+                <div style="display: inline-block; float: right; font-size: 11px; padding-top: 10px; padding-right: 8px;">
+                    <span data-searchbardropdown="#languageDropdown" id="languageDropdownSpan" style="font-size: 11px;">
+                        <img src="{$PANTHERA_URL}/images/admin/flags/polski.png" style="height: 10px; margin: 1px;">
+                    </span>
+                    
+                    <div id="languageDropdown" class="searchBarDropdown searchBarDropdown-tip searchBarDropdown-relative">
+                        <ul class="searchBarDropdown-menu">
+                            {loop="$flags"}
+                                <li>
+                                    <a href="?{function="getQueryString('GET', '', array('_', '_locale'))"}&_locale={$value}&cat=admin">
+                                        <img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 12px; margin: 1px;"> {$value}
+                                    </a>
+                                </li>
+                            {/loop}
+                        </ul>
+                    </div>
+                </div>
             </div>
             
             <!-- Menubar -->
