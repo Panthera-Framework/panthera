@@ -13,11 +13,9 @@ if (!defined('IN_PANTHERA'))
 
 #$builtInClasses = @json_decode(file_get_contents($panthera->config->getKey('url'). '/_php_helper.php?code=' .$panthera->config->getKey('internal_passwd')));
 
-$tpl = 'debhook.tpl';
-
 if (!getUserRightAttribute($user, 'can_see_debhook')) {
-    $noAccess = new uiNoAccess; $noAccess -> display();
-    pa_exit();
+    $noAccess = new uiNoAccess; 
+    $noAccess -> display();
 }
 
 $panthera -> locale -> loadDomain('debhook');
@@ -105,7 +103,7 @@ if ($_GET['action'] == 'list')
     $arrayFunctions = array_merge($userFunctions, $arrayFunctions);
     $template -> push('functions', $arrayFunctions);
     $template -> push('action', 'list');
-    $template -> display($tpl);
+    $template -> display('debhook.tpl');
     pa_exit();
 }
 
@@ -143,5 +141,8 @@ foreach ($hookOptions as $key => $hooks)
     }
 }
 
-$template -> push('hooks', $array);
+$titlebar = new uiTitlebar(localize('Plugins debugger', 'settings'));
+$panthera -> template -> push('hooks', $array);
+$panthera -> template -> display('debhook.tpl');
+pa_exit();
 
