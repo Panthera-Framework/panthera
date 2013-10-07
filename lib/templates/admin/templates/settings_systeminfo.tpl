@@ -30,7 +30,7 @@
         <br><br>
         <h1>{function="localize('List of defined constants', 'settings')"}</h1>
         <br>
-        <table style="width: 768px;">
+        <table style="display: inline-block;">
             <thead>
                 <tr>
                     <th scope="col" style="width: 300px;">{function="localize('Constant', 'settings')"}</th>
@@ -53,7 +53,7 @@
         <br><br>
         <h1>{function="localize('List of access controls for current user', 'settings')"}</h1>
         <br>
-        <table>
+        <table style="display: inline-block;">
             <thead>
                 <tr>
                     <th scope="col" style="width: 300px;">{function="localize('Key', 'messages')"}</th>
@@ -77,7 +77,7 @@
         <br><br>
         <h1>{function="localize('Detected browser and operating system', 'settings')"}</h1>
         <br>
-        <table style="width: 768px;">
+        <table style="display: inline-block;">
             <thead>
                 <tr>
                     <th scope="col" style="width: 300px;">{function="localize('Key', 'messages')"}</th>
