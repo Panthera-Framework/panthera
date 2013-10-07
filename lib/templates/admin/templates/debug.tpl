@@ -10,10 +10,6 @@ $(document).ready(function() {
         $('#current_log_window').slideToggle('slow');
     });
     
-    $('#messagesFilterButton').click(function () {
-        manageFilters($('#messagesFilterText').val());
-    });
-    
     panthera.inputTimeout({ element: '#messagesFilter', interval: 900, callback: messagesFilterSave });
 });
 
@@ -45,8 +41,14 @@ function manageFilters(filter)
 function toggleDebugValue()
 {
     panthera.jsonGET({ data: '', url: '?display=debug&cat=admin&action=toggle_debug_value', success: function (response) {
-            if (response.status == "success")
-                navigateTo('?display=debug&cat=admin');
+            if (response.state)
+            {
+                $('#debuggerState').html('{function="localize('On')"}');
+                $('#buttonToggleDebuggerState').val('{function="localize('Turn off debugger')"}');
+            } else {
+                $('#debuggerState').html('{function="localize('Off')"}');
+                $('#buttonToggleDebuggerState').val('{function="localize('Turn on debugger')"}');
+            }
         }
     });
 }
@@ -90,11 +92,10 @@ function saveVariable(id, value)
 </style>
 
 <div id="topContent">
-    
     <div class="searchBarButtonArea">
+        <input type="button" value="{if="$debug == true"}{function="localize('Turn off debugger')"}{else}{function="localize('Turn on debugger')"}{/if}" onclick="toggleDebugValue()" id="buttonToggleDebuggerState">
         <input type="button" value="{function="localize('Options')"}" onclick="panthera.popup.toggle('element:#options')">
     </div>
-    
 </div>
 
 <div id="popupOverlay"></div>
@@ -125,17 +126,17 @@ function saveVariable(id, value)
              
               <tbody>
                     <tr>
-                        <th>{function="localize('Debugger state', 'debug')"}</th>
-                        <td><a id='debug_value' onclick="toggleDebugValue();"  style="cursor: pointer; color: #fff;"> {if="$debug == true"} {function="localize('On')"} {else} {function="localize('Off')"} {/if} </a></td>
+                        <th>{function="localize('Debugger state', 'debug')"}:</th>
+                        <td><a id='debug_value' onclick="toggleDebugValue();"  style="cursor: pointer; color: #fff;"> <span id="debuggerState">{if="$debug == true"}{function="localize('On')"}{else}{function="localize('Off')"}{/if}</span></a></td>
                     </tr>
                     
                     <tr style="background-color: transparent;">
-                        <th>{function="localize('Log save handlers', 'debug')"}</th>
+                        <th>{function="localize('Log save handlers', 'debug')"}:</th>
                         <td>{$logHandlers}</td>
                     </tr>
                     
                     <tr>
-                        <th>{function="localize('Messages filter', 'debug')"}</th>
+                        <th>{function="localize('Messages filter', 'debug')"}:</th>
                         <td>
                             <select id="messagesFilter">
                                 <option value="" {if="$messageFilterType == ''"}selected{/if}>{function="localize('all messages', 'debug')"}</option>
@@ -146,7 +147,7 @@ function saveVariable(id, value)
                     </tr>
                     
                     <tr id="filterTr" style="background-color: transparent;">
-                        <th>{function="localize('Filter name (eg. pantheraLocale)', 'debug')"}</th>
+                        <th>{function="localize('Filter name (eg. pantheraLocale)', 'debug')"}:</th>
                         <td><input type="text" id="messagesFilterText"> <input type="button" value="{function="localize('Add')"}/{function="localize('Remove')"}" id="messagesFilterButton"></td>
                     </tr>
                     
@@ -163,4 +164,12 @@ function saveVariable(id, value)
                     </tr>
               </tbody>
         </table>
+        
+        <script type="text/javascript">
+        $('#messagesFilterButton').click(function () {
+            manageFilters($('#messagesFilterText').val());
+        });
+        
+        panthera.inputTimeout({ element: '#messagesFilter', interval: 900, callback: messagesFilterSave });
+        </script>
 </div>

@@ -45,7 +45,7 @@ if ($_GET['action'] == 'toggle_debug_value')
     
     if ($panthera -> config -> setKey('debug', $value, 'bool'))
     {
-        ajax_exit(array('status' => 'success'));
+        ajax_exit(array('status' => 'success', 'state' => $value));
     }
     
     ajax_exit(array('status' => 'failed'));
