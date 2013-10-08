@@ -223,6 +223,11 @@ class uiPager
     
     public function getPageLimit()
     {
+        if (!self::$pagers[$this->name]['links'])
+        {
+            $this->build();
+        }
+    
         return self::$pagers[$this->name]['pageLimit'];
     }
     

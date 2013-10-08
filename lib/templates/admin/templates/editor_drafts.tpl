@@ -39,6 +39,12 @@ function removeDraft(id)
 }
 </script>
 
+<style>
+.pagerLink {
+    color: white;
+}
+</style>
+
 {if="!$callback"}
 {include="ui.titlebar"}
 {/if}
@@ -75,7 +81,10 @@ function removeDraft(id)
             {/loop}
             
             <tr>
-                <td colspan="2" style="text-align: right;"><input type="button" value="{function="localize('Close')"}" onclick="panthera.popup.close()"></td>
+                <td colspan="2" style="text-align: right;">
+                    <div style="position: relative; text-align: left; padding-left: 60px; float: left; color: white;" class="pager">{$uiPagerName="adminEditorDrafts"}{include="ui.pager"}</div>
+                    <input type="button" value="{function="localize('Close')"}" onclick="panthera.popup.close()">
+                </td>
             </tr>
         </tbody>
 </table>

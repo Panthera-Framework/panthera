@@ -90,18 +90,23 @@ if(isset($_POST['content']))
         $noAccess -> addMetas(array('can_manage_newsletter', 'can_manage_newsletter_' .$newsletter->nid));
         $noAccess -> display();
     }
-
+    
     // content cannot be shorten than 10 characters
     if (strlen($_POST['content']) < 5)
         ajax_exit(array('status' => 'failed', 'message' => localize('Message is too short', 'newsletter')));
 
-    if (strlen($_POST['title']) < 3)
+    if (strlen($_POST['title']) < 3 and !$_POST['saveasdraft'])
         ajax_exit(array('status' => 'failed', 'message' => localize('Title is too short', 'newsletter')));
         
-    if ($_POST['putToDrafts'])
+    if (@$_POST['putToDrafts'] or @$_POST['saveasdraft'])
     {
         $panthera -> importModule('editordrafts');
         editorDraft::createDraft($_POST['content'], $panthera->user->id);
+        
+        if (@$_POST['saveasdraft'])
+        {
+            ajax_exit(array('status' => 'success', 'message' => localize('Saved')));
+        }
     }
     
     $options = array(

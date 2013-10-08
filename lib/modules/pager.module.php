@@ -39,7 +39,7 @@ class Pager
             $this->perPage = $pager['perPage'];
             $this->maxLinks = $pager['maxLinks'];
         }
-
+        
         if (gettype($this->max) == "array")
             $this->max = 5;
 

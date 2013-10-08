@@ -18,19 +18,26 @@ jQuery(document).ready(function($) {
         panthera.jsonPOST({ data: '#newsletter_form', mce: 'tinymce_all', success: function (response) {
                 if (response.status == 'success')
                 {
-                    panthera.alertBox.create('{function="localize('Sent', 'newsletter')"}');
                     $('#messagesQueueNoMessages').hide();
                 }
             } 
         });
     });
 });
+
+function saveAsDraft()
+{
+    $('#saveasdraft').val(1);
+    $('#newsletter_form').submit();
+    $('#saveasdraft').val(0);
+}
 </script>
 
 {include="ui.titlebar"}
 
 <div id="topContent">
     <div class="searchBarButtonArea">
+        <input type="button" value="{function="localize('Saved drafts', 'editor')"}" onclick="panthera.popup.toggle('?display=editor_drafts&cat=admin&popup=true&callback=mceInsertContent')">
         <input type="button" value="{function="localize('Edit footer', 'newsletter')"}" onclick="panthera.popup.toggle('?display=compose_newsletter&cat=admin&nid={$nid}&action=editFooter')">
         <input type="button" value="{function="localize('New message', 'newsletter')"}" onclick="navigateTo('?display=compose_newsletter&cat=admin&nid={$nid}')">
         <input type="button" value="{function="localize('Messages queue', 'newsletter')"}" onclick="panthera.popup.toggle('element:#messagesQueue')">
@@ -86,11 +93,10 @@ jQuery(document).ready(function($) {
             </tbody>
         </table>
 </div>
-
+<form id="newsletter_form" action="{$AJAX_URL}?display=compose_newsletter&cat=admin&nid={$nid}" method="POST">
 <div class="ajax-content centeredObject" style="text-align: center; padding-left: 0px;">
-    <form id="newsletter_form" action="{$AJAX_URL}?display=compose_newsletter&cat=admin&nid={$nid}" method="POST">
-    <div style="display: inline-block;">
-        <table style="width: 100%;">
+    <div style="display: inline-block; margin: 0 auto;">
+        <table style="width: 100%; min-width: 800px; margin-bottom: 25px;">
             <thead>
                 <tr>
                     <th colspan="2">{function="localize('Create a new message', 'newsletter')"}</th>
@@ -107,12 +113,10 @@ jQuery(document).ready(function($) {
                     <td>{function="localize('Sender', 'newsletter')"}:</td>
                     <td><input type="text" value="" name="from"></td>
                 </tr>
-                
-                <tr>
-                    <td colspan="2" style="width: 800px; padding: 0px;"><textarea name="content" id="content_textarea" style="height: 400px; width: 100%;"></textarea></td>
-                </tr>
             </tbody>
         </table>
+        
+        <textarea name="content" id="content_textarea" style="height: 400px; width: 100%;"></textarea>
         
         <!-- Options -->
         
@@ -134,7 +138,11 @@ jQuery(document).ready(function($) {
             </tbody>
         </table>
         
-        <div style="text-align: right; margin-top: 10px;"><input type="submit" value="{function="localize('Send', 'newsletter')"}"></div>
+        <div style="text-align: right; margin-top: 10px;">
+            <input type="hidden" name="saveasdraft" id="saveasdraft" value="0">
+            <input type="button" value="{function="localize('Save as draft', 'newsletter')"}" onclick="saveAsDraft()">
+            <input type="submit" value="{function="localize('Send', 'newsletter')"}">
+        </div>
     </div>
-    </form>
 </div>
+</form>

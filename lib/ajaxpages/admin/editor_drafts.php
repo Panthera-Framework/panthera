@@ -89,9 +89,16 @@ if (isset($_GET['id']))
     }
 }
 
+$count = editorDraft::fetchByUser($panthera -> user -> id, '', False, False);
+
+$uiPager = new uiPager('adminEditorDrafts', $count);
+$uiPager -> setActive(intval($_GET['page']));
+$uiPager -> setLinkTemplatesFromConfig('editor_drafts.tpl');
+$limit = $uiPager -> getPageLimit();
+
 $drafts = array();
 
-foreach (editorDraft::fetchByUser($panthera -> user -> id) as $draft)
+foreach (editorDraft::fetchByUser($panthera -> user -> id, '', $limit[1], $limit[0]) as $draft)
 {
     $draft['user'] = $panthera -> user -> getName();
     $drafts[$draft['id']] = $draft;
