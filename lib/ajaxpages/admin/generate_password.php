@@ -52,7 +52,7 @@ if ($_GET['action'] == 'generatePassword') {
     
     // generate random string
     if ($_POST['lenght'] != null) {
-        if (intval($_POST['lenght']) > 1)  
+        if (intval($_POST['lenght']) > 1 and intval($_POST['lenght']) < 29)  
             $string = generateRandomString(intval($_POST['lenght']));
         else
             ajax_exit(array('status' => 'failed', 'message' => localize('Lenght must be at least 8!', 'debug')));
