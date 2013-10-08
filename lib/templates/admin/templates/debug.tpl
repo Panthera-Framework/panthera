@@ -10,7 +10,7 @@ $(document).ready(function() {
         $('#current_log_window').slideToggle('slow');
     });
     
-    panthera.inputTimeout({ element: '#messagesFilter', interval: 900, callback: messagesFilterSave });
+    panthera.inputTimeout({ element: '#messagesFilter', interval: 600, callback: messagesFilterSave });
 });
 
 var spinner = new panthera.ajaxLoader($('#optionsTable'));
@@ -88,7 +88,6 @@ function saveVariable(id, value)
 #topContent {
     min-height: 55px;
 }
-
 </style>
 
 <div id="topContent">

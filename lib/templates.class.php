@@ -329,30 +329,24 @@ class pantheraTemplate extends pantheraClass
     }
 
     /**
-	 * Add Google site verification identity
-	 *
-     * @param string $key A key you received from Google to verify your website
-	 * @return bool
-	 * @author Damian Kęska
-	 */
-
-    public function googleSiteVerification($key)
-    {
-        $this->addMetaTag('google-site-verification', $key);
-        return True;
-    }
-
-    /**
 	 * Include javascript file
 	 *
      * @param string $src
+     * @param string $content
 	 * @return bool
 	 * @author Damian Kęska
 	 */
 
-    public function addScript($src)
+    public function addScript($src, $content='')
     {
-        $this->attributes['scripts'][md5($src)] = array('src' => $src, 'content' => '');
+        if ($content)
+        {
+            $id = hash('md4', $content);
+        } else {
+            $id = hash('md4', $src);
+        }
+    
+        $this->attributes['scripts'][$id] = array('src' => $src, 'content' => $content);
         return True;
     }
 
@@ -368,20 +362,6 @@ class pantheraTemplate extends pantheraClass
     {
         unset($this->attributes['scripts'][md5($src)]);
         return True;        
-    }
-
-    /**
-	 * Add javascript content
-	 *
-     * @param string $content
-	 * @return bool
-	 * @author Damian Kęska
-	 */
-
-    public function addScriptContent($content)
-    {
-        $this->attributes['scripts'][md5($content)] = array('src' => '', 'content' => $content);
-        return True;
     }
 
     /**
@@ -409,21 +389,6 @@ class pantheraTemplate extends pantheraClass
     public function addStyle($href, $title='')
     {
         $this->addLink($href, 'text/css', 'stylesheet', $title='');
-        return True;
-    }
-
-
-    /**
-	 * Add Open Search
-	 *
-     * @param string $src
-	 * @return bool
-	 * @author Damian Kęska
-	 */
-
-    public function addOpenSearch($href, $title='')
-    {
-        $this->addLink($href, 'application/opensearchdescription+xml', 'search', $title);
         return True;
     }
 
@@ -660,7 +625,10 @@ class pantheraTemplate extends pantheraClass
         
         if (!$vars)
             $vars = $this->vars;
-
+        
+        // add active language to variables array
+        $vars['language'] = $this->panthera->locale->getActive();
+        
         // assign all variables from pantheraTemplate to template engine
         foreach ($vars as $var => $value)
             $this -> tpl -> assign($var, $value);
@@ -679,9 +647,6 @@ class pantheraTemplate extends pantheraClass
             
             $this->panthera->outputControl->flushAndFinish();
         }
-        
-        // generate template execution time
-        
     }
     
     /**

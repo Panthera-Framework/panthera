@@ -54,9 +54,9 @@
                 
                 <div class="userAvatar"><img src="{$user->getAvatar()}" style="max-width: 28px; max-height: 28px; background: #56687b; position: absolute; top: 0; bottom: 0; margin: auto;"></div>
                 
-                <div style="display: inline-block; float: right; font-size: 11px; padding-top: 10px; padding-right: 8px;">
-                    <span data-searchbardropdown="#languageDropdown" id="languageDropdownSpan" style="font-size: 11px;">
-                        <img src="{$PANTHERA_URL}/images/admin/flags/polski.png" style="height: 10px; margin: 1px;">
+                <div style="display: inline-block; float: right; font-size: 11px; padding-top: 10px; padding-right: 5px;">
+                    <span data-searchbardropdown="#languageDropdown" id="languageDropdownSpan" style="font-size: 11px; cursor: pointer;">
+                        <img src="{$PANTHERA_URL}/images/admin/flags/{$language}.png" style="height: 10px; margin: 1px;">
                     </span>
                     
                     <div id="languageDropdown" class="searchBarDropdown searchBarDropdown-tip searchBarDropdown-relative">
