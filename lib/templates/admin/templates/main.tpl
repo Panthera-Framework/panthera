@@ -28,7 +28,7 @@
     <body>
         <div id="logoBar">
             <div class="centerWithContent pantheraLogo">
-                <span><a href="{$PANTHERA_URL}/pa-admin.php">Panthera</a></span>
+                <span><a href="{$PANTHERA_URL}/pa-admin.php">{$siteTitle}</a></span>
                 
                 <!-- Userbar: menu -->
                 

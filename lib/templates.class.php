@@ -515,6 +515,15 @@ class pantheraTemplate extends pantheraClass
         if (!$skipHooking)
             $this->panthera->get_options('template.display', $template);
         
+        $siteTitle = pantheraLocale::selectStringFromArray($this->panthera->config->getKey('site_title'));
+        
+        if (!$siteTitle)
+        {
+            $siteTitle = 'Panthera';
+        }
+        
+        $this->push('siteTitle', $siteTitle);
+        
         #foreach ($this->vars as $key => $value)
             #$this->tpl->assign($key, $value);
 
@@ -524,7 +533,7 @@ class pantheraTemplate extends pantheraClass
             if (!defined('TPL_NO_AUTO_HEADER'))
             {
                 if (!$this->attributes['title'])
-                    $this -> setTitle(pantheraLocale::selectStringFromArray($this->panthera->config->getKey('site_title')));
+                    $this -> setTitle($siteTitle);
                     
                 $this -> addMetaTag('description', pantheraLocale::selectStringFromArray($this->panthera->config->getKey('site_description')));
                 $this -> putKeywords(explode(',', pantheraLocale::selectStringFromArray($this->panthera->config->getKey('site_metas'))));

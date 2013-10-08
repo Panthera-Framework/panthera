@@ -1,16 +1,5 @@
-<script>
+<script type="text/javascript">
 $(document).ready(function(){
-    /**
-      * Send mail (from form)
-      *
-      * @author Mateusz Warzyński
-      */
-
-    $('#mail_form').submit(function () {
-        panthera.jsonPOST({ data: '#mail_form', messageBox: 'w2ui'});
-        return false;
-    });
-
     /**
       * Check type of typed data
       *
@@ -99,7 +88,7 @@ function callback_getContactData(data)
 
   <div id="newMail" style="display: none;">
       <table style="display: inline-block;" class="formTable">
-        <form action="{$AJAX_URL}?display=mailing&cat=admin&action=send" method="POST" id="mail_form"  style="margin: 0 auto; margin-bottom: 30px;">
+        <form action="?display=mailing&cat=admin&action=send" method="POST" id="mail_form"  style="margin: 0 auto; margin-bottom: 30px;">
          
          <thead>
                  <tr>
@@ -117,7 +106,7 @@ function callback_getContactData(data)
                         <img src="{$PANTHERA_URL}/images/admin/ui/permissions.png" style="max-height: 23px; margin-left: 3px; vertical-align: middle; padding-bottom: 5px;">
                       </a> -->
                         
-                      <input type="submit" value="{function="localize('Send', 'mailing')"}"  style="float: right; margin-right: 30px;">
+                      <input type="button" value="{function="localize('Send', 'mailing')"}"  style="float: right; margin-right: 30px;" onclick="$('#mail_form').submit();">
                  </td>
              </tr>
          </tfoot>
@@ -145,7 +134,20 @@ function callback_getContactData(data)
                </tr>
           </tbody>
          </form>
-      </table>  
+      </table>
+      
+      <script type="text/javascript">
+      /**
+        * Send mail (from form)
+        *
+        * @author Mateusz Warzyński
+        */
+
+        $('#mail_form').submit(function () {
+            panthera.jsonPOST({ data: '#mail_form', messageBox: 'w2ui'});
+            return false;
+        });
+    </script>
   </div>
 
   <div id="popupOverlay" style="text-align: center; padding-bottom: 0px;"></div>
