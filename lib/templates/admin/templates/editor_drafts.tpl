@@ -29,13 +29,13 @@ function selectDraft(id)
 
 function removeDraft(id)
 {
-            panthera.jsonPOST({url: '?display=editor_drafts&cat=admin&id='+id, data: 'action=removeDraft', success: function (response) {
-                    if (response.status == 'success')
-                    {
-                        $('#draft_tr_'+id).remove();
-                    }
-                }
-            });
+    panthera.jsonPOST({url: '?display=editor_drafts&cat=admin&id='+id, data: 'action=removeDraft', success: function (response) {
+            if (response.status == 'success')
+            {
+                $('#draft_tr_'+id).remove();
+            }
+        }
+    });
 }
 </script>
 
@@ -75,7 +75,7 @@ function removeDraft(id)
             {/loop}
             
             <tr>
-                <td colspan="2" style="text-align: right;"><input type="button" value="{function="localize('Close', 'editor')"}" onclick="panthera.popup.close()"></td>
+                <td colspan="2" style="text-align: right;"><input type="button" value="{function="localize('Close')"}" onclick="panthera.popup.close()"></td>
             </tr>
         </tbody>
 </table>

@@ -17,6 +17,7 @@ class pantheraLocale
 
     // cache expiration time in seconds (set 0 to disable cache)
     protected $cache = 0;
+    protected $invalidDomains = array(); // list of domains failed to load
 
     /**
      * Constructor, creates default values if any doesnt exists yet
@@ -155,8 +156,8 @@ class pantheraLocale
     public function toggleLocale($locale, $value)
     {
         $locales = $this->panthera->config->getKey('languages');
-
-        if(array_key_exists($locale, $locales) or $locale == 'english')
+        
+        if (isset($locales[$locale]) or $locale == 'english')
         {
             $locales[$locale] = (bool)$value;
             $this->panthera->config->setKey('languages', $locales);
@@ -200,13 +201,24 @@ class pantheraLocale
 
         $orig = $string;
 
+        if (!isset($this->memory[$domain]))
+        {
+            $this -> panthera -> logging -> output ('Autoloading domain "' .$domain. '" on-demand', 'pantheraLocale');
+        
+            if (isset($this->invalidDomains[$domain]))
+            {
+                return $string;
+            }
+            
+            $this->loadDomain($domain);
+        }
+
         // check if text exists in domain
-        if (@array_key_exists($string, $this->memory[$domain]))
+        if (isset($this->memory[$domain][$string]))
             $string = $this->memory[$domain][$string];
 
-        if ($this->panthera->logging->debug) {
+        if ($this->panthera->logging->debug)
             $this->panthera->logging->output('localize -> "' .$orig. '", result="' .$string. '" domain='.$domain. ' (global: ' .$this->currentDomain. ')', 'pantheraLocale');
-        }
 
         return $string;
     }
@@ -250,7 +262,8 @@ class pantheraLocale
     public function loadDomain($domain, $force=False)
     {
         // dont load same domains multiple times
-        if (array_key_exists($domain, $this->domains) and !$force)
+        
+        if (isset($this->domains[$domain]) and !$force)
             return False;
             
         $dirs = array(SITE_DIR. '/content/locales/' .$this->locale, PANTHERA_DIR. '/locales/' .$this->locale);
@@ -291,7 +304,8 @@ class pantheraLocale
                 return True;
             }
         }
-
+        
+        $this->invalidDomains[$domain] = True;
         $this->panthera->logging->output('Cannot find domain "' .$domain. '"', 'pantheraLocale');
         return False;
     }
@@ -305,7 +319,7 @@ class pantheraLocale
 
     public function fromHeader()
     {
-        if(array_key_exists('HTTP_ACCEPT_LANGUAGE', $_SERVER))
+        if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
         {
             $languageTable = array('en' => 'english', 'en-us' => 'english', 'pl' => 'polski', 'de' => 'deutsh');
             $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, strpos($_SERVER['HTTP_ACCEPT_LANGUAGE'], ','));
@@ -313,7 +327,7 @@ class pantheraLocale
             // applications may add their supported languages to this table
             $languageTable = $this->panthera->get_options('locale.header.langtable', $languageTable);
 
-            if (array_key_exists($lang, $languageTable))
+            if (isset($languageTable[$lang]))
                 $this->setLocale($languageTable[$lang]);
         }
     }
@@ -338,7 +352,7 @@ class pantheraLocale
             $locale = strtolower($_GET['_locale']); // selected by user
             $locales = $this->getLocales(); // all avaliable locales
 
-            if (array_key_exists($locale,  $locales))
+            if (isset($locales[$locale]))
             {
                 $locale = $this->panthera->get_filters('session_locale', $locale);
 
