@@ -10,7 +10,7 @@ function addSubscriber()
     panthera.jsonPOST({ data: '#addSubscriberForm', messageBox: 'w2ui', success: function (response) {
             if (response.status == 'success')
             {
-                $('#newsletterUsers').prepend('<tr id="sub_'+response.id+'"><td>'+response.type+'</td><td>'+response.address+'</td><td>'+response.added+'</td><td colspan="2">'+response.notes+'</td></tr>');
+                $('#newsletterUsers').prepend('<tr id="sub_'+response.id+'"><td>'+response.type+'</td><td>'+response.address+'</td><td>'+response.added+'</td><td colspan="99">'+response.notes+'</td></tr>');
             }
         }
     });
@@ -26,7 +26,7 @@ function addSubscriber()
 
 function removeSubscriber(id, elementID)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=newsletter_users&cat=admin&nid={$nid}&action=removeSubscriber', data: 'id='+id, messageBox: 'w2ui', success: function (response) {
+    panthera.jsonPOST({ url: '?display=newsletter_users&cat=admin&nid={$nid}&action=removeSubscriber', data: 'id='+id, messageBox: 'w2ui', success: function (response) {
             if (response.status == "success")
             {
                 $("#sub_"+elementID).remove();
