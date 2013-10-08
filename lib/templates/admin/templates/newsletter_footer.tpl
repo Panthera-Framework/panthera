@@ -46,7 +46,7 @@ jQuery(document).ready(function($) {
             <tr>
                 <td colspan="2" style="padding-top: 35px;">
                     <input type="button" value="{function="localize('Cancel')"}" onclick="panthera.popup.close()" style="float: left; margin-left: 30px;">
-                    <input type="submit" value="{function="localize('Save changes', 'webcatalog')"}" style="float: right; margin-right: 30px;">
+                    <input type="submit" value="{function="localize('Save changes', 'newsletter')"}" style="float: right; margin-right: 30px;">
                 </td>
             </tr>
         </tfoot>

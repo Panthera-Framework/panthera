@@ -69,8 +69,6 @@ if ($_GET['action'] == 'send')
     $mail -> setSubject($_POST['subject']);
     $mail -> setFrom($_POST['from']);
 
-    var_dump($recipients);
-    
     // all recipients
     foreach ($recipients as $recipient)
     {
@@ -178,6 +176,7 @@ if ($_GET['action'] == 'send')
   */
     
 } elseif (isset($_POST['mailing_use_php'])) {
+
     // permissions check
     if(!$canModifySettings)
         ajax_exit(array('status' => 'failed', 'message' => localize('Permission denied. You dont have access to this action', 'messages')));
@@ -203,6 +202,8 @@ if ($_GET['action'] == 'send')
             $panthera -> config -> setKey($key, $value); // we dont select section here as we bet that those keys already exists and the section will be selected automaticaly
         }
     }
+    
+    $panthera -> config -> save();
 
     ajax_exit(array('status' => 'success'));
 }
@@ -212,10 +213,10 @@ if ($_GET['action'] == 'send')
 $yn = array(0 => localize('No'), 1 => localize('Yes'));
 
 $mailAttributes = array();
-$mailAttributes['mailing_use_php'] = array('value' => (bool)$panthera -> config -> getKey('mailing_use_php', True, 'bool', 'mailing'));
+$mailAttributes['mailing_use_php'] = array('value' => (bool)$panthera -> config -> getKey('mailing_use_php', 1, 'bool', 'mailing'));
 
 // mailing server
-$mailAttributes['mailing_server'] = array('name' => 'Server',  'value' => $panthera -> config -> getKey('mailing_server', null, null, 'mailing'));
+$mailAttributes['mailing_server'] = array('name' => 'Server',  'value' => $panthera -> config -> getKey('mailing_server', '', 'string', 'mailing'));
 $mailAttributes['mailing_server_port'] = array('name' => 'Port', 'value' => $panthera -> config -> getKey('mailing_server_port', 465, 'int', 'mailing'));
 
 // auth data
