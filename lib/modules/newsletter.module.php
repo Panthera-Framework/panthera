@@ -401,6 +401,22 @@ class newsletterSubscriber extends pantheraFetchDB
     protected $_tableName = 'newsletter_users';
     protected $_idColumn = 'id';
     protected $_constructBy = array('id', 'array', 'address', 'unsubscribe_id', 'activate_id');
+    protected $_meta;
+    
+    /**
+      * Every subscriber can have it's meta tags
+      *
+      * @return object|null
+      * @author Damian Kęska
+      */
+
+    public function getMetas()
+    {
+        if (!isset($this->_meta))
+            $this->_meta = new metaAttributes($this->panthera, 'nletter_u', $this->id, 120);
+
+        return $this->_meta;
+    }
 }
 
 /**

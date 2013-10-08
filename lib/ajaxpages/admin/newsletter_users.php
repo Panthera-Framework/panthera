@@ -20,6 +20,10 @@ if (!getUserRightAttribute($panthera->user, 'can_manage_newsletter_users')) {
 $panthera -> importModule('newsletter');
 $panthera -> locale -> loadDomain('newsletter');
 
+// list of all global additiona fields
+//$additionalFields = array('name' => array('Name', 'newsletter'), 'website' => array('Website', 'newsletter')); // example
+$additionalFields = $panthera -> get_filters('newsletter.users.additionalFields', array());
+
 // GET newsletter by `nid` (from GET parameter)
 $newsletter = new newsletter('nid', $_GET['nid']);
 $types = newsletterManagement::getTypes();
@@ -91,6 +95,18 @@ if ($_GET['action'] == 'addSubscriber')
         {
             $notes = strip_tags($_POST['notes']);
             $subscriber = new newsletterSubscriber('id', $subscription['id']);
+            $metas = $subscriber -> getMetas();
+            
+            foreach ($additionalFields as $fieldName => $field)
+            {
+                if ($_POST['extrafield_' .$fieldName])
+                {
+                    $metas -> set($fieldName, strip_tags($_POST['extrafield_' .$fieldName]));
+                }
+            }
+            
+            $metas -> save();
+            
             $subscriber -> notes = $notes;
             $subscriber -> save();
         }
@@ -127,7 +143,17 @@ $panthera -> template -> push ('newsletter_types', $types);
 
 // get all users from current page
 $users = $newsletter -> getUsers($limit[0], $limit[1]);
-$panthera -> template -> push ('newsletter_users', $users);
+$usersTpl = array();
+
+foreach ($users as $index => $user)
+{
+    $u = new newsletterSubscriber('id', $user['id']);
+    $user['metas'] = $u -> getMetas() -> listAll();
+    $usersTpl[$index] = $user;
+}
+
+$panthera -> template -> push ('additionalFields', $additionalFields);
+$panthera -> template -> push ('newsletter_users', $usersTpl);
 $panthera -> template -> display('newsletter_users.tpl');
 pa_exit();
 ?>

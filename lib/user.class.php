@@ -957,9 +957,15 @@ class metaAttributes
                     // can't remove variable from overlay
                     if ($meta['overlay'] != '')
                         continue;
+                        
+                    $metaValues = array(
+                        'userid' => $this->_objectID,
+                        'type' => $this->_type,
+                        'name' => $key
+                    );
 
                     try {
-                        $panthera -> db -> query('DELETE FROM `{$db_prefix}metas` WHERE `metaid` = :metaid', array('metaid' => $meta['metaid']));
+                        $panthera -> db -> query('DELETE FROM `{$db_prefix}metas` WHERE `userid` = :userid AND `type` = :type AND `name` = :name', $metaValues);
                         unset($this->_metas[$key]);
                     } catch (Exception $e) {
                         $panthera -> logging -> output ('Cannot remove meta attribute id=' .$meta['metaid']. ', exception=' .$e->getMessage(), 'metaAttributes');
@@ -978,9 +984,15 @@ class metaAttributes
                         continue;
 
                     // update existing meta
-                    $metaValues = array('value' => serialize($meta['value']), 'metaid' => $meta['metaid']);
+                    $metaValues = array(
+                        'value' => serialize($meta['value']),
+                        'userid' => $this->_objectID,
+                        'type' => $this->_type,
+                        'name' => $key
+                    );
+                    
                     try {
-                        $panthera -> db -> query('UPDATE `{$db_prefix}metas` SET `value` = :value WHERE `metaid` = :metaid', $metaValues);
+                        $panthera -> db -> query('UPDATE `{$db_prefix}metas` SET `value` = :value WHERE `userid` = :userid AND `type` = :type AND `name` = :name', $metaValues);
                     } catch (Exception $e) {
                         $panthera -> logging -> output ('Cannot update meta attribute id=' .$meta['metaid']. ', exception=' .$e->getMessage(), 'metaAttributes');
                     }
