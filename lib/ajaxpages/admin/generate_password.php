@@ -24,47 +24,47 @@ if ($_GET['action'] == 'generatePassword') {
 
     // check permissions
     if (!$canGenerateHash)
-        ajax_exit(array('status' => 'failed', 'message' => localize('Permission denied. You dont have access to this action', 'messages')));
+    {
+        $noAccess = new uiNoAccess; 
+        $noAccess -> display();
+    }
     
-    // check lenght of password
-    if (strlen($_POST['password']) < 2)
-        ajax_exit(array('status' => 'failed', 'message' => localize('Your password is too short!', 'debug')));
+    $password = $_POST['password'];
+    $length = intval($_POST['length']);
+    $chars = $_POST['range'];
 
-    $hash = encodePassword($_POST['password']);
-
-    if (strlen($hash) == 60)
-        ajax_exit(array('status' => 'success', 'hash' => $hash));
-
-    ajax_exit(array('status' => 'failed', 'message' => localize('Cannot generate hash!', 'debug')));
-
-
-/**
-  * Generate random string
-  *
-  * @author Mateusz Warzyński
-  */
-
-} elseif ($_GET['action'] == 'generateRandom') {
+    // set default length
+    if ($length < 1 or $length > 256)
+    {
+        $length = 12;
+    }
     
-    // check permissions
-    if (!$canGenerateHash)
-        ajax_exit(array('status' => 'failed', 'message' => localize('Permission denied. You dont have access to this action', 'messages')));
+    if (!$chars)
+    {
+        $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.,?!';
+    }
     
-    // generate random string
-    if ($_POST['lenght'] != null) {
-        if (intval($_POST['lenght']) > 1 and intval($_POST['lenght']) < 29)  
-            $string = generateRandomString(intval($_POST['lenght']));
-        else
-            ajax_exit(array('status' => 'failed', 'message' => localize('Lenght must be at least 8!', 'debug')));
-    } else
-        $string = generateRandomString(2);
+    // generate random string if password not provided
+    if (!$password or $panthera->session->get('generate.password.last') == $password)
+    {
+        $password = generateRandomString($length, $chars);
+        $panthera->session->set('generate.password.last', $password);
+    }
     
-    if (strlen($string) > 1)
-        ajax_exit(array('status' => 'success', 'random' => $string));
+    $hash = encodePassword($password);
+
+    if ($hash)
+    {
+        ajax_exit(array(
+            'status' => 'success',
+            'hash' => $hash,
+            'password' => $password,
+            'len' => strlen($password)
+        ));
+    }
     
-    ajax_exit(array('status' => 'failed', 'message' => localize('Cannot generate random string!', 'debug')));
+    ajax_exit(array('status' => 'failed', 'message' => localize('Cannot generate hash, unknown error', 'generate_password')));
 }
-
 
 $titlebar = new uiTitlebar(localize('Generate password', 'debug'));
 $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/developement.png', 'left');

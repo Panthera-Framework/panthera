@@ -1,30 +1,6 @@
 {$site_header}
 
 <script type="text/javascript">
-
-// spinner
-var generating = new panthera.ajaxLoader($('#generateHash'));
-
-/**
-  * Generate random string
-  *
-  * @author Mateusz Warzyński
-  */
-
-function generateRandom()
-{
-    var lenght = $('#lenght_random').val();
-    
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=generate_password&cat=admin&action=generateRandom', data: 'lenght='+lenght, spinner: generating, messageBox: 'w2ui', success: function (response) {
-            if (response.status == "success")
-            {
-                $('#password').val(response.random);
-                generateHash();
-            }
-        }
-   });
-}
-
 /**
   * Generate password hash
   *
@@ -33,12 +9,12 @@ function generateRandom()
 
 function generateHash()
 {
-    var password = $('#password').val();
-    
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=generate_password&cat=admin&action=generatePassword', data: 'password='+password, spinner: generating, messageBox: 'w2ui', success: function (response) {
+    panthera.jsonPOST({ data: '#generatePasswordForm', messageBox: 'w2ui', success: function (response) {
             if (response.status == "success")
             {
-                $('#hash').val(response.hash);
+                $('#password').val(response.password);
+                $('#hash').html(response.hash);
+                $('#length').val(response.len);
             }
         }
    });
@@ -49,28 +25,45 @@ function generateHash()
 
 {include="ui.titlebar"}
 
+<div id="topContent">
+    <div class="dash">
+        <div class="searchBarButtonArea">
+            <input type="button" onclick="generateHash();" value="{function="localize('Generate', 'generate_password')"}">
+        </div>
+    </div>
+</div>
+
 <!-- Content -->
 <div class="ajax-content" style="text-align: center;">
-    
-    <table>
+    <form action="?display=generate_password&cat=admin&action=generatePassword" method="POST" id="generatePasswordForm">
+        <table style="margin: 0 auto; width: 740px;">
             <thead>
                 <tr>
-                    <th scope="col" class="rounded-company" style="width: 250px;">{function="localize('Password')"}</th>
-                    <th colspan="2">{function="localize('Hash')"}</th>
+                    <th colspan="2">{$uiTitlebar.title}</th>
                 </tr>
             </thead>
             
             <tbody>
                 <tr>
-                    <td><input type="text" id="password" style="width: 200px;" onchange="generateHash();"></td>
-                    <td><input type="text" id="hash" style="width: 500px;" disabled></td>
+                    <td>{function="localize('Length', 'generate_password')"}:</td>
+                    <td><input type="text" name="length" id="length" style="width: 100%;"></td>
                 </tr>
+                
                 <tr>
-                    <td colspan="2">
-                        <input type="button" onclick="generateRandom();" value="{function="localize('Random', 'debug')"}" style="float: right; margin-right: 7px;">
-                        <input type="text" id="lenght_random" placeholder="{function="localize('Lenght', 'debug')"}" style="float: right; margin-right: 5px; width: 50px;">
-                    </td>
+                    <td>{function="localize('Characters range')"}:</td>
+                    <td><input type="text" name="range" id="range" value="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.,?!" style="width: 100%;"></td>
+                </tr>
+                
+                <tr>
+                    <td>{function="localize('Password', 'generate_password')"}:</td>
+                    <td><input type="text" name="password" id="password" style="width: 100%;"></td>
+                </tr>
+                
+                <tr>
+                    <td>{function="localize('Hash', 'generate_password')"}:</td>
+                    <td><span id="hash"></span></td>
                 </tr>
             </tbody>
-    </table>
+        </table>
+    </form>
 </div>

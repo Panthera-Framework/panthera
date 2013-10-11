@@ -42,7 +42,8 @@ if ($_GET['action'] == 'post_form')
     // check user rights to edit custom pages or just only this custompage
     if ($cpage->author_id != $panthera->user->id and !getUserRightAttribute($user, 'can_manage_custompage_' . $cpage->id) and !$rightsManagement)
     {
-        ajax_exit(array('status' => 'failed', 'message' => localize('No rights to execute this action', 'permissions')));
+        $noAccess = new uiNoAccess; 
+        $noAccess -> display();
     }
     
     if (!isset($_POST['for_all_languages']))
@@ -154,8 +155,8 @@ if ($_GET['action'] == "edit_page")
         // is author or can manage this page or can manage all pages or can view all pages (but not edit)
         if ($cpage->author_id != $panthera->user->id and !getUserRightAttribute($user, 'can_manage_custompage_' . $cpage->id) and !$rightsManagement and !$rightsViewAll)
         {
-            $noAccess = new uiNoAccess; $noAccess -> display();
-            pa_exit();
+            $noAccess = new uiNoAccess; 
+            $noAccess -> display();
         }
     }
     
@@ -221,7 +222,10 @@ if ($_GET['action'] == "edit_page")
     if ($_GET['section'] == 'tags') 
     {
         if (!getUserRightAttribute($user, 'can_edit_customPages') and !getUserRightAttribute($user, 'can_manage_custompage_' . $id))
-            ajax_exit(array('status' => 'failed', 'message' => localize('You dont have rights to edit this page', 'messages')));
+        {
+            $noAccess = new uiNoAccess; 
+            $noAccess -> display();
+        }
 
         $tags = @unserialize($cpage -> meta_tags);
         print(json_encode(array('tags' => $tags)));
