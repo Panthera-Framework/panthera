@@ -1,4 +1,4 @@
-<table class="dashWidget">
+<table class="dashWidget" style="padding-top: 30px;">
     <thead>
         <th colspan="3">
             {function="localize('Recent cronjobs', 'dash')"}<span id="widgetRemoveButtons" class="widgetRemoveButtons"><a href="#" onclick="removeWidget('cronjobs')"><img src="{$PANTHERA_URL}/images/admin/list-remove.png" style="height: 15px; float: right; margin-right: 5px;"></a></span>
