@@ -1,4 +1,4 @@
-<table class="dashWidget">
+<table class="dashWidget" style="padding-top: 30px;">
     <thead>
         <tr>
             <th colspan="2">
