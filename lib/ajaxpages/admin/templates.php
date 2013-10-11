@@ -12,12 +12,9 @@ if (!defined('IN_PANTHERA'))
       exit;
 
 if (!getUserRightAttribute($user, 'can_manage_templates')) {
-    $panthera -> template -> display('no_access.tpl');
-    pa_exit();
+    $noAccess = new uiNoAccess;
+    $noAccess -> display();
 }
-
-// load text domain
-$panthera -> locale -> loadDomain('templates');
 
 /**
   * Running webrootMerge
@@ -62,6 +59,12 @@ if ($_GET['action'] == 'webrootMerge')
     }
 
     ajax_exit(array('status' => 'failed'));
+    
+/**
+  * Execute action
+  *
+  * @author Damian Kęska
+  */
 
 } elseif ($_GET['action'] == 'exec') {
 
@@ -85,15 +88,6 @@ if ($_GET['action'] == 'webrootMerge')
             ajax_exit(array('status' => 'success'));
         break;
         
-        /*case 'tpl_auto_webroot':
-            if ($_GET['value'] == "true")
-                $panthera -> config -> setKey('tpl_auto_webroot', True, 'bool');
-            else
-                $panthera -> config -> setKey('tpl_auto_webroot', False, 'bool');
-
-            ajax_exit(array('status' => 'success'));
-        break;*/
-
         case 'template_cache_lifetime':
             $value = intval($_GET['value']);
 
@@ -130,17 +124,13 @@ if ($_GET['action'] == 'webrootMerge')
 $config = array ('template_caching' => $panthera -> config -> getKey('template_caching'),
                  'template_cache_lifetime' => $panthera -> config -> getKey('template_cache_lifetime'),
                  'template_debugging' => $panthera -> config -> getKey('template_debugging')
-                 /*'tpl_auto_webroot' => $panthera -> config -> getKey('tpl_auto_webroot')*/
                 );
+                
+$titlebar = new uiTitlebar(localize('Templates management', 'templates'));
+$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Icon-template.png', 'left');
 
 $panthera -> template -> push ('config', $config);
 $panthera -> template -> push ('current_template', $panthera -> config -> getKey('template'));
 $panthera -> template -> push ('templates_list', $panthera -> template -> listTemplates());
-
-$titlebar = new uiTitlebar(localize('Templates management', 'templates'));
-$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Icon-template.png', 'left');
-
 $panthera -> template -> display('templates.tpl');
 pa_exit();
-
-?>

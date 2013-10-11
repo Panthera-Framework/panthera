@@ -848,3 +848,8 @@ ul.dropdown li:hover > a.dir {
 .dashWidget {
     display: inline-block;
 }
+
+.underTableDescription {
+    text-align: left;
+    padding: 15px;
+}
