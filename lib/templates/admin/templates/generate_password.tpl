@@ -20,7 +20,6 @@ function generateHash()
    });
 }
 
-
 </script>
 
 {include="ui.titlebar"}

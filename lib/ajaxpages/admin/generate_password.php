@@ -20,8 +20,8 @@ $canGenerateHash = getUserRightAttribute($user, 'can_generate_hash');
   * @author Mateusz Warzyński
   */
 
-if ($_GET['action'] == 'generatePassword') {
-
+if ($_GET['action'] == 'generatePassword') 
+{
     // check permissions
     if (!$canGenerateHash)
     {

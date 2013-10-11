@@ -11,7 +11,7 @@
 
 function executeShellCommand()
 {
-    command = jQuery('#command_selection').val();
+    command = $('#command_selection').val();
 
     panthera.jsonPOST({ url: '{$AJAX_URL}?display=shellutils&cat=admin&exec='+command, data: '', messageBox: 'w2ui'});
     return false;
@@ -32,13 +32,19 @@ function executeShellCommand()
          </thead>
 
         <tbody>
-            <tr><td style="width: 100px;">{function="localize('Server command', 'debug')"}:</td><td style="width: 80px;">
-            <select id="command_selection">
-            {loop="$commands"}
-                <option value="{$key}">{$key}</option>
-            {/loop}
-            </select>
-            </td> <td><input type="button" value="{function="localize('Execute', 'debug')"}" onclick="executeShellCommand();"></td></tr>
+            <tr>
+                <td style="width: 120px;">{function="localize('Server command', 'debug')"}:</td>
+                <td style="min-width: 80px;">
+                    <select id="command_selection">
+                    {loop="$commands"}
+                        <option value="{$key}">{$key}</option>
+                    {/loop}
+                    </select>
+                </td> 
+                <td>
+                    <input type="button" value="{function="localize('Execute', 'debug')"}" onclick="executeShellCommand();">
+                </td>
+            </tr>
         </tbody>
       </table>
 </div>
