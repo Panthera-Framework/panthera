@@ -96,7 +96,7 @@ $(function(){
          
 {if="isset($showWidgets)"}
     {if="isset($lastLogged) and count($lastLogged) > 0"}
-    <table class="dashWidget">
+    <table class="dashWidget" style="padding-top: 30px;">
         <thead>
             <th colspan="3">
                 {function="localize('Recently logged in users', 'dash')"}
