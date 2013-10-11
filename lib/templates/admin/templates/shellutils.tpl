@@ -13,7 +13,7 @@ function executeShellCommand()
 {
     command = $('#command_selection').val();
 
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=shellutils&cat=admin&exec='+command, data: '', messageBox: 'w2ui'});
+    panthera.jsonPOST({ url: '?display=shellutils&cat=admin&exec='+command, data: '', messageBox: 'w2ui'});
     return false;
 
 }

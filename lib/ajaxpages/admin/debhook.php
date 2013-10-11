@@ -11,17 +11,15 @@
 if (!defined('IN_PANTHERA'))
       exit;
 
-#$builtInClasses = @json_decode(file_get_contents($panthera->config->getKey('url'). '/_php_helper.php?code=' .$panthera->config->getKey('internal_passwd')));
-
 if (!getUserRightAttribute($user, 'can_see_debhook')) {
     $noAccess = new uiNoAccess; 
     $noAccess -> display();
 }
 
-$panthera -> locale -> loadDomain('debhook');
+$search = $_GET['query'];
 
-if ($_GET['action'] == 'list')
-{
+//if ($_GET['action'] == 'list')
+//{
     /* List of classes and functions */
     $functions = get_defined_functions();
     $userFunctions = array();
@@ -39,18 +37,19 @@ if ($_GET['action'] == 'list')
 
         $params = rtrim($params, ', ');
 
-        if (isset($_GET['search']))
+        if ($search)
         {
-            if (strpos($_GET['search'], $value) === -1)
+            if (stripos($value, $search) === False)
                 continue;
         }
 
-        $userFunctions[] = array('type' => 'function', 'name' => $value, 'filename' => $reflection->getFileName(), 'declaration' => $reflection->getFileName(). ':' .$reflection->getStartLine(), 'params' => $params, 'startline' => ($reflection->getStartLine()-10), 'endline' => ($reflection->getEndLine()+2));
+        $userFunctions['function_' .$value] = array('type' => 'function', 'name' => $value, 'filename' => $reflection->getFileName(), 'declaration' => $reflection->getFileName(). ':' .$reflection->getStartLine(), 'params' => $params, 'startline' => ($reflection->getStartLine()-10), 'endline' => ($reflection->getEndLine()+2));
     }
 
     $arrayFunctions = array();
 
     $classes = get_declared_classes();
+    $classesFuncs = array(); // count of functions per class
 
     foreach ($classes as $className)
     {
@@ -61,7 +60,7 @@ if ($_GET['action'] == 'list')
 
         unset($reflectionClass);
 
-        $arrayFunctions[] = array('type' => 'class', 'name' => $className);
+        $arrayFunctions['class_' .$className] = array('type' => 'class', 'name' => $className);
         $methods = get_class_methods($className); // get all class methods
 
 
@@ -76,10 +75,12 @@ if ($_GET['action'] == 'list')
             if ($fileName == '')
                 $fileName = 'unknown';
 
-            if (isset($_GET['search']))
+            if ($search)
             {
-                if (strpos($_GET['search'], $methodName) === -1)
+                if (stripos($methodName, $search) === False)
                     continue;
+                    
+                $classesFuncs[$className]++;
             }
 
              // parameters list
@@ -92,8 +93,23 @@ if ($_GET['action'] == 'list')
             $params = rtrim($params, ', ');
 
             // end of parameters list
-
-            $arrayFunctions[] = array('type' => 'method', 'name' => $className. ' -> ' .$methodName, 'filename' => $fileName, 'declaration' => $fileName. ':' .$startLine, 'params' => $params, 'startline' => ($reflection->getStartLine()-10), 'endline' => ($reflection->getEndLine()+2));
+            $arrayFunctions['method_' .$methodName] = array('type' => 'method', 'name' => $className. ' -> ' .$methodName, 'filename' => $fileName, 'declaration' => $fileName. ':' .$startLine, 'params' => $params, 'startline' => ($reflection->getStartLine()-10), 'endline' => ($reflection->getEndLine()+2));
+        }
+    }
+    
+    if ($search)
+    {
+        foreach ($arrayFunctions as $objectName => $data)
+        {
+            if (strpos($objectName, 'class_') === 0)
+            {
+                $realName = str_replace('class_' .$objectName, '', $objectName);
+                
+                if (!isset($classesFuncs[$className]))
+                {
+                    unset($arrayFunctions[$realName]);
+                }
+            }
         }
     }
 
@@ -102,12 +118,14 @@ if ($_GET['action'] == 'list')
 
     $arrayFunctions = array_merge($userFunctions, $arrayFunctions);
     $template -> push('functions', $arrayFunctions);
-    $template -> push('action', 'list');
-    $template -> display('debhook.tpl');
-    pa_exit();
-}
+//}
 
 
+/**
+  * Get list of all defined hooks
+  *
+  * @author Damian Kęska
+  */
 
 $hookOptions = $panthera -> getAllHooks();
 $list = array();
@@ -140,6 +158,12 @@ foreach ($hookOptions as $key => $hooks)
         $array[] = array('hook' => $key, 'function' => $name, 'filename' => $reflection->getFileName(), 'declaration' => $reflection->getFileName(). ':' .$reflection->getStartLine(), 'params' => $params, 'startline' => ($reflection->getStartLine()-10), 'endline' => ($reflection->getEndLine()+2));
     }
 }
+
+$sBar = new uiSearchbar('uiTop');
+//$sBar -> setMethod('POST');
+$sBar -> setQuery($_GET['query']);
+$sBar -> setAddress('?display=debhook&cat=admin');
+$sBar -> navigate(True);
 
 $titlebar = new uiTitlebar(localize('Plugins debugger', 'settings'));
 $panthera -> template -> push('hooks', $array);
