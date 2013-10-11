@@ -48,8 +48,10 @@ function removeWidget(widgetName)
   */
 
 $(function(){
-	if ({$widgetsUnlocked} == 1 && $('#widgetsLockedImg').length > 0)
+	if ({$widgetsUnlocked} == 1)
 	    toggleWidgetsLock(0);
+	else
+	    toggleWidgetsLock(1);
 });
 
 </script>
