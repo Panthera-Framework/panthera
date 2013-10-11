@@ -21,7 +21,7 @@
 </a>
 
 <!-- permissions popup -->
-<a href="#" onclick="createPopup('?display=acl&cat=admin&popup=true&name=can_see_dash');" style="align: right;>
+<a href="#" onclick="panthera.popup.toggle('?display=acl&cat=admin&popup=true&name=can_see_dash');" style="align: right;>
     <img src="{$PANTHERA_URL}/images/admin/pantheraUI/transparent.png" class="pantheraIcon icon-Users" alt="{function="localize('Manage permissions')"}">
 </a>
 {/if}

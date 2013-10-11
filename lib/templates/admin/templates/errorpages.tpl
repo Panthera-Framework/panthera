@@ -1,5 +1,6 @@
 {$site_header}
 
+{$titleBarInclude='errorpages.titlebar'}
 {include="ui.titlebar"}
 
 <div id="popupOverlay" style="text-align: center; padding-top: 20px; padding-bottom: 0px;"></div>
@@ -10,14 +11,6 @@
             <thead>
                 <tr><th colspan="5"><b>{function="localize('Error pages', 'errorpages')"}:</b></th></tr>
              </thead>
-
-            <tfoot style="background: transparent;">
-                <tr>
-                   <td colspan="5" class="rounded-foot-left">
-                    <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="panthera.popup.toggle('?display=acl&amp;cat=admin&amp;popup=true&amp;name=can_test_error_pages', 1300, 550);" style="float: right; margin-right: 7px;">
-                   </td>
-                </tr>
-            </tfoot>
 
             <tbody>
                 {loop="$errorPages"}
