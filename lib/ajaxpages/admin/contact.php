@@ -61,6 +61,27 @@ $contactDefaults = array(
 $contactData = $panthera -> config -> getKey($fieldName, $contactDefaults, 'array');
 
 /**
+  * Save options contact informations
+  *
+  * @author Mateusz Warzyński
+  */
+  
+if ($_GET['action'] == 'save_options')
+{
+    $email = $_POST['contact_email'];
+    
+    if (strlen($email) > 0)
+    {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+        {
+            ajax_exit(array('status' => 'failed', 'error ' => localize('Invalid e-mail adress', 'contactpage')));
+        }
+        
+        $contactData['mail'] = $email;
+    }
+}
+
+/**
   * Save all contact informations
   *
   * @author Damian Kęska
@@ -69,7 +90,6 @@ $contactData = $panthera -> config -> getKey($fieldName, $contactDefaults, 'arra
 if ($_GET['action'] == 'save')
 {
     $mdata = $_POST['map_bounds'];
-    $email = $_POST['contact_email'];
     $contact_text = $_POST['address_text'];
     
     if(strlen($contact_text) > 0)
@@ -84,16 +104,6 @@ if ($_GET['action'] == 'save')
         }
         
         $contactData['map'] = $mdata;
-    }
-
-    if (strlen($email) > 0)
-    {
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL))
-        {
-            ajax_exit(array('status' => 'failed', 'error ' => localize('Invalid e-mail adress', 'contactpage')));
-        }
-        
-        $contactData['mail'] = $email;
     }
     
     // save data right back to database
