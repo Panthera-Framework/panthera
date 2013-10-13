@@ -89,6 +89,7 @@ body {
     padding: 4px;
     outline: 1px solid #3d4957;
     border: solid 1px #7c8a98;
+    cursor: pointer;
     font-size: 12px; 
     text-align: center;
 }
