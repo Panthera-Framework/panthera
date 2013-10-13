@@ -22,10 +22,6 @@
         });
     });
     
-    {loop="$variables"}
-    {if="$value.type == 'wysiwyg'"}mceInit('{$key}');{/if}
-    {/loop}
-    
 </script>
 
 {include="ui.titlebar"}
