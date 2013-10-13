@@ -9,27 +9,6 @@ function localeAction(action, id)
 
     panthera.htmlPOST({ url: '{$AJAX_URL}?display=locales&cat=admin&action='+action, data: 'id='+id, success: '#locale_window' });
 }
-
-$(document).ready(function () {
-    /**
-      * Adding new language
-      *
-      * @author Damian Kęska
-      */
-
-    $('#newLanguageGrid').submit(function () {
-        spinner = new panthera.ajaxLoader($('#newLanguageGrid'));
-    
-        panthera.jsonPOST({ data: '#createNewLanguage', spinner: spinner, async: true, messageBox: 'w2ui', success: function (response) {
-                if (response.status == "success")
-                    navigateTo('?display=langtool&cat=admin');    
-            }
-        });
-        
-        return false;
-    })
-});
-
 </script>
 {/if}
 
@@ -42,9 +21,7 @@ $(document).ready(function () {
     </div>
 </div>
 
-
 <!-- Create language popup -->
-
 <div id="createLanguage" style="display: none;">
     <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
         
@@ -113,7 +90,7 @@ $(document).ready(function () {
         <tbody>
             {loop="$locales_added"}
                 <tr>
-                    {if="$value.flag == True"}<td style='width: 30px;'><img src='{$PANTHERA_URL}/images/admin/flags/{$key}.png'></td>{/if}
+                    <td style='width: 30px;'><img {if="$value.flag == True"}src='{$PANTHERA_URL}/images/admin/flags/{$key}.png'{else} src="" {/if}></td>
                     <td>{$key}</td>
                     <td><input type="button" value="{function="localize('Delete')"}" onclick="localeAction('delete', '{$key}'); return false;">
 
