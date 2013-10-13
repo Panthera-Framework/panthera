@@ -428,10 +428,7 @@ if (!isset($itemsCount))
 
 $uiPager = new uiPager('customPages', $itemsCount, 'adminCustomPages');
 $uiPager -> setActive($page);
-$args = $_GET;
-$args['page'] = '{$page}';
-unset($args['_']);
-$uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString('GET', 'page={$page}', '_'). '\');');
+$uiPager -> setLinkTemplatesFromConfig('custompages.tpl');
 $limit = $uiPager -> getPageLimit();
 
 // if does not exists in cache, regenerate it

@@ -41,6 +41,18 @@ class crontab extends pantheraFetchDB
     }
     
     /**
+      * Get interval expression in crontab-compatible syntax
+      *
+      * @return string 
+      * @author Damian Kęska
+      */
+    
+    public function getIntervalExpression()
+    {
+        return $this->__get('minute'). ' ' .$this->__get('hour'). ' ' .$this->__get('day'). ' ' .$this->__get('month'). ' ' .$this->__get('year'). ' ' .$this->__get('weekday');
+    }
+    
+    /**
       * Set job data
       *
       * @param mixed data
@@ -399,6 +411,59 @@ class crontab extends pantheraFetchDB
         $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}cronjobs` (`jobid`, `jobname`, `data`, `minute`, `hour`, `day`, `month`, `year`, `weekday`, `next_interation`, `created`) VALUES (NULL, :jobname, :data, :minute, :hour, :day, :month, :year, :weekday, :next_interation, NOW())', $array);
         
         return (bool)$SQL->rowCount();
+    }
+    
+    /**
+      * Get default intervals
+      *
+      * @param string $intervalName to get expression for
+      * @return array
+      * @author Damian Kęska
+      */
+    
+    public static function getDefaultIntervals($intervalName='')
+    {
+        $options = array();
+        $options['1m'] = array('title' => slocalize('%s minutes', 'messages', 1), 'expression' => '*/1 * * * * *');
+        $options['2m'] = array('title' => slocalize('%s minutes', 'messages', 2), 'expression' => '*/2 * * * * *');
+        $options['5m'] = array('title' => slocalize('%s minutes', 'messages', 5), 'expression' => '*/5 * * * * *');
+        $options['10m'] = array('title' => slocalize('%s minutes', 'messages', 10), 'expression' => '*/10 * * * * *');
+        $options['15m'] = array('title' => slocalize('%s minutes', 'messages', 15), 'expression' => '*/15 * * * * *');
+        $options['30m'] = array('title' => slocalize('%s minutes', 'messages', 30), 'expression' => '*/30 * * * * *');
+        $options['45m'] = array('title' => slocalize('%s minutes', 'messages', 45), 'expression' => '*/45 * * * * *');
+        $options['50m'] = array('title' => slocalize('%s minutes', 'messages', 50), 'expression' => '*/50 * * * * *');
+    
+        // hours
+        for ($i=1; $i <= 24; $i++)
+        {
+            $options[$i. 'h'] = array('title' => slocalize('%s hours', 'messages', $i), 'expression' => '* */' .$i. ' * * * *');
+        }
+        
+        // days
+        for ($i=1; $i <= 31; $i++)
+        {
+            $options[$i. 'd'] = array('title' => slocalize('%s days', 'messages', $i), 'expression' => '* * */' .$i. ' * * *');
+        }
+        
+        $options['1o'] = array('title' => slocalize('%s months', 'messages', 1), 'expression' => '* * * */1 * *');
+        $options['2o'] = array('title' => slocalize('%s months', 'messages', 2), 'expression' => '* * * */2 * *');
+        $options['3o'] = array('title' => slocalize('%s months', 'messages', 3), 'expression' => '* * * */3 * *');
+        $options['6o'] = array('title' => slocalize('%s months', 'messages', 6), 'expression' => '* * * */6 * *');
+        $options['8o'] = array('title' => slocalize('%s months', 'messages', 8), 'expression' => '* * * */8 * *');
+        $options['10o'] = array('title' => slocalize('%s months', 'messages', 10), 'expression' => '* * * */10 * *');
+        $options['12o'] = array('title' => slocalize('%s months', 'messages', 12), 'expression' => '* * * */12 * *');
+        
+        if ($intervalName)
+        {
+            if (isset($options[$intervalName]))
+            {
+                return $options[$intervalName];
+            }
+            
+            return '7d';
+        }
+        
+        return $options;
     }
 }
 
