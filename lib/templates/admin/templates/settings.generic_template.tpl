@@ -62,7 +62,7 @@
       {loop="$variables"}
         {if="!$value.hide"}
         <tr>
-            <td valign="top"{if="$value.separator"} colspan="2"{/if} style="{if="!$value.separator"}padding-left: 25px; height: 100%;{/if}">
+            <td valign="top"{if="$value.separator"} colspan="2"{/if} style="{if="!$value.separator"}padding-left: 25px; height: 100%; max-width: 500px;{/if}">
                 <p>{$value.label}:
               {if="$value.description"}<br>
                 <small><span style="color: grey;">{$value.description}</span></small>
