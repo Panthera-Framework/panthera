@@ -22,6 +22,10 @@
         });
     });
     
+    {loop="$variables"}
+    {if="$value.type == 'wysiwyg'"}mceInit('{$key}');{/if}
+    {/loop}
+    
 </script>
 
 {include="ui.titlebar"}
@@ -54,10 +58,18 @@
             </td>
         </tr>
         {/if}
-        {loop="$variables"}
+        
+      {loop="$variables"}
         {if="!$value.hide"}
         <tr>
-            <td valign="top"{if="$value.separator"} colspan="2"{/if} style="{if="!$value.separator"}padding-left: 25px; {/if}"><b>{$value.label}:</b> {if="$value.description"}<br><small>{$value.description}</small>{/if}</td>
+            <td valign="top"{if="$value.separator"} colspan="2"{/if} style="{if="!$value.separator"}padding-left: 25px; height: 100%;{/if}">
+                <p>{$value.label}:
+              {if="$value.description"}<br>
+                <small><span style="color: grey;">{$value.description}</span></small>
+              {/if}
+                </p>
+            </td>
+            
             {if="!$value.separator"}
             <td>
                 {if="is_array($value.validator)"}
@@ -90,7 +102,7 @@
             {/if}
         </tr>
         {/if}
-        {/loop}
+      {/loop}
     </tbody>
 </table>
 </form>
