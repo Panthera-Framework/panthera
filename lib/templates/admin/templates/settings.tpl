@@ -22,7 +22,7 @@
 <div class="settingsBackground">
     {loop="$items"}
     <div id="section_{$j}">
-        <div class="titledSeparator">{$key|localize:settings|ucfirst}</div>
+        <div class="titledSeparator">{function="localize(ucfirst($key), 'settings')"}</div>
 
         <div class="iconViewContainer">
             {loop="$value"}

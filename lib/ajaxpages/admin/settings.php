@@ -99,7 +99,7 @@ $defaults = array();
 $defaults['system'] = array();
 $defaults['system']['database'] = array(
     'link' => '?display=database&cat=admin', 
-    'name' => localize('Database management', 'dash'), 
+    'name' => localize('Database management', 'settings'), 
     'description' => localize('Monitor connection status, create backups', 'settings'), 
     'icon' => '{$PANTHERA_URL}/images/admin/menu/db.png' , 
     'linkType' => 'ajax'
@@ -107,7 +107,7 @@ $defaults['system']['database'] = array(
 
 $defaults['system']['cache'] = array(
     'link' => '?display=cache&cat=admin', 
-    'name' => localize('Cache management', 'dash'),
+    'name' => localize('Cache management', 'settings'),
     'description' => localize('Monitor and manage cache settings', 'settings'),
     'icon' => '{$PANTHERA_URL}/images/admin/menu/cache.png' , 
     'linkType' => 'ajax'
@@ -115,7 +115,7 @@ $defaults['system']['cache'] = array(
 
 $defaults['system']['leopard'] = array(
     'link' => '?display=leopard&cat=admin', 
-    'name' => localize('Package management', 'dash'),
+    'name' => localize('Package management', 'settings'),
     'description' => localize('Install or remove Panthera packages', 'settings'),
     'icon' => '{$PANTHERA_URL}/images/admin/menu/package.png' , 
     'linkType' => 'ajax'
@@ -151,7 +151,7 @@ $defaults['system']['templates'] = array(
 
 $defaults['system']['session'] = array(
     'link' => '?display=settings.session&cat=admin',
-    'name' => ucfirst(localize('session', 'dash')),
+    'name' => ucfirst(localize('session', 'settings')),
     'description' => localize('Session, cookies and browser security settings', 'settings'),
     'icon' => '{$PANTHERA_URL}/images/admin/menu/session-icon.png',
     'linkType' => 'ajax'
@@ -159,7 +159,7 @@ $defaults['system']['session'] = array(
 
 $defaults['system']['mce'] = array(
     'link' => '?display=settings.mce&cat=admin',
-    'name' => ucfirst(localize('mce settings', 'dash')),
+    'name' => ucfirst(localize('mce settings', 'settings')),
     'description' => localize('Text editor settings', 'settings'),
     'icon' => '{$PANTHERA_URL}/images/admin/menu/mce.png',
     'linkType' => 'ajax'
@@ -186,8 +186,8 @@ $defaults['content'] = array();
 
 $defaults['content']['users'] = array(
     'link' => '?display=users&cat=admin',
-    'name' => ucfirst(localize('users', 'dash')),
-    'description' => localize('Manage system translations', 'settings'),
+    'name' => ucfirst(localize('users', 'settings')),
+    'description' => localize('Manage users', 'settings'),
     'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png',
     'linkType' => 'ajax'
 );
@@ -224,7 +224,7 @@ $defaults['content']['langtool'] = array(
 
 $defaults['content']['passwordrecovery'] = array(
     'link' => '?display=settings.passwordrecovery&cat=admin',
-    'name' => ucfirst(localize('password recovery', 'dash')),
+    'name' => ucfirst(localize('password recovery', 'settings')),
     'description' => localize('Default mail title, content, password length', 'settings'),
     'icon' => '{$PANTHERA_URL}/images/admin/menu/password-recovery.png',
     'linkType' => 'ajax'
