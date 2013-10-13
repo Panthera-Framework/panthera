@@ -48,7 +48,7 @@
     <tbody>
         {if="$uiSettings.languageSelector"}
         <tr>
-            <td><b>{function="localize('Language')"}:</b></td>
+            <td>{function="localize('Language')"}</td>
             <td>
                 <select name="language" id="languageSelection">
                 {loop="$uiSettings.languages"}
