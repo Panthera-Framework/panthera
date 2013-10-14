@@ -408,7 +408,7 @@ input[type=button], input[type=submit] {
     cursor: pointer;
 }
 
-input[type=button]:active, input[type=submit]:active {
+input[type=button]:hover, input[type=submit]:hover {
     background: url('../images/admin/pantheraUI/button2.png');
 }
 
