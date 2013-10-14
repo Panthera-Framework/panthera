@@ -1,0 +1,5 @@
+{
+    "index": "main.tpl",
+    "desktop_template": "admin",
+    "tablet_template": "admin_mobile"
+}
