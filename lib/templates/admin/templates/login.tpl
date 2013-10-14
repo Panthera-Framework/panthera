@@ -3,10 +3,12 @@
 	<head>
 	    {$site_header}
     	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    	<link rel='stylesheet' href='{$PANTHERA_URL}/css/jquery.dropdown.css' type='text/css' media='all' />
     	<link rel='stylesheet' href='{$PANTHERA_URL}/css/login.css' type='text/css' media='all' />
     	
     	<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
         <script type="text/javascript" src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    	<script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery.dropdown.js"></script>
     </head>
 
  <body class="login">
@@ -16,6 +18,24 @@
     <form name="loginform" id="loginform" action="?" method="post" class="login-form">
 
         <div class="header">
+           <div style="float: right;">
+            <span data-searchbardropdown="#languageDropdown" id="languageDropdownSpan" style="font-size: 11px; cursor: pointer;">
+                <img src="{$PANTHERA_URL}/images/admin/flags/{$language}.png" style="height: 10px; margin: 1px;">
+            </span>
+            
+            <div id="languageDropdown" class="searchBarDropdown searchBarDropdown-tip searchBarDropdown-relative">
+                <ul class="searchBarDropdown-menu">
+                    {loop="$flags"}
+                    <li>
+                        <a href="?{function="getQueryString('GET', '', array('_', '_locale'))"}&_locale={$value}&cat=admin">
+                        <img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 12px; margin: 1px;"> {$value}
+                        </a>
+                    </li>
+                    {/loop}
+                </ul>
+            </div>
+           </div>
+            
             <center>
                 <h1>Panthera Framework</h1>
                 {if="isset($message)"}

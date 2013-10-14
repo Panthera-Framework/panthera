@@ -75,6 +75,20 @@ if (strpos($_SERVER['HTTP_REFERER'], $panthera->config->getKey('ajax_url')) !== 
     $panthera->session->set('login_referer', $_SERVER['HTTP_REFERER']);
 }
 
+$locales = $panthera -> locale -> getLocales();
+$localesTpl = array();
+
+foreach ($locales as $lang => $enabled)
+{
+    if ($enabled == True)
+    {
+        if (is_file(SITE_DIR. '/images/admin/flags/' .$lang. '.png'))
+            $localesTpl[] = $lang;
+    }
+}
+
+
+$panthera -> template -> push('flags', $localesTpl);
 $panthera -> template -> setTitle(localize('Log in'));
 $template -> setTemplate('admin');
 $template -> display('login.tpl');
