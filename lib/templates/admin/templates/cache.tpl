@@ -182,31 +182,6 @@ $(document).ready(function () {
     bars.draw();
     {/if}
 
-    /**
-      * Add new Memcached server
-      *
-      * @author Damian Kęska
-      */
-
-    $('#addMemcachedServer').submit(function () {
-        panthera.jsonPOST( { data: '#addMemcachedServer', spinner: addMemcachedServerSpinner, success: function (response) {
-                if (response.status == "success")
-                {
-                    navigateTo('?display=cache&cat=admin');
-                } else {
-                    if (response.message != undefined)
-                    {
-                        w2alert(response.message, '{function="localize('Error')"}');
-                    }
-                }
-
-            }
-        });
-
-        return false;
-
-    });
-
     $('#addRedisServer').submit(function () {
         panthera.jsonPOST( { data: '#addRedisServer', spinner: addRedisServerSpinner, success: function (response) {
                 if (response.status == "success")
@@ -230,9 +205,15 @@ $(document).ready(function () {
 
 {include="ui.titlebar"}
 
+<div id="topContent">
+    <div class="searchBarButtonArea">
+        {if="$memcacheAvaliable == True"}<input type="button" value="{function="localize('Add memcached server', 'cache')"}" onclick="panthera.popup.toggle('element:#addMemcachedServerDiv')">{/if}
+        {if="isset($redisInfo)"}<input type="button" value="{function="localize('Add Redis cache', 'cache')"}" onclick="panthera.popup.toggle('element:#addRedisServerDiv')">{/if}
+    </div>
+</div>
+
 <!-- Content -->
 <div class="ajax-content" style="text-align: center;">
-    
     <table style="display: inline-block;">
         <thead>
             <tr>
@@ -297,53 +278,100 @@ $(document).ready(function () {
             </tr>
         </tbody>
     </table>
+    
+    
 
+  <!-- Adding new Memcached server -->
+  <div id="addMemcachedServerDiv" style="display: none;">
   {if="$memcacheAvaliable == True"}
-   <div style="position: relative;" id="addMemcachedServerDiv">
-    <table class="gridTable">
-        <thead>
-            <tr>
-                <th colspan="2" style="width: 250px;">{function="localize('Add memcached server', 'cache')"} </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td style="text-align: center;">
-                    <form action="?display=cache&cat=admin&action=addMemcachedServer" method="POST" id="addMemcachedServer">
-                        <input type="text" name="ip" placeholder="{function="localize('address', 'cache')"}" style="width: 110px;"> 
-                        <input type="text" name="port" placeholder="{function="localize('port', 'cache')"}" style="width: 60px;"> 
-                        <input type="text" name="priority" placeholder="{function="localize('priority', 'cache')"} ({function="localize('optional', 'cache')"})" style="width: 90px;"> 
-                        <input type="submit" value="{function="localize('Add')"}">
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-   </div>
+   <div style="text-align: center;">
+        <form action="?display=cache&cat=admin&action=addMemcachedServer" method="POST" id="addMemcachedServer">
+            <table class="formTable" style="display: inline-block;">
+                <thead>
+                    <tr>
+                        <th colspan="2" style="width: 250px;">
+                            <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px;">{function="localize('Add memcached server', 'cache')"}</p>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>{function="ucfirst(localize('address', 'cache'))"}</th>
+                        <td><input type="text" name="ip" placeholder="{function="localize('address', 'cache')"}" style="width: 110px;"></td>
+                    </tr>
+                    <tr>
+                        <th>{function="ucfirst(localize('port', 'cache'))"}</th>
+                        <td><input type="text" name="port" placeholder="{function="localize('port', 'cache')"}" style="width: 60px;"></td>
+                    </tr>
+                    <tr>
+                        <th>{function="ucfirst(localize('priority', 'cache'))"} ({function="localize('optional', 'cache')"})</th>
+                        <td><input type="number" name="priority" placeholder="{function="localize('priority', 'cache')"} ({function="localize('optional', 'cache')"})" style="width: 90px;"></td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2" style="padding-top: 35px;">
+                            <input type="button" value="{function="localize('Cancel')"}" onclick="panthera.popup.close()" style="float: left; margin-left: 30px;">
+                            <input type="submit" value="{function="localize('Add')"}" style="float: right; margin-right: 30px;">
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </form>
+    </div>
+   
+   <script type="text/javascript">
+   /**
+      * Add new Memcached server
+      *
+      * @author Damian Kęska
+      */
+
+    $('#addMemcachedServer').submit(function () {
+        panthera.jsonPOST( { data: '#addMemcachedServer', spinner: addMemcachedServerSpinner, success: function (response) {
+                if (response.status == "success")
+                {
+                    navigateTo('?display=cache&cat=admin');
+                } else {
+                    if (response.message != undefined)
+                    {
+                        w2alert(response.message, '{function="localize('Error')"}');
+                    }
+                }
+
+            }
+        });
+
+        return false;
+
+    });
+    </script>
   {/if}
+  </div>
     
   {if="isset($redisInfo)"}
-   <div style="position: relative;" id="addRedisServerDiv">
+   <div style="display: none;" id="addRedisServerDiv">
+    <form action="?display=cache&cat=admin&action=addRedisServer" method="POST" id="addRedisServer">
     <table style="display: inline-block;">
-        <thead>
+        <thead class="formTable">
             <tr>
-                <th colspan="2" style="width: 250px;">{function="localize('Add Redis cache', 'cache')"} </th>
+                <th colspan="2" style="width: 250px;">
+                    <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px;">{function="localize('Add Redis cache', 'cache')"}</p>
+                </th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td colspan="2" style="text-align: center;">
-                    <form action="?display=cache&cat=admin&action=addRedisServer" method="POST" id="addRedisServer">
-                        <input type="text" name="ip" placeholder="{function="localize('address', 'cache')"}" style="width: 110px;"> 
-                        <input type="text" name="port" placeholder="{function="localize('port', 'cache')"}" style="width: 60px;"> 
-                        <select name="persistent">
-                            <option value="1">{function="localize('Persistent connection', 'cache')"}</option>
-                            <option value="">{function="localize('Normal connection', 'cache')"}</option>
-                        </select>
+                    
+                        
                         <input type="submit" value="{function="localize('Add')"}">
                     </form>
                 </td>
+                
             </tr>
+            
+            
             {loop="$redisServers"}
             <tr>
                 <td style="text-align: center;">{if="$value['socket'] != False"}{$value.socket}{else}{$value.host}:{$value.port} {if="$value['persistent'] == True"}({function="localize('persistent connection', 'cache')"}){/if}{/if}</td>
@@ -351,17 +379,38 @@ $(document).ready(function () {
             </tr>
             {/loop}
         </tbody>
+        
+        <tbody>
+            <tr>
+                <th>{function="ucfirst(localize('address', 'cache'))"}</th>
+                <td><input type="text" name="ip" placeholder="{function="localize('address', 'cache')"}" style="width: 110px;"></td>
+            </tr>
+            <tr>
+                <th>{function="ucfirst(localize('port', 'cache'))"}</th>
+                <td><input type="text" name="port" placeholder="{function="localize('port', 'cache')"}" style="width: 60px;"></td>
+            </tr>
+            <tr>
+                <th>{function="localize('Persistent connection', 'cache')"}</th>
+                <td>
+                    <select name="persistent">
+                        <option value="1">{function="localize('Persistent connection', 'cache')"}</option>
+                        <option value="">{function="localize('Normal connection', 'cache')"}</option>
+                    </select>
+                </td>
+            </tr>
+        </tbody>
     </table>
-   </div>
+    </form>
+   </div><br>
   {/if}
 
     <!-- separator -->
-    <div style="height: 1px; margin-top: 100px;"></div>
+    <div style="height: 1px; margin-top: 30px;"></div>
 
   {if="count($memcachedServers) > 0"}
   {if="count($memcachedServers) > 1"}
     <!-- charts -->
-    <table style="display: inline-block;">
+    <table style="display: inline-block; margin-bottom: 60px;">
         <thead>
             <tr><th>{function="ucfirst(localize('Memcached statistics', 'cache'))"} - {function="localize('Server load', 'cache')"}</th></tr>
         </thead>
@@ -371,7 +420,7 @@ $(document).ready(function () {
                 <td><div id='memcachedChart' style='width: 480px; height: 188px; margin-bottom: 10px;'></div></td>
             </tr>
         </tbody>
-    </table>
+    </table><br>
   {/if}
     
   {if="isset($redisInfo)"}
@@ -425,7 +474,7 @@ $(document).ready(function () {
 
     <!-- list of servers -->
   {loop="$memcachedServers"}
-    <div style="width: 46%; margin-bottom: 15px; position: relative;" id="server_{$value.num}">
+    <div style="margin-bottom: 30px; display: inline-block;" id="server_{$value.num}">
         <table>
             <thead>
                 <tr>
@@ -439,15 +488,6 @@ $(document).ready(function () {
                     </th>
                 </tr>
             </thead>
-            <tfoot style="background: transparent;">
-                <tr>
-                    <td colspan="2" class="rounded-foot-left">
-                        <em>
-                        <input type="button" value="{function="localize('Clear cache of this server', 'cache')"}" onclick="clearMemcachedCache({$value.num});" style="float: right; margin-right: 7px;" id="button_{$value.num}">
-                        </em>
-                    </td>
-                </tr>
-            </tfoot>
             <tbody>
                 <tr>
                     <td>{function="localize('Host', 'cache')"}:</td>
@@ -489,12 +529,13 @@ $(document).ready(function () {
                 {/if}
             </tbody>
         </table>
+        <input type="button" value="{function="localize('Clear cache of this server', 'cache')"}" onclick="clearMemcachedCache({$value.num});" style="float: right; margin-right: 31px; margin-top: 10px;" id="button_{$value.num}">
     </div>
    {/loop}
   {/if}
 
   {if="$acp_info != ''"}
-    <div class="grid-2" id="apc_window" style="position: inline-block; margin-bottom: 15px;">
+    <div id="apc_window" style="display: inline-block; margin-bottom: 15px;">
         <table>
             <thead>
                 <tr>
@@ -533,8 +574,8 @@ $(document).ready(function () {
      
  {if="isset($xcacheInfo)"}
    {loop="$xcacheInfo"}
-    <div style="position: inline-block;" id="xcacheWindow_{$key}">
-        <table style="display: inline-block;">
+    <div style="display: inline-block;" id="xcacheWindow_{$key}">
+        <table>
             <thead>
                 <tr>
                     <th colspan="2">
@@ -542,15 +583,6 @@ $(document).ready(function () {
                     </th>
                 </tr>
             </thead>
-            <tfoot style="background: transparent;">
-                <tr>
-                    <td colspan="2" class="rounded-foot-left">
-                        <em>
-                        <input type="button" value="{function="localize('Clear cache', 'cache')"}" onclick="clearXCache('{$key}');" style="float: right; margin-right: 7px;">
-                        </em>
-                    </td>
-                </tr>
-            </tfoot>
             <tbody>
                 <tr>
                     <td>{function="localize('Items', 'cache')"}:</td>
@@ -604,7 +636,8 @@ $(document).ready(function () {
                 </tr>
             </tbody>
         </table>
-    </div>
+        <input type="button" value="{function="localize('Clear cache', 'cache')"}" onclick="clearXCache('{$key}');" style="float: right; margin-right: 31px; margin-top: 10px;">
+    </div><br>
   {/loop}
  {/if}
 </div>
