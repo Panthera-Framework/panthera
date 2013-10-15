@@ -1,0 +1,264 @@
+<script type="text/javascript">
+/**
+  * Save group attributes
+  *
+  * @param string key
+  * @param string groupName
+  * @param string action
+  * @return void 
+  * @author Damian Kęska
+  */
+
+function saveGroupAttribute(key, groupName, action)
+{
+    data = 'group='+groupName+'&do='+action;
+    
+    if (action == 'save')
+    {
+        data += '&value='+$('#'+key+'_value').val();
+    } else if (action == 'create') {
+        data += '&value='+$('#newMetaValue').val();
+        
+        // get value from select tag if avaliable
+        if ($('#newMetaSelect').val() != '')
+            key = $('#newMetaSelect').val();
+        else
+            key = $('#newMetaText').val();
+    }
+    
+    data += '&key='+key;
+    
+    panthera.jsonPOST({ url: '?display=acl&cat=admin&action=groupMetaSave', data: data, success: function (response) {
+            if (response.status == "success")
+            {
+                if (action == 'remove')
+                {
+                    $('#meta_'+key).remove();
+                }
+                
+                // rebuild list of meta tags
+                if (response.metaList != undefined)
+                {
+                    rebuildMetaList(response.metaList);
+                }
+                
+                panthera.popup.close();
+            } else {
+                if (response.message != undefined)
+                {
+                    w2alert(response.message);
+                }
+            
+            }
+        }
+    });
+}
+
+/**
+  * Rebuild meta tags list
+  *
+  * @param string metas
+  * @return void 
+  * @author Damian Kęska
+  */
+
+function rebuildMetaList(metas)
+{
+    if (metas.length == 0)
+        return false;
+
+    $('.metas').remove();
+    
+    panthera.logging.output('Rebuilidng meta tags list', 'page');
+
+    for (meta in metas)
+    {
+        if (metas[meta].value == true)
+            options = '<option value="1" selected>True</option><option value="0">False</option>';
+        else
+            options = '<option value="1">True</option><option value="0" selected>False</option>';
+    
+        $('#metasList').prepend('<tr class="metas" id="meta_'+meta+'"><td>'+metas[meta].name+'</td><td><select id="'+meta+'_value" style="width: 95%;">'+options+'</select></td><td><input type="button" value="&nbsp;{function="localize('Save', 'acl')"}&nbsp;" onclick="saveGroupAttribute(\''+meta+'\', \'{$groupName}\', \'save\');">&nbsp;<input type="button" value="&nbsp;{function="localize('Remove', 'acl')"}&nbsp;" onclick="saveGroupAttribute(\''+meta+'\', \'{$groupName}\', \'remove\');"></td></tr>');
+    }
+}
+
+/**
+  * Add or remove user in a group
+  *
+  * @param string action
+  * @param string user
+  * @return void
+  * @author Damian Kęska
+  */
+
+function saveGroupUser(action, group, user)
+{
+    if (action == 'add')
+        user = $('#newGroupUserLogin').val();
+        
+    if (user.length < 2)
+        return false;
+
+    panthera.jsonPOST({ url: '?display=acl&cat=admin&action=groupUsers', data: 'user='+user+'&subaction='+action+'&group='+group, success: function (response) {
+            if (response.status == "success")
+            {
+                // rebuild list of meta tags
+                if (response.userList != undefined)
+                {
+                    rebuildUserList(response.userList);
+                }
+                
+                panthera.popup.close();
+            } else {
+                if (response.message != undefined)
+                {
+                    w2alert(response.message);
+                }
+            
+            }    
+        }
+    });
+}
+
+/**
+  * Rebuild users list
+  *
+  * @param json users
+  * @return void
+  * @author Damian Kęska
+  */
+
+function rebuildUserList(users)
+{
+    $('.groupUsers').remove();
+    
+    for (user in users)
+    {
+        $('#groupUsersBody').prepend('<tr id="user_'+users[user].login+'" class="groupUsers"><td>'+users[user].login+'</td><td style="width: 10%; padding-right: 10px;"><input type="button" value="{function="localize('Remove', 'acl')"}" onclick="saveGroupUser(\'remove\', \'{$groupName}\', \''+users[user].login+'\');"></td></tr>');
+    }
+}
+
+</script>
+
+{include="ui.titlebar"}
+
+<div id="topContent">
+    <div class="searchBarButtonArea">
+        <input type="button" value="{function="localize('Add user to group', 'acl')"}" onclick="panthera.popup.toggle('element:#addUserPopup')">
+        <input type="button" value="{function="localize('Add new attribute', 'acl')"}" onclick="panthera.popup.toggle('element:#addMetaTag')">
+    </div>
+</div>
+
+<!-- Adding new user popup -->
+<div id="addUserPopup" style="display: none;">
+    <table class="formTable" style="width: 300px; margin: 0 auto;">
+        <thead>
+            <th colspan="2"><p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px;">{function="localize('Add user to group', 'acl')"}</p></th>
+        </thead>
+        <tbody>
+            <tr>
+                <th>{function="localize('Login', 'acl')"}:</th>
+                <td><input type="text" id="newGroupUserLogin" style="width: 95%;"></td>
+            </tr>
+        </tbody>
+        
+        <tfoot>
+            <tr>
+                <td colspan="2" style="padding-top: 35px;">
+                    <input type="button" value="{function="localize('Cancel')"}" onclick="panthera.popup.close()" style="float: left; margin-left: 30px;">
+                    <input type="button" value="&nbsp;{function="localize('Add new user', 'acl')"}&nbsp;" onclick="saveGroupUser('add', '{$groupName}');" style="float: right;">
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<!-- Adding new meta tag -->
+<div id="addMetaTag" style="display: none;">
+    <table class="formTable" style="width: 300px; margin: 0 auto;">
+        <thead>
+            <th colspan="2"><p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px;">{function="localize('Add user to group', 'acl')"}</p></th>
+        </thead>
+        <tbody>
+            <tr>
+                <th>{function="localize('Select tag', 'acl')"}:</th>
+                <td><select id="newMetaSelect">
+                        <option value=""></option>
+                        {loop="$metasAvaliable"}
+                        <option value="{$key}">{$value.desc|strCut:25}</option>
+                        {/loop}
+                    </select>
+                </td>
+            </tr>
+            
+            <tr>
+                <th>{function="localize('Or enter tag name manually', 'acl')"}:</th>
+                <td><input type="text" id="newMetaText"></td>
+            </tr>
+            
+            <tr>
+                <th>{function="localize('Value')"}</th>
+                <td><select id="newMetaValue" style="width: 95%;">
+                        <option value="1">True</option>
+                        <option value="0">False</option>
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+        
+        <tfoot>
+            <tr>
+                <td colspan="2" style="padding-top: 35px;">
+                    <input type="button" value="{function="localize('Cancel')"}" onclick="panthera.popup.close()" style="float: left; margin-left: 30px;">
+                    <input type="button" value="&nbsp;{function="localize('Add new attribute', 'acl')"}&nbsp;" onclick="saveGroupAttribute('', '{$groupName}', 'create');" style="float: right;">
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<!-- Content -->
+<div class="ajax-content" style="text-align: center;">
+    <table style="display: inline-table; width: 350px; margin-bottom: 30px;">
+        <thead>
+            <tr>
+                <th colspan="2">{function="localize('Users in this group', 'acl')"}</th>
+            </tr>
+        </thead>
+        
+        <tbody id="groupUsersBody">
+            {loop="$groupUsers"}
+            <tr id="user_{$value.login}" class="groupUsers">
+                <td>{$value.login}</td>
+                <td style="width: 10%; padding-right: 10px;"><input type="button" value="{function="localize('Remove', 'acl')"}" onclick="saveGroupUser('remove', '{$groupName}', '{$value.login}');"></td>
+            </tr>
+            {/loop}
+        </tbody>
+        
+        <tfoot style="background-color: transparent;">
+           <tr>
+             <td colspan="7" class="pager">{$uiPagerName="adminACLGroups"}
+               {include="ui.pager"}
+             </td>
+           </tr>
+        </tfoot>
+    </table>
+    
+    <table style="display: inline-block;">
+        <thead>
+            <tr>
+                <th colspan="3">{function="localize('Meta attributes of this group', 'acl')"}</th>
+            </tr>
+        </thead>
+    
+        <tbody id="metasList">
+            {loop="$metas"}
+            <tr class="metas" id="meta_{$key}">
+                <td>{$value.name}</td>
+                <td><select id="{$key}_value" style="width: 95%;"><option value="1"{if="$value.value == True"} selected{/if}>True</option><option value="0"{if="$value.value == False"} selected{/if}>False</option></select></td>
+                <td><input type="button" value="&nbsp;{function="localize('Save', 'acl')"}&nbsp;" onclick="saveGroupAttribute('{$key}', '{$groupName}', 'save');">&nbsp;<input type="button" value="&nbsp;{function="localize('Remove', 'acl')"}&nbsp;" onclick="saveGroupAttribute('{$key}', '{$groupName}', 'remove');"></td>
+            </tr>
+            {/loop}
+        </tbody>
+    </table>
+</div>

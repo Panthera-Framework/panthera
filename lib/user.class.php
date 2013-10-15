@@ -382,9 +382,26 @@ class pantheraGroup extends pantheraFetchDB
       * @author Damian Kęska
       */
 
-    public function findUsers()
+    public function findUsers($limit=0, $offset=0)
     {
-        $SQL = $this -> panthera -> db -> query('SELECT `login`, `id` FROM `{$db_prefix}users` WHERE `primary_group` = :groupName', array('groupName' => $this->name));
+        $limitQuery = '';
+        $what = '`login`, `id`';
+    
+        if ($limit and $offset)
+        {
+            $limitQuery = ' LIMIT ' .intval($offset). ', ' .intval($limit);
+        } elseif ($limit === False) {
+            $what = 'count(*)';
+        }
+    
+        $SQL = $this -> panthera -> db -> query('SELECT ' .$what. ' FROM `{$db_prefix}users` WHERE `primary_group` = :groupName' .$limitQuery, array('groupName' => $this->name));
+        
+        if ($limit === False)
+        {
+            $array = $SQL -> fetch(PDO::FETCH_ASSOC);
+            return intval($array['count(*)']);
+        }
+        
         return $SQL -> fetchAll(PDO::FETCH_ASSOC);
     }
 }

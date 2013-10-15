@@ -104,12 +104,22 @@ if ($_GET['action'] == 'delete')
             $metasTpl[$meta]['name'] = $permissionsTable[$meta]['desc'];
     }
     
+    $count = $group->findUsers(False);
+    
+    $uiPager = new uiPager('adminACLGroups', $count);
+    $uiPager -> setActive(intval($_GET['page']));
+    $uiPager -> setLinkTemplatesFromConfig('acl_listgroup.tpl');
+    $limit = $uiPager -> getPageLimit();
+    
     // show some informations
     $panthera -> template -> push('metasAvaliable', $permissionsTable);
     $panthera -> template -> push('metas', $metasTpl);
     $panthera -> template -> push('groupName', $groupName);
     $panthera -> template -> push('groupDescription', $group->description);
-    $panthera -> template -> push('groupUsers', $group->findUsers());
+    $panthera -> template -> push('groupUsers', $group->findUsers($limit[0], $limit[1]));
+    
+    $titlebar = new uiTitlebar(slocalize('Editing group "%s"', 'users', $groupName));
+    $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
     
     // display template
     $panthera -> template -> display('acl_listgroup.tpl');
