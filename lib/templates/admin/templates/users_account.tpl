@@ -26,21 +26,16 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
 {include="ui.titlebar"}
 
 <div id="topContent">
-    {$uiSearchbarName="uiTop"}
-    {include="ui.searchbar"}
-    
-    <div class="separatorHorizontal"></div>
-    
     <div class="searchBarButtonArea">
-        <input type="button" value="{function="localize('Ban', 'users')"}" onclick="panthera.popup.toggle('element:#banUser')">
-        <input type="button" value="{function="localize('Permissions', 'users')"}" onclick="panthera.popup.toggle('element:#managePermissions')">
+        {if="$permissions.canBlockUser"}<input type="button" value="{function="localize('Ban', 'users')"}" onclick="panthera.popup.toggle('element:#banUser')">{/if}
+        {if="$permissions.canSeePermissions"}<input type="button" value="{function="localize('Permissions', 'users')"}" onclick="panthera.popup.toggle('element:#managePermissions')">{/if}
         <input type="button" value="{function="localize('Edit', 'users')"}" onclick="panthera.popup.toggle('element:#editPopup')">
     </div>
 </div>
 
 
-<!-- New category popup -->
-
+{if="$permissions.canBlockUser"}
+<!-- User banning popup -->
 <div id="banUser" style="display: none;">
     <script type="text/javascript">
     /**
@@ -86,9 +81,9 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
             </tfoot>
         </table>
 </div>
+{/if}
 
 <!-- Edit user popup -->
-
 <div id="editPopup" style="display: none; position: relative;">
       <script type="text/javascript">
       
@@ -115,9 +110,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
       </script>
       
       <form action="?display=users&cat=admin&action=edit_user" method="POST" id="editUserForm">
-         
          <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
-
              <thead>
                  <tr>
                      <td colspan="2" class="formTableHeader" style="padding-top: 0px; padding-bottom: 30px;">
@@ -171,7 +164,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
                   <th>{function="localize('Full name', 'users')"}</th>
                   <th><input type="text" name="full_name" value="{$full_name}"></th>
                 </tr>
-
+                {if="$permissions.canEditOthers"}
                 <tr>
                   <th>{function="localize('Primary group', 'users')"}</th>
                   <th>
@@ -182,7 +175,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
                     </select>
                   </th>
                 </tr>
-
+                {/if}
                 <tr>
                   <th>{function="localize('Language', 'users')"}</th>
                   <th>
@@ -209,8 +202,8 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
          </form>
 </div>
 
+{if="$permissions.canSeePermissions"}
 <!-- Manage permissions popup -->
-
 <div id="managePermissions" style="display: none;">
        <script type="text/javascript">
         function aclModify(id, name)
@@ -262,8 +255,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
             </tbody>
          </table>
 </div>
-
-<div id="popupOverlay" style="text-align: center; padding-top: 20px; padding-bottom: 0px;"></div>
+{/if}
 
 <!-- Ajax content -->
 <div class="ajax-content" style="text-align: center;">

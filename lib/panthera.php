@@ -2246,6 +2246,31 @@ function r_dump()
 }
 
 /**
+  * List all class/object methods
+  *
+  * @param object|string $obj
+  * @param bool $return Return as string
+  * @return mixed 
+  * @author Damian Kęska
+  */
+
+function object_info($obj, $return=False)
+{
+    if (is_string($obj))
+    {
+        if(class_exists($obj))
+        {
+            return ReflectionClass::export($obj, $return);
+        }
+    }
+
+    if (is_object($obj))
+    {
+        return ReflectionObject::export($obj, $return);
+    }
+}
+
+/**
   * Data serialization using method with best performance
   *
   * @param mixed $data
@@ -2434,6 +2459,9 @@ function filterInput($input, $filtersList)
 
     if(in_array('quotehtml', $filters))
         $input = htmlspecialchars($input);
+        
+    if (in_array('strip', $filters))
+        $input = strip_tags($input);
 
     if (in_array('quotes', $filters))
     {

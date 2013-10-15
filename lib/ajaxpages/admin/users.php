@@ -13,10 +13,20 @@ if (!defined('IN_PANTHERA'))
 
 $panthera -> locale -> loadDomain('users');
 
-$template -> push('action', '');
-$template -> push('user_uid', '');
-$template -> push('locales', $panthera -> locale -> getLocales());
-$template -> push('locale', $panthera -> locale -> getActive());
+$panthera -> template -> push('action', '');
+$panthera -> template -> push('user_uid', '');
+$panthera -> template -> push('locales', $panthera -> locale -> getLocales());
+$panthera -> template -> push('locale', $panthera -> locale -> getActive());
+
+$isAdmin = checkUserPermissions($panthera->user, True);
+
+$permissions = array(
+    'canBlockUser' => $isAdmin,
+    'canSeePermissions' => $isAdmin,
+    'canEditOthers' => $isAdmin
+);
+
+$panthera -> template -> push('permissions', $permissions);
 
 /**
   * User account details
@@ -31,7 +41,7 @@ if ($_GET['action'] == 'account') {
 
     if (isset($_GET['uid']) and checkUserPermissions($panthera->user, True)) {
         $u = getUserById($_GET['uid']);
-        $template -> push('user_uid', '&uid=' .$_GET['uid']);
+        $panthera -> template -> push('user_uid', '&uid=' .$_GET['uid']);
     } else {
         $u = $panthera->user;
     }
@@ -47,23 +57,53 @@ if ($_GET['action'] == 'account') {
         $noAccess -> display();
     }
     
+    // user cannot ban superuser or other admin
+    if (($u->acl->get('superuser') or $u->acl->get('admin')) and !$panthera->user->acl->get('superuser'))
+    {
+        $permissions['canBlockUser'] = False;
+        $panthera -> template -> push('permissions', $permissions);
+    }
+    
+    
     // ban/unban user
     if (isset($_POST['ban']))
     {
-        if (checkUserPermissions($panthera->user, True)) {
+        if ($isAdmin) 
+        {
             $u = new pantheraUser('id', $_GET['uid']);
-            
             $banned = $u->isBanned();
             
-            if ($u -> isBanned(!$banned) == !$banned) {
+            // user cannot ban itself
+            if ($u == $panthera->user)
+            {
+                $noAccess = new uiNoAccess;
+                $noAccess -> display();
+            }
+            
+            // user cannot ban superuser or other admin
+            if (!$permissions['canBlockUser'])
+            {
+                $noAccess = new uiNoAccess;
+                $noAccess -> display();
+            }
+            
+            
+            if ($u -> isBanned(!$banned) == !$banned)
+            {
                 $u -> save();
                 ajax_exit(array('status' => 'success', 'value' => !$banned));
-            } else
-                ajax_exit(array('status' => 'failed', 'message' => localize('Cannot use this function!', 'users')));
+            } else {
+                $noAccess = new uiNoAccess;
+                $noAccess -> addMetas(array('admin'));
+                $noAccess -> display();
+            }
             
         } else {
-            ajax_exit(array('status' => 'failed', 'message' => localize('You have not permissions which allow to ban users!', 'users')));
+            $noAccess = new uiNoAccess;
+            $noAccess -> addMetas(array('admin'));
+            $noAccess -> display();
         }
+        
         pa_exit();
     }
 
@@ -135,7 +175,8 @@ if ($_GET['action'] == 'account') {
 
     $permissionsTable = $panthera->listPermissions();
 
-    foreach ($userTable as $key => $value) {
+    foreach ($userTable as $key => $value) 
+    {
         $name = $key;
 
         // translating name to description
@@ -145,11 +186,13 @@ if ($_GET['action'] == 'account') {
         if ($value == True)
             $aclList[$key] = array('name' => $name, 'value' => localize('Yes'), 'active' => 1);
         else
-                $aclList[$key] = array('name' => $name, 'value' => localize('No'), 'active' => 0);
+            $aclList[$key] = array('name' => $name, 'value' => localize('No'), 'active' => 0);
     }
 
-    if ($panthera->config->getKey('usr_view_acl_table', false, 'bool') or checkUserPermissions($panthera->user, True)) {
-        foreach ($permissionsTable as $key => $value) {
+    if ($panthera->config->getKey('usr_view_acl_table', false, 'bool') or checkUserPermissions($panthera->user, True)) 
+    {
+        foreach ($permissionsTable as $key => $value) 
+        {
 
             if (isset($aclList[$key]))
                 continue;
@@ -160,13 +203,14 @@ if ($_GET['action'] == 'account') {
             if ($acl == True) {
                 $active = 1;
                 $val = localize('Yes');
-            } else
+            } else {
                 $val = localize('No');
                 $aclList[$key] = array('name' => $value['desc'], 'value' => $val, 'active' => $active);
             }
         }
 
-    $template -> push('aclList', $aclList);
+        $template -> push('aclList', $aclList);
+    }
     
     $titlebar = new uiTitlebar(localize('Panel with informations about user.', 'users'));
     $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
@@ -234,27 +278,39 @@ if ($_GET['action'] == 'account') {
   */
 
 } elseif ($_GET['action'] == 'edit_user') {
-    // check user permissions
-    if (!checkUserPermissions($panthera->user, True)) 
+    
+    
+    if ($isAdmin)
     {
-        ajax_exit(array('status' => 'failed', 'message' => localize('No rights to execute this action', 'permissions')));
+        if (strlen($_POST['uid']) > 0)
+            $u = getUserById($_POST['uid']);
+        else
+            ajax_exit(array('status' => 'failed', 'message' => localize('Cannot find user by selected id', 'users')));
+    } else {
+        $u = $panthera -> user;
     }
     
-    if (strlen($_POST['uid']) > 0)
-        $u = getUserById($_POST['uid']);
-    else
-        ajax_exit(array('status' => 'failed', 'message' => localize('Cannot find UID of user!', 'users')));
+    /**
+      * Change password
+      *
+      * @author Damian Kęska
+      */
     
-    if ($_POST['passwd'] != '') {
-        if (strlen($_POST['passwd']) > 6) {
-            if ($_POST['passwd'] == $_POST['retyped_passwd']) {
-                if ($u->changePassword($_POST['passwd'])) {
+    if ($_POST['passwd']) 
+    {
+        if (strlen($_POST['passwd']) > 6) 
+        {
+            if ($_POST['passwd'] == $_POST['retyped_passwd']) 
+            {
+                if ($u->changePassword($_POST['passwd'])) 
+                {
                     $u->save();
                 } else {
-                    print(json_encode(array('status' => 'failed', 'message' => localize('Error with changing password'))));
+                    ajax_exit(array('status' => 'failed', 'message' => localize('Error with changing password')));
                 }
+                
             } else {
-                print(json_encode(array('status' => 'failed', 'message' => localize('Passwords are not identical'))));
+                ajax_exit(array('status' => 'failed', 'message' => localize('Passwords are not identical')));
                 pa_exit();
             }
         } else
@@ -262,22 +318,43 @@ if ($_GET['action'] == 'account') {
     }
 
     if (strlen($_POST['full_name']) > 4)
-        $u -> full_name = $_POST['full_name'];
-    else
+    {
+        $u -> full_name = filterInput($_POST['full_name'], 'strip');
+    } else {
         ajax_exit(array('status' => 'failed', 'message' => localize('Full name is too short', 'users')));
-
+    }
+    
     if (strlen($_POST['avatar']) > 6)
-        $u -> profile_picture = $_POST['avatar'];
+    {
+        $u -> profile_picture = filterInput($_POST['avatar'], 'strip');
+    }
 
-    $u -> mail = $_POST['email'];
-    $u -> jabber = $_POST['jabber'];
+    //     
+    if (filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
+    {
+        $u -> mail = $_POST['email'];
+    }
+    
+    if (filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
+    {
+        $u -> jabber = $_POST['jabber'];
+    }
+    
+    $languages = $panthera -> locale -> getLocales();
 
-    $u -> language = $_POST['language'];
-    $u -> primary_group = $_POST['primary_group'];
-
+    if (isset($languages[$_POST['language']]))
+    {
+        $u -> language = $_POST['language'];
+    }
+    
+    if ($isAdmin)
+    {
+        $u -> primary_group = $_POST['primary_group'];
+    }
+    
     $u -> save();
     
-    ajax_exit(array('status' => 'success', 'message' => 'Information about user has been saved successfully!'));
+    ajax_exit(array('status' => 'success', 'message' => 'Information about user has been updated'));
     
 /**
   * Remove an user (by id)
@@ -287,7 +364,7 @@ if ($_GET['action'] == 'account') {
 
 } elseif ($_GET['action'] == 'removeUser') {
     // check user permissions
-    if (!checkUserPermissions($panthera->user, True)) 
+    if (!$isAdmin) 
     {
         ajax_exit(array('status' => 'failed', 'message' => localize('No rights to execute this action', 'permissions')));
     }
@@ -297,10 +374,10 @@ if ($_GET['action'] == 'account') {
     try {
         $cUser = getCurrentUser();
         if ($cUser->id == $id)
-            ajax_exit(array('status' => 'failed', 'message' => localize('You can not remove yourself!', 'users')));
+            ajax_exit(array('status' => 'failed', 'message' => localize('You can not remove yourself', 'users')));
 
         if (removeUser($id))
-            ajax_exit(array('status' => 'success', 'message' => localize('User has been removed successfully!', 'users')));
+            ajax_exit(array('status' => 'success', 'message' => localize('User has been removed', 'users')));
 
     } catch (Exception $e) {
         ajax_exit(array('status' => 'failed', localize('Cannot remove user', 'users')));
@@ -315,25 +392,29 @@ if ($_GET['action'] == 'account') {
 
 } elseif ($_GET['action'] == 'add_user') {
     // check permissions
-    if (!checkUserPermissions($panthera->user, True))
+    if (!$isAdmin)
     {
         ajax_exit(array('status' => 'failed', 'message' => localize('No rights to execute this action', 'permissions')));
         pa_exit();
     }
-
 
     if (strlen($_POST['login']) > 2)
         $login = $_POST['login'];
     else
         ajax_exit(array('status' => 'failed', 'message' => localize('Login is too short!', 'users')));
 
-    if (strlen($_POST['passwd']) > 6) {
+    if (strlen($_POST['passwd']) > 6) 
+    {
         $password = encodePassword($_POST['passwd']);
+        
         if (!verifyPassword($_POST['retyped_passwd'], $password))
-            ajax_exit(array('status' => 'failed', 'message' =>  localize('Passwords are not identical!', 'users')));
-    } else
+        {
+            ajax_exit(array('status' => 'failed', 'message' =>  localize('Passwords does not match', 'users')));
+        }
+    } else {
         ajax_exit(array('status' => 'failed', 'message' => localize('Password is too short!', 'users')));
-
+    }
+    
     if (strlen($_POST['full_name']) > 4)
         $full_name = $_POST['full_name'];
     else
