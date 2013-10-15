@@ -70,15 +70,25 @@ function rebuildMetaList(metas)
     $('.metas').remove();
     
     panthera.logging.output('Rebuilidng meta tags list', 'page');
+    i=0;
 
     for (meta in metas)
     {
+        i=i+1;
+    
         if (metas[meta].value == true)
             options = '<option value="1" selected>True</option><option value="0">False</option>';
         else
             options = '<option value="1">True</option><option value="0" selected>False</option>';
     
         $('#metasList').prepend('<tr class="metas" id="meta_'+meta+'"><td>'+metas[meta].name+'</td><td><select id="'+meta+'_value" style="width: 95%;">'+options+'</select></td><td><input type="button" value="&nbsp;{function="localize('Save', 'acl')"}&nbsp;" onclick="saveGroupAttribute(\''+meta+'\', \'{$groupName}\', \'save\');">&nbsp;<input type="button" value="&nbsp;{function="localize('Remove', 'acl')"}&nbsp;" onclick="saveGroupAttribute(\''+meta+'\', \'{$groupName}\', \'remove\');"></td></tr>');
+    }
+    
+    if (i > 0)
+    {
+        $('#noMetaTags').hide();
+    } else {
+        $('#noMetaTags').show();
     }
 }
 
@@ -132,9 +142,19 @@ function rebuildUserList(users)
 {
     $('.groupUsers').remove();
     
+    i=0;
+    
     for (user in users)
     {
+        i=i+1;
         $('#groupUsersBody').prepend('<tr id="user_'+users[user].login+'" class="groupUsers"><td>'+users[user].login+'</td><td style="width: 10%; padding-right: 10px;"><input type="button" value="{function="localize('Remove', 'acl')"}" onclick="saveGroupUser(\'remove\', \'{$groupName}\', \''+users[user].login+'\');"></td></tr>');
+    }
+    
+    if (i > 0)
+    {
+        $('#noGroupUsers').hide();
+    } else {
+        $('#noGroupUsers').show();
     }
 }
 
@@ -233,6 +253,10 @@ function rebuildUserList(users)
                 <td style="width: 10%; padding-right: 10px;"><input type="button" value="{function="localize('Remove', 'acl')"}" onclick="saveGroupUser('remove', '{$groupName}', '{$value.login}');"></td>
             </tr>
             {/loop}
+            
+            {if="!$groupUsers"}
+            <tr id="noGroupUsers"><td colspan="2">{function="localize('No any users found in this group', 'acl')"}</td></tr>
+            {/if}
         </tbody>
         
         <tfoot style="background-color: transparent;">
@@ -259,6 +283,10 @@ function rebuildUserList(users)
                 <td><input type="button" value="&nbsp;{function="localize('Save', 'acl')"}&nbsp;" onclick="saveGroupAttribute('{$key}', '{$groupName}', 'save');">&nbsp;<input type="button" value="&nbsp;{function="localize('Remove', 'acl')"}&nbsp;" onclick="saveGroupAttribute('{$key}', '{$groupName}', 'remove');"></td>
             </tr>
             {/loop}
+            
+            {if="!$metas"}
+            <tr id="noMetaTags"><td colspan="2">{function="localize('No meta tags found to be assigned to this group', 'acl')"}</td></tr>
+            {/if}
         </tbody>
     </table>
 </div>

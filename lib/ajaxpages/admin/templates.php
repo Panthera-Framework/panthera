@@ -51,6 +51,11 @@ if ($_GET['action'] == 'webrootMerge')
     $template = addslashes($_GET['template']);
 
     $templates = $panthera -> template -> listTemplates();
+    
+    unset($templates['admin']);
+    unset($templates['admin_mobile']);
+    unset($templates['installer']);
+    unset($templates['_libs_webroot']);
 
     if (isset($templates[$template]) and $template != 'admin')
     {
@@ -126,11 +131,18 @@ $config = array ('template_caching' => $panthera -> config -> getKey('template_c
                  'template_debugging' => $panthera -> config -> getKey('template_debugging')
                 );
                 
+$templates = $panthera -> template -> listTemplates();
+
+unset($templates['admin']);
+unset($templates['admin_mobile']);
+unset($templates['installer']);
+unset($templates['_libs_webroot']);
+                
 $titlebar = new uiTitlebar(localize('Templates management', 'templates'));
 $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Icon-template.png', 'left');
 
 $panthera -> template -> push ('config', $config);
 $panthera -> template -> push ('current_template', $panthera -> config -> getKey('template'));
-$panthera -> template -> push ('templates_list', $panthera -> template -> listTemplates());
+$panthera -> template -> push ('templates_list', $templates);
 $panthera -> template -> display('templates.tpl');
 pa_exit();
