@@ -73,22 +73,7 @@ if ($_GET['action'] == 'save')
     }
 
     ajax_exit(array('status' => 'success'));
-    
-/**
-  * Clear XCache
-  *
-  * @author Damian Kęska
-  */
 
-} elseif ($_GET['action'] == 'clearXCache') {
-    if (!function_exists('xcache_set'))
-    {
-        ajax_exit(array('status' => 'failed'));
-    }
-
-    xcache_clear_cache(XC_TYPE_VAR, intval($_GET['cacheID']));
-    ajax_exit(array('status' => 'success'));
-    
 /**
   * Add new Redis server
   *
@@ -96,7 +81,7 @@ if ($_GET['action'] == 'save')
   */
     
 } elseif ($_GET['action'] == 'addRedisServer') {
-    // TODO: Support socket connections
+    // TODO: Support UNIX-socket connections
 
     $config = $panthera -> config -> getKey('redis_servers');
     $persistent = False;
@@ -113,15 +98,21 @@ if ($_GET['action'] == 'save')
         }
     }
     
-    $r = new Redis();
-    $r -> connect($_POST['ip'], $_POST['port']);
-    
-    if ($r -> info())
-    {
-        $config[] = array('host' => $_POST['ip'], 'port' => $_POST['port'], 'persistent' => $persistent, 'socket' => False);
+    try {
+        $r = new Redis();
+        $r -> connect($_POST['ip'], $_POST['port']);
+        
+        if ($r -> info())
+        {
+            $config[] = array('host' => $_POST['ip'], 'port' => $_POST['port'], 'persistent' => $persistent, 'socket' => False);
+        }
+        
+        $panthera -> config -> setKey('redis_servers', $config, 'array');
+    } catch (Exception $e) {
+        // nothing
+        ajax_exit(array('status' => 'failed', 'message' => localize('Cannot connect to Redis server', 'cache')));
     }
     
-    $panthera -> config -> setKey('redis_servers', $config, 'array');
     ajax_exit(array('status' => 'success'));
     
 /**
@@ -214,32 +205,82 @@ if ($_GET['action'] == 'save')
     ajax_exit(array('status' => 'success'));
 
 /**
-  * Clear variables cache (APC)
+  * Clear cache
   *
-  * @author Mateusz Warzyński
+  * @author Damian Kęska
   */
 
-} elseif ($_GET['action'] == 'clearVariablesCache') {
-    if (apc_clear_cache('user'))
-        ajax_exit(array('status' => 'success'));
-    else
-        ajax_exit(array('status' => 'failed'));
+} elseif ($_GET['action'] == 'clear') {
 
-/**
-  * Clear files cache (APC)
-  *
-  * @author Mateusz Warzyński
-  */
+    $result = False;
 
-} elseif ($_GET['action'] == 'clearFilesCache') {
-    if (apc_clear_cache('opcode'))
-        ajax_exit(array('status' => 'success'));
+    switch ($_POST['type'])
+    {
+        case 'files':
+            $result = apc_clear_cache('opcode');
+        break;
+        
+        case 'variables':
+            $result = apc_clear_cache('user');
+        break;
+        
+        case 'varCache':
+            if ($panthera -> varCache)
+                $result = $panthera -> varCache -> clear();
+        break;
+        
+        case 'cache':
+            if ($panthera -> cache)
+                $result = $panthera -> cache -> clear();
+        break;
+        
+        case 'memcached':
+            $id = $_POST['id'];
+            $memcached = new pantheraMemcached($panthera);
+            $stats = $memcached -> getStats();
+            $serverPort = null;
+
+            // get server and port from id
+            $i=0;
+            foreach ($stats as $server => $attributes)
+            {
+                if ($id == $i)
+                {
+                    $serverPort = $server;
+                }
+                
+                $i++;
+            }
+
+            if ($serverPort)
+            {
+                $server = explode(':', $serverPort);
+                $m = new Memcached;
+                $m -> addServer($server[0], $server[1]);
+                $result = $m -> flush();
+            }
+        break;
+        
+        case 'xcache':
+            $result = xcache_clear_cache(XC_TYPE_VAR, intval($_POST['id']));
+        break;
+    }
+    
+    if ($result)
+        ajax_exit(array('status' => 'success', 'message' => localize('Done')));
     else
-        ajax_exit(array('status' => 'failed'));
+        ajax_exit(array('status' => 'failed', 'message' => localize('Cannot clear cache', 'cache'), 'dump' => object_dump($result)));
 }
 
-// Check if apc support is available in PHP, if yes show some statistics
 
+/**
+  * APC statistics
+  * Supported only by APC module. APCU still missess most of those features.
+  *
+  * @author Damian Kęska
+  */
+
+// Check if apc support is available in PHP, if yes show some statistics
 if (extension_loaded('apc') && function_exists('apc_cache_info'))
 {
     $info = apc_cache_info();
@@ -263,17 +304,39 @@ if (extension_loaded('apc') && function_exists('apc_cache_info'))
         pa_exit();
     }
 
-    $apcInfo['start_time'] = date("G:i:s d.m.Y", $info['start_time']);
+    if ($info['start_time'])
+        $apcInfo['start_time'] = date("G:i:s d.m.Y", $info['start_time']);
+    else
+        $apcInfo['start_time'] = '?';
+    
     $apcInfo['cached_files'] = count($info['cache_list']);
     $apcInfo['num_hits'] = $info['num_hits'];
     $apcInfo['num_misses'] = $info['num_misses'];
+    $apcInfo['module'] = 'APC';
+    
+    foreach ($apcInfo as $key => $value)
+    {
+        if (!$value)
+            $apcInfo[$key] = '?';
+    }
+    
+    if (extension_loaded('apcu'))
+    {
+        $apcInfo['module'] = 'APCu';
+    }
 
     $panthera -> template -> push('acp_info', $apcInfo);
 }
 
 
+/**
+  * List of Memcached servers
+  *
+  * @author Damian Kęska
+  */
+
 // Check if memcached support is avaliable in PHP, if yes import our wrapper library
- $panthera -> template -> push('memcachedServers', array());
+$panthera -> template -> push('memcachedServers', array());
 
 if (class_exists('Memcached'))
 {
@@ -299,37 +362,6 @@ if (class_exists('Memcached'))
         $panthera -> template -> push('stats', $serverStats);
         $panthera -> template -> display('cache_stats_memcached.tpl');
         pa_exit();
-
-
-    /**
-      * Clear memcached cache
-      *
-      * @author Mateusz Warzyński
-      */
-
-    } elseif ($_GET['action'] == 'clearMemcachedCache') {
-        $id = $_GET['id'];
-        $stats = $memcached -> getStats();
-
-        // get server and port from id
-        $i=0;
-        foreach ($stats as $server => $attributes)
-        {
-            if ($id == $i)
-            {
-                $serverPort = $server;
-            }
-            $i = $i++;
-        }
-
-        $server = explode(':', $serverPort);
-        $m = new Memcached;
-        $m -> addServer($server[0], $server[1]);
-
-        if ($m -> flush())
-            ajax_exit(array('status' => 'success'));
-        else
-            ajax_exit(array('status' => 'failed', 'message' => localize('Cannot clean cache!')));
     }
 
     $stats = $memcached -> getStats();
@@ -383,8 +415,16 @@ if (class_exists('Memcached'))
     $panthera -> template -> push('memcachedServers', $servers);
 }
 
+
 // Detection of APC, XCache and Memcached.
 $cacheList = array('xcache' => False, 'apc' => False, 'memcached' => False, 'redis' => False);
+
+
+/**
+  * XCache support
+  *
+  * @author Damian Kęska
+  */
 
 // check for requirements for built-in caching methods
 if (function_exists('xcache_set'))
@@ -424,6 +464,9 @@ if (function_exists('xcache_set'))
     $cacheList['xcache'] = True;
 }
 
+
+
+
 if (extension_loaded('apc'))
     $cacheList['apc'] = True;
 
@@ -453,6 +496,11 @@ if (class_exists('Redis'))
                 $hosts .= $server['host']. ':' .$server['port']. ', ';
             }
             
+            if (!$info['os'])
+            {
+                $info['os'] = localize('Unknown');
+            }
+            
             $redisInfo = array(
                 'hosts' => rtrim($hosts, ', '),
                 'clients' => $info['connected_clients'],
@@ -479,6 +527,7 @@ if (class_exists('Redis'))
 
     $cacheList['redis'] = True;
 }
+
 
 $cacheList['db'] = True; // db is always available
 

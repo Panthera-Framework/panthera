@@ -2,45 +2,28 @@
 <script src="{$PANTHERA_URL}/js/admin/raphael-min.js"></script>
 <script src="{$PANTHERA_URL}/js/admin/charts.min.js"></script>
 <script type="text/javascript">
-// Spinners
-var spinner = new panthera.ajaxLoader($('#cacheVariables'));
-var apc_cache = new panthera.ajaxLoader($('#apc_window'));
-var addMemcachedServerSpinner = new panthera.ajaxLoader($('#addMemcachedServerDiv'));
-var addRedisServerSpinner = new panthera.ajaxLoader($('#addRedisServerDiv'));
-
-/**
-  * Clear variables cache
-  *
-  * @author Mateusz Warzyński
-  */
-
-function clearVariablesCache()
-{
-        panthera.jsonPOST( { url: '?display=cache&cat=admin&action=clearVariablesCache', data: '', spinner: apc_cache, success: function (response) {
-                if (response.status == 'success')
-                {
-                    $('#cl1').slideUp();
-                    $('#cl1').slideDown();
-                }
-            }
-        });
-
-        return false;
-}
-
 /**
   * Clear files cache
   *
-  * @author Mateusz Warzyński
+  * @author Damian Kęska
   */
 
-function clearFilesCache()
+function clearCache(cacheType, id)
 {
-        panthera.jsonPOST( { url: '?display=cache&cat=admin&action=clearFilesCache', data: '', spinner: apc_cache, success: function (response) {
+    if (!id)
+    {
+        id = -1;
+    }
+
+        panthera.jsonPOST( { url: '?display=cache&cat=admin&action=clear', data: 'type='+cacheType+'&id='+id, success: function (response) {
                 if (response.status == 'success')
                 {
-                    $('#cl2').slideUp();
-                    $('#cl2').slideDown();
+                    navigateTo('?display=cache&cat=admin');
+                } else {
+                  if (response.message != undefined)
+                  {
+                      panthera.alertBox.create(response.message);
+                  }
                 }
             }
         });
@@ -60,43 +43,14 @@ function saveCacheVariables()
     cache = $('#cache').val();
     varcache = $('#varcache').val();
 
-    panthera.jsonPOST({ url: '?display=cache&cat=admin&action=save', data: 'cache='+cache+'&varcache='+varcache, spinner: spinner, success: function (response) {
+    panthera.jsonPOST({ url: '?display=cache&cat=admin&action=save', data: 'cache='+cache+'&varcache='+varcache, success: function (response) {
           if (response.status == "success")
           {
-                   jQuery('#save_button').attr("disabled", "disabled");
-                   jQuery('#save_button').animate({ height:'toggle'});
-                   setTimeout("jQuery('#save_button').removeAttr('disabled');", 2500);
-                   setTimeout("jQuery('#save_button').animate({ height:'toggle' });", 2500);
+              navigateTo('?display=cache&cat=admin');
           } else {
-
               if (response.message != undefined)
               {
-                  w2alert(response.message, '{function="localize('Error', 'localize')"}');
-              }
-          }
-        }
-    });
-    return false;
-}
-
-/**
-  * Clear memcached server
-  *
-  * @author Mateusz Warzyński
-  */
-
-function clearMemcachedCache(id)
-{
-    panthera.jsonPOST({ url: '?display=cache&cat=admin&action=clearMemcachedCache&id='+id, data: '', success: function (response) {
-        if (response.status == "success") 
-        {
-            $('#button_'+id).animate({ height:'toggle'});
-            $('#button_'+id).animate({ height:'toggle'});
-            navigateTo('?display=cache&cat=admin');
-        } else {
-              if (response.message != undefined)
-              {
-                  w2alert(response.message, '{function="localize('Error', 'localize')"}');
+                  panthera.alertBox.create(response.message, '{function="localize('Error', 'localize')"}');
               }
           }
         }
@@ -112,7 +66,7 @@ function clearMemcachedCache(id)
 
 function removeMemcachedServer(server, divid)
 {
-    w2confirm('{function="localize('Are you sure?')"}', '{function="localize('Confirmation')"}', function (response) {
+    w2confirm('{function="localize('Are you sure?')"}', function (response) {
         if (response != 'Yes')
         {
             return false;
@@ -121,30 +75,25 @@ function removeMemcachedServer(server, divid)
         panthera.jsonPOST( { url: '?display=cache&cat=admin&action=removeMemcachedServer', data: 'server='+server, success: function (response) {
                 if (response.status == 'success')
                 {
-                    $('#'+divid).remove();
+                    navigateTo('?display=cache&cat=admin');
                 }
             }
         });
     });
 }
 
-function clearXCache (cacheID)
-{
-    panthera.jsonPOST( { url: '?display=cache&cat=admin&action=clearXCache', data: 'cacheID='+cacheID, spinner: new panthera.ajaxLoader($('#xcacheWindow_'+cacheID)), success: function (response) {
-            if (response.status == "success")
-            {
-                window.setTimeout("navigateTo('?display=cache&cat=admin')", 800);
-            }    
-        }
-    });
-}
+/**
+  * Removes a Redis server
+  *
+  * @author Damian Kęska
+  */
 
 function removeRedisServer(address)
 {
-    panthera.jsonPOST( { url: '?display=cache&cat=admin&action=removeRedisServer', data: 'address='+address, spinner: addRedisServerSpinner, success: function (response) {
+    panthera.jsonPOST( { url: '?display=cache&cat=admin&action=removeRedisServer', data: 'address='+address, success: function (response) {
             if (response.status == "success")
             {
-                window.setTimeout("navigateTo('?display=cache&cat=admin')", 800);
+                navigateTo('?display=cache&cat=admin');
             }    
         }
     });
@@ -181,25 +130,6 @@ $(document).ready(function () {
 
     bars.draw();
     {/if}
-
-    $('#addRedisServer').submit(function () {
-        panthera.jsonPOST( { data: '#addRedisServer', spinner: addRedisServerSpinner, success: function (response) {
-                if (response.status == "success")
-                {
-                    navigateTo('?display=cache&cat=admin');
-                } else {
-                    if (response.message != undefined)
-                    {
-                        w2alert(response.message, '{function="localize('Error')"}');
-                    }
-                }
-            }
-        });
-
-        return false;
-
-    });
-
 });
 </script>
 
@@ -207,8 +137,13 @@ $(document).ready(function () {
 
 <div id="topContent">
     <div class="searchBarButtonArea">
+        <div style="float: left; display: inline-block; margin-left: 10px;">
+            <input type="button" value="{function="localize('Clear varCache')"}" onclick="clearCache('varCache')">
+            <input type="button" value="{function="localize('Clear cache')"}" onclick="clearCache('cache')">
+        </div>
+    
         {if="$memcacheAvaliable == True"}<input type="button" value="{function="localize('Add memcached server', 'cache')"}" onclick="panthera.popup.toggle('element:#addMemcachedServerDiv')">{/if}
-        {if="isset($redisInfo)"}<input type="button" value="{function="localize('Add Redis cache', 'cache')"}" onclick="panthera.popup.toggle('element:#addRedisServerDiv')">{/if}
+        {*}{if="isset($redisInfo)"}{/*}<input type="button" value="{function="localize('Add Redis cache', 'cache')"}" onclick="panthera.popup.toggle('element:#addRedisServerDiv')">{*}{/if}{/*}
     </div>
 </div>
 
@@ -328,14 +263,14 @@ $(document).ready(function () {
       */
 
     $('#addMemcachedServer').submit(function () {
-        panthera.jsonPOST( { data: '#addMemcachedServer', spinner: addMemcachedServerSpinner, success: function (response) {
+        panthera.jsonPOST( { data: '#addMemcachedServer', success: function (response) {
                 if (response.status == "success")
                 {
                     navigateTo('?display=cache&cat=admin');
                 } else {
                     if (response.message != undefined)
                     {
-                        w2alert(response.message, '{function="localize('Error')"}');
+                        panthera.alertBox.create(response.message, '{function="localize('Error')"}');
                     }
                 }
 
@@ -349,37 +284,17 @@ $(document).ready(function () {
   {/if}
   </div>
     
-  {if="isset($redisInfo)"}
+  {*}{if="isset($redisInfo)"}{/*}
    <div style="display: none;" id="addRedisServerDiv">
     <form action="?display=cache&cat=admin&action=addRedisServer" method="POST" id="addRedisServer">
-    <table style="display: inline-block;">
-        <thead class="formTable">
+    <table style="margin: 0 auto;" class="formTable">
+        <thead>
             <tr>
                 <th colspan="2" style="width: 250px;">
                     <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px;">{function="localize('Add Redis cache', 'cache')"}</p>
                 </th>
             </tr>
         </thead>
-        <tbody>
-            <tr>
-                <td colspan="2" style="text-align: center;">
-                    
-                        
-                        <input type="submit" value="{function="localize('Add')"}">
-                    </form>
-                </td>
-                
-            </tr>
-            
-            
-            {loop="$redisServers"}
-            <tr>
-                <td style="text-align: center;">{if="$value['socket'] != False"}{$value.socket}{else}{$value.host}:{$value.port} {if="$value['persistent'] == True"}({function="localize('persistent connection', 'cache')"}){/if}{/if}</td>
-                <td><a href="#" onclick="removeRedisServer('{$value.host}:{$value.port}')">{function="localize('Remove')"}</a></td>
-            </tr>
-            {/loop}
-        </tbody>
-        
         <tbody>
             <tr>
                 <th>{function="ucfirst(localize('address', 'cache'))"}</th>
@@ -399,10 +314,40 @@ $(document).ready(function () {
                 </td>
             </tr>
         </tbody>
+        
+        <tfoot>
+            <tr>
+                <td colspan="2" style="padding-top: 35px;">
+                    <input type="button" value="{function="localize('Cancel')"}" onclick="panthera.popup.close()" style="float: left; margin-left: 30px;">
+                    <input type="submit" value="{function="localize('Add')"}" style="float: right; margin-right: 30px;">
+                </td>
+            </tr>
+        </tfoot>
     </table>
     </form>
+    
+    <script type="text/javascript">
+    $('#addRedisServer').submit(function () {
+        panthera.jsonPOST( { data: '#addRedisServer', success: function (response) {
+                if (response.status == "success")
+                {
+                    navigateTo('?display=cache&cat=admin');
+                } else {
+                    if (response.message != undefined)
+                    {
+                        panthera.alertBox.create(response.message);
+                    }
+                }
+            }
+        });
+
+        return false;
+
+    });
+    </script>
+    
    </div><br>
-  {/if}
+  {*}{/if}{/*}
 
     <!-- separator -->
     <div style="height: 1px; margin-top: 30px;"></div>
@@ -424,9 +369,8 @@ $(document).ready(function () {
   {/if}
     
   {if="isset($redisInfo)"}
-    <div style="height: 1px; margin-bottom: 30px;"></div>
     <div id="redisWindow">
-        <table>
+        <table style="margin: 0 auto; margin-bottom: 30px; display: inline-block;">
             <thead>
                 <tr>
                     <th colspan="2">
@@ -469,6 +413,26 @@ $(document).ready(function () {
                 </tr>
             </tbody>
         </table>
+    
+    
+        <table style="display: inline-block; margin-left: 10px;">
+            <thead>
+                <tr>
+                    <th colspan="2">
+                        {function="localize('Connected Redis servers', 'cache')"}
+                    </th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                {loop="$redisServers"}
+                <tr>
+                    <td style="text-align: center;">{if="$value['socket'] != False"}{$value.socket}{else}{$value.host}:{$value.port} {if="$value['persistent'] == True"}({function="localize('persistent connection', 'cache')"}){/if}{/if}</td>
+                    <td><a href="#" onclick="removeRedisServer('{$value.host}:{$value.port}')">{function="localize('Remove')"}</a></td>
+                </tr>
+                {/loop}
+            </tbody>
+        </table>
     </div>
   {/if}
 
@@ -479,7 +443,7 @@ $(document).ready(function () {
             <thead>
                 <tr>
                     <th colspan="2">
-                        <a href="#" onclick="createPopup('_ajax.php?display=cache&cat=admin&popup=memcached&server={$key}', 1000, 720);">memcached #{$value.num}</a>
+                        <a href="#" onclick="panthera.popup.create('_ajax.php?display=cache&cat=admin&popup=memcached&server={$key}');">memcached #{$value.num}</a>
                         <span class="widgetRemoveButtons" style="float: right;">
                         <a href="#" onclick="removeMemcachedServer('{$key}', 'server_{$value.num}')">
                         <img src="{$PANTHERA_URL}/images/admin/list-remove.png" style="height: 15px;">
@@ -529,35 +493,26 @@ $(document).ready(function () {
                 {/if}
             </tbody>
         </table>
-        <input type="button" value="{function="localize('Clear cache of this server', 'cache')"}" onclick="clearMemcachedCache({$value.num});" style="float: right; margin-right: 31px; margin-top: 10px;" id="button_{$value.num}">
+        <input type="button" value="{function="localize('Clear cache of this server', 'cache')"}" onclick="clearCache('memcached', {$value.num});" style="float: right; margin-right: 31px; margin-top: 10px;" id="button_{$value.num}">
     </div>
    {/loop}
   {/if}
 
   {if="$acp_info != ''"}
-    <div id="apc_window" style="display: inline-block; margin-bottom: 15px;">
-        <table>
+      <br>
+      <div style="display: inline-block;">
+        <table style="margin: 0 auto; min-width: 600px;">
             <thead>
                 <tr>
                     <th colspan="2">
-                        <a href="#" onclick="createPopup('_ajax.php?display=cache&cat=admin&popup=apc', 1400, 800);">APC</a>
+                        <a href="#" onclick="panthera.popup.toggle('_ajax.php?display=cache&cat=admin&popup=apc');">APC</a>
                     </th>
                 </tr>
             </thead>
-            <tfoot style="background: transparent;">
-                <tr>
-                    <td colspan="2" class="rounded-foot-left">
-                        <em>
-                        <input type="button" value="{function="localize('Clear variables cache', 'cache')"}" onclick="clearVariablesCache();" style="float: right; margin-right: 7px;" id="cl1">
-                        <input type="button" value="{function="localize('Clear files cache', 'cache')"}" onclick="clearFilesCache();" style="float: right; margin-right: 7px;" id="cl2">
-                        </em>
-                    </td>
-                </tr>
-            </tfoot>
             <tbody>
                 <tr>
                     <td>{function="localize('Start time', 'cache')"}:</td>
-                    <td>{$acp_info.start_time}</td>
+                    <td>{if="$acp_info.start_time == '?'"}{function="localize('Not supported by module', 'cache')"}{else}{$acp_info.start_time}{/if}</td>
                 </tr>
                 <tr>
                     <td>{function="localize('Cached files', 'cache')"}:</td>
@@ -565,12 +520,20 @@ $(document).ready(function () {
                 </tr>
                 <tr>
                     <td>{function="localize('Usage', 'cache')"}:</td>
-                    <td>{$acp_info.num_hits} {function="localize('hits', 'cache')"}, {$acp_info.num_misses} {function="localize('misses', 'cache')"}</td>
+                    <td>{if="$acp_info.num_hits == '?'"}{function="localize('Not supported by module', 'cache')"}{else}{$acp_info.num_hits} {function="localize('hits', 'cache')"}, {$acp_info.num_misses} {function="localize('misses', 'cache')"}{/if}</td>
+                </tr>
+                
+                <tr>
+                    <td>{function="localize('Module', 'cache')"}:</td>
+                    <td>{$acp_info.module}</td>
                 </tr>
             </tbody>
         </table>
-    </div>
-     {/if}
+        
+        <input type="button" value="{function="localize('Clear variables cache', 'cache')"}" onclick="clearCache('APCVariables');" style="float: right; margin-top: 10px;" id="cl1">
+        <input type="button" value="{function="localize('Clear files cache', 'cache')"}" onclick="clearCache('APCFiles');" style="float: right; margin-right: 5px; margin-top: 10px;" id="cl2">
+     </div>
+ {/if}
      
  {if="isset($xcacheInfo)"}
    {loop="$xcacheInfo"}
@@ -636,7 +599,7 @@ $(document).ready(function () {
                 </tr>
             </tbody>
         </table>
-        <input type="button" value="{function="localize('Clear cache', 'cache')"}" onclick="clearXCache('{$key}');" style="float: right; margin-right: 31px; margin-top: 10px;">
+        <input type="button" value="{function="localize('Clear cache', 'cache')"}" onclick="clearCache('xcache', '{$key}');" style="float: right; margin-right: 31px; margin-top: 10px;">
     </div><br>
   {/loop}
  {/if}
