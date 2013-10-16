@@ -1,7 +1,5 @@
 {$site_header}
 
-{function="localizeDomain('contact')"}
-
 <script type="text/javascript">
 var gmap = "";
 var map = "";
@@ -28,6 +26,11 @@ function initEditor()
     mceSetContent('address_text', htmlspecialchars_decode("{$adress_text}"));
 }
 
+</script>
+
+{function="uiMce::display()"}
+
+<script type="text/javascript">
 jQuery(document).ready(function() {
     /**
       * Init MCE Editor
@@ -110,13 +113,20 @@ jQuery(document).ready(function() {
 });
 </script>
 
-{function="uiMce::display()"}
-
 {include="ui.titlebar"}
 
-<div id="topContent" style="min-height: 0px;">
+<div id="topContent" style="min-height: 0px; text-align: center;">
+    <!-- Search bar -->
+    <p style="font-size: 11px;">
+        <form action="?display=contact&cat=admin&action=save&language={$contactLanguage}" method="GET" id="map_form">
+            <input type="text" value="" id="map_searchbox" placeholder="{function="localize('Search', 'contactpage')"}" style="width:200px; font-size:11px;">
+            <a href="#" onclick="$('#map_form').submit()">
+                <img src="images/admin/pantheraUI/transparent.png" class="pantheraIcon icon-Search" alt="Configure" style="vertical-align: middle;">
+            </a>
+        </form>
+    </p>
+
     <div class="searchBarButtonArea">
-    
         <span data-searchbardropdown="#searchDropdown" id="searchDropdownSpan" style="position: relative; cursor: pointer;">
              <input type="button" value="{function="localize('Switch language', 'custompages')"}">
         </span>
@@ -130,32 +140,26 @@ jQuery(document).ready(function() {
         </div>
        
         <input type="button" value="{function="localize('Options')"}" onclick="panthera.popup.toggle('element:#popupOptions');">
+        <input type="button" value="{function="localize('Save')"}" style="margin-top: 5px;" onclick="$('#contact_form').submit();">
     </div>
 </div>
 
-<div id="popupOverlay" style="text-align: center; padding-top: 20px; padding-bottom: 0px;"></div>
+<div id="map" style="width: 100%; height: 400px; {if="$skip_map"}display: none;{/if}"></div>
 
-<div class="ajax-content" style="text-align: center;">
-    <div style="display: inline-block; width: 70%; margin: 0 auto;">
-            <p style="font-size: 11px;">
-                <form action="?display=contact&cat=admin&action=save" method="GET" id="map_form"><input type="text" value="" id="map_searchbox" placeholder="{function="localize('Search', 'contactpage')"}" style="width:150px; font-size:11px;"></form>
-            </p>
-            <div id="map" style="width: 100%; height: 300px; margin-top: 10px;"></div>
-    </div><br><br>
-   
-   <form action="?display=contact&cat=admin&action=save" method="GET" id="contact_form">
-    <div style="display: inline-block; margin: 0 auto;">
+<!-- Page content -->
+<div class="ajax-content" style="text-align: center;" id="textContent">
+    <form action="?display=contact&cat=admin&action=save&language={$contactLanguage}" method="GET" id="contact_form">
+        <div style="display: inline-block; margin: 0 auto;">
             <textarea id="address_text" name="address_text" style="height: 350px; width: 750px;">{$adress_text}</textarea>
-            <input type="submit" value="{function="localize('Save')"}" style="margin-top: 5px;">
-    </div>
-    <input type="hidden" name="map_bounds" id="map_bounds">
-   </form>
+        </div>
+        <input type="hidden" name="map_bounds" id="map_bounds">
+    </form>
 </div>
+
 
 <!-- Options popup -->
-
 <div id="popupOptions" style="display: none;">
-   <form action="?display=contact&cat=admin&action=save_options" method="GET" id="contact_form_options">
+   <form action="?display=contact&cat=admin&action=save_options" method="POST" id="contact_form_options">
     <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
         <thead>
             <tr>
@@ -171,7 +175,7 @@ jQuery(document).ready(function() {
             </tr>
             <tr>
                 <th>{function="localize('One contact page for all languages', 'contactpage')"}:</th>
-                <th><input type="checkbox" value="1" name="all_langs"{if="$oneContactPage == True} checked{/if"} id="oneContactCheckbox"></th>
+                <th><input type="checkbox" value="1" name="all_langs"{if="$oneContactPage"} checked{/if} id="oneContactCheckbox"></th>
             </tr>
             
             <!-- <tr{if="$oneContactPage == True} style='display: none;'{/if"} id="contactLanguage">
@@ -195,4 +199,24 @@ jQuery(document).ready(function() {
         </tfoot>
     </table>
    </form>
+   
+   <script type="text/javascript">
+   /**
+      * Save options contact information
+      *
+      * @author Mateusz Warzyński
+      */
+
+    $('#contact_form_options').submit(function () {
+        panthera.jsonPOST({ url: "?display=contact&cat=admin&action=save", data: '#contact_form_options', success: function (response) {
+                if (response.status == 'success')
+                {
+                    panthera.popup.close();
+                }
+            }
+        });
+        
+        return false;
+    });
+    </script>
 </div>

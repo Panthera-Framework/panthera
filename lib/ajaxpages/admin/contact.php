@@ -19,7 +19,7 @@ if (!getUserRightAttribute($user, 'can_edit_contact'))
 
 // localization
 $panthera -> locale -> loadDomain('contactpage');
-$language = $panthera -> locale -> getActive();
+$language = $panthera -> locale -> getFromOverride($_GET['language']);
 $locales = $panthera -> locale -> getLocales();
 
 if (isset($_GET['language']))
@@ -38,10 +38,10 @@ if ($_GET['action'] == 'save')
         $panthera -> config -> setKey('contact.generic', True, 'bool');
     else {
         $panthera -> config -> setKey('contact.generic', False, 'bool');
-        
-        $_GET['language'] = $language = $_POST['save_as_language'];  
     }
 }
+
+
 // if using one contact page for all languages
 if ($panthera->config->getKey('contact.generic', False, 'bool'))
 {
@@ -57,29 +57,8 @@ $contactDefaults = array(
     'map' => '{"bounds":{"Z":{"b":50.52538601346569,"d":50.78657485494268},"fa":{"b":17.58736379609377,"d":18.27400930390627}},"zoom":10,"center":{"jb":50.65616198748283,"kb":17.93068655000002}}', 
     'mail' => 'example@example.com'
 );
-                             
-$contactData = $panthera -> config -> getKey($fieldName, $contactDefaults, 'array');
 
-/**
-  * Save options contact informations
-  *
-  * @author Mateusz Warzyński
-  */
-  
-if ($_GET['action'] == 'save_options')
-{
-    $email = $_POST['contact_email'];
-    
-    if (strlen($email) > 0)
-    {
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL))
-        {
-            ajax_exit(array('status' => 'failed', 'error ' => localize('Invalid e-mail adress', 'contactpage')));
-        }
-        
-        $contactData['mail'] = $email;
-    }
-}
+$contactData = $panthera -> config -> getKey($fieldName, $contactDefaults, 'array');
 
 /**
   * Save all contact informations
@@ -91,6 +70,12 @@ if ($_GET['action'] == 'save')
 {
     $mdata = $_POST['map_bounds'];
     $contact_text = $_POST['address_text'];
+    $email = $_POST['contact_email'];
+    
+    if (filter_var($email, FILTER_VALIDATE_EMAIL))
+    {
+        $contactData['mail'] = $email;
+    }
     
     if(strlen($contact_text) > 0)
         $contactData['text'] = $contact_text;
@@ -113,7 +98,6 @@ if ($_GET['action'] == 'save')
     pa_exit();
 }
 
-
 $html = str_replace("\n", '\\n', $panthera->config->getKey($fields['contact_text']));
 $html = str_replace("\r", '\\r', $html);
 $html = htmlspecialchars($html, ENT_QUOTES);
@@ -121,8 +105,10 @@ $html = htmlspecialchars($html, ENT_QUOTES);
 if (!defined('CONTACT_SKIP_MAP'))
 {
     $map_data = json_decode(stripslashes($contactData['map']), true);
-    $x = $map_data['center']['pb'];
-    $y = $map_data['center']['qb'];
+    
+    $x = $map_data['center'][key($map_data['center'])];
+    $y = end($map_data['center']);
+    
     $zoom = $map_data['zoom'];
     
     if (!$x)
@@ -140,9 +126,10 @@ if (!defined('CONTACT_SKIP_MAP'))
 } else
     $template -> push ('skip_map', True);
 
-$template -> push ('gmapsApiKey', $panthera -> config -> getKey('gmaps_key', '', 'string'));
-$template -> push ('contact_mail', $contactData['mail']);
-$template -> push ('adress_text', htmlspecialchars(str_replace("\n", ' ', $contactData['text'])));
+$panthera -> template -> push ('gmapsApiKey', $panthera -> config -> getKey('gmaps_key', '', 'string'));
+$panthera -> template -> push ('contact_mail', $contactData['mail']);
+$panthera -> template -> push ('adress_text', htmlspecialchars(str_replace("\n", ' ', $contactData['text'])));
+$panthera -> template -> push ('contactLanguage', $language);
 
 $titlebar = new uiTitlebar(localize('Street adress, phone number, location etc.', 'contactpage') ." (".$language.")");
 $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/contact.png', 'left');
