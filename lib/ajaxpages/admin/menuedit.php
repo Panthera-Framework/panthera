@@ -272,14 +272,6 @@ if ($_GET['action'] == 'item') {
     }
 }
 
-if ($_GET['action'] == 'new_category') {
-	$titlebar = new uiTitlebar(localize('Adding category', 'menuedit'));
-	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png', 'left');
-	
-    $template -> display('menuedit_newcategory.tpl');
-    pa_exit();
-}
-
 if ($_GET['action'] == 'category') {
     $tpl = "menuedit_category.tpl";
 
@@ -292,19 +284,7 @@ if ($_GET['action'] == 'category') {
         $tmp['link'] = pantheraUrl($value['link']);
         $array[$key] = $tmp;
     }
-
-    $template -> push('menus', $array);
-    $template -> push('category', $_GET['category']);
-	
-	$titlebar = new uiTitlebar(localize('Edit menu', 'menuedit')." (".localize('To change sequence of items in the category, you can drag & drop them', 'menuedit').")");
-	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png', 'left');
-    $template -> display($tpl);
-    pa_exit();
-}
-
-if ($_GET['action'] == 'new_item') {
-    $tpl = "menuedit_newitem.tpl";
-
+    
     $locales = array();
 
     foreach ($panthera -> locale -> getLocales() as $key => $value) {
@@ -323,10 +303,12 @@ if ($_GET['action'] == 'new_item') {
 
     $template -> push('item_language', $locales);
     $template -> push('cat_type', $_GET['category']);
+
+    $template -> push('menus', $array);
+    $template -> push('category', $_GET['category']);
 	
-	$titlebar = new uiTitlebar(localize('Adding item', 'menuedit'));
+	$titlebar = new uiTitlebar(localize('Edit menu', 'menuedit')." (".localize('To change sequence of items in the category, you can drag & drop them', 'menuedit').")");
 	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png', 'left');
-	
     $template -> display($tpl);
     pa_exit();
 }
