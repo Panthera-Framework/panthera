@@ -107,7 +107,7 @@
             </tr>
         </thead>
 
-        <tbody>
+        <tbody class="hovered">
             {loop="$category_list"}
             <tr id="galleryCategory_row_{$value->id}" style="{if="!$value->visibility"}opacity: 0.5;{/if}">
                 
