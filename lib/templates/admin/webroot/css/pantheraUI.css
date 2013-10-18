@@ -262,7 +262,7 @@ a:active {
     display: inline-block;
     position: relative;
     text-align: center;
-    width: 77px;
+    width: 71px;
     height: 85px;
     vertical-align:top;
     
@@ -327,11 +327,6 @@ table {
 
 thead {
     background-color: #56687b;
-}
-
-.tbodyHead {
-    background-color: #56687B;
-    color: white;
 }
 
 th {
@@ -857,4 +852,70 @@ ul.dropdown li:hover > a.dir {
 .underTableDescription {
     text-align: left;
     padding: 15px;
+}
+
+.galleryItem {
+    width: 300px;
+    max-height: 400px;
+    
+    background: #f2f4f3;
+    border: 1px #d1d2d5 solid;
+    border-radius:3px;
+    
+    margin-right: 20px;
+    margin-bottom: 20px;
+    display: inline;
+    float: left;
+}
+
+.galleryItem div.galleryImageFrame {
+    width: 100%;
+    background: white;
+    height: 200px;
+    text-align: center;
+    position: relative;
+}
+
+.galleryItemHidden {
+    filter:progid:DXImageTransform.Microsoft.Alpha(opacity=50);
+    -moz-opacity: 0.4;
+    -khtml-opacity: 0.4;
+    opacity: 0.4;
+}
+
+.paGalleryFrameOverlay {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    
+    background:#000;
+    width: 100%;
+    height: 100%;
+    
+    
+    filter:progid:DXImageTransform.Microsoft.Alpha(opacity=70);
+    -moz-opacity: 0.7;
+    -khtml-opacity: 0.7;
+    opacity: 0.7;
+    color: white;
+    display: none;
+}
+
+.galleryItem div.galleryImageFrame:hover .paGalleryFrameOverlay {
+    display: block;
+}
+
+.galleryImage {
+    max-height: 200px;
+    max-width: 300px;
+}
+
+.galleryItem div.galleryItemDetails {
+    margin-top: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.galleryIcon {
+    width: 25px;
 }
