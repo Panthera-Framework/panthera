@@ -76,7 +76,6 @@
    </form>
    
    <script type="text/javascript">
-   $(document).ready(function () {
         $('#newGalleryForm').submit(function () {
             panthera.jsonPOST( { data: '#newGalleryForm', messageBox: 'w2ui', success: function (response) {
                     if (response.status == 'success')
@@ -88,7 +87,6 @@
             
             return false;
         });
-    });
    </script>
 </div>
 
