@@ -40,6 +40,9 @@
 {include="ui.titlebar"}
 
 <div id="topContent">
+    {$uiSearchbarName="uiTop"}
+    {include="ui.searchbar"}
+
     <div class="searchBarButtonArea">
         <input type="button" value="{function="localize('Create new gallery', 'gallery')"}" onclick="panthera.popup.toggle('element:#createGallery')">
     </div>
