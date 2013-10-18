@@ -54,6 +54,14 @@
    <form action="?{function="getQueryString('GET', 'action=createCategory', '_')"}" method="POST" id="newGalleryForm">
     <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
         
+        <thead>
+            <tr>
+                <td colspan="2" class="formTableHeader" style="padding-top: 0px; padding-bottom: 30px;">
+                    <p style="color: #e5ebef; padding: 30px; margin: 0px; margin-left: 15px;">{function="localize('Create new gallery', 'gallery')"}</p>
+                </td>
+            </tr>
+        </thead>
+        
         <tbody>
           <tr>
             <th>{function="localize('Name', 'gallery')"}:</th>
