@@ -91,8 +91,6 @@
    </form>
 </div>
 
-<div id="popupOverlay" style="text-align: center; padding-top: 20px; padding-bottom: 0px;"></div>
-
 <!-- Content -->
 <div class="ajax-content" style="text-align: center;">
     <table style="display: inline-block;">
@@ -139,6 +137,9 @@
                 </td>
             </tr>
             {/loop}
+            <tr id="noGalleryCategories" {if="$category_list"}style="display: none;"{/if}>
+                <td colspan="5">{function="localize('No gallery categories found, create new one using button below', 'gallery')"}</td>
+            </tr>
         </tbody>
     </table>
 </div>
