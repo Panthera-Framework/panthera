@@ -119,7 +119,7 @@ jQuery(document).ready(function() {
     <!-- Search bar -->
     <p style="font-size: 11px;">
         <form action="?display=contact&cat=admin&action=save&language={$contactLanguage}" method="GET" id="map_form">
-            <input type="text" value="" id="map_searchbox" placeholder="{function="localize('Search', 'contactpage')"}" style="width:200px; font-size:11px;">
+            <input type="text" value="" id="map_searchbox" placeholder="{function="localize('Search on the map', 'contactpage')"}" style="width:200px; font-size:11px;">
             <a href="#" onclick="$('#map_form').submit()">
                 <img src="images/admin/pantheraUI/transparent.png" class="pantheraIcon icon-Search" alt="Configure" style="vertical-align: middle;">
             </a>
@@ -144,7 +144,7 @@ jQuery(document).ready(function() {
     </div>
 </div>
 
-<div id="map" style="width: 100%; height: 400px; {if="$skip_map"}display: none;{/if}"></div>
+<div id="map" style="width: 99.99%; height: 400px; {if="$skip_map"}display: none;{/if}"></div>
 
 <!-- Page content -->
 <div class="ajax-content" style="text-align: center;" id="textContent">
