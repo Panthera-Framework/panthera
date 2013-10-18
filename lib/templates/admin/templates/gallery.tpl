@@ -35,21 +35,6 @@
         
         });
     }
-    
-    $(document).ready(function () {
-        $('#newGalleryForm').submit(function () {
-            panthera.jsonPOST( { data: '#newGalleryForm', messageBox: 'w2ui', success: function (response) {
-                    if (response.status == 'success')
-                    {
-                        navigateTo('?display=gallery&cat=admin&filter={$category_filter}');
-                    }
-                } 
-            });
-            
-            return false;
-        });
-    });
-    
 </script>
 
 {include="ui.titlebar"}
@@ -89,6 +74,22 @@
         
     </table>
    </form>
+   
+   <script type="text/javascript">
+   $(document).ready(function () {
+        $('#newGalleryForm').submit(function () {
+            panthera.jsonPOST( { data: '#newGalleryForm', messageBox: 'w2ui', success: function (response) {
+                    if (response.status == 'success')
+                    {
+                        navigateTo('?display=gallery&cat=admin&filter={$category_filter}');
+                    }
+                } 
+            });
+            
+            return false;
+        });
+    });
+   </script>
 </div>
 
 <!-- Content -->
