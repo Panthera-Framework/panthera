@@ -329,6 +329,11 @@ thead {
     background-color: #56687b;
 }
 
+.tbodyHead {
+    background-color: #56687B;
+    color: white;
+}
+
 th {
     padding-left: 7px;
     font-weight: 200;

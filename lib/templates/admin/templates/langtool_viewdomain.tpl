@@ -1,39 +1,21 @@
-<script>
+<script type="text/javascript">
 /**
   * Translate string
   *
-  * @author Mateusz Warzyński
+  * @author Damian Kęska
   */
 
-function saveString(j, locale, domain, id)
+function saveStrings()
 {
-    string = $("#string_value_"+j).val();
-    panthera.jsonPOST({ url: "?display=langtool&cat=admin&action=view_domain&locale="+locale+"&domain="+domain+"&subaction=set_string&id="+id+"&string="+string, data: "", success: function (response) {
+    stringsArray = new Array();
 
-        // return string from server (just in case)
-        if (response.status == "success")
-              $("#td_"+j+"_"+locale).text(response.string);
-
-        }
+    // serialize all forms and put into array
+    $('.translationForm').each(function( index ) {
+        stringsArray.push($(this).serialize());
     });
-}
-
-/**
-  * Add string
-  *
-  * @author Mateusz Warzyński
-  */
-
-function addString(backURL)
-{
-    panthera.jsonPOST({ data: '#add_string', success: function (response) {
-
-        // return string from server (just in case)
-        if (response.status == "success")
-            navigateTo(backURL);
-
-        }
-    });
+    
+    // serialized array will be encoded into JSON and then to Base64 and send to server
+    panthera.jsonPOST({ url: '?display=langtool&cat=admin&action=saveStrings', 'data': 'aaa=źźź&data='+Base64.encode(JSON.stringify(stringsArray)), messageBox: 'w2ui'});
 }
 
 /**
@@ -44,13 +26,17 @@ function addString(backURL)
 
 function removeString(j, locale, domain)
 {
-    string = $('#id_'+j).val();
-    panthera.jsonPOST({ url: "?display=langtool&cat=admin&action=view_domain&locale="+locale+"&domain="+domain+"&subaction=remove_string&id="+string, data: "", messageBox: 'w2ui', success: function (response) {
+    string = $('#original_'+j).val();
+    
+    panthera.confirmBox.create('{function="localize('Are you sure?')"}', function (response) {
+        if (response == 'Yes')
+        {
+            panthera.jsonPOST({ url: "?display=langtool&cat=admin&action=view_domain&locale="+locale+"&domain="+domain+"&subaction=remove_string&id="+string, data: "", messageBox: 'w2ui', success: function (response) {
 
-        // return string from server (just in case)
-        if (response.status == "success")
-            $('#translate_'+j).slideUp('slow', function () {
-                $('#translate_'+j).remove();
+                // return string from server (just in case)
+                if (response.status == "success")
+                    $('#translate_'+j).remove();
+                }
             });
         }
     });
@@ -78,75 +64,156 @@ function addOtherString(j, locale, domain, id)
 
 {include="ui.titlebar"}
 
-<!-- Ajax content -->
+<div id="topContent" style="min-height: 50px;">
+    <div class="searchBarButtonArea">
+        <div style="float: left; display: inline-block; margin-left: 10px;">
+            <input type="button" value="{function="slocalize('Back to %s', 'messages', $language)"}" onclick="navigateTo('?display=langtool&cat=admin&action=domains&locale={$language}')">
+        </div>
+    
+        <input type="button" value="{function="localize('Add new translation', 'langtool')"}" onclick="panthera.popup.toggle('element:#addNewStringPopup')">
+        <input type="button" value="{function="localize('Save')"}" onclick="saveStrings()">
+    </div>
+</div>
 
-<div class="ajax-content" style="text-align: center;">
 
-       <table>
-          <form id="add_string" action="?display=langtool&cat=admin&action=view_domain&locale={$locale}&domain={$domain}&subaction=set_string" method="POST">
-              <thead>
-                 <tr>
-                     <th colspan="2">{function="localize('Add new translation', 'langtool')"}</th>
-                 </tr>
-              </thead>
-              
-              <tfoot style="background-color: transparent;">
-                  <tr>
-                      <td colspan="2"><input type="button" value="{function="localize('Add')"}" style="margin-right: 10px; float: right;" onclick="addString('?display=langtool&cat=admin&action=view_domain&locale={$locale}&domain={$domain}');"></td>
-                  </tr>
-              </tfoot>
-              
-              <tbody>
-                 <tr>
-                     <td><img src="{$PANTHERA_URL}/images/admin/flags/english.png">&nbsp;&nbsp;&nbsp;<input type="text" name="id" style="width: 80%;"></td>
-                     <td id="string"><img src="{$flag}">&nbsp;&nbsp;&nbsp;<input type="text" name="string" style="width: 80%;"></td>
-                 </tr>
-              </tbody>
-          </form>
-       </table>
-       
-       
-       {$j=0}
-       {loop="$translates"}
-       {$j=$j+1}
-       {$k=$key}
-          
-       <input type="text" id="id_{$j}" value="{$key}" style="display: none;">
-       
-       <table style="margin-top: 25px;" id="translate_{$j}">
-          <form id="change_string_{$j}" action="?display=langtool&cat=admin&action=view_domain&locale={$locale}&domain={$domain}&subaction=set_string&id={$k}" method="POST">
-          
+
+
+
+<!-- A template of a table to insert -->
+<div id="newTable" style="display: none;">
+<table style="width: 100%; margin-bottom: 60px;" id="translate_%randomid%">
+        <thead>
+            <th colspan="2"><img src="{$PANTHERA_URL}/images/admin/flags/english.png" style="padding-right: 10px; margin-left: 1px;">"%original%" <small><i>(english)</i></small></th>
+        </thead>
+        
+        <tbody>
+            <tr style="height: 60px;">
+                <td>
+                    <form action="#" method="POST" class="">
+                        <!-- Original string -->
+                        <input type="hidden" name="original" value="%original%" id="original_%randomid%">
+                        
+                        <!-- Translation language -->
+                        <input type="hidden" name="language" value="{$language}">
+                        <img src="{$flag}" style="margin-right: 25px;">
+                        
+                        <input type="hidden" name="domain" value="{$domain}">
+                        
+                        <!-- translation string --> 
+                        <input type="text" name="translation" value="%translation%" style="width: 50%;"> 
+                        <input type="button" value="{function="localize('Remove')"}" style="float: right;" onclick="removeString('%randomid%', '{$locale}', '{$domain}');">
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<!-- Adding new string popup -->
+<div id="addNewStringPopup" style="display: none;">
+    <form action="?display=langtool&cat=admin&action=view_domain&locale={$locale}&domain={$domain}&subaction=addNewString" method="POST" id="addNewStringForm">
+    <table class="formTable" style="margin: 0 auto;">
             <thead>
                 <tr>
-                    <th colspan="2"><img src="{$PANTHERA_URL}/images/admin/flags/english.png" style="padding-right: 25px; margin-left: 1px;">{$k}</th>
+                    <th colspan="2">{function="localize('Add new translation', 'langtool')"}</th>
                 </tr>
             </thead>
             
+            <tbody>
+                <tr>
+                    <th><img src="{$PANTHERA_URL}/images/admin/flags/english.png"> {function="localize('Original', 'langtool')"} <small><i>(english)</i></small></th>
+                    <td><input type="text" name="id" style="width: 80%;"></td>
+                </tr>
+            
+                <tr>
+                    <th id="string"><img src="{$flag}"> {$language|ucfirst}</i></small></th>
+                    <td><input type="text" name="string" style="width: 80%;"></td>
+                </tr>
+                
+                
+            </tbody>
+            
             <tfoot style="background-color: transparent;">
                 <tr>
-                   <td colspan="2">
-                      <input type="button" value="{function="localize('Remove')"}" style="float: right;" onclick="removeString('{$j}', '{$locale}', '{$domain}');">
-                   </td>
+                    <td colspan="2"><input type="button" value="{function="localize('Add')"}" style="margin-right: 10px; float: right;" onclick="$('#addNewStringForm').submit();"></td>
                 </tr>
             </tfoot>
-            
-            <tbody class="hovered">
-             {loop="$value"}
-                <tr>
-               {if="$key == $locale"}
-                    <td><img src="{$flag}"></td>
-                    <td id="string_{$j}"><input type="text" name="string" id="string_value_{$j}" value="{$value}"> <input type="button" value="{function="localize('Change')"}" onclick="saveString({$j}, '{$key}', '{$domain}', '{$k}');"> </td>
-               {elseif="$value == ''"}
-                    <td><img src="{$PANTHERA_URL}/images/admin/flags/{$lang}.png"></td>
-                    <td id="td_{$j}_{$lang}"><input type="text" name="string" id="string_{$j}_{$lang}"> <input type="button" value="{function="localize('Add')"}"onclick="addOtherString({$j}, '{$key}', '{$domain}', '{$k}')"> </td>
-               {else}
-                    <td><img src="{$flag}"></td>
-                    <td><a href="?display=langtool&cat=admin&action=view_domain&locale={$key}&domain={$domain}">{$value}</a></td>
-               {/if}
-                </tr>
-             {/loop}
-            </tbody>
-         </form>
-      </table>
-      {/loop}
+    </table>
+    </form>
+    
+    <script type="text/javascript">
+    /**
+      * Add string
+      *
+      * @author Mateusz Warzyński
+      * @author Damian Kęska
+      */
+
+    $('#addNewStringForm').submit(function () {
+        panthera.jsonPOST({ data: '#addNewStringForm', success: function (response) {
+                // return string from server (just in case)
+                if (response.status == "success")
+                {
+                    newTable = $('#newTable').html();
+                    newTable = newTable.replace(/%original%/g, response.original);
+                    newTable = newTable.replace(/%randomid%/g, response.random);
+                    newTable = newTable.replace(/%translation%/g, response.translation);
+                    newTable = newTable.replace('class=""', 'class="translationForm"');
+                    $('#newTableAppendPoint').append(newTable);
+                }
+            }
+        });
+        
+        return false;
+    });
+    </script>
+</div>
+
+
+
+
+
+<!-- Ajax content -->
+<div id="ajax_content" class="ajax-content" style="text-align: center;">
+    {$j=0}
+    {loop="$translates"}
+    {$k=$key}
+    {$j=$j+1}
+    <table style="width: 100%; margin-bottom: 60px;" id="translate_{$j}">
+        <thead>
+            <th colspan="2"><img src="{$PANTHERA_URL}/images/admin/flags/english.png" style="padding-right: 10px; margin-left: 1px;">"{$k}" <small><i>(english)</i></small></th>
+        </thead>
+        
+        <tbody>
+            {loop="$value"}
+            {if="$key == $locale"}
+            <tr style="height: 60px;">
+                <td>
+                    <form action="#" method="POST" class="translationForm">
+                        <!-- Original string -->
+                        <input type="hidden" name="original" value="{$k}" id="original_{$j}">
+                        
+                        <!-- Translation language -->
+                        <input type="hidden" name="language" value="{$language}">
+                        <img src="{$flag}" style="margin-right: 25px;">
+                        
+                        <input type="hidden" name="domain" value="{$domain}">
+                        
+                        <!-- translation string --> 
+                        <input type="text" name="translation" value="{$value}" style="width: 50%;"> 
+                        <input type="button" value="{function="localize('Remove')"}" style="float: right;" onclick="removeString('{$j}', '{$locale}', '{$domain}');">
+                    </form>
+                </td>
+            </tr>
+            {/if}
+            {/loop}
+        </tbody>
+    </table>
+    {/loop}
+    
+    <div id="newTableAppendPoint"></div>
 </div>

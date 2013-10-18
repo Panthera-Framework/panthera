@@ -34,8 +34,6 @@ function renameDomain(name, locale, n)
                 $("#domain_new_name_"+n).val(newname);
         }
     });
-
-    return false;
 }
 
 
@@ -47,13 +45,17 @@ function renameDomain(name, locale, n)
 
 function removeDomain(name, locale, n)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=langtool&cat=admin&action=domains&subaction=remove_domain&domain_name='+name+'&locale='+locale, data: '', success: function (response) {
-            if (response.status == "success")
-                jQuery('#domain_row_'+n).remove();
+    panthera.confirmBox.create("{function="localize('Are you sure?')"}", function (response) {
+    
+        if (response == 'Yes')
+        {
+            panthera.jsonPOST({ url: '{$AJAX_URL}?display=langtool&cat=admin&action=domains&subaction=remove_domain&domain_name='+name+'&locale='+locale, data: '', success: function (response) {
+                    if (response.status == "success")
+                        jQuery('#domain_row_'+n).remove();
+                }
+            });
         }
     });
-
-    return false;
 }
 </script>
 

@@ -48,7 +48,7 @@
                 <tr>
                     <td colspan="3" style="padding-top: 35px;">
                         <input type="button" value="{function="localize('Cancel')"}" onclick="panthera.popup.close()" style="float: left; margin-left: 30px;">
-                        <input type="submit" value="{function="localize('Add', 'users')"}" style="float: right; margin-right: 30px;">
+                        <input type="submit" value="{function="localize('Add', 'users')"}" style="float: right;">
                     </td>
                 </tr>
             </tfoot>
@@ -69,7 +69,7 @@
 
 <div class="ajax-content" style="text-align: center;">
 
-      <table>
+      <table style="width: 100%;">
             <thead>
                 <tr>
                     <th colspan="2">{function="localize('Locale', 'langtool')"}</th>

@@ -93,6 +93,7 @@ if (@$_GET['display'] == 'langtool') {
             }
             
             $domains = localesManagement::getDomains($_GET['locale']);
+            sort($domains);
             
             foreach ($domains as $key => $domain)
             {
@@ -138,8 +139,75 @@ if (@$_GET['display'] == 'langtool') {
             
         localesManagement::create($_POST['languageName'], $panthera->locale->getActive());
         ajax_exit(array('status' => 'success'));
-    } 
+        
+        
+        
+        
+        
+    /**
+      * Save multiple strings
+      *
+      * @author Damian Kęska
+      */
+        
+    } elseif ($_GET['action'] == 'saveStrings') {
+        $data = json_decode(base64_decode($_POST['data']), true);
+        $languages = array (); // here we will store objects of languages and domains
+        $set = 0;
+        
+        foreach ($data as $form => $string)
+        {
+            parse_str($string, $data[$form]);
+            
+            // alias for $data[$form]
+            $postData = $data[$form];
+            
+            if (!$languages[$postData['language']])
+            {
+                $languages[$postData['language']] = array();
+            }
+            
+            // create new domain object
+            if (!$languages[ $postData['language'] ][ $postData['domain'] ])
+            {
+                try {
+                    $languages[$postData['language']][$postData['domain']] = new localeDomain($postData['language'], $postData['domain']);
+                } catch (Exception $e) {
+                    $panthera -> logging -> output('Cannot find "' .$postData['domain']. '" domain for "' .$postData['language']. '" language, skipping', 'langtool');
+                    continue;
+                }
+            }
+            
+            // check if domain exists
+            if (!$languages[$postData['language']][$postData['domain']] -> exists())
+            {
+                $panthera -> logging -> output('Cannot find "' .$postData['domain']. '" domain for "' .$postData['language']. '" language, skipping', 'langtool');
+                continue;
+            }
+            
+            if (localize($postData['original'], $postData['domain']) != $postData['translation'])
+            {
+                $languages[$postData['language']][$postData['domain']] -> setString(trim($postData['original']), trim($postData['translation']));
+                $set++;
+            }
+        }
+        
+        // save all opened domains
+        foreach ($languages as $lang)
+        {
+            foreach ($lang as $domain)
+            {
+                $domain -> save();
+                unset($domain);
+            }
+        }
+        
+        ajax_exit(array('status' => 'success', 'message' => slocalize('Saved %s translation strings', 'langtool', $set)));
+    }
    
+
+
+
 
     /**
       * Domain view
@@ -154,8 +222,8 @@ if (@$_GET['display'] == 'langtool') {
         $locale = $_GET['locale'];
 
         // check if locale exists
-        if (localesManagement::getLocaleDir($locale) == FALSE)
-            ajax_exit(array('status' => 'failed', 'message' => localize('Locale does not exist')));
+        if (!localesManagement::getLocaleDir($locale))
+            ajax_exit(array('status' => 'failed', 'message' => localize('Locale does not exist', 'langtool')));
             
         // get domain name
         $name = str_replace('.phps', '', $_GET['domain']);
@@ -163,41 +231,54 @@ if (@$_GET['display'] == 'langtool') {
 
         // check if domain and/or language exists
         if (!$domain -> exists())
-            ajax_exit(array('status' => 'failed', 'message' => localize('Selected domain and/or locale does not exists')));
+            ajax_exit(array('status' => 'failed', 'message' => localize('Selected domain and/or locale does not exists', 'langtool')));
+            
+            
+        /**
+          * Adding new string
+          *
+          * @author Mateusz Warzyński
+          */
             
         // save changed string to locale file
-        if ($_GET['subaction'] == 'set_string')
+        if ($_GET['subaction'] == 'addNewString')
         {
             // check if got string is not null (may be _POST or _GET)
-            if (strlen($_POST['string']) > 1)
-                $string = $_POST['string'];
-            elseif (strlen($_GET['string']) > 1)
-                $string = $_GET['string'];
-            else
-                ajax_exit(array('status' => 'failed', 'message' => localize('String is empty!')));
-
-            // check if got ID is not null (may be _POST or _GET)
-            if (strlen($_POST['id']) > 1)
-                $id = $_POST['id'];
-            elseif (strlen($_GET['id']) > 1)
-                $id = $_GET['id'];
-            else
-                ajax_exit(array('status' => 'failed', 'message' => localize('ID is empty!')));
+            $string = trim($_POST['string']);
+            $id = trim($_POST['id']);
+            
+            if (!$string)
+            { 
+                ajax_exit(array('status' => 'failed', 'message' => localize('Translation string cannot be empty', 'langtool')));
+            }
+            
+            // check if original string is not empty
+            if (!$id)
+            {
+                ajax_exit(array('status' => 'failed', 'message' => localize('Original string is empty', 'langtool')));
+            }
 
             if ($domain->setString($id, $string))
             {
                 $domain->save(); // save translation
-                ajax_exit(array('status' => 'success', 'message' => localize('Saved'), 'string' => $string));
+                ajax_exit(array('status' => 'success', 'message' => localize('Saved'), 'translation' => $string, 'original' => $id, 'domain' => $name, 'language' => $locale, 'random' => rand(999, 9999)));
             } else {
-                ajax_exit(array('status' => 'failed', 'message' => localize('Cannot save string, unknown error')));
+                ajax_exit(array('status' => 'failed', 'message' => localize('Cannot save string, unknown error', 'langtool')));
             }
         }
+        
+        
+        /**
+          * Removing a string
+          *
+          * @author Mateusz Warzyński
+          */
 
         // remove translation from domain
         if ($_GET['subaction'] == 'remove_string')
         {
             if (!$domain->stringExists($_GET['id']))
-                ajax_exit(array('status' => 'failed', 'message' => localize("String does not exist!")));
+                ajax_exit(array('status' => 'failed', 'message' => localize('Cannot find original string', 'langtool')));
 
             if ($domain -> removeString($_GET['id'])) {
                 $domain -> save(); // save domain without string (remove string permanently)
@@ -265,6 +346,7 @@ if (@$_GET['display'] == 'langtool') {
                     $i++;
                 }
         }
+        
         $i = null; // clean memory
 
         // send data to template

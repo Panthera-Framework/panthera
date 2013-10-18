@@ -157,7 +157,10 @@ class localesManagement
                 if ($info['extension'] != 'phps')
                     continue;
 
-                $list[] = $domain;
+                if (!in_array($domain, $list))
+                {
+                    $list[] = $domain;
+                }
             }
         }
 
