@@ -156,7 +156,7 @@ if ($_GET['action'] == 'account') {
     $template -> push('full_name', $u->full_name);
     $template -> push('primary_group', $u->primary_group);
     $template -> push('joined', $u->joined);
-    $template -> push('language', $u->language);
+    $template -> push('user_language', $u->language);
     $template -> push('isBanned', $u->isBanned());
     $template -> push('jabber', $u->jabber);
     $template -> push('email', $u->mail);

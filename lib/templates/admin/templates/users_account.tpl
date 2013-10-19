@@ -302,7 +302,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
 
                 <tr>
                   <td>{function="localize('Language', 'users')"}</td>
-                  <td><p>{$language}</p></td>
+                  <td><p>{$user_language}</p></td>
                 </tr>
                 
                 <tr>
