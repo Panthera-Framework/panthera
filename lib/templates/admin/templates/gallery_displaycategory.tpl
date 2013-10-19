@@ -264,5 +264,6 @@
             <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=add_item&ctgid={$category_id}');"><span class="tooltip">{function="localize('Drag and drop files to this area to start uploading', 'gallery')"}</span><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: absolute; top: 30px; left: 30px; opacity: 0.8;"></a>
         </div>
     </div>
+    <div style="width: 100%; display: inline-block;">&nbsp;</div>
   </div>
 </div>
