@@ -26,8 +26,6 @@ $permissions = array(
     'canEditOthers' => $isAdmin
 );
 
-$panthera -> template -> push('permissions', $permissions);
-
 /**
   * User account details
   *
@@ -44,6 +42,7 @@ if ($_GET['action'] == 'account') {
         $panthera -> template -> push('user_uid', '&uid=' .$_GET['uid']);
     } else {
         $u = $panthera->user;
+        $permissions['canBlockUser'] = False;
     }
 
     if ($u != $user)
@@ -138,9 +137,6 @@ if ($_GET['action'] == 'account') {
         if($Value == True)
             $localesActive[$Key] = $Value;
     }
-
-    if ($u->profile_picture == '')
-        $u->profile_picture = '{$PANTHERA_URL}/images/default_avatar.png';
         
     $groups = pantheraGroup::listGroups();
     $groupsTpl = array();
@@ -211,6 +207,8 @@ if ($_GET['action'] == 'account') {
 
         $template -> push('aclList', $aclList);
     }
+    
+    $panthera -> template -> push('permissions', $permissions);
     
     $titlebar = new uiTitlebar(localize('Panel with informations about user.', 'users'));
     $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
@@ -601,6 +599,7 @@ if ($_GET['action'] == 'account') {
             $users[] = array('login' => 'test', 'full_name' => 'Testowy, nie istniejący user', 'primary_group' => 'non_existing', 'joined' => 'today', 'language' => 'Marsjański', 'id' => 1);
         }*/
 
+        $panthera -> template -> push('permissions', $permissions);
         $panthera -> template -> push('locales_added', $panthera->locale->getLocales());
         $panthera -> template -> push('users_list', $users);
         $panthera -> template -> push('view_users', True);

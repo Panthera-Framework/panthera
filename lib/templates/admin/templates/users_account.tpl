@@ -35,6 +35,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
 
 
 {if="$permissions.canBlockUser"}
+{if="$my_id != $user_uid"}
 <!-- User banning popup -->
 <div id="banUser" style="display: none;">
     <script type="text/javascript">
@@ -81,6 +82,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
             </tfoot>
         </table>
 </div>
+{/if}
 {/if}
 
 <!-- Edit user popup -->
