@@ -209,16 +209,18 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
         function aclModify(id, name)
         {
             var bool =  $('#'+id).val();
+            var yes = $('#yes_text').val();
+            var no = $('#no_text').val();
             
             panthera.jsonPOST({ url: '?display=users&cat=admin&action=account{$user_uid}', data: 'aclname='+name+'&value='+bool, success: function (response) {
                   if (response.status == "success")
                   {
                       if (response.value == false) {
-                        $('#text_'+name).text('No');
+                        $('#text_'+name).text(no);
                         $('#text_'+name).css('color', '#941111');
                         $('#'+id).val("1");
                       } else {
-                        $('#text_'+name).text('Yes');
+                        $('#text_'+name).text(yes);
                         $('#text_'+name).css('color', "#14D614");
                         $('#'+id).val("0");
                       }
@@ -254,6 +256,9 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
               {/loop}
             </tbody>
          </table>
+         
+         <input type="text" value="{function="localize('No')"}" id="no_text" style="display: none;">
+         <input type="text" value="{function="localize('Yes')"}" id="yes_text" style="display: none;">
 </div>
 {/if}
 
