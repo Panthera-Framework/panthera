@@ -419,7 +419,7 @@ if ($_GET['action'] == 'displayCategory')
 }
 
 /**
-  * New item form
+  * Edit item form
   *
   * @author Damian Kęska
   * @author Mateusz Warzyński
@@ -432,7 +432,7 @@ if ($_GET['action'] == 'edit_item_form')
 
     if ($_GET['subaction'] == 'edit_item')
     {
-        $item = new galleryItem('id', $id);
+        $item = new galleryItem('id', $_GET['id']);
         $_POST['upload_id'] = intval($_POST['upload_id']);
         
         if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gimage_' .$id) and !getUserRightAttribute($user, 'can_manage_gallery_' .$item->getGalleryID()))
