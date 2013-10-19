@@ -166,7 +166,7 @@ if ($_GET['action'] == 'account') {
     $template -> push('user_fields', $panthera -> get_filters('user.fields', array()));
 
     $aclList = array();
-    $userTable = $panthera->user->acl->listAll();
+    $userTable = $u->acl->listAll();
 
     if (checkUserPermissions($panthera->user, True))
         $template -> push('allow_edit_acl', True);
