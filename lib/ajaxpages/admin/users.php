@@ -42,8 +42,10 @@ if ($_GET['action'] == 'account') {
         $panthera -> template -> push('user_uid', '&uid=' .$_GET['uid']);
     } else {
         $u = $panthera->user;
-        $permissions['canBlockUser'] = False;
     }
+    
+    if ($u->id == $user->id)
+        $permissions['canBlockUser'] = False;
 
     if ($u != $user)
         $panthera -> template -> push ('dontRequireOld', True);
@@ -164,7 +166,7 @@ if ($_GET['action'] == 'account') {
     $template -> push('user_fields', $panthera -> get_filters('user.fields', array()));
 
     $aclList = array();
-    $userTable = $u->acl->listAll();
+    $userTable = $panthera->user->acl->listAll();
 
     if (checkUserPermissions($panthera->user, True))
         $template -> push('allow_edit_acl', True);
@@ -208,7 +210,7 @@ if ($_GET['action'] == 'account') {
         $template -> push('aclList', $aclList);
     }
     
-    $panthera -> template -> push('permissions', $permissions);
+    $template -> push('permissions', $permissions);
     
     $titlebar = new uiTitlebar(localize('Panel with informations about user.', 'users'));
     $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
