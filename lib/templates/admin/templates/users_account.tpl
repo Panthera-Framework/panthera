@@ -246,7 +246,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
                 <tr style="border-bottom: 1px solid #404c5a;">
                     <th style="padding-top: 0px; padding-bottom: 0px; font-size: 11px;">{$value.name}</th>
                     <th style="padding-top: 0px; padding-bottom: 0px; width: 22px;">
-                           <a href="#" onClick="aclModify('acl_{$key}', '{$key}');" id="text_{$key}" {if="$value.value == 'Yes'"} style="color: #14D614;" {else} style="color: #941111;" {/if}>{$value.value}</a>
+                           <a href="#" onClick="aclModify('acl_{$key}', '{$key}');" id="text_{$key}" {if="$value.value == localize('Yes')"} style="color: #14D614;" {else} style="color: #941111;" {/if}>{$value.value}</a>
                     </th>
                 </tr>
                 
