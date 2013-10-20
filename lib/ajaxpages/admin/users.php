@@ -26,6 +26,8 @@ $permissions = array(
     'canEditOthers' => $isAdmin
 );
 
+$panthera -> template -> push('permissions', $permissions);
+
 /**
   * User account details
   *
@@ -601,7 +603,6 @@ if ($_GET['action'] == 'account') {
             $users[] = array('login' => 'test', 'full_name' => 'Testowy, nie istniejący user', 'primary_group' => 'non_existing', 'joined' => 'today', 'language' => 'Marsjański', 'id' => 1);
         }*/
 
-        $panthera -> template -> push('permissions', $permissions);
         $panthera -> template -> push('locales_added', $panthera->locale->getLocales());
         $panthera -> template -> push('users_list', $users);
         $panthera -> template -> push('view_users', True);
