@@ -9,12 +9,17 @@
 
 function removeMenuCategory(id)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=menuedit&cat=admin&action=remove_category&category_id='+id, data: '', messageBox: 'w2ui', success: function (response) {
-            if (response.status == "success")
-                navigateTo('?display=menuedit&cat=admin');
+    panthera.confirmBox.create('{function="localize('Are you sure you want delete this category?', 'menuedit')"}', function (responseText) {
+       if (responseText == 'Yes')
+        {
+            panthera.jsonPOST({ url: '{$AJAX_URL}?display=menuedit&cat=admin&action=remove_category&category_id='+id, data: '', messageBox: 'w2ui', success: function (response) {
+                    if (response.status == "success")
+                        navigateTo('?display=menuedit&cat=admin');
+                }
+            });
+            return false;
         }
-    });
-    return false;
+   });
 }
 
 </script>
@@ -117,7 +122,11 @@ function removeMenuCategory(id)
                   <td>{$value.title}</td>
                   <td>{$value.description}</td>
                   <td>{$value.elements}</td>
-                  <td><input type="button" onclick="removeMenuCategory({$value.id});" value="{function="localize('Remove')"}"/></td>
+                  <td>
+                      <a href="#" onclick="removeMenuCategory({$value.id});">
+                            <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
+                      </a>
+                  </td>
               </tr>
              {/loop}
             {/if}
