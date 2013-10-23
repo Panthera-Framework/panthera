@@ -45,8 +45,8 @@
         <style type="text/css">
             .login-form {
                 position: relative;
-                margin-top: 7%;
-                margin-bottom: 7%;
+                margin-top: 5%;
+                margin-bottom: 5%;
                 min-width: 700px;
                 min-height: 500px;
             }
