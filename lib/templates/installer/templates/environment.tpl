@@ -1,21 +1,5 @@
 {include="buttons"}
 
-<style type="text/css">
-    .content .table thead p {
-        font-size: 11px;
-    }
-
-    .content .table tbody tr {
-        padding-left: 7px;
-    }
-    
-    .content .table tbody tr td {
-        padding: 9px;
-        border-bottom: 2px solid #56687b;
-    }
-
-</style>
-
 <div class="header">
         <h1>{function="localize('Requirements and technical details', 'installer')"}</h1>
         <div style="margin-left: 5px;"><span>{function="localize('The list below describes required modules and their versions that are needed to correctly install and run this application', 'installer')"}.</span></div>

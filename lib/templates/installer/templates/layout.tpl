@@ -86,6 +86,33 @@
                 
                 border-top: 1px solid #3d4957; 
             }
+            
+            .login-form .content .table thead p {
+                font-size: 11px;
+            }
+        
+            .login-form .content .table tbody tr {
+                padding-left: 7px;
+            }
+            
+            .login-form .content .table tbody tr td {
+                padding: 9px;
+                border-bottom: 2px solid #56687b;
+            }
+            
+            input[type="text"], input[type="number"], input[type="password"] {
+                background: #3d4957;
+                outline: 1px solid #3d4957;
+                border: solid 1px #7c8a98;
+                padding: 5px;
+                color: #fff;
+                font-size: 11px;
+                min-width: 200px;
+            }
+            
+            input[type="text"]:hover, input[type="number"]:hover, input[type="password"]:hover {
+                background: #3d4957;
+            }
         
         </style>
     </head>
@@ -97,7 +124,6 @@
         <div class="footer">
                <input type="button" class="button" disabled value="{function="localize('Back', 'installer')"}" id="installer-controll-backBtn" onclick="customNextBtn = false; navigateTo('?_stepbackward=True');" style="float: left; margin-left: 60px;">
                <input type="button" class="button" value="{function="localize('Next', 'installer')"}" id="installer-controll-nextBtn" onclick="nextBtn()" style="float: right; margin-right: 60px;"> 
-               <input type="button" class="button checkButton" value="{function="localize('Check', 'installer')"}" id="installer-controll-checkBtn" onclick="checkBtn()" style="float: right; margin-right: 10px;">
           </div>            
         </div>
       </div>

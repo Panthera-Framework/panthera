@@ -147,69 +147,72 @@ $(document).bind('onNextBtn', function () {
 }
 </style>
 
-<h1>{function="localize('Database connection', 'installer')"}</h1>
-
-<div id="databaseDropdown" class="dropdown dropdown-tip">
-    <ul class="dropdown-menu">
-        {loop="$databaseSockets"}
-            <li><a href="#{$key|ucfirst}" onclick="selectDatabaseType('{$value}', '{$key}')">{$key}</a></li>
-        {/loop}
-    </ul>
+<div class="header">
+        <h1>{function="localize('Database connection', 'installer')"}.</h1>
+        <div style="margin-left: 5px;"><span>{function="localize('Please fill the details of your server', 'installer')"}.</span></div>
 </div>
 
-<table class="table" style="width: 80%; margin-left: 10px; margin: 0 auto; margin-top: 30px; margin-bottom: 30px;">
-    <tbody>
-        <tr>
-            <td style="width: 20%;">{function="localize('Database type', 'installer')"}:</td>
-            <td><span class="selectBox" data-dropdown="#databaseDropdown" id="dbSocket">{if="isset($databaseSettings['db_socket'])"}{$databaseSettings.db_socket}{/if}</span></td>
-        </tr>
-        
-        <tr>
-            <td>{function="localize('Prefix', 'installer')"}:</td>
-            <td><input type="text" id="dbPrefix" style="width: 50%;" placeholder="pa_" value="{if="isset($databaseSettings['db_prefix'])"}{$databaseSettings.db_prefix}{/if}"></td>
-        </tr>
-        
-        <!-- File based databases eg. SQLite3 -->
-        <tr class="fileBasedDB">
-            <td>{function="localize('File name', 'installer')"}:</td>
-            <td>
-                <input type="text" id="dbFile" style="width: 50%;" placeholder="eg. db (/content/database/db.sqlite3)" value="{if="isset($databaseSettings['db_file'])"}{$databaseSettings.db_file}{/if}"> 
-                <span id="dbFileCreate" style="margin-left: 15px; display: none;"><small>{function="localize('Database file does not exists', 'installer')"}. <a href="#" onclick="createNewFile()"><b>{function="localize('Create new file?', 'installer')"}</b></a></small></span>
-            </td>
-        </tr>
-        
-        <!-- Server based databases eg. MySQL -->
-        <tr class="serverBasedDB">
-            <td>{function="localize('Host', 'installer')"}:</td>
-            <td><input type="text" id="dbHost" style="width: 50%;" placeholder="localhost" value="{if="isset($databaseSettings['db_host'])"}{$databaseSettings.db_host}{/if}"></td>
-        </tr>
-        
-        <tr class="serverBasedDB">
-            <td>{function="localize('Login', 'installer')"}:</td>
-            <td><input type="text" id="dbUser" style="width: 50%;" placeholder="panthera" value="{if="isset($databaseSettings['db_username'])"}{$databaseSettings.db_username}{/if}"></td>
-        </tr>
-        
-        <tr class="serverBasedDB">
-            <td>{function="localize('Password', 'installer')"}:</td>
-            <td><input type="password" id="dbPassword" style="width: 50%;" value="{if="isset($databaseSettings['db_password'])"}{$databaseSettings.db_password}{/if}"></td>
-        </tr>
-        
-        <tr class="serverBasedDB">
-            <td>{function="localize('Database name', 'installer')"}:</td>
-            <td><input type="text" id="dbName" style="width: 50%;" placeholder="my_site" value="{if="isset($databaseSettings['db_name'])"}{$databaseSettings.db_name}{/if}"></td>
-        </tr>
-        
-        <tr class="databaseError" style="display: none;">
-            <td colspan="3" id="databaseError" style="color: red;"></td>
-        </tr>
-    </tbody>
-</table>
+<div class="content">
+    
+    <table style="border: 0;">
+      <tbody>
+          <tr>
+              <td><p><b>{function="localize('Database type', 'installer')"}:</b></td>
+              <td style="padding-left: 10px;">
+                    <select style="width: 212px;" onchange="selectDatabaseType('{$value}', '{$key}')">
+                       {loop="$databaseSockets"}
+                        <option {if="$databaseSettings.db_socket == $key"} selected {/if}>{$key}</option>
+                       {/loop}
+                    </select>
+              </td>
+          </tr>
+          
+          <tr>
+              <td><p><b>{function="localize('Prefix', 'installer')"}:</p></b></td>
+              <td  style="padding-left: 10px;"><input type="text" id="dbPrefix" style="width: 50%;" placeholder="pa_" value="{if="isset($databaseSettings['db_prefix'])"}{$databaseSettings.db_prefix}{/if}"></td>
+          </tr>
+          
+          <tr>
+              <td><p><b>{function="localize('File name', 'installer')"}:</p></b></td>
+              <td  style="padding-left: 10px;"><input type="text" id="dbFile" style="width: 50%;" placeholder="eg. db (/content/database/db.sqlite3)" value="{if="isset($databaseSettings['db_file'])"}{$databaseSettings.db_file}{/if}"> 
+                <span id="dbFileCreate" style="margin-left: 15px; display: none;"><small>{function="localize('Database file does not exists', 'installer')"}. <a href="#" onclick="createNewFile()"><b>{function="localize('Create new file?', 'installer')"}</b></a></small></span></td>
+          </tr>
+          
+          <tr>
+              <td><p><b>{function="localize('Host', 'installer')"}:</p></b></td>
+              <td style="padding-left: 10px;"><input type="text" id="dbHost" style="width: 50%;" placeholder="localhost" value="{if="isset($databaseSettings['db_host'])"}{$databaseSettings.db_host}{/if}"></td> 
+          </tr>
+          
+          <tr>
+              <td><p><b>{function="localize('Login', 'installer')"}:</p></b></td>
+              <td style="padding-left: 10px;"><input type="text" id="dbUser" style="width: 50%;" placeholder="panthera" value="{if="isset($databaseSettings['db_username'])"}{$databaseSettings.db_username}{/if}"></td> 
+          </tr>
+          
+          <tr>
+              <td><p><b>{function="localize('Password', 'installer')"}:</p></b></td>
+              <td style="padding-left: 10px;"><input type="password" id="dbPassword" style="width: 50%;" value="{if="isset($databaseSettings['db_password'])"}{$databaseSettings.db_password}{/if}"></td> 
+          </tr>
+          
+          <tr>
+              <td><p><b>{function="localize('Database name', 'installer')"}:</p></b></td>
+              <td style="padding-left: 10px;"><input type="text" id="dbName" style="width: 50%;" placeholder="my_site" value="{if="isset($databaseSettings['db_name'])"}{$databaseSettings.db_name}{/if}"></td> 
+          </tr>
+          
+          <tr class="databaseError" style="display: none;">
+              <td colspan="3" id="databaseError" style="color: red;"></td>
+          </tr>
+      </tbody>
+     </table>
+     
+     <input type="button" class="button checkButton" value="{function="localize('Check', 'installer')"}" id="installer-controll-checkBtn" onclick="checkBtn()" style="float: right; margin-right: 10px;">
+     
+     <table class="table" style="width: 80%; margin-left: 10px; margin: 0 auto; margin-top: 30px; margin-bottom: 30px; display:none;" id="tablesListTable">
+        <thead>
+          <tr><td colspan="2"><b>{function="localize('Existing tables in selected database', 'installer')"}:</b></td></tr>
+        </thead>
 
-<table class="table" style="width: 80%; margin-left: 10px; margin: 0 auto; margin-top: 30px; margin-bottom: 30px; display:none;" id="tablesListTable">
-    <thead>
-        <tr><td colspan="2"><b>{function="localize('Existing tables in selected database', 'installer')"}:</b></td></tr>
-    </thead>
-
-    <tbody id="tablesList">
-    </body>
-</table>
+        <tbody id="tablesList">
+        </tbody>
+    </table>
+    
+</div>
