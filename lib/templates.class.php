@@ -904,6 +904,7 @@ class pantheraTemplate extends pantheraClass
 class outputControl extends pantheraClass
 {
     protected $log = '';
+    protected $handler = False;
     
     /**
       * Save output buffer to variable that can be added to Panthera Logging
@@ -917,18 +918,20 @@ class outputControl extends pantheraClass
         global $panthera;
     
         @ob_flush();
+        
+        if ($panthera)
+            $panthera->logging->output('Setting output buffering with "' .$handler. '" handler', 'outputControl');
 
         if ($handler == 'log')
         {
             @ob_start('obLogHandler');
         } elseif (!$handler) {
-            ob_start();
+            @ob_start();
         } else {
-            ob_start($handler);
+            @ob_start($handler);
         }
         
-        if ($panthera)
-            $panthera->logging->output('Setting output buffering with "' .$handler. '" handler', 'outputControl');
+        $this -> handler = $handler;
     }
     
     /**
@@ -947,15 +950,45 @@ class outputControl extends pantheraClass
     }
     
     /**
+      * Check if output buffering is enabled
+      *
+      * @return string 
+      * @author Damian Kęska
+      */
+    
+    public function isEnabled()
+    {
+        return $this->handler;
+    }
+    
+    /**
       * Get saved output
       *
       * @return string 
       * @author Damian Kęska
       */
     
-    public function getLog()
+    public function get()
     {
+        if (!$this->handler)
+        {
+            return @ob_get_contents();
+        }
+    
         return $this->log;
+    }
+    
+    /**
+      * Clean output buffering
+      *
+      * @author void
+      * @author Damian Kęska
+      */
+    
+    public function clean()
+    {
+        @ob_clean();
+        $this -> log = '';
     }
     
     /**
@@ -970,12 +1003,13 @@ class outputControl extends pantheraClass
     {
         global $panthera;
         
-        ob_end_flush();
-    
+        @ob_end_flush();
+        
         while (ob_get_level() > 0) {
-            ob_end_flush();
+            @ob_end_flush();
         }
         
+        $this -> handler = False;
         $panthera->logging->output('Flushing buffers and stopping output buffering', 'outputControl');
     }
 }

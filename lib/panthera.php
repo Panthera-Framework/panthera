@@ -2584,3 +2584,41 @@ function stripNewLines($str)
     
     return $str;
 }
+
+/**
+  * Capture function stdout
+  *
+  * @param string|function $function
+  * @package Panthera\pantheraCore
+  * @author Damian Kęska
+  */
+
+function captureStdout($function, $a=null, $b=null, $c=null, $d=null, $e=null, $f=null)
+{
+    global $panthera;
+    
+    // capture old output if any
+    $before = $panthera -> outputControl -> get();
+    $handler = $panthera -> outputControl -> isEnabled();
+    $panthera -> outputControl -> clean();
+    
+    // start new buffering
+    $panthera -> outputControl -> startBuffering();
+    
+    // executing function
+    $return = $function($a, $b, $c, $d, $e, $f);
+    $contents = $panthera -> outputControl -> get();
+
+    $panthera -> outputControl -> clean();
+    $panthera -> outputControl -> flushAndFinish();
+    
+    if ($handler === False)
+    {
+        $panthera -> outputControl -> flushAndFinish();
+    } else {
+        $panthera -> outputControl -> startBuffering($handler);
+        print($before);
+    }
+    
+    return array('return' => $return, 'output' => $contents);
+}
