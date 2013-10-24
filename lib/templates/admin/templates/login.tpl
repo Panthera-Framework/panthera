@@ -39,7 +39,7 @@
             <center>
                 <h1>Panthera Framework</h1>
                 {if="isset($message)"}
-                    <span style=" color: #f3f3f3;">{function="localize($message, 'login')"}!</span>
+                    <span>{function="localize($message, 'login')"}!</span><br/>
                 {else}
                     <span>{function="localize('Fill out the form below to login to Panthera', 'login')"}.</span>
                 {/if}
