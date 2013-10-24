@@ -8,6 +8,7 @@
         <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
         <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/panthera.js"></script>
+        <script type="text/javascript" src="{$PANTHERA_URL}/js/admin/pantheraUI.js"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/w2ui-1.2.min.js"></script>
         
         <script type="text/javascript">
@@ -123,7 +124,8 @@
         <div id="ajax_content">{include="$stepTemplate"}</div>
         <div class="footer">
                <input type="button" class="button" disabled value="{function="localize('Back', 'installer')"}" id="installer-controll-backBtn" onclick="customNextBtn = false; navigateTo('?_stepbackward=True');" style="float: left; margin-left: 60px;">
-               <input type="button" class="button" value="{function="localize('Next', 'installer')"}" id="installer-controll-nextBtn" onclick="nextBtn()" style="float: right; margin-right: 60px;"> 
+               <input type="button" class="button" value="{function="localize('Next', 'installer')"}" id="installer-controll-nextBtn" onclick="nextBtn()" style="float: right; margin-right: 60px;">
+               <input type="button" class="button checkButton" value="{function="localize('Check', 'installer')"}" id="installer-controll-checkBtn" onclick="databaseCheck()" style="float: right; margin-right: 10px;"> 
           </div>            
         </div>
       </div>

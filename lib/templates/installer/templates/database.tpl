@@ -1,11 +1,24 @@
 {include="buttons"}
 
 <script type="text/javascript">
-function selectDatabaseType (dbType, dbName)
+function selectDatabaseType ()
 {
+    
+    // sqlite -> file, mysql -> server,
+    
+    var dbType = $("#selectDatabase").val();
+    
+    if (dbType == 'sqlite') {
+        var dbName = 'file';
+    }
+    
+    if (dbType == 'mysql') {
+        var dbName = 'server';
+    }
+    
     $('#dbSocket').html(dbName);
     
-    if (dbType == 'file')
+    if (dbType == 'sqlite')
     {
         $('.serverBasedDB').hide('slow', function () { $('.fileBasedDB').show(); });
     } else {
@@ -53,6 +66,9 @@ function databaseCheck()
     }
     
     panthera.jsonPOST( { url: '?', data: data, async: true, success: function (response) {
+        
+            $("#mysql_checkTable").show();
+            
             if (response.status == 'success')
             {
                 $('#installer-controll-nextBtn').attr('disabled', false);
@@ -76,8 +92,8 @@ function databaseCheck()
                             errors++;
                             tdStyle = 'font-weight: 700;';
                         }
-                    
-                        $('#tablesList').append('<tr><td style="width: 90%; '+tdStyle+'"><i>'+table+'</i></td><td style="width: 10%;"><!--<input type="button" class="button redButton" value="{function="localize('Drop', 'installer')"}" onclick="customNextBtn = false; navigateTo(\'?_stepbackward=True\');">--></td></tr>');
+                        $('#tablesList').append('<tr style="font-size: 13px; background: #ffd4d4;"><td><i>'+table+'</i></td></tr>');
+                        // $('#tablesList').append('<tr><td style="width: 90%; '+tdStyle+'"><i>'+table+'</i></td><td style="width: 10%;"><!--<input type="button" class="button redButton" value="{function="localize('Drop', 'installer')"}" onclick="customNextBtn = false; navigateTo(\'?_stepbackward=True\');">--></td></tr>');
                     }
                 }
                 
@@ -86,10 +102,10 @@ function databaseCheck()
                     $('#installer-controll-nextBtn').attr('disabled', true);
                     collisionsSelection = true;
                     
-                    $('#tablesList').append('<tr><td colspan="2">{function="localize('Detected', 'installer')"} '+errors+' {function="localize('collisions', 'installer')"}. {function="localize('What to do?', 'installer')"}</td></tr>');
-                    $('#tablesList').append('<tr><td colspan="2"><input type="radio" name="collisionsSelection" value="leaveExisting"> {function="localize('Leave all tables without changes, but create missing ones', 'installer')"}</td></tr>');
-                    $('#tablesList').append('<tr><td colspan="2"><input type="radio" name="collisionsSelection" value="backupAndDrop"> {function="localize('Make a backup and drop old tables', 'installer')"}</td></tr>');
-                    $('#tablesList').append('<tr><td colspan="2"><input type="radio" name="collisionsSelection" value="simplyDrop"> {function="localize('Just drop the old tables and create new', 'installer')"}</td></tr>');
+                    $('#tablesList').append('<tr><td><p>{function="localize('Detected', 'installer')"} '+errors+' {function="localize('collisions', 'installer')"}. {function="localize('What to do?', 'installer')"}</p></td></tr>');
+                    $('#tablesList').append('<tr><td><p><input type="radio" name="collisionsSelection" value="leaveExisting"> {function="localize('Leave all tables without changes, but create missing ones', 'installer')"}</p></td></tr>');
+                    $('#tablesList').append('<tr><td><p><input type="radio" name="collisionsSelection" value="backupAndDrop"> {function="localize('Make a backup and drop old tables', 'installer')"}</p></td></tr>');
+                    $('#tablesList').append('<tr><td><p><input type="radio" name="collisionsSelection" value="simplyDrop"> {function="localize('Just drop the old tables and create new', 'installer')"}</p></td></tr>');
                 } else
                     collisionsSelection = false;
                 
@@ -159,7 +175,7 @@ $(document).bind('onNextBtn', function () {
           <tr>
               <td><p><b>{function="localize('Database type', 'installer')"}:</b></td>
               <td style="padding-left: 10px;">
-                    <select style="width: 212px;" onchange="selectDatabaseType('{$value}', '{$key}')">
+                    <select style="width: 212px;" onchange="selectDatabaseType();" id="selectDatabase">
                        {loop="$databaseSockets"}
                         <option {if="$databaseSettings.db_socket == $key"} selected {/if}>{$key}</option>
                        {/loop}
@@ -172,28 +188,28 @@ $(document).bind('onNextBtn', function () {
               <td  style="padding-left: 10px;"><input type="text" id="dbPrefix" style="width: 50%;" placeholder="pa_" value="{if="isset($databaseSettings['db_prefix'])"}{$databaseSettings.db_prefix}{/if}"></td>
           </tr>
           
-          <tr>
+          <tr class="fileBasedDB">
               <td><p><b>{function="localize('File name', 'installer')"}:</p></b></td>
               <td  style="padding-left: 10px;"><input type="text" id="dbFile" style="width: 50%;" placeholder="eg. db (/content/database/db.sqlite3)" value="{if="isset($databaseSettings['db_file'])"}{$databaseSettings.db_file}{/if}"> 
                 <span id="dbFileCreate" style="margin-left: 15px; display: none;"><small>{function="localize('Database file does not exists', 'installer')"}. <a href="#" onclick="createNewFile()"><b>{function="localize('Create new file?', 'installer')"}</b></a></small></span></td>
           </tr>
           
-          <tr>
+          <tr class="serverBasedDB">
               <td><p><b>{function="localize('Host', 'installer')"}:</p></b></td>
               <td style="padding-left: 10px;"><input type="text" id="dbHost" style="width: 50%;" placeholder="localhost" value="{if="isset($databaseSettings['db_host'])"}{$databaseSettings.db_host}{/if}"></td> 
           </tr>
           
-          <tr>
+          <tr class="serverBasedDB">
               <td><p><b>{function="localize('Login', 'installer')"}:</p></b></td>
               <td style="padding-left: 10px;"><input type="text" id="dbUser" style="width: 50%;" placeholder="panthera" value="{if="isset($databaseSettings['db_username'])"}{$databaseSettings.db_username}{/if}"></td> 
           </tr>
           
-          <tr>
+          <tr class="serverBasedDB">
               <td><p><b>{function="localize('Password', 'installer')"}:</p></b></td>
               <td style="padding-left: 10px;"><input type="password" id="dbPassword" style="width: 50%;" value="{if="isset($databaseSettings['db_password'])"}{$databaseSettings.db_password}{/if}"></td> 
           </tr>
           
-          <tr>
+          <tr class="serverBasedDB">
               <td><p><b>{function="localize('Database name', 'installer')"}:</p></b></td>
               <td style="padding-left: 10px;"><input type="text" id="dbName" style="width: 50%;" placeholder="my_site" value="{if="isset($databaseSettings['db_name'])"}{$databaseSettings.db_name}{/if}"></td> 
           </tr>
@@ -204,15 +220,15 @@ $(document).bind('onNextBtn', function () {
       </tbody>
      </table>
      
-     <input type="button" class="button checkButton" value="{function="localize('Check', 'installer')"}" id="installer-controll-checkBtn" onclick="checkBtn()" style="float: right; margin-right: 10px;">
-     
-     <table class="table" style="width: 80%; margin-left: 10px; margin: 0 auto; margin-top: 30px; margin-bottom: 30px; display:none;" id="tablesListTable">
-        <thead>
-          <tr><td colspan="2"><b>{function="localize('Existing tables in selected database', 'installer')"}:</b></td></tr>
-        </thead>
-
-        <tbody id="tablesList">
-        </tbody>
-    </table>
+     <div id="mysql_checkTable" style="display: none;">
+         <table class="table" style="width: 80%; margin: 0 auto; margin-top: 50px; margin-bottom: 50px; border: none; border-spacing: 0px;" id="tablesListTable">
+            <thead>
+              <tr><td colspan="1"><p>{function="localize('Existing tables in selected database', 'installer')"}:</p></td></tr>
+            </thead>
+    
+            <tbody id="tablesList">
+            </tbody>
+         </table>
+     </div> 
     
 </div>
