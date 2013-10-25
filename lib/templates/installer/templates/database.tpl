@@ -92,7 +92,7 @@ function databaseCheck()
                             errors++;
                             tdStyle = 'font-weight: 700;';
                         }
-                        $('#tablesList').append('<tr style="font-size: 13px; background: #ffd4d4;"><td><i>'+table+'</i></td></tr>');
+                        $('#tablesList').append('<tr style="font-size: 13px; background: #ffd4d4;"><td><p style="color: black;"><i>'+table+'</i></p></td></tr>');
                         // $('#tablesList').append('<tr><td style="width: 90%; '+tdStyle+'"><i>'+table+'</i></td><td style="width: 10%;"><!--<input type="button" class="button redButton" value="{function="localize('Drop', 'installer')"}" onclick="customNextBtn = false; navigateTo(\'?_stepbackward=True\');">--></td></tr>');
                     }
                 }

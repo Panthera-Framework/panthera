@@ -88,8 +88,9 @@
                 border-top: 1px solid #3d4957; 
             }
             
-            .login-form .content .table thead p {
-                font-size: 11px;
+            .login-form .content .table thead {
+                color: #fff;
+                font-size: 13px;
             }
         
             .login-form .content .table tbody tr {
@@ -99,6 +100,8 @@
             .login-form .content .table tbody tr td {
                 padding: 9px;
                 border-bottom: 2px solid #56687b;
+                color: #fff;
+                font-size: 13px;
             }
             
             input[type="text"], input[type="number"], input[type="password"] {

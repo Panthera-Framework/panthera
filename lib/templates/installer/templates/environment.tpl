@@ -18,9 +18,9 @@
         <tbody>
             {loop="$requirements"}
             <tr style="font-size: 13px; {if="$value.passed == False"}background: fff;{elseif="$value.passed === 'optional'"}background: #ffd4d4;{else}background: #e7ffd4;{/if}">
-                <td><i>{$key}</i></td>
-                <td>{$value.installed}</td>
-                <td>{$value.required}</td>
+                <td><p style="color: black;"><i>{$key}</i></p></td>
+                <td><p style="color: black;">{$value.installed}</p></td>
+                <td><p style="color: black;">{$value.required}</p></td>
             </tr>
             {/loop}
         </tbody>
