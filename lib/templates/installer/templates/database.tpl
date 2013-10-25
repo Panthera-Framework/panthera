@@ -58,7 +58,7 @@ var collisionsSelection = false;
 
 function databaseCheck()
 {
-    data = 'db_prefix='+$('#dbPrefix').val()+'&db_file='+$('#dbFile').val()+'&db_socket='+$('#dbSocket').html()+'&db_username='+$('#dbUser').val()+'&db_password='+$('#dbPassword').val()+'&db_host='+$('#dbHost').val()+'&db_name='+$('#dbName').val();
+    data = 'db_prefix='+$('#dbPrefix').val()+'&db_file='+$('#dbFile').val()+'&db_socket='+$('#dbSocket').val()+'&db_username='+$('#dbUser').val()+'&db_password='+$('#dbPassword').val()+'&db_host='+$('#dbHost').val()+'&db_name='+$('#dbName').val();
     
     if (collisionsSelection == true)
     {
@@ -155,13 +155,11 @@ $(document).bind('onNextBtn', function () {
         }
     });
 });
-</script>
 
-<style>
-#installer-controll-checkBtn {
-    display: inline;
-}
-</style>
+$(document).ready(function() {
+    $('#installer-controll-checkBtn').show();
+});
+</script>
 
 <div class="header">
         <h1>{function="localize('Database connection', 'installer')"}.</h1>
@@ -175,9 +173,9 @@ $(document).bind('onNextBtn', function () {
           <tr>
               <td><p><b>{function="localize('Database type', 'installer')"}:</b></td>
               <td style="padding-left: 10px;">
-                    <select style="width: 212px;" onchange="selectDatabaseType();" id="selectDatabase">
+                    <select style="width: 212px;" onchange="selectDatabaseType();" id="dbSocket">
                        {loop="$databaseSockets"}
-                        <option {if="$databaseSettings.db_socket == $key"} selected {/if}>{$key}</option>
+                        <option value="{$key}"{if="$databaseSettings.db_socket == $key"} selected {/if}>{$key}</option>
                        {/loop}
                     </select>
               </td>
