@@ -12,13 +12,69 @@ class httplib
     public static $userAgent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36';
     protected $sessionResource;
     protected $cookiesTempFile = '';
+    
+    // proxy settings
+    protected $proxyAuth = null;
+    protected $proxy = null;
+    protected $proxyType = 'http';
+
     public $timeout = 16;
+
+    /**
+      * Constructor
+      *
+      * @return void
+      * @author Damian Kęska
+      */
  
     public function __construct()
     {
         global $panthera;
         
         $panthera -> add_option('page_load_ends', array($this, 'cleanup'));
+    }
+    
+    /**
+      * Set proxy connection
+      *
+      * @param string|bool $host Set this field to IP address or False value to disable proxy
+      * @param int $port
+      * @param string $type Proxy type: http, socks4 or socks5
+      * @param string $auth Login:password format authentication
+      * @return bool
+      * @author Damian Kęska
+      */
+    
+    public function setProxy($host=false, $port=8080, $type='http', $auth=null)
+    {
+        if ($host === False)
+        {
+            $this->proxy = null;
+            return True;
+        }
+    
+        if (!filter_var($host, FILTER_VALIDATE_IP) or !is_numeric($port))
+        {
+            $this->proxy = False;
+            return False;
+        }
+        
+        $this->proxy = $host. ':' .$port;
+        
+        if ($type == 'http' or $type == 'socks4' or $type == 'socks5')
+        {
+            $this->proxyType = $type;
+        }
+        
+        if ($auth)
+        {
+            if (strpos($auth, ':') !== False)
+            {
+                $this->proxyAuth = $auth;
+            }
+        }
+        
+        return True;
     }
     
     /**
@@ -147,6 +203,32 @@ class httplib
         curl_setopt($curl, CURLOPT_MAXREDIRS, 5 );
         curl_setopt($curl, CURLOPT_TIMEOUT, intval($this->timeout));
         
+        // proxy suppport
+        if ($this->proxy === False) // unconfigured proxy
+        {
+            throw new Exception('Failed to configure proxy, please check proxy settings');
+            return False; // just in case
+        }
+        
+        if ($this->proxy)
+        {
+            curl_setopt($curl, CURLOPT_PROXY, $this->proxy);
+            
+            if ($this->proxyType == 'socks4' or $this->proxyType == 'socks5')
+            {
+                curl_setopt($curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+            } else {
+                curl_setopt($curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+            }
+            
+            if ($this->proxyAuth)
+            {
+                curl_setopt($curl, CURLOPT_PROXYAUTH, $this->proxyAuth);
+            }
+            
+            $panthera -> logging -> output('Using proxy server address=' .$this->proxy. ', type=' .$this->proxyType. ', auth=len(' .strlen($this->proxyAuth). ')', 'httplib');
+        }
+        
         // default headers
         $headers = array(
             'Accept-Language:en-US,en;q=0.8,pl;q=0.6',
@@ -200,6 +282,11 @@ class httplib
         }
         
         $data = curl_exec($curl);
+        
+        if ($data === False)
+        {
+            throw new Exception('Failed to make HTTP request, details: ' .curl_error($curl));
+        }
         
         $panthera -> logging -> output('Request finished', 'httplib');
         //curl_close($curl);
