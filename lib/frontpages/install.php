@@ -103,6 +103,7 @@ if ($config['preconfigured'] !== True)
 }
 
 define('PANTHERA_FORCE_DEBUGGING', True);
+define('SKIP_CACHE', False);
 
 // app starts here
 require $config['lib']. '/boot.php';

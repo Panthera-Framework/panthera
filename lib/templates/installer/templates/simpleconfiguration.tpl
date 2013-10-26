@@ -4,6 +4,7 @@ customNextBtn = true;
 
 $(document).ready (function () {
     $('#installer-controll-nextBtn').attr('disabled', false);
+    $('#installer-controll-checkBtn').hide();
     $('#mailing_server_port').w2field( { type: 'int' } );
     $('#session_lifetime').w2field( { type: 'int' });
     

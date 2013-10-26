@@ -759,7 +759,7 @@ class pantheraCore
         $this->logging = new pantheraLogging($this);
         $this->outputControl = new outputControl($this);
 
-        if (isset($config['varCache']) and isset($config['cache']))
+        if ((isset($config['varCache']) and isset($config['cache'])) and !defined('SKIP_CACHE'))
         {
             $this->logging -> output('Initializing cache configured in app.php', 'pantheraCore');
             $this->loadCache($config['varCache'], $config['cache'], $config['session_key']);

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>{$site_title}</title>
         {$site_header}
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <link rel='stylesheet' href='{$PANTHERA_URL}/css/login.css' type='text/css' media='all' />

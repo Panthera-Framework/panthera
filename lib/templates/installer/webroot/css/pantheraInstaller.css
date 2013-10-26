@@ -39,10 +39,14 @@
 }
 
 .login-form .content .table tbody tr td {
-    border-bottom:2px solid #56687b;
+    border-bottom:1px solid #56687b;
     color:#fff;
     font-size:13px;
-    padding:9px;
+    padding: 15px;
+}
+
+.login-form .content .table thead tr td {
+    padding: 10px;
 }
 
 input[type="text"],input[type="number"],input[type="password"] {

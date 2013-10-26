@@ -66,6 +66,8 @@ class pantheraInstaller
         {
             $this->setButton('back', True);
         }
+        
+        $panthera -> template -> setTitle(localize('Panthera Framework installer', 'installer'));
     }
     
     /**
