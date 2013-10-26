@@ -159,11 +159,12 @@ class pantheraDB
       * @config build_missing_tables
       * @param string $query to send
       * @param array $values to pass to query
+      * @param bool $retry Is this a retry query?
       * @return object 
       * @author Damian Kęska
       */
     
-    public function query($query, $values=NuLL)
+    public function query($query, $values=NuLL, $retry=False)
     {
         $this->sqlCount++;
         $query = str_ireplace('{$db_prefix}', $this->prefix, $query);
@@ -191,8 +192,16 @@ class pantheraDB
 
             } catch (PDOException $e) {
                 if ($this->socketType == 'sqlite')
-                    $sth = $this->_fixMissingSQLite($e, $query, $values);
-                elseif ($this->socketType == 'mysql')
+                {
+                    if (strpos($e->getMessage(), 'General error: 17') !== False and !$retry)
+                    {
+                        $sth = $this->query($query, $values, True);
+                        
+                    } else {
+                        $sth = $this->_fixMissingSQLite($e, $query, $values);
+                    }
+                    
+                } elseif ($this->socketType == 'mysql')
                     $sth = $this->_fixMissingMySQL($e, $query, $values);
             }
             

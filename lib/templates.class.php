@@ -800,15 +800,15 @@ class pantheraTemplate extends pantheraClass
         $this -> panthera -> logging -> startTimer();
         
         $roots = array (
-                      PANTHERA_DIR.'/templates/admin/webroot' => 'admin', 
-                      SITE_DIR. '/content/templates/admin/webroot' => 'admin', 
-                      PANTHERA_DIR.'/templates/admin_mobile/webroot' => 'admin_mobile', 
-                      SITE_DIR. '/content/templates/admin_mobile/webroot' => 'admin_mobile',
-                      PANTHERA_DIR.'/templates/' .$mainTemplate. '/webroot' => $mainTemplate, 
-                      SITE_DIR. '/content/templates/' .$mainTemplate. '/webroot' => $mainTemplate,
-                      PANTHERA_DIR. '/templates/_libs_webroot' => '_libs_webroot',
-                      SITE_DIR. '/templates/_libs_webroot' => '_libs_webroot'
-                    );
+            PANTHERA_DIR.'/templates/admin/webroot' => 'admin', 
+            SITE_DIR. '/content/templates/admin/webroot' => 'admin', 
+            PANTHERA_DIR.'/templates/admin_mobile/webroot' => 'admin_mobile', 
+            SITE_DIR. '/content/templates/admin_mobile/webroot' => 'admin_mobile',
+            PANTHERA_DIR.'/templates/' .$mainTemplate. '/webroot' => $mainTemplate, 
+            SITE_DIR. '/content/templates/' .$mainTemplate. '/webroot' => $mainTemplate,
+            PANTHERA_DIR. '/templates/_libs_webroot' => '_libs_webroot',
+            SITE_DIR. '/templates/_libs_webroot' => '_libs_webroot'
+        );
                     
         // add templates from site configuration
         $customTemplates = array_merge($customTemplates, $configTemplates);  

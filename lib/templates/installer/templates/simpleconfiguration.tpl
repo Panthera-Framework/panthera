@@ -21,8 +21,8 @@ $(document).ready (function () {
 </script>
 
 <div class="header">
-        <h1>{function="localize('Basic configuration', 'installer')"}.</h1>
-        <div style="margin-left: 5px;"><span>{function="localize('Set default install options', 'installer')"}.</span></div>
+    <h1>{function="localize('Basic configuration', 'installer')"}.</h1>
+    <div style="margin-left: 5px;"><span>{function="localize('Set default install options', 'installer')"}.</span></div>
 </div>
 
 

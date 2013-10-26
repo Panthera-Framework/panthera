@@ -1,8 +1,8 @@
 {include="buttons"}
 
 <div class="header">
-        <h1>{function="localize('Requirements and technical details', 'installer')"}</h1>
-        <div style="margin-left: 5px;"><span>{function="localize('The list below describes required modules and their versions that are needed to correctly install and run this application', 'installer')"}.</span></div>
+    <h1>{function="localize('Requirements and technical details', 'installer')"}</h1>
+    <div style="margin-left: 5px;"><span>{function="localize('The list below describes required modules and their versions that are needed to correctly install and run this application', 'installer')"}.</span></div>
 </div>
 
 <div class="content" style="margin-left: 0px;">
