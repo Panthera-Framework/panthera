@@ -143,21 +143,25 @@ class varCache_db
         else
             $expire = -1;
             
-        if (!$this->exists($var))
-        {
-            $SQL = $this -> panthera -> db -> query ('INSERT INTO `{$db_prefix}var_cache` (`var`, `value`, `expire`) VALUES (:var, :value, :expire)', array('var' => $var, 'value' => serialize($value), 'expire' => $expire));
-        } else {
+        try {
+            $this->cache[$var] = $value;
         
-            if ($expire > 0)
-                $SQL = $this-> panthera -> db -> query ('UPDATE `{$db_prefix}var_cache` SET `value` = :value, `expire` = :expire WHERE `var` = :var', array('var' => $var, 'value' => serialize($value), 'expire' => $expire));
-            else
-                $SQL = $this-> panthera -> db -> query ('UPDATE `{$db_prefix}var_cache` SET `value` = :value WHERE `var` = :var', array('var' => $var, 'value' => serialize($value)));
+            if (!$this->exists($var))
+            {
+                $SQL = $this -> panthera -> db -> query ('INSERT INTO `{$db_prefix}var_cache` (`var`, `value`, `expire`) VALUES (:var, :value, :expire)', array('var' => $var, 'value' => serialize($value), 'expire' => $expire));
+            } else {
+            
+                if ($expire > 0)
+                    $SQL = $this-> panthera -> db -> query ('UPDATE `{$db_prefix}var_cache` SET `value` = :value, `expire` = :expire WHERE `var` = :var', array('var' => $var, 'value' => serialize($value), 'expire' => $expire));
+                else
+                    $SQL = $this-> panthera -> db -> query ('UPDATE `{$db_prefix}var_cache` SET `value` = :value WHERE `var` = :var', array('var' => $var, 'value' => serialize($value)));
+            }
+            
+            // true or false if affected any row
+            return (bool)$SQL -> rowCount();
+        } catch (Exception $e) {
+            $this -> panthera -> logging -> output('Something went wrong in database varCache (database exception: ' .$e->getMessage(). ') set for var=' .$var, 'cache');
         }
-        
-        $this->cache[$var] = $value;
-        
-        // true or false if affected any row
-        return (bool)$SQL -> rowCount();
     }
 }
 
