@@ -3,10 +3,8 @@
 <script type="text/javascript">
 function selectDatabaseType ()
 {
-    
     // sqlite -> file, mysql -> server,
-    
-    var dbType = $("#selectDatabase").val();
+    var dbType = $("#dbSocket").val();
     
     if (dbType == 'sqlite') {
         var dbName = 'file';
@@ -15,8 +13,6 @@ function selectDatabaseType ()
     if (dbType == 'mysql') {
         var dbName = 'server';
     }
-    
-    $('#dbSocket').html(dbName);
     
     if (dbType == 'sqlite')
     {
