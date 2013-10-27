@@ -111,9 +111,15 @@ if (@$_GET['display'] == 'langtool') {
                 }
                     
                 $domains[$key] = str_ireplace('.phps', '', $domain);
-                
-                if ($_GET['query'] != '' AND !strstr($domains[$key], strtolower($_GET['query'])))
-                    unset($domains[$key]);
+            }
+            
+            // search loop
+            if ($_GET['query'] != '') {
+                foreach ($domains as $key => $domain)
+                {
+                    if (!strstr($domains[$key], strtolower($_GET['query'])))
+                        unset($domains[$key]);
+                }
             }
             
 
