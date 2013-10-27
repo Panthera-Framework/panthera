@@ -115,6 +115,8 @@
     {$uiSearchbarName="uiTop"}
     {include="ui.searchbar"}
     
+    <div class="separatorHorizontal"></div>
+    
     <div class="searchBarButtonArea">
         <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=gallery&cat=admin');" style="float: left; margin-left: 10px;">
        {if="!$all_langs"} <input type="button" value="{function="localize('Other languages', 'gallery')"}" onclick="panthera.popup.toggle('element:#languagePopup')"> {/if}
