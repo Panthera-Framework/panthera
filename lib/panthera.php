@@ -1247,7 +1247,7 @@ class pantheraCore
                     if ($configPlugins[$file] == True)
                         $enabled = True;
                 }
-
+                
                 $files[$file] = array('include_path' => $dir. '/' .$file, 'enabled' => $enabled, 'info' => $this->plugins[$file]);
             }
         }
@@ -1418,8 +1418,13 @@ class pantheraCore
         else
             $type = 'module'; // TODO: Create better module plugins support
 
+        if (strpos($dir, '/') !== false) {
+            $dir = explode("/", $dir);
+            $dir = end($dir);   
+        }
+        
         $this->plugins[$dir] = array('name' => $pluginName, 'type' => 'module', 'file' => $file, 'meta' => $info);
-        $this->logging->output("Registering plugin ".$pluginName." for file ".$file.", key=".$dir);
+        $this->logging->output("Registering plugin ".$pluginName." for file ".$file.", key=".$dir.", author=".$info['author']);
         return True;
     }
 
