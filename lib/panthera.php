@@ -1424,7 +1424,7 @@ class pantheraCore
         }
         
         $this->plugins[$dir] = array('name' => $pluginName, 'type' => 'module', 'file' => $file, 'meta' => $info);
-        $this->logging->output("Registering plugin ".$pluginName." for file ".$file.", key=".$dir.", author=".$info['author']);
+        $this->logging->output("Registering plugin ".$pluginName." for file ".$file.", key=".$dir);
         return True;
     }
 
