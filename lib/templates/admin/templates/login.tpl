@@ -5,6 +5,7 @@
     	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     	<link rel='stylesheet' href='{$PANTHERA_URL}/css/jquery.dropdown.css' type='text/css' media='all' />
     	<link rel='stylesheet' href='{$PANTHERA_URL}/css/login.css' type='text/css' media='all' />
+    	<link rel="icon" type="image/png" href="{$PANTHERA_URL}/images/admin/pantheraUI/favicon.ico" />
     	
     	<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
         <script type="text/javascript" src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>

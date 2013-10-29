@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         {$site_header}
+        <link rel="icon" type="image/png" href="{$PANTHERA_URL}/images/admin/pantheraUI/favicon.ico" />
         <link rel="stylesheet" type="text/css" href="css/pantheraUI.css">
         <link rel="stylesheet" type="text/css" href="css/jquery.dropdown.css">
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>

@@ -297,12 +297,20 @@ if ($_GET['action'] == 'displayCategory')
     if (!isset($_GET['unique']))
         pa_exit();
 
+    $sBar = new uiSearchbar('uiTop');
+    //$sBar -> setMethod('POST');
+    $sBar -> setQuery($_GET['query']);
+    $sBar -> setAddress('?display=gallery&cat=admin&action=displayCategory&unique='.$_GET['unique']);
+    $sBar -> navigate(True);
+    $sBar->addIcon( '{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_galleries', localize( 'Manage permissions' ) );
+
     $template -> push('action', 'display_category');
 
     // query for a page using `unique` and `language` columns
     $statement = new whereClause();
     $statement -> add('', 'unique', '=', $_GET['unique']);
     $statement -> add('AND', 'language', '=', $language);
+    
     $category = new galleryCategory($statement, null);
 
     if (!$category->exists())
@@ -373,10 +381,23 @@ if ($_GET['action'] == 'displayCategory')
     // get gallery items
     $count = getGalleryItems(array('gallery_id' => $category->id), False);
     $i = getGalleryItems(array('gallery_id' => $category->id), $count, 0);
+    
+    if ($_GET['query'] != '')
+    {
+        $itemsList = '';
+        foreach ($i as $key => $value)
+        {
+            if (strstr($value->title, strtolower($_GET['query']))) {
+                $itemsList[] = $value;   
+            }
+        }
+    } else {
+        $itemsList = $i;
+    }
 
     $template -> push('category_title', $category->title);
     $template -> push('category_id', $category->id);
-    $template -> push('item_list', $i);
+    $template -> push('item_list', $itemsList);
     $template -> push('langauge', $category->language);
     $template -> push('unique', $_GET['unique']);
     $template -> push('languages', $panthera->locale->getLocales());

@@ -1247,7 +1247,7 @@ class pantheraCore
                     if ($configPlugins[$file] == True)
                         $enabled = True;
                 }
-
+                
                 $files[$file] = array('include_path' => $dir. '/' .$file, 'enabled' => $enabled, 'info' => $this->plugins[$file]);
             }
         }
@@ -1418,6 +1418,11 @@ class pantheraCore
         else
             $type = 'module'; // TODO: Create better module plugins support
 
+        if (strpos($dir, '/') !== false) {
+            $dir = explode("/", $dir);
+            $dir = end($dir);   
+        }
+        
         $this->plugins[$dir] = array('name' => $pluginName, 'type' => 'module', 'file' => $file, 'meta' => $info);
         $this->logging->output("Registering plugin ".$pluginName." for file ".$file.", key=".$dir);
         return True;
@@ -1551,19 +1556,19 @@ class pantheraTypes extends pantheraClass
 
     function _pesel($str)
     {
-	    if (!preg_match('/^[0-9]{11}$/',$str)) //sprawdzamy czy ciąg ma 11 cyfr
+	    if (!preg_match('/^[0-9]{11}$/',$str))
 		    return False;
 
-	    $arrSteps = array(1, 3, 7, 9, 1, 3, 7, 9, 1, 3); // tablica z odpowiednimi wagami
+	    $arrSteps = array(1, 3, 7, 9, 1, 3, 7, 9, 1, 3);
 	    $intSum = 0;
 
 	    for ($i = 0; $i < 10; $i++)
-		    $intSum += $arrSteps[$i] * $str[$i]; //mnożymy każdy ze znaków przez wagć i sumujemy wszystko
+		    $intSum += $arrSteps[$i] * $str[$i];
 
-	    $int = 10 - $intSum % 10; //obliczamy sumę kontrolną
+	    $int = 10 - $intSum % 10;
 	    $intControlNr = ($int == 10)?0:$int;
 
-	    if ($intControlNr == $str[10]) //sprawdzamy czy taka sama suma kontrolna jest w ciągu
+	    if ($intControlNr == $str[10])
 		    return True;
 
 	    return False;
@@ -1611,25 +1616,20 @@ class pantheraTypes extends pantheraClass
     {
       // Usuniecie spacji
       $iNRB = str_replace(' ', '', $p_iNRB);
-      // Sprawdzenie czy przekazany numer zawiera 26 znaków
+      
       if(strlen($iNRB) != 26)
         return false;
 
-      // Zdefiniowanie tablicy z wagami poszczególnych cyfr
       $aWagiCyfr = array(1, 10, 3, 30, 9, 90, 27, 76, 81, 34, 49, 5, 50, 15, 53, 45, 62, 38, 89, 17, 73, 51, 25, 56, 75, 71, 31, 19, 93, 57);
 
-      // Dodanie kodu kraju (w tym przypadku dodajemy kod PL)
       $iNRB = $iNRB.'2521';
       $iNRB = substr($iNRB, 2).substr($iNRB, 0, 2);
 
-      // Wyzerowanie zmiennej
       $iSumaCyfr = 0;
 
-      // Pętla obliczająca sumć cyfr w numerze konta
       for($i = 0; $i < 30; $i++)
         $iSumaCyfr += $iNRB[29-$i] * $aWagiCyfr[$i];
 
-      // Sprawdzenie czy modulo z sumy wag poszczegolnych cyfr jest rowne 1
       return ($iSumaCyfr % 97 == 1);
     }
 

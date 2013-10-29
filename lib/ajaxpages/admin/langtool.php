@@ -92,6 +92,11 @@ if (@$_GET['display'] == 'langtool') {
                 }
             }
             
+            $sBar = new uiSearchbar('uiTop');
+            $sBar -> setQuery($_GET['query']);
+            $sBar -> setAddress('?display=langtool&cat=admin&action=domains&locale='.$locale);
+            $sBar -> navigate(True);
+            
             $domains = localesManagement::getDomains($_GET['locale']);
             sort($domains);
             
@@ -106,6 +111,15 @@ if (@$_GET['display'] == 'langtool') {
                 }
                     
                 $domains[$key] = str_ireplace('.phps', '', $domain);
+            }
+            
+            // search loop
+            if ($_GET['query'] != '') {
+                foreach ($domains as $key => $domain)
+                {
+                    if (!strstr($domains[$key], strtolower($_GET['query'])))
+                        unset($domains[$key]);
+                }
             }
             
 

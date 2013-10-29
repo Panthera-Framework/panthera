@@ -64,7 +64,7 @@ sliderChangeImage('{$link}');
 
 <div id="topContent">
     <div class="searchBarButtonArea">
-        <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=gallery&cat=admin&action=display_category&unique={$unique}'); return false;" style="float: left; margin-left: 10px;">
+        <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=gallery&cat=admin&action=displayCategory&unique={$unique}'); return false;" style="float: left; margin-left: 10px;">
         <input type="submit" value="{function="localize('Save')"}">
     </div>
 </div>

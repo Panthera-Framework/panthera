@@ -62,6 +62,11 @@ function removeDomain(name, locale, n)
 {include="ui.titlebar"}
 
 <div id="topContent" style="min-height: 50px;">
+    {$uiSearchbarName="uiTop"}
+    {include="ui.searchbar"}
+    
+    <div class="separatorHorizontal"></div>
+
     <div class="searchBarButtonArea">
         <input type="button" value="{function="localize('Add domain', 'langtool')"}" onclick="panthera.popup.toggle('element:#newDomain')">
     </div>
