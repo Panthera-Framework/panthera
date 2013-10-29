@@ -259,7 +259,7 @@ function templateTool(toolName, value)
     <div style="display: inline-block;">
         <table style="width: 100%;">
             <thead>
-                <th colspan="3">{function="localize('Site templates viewer', 'templates')"}</th>
+                <th colspan="4">{function="localize('Site templates viewer', 'templates')"}</th>
             </thead>
             
             <tbody id="templateListBody">
@@ -268,6 +268,8 @@ function templateTool(toolName, value)
                      <td style="padding: 10px; border-right: 0px; width: 1%;">
                         <input type="checkbox" class="checkb_all" id="checkb_{$key}" {if="$key == $current_template"}checked{else}onclick="$('.checkb_all').attr('checked', false); $(this).attr('checked', true); selectDefaultTemplate('{$key}', 'checkb_{$key}')"{/if}>
                      </td>
+                     <td style="width: 60px; padding: 10px; border-right: 0px;"><img src='{$PANTHERA_URL}/images/admin/pantheraUI/template-thumbnail.png' width="120px" height="78px"></td>
+                     <!-- <td style="width: 60px; padding: 10px; border-right: 0px;"><img src='' width="120px" height="78px"></td> -->
                      <td style="width: 60px; padding: 10px; border-right: 0px;">{$value.place}</td>
                      <td><a href="#" onclick="selectTemplate('{$key}');">{$key}</td>
                  </tr>
@@ -280,3 +282,4 @@ function templateTool(toolName, value)
        </div>
    </div>
 </div>
+ 
