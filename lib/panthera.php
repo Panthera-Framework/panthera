@@ -1889,7 +1889,7 @@ function ajax_exit($array)
     // insert buffered log if avaliable to "message" element
     if (isset($array['message']))
     {
-        $array['message'] = str_ireplace('{$bufferedOutput}', $panthera -> outputControl -> getLog(), $array['message']);
+        $array['message'] = str_ireplace('{$bufferedOutput}', $panthera -> outputControl -> get(), $array['message']);
     }
 
     print(json_encode($array));

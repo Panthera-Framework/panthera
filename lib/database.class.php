@@ -520,7 +520,10 @@ class pantheraDB
             $dataRow = rtrim($dataRow, ', ');
             
             
-            return array('query' => $queryTable. '(' .$columns. ') VALUES (' .$dataRow. ')', 'values' => $array);
+            return array(
+                'query' => $queryTable. '(' .rtrim($columns, ', '). ') VALUES (' .$dataRow. ')', 
+                'values' => $array
+            );
             
         } else {
             // multiple rows code
@@ -558,7 +561,10 @@ class pantheraDB
             
             $dataRows = rtrim($dataRows, ', ');
         
-            return array('query' => $queryTable. '(' .$columns. ') VALUES ' .$dataRows, 'values' => $values);
+            return array(
+                'query' => $queryTable. '(' .rtrim($columns, ', '). ') VALUES ' .$dataRows,
+                'values' => $values
+            );
         }
     }
     
