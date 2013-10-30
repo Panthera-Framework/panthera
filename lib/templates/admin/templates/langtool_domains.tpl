@@ -1,5 +1,22 @@
 <script type="text/javascript">
-spinner = new panthera.ajaxLoader($('#langtoolWindow'));
+/**
+  * Translate strings
+  *
+  * @author Damian Kęska
+  */
+
+function saveStrings()
+{
+    stringsArray = new Array();
+
+    // serialize all forms and put into array
+    $('.missingTranslationForm').each(function( index ) {
+        stringsArray.push($(this).serialize());
+    });
+    
+    // serialized array will be encoded into JSON and then to Base64 and send to server
+    panthera.jsonPOST({ url: '?display=langtool&cat=admin&action=saveStrings&createMissingDomains=True&missingStrings=True', 'data': 'data='+Base64.encode(JSON.stringify(stringsArray)), messageBox: 'w2ui'});
+}
 
 /**
   * Create domain
@@ -69,6 +86,7 @@ function removeDomain(name, locale, n)
 
     <div class="searchBarButtonArea">
         <input type="button" value="{function="localize('Add domain', 'langtool')"}" onclick="panthera.popup.toggle('element:#newDomain')">
+        <input type="button" value="{function="localize('Save added strings', 'langtool')"}" onclick="saveStrings()">
     </div>
 </div>
 
@@ -135,7 +153,7 @@ function removeDomain(name, locale, n)
 
 <div class="ajax-content" style="text-align: center;">
 
-      <table style="display: inline-block;">
+      <table style="display: inline-block; margin-bottom: 30px; max-width: 40%;">
             <thead>
                 <tr>
                     <th>{function="localize('Locale', 'langtool')"}</th>
@@ -170,4 +188,42 @@ function removeDomain(name, locale, n)
               {/if}
             </tbody>
      </table>
+     
+     {if="count($missingTranslations)"}
+     
+        <table style="display: inline-block; width: 50%; margin-right: 50px;">
+            <thead>
+                <tr>
+                    <th>{function="localize('Missing translations in this language', 'langtool')"}</th>
+                </tr>
+            </thead>
+            
+            <tbody class="hovered">
+                {loop="$missingTranslations"}
+                    {$domain=$key}
+                    {loop="$value"}
+                <tr>
+                    <td>
+                        <form action="#" method="POST" class="missingTranslationForm">
+                            <small><i>{$value.domain}</i></small>
+                            <input type="hidden" name="domain" value="{$value.domain}">
+                            <input type="hidden" name="language" value="{$locale}">
+                            <input type="hidden" name="original" value="{$key|base64_encode}">
+                            <input type="hidden" name="originalEncoding" value="base64">
+                            <span style="margin-left: 20px;">{$key|htmlspecialchars}</span>
+                            
+                            <div style="float: right; margin-bottom: 10px;">
+                                <input type="text" name="translation" style="width: 40%; margin-top: 25px; margin-bottom: 25px;">
+                                <br>
+                                <small style="float: right;">{$value.file|basename}:{$value.line}</small>
+                            </div>
+                        </form>
+                    </td>
+                    
+                </tr>
+                    {/loop}
+                {/loop}
+            </tbody>
+        </table>
+     {/if}
 </div>

@@ -320,6 +320,114 @@ class localesManagement
 
         return new localeDomain($localeName, $domain);
     }*/
+    
+    /**
+      * Search for missing translations in PHP and tpl files
+      *
+      * @param string $tree Path to directory to scan recursively
+      * @return array
+      * @author Damian Kęska
+      */
+    
+    public static function scanForMissingStrings($tree, $locale='')
+    {
+        global $panthera;
+        $panthera -> importModule('filesystem');
+        
+        if (!$locale)
+        {
+            $locale = $panthera -> locale -> getActive();
+        }
+        
+        if (!is_dir($tree))
+        {
+            return array();
+        }
+        
+        $missing = array();
+        $files = scandirDeeply($tree, false);
+        $domainObjects = array();
+        
+        foreach ($files as $file)
+        {
+            $pathinfo = pathinfo($file);
+            
+            if (strpos($file, '/tmp/') !== False)
+            {
+                continue;
+            }
+
+            // in Python style            
+            if (!in_array(strtolower(@$pathinfo['extension']), array('php', 'tpl', 'html')))
+            {
+                continue;
+            }
+            
+            $contents = file($file);
+            $i = 0;
+            
+            foreach ($contents as $line)
+            {
+                $i++;
+            
+                if (strpos($line, 'localize(') !== False)
+                {
+                    preg_match_all("/(localize|slocalize)\((.*)\)/U", $line, $out, PREG_SET_ORDER); 
+                    
+                    foreach ($out as $match)
+                    {
+                        $type = $match[1];
+                        $args = explode("', ", $match[2]);
+                        $rArgs = array();
+                        
+                        foreach ($args as $arg)
+                        {
+                            $rArgs[] = trim($arg, "'\" ");
+                        }
+                        
+                        if ($rArgs[0][0] == '$') // first character
+                        {
+                            continue;
+                        }
+                        
+                        if (!isset($rArgs[1]))
+                        {
+                            $rArgs[1] = 'messages'; // default domain
+                        }
+
+                        $check = false;
+                        
+                        try {
+                            // create new domain object and push to array
+                            if (!isset($domainObjects[$rArgs[1]]))
+                            {
+                                $domainObjects[$rArgs[1]] = new localeDomain($locale, $rArgs[1]);
+                            }
+                            
+                            $check = $domainObjects[$rArgs[1]] -> stringExists($rArgs[0]);
+                        } catch (Exception $e) {
+                            // nothing here
+                        }
+                        
+                        if (!$check)
+                        {
+                            // create new domain in array
+                            if (!isset($missing[$rArgs[1]]))
+                            {
+                                $missing[$rArgs[1]] = array();
+                            }
+                            
+                            $missing[$rArgs[1]][$rArgs[0]] = array('file' => $file, 'line' => $i, 'type' => $type, 'domain' => $rArgs[1]);
+                        }
+                    }
+                }
+            }
+            
+            unset($contents);
+        }
+        
+        return $missing;
+    }
 }
 
 /**
@@ -417,7 +525,7 @@ class localeDomain
 
     public function stringExists($id)
     {
-        return array_key_exists($id, $this->memory);
+        return isset($this->memory[$id]);
     }
 
     /**
@@ -478,8 +586,12 @@ class localeDomain
         
         // clean up the cache if avaliable
         if ($this->panthera->cache)
+        {
+            if ($this->panthera->varCache)
+                $this -> panthera -> varCache -> remove('langtool.scan.missing.' .$this->locale);
+        
             $this->panthera->cache->remove('locale.' .$this->locale. '.' .$this->domain);
-
+        }
         try {
             $fp = fopen($saveDir, 'w');
             fwrite($fp, serialize($this->memory));

@@ -469,19 +469,6 @@ class pantheraLocale
 }
 
 /**
- * Set localization domain (useful in template system)
- *
- * @return void
- * @author Damian Kęska
- */
-
-function localizeDomain($domain)
-{
-    global $panthera;
-    $panthera->locale->setDomain($domain);
-}
-
-/**
  * Translate string (useful in template system)
  *
  * @return string
@@ -519,4 +506,3 @@ function slocalize($string, $domain)
 
     return $panthera->locale->f_($string, $domain, $args);
 }
-?>

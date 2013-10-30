@@ -7,10 +7,39 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
-if (!defined('IN_PANTHERA'))
-      exit;
+if (!defined('IN_PANTHERA')) 
+    exit;
+    
+/**
+  * Update missing strings cache
+  *
+  * @package Panthera\core\ajaxpages
+  * @return array
+  * @author Damian Kęska
+  */
+    
+function updateMissingStringsCache($locale)
+{
+    global $panthera;
 
-if (@$_GET['display'] == 'langtool') {
+    $missingStrings = array_merge(
+        localesManagement::scanForMissingStrings(PANTHERA_DIR, $locale), 
+        localesManagement::scanForMissingStrings(SITE_DIR. '/content/templates', $locale),
+        localesManagement::scanForMissingStrings(SITE_DIR. '/content/ajaxpages', $locale),
+        localesManagement::scanForMissingStrings(SITE_DIR. '/content/pages', $locale),
+        localesManagement::scanForMissingStrings(SITE_DIR. '/content/plugins', $locale),
+        localesManagement::scanForMissingStrings(SITE_DIR. '/content/frontpages', $locale)
+    );
+                
+    $panthera -> logging -> output('Creating new missing strings cache in "langtool.scan.missing.' .$locale. '"', 'langtool');
+    $panthera -> varCache -> remove('langtool.scan.missing.' .$locale);
+    $panthera -> varCache -> set('langtool.scan.missing.' .$locale, $missingStrings, 360);
+    
+    return $missingStrings;
+}
+
+if (@$_GET['display'] == 'langtool') 
+{
 
     $tpl = 'langtool.tpl';
 
@@ -18,6 +47,40 @@ if (@$_GET['display'] == 'langtool') {
 
     // we need to operate on langauge files, so we include some functions here
     $panthera -> importModule('liblangtool');
+    
+    /**
+      * Refreshing list of missing templates for current locale
+      *
+      * @author Damian Kęska
+      */
+    
+    if ($_GET['action'] == 'domains' or $_GET['action'] == 'view_domain')
+    {
+        $locale = $_GET['locale'];
+
+        if (!localesManagement::getLocaleDir($locale))
+            ajax_exit(array('status' => 'failed', 'message' => localize('Locale does not exist')));
+            
+        if ($panthera->varCache)
+        {
+            if (!$panthera->varCache->exists('langtool.scan.missing.' .$locale))
+            {
+                $missingStrings = updateMissingStringsCache($locale);
+            } else {
+                $missingStrings = $panthera -> varCache -> get('langtool.scan.missing.' .$locale);
+            }
+        }
+        
+        if ($_GET['action'] == 'domains')
+        {
+            $panthera -> template -> push('missingTranslations', $missingStrings);
+        } else {
+            if (isset($missingStrings[$_GET['domain']]))
+            {
+                $panthera -> template -> push ('missingTranslations', $missingStrings[$_GET['domain']]);
+            }
+        }
+    }
 
     /**
       * Domains management
@@ -31,11 +94,6 @@ if (@$_GET['display'] == 'langtool') {
 
         if (isset($_GET['locale']))
         {
-            $locale = $_GET['locale'];
-
-            if (localesManagement::getLocaleDir($locale) == FALSE)
-                ajax_exit(array('status' => 'failed', 'message' => localize('Locale does not exist')));
-            
             // setting correct icon   
             $icon = pantheraUrl('{$PANTHERA_URL}/images/admin/flags/unknown.png');
                 
@@ -49,29 +107,29 @@ if (@$_GET['display'] == 'langtool') {
             if ($_GET['subaction'] == 'add_domain')
             {
                 if (strlen($_GET['domain_name']) < 3)
-                    ajax_exit(array('status' => 'failed', 'message' => localize('Name is too short!')));
+                    ajax_exit(array('status' => 'failed', 'message' => localize('Domain name is too short', 'langtool')));
 
                 if (localesManagement::createDomain($locale, $_GET['domain_name']))
-                    ajax_exit(array('status' => 'success', 'message' => localize('Domain has been successfully created!')));
-                else
-                    ajax_exit(array('status' => 'failed', 'message' => localize('Error!')));
+                    ajax_exit(array('status' => 'success', 'message' => localize('Done')));
+                
+                ajax_exit(array('status' => 'failed', 'message' => localize('Cannot create domain, please check write permissions on content/locales directory and it\'s subdirectories', 'langtool')));
             }
 
-            if ($_GET['subaction'] == 'remove_domain') {
+            if ($_GET['subaction'] == 'remove_domain') 
+            {
                 if (strlen($_GET['domain_name']) < 3)
-                    ajax_exit(array('status' => 'failed', 'message' => localize('Name of created domain is too short!')));
+                    ajax_exit(array('status' => 'failed', 'message' => localize('Name of created domain is too short', 'langtool')));
                 else
                     $domain_name = str_ireplace('.phps', '', $_GET['domain_name']);
 
                 if (localesManagement::removeDomain($locale, $domain_name))
-                    ajax_exit(array('status' => 'success', 'message' => localize('Domain has been successfully removed!')));
-                else
-                    ajax_exit(array('status' => 'failed', 'message' => localize('Error!')));
+                    ajax_exit(array('status' => 'success', 'message' => localize('Done', 'langtool')));
+                
+                ajax_exit(array('status' => 'failed', 'message' => localize('Cannot remove domain, please check write permissions on content/locales directory and it\'s subdirectories', 'langtool')));
             }
 
-            // Sorry...
-            if ($_GET['subaction'] == 'rename_domain') {
-
+            if ($_GET['subaction'] == 'rename_domain') 
+            {
                 // public static function renameDomain($locale, $domain, $newName)
 
                 $name = str_ireplace('.phps', '', $_GET['domain_name']);
@@ -114,7 +172,8 @@ if (@$_GET['display'] == 'langtool') {
             }
             
             // search loop
-            if ($_GET['query'] != '') {
+            if ($_GET['query'] != '') 
+            {
                 foreach ($domains as $key => $domain)
                 {
                     if (!strstr($domains[$key], strtolower($_GET['query'])))
@@ -181,14 +240,40 @@ if (@$_GET['display'] == 'langtool') {
                 $languages[$postData['language']] = array();
             }
             
+            // detect base64 encoded original string and decode it (encoded string is more easier to transport and display in HTML code when it contains quotes etc.)
+            if (isset($postData['originalEncoding']))
+            {
+                if ($postData['originalEncoding'] == 'base64')
+                {
+                    $postData['original'] = base64_decode($postData['original']);
+                    unset($postData['originalEncoding']);
+                }
+            }
+            
+            // skip invalid empty strings
+            if (!$postData['original'] or !$postData['language'] or !$postData['translation'])
+            {
+                continue;
+            }
+            
             // create new domain object
             if (!$languages[ $postData['language'] ][ $postData['domain'] ])
             {
                 try {
                     $languages[$postData['language']][$postData['domain']] = new localeDomain($postData['language'], $postData['domain']);
                 } catch (Exception $e) {
-                    $panthera -> logging -> output('Cannot find "' .$postData['domain']. '" domain for "' .$postData['language']. '" language, skipping', 'langtool');
-                    continue;
+                
+                    if (isset($_GET['createMissingDomains']))
+                    {
+                        if (!localesManagement::createDomain($locale, $postData['domain']))
+                        {
+                            continue;
+                        }
+                        
+                    } else {
+                        $panthera -> logging -> output('Cannot find "' .$postData['domain']. '" domain for "' .$postData['language']. '" language, skipping', 'langtool');
+                        continue;
+                    }
                 }
             }
             
@@ -201,13 +286,14 @@ if (@$_GET['display'] == 'langtool') {
             
             if (localize($postData['original'], $postData['domain']) != $postData['translation'])
             {
+                $panthera -> logging -> output('Translating string "' .trim($postData['original']). '" => "' .trim($postData['translation']). '" (' .$postData['language']. '::' .$postData['domain']. ')', 'langtool');
                 $languages[$postData['language']][$postData['domain']] -> setString(trim($postData['original']), trim($postData['translation']));
                 $set++;
             }
         }
         
         // save all opened domains
-        foreach ($languages as $lang)
+        foreach ($languages as $langName => $lang)
         {
             foreach ($lang as $domain)
             {
@@ -245,8 +331,9 @@ if (@$_GET['display'] == 'langtool') {
 
         // check if domain and/or language exists
         if (!$domain -> exists())
+        {
             ajax_exit(array('status' => 'failed', 'message' => localize('Selected domain and/or locale does not exists', 'langtool')));
-            
+        }            
             
         /**
           * Adding new string

@@ -1,6 +1,6 @@
 <script type="text/javascript">
 /**
-  * Translate string
+  * Translate strings
   *
   * @author Damian Kęska
   */
