@@ -11,7 +11,10 @@ function saveStrings()
 
     // serialize all forms and put into array
     $('.missingTranslationForm').each(function( index ) {
-        stringsArray.push($(this).serialize());
+        if ($('input[name="translation"]', $(this)).val())
+        {
+            stringsArray.push($(this).serialize());
+        }
     });
     
     // serialized array will be encoded into JSON and then to Base64 and send to server
@@ -205,18 +208,14 @@ function removeDomain(name, locale, n)
                 <tr>
                     <td>
                         <form action="#" method="POST" class="missingTranslationForm">
-                            <small><i>{$value.domain}</i></small>
+                            <small style="float: left;"><i>{$value.domain}</i><br>{$value.file|basename}:{$value.line}</small>
                             <input type="hidden" name="domain" value="{$value.domain}">
                             <input type="hidden" name="language" value="{$locale}">
                             <input type="hidden" name="original" value="{$key|base64_encode}">
                             <input type="hidden" name="originalEncoding" value="base64">
                             <span style="margin-left: 20px;">{$key|htmlspecialchars}</span>
                             
-                            <div style="float: right; margin-bottom: 10px;">
-                                <input type="text" name="translation" style="width: 40%; margin-top: 25px; margin-bottom: 25px;">
-                                <br>
-                                <small style="float: right;">{$value.file|basename}:{$value.line}</small>
-                            </div>
+                            <input type="text" name="translation" style="float: right; width: 40%;">
                         </form>
                     </td>
                     

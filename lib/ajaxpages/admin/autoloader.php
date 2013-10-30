@@ -19,7 +19,7 @@ if(!checkUserPermissions($user, True))
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
     $items = pantheraAutoloader::updateCache();
-    ajax_exit(array('status' => 'success', 'message' => localize('Updated autoloader cache, counting ' .count($items). ' items')));
+    ajax_exit(array('status' => 'success', 'message' => slocalize('Updated autoloader cache, counting %s items', 'system', count($items))));
 }
 
 $titlebar = new uiTitlebar(localize('Autoloader cache'));

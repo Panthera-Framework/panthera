@@ -473,7 +473,7 @@ class localeDomain
         if ($this->dir != "")
             $this->memory = unserialize(file_get_contents($this->dir));
         else
-            throw new Exception('404 "' .$domain. '" domain not found, looked in "' .$this->dir. '" but found nothing... :(', 404);
+            throw new Exception('404 "' .$domain. '" domain not found, looked in content and lib but found nothing... :(', 404);
     }
 
     /**

@@ -270,6 +270,13 @@ if (@$_GET['display'] == 'langtool')
                             continue;
                         }
                         
+                        // just in case
+                        try {
+                            $languages[$postData['language']][$postData['domain']] = new localeDomain($postData['language'], $postData['domain']);
+                        } catch (Exception $e) {
+                            continue;
+                        }
+                        
                     } else {
                         $panthera -> logging -> output('Cannot find "' .$postData['domain']. '" domain for "' .$postData['language']. '" language, skipping', 'langtool');
                         continue;
