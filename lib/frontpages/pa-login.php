@@ -17,7 +17,15 @@ if (isset($_GET['logout']))
     
 // redirect user if already logged in
 if(checkUserPermissions($user))
+{
+    if (!getUserRightAttribute($panthera->user, 'can_access_pa'))
+    {
+        pa_redirect($panthera->config->getKey('redirect_after_login', 'index.php', 'string', 'pa-login'));
+        pa_exit(); // just in case
+    }
+    
     pa_redirect('pa-admin.php');
+}
 
 if (isset($_POST['log']) or isset($_GET['key']))
 {

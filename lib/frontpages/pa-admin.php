@@ -9,7 +9,7 @@
 
 require 'content/app.php';
 
-if (!checkUserPermissions($user, True))
+if (!checkUserPermissions($panthera->user, True) and !getUserRightAttribute($panthera->user, 'can_access_pa'))
 {
     pa_redirect('pa-login.php');
 }

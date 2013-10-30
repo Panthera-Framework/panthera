@@ -38,11 +38,16 @@ function updateMissingStringsCache($locale)
     return $missingStrings;
 }
 
+$permissions = array(
+    'management' => getUserRightAttribute($panthera->user, 'langtool_management'),
+    'admin' => checkUserPermissions($panthera->user, True)
+);
+
+$panthera -> template -> push('permissions', $permissions);
+$panthera -> template -> push('domain', $_GET['domain']);
+
 if (@$_GET['display'] == 'langtool') 
 {
-
-    $tpl = 'langtool.tpl';
-
     $panthera -> locale -> loadDomain('langtool');
 
     // we need to operate on langauge files, so we include some functions here
@@ -57,7 +62,7 @@ if (@$_GET['display'] == 'langtool')
     if ($_GET['action'] == 'domains' or $_GET['action'] == 'view_domain')
     {
         $locale = $_GET['locale'];
-
+        
         if (!localesManagement::getLocaleDir($locale))
             ajax_exit(array('status' => 'failed', 'message' => localize('Locale does not exist')));
             
@@ -68,6 +73,24 @@ if (@$_GET['display'] == 'langtool')
                 $missingStrings = updateMissingStringsCache($locale);
             } else {
                 $missingStrings = $panthera -> varCache -> get('langtool.scan.missing.' .$locale);
+            }
+            
+            // remove domains user don't have permissions to write to
+            foreach ($missingStrings as $domainName => $domain)
+            {
+                // search results also for missing translation strings
+                if (@$_GET['query'])
+                {
+                    if(stripos($domainName, $_GET['query']) === False)
+                    {
+                        unset($missingStrings[$domainName]);
+                    }
+                }
+            
+                if (!getUserRightAttribute($panthera->user, 'langtool_' .$locale. '_' .$domainName) and !$permissions['management'] and !getUserRightAttribute($panthera->user, 'langtool_locale_' .$locale))
+                {
+                    unset($missingStrings[$domainName]);
+                }
             }
         }
         
@@ -90,8 +113,18 @@ if (@$_GET['display'] == 'langtool')
 
     if ($_GET['action'] == 'domains')
     {
-        $tpl = 'langtool_domains.tpl';
-
+    
+        // check permissions - let users view this page but with content user have rights to
+        if (isset($_GET['subaction']))
+        {
+            if (!getUserRightAttribute($panthera->user, 'langtool_locale_' .$locale) and !$permissions['management']) 
+            {
+                $noAccess = new uiNoAccess;
+                $noAccess -> addMetas(array('langtool_locale_' .$locale, 'langtool_management'));
+                $noAccess -> display();
+            }
+        }
+    
         if (isset($_GET['locale']))
         {
             // setting correct icon   
@@ -103,6 +136,12 @@ if (@$_GET['display'] == 'langtool')
             }
             
             $panthera -> template -> push ('flag', $icon);
+            
+            /**
+              * Create a new domain
+              *
+              * @author Mateusz Warzyński
+              */
 
             if ($_GET['subaction'] == 'add_domain')
             {
@@ -114,6 +153,12 @@ if (@$_GET['display'] == 'langtool')
                 
                 ajax_exit(array('status' => 'failed', 'message' => localize('Cannot create domain, please check write permissions on content/locales directory and it\'s subdirectories', 'langtool')));
             }
+            
+            /**
+              * Remove a domain
+              *
+              * @author Mateusz Warzyński
+              */
 
             if ($_GET['subaction'] == 'remove_domain') 
             {
@@ -127,6 +172,12 @@ if (@$_GET['display'] == 'langtool')
                 
                 ajax_exit(array('status' => 'failed', 'message' => localize('Cannot remove domain, please check write permissions on content/locales directory and it\'s subdirectories', 'langtool')));
             }
+            
+            /**
+              * Rename existing domain
+              *
+              * @author Mateusz Warzyński
+              */
 
             if ($_GET['subaction'] == 'rename_domain') 
             {
@@ -161,6 +212,14 @@ if (@$_GET['display'] == 'langtool')
             foreach ($domains as $key => $domain)
             {
                 $dir = localesManagement::getDomainDir($_GET['locale'], str_replace('.phps', '', $domain));
+                $domainName = str_ireplace('.phps', '', $domain);
+                
+                // skip domains user don't have priviledges to
+                if (!getUserRightAttribute($panthera->user, 'langtool_' .$locale. '_' .$domainName) and !$permissions['management'])
+                {
+                    unset($domains[$key]);
+                    continue;
+                }
                 
                 if (substr($dir, 0, strlen(PANTHERA_DIR)) == PANTHERA_DIR and defined('LANGTOOL_DISABLE_LIB'))
                 {
@@ -168,7 +227,7 @@ if (@$_GET['display'] == 'langtool')
                     continue;
                 }
                     
-                $domains[$key] = str_ireplace('.phps', '', $domain);
+                $domains[$key] = $domainName;
             }
             
             // search loop
@@ -188,7 +247,7 @@ if (@$_GET['display'] == 'langtool')
 			$titlebar = new uiTitlebar(localize('Manage domains', 'langtool'));
 			$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/langtool.png', 'left');
 			
-			$template -> display($tpl);
+			$template -> display('langtool_domains.tpl');
 			pa_exit();
         }
     }
@@ -201,6 +260,15 @@ if (@$_GET['display'] == 'langtool')
     
     if ($_GET['action'] == 'createNewLanguage')
     {
+        // check permissions
+        if (!$permissions['management']) 
+        {
+            $noAccess = new uiNoAccess;
+            $noAccess -> addMetas(array('langtool_management'));
+            $noAccess -> display();
+        }
+    
+    
         if (strlen($_POST['languageName']) < 3)
             ajax_exit(array('status' => 'failed', 'message' => localize('Name is too short', 'langtool')));
     
@@ -228,6 +296,8 @@ if (@$_GET['display'] == 'langtool')
         $languages = array (); // here we will store objects of languages and domains
         $set = 0;
         
+        $domainPermissions = array();
+        
         foreach ($data as $form => $string)
         {
             parse_str($string, $data[$form]);
@@ -253,6 +323,21 @@ if (@$_GET['display'] == 'langtool')
             // skip invalid empty strings
             if (!$postData['original'] or !$postData['language'] or !$postData['translation'])
             {
+                continue;
+            }
+            
+            // permissions
+            if (!isset($domainPermissions[$postData['language'].$postData['domain']]))
+            {
+                // save into cache to avoid checking user attribute every time
+                $domainPermissions[$postData['language']] = getUserRightAttribute($panthera->user, 'langtool_locale_' .$postData['language']);
+                $domainPermissions[$postData['language'].$postData['domain']] = getUserRightAttribute($panthera->user, 'langtool_' .$postData['language']. '_' .$postData['domain']);
+            }
+            
+            if (!$domainPermissions[$postData['language'].$postData['domain']] and !$permissions['management'])
+            {
+                // skip entries we don't have permissions to write
+                $panthera -> logging -> output ('No enough permissions to write string in "' .$postData['domain']. '" domain (language: "' .$postData['language']. '")', 'langtool');
                 continue;
             }
             
@@ -324,8 +409,6 @@ if (@$_GET['display'] == 'langtool')
 
     if ($_GET['action'] == 'view_domain')
     {
-        $tpl = 'langtool_viewdomain.tpl';
-
         $locale = $_GET['locale'];
 
         // check if locale exists
@@ -334,6 +417,15 @@ if (@$_GET['display'] == 'langtool')
             
         // get domain name
         $name = str_replace('.phps', '', $_GET['domain']);
+        
+        // check permissions
+        if (!getUserRightAttribute($panthera->user, 'langtool_' .$locale. '_' .$name) and !getUserRightAttribute($panthera->user, 'langtool_locale_' .$locale) and !$permissions['management']) 
+        {
+            $noAccess = new uiNoAccess;
+            $noAccess -> addMetas(array('langtool_' .$locale. '_' .$name, 'langtool_locale_' .$locale, 'langtool_management'));
+            $noAccess -> display();
+        }
+        
         $domain = new localeDomain($locale, $name);
 
         // check if domain and/or language exists
@@ -408,7 +500,6 @@ if (@$_GET['display'] == 'langtool')
 
         // send data to template
         $template -> push('locale', $locale);
-        $template -> push('domain', $_GET['domain']);
 
         // get translated string in other languages
         $translates = array();
@@ -463,7 +554,7 @@ if (@$_GET['display'] == 'langtool')
 		$titlebar = new uiTitlebar(localize('Translates for', 'langtool')." ".$_GET['domain']);
 		$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/langtool.png', 'left');
 		
-		$template -> display($tpl);
+		$template -> display('langtool_viewdomain.tpl');
 		pa_exit();
     }
 
@@ -484,6 +575,7 @@ if (@$_GET['display'] == 'langtool')
 	
 	$titlebar = new uiTitlebar(localize('Manage languages', 'langtool'));
 	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/langtool.png', 'left');
+	
+	$panthera -> template -> display('langtool.tpl');
+	pa_exit();
 }
-
-?>

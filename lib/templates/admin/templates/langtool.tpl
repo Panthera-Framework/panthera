@@ -1,3 +1,4 @@
+{$titleBarInclude='langtool.titlebar'}
 {include="ui.titlebar"}
 
 <div id="topContent" style="min-height: 50px;">

@@ -79,6 +79,7 @@ function removeDomain(name, locale, n)
 }
 </script>
 
+{$titleBarInclude='langtool_domains.titlebar'}
 {include="ui.titlebar"}
 
 <div id="topContent" style="min-height: 50px;">
