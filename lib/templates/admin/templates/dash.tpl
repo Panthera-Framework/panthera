@@ -1,5 +1,14 @@
 {$site_header}
 
+{if="!$showWidgets"}
+<style>
+#ajax_content {
+    background-color: #56687b;
+}
+
+</style>
+{/if}
+
 <script type="text/javascript">
 var widgetsUnlocked = 0;
 

@@ -11,57 +11,54 @@
 if (!defined('IN_PANTHERA'))
     exit;
 
-if (!getUserRightAttribute($user, 'can_see_dash')) {
-    $noAccess = new uiNoAccess; $noAccess -> display();
-    pa_exit();
-}
-
 // dash have it's own configuration section
 $panthera -> config -> loadSection('dash');
 
 $panthera -> locale -> loadDomain('dash');
 $panthera -> template -> push('widgetsUnlocked', 0);
 
-
-/**
-  * Remove widget from dashboard
-  *
-  * @param string $widget
-  * @author Damian Kęska
-  */
-
-if ($_GET['action'] == 'remove')
+if (getUserRightAttribute($panthera->user, 'can_see_dash'))
 {
-    $widgets = $panthera -> config -> getKey('dash.widgets');
+    /**
+      * Remove widget from dashboard
+      *
+      * @param string $widget
+      * @author Damian Kęska
+      */
 
-    // disable widget
-    if(array_key_exists($_GET['widget'], $widgets))
-    {
-        $widgets[$_GET['widget']] = False;
-    }
-
-    $panthera -> config -> setKey('dash.widgets', $widgets, 'array', 'dash');
-    $panthera -> template -> push('widgetsUnlocked', 1);
-
-/**
-  * Add a widget from /modules/dash/ directory or builtin (gallery or lastLogged)
-  *
-  * @param string $widget
-  * @author Damian Kęska
-  */
-
-} elseif ($_GET['action'] == 'add') {
-
-    $widget = addslashes(str_replace('/', '', $_GET['widget']));
-
-    if (is_file(PANTHERA_DIR. '/modules/dash/' .$widget. '.widget.php') or is_file(SITE_DIR. '/content/modules/dash/' .$widget. '.widget.php') or $widget == 'gallery' or $widget == 'lastLogged')
+    if ($_GET['action'] == 'remove')
     {
         $widgets = $panthera -> config -> getKey('dash.widgets');
-        $widgets[$widget] = True;
-        $panthera -> config -> setKey('dash.widgets', $widgets, 'array', 'dash');
-    }
 
-    $panthera -> template -> push('widgetsUnlocked', 1);
+        // disable widget
+        if(array_key_exists($_GET['widget'], $widgets))
+        {
+            $widgets[$_GET['widget']] = False;
+        }
+
+        $panthera -> config -> setKey('dash.widgets', $widgets, 'array', 'dash');
+        $panthera -> template -> push('widgetsUnlocked', 1);
+
+    /**
+      * Add a widget from /modules/dash/ directory or builtin (gallery or lastLogged)
+      *
+      * @param string $widget
+      * @author Damian Kęska
+      */
+
+    } elseif ($_GET['action'] == 'add') {
+
+        $widget = addslashes(str_replace('/', '', $_GET['widget']));
+
+        if (is_file(PANTHERA_DIR. '/modules/dash/' .$widget. '.widget.php') or is_file(SITE_DIR. '/content/modules/dash/' .$widget. '.widget.php') or $widget == 'gallery' or $widget == 'lastLogged')
+        {
+            $widgets = $panthera -> config -> getKey('dash.widgets');
+            $widgets[$widget] = True;
+            $panthera -> config -> setKey('dash.widgets', $widgets, 'array', 'dash');
+        }
+
+        $panthera -> template -> push('widgetsUnlocked', 1);
+    }
 }
 
 // default list of pages displayed in dash
@@ -151,8 +148,10 @@ list($menu, $category) = $panthera -> get_filters('dash_menu', array($menu, $_GE
   *
   * @author Damian Kęska
   */
+  
+$panthera -> template -> push('showWidgets', getUserRightAttribute($panthera->user, 'can_see_dash'));
 
-if ($panthera->config->getKey('dash.enableWidgets', 1, 'bool', 'dash'))
+if ($panthera->config->getKey('dash.enableWidgets', 1, 'bool', 'dash') and getUserRightAttribute($panthera->user, 'can_see_dash'))
 {
     $settings = $panthera -> config -> getKey('dash.widgets', array('gallery' => True, 'lastLogged' => True), 'array', 'dash');
     $widgets = False;

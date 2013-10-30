@@ -30,6 +30,16 @@
             <li>{function="localize('Please check account you are using', 'login')"}</li>
             <li>{function="localize('If you think you should be able to access this page please contact Administrator', 'login')"}</li>
         </ul>
+        
+        {if="count($uiNoAccess['metas']) > 0"}
+        <h3 style="margin-left: 25px;">{function="localize('List of possible priviledges that can be set for you to make this page accessible', 'login')"}:</h3>
+        <ul>
+            {loop="$uiNoAccess.metas"}
+            <li>{$value}</li>
+            {/loop}
+        </ul>
+        {/if}
+        
         {else}
         <h2 style="margin-left: 25px; margin-top: 80px;">{function="localize('To continue you must first sign in', 'login')"}.</h2>
     
