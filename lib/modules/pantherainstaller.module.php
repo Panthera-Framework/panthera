@@ -30,6 +30,7 @@ class pantheraInstaller
         }
         
         $panthera -> importModule('rwjson');
+        $panthera -> importModule('libtemplate');
         
         if (!is_dir(SITE_DIR. '/content/installer'))
             mkdir(SITE_DIR. '/content/installer');
@@ -43,7 +44,7 @@ class pantheraInstaller
         
         // merge webroot if not merged
         if (!is_dir(SITE_DIR. '/images') or !is_dir(SITE_DIR. '/js') or !is_dir(SITE_DIR. '/css'))
-            $panthera -> template -> webrootMerge(array('installer', 'admin'));
+            libtemplate::webrootMerge(array('installer', 'admin'));
         
         // temporary database for installer
         $this -> config = (object)json_decode(file_get_contents($index));

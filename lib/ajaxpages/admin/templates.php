@@ -24,7 +24,7 @@ if (!getUserRightAttribute($user, 'can_manage_templates')) {
 
 if ($_GET['action'] == 'webrootMerge')
 {
-    $merge = $panthera -> template -> webrootMerge();
+    $merge = libtemplate::webrootMerge();
     ajax_exit(array('status' => 'success', 'result' => $merge));
 
 /**
@@ -39,7 +39,7 @@ if ($_GET['action'] == 'webrootMerge')
     if ($template == '')
         $template = False;
 
-    return ajax_exit(array('status' => 'success', 'current' => $panthera -> config -> getKey('template'), 'result' => $panthera -> template -> listTemplates($template)));
+    return ajax_exit(array('status' => 'success', 'current' => $panthera -> config -> getKey('template'), 'result' => libtemplate::listTemplates($template)));
 
 /**
   * Setting template
@@ -50,7 +50,7 @@ if ($_GET['action'] == 'webrootMerge')
 } elseif ($_GET['action'] == 'setTemplate') {
     $template = addslashes($_GET['template']);
 
-    $templates = $panthera -> template -> listTemplates();
+    $templates = libtemplate::listTemplates();
     
     unset($templates['admin']);
     unset($templates['admin_mobile']);
@@ -131,7 +131,7 @@ $config = array ('template_caching' => $panthera -> config -> getKey('template_c
                  'template_debugging' => $panthera -> config -> getKey('template_debugging')
                 );
                 
-$templates = $panthera -> template -> listTemplates();
+$templates = libtemplate::listTemplates();
 
 unset($templates['admin']);
 unset($templates['admin_mobile']);

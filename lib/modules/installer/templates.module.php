@@ -16,9 +16,10 @@ global $panthera;
 global $installer;
 
 $panthera -> importModule('rwjson');
+$panthera -> importModule('libtemplate');
 
 $templates = array();
-$tpl = $panthera -> template -> listTemplates();
+$tpl = libtemplate::listTemplates();
 
 if ($_GET['action'] == 'createView')
 {
@@ -116,7 +117,7 @@ if ($_GET['action'] == 'createView')
     }
 }
 
-foreach ($panthera -> template -> listTemplates() as $key => $value)
+foreach (libtemplate::listTemplates() as $key => $value)
 {
     if ($key == 'installer' or substr($key, 0, 5) == 'admin')
     {
