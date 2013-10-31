@@ -9,17 +9,17 @@
 
 class pantheraWorker extends cliApp
 {
-    const maxThreads = 4;
-    const maxPerThread = 10;
+    protected static $maxThreads = 4;
+    protected static $maxPerThread = 10;
     
     protected $socketAddress = null; // custom socket address (can be TCP, UDP or UNIX)
     protected $db = array(); // here will be stored all items
     protected $logging = True;
     protected $quietWorkers = True;
-    protected $assigned = array(); // list of elements already assigned to any process
     protected $refreshDatabseOnFinish = False;
     
     // counters
+    protected $assigned = array(); // list of elements already assigned to any process
     protected $processedItems = 0;
 
     /**
@@ -92,16 +92,15 @@ class pantheraWorker extends cliApp
     {
         // our database
         $this->db = $this->getDatabase();
-        $spawnWorkers = self::maxThreads;
-        $socketAddress = 'unix:///tmp/pantheraWorker-' .rand(999, 9999). '.sock';
+        $spawnWorkers = static::$maxThreads;
         //$socketAddress = 'tcp://0.0.0.0:8000';
         
-        if ($this->socketAddress)
-            $socketAddress = $this->socketAddress;
+        if (!$this->socketAddress)
+            $socketAddress = $this->socketAddress = 'unix:///tmp/pantheraWorker-' .rand(999, 9999). '.sock';
         
-        if (count($this->db)/self::maxPerThread < $spawnWorkers)
+        if (count($this->db)/static::$maxPerThread < $spawnWorkers)
         {
-            $spawnWorkers = intval(count($this->db)/self::maxPerThread);
+            $spawnWorkers = intval(count($this->db)/static::$maxPerThread);
             
             if ($spawnWorkers < 1)
             {
@@ -142,7 +141,7 @@ class pantheraWorker extends cliApp
                         $newArr[$key] = $dataRow;
                         $this->assigned[$key] = True;
                         
-                        if ($i >= self::maxPerThread)
+                        if ($i >= static::$maxPerThread)
                         {
                             break;
                         }
@@ -156,18 +155,30 @@ class pantheraWorker extends cliApp
                 $this -> processedItems += count($request['data']);
             }
             
-            if ($this -> processedItems >= count($this->db) or count($this -> assigned) >= count($this->db))
+            if ($this -> processedItems >= count($this->db))
             {
+                echo '=============================aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa======================';
+            
                 if ($this->refreshDatabseOnFinish)
                 {
+                    $this -> panthera -> logging -> output('Refreshing database', 'pantheraWorker');
                     $this -> db = $this -> getDatabase();
                 } else {
                     $test = $this -> onExit();
                     
                     if ($test)
                     {
+                        $this -> panthera -> logging -> output('Executing onExit action', 'pantheraWorker');
                         $this -> db = $test;
+                        
+                        if (!$this->db)
+                        {
+                            @fclose($socket);
+                            pa_exit();
+                        }
+                        
                     } else {
+                        $this -> panthera -> logging -> output('No more work to do, closing server connection', 'pantheraWorker');
                         @fclose($socket);
                         pa_exit();
                     }
@@ -290,10 +301,17 @@ class pantheraWorker extends cliApp
     protected function _clientSendData($data)
     {
         $socket = stream_socket_client($this->argv['long']['socket'], $errorno, $errorstr, 32);
+        
+        if (!$socket)
+        {
+            $this -> panthera -> logging -> output('Master is down, closing thread', 'pantheraWorker');
+            pa_exit();
+        }
+        
         fwrite($socket, json_encode($data));
         $response = '';
         
-        while (!feof($socket))
+        while (!@feof($socket))
         {
             $response .= fread($socket, 1024);
         }
