@@ -13,7 +13,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $('#settingsFormSave').submit(function () {
-            panthera.jsonPOST( { data: '#settingsFormSave', spinner: new panthera.ajaxLoader($('#settingsFormSaveDiv')), messageBox: 'w2ui', mce: 'tinymce_all' });
+            panthera.jsonPOST( { data: '#settingsFormSave', messageBox: 'w2ui', mce: 'tinymce_all' });
             return false; 
         });
         
