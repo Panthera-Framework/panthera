@@ -480,6 +480,41 @@ class pantheraDB
     }
     
     /**
+      * Build a simple "UPDATE" string
+      *
+      * @param array $array
+      * @return array with query and values
+      * @author Damian Kęska
+      */
+    
+    public function buildUpdateString($array, $ignore=null)
+    {
+        if (!is_array($array))
+        {
+            return False;
+        }
+        
+        if (!is_array($ignore))
+        {
+            $ignore = array();
+        }
+        
+        $updateString = '';
+        
+        foreach ($array as $key => $value)
+        {
+            if (in_array($key, $ignore))
+            {
+                continue;
+            }
+        
+            $updateString .= '`' .$key. '` = :' .$key. ', ';
+        }
+        
+        return array('query' => trim($updateString, ', '), 'values' => $array);
+    }
+    
+    /**
       * Build a SQL insert query string with single or multiple rows
       *
       * @param array $array Input array containing keys and values eg. array('id' => 1, 'title' => 'Test'), and for multiple rows: array(array('id' => 1, 'title' => 'First'), array('id' => 2, 'title' => 'Second'))

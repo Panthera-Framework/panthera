@@ -352,7 +352,7 @@ abstract class cliApp
     /**
      * Don't close window immediately, just wait for user input
      *
-     * @return void
+     * @return string
      * @author Damian Kęska
      */
 
@@ -361,7 +361,7 @@ abstract class cliApp
         if (!is_int($time))
             $time = $this->sleepTime;
 
-        $this->screen->readline($time);
+        return $this->screen->readline($time);
     }
 
     /**
