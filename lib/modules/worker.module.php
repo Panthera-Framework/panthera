@@ -157,12 +157,11 @@ class pantheraWorker extends cliApp
             
             if ($this -> processedItems >= count($this->db))
             {
-                echo '=============================aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa======================';
-            
                 if ($this->refreshDatabseOnFinish)
                 {
                     $this -> panthera -> logging -> output('Refreshing database', 'pantheraWorker');
                     $this -> db = $this -> getDatabase();
+                    $this -> processedItems = 0;
                 } else {
                     $test = $this -> onExit();
                     
@@ -176,6 +175,8 @@ class pantheraWorker extends cliApp
                             @fclose($socket);
                             pa_exit();
                         }
+                        
+                        $this -> processedItems = 0;
                         
                     } else {
                         $this -> panthera -> logging -> output('No more work to do, closing server connection', 'pantheraWorker');
