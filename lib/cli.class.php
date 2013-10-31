@@ -160,6 +160,8 @@ abstract class cliApp
     public function __construct()
     {
         global $panthera;
+        global $argv;
+        
         $this->panthera = $panthera;
 
         /*if (function_exists('pcntl_signal'))
@@ -175,6 +177,8 @@ abstract class cliApp
 
         // dont mess logs when in cli mode
         $panthera -> logging -> tofile = False;
+        
+        $this -> argv = CommandLine::parseArgs($argv);
 
         // signal handler
         $panthera->add_option('cliSignal', array($this, 'signalHandler'));
