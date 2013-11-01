@@ -111,6 +111,14 @@ function addGroup(acl)
     </tr>
 
     </tbody>
+    
+    <tfoot>
+    <tr>
+      <td colspan="2" style="padding-top: 35px;">
+         <input type="button" value="{function="localize('Cancel')"}" onclick="panthera.popup.close()" style="float: right;">
+      </td>
+    </tr>
+    </tfoot>
 </table>
 {elseif="$action == 'disabled'"}
 <h2>{function="localize('Permissions management is currently disabled in website settings', 'acl')"}</h2>
