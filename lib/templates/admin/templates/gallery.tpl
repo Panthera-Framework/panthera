@@ -84,6 +84,7 @@
         </tfoot>
         
     </table>
+    <input type="text" name="language" value="{$set_locale}" style="display: none;">
    </form>
    
    <script type="text/javascript">

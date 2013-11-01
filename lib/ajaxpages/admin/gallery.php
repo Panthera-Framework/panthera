@@ -278,7 +278,7 @@ if ($_GET['action'] == 'createCategory')
     
     if (isset($_POST['visibility']))
     {
-        if (gallery::createCategory(htmlspecialchars($_POST['name']), $panthera->user->login, $panthera->user->id, $panthera->user->language, intval($_POST['visibility']), $panthera->user->full_name))
+        if (gallery::createCategory(htmlspecialchars($_POST['name']), $panthera->user->login, $panthera->user->id, $_POST['language'], intval($_POST['visibility']), $panthera->user->full_name))
             ajax_exit(array('status' => 'success'));
         else
             ajax_exit(array('status' => 'failed', 'error' => localize('Unknown error', 'gallery')));
@@ -852,6 +852,7 @@ if (defined('GALLERY_FILTER'))
     $template -> push('category_filter', $_GET['filter']);
 
 $template -> push('category_list', $categoriesFiltered);
+$template -> push('set_locale', $panthera -> locale -> getActive());
 
 $titlebar = new uiTitlebar(localize('Gallery'));
 $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');
