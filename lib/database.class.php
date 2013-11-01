@@ -702,7 +702,7 @@ class pantheraDB
         {
             $unique = $seoUrl = $title;
         } else {
-            $unique = $seroUrl = generateRandomString(8);
+            $unique = $seoUrl = generateRandomString(8);
         }
         
         $i = 0;
