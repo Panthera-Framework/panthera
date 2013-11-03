@@ -46,8 +46,8 @@ if ($_GET['action'] == 'saveCategoryDetails')
     if (!$gallery -> exists())
         ajax_exit(array('status' => 'failed', 'message' => localize('There is no such category', 'gallery')));
 
-    //if ($panthera->locale->exists($_POST['language']))
-    //    $gallery -> language = $_POST['language'];
+    if ($panthera->locale->exists($_POST['language']))
+        $gallery -> language = $_POST['language'];
 
     if (strlen($_POST['title']) > 0)
         $gallery -> title = $_POST['title'];

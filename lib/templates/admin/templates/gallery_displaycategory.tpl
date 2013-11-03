@@ -180,7 +180,7 @@
                 <th><input type="checkbox" name="all_langs" value="1"{if="$all_langs"} checked{/if} id="all_langs_checkbox"></th>
             </tr>
             
-            <!-- <tr {if="$all_langs"}style='display: none;'{/if} id="language_input">
+            <tr {if="$all_langs"}style='display: none;'{/if} id="language_input">
                 <th>{function="localize('Save this gallery in', 'gallery')"}:</th>
                 <th>
                     <select name="language">
@@ -189,7 +189,7 @@
                     {/loop}
                     </select>
                 </th>
-            </tr> -->
+            </tr>
         </tbody>
         
         <tfoot>
