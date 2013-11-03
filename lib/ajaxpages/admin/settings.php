@@ -245,6 +245,9 @@ $defaults['content']['custompages'] = array(
     'linkType' => 'ajax'
 );
 
+// hook some icons
+$defaults = $panthera -> get_filters('ajaxpages.settings', $defaults);
+
 // titlebar
 $titlebar = new uiTitlebar(localize('Settings', 'settings'));
 $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/settings.png', 'left');
