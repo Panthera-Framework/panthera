@@ -2,6 +2,7 @@
 	position: absolute;
 	z-index: 9999999;
 	display: none;
+	border: solid 1px #6E8093;
 }
 
 .searchBarDropdown .searchBarDropdown-menu,
@@ -11,7 +12,7 @@
 	list-style: none;
 	background: #404C5A;
 	overflow: visible;
-	padding: 1px 0;
+	padding: 0px 0;
 	margin: 0;
 }
 
@@ -54,6 +55,7 @@
 .searchBarDropdown.searchBarDropdown-tip.searchBarDropdown-anchor-right:after {
 	left: auto;
 	right: 10px;
+	border: solid 1px #6E8093;
 }
 
 
@@ -101,10 +103,3 @@
 	background-position: 8px center;
 	background-repeat: no-repeat;
 }
-
-.searchBarDropdown .undo A { background-image: url(icons/arrow-curve-180-left.png); }
-.searchBarDropdown .redo A { background-image: url(icons/arrow-curve.png); }
-.searchBarDropdown .cut A { background-image: url(icons/scissors.png); }
-.searchBarDropdown .copy A { background-image: url(icons/document-copy.png); }
-.searchBarDropdown .paste A { background-image: url(icons/clipboard.png); }
-.searchBarDropdown .delete A { background-image: url(icons/cross-script.png); }

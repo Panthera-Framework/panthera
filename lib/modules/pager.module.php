@@ -28,14 +28,14 @@ class Pager
 	 * @author Damian Kęska
 	 */
 
-    public function __construct($max, $perPage='')
+    public function __construct($max, $perPage='', $defaultOnPage=16)
     {
         $this->max = $max;
         $this->perPage = intval($perPage);
         
         if (is_string($perPage))
         {
-            $pager = self::getPagerFromTable($perPage);
+            $pager = self::getPagerFromTable($perPage, intval($defaultOnPage));
             $this->perPage = $pager['perPage'];
             $this->maxLinks = $pager['maxLinks'];
         }
@@ -57,7 +57,7 @@ class Pager
       * @author Damian Kęska
       */
     
-    public static function getPagerFromTable($name)
+    public static function getPagerFromTable($name, $defaultOnPage=16)
     {
         global $panthera;
         $panthera -> logging -> output ('Getting pager name "' .$name. '" from pager table', 'Pager');
@@ -65,7 +65,12 @@ class Pager
         
         if (!isset($pagerData[$name]))
         {
-            $pagerData[$name] = array('perPage' => 5, 'maxLinks' => 6);
+            if (intval($defaultOnPage) < 1)
+            {
+                $defaultOnPage = 16;
+            }
+        
+            $pagerData[$name] = array('perPage' => 5, 'maxLinks' => $defaultOnPage);
             $panthera -> config -> setKey('pager', $pagerData, 'array', 'ui');
             $panthera -> config -> save(); // just in case...
         }

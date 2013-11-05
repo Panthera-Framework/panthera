@@ -19,7 +19,7 @@ class uiPager
     public static $pagers;
     protected $barName = "";
     
-    public function __construct ($name, $totalItems, $maxOnPage='')
+    public function __construct ($name, $totalItems, $maxOnPage='', $defaultOnPage=16)
     {
         global $panthera;
         $this -> name = $name;
@@ -41,7 +41,8 @@ class uiPager
             'backBtn' => False,
             'nextBtn' => False,
             'pages' => 0,
-            'object' => $this
+            'object' => $this,
+            'defaultOnPage' => intval($defaultOnPage),
         );
         
         $panthera -> add_option('template.display', array($this, 'applyToTemplate'));
@@ -160,7 +161,7 @@ class uiPager
     
     protected function build()
     {
-        $this -> pager = new Pager(self::$pagers[$this->name]['total'], self::$pagers[$this->name]['pageMax']);
+        $this -> pager = new Pager(self::$pagers[$this->name]['total'], self::$pagers[$this->name]['pageMax'], self::$pagers[$this->name]['defaultOnPage']);
         $this -> pager -> maxLinks = self::$pagers[$this->name]['maxLinks'];
         self::$pagers[$this->name]['pageLimit'] = $this -> pager -> getPageLimit(self::$pagers[$this->name]['active']);
         

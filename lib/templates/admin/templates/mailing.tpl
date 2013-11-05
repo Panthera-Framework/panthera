@@ -98,20 +98,7 @@ function callback_getContactData(data)
                  </tr>
          </thead>
          
-         <tfoot>
-             <tr>
-                 <td colspan="2">
-                      <input type="button" value="{function="localize('Cancel')"}" onclick="panthera.popup.close()" style="float: left; margin-left: 30px;">
-                      <!-- <a href="#" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_send_mails', 1024, 600);" title="{function="localize('Manage permissions')"}">
-                        <img src="{$PANTHERA_URL}/images/admin/ui/permissions.png" style="max-height: 23px; margin-left: 3px; vertical-align: middle; padding-bottom: 5px;">
-                      </a> -->
-                        
-                      <input type="button" value="{function="localize('Send', 'mailing')"}"  style="float: right; margin-right: 30px;" onclick="$('#mail_form').submit();">
-                 </td>
-             </tr>
-         </tfoot>
-
-          <tbody>
+         <tbody>
                <tr>
                    <th>{function="localize('Subject', 'mailing')"}</th>
                    <th colspan="2"><input type="text" name="subject" value="{$last_subject}" style="width: 445px;"></th>
@@ -133,6 +120,19 @@ function callback_getContactData(data)
                    <th colspan="2"><textarea style="width: 450px; max-width: 450px; min-width: 450px; height: 150px; background-color: #3d4957; outline: 1px solid #3d4957; border: solid 1px #7c8a98;" name="body">{$last_body}</textarea></th>
                </tr>
           </tbody>
+          
+          <tfoot>
+             <tr>
+                 <td colspan="2">
+                      <input type="button" value="{function="localize('Cancel')"}" onclick="panthera.popup.close()" style="float: left; margin-left: 30px;">
+                      <!-- <a href="#" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_send_mails', 1024, 600);" title="{function="localize('Manage permissions')"}">
+                        <img src="{$PANTHERA_URL}/images/admin/ui/permissions.png" style="max-height: 23px; margin-left: 3px; vertical-align: middle; padding-bottom: 5px;">
+                      </a> -->
+                        
+                      <input type="button" value="{function="localize('Send', 'mailing')"}"  style="float: right; margin-right: 30px;" onclick="$('#mail_form').submit();">
+                 </td>
+             </tr>
+         </tfoot>
          </form>
       </table>
       

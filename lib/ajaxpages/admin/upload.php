@@ -16,9 +16,15 @@ $panthera -> importModule('simpleImage');
 $panthera -> importModule('pager');
 $panthera -> locale -> loadDomain('files');
 
+$permissions = array(
+    'admin' => checkUserPermissions($panthera->user, True)
+);
+
+$panthera -> template -> push ('permissions', $permissions);
+
 if (isset($_GET['popup']))
 {
-    if (!checkUserPermissions($user))
+    if (!checkUserPermissions($panthera->user))
     {
         $noAccess = new uiNoAccess; $noAccess -> display();
         $panthera->finish();
@@ -51,11 +57,29 @@ if (isset($_GET['popup']))
         // maybe permissions error?
         $panthera -> logging -> output ('upload::Cannot delete upload, check permissions of a file ' .$file->location);
         ajax_exit(array('status' => 'failed', 'message' => localize('Unknown error')));
-
+    }
+    
+    /**
+      * Display file upload page
+      *
+      * @author Damian Kęska
+      */
+    
+    if ($_GET['action'] == 'uploadFileWindow')
+    {
+        if (!getUserRightAttribute($user, 'can_upload_files'))
+            ajax_exit(array('status' => 'failed', 'message' => localize('You are not allowed to upload files', 'files')));
+            
+        $panthera -> template -> display('upload_newfile.tpl');
+        pa_exit();
     }
 
 
-    // ==== HANDLE UPLOAD ====
+    /**
+      * Handle file upload
+      *
+      * @author Damian Kęska
+      */
 
     if ($_GET['action'] == 'handle_file')
     {
@@ -102,36 +126,59 @@ if (isset($_GET['popup']))
         $public = 0;
 
         if (strlen($description) > 511)
+        {
             ajax_exit(array('status' => 'failed', 'message' => localize('Description is too long, out of 512 characters range')));
-
+        }
+        
         $uploadID = handleUpload($_FILES['input_file'], $directory, $user->id, $user->login, $protected, $public, $mime, $description);
 
         if ($uploadID)
+        {
             ajax_exit(array('status' => 'success', 'upload_id' => $uploadID));
-
+        }
+        
         ajax_exit(array('status' => 'failed', 'message' => localize('Unknown error')));
     }
 
 
-    if ($_GET['action'] == 'display_list')
-        $template -> push('action', 'display_list');
-
-
-    // ==== LIST OF UPLOADED FILES
-
-    $page = intval(@$_POST['page']);
-    $count = getUploadedFiles('', False);
+    /**
+      * List of uploaded files
+      *
+      * @author Damian Kęska
+      */
+      
+    $by = array('uploader_login' => $panthera -> user -> login);
+    $panthera -> template -> push('seeOtherUsersUploads', False);
+    
+    if ($permissions['admin'] and isset($_GET['otherUsers']))
+    {
+        if ($_GET['otherUsers'] == 'true')
+        {
+            $panthera -> session -> set('pa.upload.otherusers', true);
+        } else {
+            $panthera -> session -> set('pa.upload.otherusers', false);
+        }
+    }
+    
+    if ($panthera->session->get('pa.upload.otherusers'))
+    {
+        $by = '';
+        $panthera -> template -> push('seeOtherUsersUploads', True);
+    }
+    
+    $page = intval(@$_GET['page']);
+    $count = getUploadedFiles($by, False);
 
     if ($page < 0)
         $page = 0;
-    
+        
     // pager
-    $uiPager = new uiPager('adminUpload', $count, 'adminUpload');
+    $uiPager = new uiPager('adminUpload', $count, 'adminUpload', 16);
     $uiPager -> setActive($page); // ?display=upload&cat=admin&popup=true&action=display_list
-    $uiPager -> setLinkTemplates('#', 'getUploadsPage(\'page={$page}\', 1300, 550);');
+    $uiPager -> setLinkTemplatesFromConfig('upload.tpl');
     $limit = $uiPager -> getPageLimit();
 
-    $files = getUploadedFiles('', $limit[1], $limit[0]); // raw list
+    $files = getUploadedFiles($by, $limit[1], $limit[0]); // raw list
     $filesTpl = array(); // list passed to template
 
     foreach ($files as $key => $value)
@@ -149,7 +196,7 @@ if (isset($_GET['popup']))
         // getting icon by mime type
         $fileType = fileTypeByMime($value->mime);
         $icon = $value->getThumbnail('200');
-        $panthera -> logging -> output ('upload::Checking for icon: ' .$icon. ' for type ' .$fileType);
+        $panthera -> logging -> output ('Checking for icon: ' .$icon. ' for type ' .$fileType, 'upload');
         
         // give user rights to delete file, create the button
         if (($user->id == $value->uploader_id and getUserRightAttribute($user, 'can_delete_own_uploads')) or getUserRightAttribute($user, 'can_manage_all_uploads'))
@@ -159,13 +206,16 @@ if (isset($_GET['popup']))
     }
 
     if (getUserRightAttribute($user, 'can_upload_files'))
+    {
         $template -> push('upload_files', True);
-
+    }
+    
     $panthera -> template -> push('max_file_size', $panthera -> config -> getKey('upload_max_size', 3145728, 'int')); // default 3 mbytes
     $panthera -> template -> push('files', $filesTpl);
     $panthera -> template -> push('callback_name', $_GET['callback']);
     $panthera -> template -> push('user_login', $user->login);
     $panthera -> template -> display('upload.tpl');
+    pa_exit();
 }
 
 pa_exit();

@@ -69,7 +69,7 @@ $defaults['debug'] = array('link' => '?display=debug&cat=admin', 'name' => array
 $defaults['mailing'] = array('link' => '?display=mailing&cat=admin', 'name' => array('Mailing', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/mail-replied.png', 'linkType' => 'ajax');
 $defaults['newsletter'] = array('link' => '?display=newsletter&cat=admin', 'name' => array('Newsletter'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/newsletter.png', 'linkType' => 'ajax');
 $defaults['gallery'] = array('link' => '?display=gallery&cat=admin', 'name' => array('Gallery'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/gallery.png', 'linkType' => 'ajax');
-$defaults['upload'] = array('link' => 'createPopup(\'_ajax.php?display=upload&cat=admin&popup=true&callback=upload_file_callback\', 1300, 550);', 'name' => localize('Uploads', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/uploads.png', 'linkType' => 'onclick');
+$defaults['upload'] = array('link' => 'panthera.popup.toggle(\'_ajax.php?display=upload&cat=admin&popup=true\');', 'name' => localize('Uploads', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/uploads.png', 'linkType' => 'onclick');
 $defaults['contact'] = array('link' => '?display=contact&cat=admin', 'name' => array('Contact'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/contact.png', 'linkType' => 'ajax');
 $defaults['custom'] = array('link' => '?display=custom&cat=admin', 'name' => array('Custom pages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/custom-pages.png', 'linkType' => 'ajax');
 $defaults['messages'] = array('link' => '?display=messages&cat=admin', 'name' => array('Quick messages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/messages.png', 'linkType' => 'ajax');

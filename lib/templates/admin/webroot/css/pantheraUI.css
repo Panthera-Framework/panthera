@@ -1003,3 +1003,104 @@ ul.dropdown li:hover > a.dir {
   100% { transform: rotate(360deg); transform: rotate(360deg); }
 }
 
+.wrap
+{
+	background: rgba(214, 214, 214, 0.5);
+	border: solid rgba(0, 0, 0, 0.5) 1px;
+	border-collapse: collapse;
+	float: left;
+	height: 350px;
+	margin: 10px;
+	margin-bottom: 25px;
+	margin-left: 20px;
+	margin-right: 0px;
+	moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+	ms-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+	o-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+	overflow: hidden;
+	position: relative;
+	webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+	width: 70%;
+}
+.uploadToolbox
+{
+	background: rgba(214, 214, 214, 0.5);
+	border: solid rgba(0, 0, 0, 0.5) 1px;
+	border-collapse: collapse;
+	float: right;
+	height: 350px;
+	margin: 10px;
+	moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+	ms-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+	o-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+	webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+	width: 25%;
+}
+.uploadToolBoxInner
+{
+	padding-left: 20px;
+	padding-top: 10px;
+}
+.uploadBox
+{
+	display: inline-block;
+	height: 90px;
+	margin-right: 10px;
+	position: relative;
+	width: 120px;
+}
+.boxInner
+{
+	background: #56687B;
+	border: solid rgba(0, 0, 0, 0.5) 1px;
+	bottom: 10px;
+	left: 10px;
+	moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+	ms-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+	o-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+	overflow: hidden;
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+.boxInner img
+{
+	cursor: pointer;
+	max-height: 56px;
+	max-width: 120px;
+	min-height: 40px;
+	min-width: 40px;
+}
+.boxImg
+{
+	align: top;
+	max-height: 65px;
+	max-width: 65px;
+	vertical-align: middle;
+}
+.boxInner .titleBox
+{
+	background: #000;
+	background: rgba(0, 0, 0, 0.5);
+	bottom: 0;
+	color: #FFF;
+	font-size: 11px;
+	left: 0;
+	padding: 6px;
+	position: absolute;
+	right: 0;
+	text-align: center;
+	word-break: break-all;
+}
+.uploadBoxCentered
+{
+	background-color: #404C5A;
+	border: solid 1px #6E8093;
+	margin: 0 auto;
+	margin-bottom: 30px;
+	margin-top: 30px;
+	min-height: 300px;
+	position: relative;
+	width: 65%;
+}

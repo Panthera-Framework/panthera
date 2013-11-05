@@ -300,11 +300,16 @@ function handleUpload($file, $category, $uploaderID, $uploaderLogin, $protected,
         return False;
 
     if (filesize($file['tmp_name']) > $panthera -> config -> getKey('upload_max_size'))
+    {
+        $panthera -> logging -> output('Upload_max_size reached, rejecting file', 'upload');
         return False;
+    }
 
     if ($mime == '')
+    {
         $mime = getFileMimeType($file['name']);
-
+    }
+    
     $name = $file['name'];
     $fileInfo = pathinfo($name);
 
@@ -332,7 +337,7 @@ function handleUpload($file, $category, $uploaderID, $uploaderLogin, $protected,
         }
     }
 
-    $panthera -> logging -> output('upload.module::Moving uploaded file from ' .$file['tmp_name']. ' to ' .$uploadDir. '/' .$name);
+    $panthera -> logging -> output('Moving uploaded file from ' .$file['tmp_name']. ' to ' .$uploadDir. '/' .$name, 'upload');
     rename($file['tmp_name'], $uploadDir. '/' .$name);
     chmod($uploadDir. '/' .$name, 0655);
 
@@ -360,7 +365,7 @@ function handleUpload($file, $category, $uploaderID, $uploaderLogin, $protected,
             $dir = SITE_DIR. '/' .$panthera -> config -> getKey('upload_dir'). '/_thumbnails';
             $fileInfo = pathinfo($name);
 
-            $panthera -> logging -> output('upload.module::Attempting to create a thumbnail - ' .$dir. '/200px_' .$fileInfo['filename']. '.jpg');
+            $panthera -> logging -> output('Attempting to create a thumbnail - ' .$dir. '/200px_' .$fileInfo['filename']. '.jpg', 'upload');
             $simpleImage = new SimpleImage();
             $simpleImage -> load($uploadDir. '/' .$name);
             $simpleImage -> resizeToWidth(200); // resize to 100px width
@@ -371,6 +376,7 @@ function handleUpload($file, $category, $uploaderID, $uploaderLogin, $protected,
         $panthera -> db -> query('INSERT INTO `{$db_prefix}uploads` (`id`, `category`, `location`, `description`, `icon`, `mime`, `uploader_id`, `uploader_login`, `protected`, `public`) VALUES (NULL, :category, :location, :description, :icon, :mime, :uploader_id, :uploader_login, :protected, :public);', $values);
         
         return $panthera -> db -> sql -> lastInsertId();
+        
     } else
         $panthera -> logging -> output('upload.module::Cannot save file "' .$name. '", directory "' .$uploadDir. '" is not writable');
 
