@@ -147,7 +147,7 @@ function getUploadsPage(data)
             <div class="uploadBox" id="box_{$key}" rel="{$key}" style="background-color: #404C5A;">
               <div class="boxInner" style="position: relative;">
                     <div class="boxImg"><img src="{$value.icon}" id="box_img_{$key}"></div>
-                    <div class="titleBox" id="box_title_{$key}">{$value.name}</div>
+                    <div class="titleBox" id="box_title_{$key}"><a href="{$value.link}" target="blank" style="color: white;">{$value.name}</a></div>
                     <input type="hidden" id="box_delete_{$key}" value="{if="$value.ableToDelete == True"}1{else}0{/if}">
                     <input type="hidden" id="box_description_{$key}" value="{$value.description}">
                     <input type="hidden" id="box_id_{$key}" value="{$value.id}">
