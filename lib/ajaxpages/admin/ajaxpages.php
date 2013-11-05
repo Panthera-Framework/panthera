@@ -29,7 +29,9 @@ $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-tab-detach-icon.
 // scan both lib and content
 $files = array_merge(
     scandirDeeply(PANTHERA_DIR. '/ajaxpages/admin'), 
-    scandirDeeply(SITE_DIR. '/content/ajaxpages/admin')
+    scandirDeeply(SITE_DIR. '/content/ajaxpages/admin'),
+    scandirDeeply(PANTHERA_DIR. '/pages'),
+    scandirDeeply(SITE_DIR. '/content/pages')
 );
 
 $pages = array();
