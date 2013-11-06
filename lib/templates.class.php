@@ -663,7 +663,7 @@ class pantheraTemplate extends pantheraClass
     public function clearCache()
     {
         $this->panthera->importModule('filesystem');
-        deleteDirectory(SITE_DIR. '/content/tmp/templates_c');
+        filesystem::deleteDirectory(SITE_DIR. '/content/tmp/templates_c');
         mkdir(SITE_DIR. '/content/tmp/templates_c');
         return true;
     }

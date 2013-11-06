@@ -100,7 +100,7 @@ class scm
         
         try {
              if (is_dir($destination))
-                deleteDirectory($destination);
+                filesystem::deleteDirectory($destination);
         
             $panthera -> logging -> output ('Unpacking zipped archive', 'scm');
             $zip = new ZipArchive;
@@ -125,7 +125,7 @@ class scm
             $destinationTmp = str_ireplace(basename($destination), basename($destination). '-tmp', $destination);
             
             if (is_dir($destinationTmp))
-                deleteDirectory($destinationTmp);
+                filesystem::deleteDirectory($destinationTmp);
             
             rename($destination, $destinationTmp); // rename destination directory to $dirName-tmp
             rename($destinationTmp. '/' .$dirName, $destination); // move $repoName-$branch directory to destination
@@ -174,7 +174,7 @@ class scm
         // unpack file
         try {
             if (is_dir($destination))
-                deleteDirectory($destination);
+                filesystem::deleteDirectory($destination);
         
             $panthera -> logging -> output ('Unpacking zipped archive', 'scm');
             
@@ -190,7 +190,7 @@ class scm
             $destinationTmp = str_ireplace(basename($destination), basename($destination). '-tmp', $destination);
             
             if (is_dir($destinationTmp))
-                deleteDirectory($destinationTmp);
+                filesystem::deleteDirectory($destinationTmp);
             
             rename($destination, $destinationTmp); // rename destination directory to $dirName-tmp
             rename($destinationTmp. '/' .$exp[2]. '-' .$branch, $destination); // move $repoName-$branch directory to destination

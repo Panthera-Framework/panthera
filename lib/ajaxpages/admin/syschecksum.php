@@ -22,7 +22,7 @@ $panthera -> locale -> loadDomain('debug');
 
 $panthera -> importModule('filesystem');
 
-$files = scandirDeeply(SITE_DIR);
+$files = filesystem::scandirDeeply(SITE_DIR);
 $filesTpl = array();
 $array = '';
 
@@ -74,7 +74,15 @@ foreach ($files as $file)
         }
     }
 
-    $filesTpl[$nameSum] = array('name' => str_replace(SITE_DIR, '', $file), 'sum' => $sum, 'size' => bytesToSize(strlen($contents)), 'time' => date('G:i:s d.m.Y', filemtime($file)), 'mtime' => filemtime($file), 'bold' => $bold, 'size_bytes' => strlen($contents));
+    $filesTpl[$nameSum] = array(
+        'name' => str_replace(SITE_DIR, '', $file),
+        'sum' => $sum,
+        'size' => filesystem::bytesToSize(strlen($contents)),
+        'time' => date('G:i:s d.m.Y', filemtime($file)),
+        'mtime' => filemtime($file),
+        'bold' => $bold,
+        'size_bytes' => strlen($contents)
+    );
 }
 
 // add new files to list that does not exists on one of servers

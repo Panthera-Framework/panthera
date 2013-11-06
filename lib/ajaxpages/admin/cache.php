@@ -388,8 +388,8 @@ if (class_exists('Memcached'))
         $servers[$server]['pid'] = $attributes['pid'];
 
         // total transfer
-        $servers[$server]['read'] = bytesToSize($attributes['bytes_read']);
-        $servers[$server]['written'] = bytesToSize($attributes['bytes_written']);
+        $servers[$server]['read'] = filesystem::bytesToSize($attributes['bytes_read']);
+        $servers[$server]['written'] = filesystem::bytesToSize($attributes['bytes_written']);
 
         // items stored
         $servers[$server]['items_current'] = $attributes['curr_items'];
@@ -407,8 +407,8 @@ if (class_exists('Memcached'))
         $servers[$server]['connections_total'] = $attributes['total_connections'];
 
         // memory usage
-        $servers[$server]['memory_used'] = bytesToSize($attributes['bytes']);
-        $servers[$server]['memory_max'] = bytesToSize($attributes['limit_maxbytes']);
+        $servers[$server]['memory_used'] = filesystem::bytesToSize($attributes['bytes']);
+        $servers[$server]['memory_max'] = filesystem::bytesToSize($attributes['limit_maxbytes']);
         $servers[$server]['load_percent'] = (($attributes['cmd_get'] + $attributes['cmd_set'])/$maxLoad)*100;
     }
 
@@ -441,7 +441,7 @@ if (function_exists('xcache_set'))
         $xcacheInfo[$i]['deleted'] = $info['deleted'];
         
         // size
-        $xcacheInfo[$i]['size'] = bytesToSize($info['size']);
+        $xcacheInfo[$i]['size'] = filesystem::bytesToSize($info['size']);
         
         $free = 0;
         foreach ($info['free_blocks'] as $block)
@@ -449,8 +449,8 @@ if (function_exists('xcache_set'))
             $free += $block['size'];
         }
         
-        $xcacheInfo[$i]['free'] = bytesToSize($free);
-        $xcacheInfo[$i]['used'] = bytesToSize($info['size']-$free);
+        $xcacheInfo[$i]['free'] = filesystem::bytesToSize($free);
+        $xcacheInfo[$i]['used'] = filesystem::bytesToSize($info['size']-$free);
         
         // hits and misses (usage)
         $xcacheInfo[$i]['hits'] = $info['hits'];
@@ -508,7 +508,7 @@ if (class_exists('Redis'))
                 'expiredKeys' => $info['expired_keys'],
                 'hits' => $info['keyspace_hits'],
                 'misses' => $info['keyspace_misses'],
-                'usedMemory' => bytesToSize($info['used_memory']),
+                'usedMemory' => filesystem::bytesToSize($info['used_memory']),
                 'commands' => $info['total_commands_processed'],
                 'totalConnections' => $info['total_connections_received'],
                 'role' => $info['role'],

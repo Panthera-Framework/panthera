@@ -74,7 +74,7 @@ class libtemplate
         
             if (is_dir($dir))
             {
-                $files = scandirDeeply($dir, False);
+                $files = filesystem::scandirDeeply($dir, False);
                 
                 // directories first need to be created
                 foreach ($files as $file)

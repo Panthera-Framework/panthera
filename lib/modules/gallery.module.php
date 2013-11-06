@@ -55,13 +55,13 @@ class galleryItem extends pantheraFetchDB
 
         $link = pantheraUrl($this->__get('link'));
         $filePath = pantheraUrl(str_replace('{$PANTHERA_URL}/', '', pantheraUrl($link, True)));
-        $mime = getFileMimeType($filePath);
+        $mime = filesystem::getFileMimeType($filePath);
 
         // TODO: handling external links (saving to tmp and generating thumbnails)
         if (substr($filePath, 0, 7) == 'http://')
             return False;
 
-        $fileType = fileTypeByMime($mime);
+        $fileType = filesystem::fileTypeByMime($mime);
         $fileInfo = pathinfo($filePath);
 
         if ($size != '')

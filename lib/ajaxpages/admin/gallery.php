@@ -99,7 +99,7 @@ if ($_GET['action'] == 'adduploads')
         if ($file->exists())
         {
             // accept only images
-            if (fileTypeByMime($file->mime) != 'image')
+            if (filesystem::fileTypeByMime($file->mime) != 'image')
             {
                 continue;
             }

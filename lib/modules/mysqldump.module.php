@@ -11,6 +11,13 @@ if (!defined('IN_PANTHERA'))
   
 if(!class_exists('Backup_Database'))
     include(PANTHERA_DIR. '/share/mysqldump.php');
+    
+/**
+  * MySQL & SQLite3 dumping functions
+  * @package Panthera\modules\database
+  * @author Damian Kęska
+  * @license GNU Affero General Public License 3, see license.txt
+  */
 
 class SQLDump
 {
@@ -69,7 +76,7 @@ class SQLDump
         if (is_dir($backupDir))
         {
             $panthera -> importModule('filesystem');
-            deleteDirectory($backupDir);
+            filesystem::deleteDirectory($backupDir);
         }
         
         // here we will place all files

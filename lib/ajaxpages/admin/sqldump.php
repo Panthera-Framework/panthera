@@ -97,7 +97,7 @@ foreach ($dumps as $dump)
 {
     $dumpsTpl[] = array(
         'name' => basename($dump),
-        'size' => bytesToSize(filesize($dump)),
+        'size' => filesystem::bytesToSize(filesize($dump)),
         'date' => date('G:i:s d.m.Y', filemtime($dump))
     );
 }

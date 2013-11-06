@@ -17,13 +17,6 @@ if ($_GET['action'] == 'toggle')
 {
     $name = addslashes($_GET['plugin']);
 
-    $errors = $panthera->checkPluginSyntax($_GET['plugin']);
-
-    if (is_string($errors))
-    {
-        ajax_exit(array('status' => 'failed', 'message' => $errors));
-    }
-
     if ($_GET['value'] == "1")
         $value = (bool)TRUE;
     else

@@ -51,7 +51,7 @@ if (isset($_GET['popup']))
         if (!getUserRightAttribute($user, 'can_delete_own_uploads'))
             ajax_exit(array('status' => 'failed', 'message' => localize('You dont have permissions to delete your own uploads', 'files')));
 
-        if (deleteUpload($id, $file->location))
+        if (pantheraUpload::deleteUpload($id, $file->location))
             ajax_exit(array('status' => 'success'));
 
         // maybe permissions error?
@@ -89,8 +89,8 @@ if (isset($_GET['popup']))
         // handle base64 encoded upload in post field "image"
         if (isset($_POST['image']))
         {
-            $upload = parseEncodedUpload($_POST['image']);
-            makeFakeUpload('input_file', $upload['content'], $_POST['fileName'], $upload['mime']);
+            $upload = pantheraUpload::parseEncodedUpload($_POST['image']);
+            pantheraUpload::makeFakeUpload('input_file', $upload['content'], $_POST['fileName'], $upload['mime']);
 
             //$_FILES['input_file'] = array('tmp_name' => '/tmp/' .md5($_POST['image']), 'name' => $_POST['fileName'], 'type' => $upload['mime'], 'error' => 0, 'size' => strlen($upload['content']));
             //$fp = fopen($_FILES['input_file']['tmp_name'], 'w');
@@ -101,7 +101,7 @@ if (isset($_GET['popup']))
         }
 
         if ($_FILES['input_file']['size'] > $panthera -> config -> getKey('upload_max_size') or filesize($_FILES['input_file']['tmp_name']) > $panthera -> config -> getKey('upload_max_size'))
-            ajax_exit(array('status' => 'failed', 'message' => localize('File is too big, allowed maximum size is:'). ' ' .bytesToSize($panthera -> config -> getKey('upload_max_size'))));
+            ajax_exit(array('status' => 'failed', 'message' => localize('File is too big, allowed maximum size is:'). ' ' .filesystem::bytesToSize($panthera -> config -> getKey('upload_max_size'))));
 
         $directory = 'default';
         $mime = '';
@@ -119,7 +119,7 @@ if (isset($_GET['popup']))
             $mime = $file['type']; // this may be a little bit dangerous but... we dont have any option
 
         if ($mime == '' or $mime == NuLL)
-            $mime = getFileMimeType($_FILES['input_file']['name']);
+            $mime = filesystem::getFileMimeType($_FILES['input_file']['name']);
 
         $description = filterInput($_POST['input_description'], 'quotehtml');
         $protected = 0;
@@ -130,7 +130,7 @@ if (isset($_GET['popup']))
             ajax_exit(array('status' => 'failed', 'message' => localize('Description is too long, out of 512 characters range')));
         }
         
-        $uploadID = handleUpload($_FILES['input_file'], $directory, $user->id, $user->login, $protected, $public, $mime, $description);
+        $uploadID = pantheraUpload::handleUpload($_FILES['input_file'], $directory, $user->id, $user->login, $protected, $public, $mime, $description);
 
         if ($uploadID)
         {
@@ -167,7 +167,7 @@ if (isset($_GET['popup']))
     }
     
     $page = intval(@$_GET['page']);
-    $count = getUploadedFiles($by, False);
+    $count = pantheraUpload::getUploadedFiles($by, False);
 
     if ($page < 0)
         $page = 0;
@@ -178,7 +178,7 @@ if (isset($_GET['popup']))
     $uiPager -> setLinkTemplatesFromConfig('upload.tpl');
     $limit = $uiPager -> getPageLimit();
 
-    $files = getUploadedFiles($by, $limit[1], $limit[0]); // raw list
+    $files = pantheraUpload::getUploadedFiles($by, $limit[1], $limit[0]); // raw list
     $filesTpl = array(); // list passed to template
 
     foreach ($files as $key => $value)
@@ -194,7 +194,7 @@ if (isset($_GET['popup']))
         $link = $value->getLink();
 
         // getting icon by mime type
-        $fileType = fileTypeByMime($value->mime);
+        $fileType = filesystem::fileTypeByMime($value->mime);
         $icon = $value->getThumbnail('200');
         $panthera -> logging -> output ('Checking for icon: ' .$icon. ' for type ' .$fileType, 'upload');
         
@@ -202,7 +202,20 @@ if (isset($_GET['popup']))
         if (($user->id == $value->uploader_id and getUserRightAttribute($user, 'can_delete_own_uploads')) or getUserRightAttribute($user, 'can_manage_all_uploads'))
             $ableToDelete = True;
 
-        $filesTpl[] = array('name' => mb_basename($value->location), 'mime' => $value->mime, 'description' => $value->description, 'location' => $location, 'link' => $link, 'uploader_login' => $value->uploader_login, 'ableToDelete' => $ableToDelete, 'icon' => $icon, 'author' => $value->uploader_login, 'directory' => $value->category, 'type' => $fileType, 'id' => $value->id);
+        $filesTpl[] = array(
+            'name' => filesystem::mb_basename($value->location),
+            'mime' => $value->mime,
+            'description' => $value->description,
+            'location' => $location,
+            'link' => $link,
+            'uploader_login' => $value->uploader_login,
+            'ableToDelete' => $ableToDelete,
+            'icon' => $icon,
+            'author' => $value->uploader_login,
+            'directory' => $value->category,
+            'type' => $fileType,
+            'id' => $value->id
+        );
     }
 
     if (getUserRightAttribute($user, 'can_upload_files'))

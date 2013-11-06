@@ -46,8 +46,8 @@ if (is_file(PANTHERA_DIR. '/' .$path) or is_file(SITE_DIR. '/' .$path))
         pa_exit();
     }
 
-    $mime = getFileMimeType($filePath);
-    $type = fileTypeByMime($mime);
+    $mime = filesystem::getFileMimeType($filePath);
+    $type = filesystem::fileTypeByMime($mime);
 
     // we cannot show config.php
     if (str_ireplace(SITE_DIR, '', $filePath) == '/content/app.php')
@@ -62,7 +62,7 @@ if (is_file(PANTHERA_DIR. '/' .$path) or is_file(SITE_DIR. '/' .$path))
         $fileLines = '<img src="' .$path. '">';
     } else {
         $fileContents = file_get_contents($filePath);
-        $fileLines = printCode($fileContents, intval($_GET['start']), intval($_GET['end']));
+        $fileLines = filesystem::printCode($fileContents, intval($_GET['start']), intval($_GET['end']));
     }
 
 
@@ -75,7 +75,7 @@ if (is_file(PANTHERA_DIR. '/' .$path) or is_file(SITE_DIR. '/' .$path))
     $template -> push('owner', $owner['name']);
     $template -> push('group', $group['name']);
     $template -> push('size_bytes', filesize($filePath));
-    $template -> push('size', bytesToSize(filesize($filePath)));
+    $template -> push('size', filesystem::bytesToSize(filesize($filePath)));
     $template -> push('modification_time', date('G:i:s d.m.Y', filemtime($filePath)));
     $template -> push('mime', $mime);
     $template -> push('type', $type);

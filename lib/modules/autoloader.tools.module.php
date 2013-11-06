@@ -30,11 +30,11 @@ class pantheraAutoloader
         $panthera -> importModule('filesystem');
         $panthera -> logging -> startTimer();
         
-        $modules = scandirDeeply(PANTHERA_DIR. '/modules', True);
+        $modules = filesystem::scandirDeeply(PANTHERA_DIR. '/modules', True);
         
         if (is_dir(SITE_DIR. '/content/modules'))
         {
-            $modulesContent = scandirDeeply(SITE_DIR. '/content/modules');
+            $modulesContent = filesystem::scandirDeeply(SITE_DIR. '/content/modules');
             
             if (is_array($modulesContent))
             {

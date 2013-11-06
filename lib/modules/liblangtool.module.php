@@ -98,7 +98,7 @@ class localesManagement
                 $panthera -> importModule('filesystem');
                 
                 if (is_dir(SITE_DIR. '/content/locales/' .$copy))   
-                    recurse_copy(SITE_DIR. '/content/locales/' .$copy, SITE_DIR. '/content/locales/' .$locale);
+                    filesystem::recurseCopy(SITE_DIR. '/content/locales/' .$copy, SITE_DIR. '/content/locales/' .$locale);
                     
             }
             
@@ -345,7 +345,7 @@ class localesManagement
         }
         
         $missing = array();
-        $files = scandirDeeply($tree, false);
+        $files = filesystem::scandirDeeply($tree, false);
         $domainObjects = array();
         
         foreach ($files as $file)

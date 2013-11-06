@@ -1075,19 +1075,6 @@ class pantheraCore
                 return False;
             }
 
-            // this is also checked when hooks are executed
-            /*if (is_object($function[0]) and !class_exists($function[0]))
-            {
-                $this->logging->output("panthera::add_option::Class '".$function[0]."' does not exists");
-                return False;
-            }
-
-            if (!method_exists($function[0], $function[1]))
-            {
-                $this->logging->output("panthera::add_option::Method '".$function[1]."' of '".$function[0]."' class does not exists");
-                return False;
-            }*/
-
         } else { // and here is just a simple function
             if(!function_exists($function))
             {
@@ -1256,51 +1243,6 @@ class pantheraCore
     }
 
     /**
-      * Check plugin's PHP syntax (if there is access to shell)
-      * Returns True if test passed or if there is no access to shell to make a test, and returns string with error if not passed
-      *
-      * @param string $plugin Plugin's directory name
-      * @return mixed
-      * @author Damian Kęska
-      */
-
-    public function checkPluginSyntax($plugin)
-    {
-        if (!$this->config->getKey('check_plugins_syntax'))
-        {
-            return True;
-        }
-    
-        if ($this->pluginExists($plugin))
-        {
-            $this->importModule('filesystem');
-            $plugins = $this->getPlugins();
-            $dir = scandirDeeply($plugins[$plugin]['include_path']);
-
-            try {
-                foreach ($dir as $file)
-                {
-                    $pathinfo = pathinfo($file);
-
-                    if ($pathinfo['extension'] == 'php')
-                    {
-                        $test = shell_exec('php-cli -l ' .$file);
-
-                        if (stristr($test, 'No syntax errors detected') !== False)
-                        {
-                            return $test;
-                        }
-                    }
-                }
-            } catch (Exception $e) {
-                return True; // we dont have rights to use shell commands, so the test must return True
-            }
-        }
-
-        return True;
-    }
-
-    /**
 	 * Load all enabled plugins
 	 *
      * @param array $pluginsDir Optional parameter to specify alternative plugin directories
@@ -1314,12 +1256,6 @@ class pantheraCore
 
         if ($pluginsDir == '')
             $pluginsDir = array(PANTHERA_DIR. '/plugins', SITE_DIR. '/content/plugins');
-
-        /*if(!is_dir($pluginsDir))
-        {
-            $this->logging->output('Cannot find plugins directory "'.$pluginsDir.'"!', 'pantheraCore');
-            return False;
-        }*/
 
         $files = array();
 
@@ -1355,19 +1291,6 @@ class pantheraCore
             }
 
             $this -> logging -> output('Loading '.$value.' plugin', 'pantheraCore');
-
-            /*$context = $this->get_context($value);
-
-            if ($context != False)
-            {
-                if (!in_array($c, $context))
-                {
-                    $this -> logging -> output('panthera::Plugin '.$value.' skipped because of context mismatch');
-                    continue;
-                }
-            } else
-                $this -> logging -> output('panthera::No context for plugin '.$value);*/
-
             $exp = explode('.', $value);
 
             if ($exp[1] == 'cgi' and PANTHERA_MODE != "CGI")

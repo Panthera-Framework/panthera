@@ -430,7 +430,7 @@ class leopardPackage
         
         
         // add all other files
-        $elements = scandirDeeply($directory);
+        $elements = filesystem::scandirDeeply($directory);
         
         foreach ($elements as $element)
         {
@@ -1051,7 +1051,7 @@ class leopard
         // clean up
         $panthera -> logging -> output ('Cleaning up backup directory', 'leopard'); 
         $panthera -> importModule('filesystem');
-        deleteDirectory($backupDir);
+        filesystem::deleteDirectory($backupDir);
         
         // remove from database
         $panthera -> db -> query ('DELETE FROM `{$db_prefix}leopard_files` WHERE `package` = :packageName', array('packageName' => $packageName));
