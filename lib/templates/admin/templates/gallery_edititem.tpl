@@ -9,7 +9,7 @@ $(document).ready(function () {
         panthera.jsonPOST({ data: '#change_item_form', async: true, url: '{$AJAX_URL}?display=gallery&cat=admin&action=edit_item_form&subaction=edit_item&id={$id}', messageBox: 'w2ui', spinner: progress,
             success: function (response) {
                 if (response.status == "success")
-                    navigateTo('{$AJAX_URL}?display=gallery&cat=admin&action=display_category&unique={$unique}&language={$language}');
+                    navigateTo('{$AJAX_URL}?display=gallery&cat=admin&action=displayCategory&unique={$unique}&language={$language}');
             }
         });
 
@@ -62,7 +62,7 @@ sliderChangeImage('{$link}');
 
 <form action="?display=gallery&cat=admin&action=edit_item_form&subaction=edit_item&id={$id}" method="POST" id="change_item_form">
 
-<div id="topContent">
+<div id="topContent" style="min-height: 50px;">
     <div class="searchBarButtonArea">
         <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=gallery&cat=admin&action=displayCategory&unique={$unique}'); return false;" style="float: left; margin-left: 10px;">
         <input type="submit" value="{function="localize('Save')"}">
@@ -74,7 +74,7 @@ sliderChangeImage('{$link}');
 <!-- Content -->
 <div class="ajax-content" style="text-align: center;">
     
-    <div style="text-align: center; margin-top: -30px; margin-left: -100px; margin-right: -100px; background: white;" id="image_slider_box">
+    <div style="text-align: center; margin-top: -30px; margin-left: -100px; margin-right: -100px; background: #56687b; padding-bottom: 30px;" id="image_slider_box">
         <img id="image_slider" style="max-width: 99.9%; max-height: 200px; min-height: 12em;   display: table-cell;   vertical-align: middle; display: block;   margin-left: auto;   margin-right: auto; ">
     </div>
 

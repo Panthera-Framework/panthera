@@ -169,7 +169,7 @@ function getUploadsPage(data)
      </div>
   </div>
   
-  <div style="width: 65%; margin: 0 auto;">
+  <div style="width: 65%; margin: 0 auto; padding-bottom: 10px;">
     <div style="display: inline-block; font-size: 12px; color: white;">{$uiPagerName="adminUpload"}{include="ui.pager"}</div>
     
     <input type="button" value="{function="localize('Close')"}" style="float: right;" onclick="panthera.popup.close();">
