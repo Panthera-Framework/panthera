@@ -172,6 +172,8 @@ function getUploadsPage(data)
   <div style="width: 65%; margin: 0 auto;">
     <div style="display: inline-block; font-size: 12px; color: white;">{$uiPagerName="adminUpload"}{include="ui.pager"}</div>
     
+    <input type="button" value="{function="localize('Close')"}" style="float: right; margin-right: 5px;" onclick="panthera.popup.close();">
+    
     {if="$permissions.admin"}
     {if="$seeOtherUsersUploads"}
     <input type="button" value="{function="localize('Hide other users files', 'files')"}" onclick="panthera.popup.create('?display=upload&cat=admin&otherUsers=false&popup=true')">
@@ -179,7 +181,7 @@ function getUploadsPage(data)
     <input type="button" value="{function="localize('Show other users files', 'files')"}" onclick="panthera.popup.create('?display=upload&cat=admin&otherUsers=true&popup=true')">
     {/if}
     {/if}
-  
+    
     {if="$upload_files == True"}<input type='button' value="{function="localize('Add new file', 'files')"}" style="float: right;" onclick="panthera.popup.toggle('?display=upload&cat=admin&action=uploadFileWindow&popup=True')">{/if}
     <input type="button" value="{function="localize('Select this file', 'files')"}" style="float: right; margin-right: 5px; display: none;" onclick="selectFile();" id="_upl_select_file">
     <input type="button" value="{function="localize('Delete selected files', 'files')"}" style="float: right; margin-right: 5px; display: none;" id="file_delete">
