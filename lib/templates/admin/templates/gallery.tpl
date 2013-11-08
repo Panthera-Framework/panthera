@@ -121,7 +121,7 @@
             <tr id="galleryCategory_row_{$value->id}" style="{if="!$value->visibility"}opacity: 0.5;{/if}">
                 
                 {if="$value->thumb_url"}
-                <td style="padding-right: 0px; padding-left: 10px;">
+                <td style="padding-top: 4px; padding-right: 10px; padding-left: 10px;">
                     <a href="?display=gallery&cat=admin&action=displayCategory&unique={$value->unique}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value->id}'>
                     <img src="{$value->thumb_url|pantheraUrl}" style="width: 50px; height: 50px;">
                     </a>
