@@ -2278,6 +2278,7 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
         $past = new DateTime($timestamp_past);
         $future = new DateTime($timestamp_future);
         $diff = $future->diff($past);
+        
     } catch (Exception $e) {
         if ($display_output == False)
         {
@@ -2287,14 +2288,20 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
         }
     }
     
-    $output = '';
+    $timeFormats = array(
+        'years' => '%y',
+        'months' => '%m',
+        'days' => '%a',
+        'hours' => '%H',
+        'minutes' => '%i',
+        'seconds' => '%s'
+    );
     
     if ($years == True)
     {
         if ($diff->format('%y') > 0)
         {
             $array['years'] = $diff->format('%y');
-            $output .= $diff->format('%y'). ' ' .localize('years'). ' ';
         }
     }
     
@@ -2303,7 +2310,6 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
         if ($diff->format('%m') > 0)
         {
             $array['months'] = $diff->format('%m');
-            $output .= $diff->format('%m'). ' ' .localize('months'). ' ';
         }
     }
     
@@ -2312,7 +2318,6 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
         if ($diff->format('%a') > 0)
         {
             $array['days'] = $diff->format('%a');
-            $output .= $diff->format('%a'). ' ' .localize('days'). ' ';
         }
     }
     
@@ -2321,7 +2326,6 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
         if ($diff->format('%H') > 0)
         {
             $array['hours'] = $diff->format('%H');
-            $output .= $diff->format('%H'). ' ' .localize('hours'). ' ';
         }
     }
     
@@ -2330,7 +2334,6 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
         if ($diff->format('%i') > 0)
         {
             $array['minutes'] = $diff->format('%i');
-            $output .= $diff->format('%i'). ' ' .localize('minutes'). ' ';
         }
     }
     
@@ -2339,14 +2342,32 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
         if ($diff->format('%s') > 0)
         {
             $array['seconds'] = $diff->format('%s');
-            $output .= $diff->format('%s'). ' ' .localize('seconds'). ' ';
         }
     }
+    
+    
     
     if ($display_output == False)
     {
         return $array;
+        
     } else {
+        $output = '';
+        $maxRange = 2; // we accept only max X data details eg. year, month (2 elements) or hour, minute
+        $range = 0;
+    
+        foreach ($array as $timeRange => $value)
+        {
+            $range++;
+            
+            if ($range > $maxRange)
+            {
+                break;
+            }
+            
+            $output .= $diff->format($timeFormats[$timeRange]). ' ' .localize($timeRange). ' ';
+        }
+    
         return $output;
     }
 }
