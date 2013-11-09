@@ -855,8 +855,8 @@ ul.dropdown li:hover > a.dir {
 }
 
 .galleryItem {
-    width: 300px;
-    max-height: 400px;
+    width: 230px;
+    max-height: 300px;
     
     background: #56687B;
     border: solid rgba(0, 0, 0, 0.5) 1px;
@@ -929,8 +929,8 @@ ul.dropdown li:hover > a.dir {
 }
 
 .galleryImage {
-    max-height: 200px;
-    max-width: 300px;
+    max-height: 201px;
+    max-width: 220px;
 }
 
 .galleryItem div.galleryItemDetails {
