@@ -12,6 +12,7 @@ $('.ajax_link').click(function (event) { event.preventDefault(); navigateTo(jQue
 
 function webrootMerge()
 {
+    loader = new panthera.ajaxLoader($('#templatesList'));
     panthera.jsonPOST({ url: '?display=templates&cat=admin&action=webrootMerge', async: true, success: function (response) {
         if (response.status == "success")
         {
