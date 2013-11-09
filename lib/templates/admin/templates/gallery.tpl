@@ -122,14 +122,14 @@
                 
                 {if="$value->thumb_url"}
                 <td style="padding-top: 4px; padding-right: 10px; padding-left: 10px;">
-                    <a href="?display=gallery&cat=admin&action=displayCategory&unique={$value->unique}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value->id}'>
+                    <a href="?display=gallery&cat=admin&action=displayCategory&unique={$value->unique}&language={$value->language}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value->id}'>
                     <img src="{$value->thumb_url|pantheraUrl}" style="width: 50px; height: 50px;">
                     </a>
                 </td>
                 {/if}
                 
                 <td {if="!$value->thumb_url"}colspan="2"{/if}>
-                <a href="?display=gallery&cat=admin&action=displayCategory&unique={$value->unique}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value->id}'>
+                <a href="?display=gallery&cat=admin&action=displayCategory&unique={$value->unique}&language={$value->language}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value->id}'>
                 {$value->title}
                 </a>
                 </td>
