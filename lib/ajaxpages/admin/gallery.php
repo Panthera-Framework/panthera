@@ -321,6 +321,7 @@ if ($_GET['action'] == 'displayCategory')
 
     if (!$category->exists())
     {
+        //pa_exit();
         $ctg = new galleryCategory('unique', $_GET['unique']);
 
         if ($ctg -> exists())
@@ -404,7 +405,7 @@ if ($_GET['action'] == 'displayCategory')
     $template -> push('category_title', $category->title);
     $template -> push('category_id', $category->id);
     $template -> push('item_list', $itemsList);
-    $template -> push('langauge', $category->language);
+    $template -> push('language', $category->language);
     $template -> push('unique', $_GET['unique']);
     $template -> push('languages', $panthera->locale->getLocales());
     $template -> push('galleryObject', $category);
@@ -535,7 +536,7 @@ if ($_GET['action'] == 'edit_item_form')
 
         $category = new galleryCategory('id', $item->gallery_id);
         $template -> push('unique', $category->unique);
-        $template -> push('language', $category->language);
+        $template -> push('language_item', $category->language);
 
 		$titlebar = new uiTitlebar(localize('Editing gallery image', 'gallery'));
 		$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');
@@ -639,7 +640,7 @@ if (@$_GET['action'] == 'add_item')
         $template -> push('category_id', $_GET['ctgid']);
         $template -> push('gallery_name', $category->title);
         $template -> push('unique', $category->unique);
-        $template -> push('language', $category->language);
+        $template -> push('language_item', $category->language);
 			
         $titlebar = new uiTitlebar(localize('Adding gallery image', 'gallery'));
         $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');

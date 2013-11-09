@@ -9,7 +9,7 @@ $(document).ready(function () {
         panthera.jsonPOST({ data: '#change_item_form', async: true, url: '{$AJAX_URL}?display=gallery&cat=admin&action=edit_item_form&subaction=edit_item&id={$id}', messageBox: 'w2ui', spinner: progress,
             success: function (response) {
                 if (response.status == "success")
-                    navigateTo('{$AJAX_URL}?display=gallery&cat=admin&action=displayCategory&unique={$unique}&language={$language}');
+                    navigateTo('{$AJAX_URL}?display=gallery&cat=admin&action=displayCategory&unique={$unique}&language={$language_item}');
             }
         });
 
@@ -64,7 +64,7 @@ sliderChangeImage('{$link}');
 
 <div id="topContent" style="min-height: 50px;">
     <div class="searchBarButtonArea">
-        <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=gallery&cat=admin&action=displayCategory&unique={$unique}'); return false;" style="float: left; margin-left: 10px;">
+        <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=gallery&cat=admin&action=displayCategory&unique={$unique}&language={$language_item}'); return false;" style="float: left; margin-left: 10px;">
         <input type="submit" value="{function="localize('Save')"}">
     </div>
 </div>

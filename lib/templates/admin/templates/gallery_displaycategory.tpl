@@ -185,7 +185,7 @@
                 <th>
                     <select name="language">
                     {loop="$languages"}
-                    <option value="{$key}"{if="$value->language == $key"} selected{/if}>{$key}</option>
+                    <option value="{$key}"{if="$language == $key"} selected{/if}>{$key}</option>
                     {/loop}
                     </select>
                 </th>
@@ -230,12 +230,18 @@
 
 <!-- Content -->
 <div class="ajax-content" style="text-align: center; background-color: #56687b;">
-  <div id="items_list" class="uploadBoxCentered" style="width: 100%; padding: 30px;">
+  <div class="uploadBoxCentered" style="min-height: 0px; width: 150px; margin-top: -30px;">
+    <div class="addBox" style="height: 100px; width: 100%; position: relative; border-radius: 2px;" id="addNewImage" ondragover="return false;">
+            <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=add_item&ctgid={$category_id}');"><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: relative; top: 30px; opacity: 0.8;" title="{function="localize('Drag and drop files to this area to start uploading', 'gallery')"}"></a>
+    </div>
+  </div>  
+  
+  <div id="items_list" class="uploadBoxCentered" style="width: 94%; padding: 30px;">
     {loop="$item_list"}
     <div class="galleryItem{if="$value->visibility == 1"} galleryItemHidden{/if} draggableGalleryItem" id="gallery_item_{$value->id}">
         <div class="galleryImageFrame">
             <div class="paGalleryFrameContent">
-                <img src="{$value->getThumbnail(300, True, True)}" class="galleryImage">
+                <a href="#edit" onclick="navigateTo('?display=gallery&cat=admin&action=edit_item_form&itid={$value->id}');"><img src="{$value->getThumbnail(300, True, True)}" class="galleryImage"></a>
             </div>
             <div class="paGalleryFrameOverlay">
                 <h3 style="margin-bottom: 6px; margin-top: 6px;">{$value->title}</h3>
@@ -253,12 +259,6 @@
         </div>
     </div> 
     {/loop}
-    
-    <div class="galleryItem" style="height: 100px; width: 100px; position: relative; border-radius: 2px;" id="addNewImage" ondragover="return false;">
-        <div class="paGalleryFrameOverlayAdd" style="display: block; border-radius: 2px; opacity: 0.4; -moz-opacity: 0.4; -khtml-opacity: 0.4;">
-            <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=add_item&ctgid={$category_id}');"><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: absolute; top: 30px; left: 30px; opacity: 0.8;" title="{function="localize('Drag and drop files to this area to start uploading', 'gallery')"}"></a>
-        </div>
-    </div>
     <div style="width: 100%; display: inline-block;">&nbsp;</div>
   </div>
 </div>

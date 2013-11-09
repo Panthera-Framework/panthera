@@ -69,7 +69,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
   
 <div id="topContent" style="min-height: 50px;">
     <div class="searchBarButtonArea">
-        <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=gallery&cat=admin&action=displayCategory&unique={$unique}'); return false;" style="float: left; margin-left: 10px;">
+        <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=gallery&cat=admin&action=displayCategory&unique={$unique}&language={$language_item}'); return false;" style="float: left; margin-left: 10px;">
         <input type="submit" value="{function="localize('Add')"}">
     </div>
 </div>
