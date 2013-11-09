@@ -229,8 +229,8 @@
 <div id="popupOverlay" style="text-align: center; padding-top: 20px; padding-bottom: 0px;"></div>
 
 <!-- Content -->
-<div class="ajax-content" style="text-align: center;">
-  <div id="items_list">
+<div class="ajax-content" style="text-align: center; background-color: #56687b;">
+  <div id="items_list" class="uploadBoxCentered" style="width: 100%; padding: 30px;">
     {loop="$item_list"}
     <div class="galleryItem{if="$value->visibility == 1"} galleryItemHidden{/if} draggableGalleryItem" id="gallery_item_{$value->id}">
         <div class="galleryImageFrame">
@@ -238,15 +238,8 @@
                 <img src="{$value->getThumbnail(300, True, True)}" class="galleryImage">
             </div>
             <div class="paGalleryFrameOverlay">
-                <small>
-                <br>
-                <b>{$value->title}</b>
-                <br><br>
-                <i>{$value->description}</i>
-                <br><br>{function="localize('Created', 'gallery')"}: {$value->created}
-                </small>
-                <br><br>
-                {function="localize('url', 'gallery')"}: <input type="text" value="{$value->link}" style="width: 200px; height: 20px;">
+                <h3 style="margin-bottom: 6px; margin-top: 6px;">{$value->title}</h3>
+                {$value->description}
             </div>
         </div>
         <div class="galleryItemDetails">
@@ -262,8 +255,8 @@
     {/loop}
     
     <div class="galleryItem" style="height: 100px; width: 100px; position: relative; border-radius: 2px;" id="addNewImage" ondragover="return false;">
-        <div class="paGalleryFrameOverlay" style="display: block; border-radius: 2px; opacity: 0.4; -moz-opacity: 0.4; -khtml-opacity: 0.4;">
-            <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=add_item&ctgid={$category_id}');"><span class="tooltip">{function="localize('Drag and drop files to this area to start uploading', 'gallery')"}</span><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: absolute; top: 30px; left: 30px; opacity: 0.8;"></a>
+        <div class="paGalleryFrameOverlayAdd" style="display: block; border-radius: 2px; opacity: 0.4; -moz-opacity: 0.4; -khtml-opacity: 0.4;">
+            <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=add_item&ctgid={$category_id}');"><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: absolute; top: 30px; left: 30px; opacity: 0.8;" title="{function="localize('Drag and drop files to this area to start uploading', 'gallery')"}"></a>
         </div>
     </div>
     <div style="width: 100%; display: inline-block;">&nbsp;</div>
