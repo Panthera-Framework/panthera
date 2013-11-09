@@ -13,7 +13,7 @@ $(document).ready(function () {
     $('#add_item_form').submit(function () {
         panthera.jsonPOST({ data: '#add_item_form', spinner: progress, async: true, messageBox: 'w2ui', success: function (response) {
                 if (response.status == "success")
-                    navigateTo('{$AJAX_URL}?display=gallery&cat=admin&action=displayCategory&unique={$unique}&language={$language}');
+                    navigateTo('{$AJAX_URL}?display=gallery&cat=admin&action=displayCategory&unique={$unique}&language={$language_item}');
             }
         });
         
