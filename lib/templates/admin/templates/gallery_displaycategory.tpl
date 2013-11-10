@@ -240,7 +240,7 @@
     {loop="$item_list"}
     <div class="galleryItem{if="$value->visibility == 1"} galleryItemHidden{/if} draggableGalleryItem" id="gallery_item_{$value->id}">
         <div class="galleryImageFrame">
-            <div class="paGalleryFrameContent"s>
+            <div class="paGalleryFrameContent">
                 <a href="#edit" onclick="navigateTo('?display=gallery&cat=admin&action=edit_item_form&itid={$value->id}');"><img src="{$value->getThumbnail(300, True, True)}" class="galleryImage"></a>
             </div>
             <div class="paGalleryFrameOverlay">
