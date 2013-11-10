@@ -42,12 +42,23 @@ if ($_GET['action'] == 'saveCategoryDetails')
     }
 
     $gallery = new galleryCategory('id', intval($_GET['id']));
+    $language = $_POST['language'];
+    
+    // check if this category already exists
+    $statement = new whereClause();
+    $statement -> add('', 'unique', '=', $gallery->unique);
+    $statement -> add('AND', 'language', '=', $language);
+    
+    $checkCategory = new galleryCategory($statement, null);
+    
+    if ($checkCategory->exists())
+        ajax_exit(array('status' => 'failed', 'message' => localize('Category in this language already exists!', 'gallery')));
 
     if (!$gallery -> exists())
         ajax_exit(array('status' => 'failed', 'message' => localize('There is no such category', 'gallery')));
 
     if ($panthera->locale->exists($_POST['language']))
-        $gallery -> language = $_POST['language'];
+        $gallery -> language = $language;
 
     if (strlen($_POST['title']) > 0)
         $gallery -> title = $_POST['title'];
