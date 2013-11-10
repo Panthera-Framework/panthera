@@ -283,7 +283,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
                   <td>{function="localize('Avatar', 'users')"}</td>
                   <td>
                       <div class="galleryImageFrame" style="margin-top: 7px; margin-bottom: 7px;">
-                        <div class="paGalleryFrameContent" style="background: none;">
+                        <div class="paGalleryFrameContent" style="background: none; height: inherit; width: inherit;">
                             <img src="{$profile_picture}" id="avatar_image" style="max-width: {$avatar_dimensions[0]}px; max-height: {$avatar_dimensions[1]}px;">
                         </div>
                       </div>
