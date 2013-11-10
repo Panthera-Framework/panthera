@@ -57,7 +57,7 @@ $(document).ready(function () {
 </script>
 
 <div style="margin-left: 25px; margin-top: 15px; margin-bottom: 15px; width: 92%; position: relative;">
-    <div style="margin: 0 auto; max-width: 40%; position: relative; height: 30px;">
+    <div style="margin: 0 auto; max-width: 45%; position: relative; height: 30px;">
         <span style="float: right;">
         <a href="#" onclick="$('#{$uiSearchbarName}_form').submit()">
             <img src="images/admin/pantheraUI/transparent.png" class="pantheraIcon icon-Search" alt="Configure" style="vertical-align: middle;">
