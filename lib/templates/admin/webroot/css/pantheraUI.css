@@ -921,6 +921,9 @@ ul.dropdown li:hover > a.dir {
 }
 
 .paGalleryFrameContent {
+    width: 230px;
+    height: 205px;
+    margin-top: 4px;
     background: #56687B;
 }
 
