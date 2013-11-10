@@ -303,15 +303,24 @@ if ($_GET['action'] == 'displayCategory')
     if (!isset($_GET['unique']))
         pa_exit();
 
+    $panthera -> importModule('pager');
+    
     $sBar = new uiSearchbar('uiTop');
     //$sBar -> setMethod('POST');
     $sBar -> setQuery($_GET['query']);
     $sBar -> setAddress('?display=gallery&cat=admin&action=displayCategory&unique='.$_GET['unique']);
     $sBar -> navigate(True);
+    $sBar -> addSetting('order', localize('Order by', 'search'), 'select', array(
+            'id' => array('title' => 'id', 'selected' => ($_GET['order'] == 'id')),
+            'title' => array('title' => localize('Title', 'gallery'), 'selected' => ($_GET['order'] == 'title')),
+            'description' => array('title' => localize('Description', 'gallery'), 'selected' => ($_GET['order'] == 'description'))
+        ));
+    $sBar -> addSetting('direction', localize('Direction', 'search'), 'select', array(
+            'ASC' => array('title' => localize('Ascending', 'search'), 'selected' => ($_GET['direction'] == 'ASC')),
+            'DESC' => array('title' => localize('Descending', 'search'), 'selected' => ($_GET['direction'] == 'DESC'))
+        ));
     $sBar->addIcon( '{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_galleries', localize( 'Manage permissions' ) );
-
-    $template -> push('action', 'display_category');
-
+    
     // query for a page using `unique` and `language` columns
     $statement = new whereClause();
     $statement -> add('', 'unique', '=', $_GET['unique']);
@@ -321,7 +330,17 @@ if ($_GET['action'] == 'displayCategory')
 
     if (!$category->exists())
     {
-        //pa_exit();
+        if (!$manageAll) {
+             $noAccess = new uiNoAccess;
+        
+            $noAccess -> addMetas(array(
+                'can_manage_galleries',
+                'can_manage_gallery_' .$ctg->id
+            ));
+                
+            $noAccess -> display();
+        }
+        
         $ctg = new galleryCategory('unique', $_GET['unique']);
 
         if ($ctg -> exists())
@@ -384,27 +403,73 @@ if ($_GET['action'] == 'displayCategory')
                 $category = $ctg;
          }
     }
+    
+    $order = 'id'; $orderColumns = array('id', 'title', 'description');
+    $direction = 'DESC';
+
+    // order by
+    if (in_array($_GET['order'], $orderColumns))
+    {
+        $order = $_GET['order'];
+    }
+    
+    // direction    
+    if ($_GET['direction'] == 'DESC' or $_GET['direction'] == 'ASC')
+    {
+        $direction = $_GET['direction'];
+    }
+    
+    $w = new whereClause();
+        
+    if ($_GET['query'])
+    {
+        $_GET['query'] = trim(strtolower($_GET['query'])); // strip unneeded spaces and make it lowercase
+        if ($order != 'id')
+            $w -> add( 'AND', $order, 'LIKE', '%' .$_GET['query']. '%');
+        else
+            $w -> add( 'AND', $order, '=', $_GET['query']);
+    }
+    
+    // if does not exists in cache
+    if (!isset($totalItems))
+    {
+        $totalItems = getGalleryItems($w, False, False, $order);
+    }
+    
+    // search identificatior (used to cache results)
+    $sid = 'search:' .hash('md4', $_GET['query'].$_GET['order'].$_GET['direction'].$totalItems);
+    
+    // try to get results from cache
+    if ($panthera->cache)
+    {
+        if ($panthera->cache->exists($sid))
+        {
+            list($totalItems, $items) = $panthera -> cache -> get($sid);
+            $panthera -> logging -> output('Getting search results ' .$sid. ' from cache', 'pantheraGallery');
+        }
+    }
 
     // get gallery items
-    $count = getGalleryItems(array('gallery_id' => $category->id), False);
-    $i = getGalleryItems(array('gallery_id' => $category->id), $count, 0);
+    $page = $_GET['page'];
     
-    if ($_GET['query'] != '')
-    {
-        $itemsList = '';
-        foreach ($i as $key => $value)
+    $uiPager = new uiPager('adminGalleryItems', $totalItems, 'adminGalleryItems', 16);
+    $uiPager -> setActive($page);
+    $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\');');
+    $limit = $uiPager -> getPageLimit();
+    
+    if (!isset($items)) {
+        $items = getGalleryItems($w, $limit[1], $limit[0], $order, $direction);
+        
+        if ($panthera->cache)
         {
-            if (strstr($value->title, strtolower($_GET['query']))) {
-                $itemsList[] = $value;   
-            }
-        }
-    } else {
-        $itemsList = $i;
+            $panthera->cache->set($sid, array($totalItems, $items), 'galleryItems');
+            $panthera->logging->output('Saving gallery items search results to cache ' .$sid, 'pantheraGallery');
+        }   
     }
 
     $template -> push('category_title', $category->title);
     $template -> push('category_id', $category->id);
-    $template -> push('item_list', $itemsList);
+    $template -> push('item_list', $items);
     $template -> push('language', $category->language);
     $template -> push('unique', $_GET['unique']);
     $template -> push('languages', $panthera->locale->getLocales());
@@ -418,11 +483,6 @@ if ($_GET['action'] == 'displayCategory')
 
     if ($category->meta('id')->get('site_header') != null)
         $header = array_merge($header, $category->meta('unique')->get('site_header'));
-
-    // manually add a css style
-    //$header = unserialize('a:2:{s:7:"scripts";a:0:{}s:6:"styles";a:1:{i:0;s:49:"{$PANTHERA_URL}/css/admin/gallery_no_settings.css";}}');
-    //$category->meta('unique')->set('site_header', $header);
-    //$category->meta('unique')->save();
 
     // add custom styles and scripts
     if (count($header) > 0)
