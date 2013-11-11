@@ -446,19 +446,6 @@ if ($_GET['action'] == 'displayCategory')
     {
         $totalItems = getGalleryItems($w, False, False, $order);
     }
-    
-    // search identificatior (used to cache results)
-    $sid = 'search:' .hash('md4', $_GET['query'].$_GET['order'].$_GET['direction'].$totalItems);
-    
-    // try to get results from cache
-    if ($panthera->cache)
-    {
-        if ($panthera->cache->exists($sid))
-        {
-            list($totalItems, $items) = $panthera -> cache -> get($sid);
-            $panthera -> logging -> output('Getting search results ' .$sid. ' from cache', 'pantheraGallery');
-        }
-    }
 
     // get gallery items
     $page = $_GET['page'];
@@ -468,15 +455,7 @@ if ($_GET['action'] == 'displayCategory')
     $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\');');
     $limit = $uiPager -> getPageLimit();
     
-    if (!isset($items)) {
-        $items = getGalleryItems($w, $limit[1], $limit[0], $order, $direction);
-        
-        if ($panthera->cache)
-        {
-            $panthera->cache->set($sid, array($totalItems, $items), 'galleryItems');
-            $panthera->logging->output('Saving gallery items search results to cache ' .$sid, 'pantheraGallery');
-        }   
-    }
+    $items = getGalleryItems($w, $limit[1], $limit[0], $order, $direction);
 
     $template -> push('category_title', $category->title);
     $template -> push('category_id', $category->id);
