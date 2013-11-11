@@ -112,40 +112,40 @@
                 <th>{function="localize('Title', 'gallery')"}</th>
                 <th>{function="localize('Created', 'gallery')"}</th>
                 <th>{function="localize('Language', 'gallery')"}</th>
-                <th>&nbsp;</th>
+                <!-- <th>&nbsp;</th> -->
             </tr>
         </thead>
 
         <tbody class="hovered">
             {loop="$category_list"}
-            <tr id="galleryCategory_row_{$value->id}" style="{if="!$value->visibility"}opacity: 0.5;{/if}">
+            <tr id="galleryCategory_row_{$value.id}"> <!--  style="{if="!$value.visibility"}opacity: 0.5;{/if} -->
                 
-                {if="$value->thumb_url"}
+                {if="$value.thumb_url"}
                 <td style="padding-top: 4px; padding-right: 10px; padding-left: 10px;">
-                    <a href="?display=gallery&cat=admin&action=displayCategory&unique={$value->unique}&language={$value->language}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value->id}'>
-                    <img src="{$value->thumb_url|pantheraUrl}" style="max-width: 50px; height: 50px;">
+                    <a href="?display=gallery&cat=admin&action=displayCategory&unique={$value.unique}&language={$value.language}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value.id}'>
+                    <img src="{$value.thumb_url|pantheraUrl}" style="max-width: 50px; height: 50px;">
                     </a>
                 </td>
                 {/if}
                 
-                <td {if="!$value->thumb_url"}colspan="2"{/if}>
-                <a href="?display=gallery&cat=admin&action=displayCategory&unique={$value->unique}&language={$value->language}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value->id}'>
-                {$value->title}
+                <td {if="!$value.thumb_url"}colspan="2"{/if}>
+                <a href="?display=gallery&cat=admin&action=displayCategory&unique={$value.unique}&language={$value.language}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value.id}'>
+                {$value.title}
                 </a>
                 </td>
-                <td>{$value->created} {function="localize('by')"} {$value->author_login}</td>
-                <td>{$value->language}</td>
-                <td>
-                    <a href="#" onclick="toggleGalleryVisibility({$value->id});">
-                    <img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/System-search.svg" style="max-height: 22px;" id="hide_btn_{$value->id}" title="{function="localize('Show or hide', 'messages')"}">
+                <td>{$value.created} {function="localize('by')"} {$value.author_login}</td>
+                <td>{$value.langs}</td>
+                <!-- <td>
+                    <a href="#" onclick="toggleGalleryVisibility({$value.id});">
+                    <img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/System-search.svg" style="max-height: 22px;" id="hide_btn_{$value.id}" title="{function="localize('Show or hide', 'messages')"}">
                     </a>
-                    <a href="#" onclick="removeGalleryCategory({$value->id});">
+                    <a href="#" onclick="removeGalleryCategory({$value.id});">
                     <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" title="Remove">
                     </a>
-                    <a href="#" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_manage_gallery_{$value->id}', 1024, 'upload_popup');">
+                    <a href="#" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_manage_gallery_{$value.id}', 1024, 'upload_popup');">
                     <img src="{$PANTHERA_URL}/images/admin/menu/users.png" style="max-height: 22px;" title="{function="localize('Manage permissions', 'messages')"}">
-                    </a>
-                </td>
+                    </a> 
+                </td> -->
             </tr>
             {/loop}
             <tr id="noGalleryCategories" {if="$category_list"}style="display: none;"{/if}>

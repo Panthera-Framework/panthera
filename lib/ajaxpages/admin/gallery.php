@@ -898,7 +898,14 @@ foreach ($categories as $category)
             continue;
     }
 
-    $categoriesFiltered[$category->unique."_".$category->language] = $category;
+    if (isset($categoriesFiltered[$category->unique])) {
+        $categoriesFiltered[$category->unique]['langs'] = $categoriesFiltered[$category->unique]['langs'].', '.$category->language;
+        if ($category->language == 'english')
+            $categoriesFiltered[$category->unique]['language'] = 'english';
+    } else {
+        $categoriesFiltered[$category->unique] = $category->getData();
+        $categoriesFiltered[$category->unique]['langs'] = $category->language;
+    }
 }
 
 if (defined('GALLERY_FILTER'))
