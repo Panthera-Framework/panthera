@@ -818,7 +818,7 @@ class whereClause
 	  * @author Damian Kęska
 	  */
 
-	public function add ( $Statement, $Column, $Equals, $Value, $group = 1 )
+	public function add ($Statement, $Column, $Equals, $Value, $group = 1)
 	{
 	    if (!isset($this->groups[$group]))
 	    {
@@ -844,8 +844,15 @@ class whereClause
 			$Statement = '';	
 		}
 		
-		$this->groups[$group]['query'] .= $Statement. ' `' .$Column. '` ' .$Equals. ' :' .$Column. ' ';
-        $this->vals[(string)$Column] = $Value;
+		$columnTmp = $Column;
+		
+		while (isset($this->vals[$columnTmp]))
+		{
+		    $columnTmp = $Column.rand(0,9999);
+		}
+		
+		$this->groups[$group]['query'] .= $Statement. ' `' .$Column. '` ' .$Equals. ' :' .$columnTmp. ' ';
+        $this->vals[(string)$columnTmp] = $Value;
 		return true;
 	}
 	
