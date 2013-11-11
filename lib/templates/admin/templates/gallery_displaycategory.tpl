@@ -3,6 +3,36 @@
 <script type="text/javascript">
     var uploadProgress = new panthera.ajaxLoader($('#addNewImage'));
 
+    function toggleGalleryVisibility(id)
+    {
+        panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggleGalleryVisibility&ctgid='+id, messageBox: 'w2ui', success: function (response) {
+                if (response.status == 'success')
+                {
+                    navigateTo(window.location);
+                }
+            }
+        });
+    }
+    
+    function removeGalleryCategory(id)
+    {
+        w2confirm('{function="localize('Are you sure you want delete this category?', 'gallery')"}', function (responseText) {
+        
+            if (responseText == 'Yes')
+            {
+                panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=deleteCategory&id='+id, messageBox: 'w2ui', success: function (response) {
+                        if (response.status == 'success')
+                        {
+                            navigateTo('?display=gallery&cat=admin&filter={$category_filter}');
+                        }
+                
+                    }
+                });
+            }
+        
+        });
+    }
+    
     function removeGalleryItem(id)
     {
         w2confirm('{function="localize('Are you sure you want delete this item?', 'gallery')"}', function (responseText) {
@@ -121,6 +151,8 @@
         <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=gallery&cat=admin');" style="float: left; margin-left: 10px;">
        {if="!$all_langs"} <input type="button" value="{function="localize('Other languages', 'gallery')"}" onclick="panthera.popup.toggle('element:#languagePopup')"> {/if}
         <input type="button" value="{function="localize('Settings')"}" onclick="panthera.popup.toggle('element:#settingsPopup')">
+        <input type="button" value="{function="localize('Toggle visibility')"}" onclick="toggleGalleryVisibility({$category_id});">
+        <input type="button" value="{function="localize('Delete')"}" onclick="removeGalleryCategory({$category_id});">
     </div>
 </div>
 

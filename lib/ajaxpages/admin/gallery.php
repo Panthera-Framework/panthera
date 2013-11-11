@@ -330,7 +330,7 @@ if ($_GET['action'] == 'displayCategory')
             'ASC' => array('title' => localize('Ascending', 'search'), 'selected' => ($_GET['direction'] == 'ASC')),
             'DESC' => array('title' => localize('Descending', 'search'), 'selected' => ($_GET['direction'] == 'DESC'))
         ));
-    $sBar->addIcon( '{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_galleries', localize( 'Manage permissions' ) );
+    // $sBar->addIcon( '{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_galleries', localize( 'Manage permissions' ) );
     
     // query for a page using `unique` and `language` columns
     $statement = new whereClause();
@@ -386,6 +386,8 @@ if ($_GET['action'] == 'displayCategory')
             }
         }
     }
+
+    $sBar->addIcon( '{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_gallery_'.$category->id, localize( 'Manage permissions' ) );
     
     $author = $category->getAuthor();
     
@@ -490,7 +492,12 @@ if ($_GET['action'] == 'displayCategory')
         }
     }
 
-    $titlebar = new uiTitlebar($category->title . " (". $category->language.")");
+    if ($category->visibility)
+        $visibility = localize("visible", 'gallery');
+    else
+        $visibility = localize("invisible", 'gallery');
+
+    $titlebar = new uiTitlebar($category->title . " (".$category->language.", ".$visibility.")");
 	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');
     $template -> display('gallery_displaycategory.tpl');
     pa_exit();

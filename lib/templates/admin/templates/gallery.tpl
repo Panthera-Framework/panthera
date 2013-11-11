@@ -1,42 +1,5 @@
 {$site_header}
 
-<script type="text/javascript">
-    function toggleGalleryVisibility(id)
-    {
-        panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggleGalleryVisibility&ctgid='+id, messageBox: 'w2ui', success: function (response) {
-                if (response.status == 'success')
-                {
-                    if (response.visible)
-                    {
-                        $('#galleryCategory_row_'+id).css({'opacity': '1'});
-                    } else {
-                        $('#galleryCategory_row_'+id).css({'opacity': '0.5'});
-                    }
-                }
-            }
-        });
-    }
-    
-    function removeGalleryCategory(id)
-    {
-        w2confirm('{function="localize('Are you sure you want delete this gallery?', 'gallery')"}', function (responseText) {
-        
-            if (responseText == 'Yes')
-            {
-                panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=deleteCategory&id='+id, messageBox: 'w2ui', success: function (response) {
-                        if (response.status == 'success')
-                        {
-                            navigateTo('?display=gallery&cat=admin&filter={$category_filter}');
-                        }
-                
-                    }
-                });
-            }
-        
-        });
-    }
-</script>
-
 {include="ui.titlebar"}
 
 <div id="topContent">
@@ -142,9 +105,6 @@
                     <a href="#" onclick="removeGalleryCategory({$value.id});">
                     <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" title="Remove">
                     </a>
-                    <a href="#" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_manage_gallery_{$value.id}', 1024, 'upload_popup');">
-                    <img src="{$PANTHERA_URL}/images/admin/menu/users.png" style="max-height: 22px;" title="{function="localize('Manage permissions', 'messages')"}">
-                    </a> 
                 </td> -->
             </tr>
             {/loop}
