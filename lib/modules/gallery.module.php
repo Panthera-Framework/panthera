@@ -249,6 +249,39 @@ class gallery
     }
     
     /**
+      * Remove category
+      *
+      * @param int $id of category
+      * @return bool
+      * @author Mateusz Warzyński
+      */
+    
+    public static function removeCategory($id)
+    {
+        global $panthera;
+        
+        // delete every item from this category
+        $w = new whereClause();
+        $w -> add( 'AND', 'gallery_id', '=', $id);
+        $items = $panthera->db->getRows('gallery_items', $w, '', '', '', 'id', 'DESC');
+        
+        $deleteItems = new whereClause(); 
+        foreach ($items as $item)
+        {
+            $deleteItems -> add('OR', 'id', '=', $item['id']);
+        }
+        
+        $show = $deleteItems->show();
+        $query = 'DELETE FROM `{$db_prefix}gallery_items` WHERE ' .$show[0];
+       
+        if (count($show[1]))
+            $panthera -> db -> query($query, $show[1]);
+        
+        $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}gallery_categories` WHERE `id` = :id', array('id' => $id));
+        return (bool)$SQL->rowCount();
+    }
+    
+    /**
       * Get category by `unique` and `language` and return in selected locale, if not found return in other language
       *
       * @param string name
@@ -303,31 +336,6 @@ function getGalleryItems($by, $limit=0, $limitFrom=0, $orderBy='id', $orderDirec
 {
       global $panthera;
       return $panthera->db->getRows('gallery_items', $by, $limit, $limitFrom, 'galleryItem', $orderBy, $orderDirection);
-}
-
-function removeGalleryCategory($id)
-{
-    global $panthera;
-    
-    // delete every item from this category
-    $w = new whereClause();
-    $w -> add( 'AND', 'gallery_id', '=', $id);
-    $items = $panthera->db->getRows('gallery_items', $w, '', '', '', 'id', 'DESC');
-    
-    $deleteItems = new whereClause(); 
-    foreach ($items as $item)
-    {
-        $deleteItems -> add('OR', 'id', '=', $item['id']);
-    }
-    
-    $show = $deleteItems->show();
-    $query = 'DELETE FROM `{$db_prefix}gallery_items` WHERE ' .$show[0];
-   
-    if (count($show[1]))
-        $panthera -> db -> query($query, $show[1]);
-    
-    $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}gallery_categories` WHERE `id` = :id', array('id' => $id));
-    return (bool)$SQL->rowCount();
 }
 
 function createGalleryItem($title, $description, $link, $gallery_id, $visibility, $upload)

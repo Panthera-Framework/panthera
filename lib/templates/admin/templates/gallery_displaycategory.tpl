@@ -23,7 +23,7 @@
                 panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=deleteCategory&id='+id, messageBox: 'w2ui', success: function (response) {
                         if (response.status == 'success')
                         {
-                            navigateTo('?display=gallery&cat=admin&filter={$category_filter}');
+                            navigateTo('?display=gallery&cat=admin');
                         }
                 
                     }

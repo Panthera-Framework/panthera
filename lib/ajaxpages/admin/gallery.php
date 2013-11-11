@@ -26,6 +26,7 @@ $manageAll = getUserRightAttribute($user, 'can_manage_galleries');
   * Save category details
   *
   * @author Damian Kęska
+  * @author Mateusz Warzyński 
   */
 
 if ($_GET['action'] == 'saveCategoryDetails')
@@ -85,7 +86,7 @@ if ($_GET['action'] == 'saveCategoryDetails')
   * Add selected uploads to gallery
   *
   * @input json {1, 2, 3, 4, 10, 50, 60} - upload id's
-  * @author Damian Kęska
+  * @author Damian Kęska 
   */
 
 if ($_GET['action'] == 'adduploads')
@@ -196,7 +197,7 @@ if ($_GET['action'] == 'deleteCategory')
         $noAccess -> display();
     }
 
-    if (removeGalleryCategory($id))
+    if (gallery::removeCategory($id))
         ajax_exit(array('status' => 'success'));
     else
         ajax_exit(array('status' => 'failed', 'error' => localize('Unknown error', 'messages')));
@@ -440,6 +441,7 @@ if ($_GET['action'] == 'displayCategory')
     }
     
     $w = new whereClause();
+    $w -> add( 'AND', 'gallery_id', '=', $category->id);
         
     if ($_GET['query'])
     {
@@ -852,22 +854,6 @@ if ($_GET['action'] == 'edit_category')
     }
     pa_exit();
 }
-
-    /*$conditions = '';
-
-    if (isset($_GET['language']))
-    {
-        if ($_GET['language'] == '' or $_GET['language'] == 'all')
-            $panthera -> session -> set('admin_gallery_locale', '');
-        elseif (array_key_exists($_GET['language'], $panthera -> locale -> getLocales()))
-            $panthera -> session -> set('admin_gallery_locale', $_GET['language']);
-    }
-
-    if ($panthera->session->exists('admin_gallery_locale'))
-    {
-        if ($panthera -> session -> get('admin_gallery_locale') != '')
-            $conditions = array('language' => $panthera -> session -> get('admin_gallery_locale'));
-    }*/
 
 // here we will store query and other filter params
 $filter = array();
