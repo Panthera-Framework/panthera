@@ -49,11 +49,13 @@ if ($_GET['action'] == 'saveCategoryDetails')
     $statement -> add('', 'unique', '=', $gallery->unique);
     $statement -> add('AND', 'language', '=', $language);
     
-    $checkCategory = new galleryCategory($statement, null);
+    // if we change language, we must check if this category exists
+    if ($gallery->language != $_POST['language']) {
+        $checkCategory = new galleryCategory($statement, null);
     
-    if ($checkCategory->exists())
-        ajax_exit(array('status' => 'failed', 'message' => localize('Category in this language already exists!', 'gallery')));
-
+        if ($checkCategory->exists())
+            ajax_exit(array('status' => 'failed', 'message' => localize('Category in this language already exists!', 'gallery')));
+    }
     if (!$gallery -> exists())
         ajax_exit(array('status' => 'failed', 'message' => localize('There is no such category', 'gallery')));
 
@@ -62,6 +64,11 @@ if ($_GET['action'] == 'saveCategoryDetails')
 
     if (strlen($_POST['title']) > 0)
         $gallery -> title = $_POST['title'];
+    
+    if ($_POST['visibility'] == True)
+        $gallery->visibility = True;
+    else
+        $gallery->visibility = False;
 
     if (isset($_POST['all_langs']))
         $gallery->meta('unique')->set('all_langs', $gallery->id);
@@ -500,7 +507,7 @@ if ($_GET['action'] == 'displayCategory')
     $titlebar = new uiTitlebar($category->title . " (".$category->language.", ".$visibility.")");
 	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');
     
-    $template -> push('category_visibility', $visibility);
+    $template -> push('category_visibility', $category->visibility);
     
     $template -> display('gallery_displaycategory.tpl');
     pa_exit();

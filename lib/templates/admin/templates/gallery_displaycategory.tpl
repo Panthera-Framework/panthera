@@ -205,7 +205,12 @@
             
             <tr id="visibility_tr">
                 <th>{function="localize('Visibility', 'gallery')"}:</th>
-                <th>{$category_visibility}&nbsp;<small><a href="#change" onclick="toggleGalleryVisibility({$category_id});">({function="localize('toggle', 'gallery')"})</small></th>
+                <th>
+                    <select name="visibility">
+                        <option value="1" {if="$category_visibility == 1"} selected {/if}>{function="localize('visible', 'gallery')"}</option>
+                        <option value="0" {if="$category_visibility == 0"} selected {/if}>{function="localize('invisible', 'gallery')"}</option>
+                    </select>
+                </th>
             </tr>
             
             <tr id="created_tr">
