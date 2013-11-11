@@ -499,6 +499,9 @@ if ($_GET['action'] == 'displayCategory')
 
     $titlebar = new uiTitlebar($category->title . " (".$category->language.", ".$visibility.")");
 	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');
+    
+    $template -> push('category_visibility', $visibility);
+    
     $template -> display('gallery_displaycategory.tpl');
     pa_exit();
 }

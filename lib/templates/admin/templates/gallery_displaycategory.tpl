@@ -151,7 +151,6 @@
         <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=gallery&cat=admin');" style="float: left; margin-left: 10px;">
        {if="!$all_langs"} <input type="button" value="{function="localize('Other languages', 'gallery')"}" onclick="panthera.popup.toggle('element:#languagePopup')"> {/if}
         <input type="button" value="{function="localize('Settings')"}" onclick="panthera.popup.toggle('element:#settingsPopup')">
-        <input type="button" value="{function="localize('Toggle visibility')"}" onclick="toggleGalleryVisibility({$category_id});">
         <input type="button" value="{function="localize('Delete')"}" onclick="removeGalleryCategory({$category_id});">
     </div>
 </div>
@@ -203,10 +202,17 @@
                 <th>{function="localize('Title', 'gallery')"}:</th>
                 <th><input type="text" style="width: 95%;" name="title" value="{$galleryObject->title}"></th>
             </tr>
+            
+            <tr id="visibility_tr">
+                <th>{function="localize('Visibility', 'gallery')"}:</th>
+                <th>{$category_visibility}&nbsp;<small><a href="#change" onclick="toggleGalleryVisibility({$category_id});">({function="localize('toggle', 'gallery')"})</small></th>
+            </tr>
+            
             <tr id="created_tr">
                 <th>{function="localize('Created', 'gallery')"}:</th>
                 <th>{$galleryObject->created} ({$galleryObject->author_login})</th>
             </tr>
+            
             <tr id="all_langs_tr">
                 <th>{function="localize('Make this gallery same for all languages', 'gallery')"}:</th>
                 <th><input type="checkbox" name="all_langs" value="1"{if="$all_langs"} checked{/if} id="all_langs_checkbox"></th>
