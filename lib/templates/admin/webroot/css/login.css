@@ -34,7 +34,7 @@ body {
 .login-form {
     width: 500px;
     margin: 0 auto;
-    position: absolute;
+    position: relative;
 
     background: #56687b;
     border: 1px solid #3d4957;
