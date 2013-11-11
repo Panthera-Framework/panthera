@@ -50,7 +50,9 @@
     <body class="login">
        <div class="login-form">
         <div id="ajax_content">{include="$stepTemplate"}</div>
+        
         <div class="footer">
+             <div id="separator" style="position: relative; height: 1px; width: 100%; top: -10px; background: #6e8093;"></div>
                <input type="button" class="button" disabled value="{function="localize('Back', 'installer')"}" id="installer-controll-backBtn" onclick="customNextBtn = false; navigateTo('?_stepbackward=True');" style="float: left; margin-left: 60px;">
                <input type="button" class="button" value="{function="localize('Next', 'installer')"}" id="installer-controll-nextBtn" onclick="nextBtn()" style="float: right; margin-right: 60px;">
                <input type="button" class="button checkButton" value="{function="localize('Check', 'installer')"}" id="installer-controll-checkBtn" onclick="databaseCheck()" style="float: right; margin-right: 10px; display: none;"> 
