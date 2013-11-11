@@ -891,6 +891,22 @@ abstract class pantheraFetchDB
     protected $cacheID = "";
     
     /**
+      * Return data row in array or serialized array format
+      *
+      * @param bool $serialize Serialize before return?
+      * @return array|string
+      * @author Damian Kęska
+      */
+    
+    public function getData($serialize=False)
+    {
+        if ($serialize)
+            return serialize($this->_data);
+            
+        return $this->_data;
+    }
+    
+    /**
       * Constructor, here are logics that parses and loads all data, cache management etc.
       *
       * @param mixed $by
