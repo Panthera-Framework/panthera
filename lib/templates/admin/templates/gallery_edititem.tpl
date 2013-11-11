@@ -41,10 +41,6 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
     sliderChangeImage(link);
 }
 
-$('#image_slider').click(function () {
-    $('#image_slider_box').slideUp();
-});
-
 sliderChangeImage('{$link}');
 </script>
 <style type="text/css">
