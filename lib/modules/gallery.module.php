@@ -309,10 +309,6 @@ function removeGalleryCategory($id)
 {
     global $panthera;
     $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}gallery_categories` WHERE `id` = :id', array('id' => $id));
-    
-    // remove items from this category
-    getGalleryItems(array('gallery_id' => '44'));
-
     return (bool)$SQL->rowCount();
 }
 
