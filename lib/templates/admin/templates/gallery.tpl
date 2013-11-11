@@ -111,7 +111,7 @@
                 <th>&nbsp;</th>
                 <th>{function="localize('Title', 'gallery')"}</th>
                 <th>{function="localize('Created', 'gallery')"}</th>
-                <th>{function="localize('Language', 'gallery')"}</th>
+                <th>{function="localize('Languages', 'gallery')"}</th>
                 <!-- <th>&nbsp;</th> -->
             </tr>
         </thead>
