@@ -10,7 +10,7 @@ function initEditor() {}
 
 function editMessage(id)
 {
-    panthera.jsonPOST({ url: '{$AJAX_URL}?display=messages&cat=admin&action=get_msg&language={$language}&msgid='+id, data: '', success: function (response) {
+    panthera.jsonPOST({ url: '{$AJAX_URL}?display=messages&cat=admin&action=get_msg&language={$language}&msgid='+id, data: '', messageBox: false, success: function (response) {
             if (response.status == "success") {
                 panthera.popup.create('element:#editMessagePopup');
                 mceInit('edit_msg_content');
@@ -29,7 +29,7 @@ function editMessage(id)
                 // init mce editor
                 mceFocus("edit_msg_content");
                 mceSetContent('edit_msg_content', response.message);
-
+                
                 $('#message_window').hide('slow');
                 $('#edit_window').show('slow');
             }
