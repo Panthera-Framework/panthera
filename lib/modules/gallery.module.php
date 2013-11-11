@@ -299,16 +299,20 @@ class gallery
     }
 }
 
-function getGalleryItems($by, $limit=0, $limitFrom=0)
+function getGalleryItems($by, $limit=0, $limitFrom=0, $orderBy='id', $orderDirection='DESC')
 {
       global $panthera;
-      return $panthera->db->getRows('gallery_items', $by, $limit, $limitFrom, 'galleryItem', 'id', 'DESC');
+      return $panthera->db->getRows('gallery_items', $by, $limit, $limitFrom, 'galleryItem', $orderBy, $orderDirection);
 }
 
 function removeGalleryCategory($id)
 {
     global $panthera;
     $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}gallery_categories` WHERE `id` = :id', array('id' => $id));
+    
+    // remove items from this category
+    getGalleryItems(array('gallery_id' => '44'));
+
     return (bool)$SQL->rowCount();
 }
 
