@@ -19,10 +19,6 @@ $(document).ready(function () {
         
         return false;
     });
-    
-    $('#image_slider').click(function () {
-        $('#image_slider_box').slideUp();
-    });
 });
 
 function sliderChangeImage(src)
