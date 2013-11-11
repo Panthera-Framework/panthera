@@ -1,4 +1,12 @@
 {$site_header}
+
+<!-- CSS styles -->
+<style type="text/css">
+.formTable tbody td {
+    padding-right: 0px;
+}
+</style>
+
 <script type="text/javascript">
 function initEditor() {}
 
