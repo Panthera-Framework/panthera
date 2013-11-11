@@ -81,7 +81,7 @@
 
         <tbody class="hovered">
             {loop="$category_list"}
-            <tr id="galleryCategory_row_{$value.id}"> <!--  style="{if="!$value.visibility"}opacity: 0.5;{/if} -->
+            <tr id="galleryCategory_row_{$value.id}" style="height: 59px;"> <!--  style="{if="!$value.visibility"}opacity: 0.5;{/if} -->
                 
                 {if="$value.thumb_url"}
                 <td style="padding-top: 4px; padding-right: 10px; padding-left: 10px;">
