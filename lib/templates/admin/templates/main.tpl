@@ -93,7 +93,14 @@
         
         <!-- Content -->
         
-        <div id="ajax_content" class="content centerWithContent"></div>
+        <div id="ajax_content" class="content centerWithContent">
+            <div class="settingsBackground" style="color: white; background-color: #56687b; height: 400px;">
+                <img src="{$PANTHERA_URL}/images/admin/pantheraUI/logo-big.png" style="margin: 30px; float: left;">
+                <span style="float: left;">
+                    <h2 style="margin-top: 80px;">{function="slocalize('Panthera Framework is loading admin panel', 'messages')"}...</h2>
+                </span>
+            </div>
+        </div>
         
         <!-- Footer -->
         
