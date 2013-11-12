@@ -102,7 +102,7 @@ function removeCategory(id)
             <tr>
                  <th style="min-width: 200px;">{function="localize('Category', 'newsletter')"}</th>
 	             <th style="min-width: 80px;">{function="localize('Users', 'newsletter')"}</th>
-	             <th style="width: 50px;">{function="localize('Default type', 'newsletter')"}</th>
+	             <th style="width: 90px;">{function="localize('Default type', 'newsletter')"}</th>
 	             <th style="width: 170px;">{function="localize('Created', 'newsletter')"}</th>
 	             <th style="width: 30px;">{function="localize('Options', 'newsletter')"}</th>
             </tr>

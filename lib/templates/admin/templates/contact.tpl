@@ -164,7 +164,7 @@ jQuery(document).ready(function() {
         <thead>
             <tr>
                 <th colspan="2" class="formTableHeader" style="padding-top: 0px; padding-bottom: 30px;">
-                    <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px;">{function="localize('Options')"}</p>
+                    <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 50px; margin-top: 30px;">{function="localize('Options')"}</p>
                 </th>
             </tr>
         </thead>

@@ -7,7 +7,11 @@ function localeAction(action, id)
     if (action == "add")
         id = jQuery('#locales_dir').val();
 
-    panthera.htmlPOST({ url: '{$AJAX_URL}?display=locales&cat=admin&action='+action, data: 'id='+id, success: '#locale_window' });
+    panthera.htmlPOST({ url: '{$AJAX_URL}?display=locales&cat=admin&action='+action, data: 'id='+id, success: function () {
+        navigateTo(window.location);
+    }
+    
+    });
 }
 </script>
 {/if}
@@ -89,18 +93,14 @@ function localeAction(action, id)
 
         <tbody>
             {loop="$locales_added"}
-                <tr>
+                <tr {if="$value.visibility == False"} style="opacity: 0.5;" {/if}>
                     <td style='width: 30px;'><img {if="$value.flag == True"}src='{$PANTHERA_URL}/images/admin/flags/{$key}.png'{else} src="" {/if}></td>
-                    <td>{$key}</td>
-                    <td><input type="button" value="{function="localize('Delete')"}" onclick="localeAction('delete', '{$key}'); return false;">
-
-                    {if="$value.visibility == True"}
-                    <input type="button" value="{function="localize('Hide')"}" onclick="localeAction('toggle_visibility', '{$key}');">
-                    {else}
-                    <input type="button" value="{function="localize('Show')"}" onclick="localeAction('toggle_visibility', '{$key}');">
-                    {/if}
-
-                <input type="button" value="{function="localize('Set as default')"}" onclick="localeAction('set_as_default', '{$key}');"></td></tr>
+                    <td style="width: 200px;">{$key}</td>
+                    <td>
+                        <a href="#delete" onclick="localeAction('delete', '{$key}'); return false;"><img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}"></a>
+                        <a href="#toggle-visibility" onclick="localeAction('toggle_visibility', '{$key}');"><img src="{$PANTHERA_URL}/images/admin/menu/search.png" style="max-height: 22px;" title="{function="localize('Toggle visibility', 'locales')"}"></a>
+                        <a href="#default" onclick="localeAction('set_as_default', '{$key}');"><img src="{$PANTHERA_URL}/images/admin/menu/star.png" style="max-height: 22px;" title="{function="localize('Set as default', 'locales')"}"></a>
+                    </td>
             {/loop}
 
         </tbody>
