@@ -51,11 +51,11 @@ function addGroup(acl)
 </script>
 
 {if="count($multiplePermissions) > 0"}
-<div style="margin-left: 20px;">{function="localize('Switch permission', 'acl')"}: 
+<div style="margin-left: 70px; color: white; margin-top: 10px; margin-bottom: 20px;">{function="localize('Switch permission', 'acl')"}: 
 {$i=0}
 {loop="$multiplePermissions"}
     {$i=$i+1}
-    <a href="#" onclick="panthera.popup.navigate('?{function="getQueryString('GET', 'current=$target', '_')"}'.replace('%24target', '{$key}'))">{$value}</a>{if="$i < count($multiplePermissions)"},{/if} 
+    <a href="#" onclick="panthera.popup.navigate('?{function="getQueryString('GET', 'current=$target', '_')"}'.replace('%24target', '{$key}'))" style="color: white;">{$value}</a>{if="$i < count($multiplePermissions)"},{/if} 
 {/loop}
 </div>
 {/if}
