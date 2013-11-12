@@ -502,7 +502,7 @@ class pantheraTemplate extends pantheraClass
 	 * @author Damian Kęska
 	 */
 
-    public function display($template=NuLL, $renderOnly=False, $skipHooking=False, $vars='')
+    public function display($template=NuLL, $renderOnly=False, $skipHooking=False, $vars='', $altTemplateDir='')
     {
         $this->timer = microtime_float();
         
@@ -617,8 +617,13 @@ class pantheraTemplate extends pantheraClass
             $template = $this->template['index'];
         }
         
-        $file = getContentDir('/templates/' .$this->name. '/templates/' .$template);
-
+        if ($altTemplateDir)
+        {
+            $file = getContentDir('/templates/' .$altTemplateDir. '/templates/' .$template);
+        } else {
+            $file = getContentDir('/templates/' .$this->name. '/templates/' .$template);
+        }
+        
         if (!$file)
             throw new Exception('Cannot find template "' .$template. '" in both /content/templates/' .$this->name. '/templates and /lib/templates/' .$this->name. '/templates directories');
             
