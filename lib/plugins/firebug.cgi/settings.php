@@ -19,12 +19,10 @@ if (!getUserRightAttribute($panthera->user, 'can_manage_firebug')) {
     pa_exit();
 }
 
-$panthera -> locale -> loadDomain('firebug');
-
 // "firebugSettings" page
 if ($_GET['display'] == 'firebugSettings')
 {
-    $whitelist = str_replace(' ', '', $panthera -> config -> getKey('firebug_whitelist'));
+    $whitelist = str_replace(' ', '', $panthera -> config -> getKey('firebug.whitelist', '', 'string', 'firebug'));
     $list = explode(',', $whitelist);
 
     $newList = array();
@@ -41,6 +39,12 @@ if ($_GET['display'] == 'firebugSettings')
 
     switch ($_GET['action'])
     {
+        /**
+          * Add new IP address
+          *
+          * @author Damian Kęska
+          */
+    
         case 'add':
             // check if ip address is valid
             if (!$panthera->types->validate($_POST['addr'], 'ip'))
@@ -50,11 +54,18 @@ if ($_GET['display'] == 'firebugSettings')
             if (!in_array($_POST['addr'], $list))
             {
                 $list[] = $_POST['addr'];
-                $panthera -> config -> setKey('firebug_whitelist', implode(',', $list));
+                $panthera -> config -> setKey('firebug.whitelist', implode(',', $list), 'string', 'firebug');
                 ajax_exit(array('status' => 'success'));
             } else
                 ajax_exit(array('status' => 'failed', 'message' => localize('Address already exists')));
         break;
+
+
+        /**
+          * Remove IP address from white list
+          *
+          * @author Damian Kęska
+          */
 
         case 'remove':
             if (!in_array($_POST['addr'], $list))
@@ -71,11 +82,16 @@ if ($_GET['display'] == 'firebugSettings')
             }
 
             $list = $newList;
-            $panthera -> config -> setKey('firebug_whitelist', implode(',', $list));
+            $panthera -> config -> setKey('firebug.whitelist', implode(',', $list), 'string', 'firebug');
 
             ajax_exit(array('status' => 'success'));
         break;
 
+        /**
+          * Show whitelisted IP addresses and client & server versions
+          *
+          * @author Damian Kęska
+          */
 
         default:
             if (isset($_SERVER['HTTP_X_FIREPHP_VERSION']))
@@ -85,6 +101,8 @@ if ($_GET['display'] == 'firebugSettings')
 
             if ($list[0] == '')
                 unset($list[0]);
+                
+            new uiTitlebar(localize('Firebug settings', 'firebug'));
 
             $panthera -> template -> push ('server_version', FirePHP::VERSION);
             $panthera -> template -> push ('current_address', $_SERVER['REMOTE_ADDR']);

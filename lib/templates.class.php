@@ -719,13 +719,18 @@ class outputControl extends pantheraClass
     /**
       * Save output buffer to variable that can be added to Panthera Logging
       *
-      * @return void 
+      * @return bool Returns true if started buffering, and returns false if buffering is already running
       * @author Damian Kęska
       */
 
     public function startBuffering($handler='')
     {
         global $panthera;
+        
+        if ($this->isEnabled())
+        {
+            return False;
+        }
     
         @ob_flush();
         
@@ -742,6 +747,8 @@ class outputControl extends pantheraClass
         }
         
         $this -> handler = $handler;
+        
+        return True;
     }
     
     /**
