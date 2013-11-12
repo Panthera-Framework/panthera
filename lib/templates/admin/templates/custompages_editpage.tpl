@@ -1,5 +1,4 @@
 {$site_header}
-{function="localizeDomain('cpages')"}
 <script type="text/javascript">
 
 /**
