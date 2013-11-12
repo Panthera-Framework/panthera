@@ -3,6 +3,7 @@
     <head>
         <title>Example application</title>
         <meta charset="utf-8">
+        <script type="text/javascript" src="{$PANTHERA_URL}/js/panthera.js"></script>
         
         <style type="text/css">
             html * { padding:0; margin:0; }

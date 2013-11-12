@@ -38,14 +38,14 @@ class debpopupPlugin
 
     public function display()
     {
+        global $panthera;
+    
         if ($this->displayed)
         {
             return False;
         }
         
         $this -> displayed = True;
-    
-        global $panthera;
         $debugMessages = nl2br($panthera -> logging -> getOutput());
         $panthera -> template -> push('debugMessages', $debugMessages);
         $template = filterInput($panthera -> template -> display('debpopup.tpl', True, True, '', '_system'), 'wysiwyg');
@@ -55,4 +55,4 @@ class debpopupPlugin
 }
 
 $obj = new debpopupPlugin;
-$panthera -> add_option('template.display', array($obj, 'display'));
+$panthera -> add_option('template.afterRender', array($obj, 'display'));
