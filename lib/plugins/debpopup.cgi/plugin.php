@@ -14,8 +14,7 @@ $pluginInfo = array(
     'name' => 'Debpopup',
     'author' => 'Damian Kęska',
     'description' => 'Displays debugging informations in browser\'s popup window',
-    'version' => PANTHERA_VERSION,
-    'configuration' => '?display=firebugSettings&cat=admin'
+    'version' => PANTHERA_VERSION
 );
 
 /**
