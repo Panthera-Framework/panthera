@@ -110,6 +110,38 @@ class uiPager
     }
     
     /**
+      * Limit array by selected range eg. keys from range 40 to 50
+      *
+      * @param array $array
+      * @return array
+      * @author Damian Kęska
+      */
+    
+    public function limitArray($array)
+    {
+        $limit = $this->getPageLimit();
+        $newArray = array();
+        
+        $c = count($array);
+        $i = 0;
+        
+        foreach ($array as $domainName => $domain)
+        {
+            foreach ($domain as $key => $value)
+            {
+                $i++;
+                
+                // rewrite only elements matching our range            
+                if ($i >= $limit[0] and $i <= ($limit[0]+$limit[1]))
+                {
+                    $newArray[$domainName][$key] = $value;
+                }
+            }
+        }
+        return $newArray;
+    }
+    
+    /**
       * Set active page
       *
       * @param int $pageID

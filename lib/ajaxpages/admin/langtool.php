@@ -96,7 +96,13 @@ if (@$_GET['display'] == 'langtool')
         
         if ($_GET['action'] == 'domains')
         {
-            $panthera -> template -> push('missingTranslations', $missingStrings);
+            $uiPager = new uiPager('adminMissingTranslations', count($missingStrings), 'adminMissingTranslations', 15);
+            $uiPager -> setActive(intval($_GET['page']));
+            $uiPager -> setLinkTemplatesFromConfig('langtool_domains.tpl');
+            
+            $d = $uiPager -> limitArray($missingStrings);
+            
+            $panthera -> template -> push('missingTranslations', $d); // limit array results to satisfy current page
         } else {
             if (isset($missingStrings[$_GET['domain']]))
             {

@@ -195,7 +195,8 @@ function removeDomain(name, locale, n)
      
      {if="count($missingTranslations)"}
      
-        <table style="display: inline-block; width: 50%; margin-right: 50px;">
+     <div style="display: inline-block; width: 50%; margin-right: 50px;">
+        <table style="display: inline-block;">
             <thead>
                 <tr>
                     <th>{function="localize('Missing translations in this language', 'langtool')"}</th>
@@ -225,5 +226,8 @@ function removeDomain(name, locale, n)
                 {/loop}
             </tbody>
         </table>
-     {/if}
+        
+        <div style="position: relative; text-align: left;" class="pager">{$uiPagerName="adminMissingTranslations"}{include="ui.pager"}</div>
+    </div>
+    {/if}
 </div>
