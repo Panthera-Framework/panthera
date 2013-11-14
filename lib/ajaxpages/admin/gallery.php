@@ -215,29 +215,84 @@ if ($_GET['action'] == 'toggleGalleryVisibility')
     if (!isset($_GET['ctgid']))
         pa_exit();
 
-    $id = intval($_GET['ctgid']);
-    $item = new galleryCategory('id', $id);
-
-    if ($item -> exists())
-    {
-        // rights: manage all galleries, manage selected gallery
-        if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gallery_' .$id))
-        {
+    if (strpos($_GET['ctgid'], '.'))
+        $id = explode(".", $_GET['ctgid']);
+    else
+        $id = intval($_GET['ctgid']);
+    
+    if (is_array($id)) {
+        // check permissions
+        if ($manageAll) {
+            foreach ($id as $i) {
+                if (!getUserRightAttribute($user, 'can_manage_gallery_' .$i)) {
+                    $noAccess = new uiNoAccess;
+            
+                    $noAccess -> addMetas(array( 
+                        'can_manage_gallery_' .$i
+                    ));
+                       
+                    $noAccess -> display();
+                }
+            }
+        } else {
             $noAccess = new uiNoAccess;
             
             $noAccess -> addMetas(array(
                 'can_manage_galleries', 
                 'can_manage_gallery_' .$id
             ));
-            
+               
             $noAccess -> display();
         }
-    
-        $item -> visibility = !(bool)$item->visibility;
+        
+        // get visibility of one category to make the same for all
+        $item = new galleryCategory('id', $id[0]);
+        $visibility = !(bool)$item->visibility;
+        $item -> visibility = $visibility;
         $item -> save();
-        ajax_exit(array('status' => 'success', 'visible' => $item->visibility));
-    } else
-        ajax_exit(array('status' => 'failed', 'error' => localize('Category does not exists')));
+        unset($id[0]);
+        
+        // set the same visibility for all categories
+        foreach ($id as $i) {
+            $item = new galleryCategory('id', $i);
+            
+            if ($item->exists()) {
+                $item -> visibility = $visibility;
+                $item -> save();
+            }
+            
+            unset($item);
+        }
+        
+        ajax_exit(array('status' => 'success', 'visible' => $visibility));
+        
+    } else {
+        
+        if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gallery_' .$id))
+        {
+            $noAccess = new uiNoAccess;
+                
+            $noAccess -> addMetas(array(
+                'can_manage_galleries', 
+                'can_manage_gallery_' .$id
+            ));
+               
+            $noAccess -> display();
+        }
+        
+        $item = new galleryCategory('id', $id);
+        
+        if ($item -> exists())
+        {
+            $item -> visibility = !(bool)$item->visibility;
+            $item -> save();
+            ajax_exit(array('status' => 'success', 'visible' => $item->visibility));
+        } else {
+            
+        }
+    }
+    
+    ajax_exit(array('status' => 'failed', 'error' => localize('Error!')));
 }
 
 /**
@@ -471,7 +526,7 @@ if ($_GET['action'] == 'displayCategory')
     $template -> push('category_title', $category->title);
     $template -> push('category_id', $category->id);
     $template -> push('item_list', $items);
-    $template -> push('language', $category->language);
+    $template -> push('category_language', $category->language);
     $template -> push('unique', $_GET['unique']);
     $template -> push('languages', $panthera->locale->getLocales());
     $template -> push('galleryObject', $category);
@@ -901,13 +956,22 @@ foreach ($categories as $category)
             continue;
     }
 
+    // create an array with information about categories
     if (isset($categoriesFiltered[$category->unique])) {
         $categoriesFiltered[$category->unique]['langs'] = $categoriesFiltered[$category->unique]['langs'].', '.$category->language;
+        $categoriesFiltered[$category->unique]['ids'] = $categoriesFiltered[$category->unique]['ids'].'.'.$category->id;
+        
         if ($category->language == 'english')
             $categoriesFiltered[$category->unique]['language'] = 'english';
+        
+        if (!$categoriesFiltered[$category->unique]['visibility_all'] and (bool)$category->visibility)
+            $categoriesFiltered[$category->unique]['visibility_all'] = (bool)$category->visiblity;
+        
     } else {
         $categoriesFiltered[$category->unique] = $category->getData();
         $categoriesFiltered[$category->unique]['langs'] = $category->language;
+        $categoriesFiltered[$category->unique]['ids'] = $category->id;
+        $categoriesFiltered[$category->unique]['visibility_all'] = (bool)$category->visibility;
     }
 }
 

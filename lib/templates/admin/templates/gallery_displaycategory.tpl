@@ -2,17 +2,6 @@
 
 <script type="text/javascript">
     var uploadProgress = new panthera.ajaxLoader($('#addNewImage'));
-
-    function toggleGalleryVisibility(id)
-    {
-        panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggleGalleryVisibility&ctgid='+id, messageBox: 'w2ui', success: function (response) {
-                if (response.status == 'success')
-                {
-                    navigateTo(window.location);
-                }
-            }
-        });
-    }
     
     function removeGalleryCategory(id)
     {
@@ -190,7 +179,6 @@
 </div>
 {/if}
 
-
 <!-- Settings popup -->
 
 <div id="settingsPopup" style="display: none;">
@@ -228,7 +216,7 @@
                 <th>
                     <select name="language">
                     {loop="$languages"}
-                    <option value="{$key}"{if="$language == $key"} selected{/if}>{$key}</option>
+                    <option value="{$key}"{if="$category_language == $key"} selected{/if}>{$key}</option>
                     {/loop}
                     </select>
                 </th>

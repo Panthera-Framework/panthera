@@ -1,5 +1,39 @@
 {$site_header}
 
+<script type="text/javascript">
+    
+    function toggleGalleriesVisibility(array)
+    {
+        panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggleGalleryVisibility&ctgid='+array, messageBox: 'w2ui', success: function (response) {
+                if (response.status == 'success')
+                {
+                    navigateTo(window.location);
+                }
+            }
+        });
+    }
+    
+    function removeGalleryCategory(array)
+    {
+        w2confirm('{function="localize('Are you sure you want delete that categories?', 'gallery')"}', function (responseText) {
+        
+            if (responseText == 'Yes')
+            {
+                panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=deleteCategory&id='+array, messageBox: 'w2ui', success: function (response) {
+                        if (response.status == 'success')
+                        {
+                            navigateTo('?display=gallery&cat=admin');
+                        }
+                
+                    }
+                });
+            }
+        
+        });
+    }
+
+</script>
+
 {include="ui.titlebar"}
 
 <div id="topContent">
@@ -75,13 +109,13 @@
                 <th>{function="localize('Title', 'gallery')"}</th>
                 <th>{function="localize('Created', 'gallery')"}</th>
                 <th>{function="localize('Languages', 'gallery')"}</th>
-                <!-- <th>&nbsp;</th> -->
+                <th>&nbsp;</th>
             </tr>
         </thead>
 
         <tbody class="hovered">
             {loop="$category_list"}
-            <tr id="galleryCategory_row_{$value.id}" style="height: 59px;"> <!--  style="{if="!$value.visibility"}opacity: 0.5;{/if} -->
+            <tr id="galleryCategory_row_{$value.id}" style="height: 59px; {if="!$value.visibility_all"}opacity: 0.5;{/if}"> 
                 
                 {if="$value.thumb_url"}
                 <td style="padding-top: 4px; padding-right: 10px; padding-left: 10px;">
@@ -98,14 +132,15 @@
                 </td>
                 <td>{$value.created} {function="localize('by')"} {$value.author_login}</td>
                 <td>{$value.langs}</td>
-                <!-- <td>
-                    <a href="#" onclick="toggleGalleryVisibility({$value.id});">
+                
+                <td>
+                    <a href="#" onclick="toggleGalleriesVisibility('{$value.ids}');">
                     <img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/System-search.svg" style="max-height: 22px;" id="hide_btn_{$value.id}" title="{function="localize('Show or hide', 'messages')"}">
                     </a>
-                    <a href="#" onclick="removeGalleryCategory({$value.id});">
+                    <a href="#" onclick="removeGalleryCategories('{$value.ids}');">
                     <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" title="Remove">
                     </a>
-                </td> -->
+                </td>
             </tr>
             {/loop}
             <tr id="noGalleryCategories" {if="$category_list"}style="display: none;"{/if}>
