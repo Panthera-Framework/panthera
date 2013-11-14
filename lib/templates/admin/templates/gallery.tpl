@@ -7,15 +7,15 @@
         panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggleGalleryVisibility&ctgid='+array, messageBox: 'w2ui', success: function (response) {
                 if (response.status == 'success')
                 {
-                    navigateTo(window.location);
+                    navigateTo('?display=gallery&cat=admin');
                 }
             }
         });
     }
     
-    function removeGalleryCategory(array)
+    function removeGalleryCategories(array)
     {
-        w2confirm('{function="localize('Are you sure you want delete that categories?', 'gallery')"}', function (responseText) {
+        w2confirm('{function="localize('Are you sure you want delete that categories? <br> Please, have another think coming. Later will be too late.', 'gallery')"}', function (responseText) {
         
             if (responseText == 'Yes')
             {

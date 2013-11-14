@@ -183,24 +183,70 @@ if ($_GET['action'] == 'deleteItem')
 
 if ($_GET['action'] == 'deleteCategory')
 {
-    $id = intval($_GET['id']);
-    
-    if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gallery_' .$id))
-    {
-        $noAccess = new uiNoAccess;
-        
-        $noAccess -> addMetas(array(
-            'can_manage_galleries',
-            'can_manage_gallery_' .$id
-        ));
-        
-        $noAccess -> display();
-    }
+    if (!isset($_GET['id']))
+        pa_exit();
 
-    if (gallery::removeCategory($id))
-        ajax_exit(array('status' => 'success'));
+    if (strpos($_GET['id'], '.'))
+        $id = explode(".", $_GET['id']);
     else
-        ajax_exit(array('status' => 'failed', 'error' => localize('Unknown error', 'messages')));
+        $id = intval($_GET['id']);
+    
+    if (is_array($id)) {
+        // check permissions
+        if ($manageAll) {
+            foreach ($id as $i) {
+                if (!getUserRightAttribute($user, 'can_manage_gallery_' .$i)) {
+                    $noAccess = new uiNoAccess;
+            
+                    $noAccess -> addMetas(array( 
+                        'can_manage_gallery_' .$i
+                    ));
+                       
+                    $noAccess -> display();
+                }
+            }
+        } else {
+            $noAccess = new uiNoAccess;
+            
+            $noAccess -> addMetas(array(
+                'can_manage_galleries', 
+                'can_manage_gallery_' .$id
+            ));
+               
+            $noAccess -> display();
+        }
+        
+        // remove categories
+        foreach ($id as $i) {
+            if (!gallery::removeCategory($i))
+                $notRemoved = true;
+        }
+        
+        if (isset($notRemoved)) {
+            ajax_exit(array('status' => 'success', 'message' => localize("Some categories haven't been deleted!")));
+        }
+        
+        ajax_exit(array('status' => 'success'));
+        
+    } else {
+    
+        if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gallery_' .$id))
+        {
+            $noAccess = new uiNoAccess;
+            
+            $noAccess -> addMetas(array(
+                'can_manage_galleries',
+                'can_manage_gallery_' .$id
+            ));
+            
+            $noAccess -> display();
+        }
+
+        if (gallery::removeCategory($id))
+            ajax_exit(array('status' => 'success'));
+        else
+            ajax_exit(array('status' => 'failed', 'error' => localize('Unknown error', 'messages')));
+    }
 }
 
 /**
