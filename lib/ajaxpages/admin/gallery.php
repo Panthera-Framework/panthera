@@ -124,7 +124,7 @@ if ($_GET['action'] == 'adduploads')
             }
         
             // add to gallery
-            createGalleryItem(basename($file->location), $file->description, pantheraUrl($file->getLink(), True), intval($_GET['gid']), True, $file);
+            galleryItem::createGalleryItem(basename($file->location), $file->description, pantheraUrl($file->getLink(), True), intval($_GET['gid']), True, $file);
             $added++;
         }
     }
@@ -491,6 +491,10 @@ if ($_GET['action'] == 'displayCategory')
                 $category = new galleryCategory($statement, null);
                 $category -> thumb_url = $ctg->thumb_url;
                 $category -> thumb_id = $ctg->thumb_id;
+                
+                // copy items to created gallery
+                galleryItem::copyGalleryItems($category->unique, $category->language, $ctg->id);
+
                 unset($ctg);
             }
         }
@@ -556,7 +560,7 @@ if ($_GET['action'] == 'displayCategory')
     // if does not exists in cache
     if (!isset($totalItems))
     {
-        $totalItems = getGalleryItems($w, False, False, $order);
+        $totalItems = galleryItem::getGalleryItems($w, False, False, $order);
     }
 
     // get gallery items
@@ -567,7 +571,7 @@ if ($_GET['action'] == 'displayCategory')
     $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\');');
     $limit = $uiPager -> getPageLimit();
     
-    $items = getGalleryItems($w, $limit[1], $limit[0], $order, $direction);
+    $items = galleryItem::getGalleryItems($w, $limit[1], $limit[0], $order, $direction);
 
     $template -> push('category_title', $category->title);
     $template -> push('category_id', $category->id);
@@ -771,7 +775,7 @@ if (@$_GET['action'] == 'add_item')
             
             $link = pantheraUrl($file->getLink(), True);
 
-            if (createGalleryItem($_POST['title'], $_POST['description'], $link, $galleryID, $visibility, $file))
+            if (galleryItem::createGalleryItem($_POST['title'], $_POST['description'], $link, $galleryID, $visibility, $file))
             {
                 ajax_exit(array('status' => 'success', 'ctgid' => $galleryID));
             } else {

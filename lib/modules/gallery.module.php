@@ -38,7 +38,103 @@ class galleryItem extends pantheraFetchDB
     {
         return parent::__set($var, pantheraUrl($value, True));
     }
+
+    /**
+      * Copy gallery items to created one
+      *
+      * @param int $createdId of new category 
+      * @param int $id of existing gallery category
+      * @return bool
+      * @author Mateusz Warzyński
+      */
     
+    public static function copyGalleryItems($unique, $language, $id)
+    {
+        global $panthera;
+        
+        $statement = new whereClause();
+        $statement -> add('', 'unique', '=', $unique);
+        $statement -> add('AND', 'language', '=', $language);
+        $newCategory = new galleryCategory($statement, null);
+        
+        if (!$newCategory->exists())
+            return false;
+        
+        $w = new whereClause();
+        $w -> add( 'AND', 'gallery_id', '=', $id);
+        $items = galleryItem::getGalleryItems($w, '', '');
+        
+        if (count($items)) {
+            foreach ($items as $item)
+                $array[] = array('title' => $item->title, 'description' => $item->description, 'url_id' => seoUrl(rand(99, 9999). '-' .$item->title."_".$language), 'link' => $item->link, 'thumbnail' => $item->thumbnail, 'gallery_id' => $newCategory->id, 'visibility' => $item->visibility, 'upload_id' => $item->upload->id);
+            
+            $query = $panthera -> db -> buildInsertString($array, True, 'gallery_items');
+            $SQL = $panthera -> db -> query($query['query'], $query['values']);
+            return (bool)$SQL->rowCount();
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+      * Get gallery items from database
+      * 
+      * @return object
+      * @author Mateusz Warzyński
+      */
+    
+    public static function getGalleryItems($by, $limit=0, $limitFrom=0, $orderBy='id', $orderDirection='DESC')
+    {
+          global $panthera;
+          return $panthera->db->getRows('gallery_items', $by, $limit, $limitFrom, 'galleryItem', $orderBy, $orderDirection);
+    }
+    
+    /**
+      * Create new gallery item
+      * 
+      * @param string $title
+      * @param string $description
+      * @param string $link
+      * @param int $gallery_id, it's a category id to which item belongs
+      * @param bool $visibility of item
+      * @param $upload  
+      * @return object
+      * @author Mateusz Warzyński
+      */
+    
+    public static function createGalleryItem($title, $description, $link, $gallery_id, $visibility, $upload)
+    {
+        global $panthera;
+    
+        $thumbnail = '';
+    
+        $panthera -> importModule('simpleImage');
+        $fileInfo = pathinfo($link);
+        $size = intval($panthera -> config -> getKey('gallery_thumbs_width', 240, 'int'));
+    
+        if ($size < 5)
+            $size = 240;
+    
+        $thumb = pantheraUrl('{$upload_dir}/_thumbnails/' .$size. '_' .$fileInfo['filename']. '.jpg');
+        
+        if (!is_file($thumb))
+        {
+            $panthera -> logging -> output('createGalleryItem::Creating thumbnail for file "' .pantheraUrl($upload->location). '", width=' .$size);
+            $simpleImage = new simpleImage();
+            $simpleImage -> load(pantheraUrl($upload->location));
+            $simpleImage -> resizeToWidth($size);
+            $simpleImage -> save(SITE_DIR. '/' .$thumb);
+            $panthera -> logging -> output('createGalleryItem::Saving thumbnail to file "' .SITE_DIR. '/' .$thumb. '"');
+        }
+    
+        $thumbnail = $panthera->config->getKey('url'). '/' .$thumb;
+    
+        $url_id = seoUrl(rand(99, 9999). '-' .$title);
+    
+        $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}gallery_items` (`id`, `title`, `description`, `created`, `url_id`, `link`, `thumbnail`, `gallery_id`, `visibility`, `upload_id`) VALUES (NULL, :title, :description, NOW(), :url_id, :link, :thumbnail, :gallery_id, :visibility, :upload_id);', array('title' => $title, 'description' => $description, 'url_id' => $url_id, 'link' => $link, 'thumbnail' => $thumbnail, 'gallery_id' => $gallery_id, 'visibility' => $visibility, 'upload_id' => $upload->id));
+        return (bool)$SQL->rowCount();
+    }
+
     /**
       * Get thumbnail path, generate new if it does not exists yet
       *
@@ -47,7 +143,7 @@ class galleryItem extends pantheraFetchDB
       * @return string with url 
       * @author Damian Kęska
       */
-
+    
     public function getThumbnail($size='', $create=False)
     {
         $this -> panthera -> importModule('simpleImage');
@@ -330,43 +426,4 @@ class gallery
         global $panthera;
         return $panthera->db->getRows('gallery_categories', $by, $limit, $limitFrom, 'galleryCategory', $orderBy, $orderDirection);
     }
-}
-
-function getGalleryItems($by, $limit=0, $limitFrom=0, $orderBy='id', $orderDirection='DESC')
-{
-      global $panthera;
-      return $panthera->db->getRows('gallery_items', $by, $limit, $limitFrom, 'galleryItem', $orderBy, $orderDirection);
-}
-
-function createGalleryItem($title, $description, $link, $gallery_id, $visibility, $upload)
-{
-    global $panthera;
-
-    $thumbnail = '';
-
-    $panthera -> importModule('simpleImage');
-    $fileInfo = pathinfo($link);
-    $size = intval($panthera -> config -> getKey('gallery_thumbs_width', 240, 'int'));
-
-    if ($size < 5)
-        $size = 240;
-
-    $thumb = pantheraUrl('{$upload_dir}/_thumbnails/' .$size. '_' .$fileInfo['filename']. '.jpg');
-	
-    if (!is_file($thumb))
-    {
-        $panthera -> logging -> output('createGalleryItem::Creating thumbnail for file "' .pantheraUrl($upload->location). '", width=' .$size);
-        $simpleImage = new simpleImage();
-        $simpleImage -> load(pantheraUrl($upload->location));
-        $simpleImage -> resizeToWidth($size);
-        $simpleImage -> save(SITE_DIR. '/' .$thumb);
-        $panthera -> logging -> output('createGalleryItem::Saving thumbnail to file "' .SITE_DIR. '/' .$thumb. '"');
-    }
-
-    $thumbnail = $panthera->config->getKey('url'). '/' .$thumb;
-
-    $url_id = seoUrl(rand(99, 9999). '-' .$title);
-
-    $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}gallery_items` (`id`, `title`, `description`, `created`, `url_id`, `link`, `thumbnail`, `gallery_id`, `visibility`, `upload_id`) VALUES (NULL, :title, :description, NOW(), :url_id, :link, :thumbnail, :gallery_id, :visibility, :upload_id);', array('title' => $title, 'description' => $description, 'url_id' => $url_id, 'link' => $link, 'thumbnail' => $thumbnail, 'gallery_id' => $gallery_id, 'visibility' => $visibility, 'upload_id' => $upload->id));
-    return (bool)$SQL->rowCount();
 }
