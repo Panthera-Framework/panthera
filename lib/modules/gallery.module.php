@@ -62,7 +62,7 @@ class galleryItem extends pantheraFetchDB
         
         $w = new whereClause();
         $w -> add( 'AND', 'gallery_id', '=', $id);
-        $items = galleryItem::getGalleryItems($w, '', '');
+        $items = galleryItem::getGalleryItems($w, '', '', 'id', 'ASC');
         
         if (count($items)) {
             foreach ($items as $item)
