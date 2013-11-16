@@ -327,4 +327,3 @@ function commentsToAdminMenu($menu) { $menu -> add('comments', localize('Comment
 $panthera -> add_option('admin_menu', 'commentsToAdminMenu');
 
 $panthera -> add_option('ajax_page', 'nCommentsAjax');
-?>

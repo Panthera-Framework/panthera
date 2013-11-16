@@ -11,9 +11,9 @@
 if (!defined('IN_PANTHERA'))
     exit;
   
-$pluginInfo = array('name' => 'Firebug integration', 'author' => 'Damian Kęska', 'description' => 'Integration with FirePHP', 'version' => PANTHERA_VERSION, 'configuration' => '?display=firebugSettings&cat=admin');
-
 include(PANTHERA_DIR. '/share/firephp-core/lib/FirePHPCore/FirePHP.class.php');
+
+$pluginClassName = 'pantheraFirePHP';
 
 /**
   * Firebug integration (FirePHP extension)
@@ -22,8 +22,16 @@ include(PANTHERA_DIR. '/share/firephp-core/lib/FirePHPCore/FirePHP.class.php');
   * @author Damian Kęska
   */
 
-class pantheraFirePHP
+class pantheraFirePHP extends pantheraPlugin
 {
+    public static $pluginInfo = array(
+        'name' => 'Firebug integration',
+        'author' => 'Damian Kęska',
+        'description' => 'Integration with FirePHP',
+        'version' => PANTHERA_VERSION, 'configuration' =>
+        '?display=firebugSettings&cat=admin'
+    );
+
     /**
       * Actions executed at the end of script
       *
@@ -137,47 +145,55 @@ class pantheraFirePHP
             include($dir.'/settings.php');
         }
     }
-}
-
-
-
-// requirements: we are using session core module and we are not in CLI mode
-if (!defined('SKIP_SESSION') and PANTHERA_MODE != 'CLI')
-{
-    // start output buffering
-    $panthera -> outputControl -> startBuffering();
     
-    $obj = new pantheraFirePHP;
-
-    // ip whitelists
-    $whitelist = str_replace(' ', '', $panthera -> config -> getKey('firebug.whitelist', '', 'string', 'firebug'));
-    $list = explode(',', $whitelist);
-    $enabled = True;
-
-    // if the whitelist is enabled
-    if (count($list) > 0 and $list[0] != '')
+    /**
+      * Run extension
+      *
+      * @return void
+      * @author Damian Kęska
+      */
+    
+    public static function run()
     {
-        // if ip address is not in list
-        if (!in_array($_SERVER['REMOTE_ADDR'], $list))
-            $enabled = False;
+        global $panthera;
+        
+        // requirements: we are using session core module and we are not in CLI mode
+        if (!defined('SKIP_SESSION') and PANTHERA_MODE != 'CLI')
+        {
+            // start output buffering
+            $panthera -> outputControl -> startBuffering();
+            
+            $obj = new pantheraFirePHP;
+            
+            // ip whitelists
+            $whitelist = str_replace(' ', '', $panthera -> config -> getKey('firebug.whitelist', '', 'string', 'firebug'));
+            $list = explode(',', $whitelist);
+            $enabled = True;
+            
+            // if the whitelist is enabled
+            if (count($list) > 0 and $list[0] != '')
+            {
+                // if ip address is not in list
+                if (!in_array($_SERVER['REMOTE_ADDR'], $list))
+                    $enabled = False;
 
-        $panthera -> add_option('ajaxpages.dash.msg', array($obj, 'info'));
-    } else
-        $panthera -> add_option('ajaxpages.dash.msg', array($obj, 'warning'));
+                $panthera -> add_option('ajaxpages.dash.msg', array($obj, 'info'));
+            } else
+                $panthera -> add_option('ajaxpages.dash.msg', array($obj, 'warning'));
 
-    // enable firephp
-    if ($enabled == True)
-    {
-        FirePHP::setEnabled(true);
+            // enable firephp
+            if ($enabled == True)
+            {
+                // output old messages
+                $firephp = FirePHP::getInstance(true);
+                $firephp->fb($panthera->logging->getOutput());
 
-        // output old messages
-        $firephp = FirePHP::getInstance(true);
-        $firephp->fb($panthera->logging->getOutput());
+                $panthera -> add_option('template.display', array($obj, 'stop'));
+                $panthera -> add_option('logging.output', array($obj, 'log'));
+            }
 
-        $panthera -> add_option('template.display', array($obj, 'stop'));
-        $panthera -> add_option('logging.output', array($obj, 'log'));
+            $panthera -> add_option('ajax_page', array($obj, 'displaySettings'));
+            $panthera -> add_option('ajaxpages.debug.tools', array($obj, 'addToDebuggingCenter'));
+        }
     }
-
-    $panthera -> add_option('ajax_page', array($obj, 'displaySettings'));
-    $panthera -> add_option('ajaxpages.debug.tools', array($obj, 'addToDebuggingCenter'));
 }

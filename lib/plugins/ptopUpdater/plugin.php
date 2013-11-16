@@ -9,8 +9,7 @@
 if (!defined('IN_PANTHERA'))
     exit;
   
-// register plugin
-$pluginInfo = array('name' => 'ptop traffic updater', 'author' => 'Damian Kęska', 'description' => 'This plugin should not be enabled manually', 'version' => PANTHERA_VERSION);
+$pluginClassName = 'ptopUpdater';
 
 /**
   * Main functions
@@ -19,9 +18,15 @@ $pluginInfo = array('name' => 'ptop traffic updater', 'author' => 'Damian Kęska
   * @author Damian Kęska
   */
 
-class ptopUpdater
+class ptopUpdater extends pantheraPlugin
 {
     protected static $time, $rid;
+    protected static $pluginInfo = array(
+        'name' => 'ptop traffic updater',
+        'author' => 'Damian Kęska',
+        'description' => 'This plugin should not be enabled manually',
+        'version' => PANTHERA_VERSION
+    );
     
     /**
       * Turn on the timer to count page load time
@@ -68,9 +73,20 @@ class ptopUpdater
             run::closeSocket('page', '', self::$rid);
             $panthera -> logging -> output('Finished loading page, timing: ' .json_encode($t['time']), 'ptop');
         }
+    }
+    
+    /**
+      * Run this plugin
+      *
+      * @return void 
+      * @author Damian Kęska
+      */
+    
+    public static function run()
+    {
+        global $panthera;
         
+        $panthera -> add_option('page_load_starts', array('ptopUpdater', 'startDigging'));
+        $panthera -> add_option('page_load_ends', array('ptopUpdater', 'finish'));
     }
 }
-
-$panthera -> add_option('page_load_starts', array('ptopUpdater', 'startDigging'));
-$panthera -> add_option('page_load_ends', array('ptopUpdater', 'finish'));

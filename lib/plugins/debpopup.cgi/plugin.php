@@ -9,14 +9,9 @@
 
 if (!defined('IN_PANTHERA'))
     exit;
+    
+$pluginClassName = 'debpopupPlugin';
   
-$pluginInfo = array(
-    'name' => 'Debpopup',
-    'author' => 'Damian Kęska',
-    'description' => 'Displays debugging informations in browser\'s popup window',
-    'version' => PANTHERA_VERSION
-);
-
 /**
   * Debpopup main class
   *
@@ -24,9 +19,15 @@ $pluginInfo = array(
   * @author Damian Kęska
   */
 
-class debpopupPlugin
+class debpopupPlugin extends pantheraPlugin
 {
     protected $displayed = False;
+    protected static $pluginInfo = array(
+        'name' => 'Debpopup',
+        'author' => 'Damian Kęska',
+        'description' => 'Displays debugging informations in browser\'s popup window',
+        'version' => PANTHERA_VERSION
+    );
     
     /**
       * Display the popup
@@ -51,7 +52,18 @@ class debpopupPlugin
         
         print("<script type='text/javascript'>var w = window.open('','name','height=400,width=1000'); w.document.write(htmlspecialchars_decode('".$template."')); w.document.close();</script>");
     }
+    
+    /**
+      * Run plugin code on application startup
+      *
+      * @returns void
+      * @author Damian Kęska
+      */
+    
+    public static function run()
+    {
+        global $panthera;
+        $obj = new debpopupPlugin;
+        $panthera -> add_option('template.afterRender', array($obj, 'display'));
+    }
 }
-
-$obj = new debpopupPlugin;
-$panthera -> add_option('template.afterRender', array($obj, 'display'));

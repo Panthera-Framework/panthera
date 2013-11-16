@@ -666,13 +666,6 @@ class pantheraConfig
                 $this->panthera->logging->output('Updating config_overlay cache', 'pantheraConfig');
                 $this->panthera->cache->set('config_overlay', $this->overlay, 3600);
             }
-
-            // doing a multiple query
-            //$this->panthera->db->query('UPDATE `{$db_prefix}config_overlay` SET `value` = :value WHERE `key` = :key;', $values, True);
-            /*$this -> panthera -> logging -> output ('pantheraConfig::Saving config-overlay.phpson');
-            $fp = @fopen(PANTHERA_DIR. '/content/config-overlay.phpson', 'w');
-            @fwrite($fp, serialize($this->overlay));
-            @fclose($fp);*/
         }
     }
 
@@ -1302,13 +1295,28 @@ class pantheraCore
             // check if main file exists in pluin directory
             if(is_file($value."/plugin.php"))
             {
-                $pluginInfo = array();
+                //$pluginInfo = array();
+                unset($pluginClassName);
 
                 include($value."/plugin.php");
-
+                
+                if (!isset($pluginClassName))
+                {
+                    $pluginClassName = str_replace('.cgi', '', basename($value)). 'Plugin';
+                }
+                
+                if (!class_exists($pluginClassName))
+                {
+                    $this -> logging -> output('Failed to load plugin "' .$value. '", please check if it contains "' .$pluginClassName. '" class', 'pantheraCore');
+                    continue;
+                }
+                
+                $pluginInfo = $pluginClassName::getPluginInfo();
+                
                 if (count($pluginInfo) > 0)
                 {
                     $this->registerPlugin($pluginInfo['name'], $value."/plugin.php", $pluginInfo);
+                    $pluginClassName::run();
                 }
                 //$plugins[] = $value."/plugin.php";
             }
@@ -1431,7 +1439,7 @@ spl_autoload_register('__pantheraAutoloader');
 class pantheraTypes extends pantheraClass
 {
     // 1 means built-in type
-    private $types = array('int' => 1, 'email' => 1, 'bool' => 1, 'ip' => 1, 'regexp' => 1, 'url' => 1, 'json' => 1, 'array' => 1, 'string' => 1, 'phone' => 1, 'pesel' => 1, 'nip' => 1, 'nrb' => 1, 'regon' => 1);
+    private $types = array('int' => 1, 'email' => 1, 'bool' => 1, 'ip' => 1, 'regexp' => 1, 'url' => 1, 'json' => 1, 'array' => 1, 'string' => 1, 'phone' => 1);
 
     public function _int($v) { return is_numeric($v); }
     public function _string($v) { return is_string($v); }
@@ -1467,121 +1475,6 @@ class pantheraTypes extends pantheraClass
             return True;
 
         return False;
-    }
-
-    /**
-      * Polish PESEL validation
-      *
-      * @param string $str Number
-      * @return bool
-      * @author PHPedia.pl <http://phpedia.pl/wiki/Walidacja_numeru_PESEL>
-      */
-
-    function _pesel($str)
-    {
-	    if (!preg_match('/^[0-9]{11}$/',$str))
-		    return False;
-
-	    $arrSteps = array(1, 3, 7, 9, 1, 3, 7, 9, 1, 3);
-	    $intSum = 0;
-
-	    for ($i = 0; $i < 10; $i++)
-		    $intSum += $arrSteps[$i] * $str[$i];
-
-	    $int = 10 - $intSum % 10;
-	    $intControlNr = ($int == 10)?0:$int;
-
-	    if ($intControlNr == $str[10])
-		    return True;
-
-	    return False;
-    }
-
-     /**
-      * Polish NIP validation
-      *
-      * @param string $str Number
-      * @return bool
-      * @author PHPedia.pl <http://phpedia.pl/wiki/Walidacja_numeru_NIP>
-      */
-
-    function _nip($str)
-    {
-	    $str = preg_replace("/[^0-9]+/","",$str);
-
-	    if (strlen($str) != 10)
-		    return false;
-
-	    $arrSteps = array(6, 5, 7, 2, 3, 4, 5, 6, 7);
-	    $intSum=0;
-
-	    for ($i = 0; $i < 9; $i++)
-		    $intSum += $arrSteps[$i] * $str[$i];
-
-	    $int = $intSum % 11;
-
-	    $intControlNr=($int == 10)?0:$int;
-	    if ($intControlNr == $str[9])
-		    return true;
-
-	    return false;
-    }
-
-    /**
-      * NRB validation
-      *
-      * @param string $p_iNRB Number
-      * @return bool
-      * @author PHPedia.pl <http://phpedia.pl/wiki/Walidacja_numeru_NRB>
-      */
-
-    function _nrb($p_iNRB)
-    {
-      // Usuniecie spacji
-      $iNRB = str_replace(' ', '', $p_iNRB);
-      
-      if(strlen($iNRB) != 26)
-        return false;
-
-      $aWagiCyfr = array(1, 10, 3, 30, 9, 90, 27, 76, 81, 34, 49, 5, 50, 15, 53, 45, 62, 38, 89, 17, 73, 51, 25, 56, 75, 71, 31, 19, 93, 57);
-
-      $iNRB = $iNRB.'2521';
-      $iNRB = substr($iNRB, 2).substr($iNRB, 0, 2);
-
-      $iSumaCyfr = 0;
-
-      for($i = 0; $i < 30; $i++)
-        $iSumaCyfr += $iNRB[29-$i] * $aWagiCyfr[$i];
-
-      return ($iSumaCyfr % 97 == 1);
-    }
-
-    /**
-      * Polish regon validation
-      *
-      * @param string $str Number
-      * @return bool
-      * @author PHPedia.pl <http://phpedia.pl/wiki/Walidacja_numeru_REGON>
-      */
-
-    function _regon($str)
-    {
-	    if (strlen($str) != 9)
-		    return False;
-
-	    $arrSteps = array(8, 9, 2, 3, 4, 5, 6, 7);
-	    $intSum=0;
-
-	    for ($i = 0; $i < 8; $i++)
-		    $intSum += $arrSteps[$i] * $str[$i];
-
-	    $int = $intSum % 11;
-	    $intControlNr=($int == 10)?0:$int;
-
-	    if ($intControlNr == $str[8])
-		    return True;
-
-	    return False;
     }
 
     public function _bool($v)
@@ -1937,9 +1830,6 @@ function pantheraUrl($url, $reverse=False, $type='')
         $var['{$upload_dir}'] = $panthera->config->getKey('upload_dir');
     }
 
-    //if (!defined('SKIP_LOCALE'))
-    //    $var['{$language}'] = $panthera->locale->getActive();
-
     if ($reverse == True)
     {
         foreach ($var as $key => $value)
@@ -2100,28 +1990,6 @@ function getContentDir($dir)
 }
 
 /**
-  * Create an empty directory with unique name in /content/tmp/ dir
-  *
-  * @return string
-  * @author Damian Kęska
-  */
-
-/*function maketmp()
-{
-    global $panthera;
-
-    $seed = $panthera->config->getKey('session_key'). '_' .substr(md5(rand(999999,99999999)), 0, 6);
-
-    // generate unique dir
-    while (is_dir(SITE_DIR. '/content/tmp/_' .$seed))
-        $seed = $panthera->config->getKey('session_key'). '_' .substr(md5(rand(999999,99999999)), 0, 6);
-
-    @mkdir(SITE_DIR. '/content/tmp/_' .$seed);
-
-    return SITE_DIR. '/content/tmp/_' .$seed;
-}*/
-
-/**
   * Print object informations
   *
   * @param object $obj Input object
@@ -2192,42 +2060,6 @@ function object_info($obj, $return=False)
         return ReflectionObject::export($obj, $return);
     }
 }
-
-/**
-  * Data serialization using method with best performance
-  *
-  * @param mixed $data
-  * @return string
-  * @author Damian Kęska
-  */
-
-/*function quickSerialize($data)
-{
-    global $panthera;
-
-    if ($panthera->qSerialize == 'binary')
-        return igbinary_serialize($data);
-    else
-        return serialize($data);
-}*/
-
-/**
-  * Data unserialization using method with best performance
-  *
-  * @param mixed $data
-  * @return string
-  * @author Damian Kęska
-  */
-
-/*function quickUnserialize($data)
-{
-    global $panthera;
-
-    if ($panthera->qSerialize == 'binary')
-        return igbinary_unserialize($data);
-    else
-        return unserialize($data);
-}*/
 
 /**
   * Splits seconds with microseconds from microtime() output
@@ -2523,10 +2355,7 @@ function getQueryString($array=null, $mix=null, $except=null)
 
 function stripNewLines($str)
 {
-    $str = str_replace("\n", '\\n', $str);
-    $str = str_replace("\r", '\\r', $str);
-    
-    return $str;
+    return str_replace("\r", '\\r', str_replace("\n", '\\n', $str));
 }
 
 /**
@@ -2565,4 +2394,23 @@ function captureStdout($function, $a=null, $b=null, $c=null, $d=null, $e=null, $
     }
     
     return array('return' => $return, 'output' => $contents);
+}
+
+/**
+  * A base plugins class
+  *
+  * @package Panthera\pantheraCore
+  * @author Damian Kęska
+  */
+
+class pantheraPlugin
+{
+    protected static $pluginInfo = array();
+    
+    public static function getPluginInfo()
+    {
+        return static::$pluginInfo;
+    }
+    
+    public static function run() {}
 }
