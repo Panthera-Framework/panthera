@@ -40,7 +40,13 @@ class accessParser
     {
         global $panthera;
         
-        $path = $panthera -> config -> getKey('path_to_server_log', '/var/log/lighttpd/access.log', 'string');
+        $path = $panthera -> config -> getKey('path_to_server_log', '', 'string');
+
+        if ($path == '')
+            throw new Exception('Please set path to access log.', 3);
+
+        if (!is_readable($path))
+            throw new Exception('File does not exist or you have not permission to read.', 2); 
 
         $fp = fopen($path, "r");
 
@@ -111,11 +117,13 @@ class accessParser
             preg_match($regex , $line, $matches);
             
             if (!isset($matches[10]))
-                break;
+                throw new Exception('File is invalid!', 1);
+            
             if (strlen($matches[1]) < 6)
                 $newLine['client_address'] = $matches[2];
             else
                 $newLine['client_address'] = $matches[1];
+            
             $newLine['date'] = $matches[4];
             $newLine['time'] = $matches[5];
             $newLine['processing_request_time'] = $matches[6];

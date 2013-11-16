@@ -20,9 +20,24 @@ if (!getUserRightAttribute($user, 'can_read_log')) {
 $panthera -> locale -> loadDomain('accessparser');
 
 $panthera -> importModule('accessparser');
+
+if ($_GET['action'] == 'savePath')
+{
+    if (!strlen($_POST['path']))
+        ajax_exit(array('status' => 'failed', 'message' => localize('Path cannot be empty!', 'accessparser')));
+    
+    $panthera -> config -> setKey('path_to_server_log', $_POST['path'], 'string');
+    ajax_exit(array('status' => 'success'));
+}
+
 $parser = new accessParser;
 
-$lines = $parser->readLog();
+try {
+    $lines = $parser->readLog();
+} catch (Exception $e) {
+    $panthera -> template -> push("error", true);
+    $panthera -> template -> push("error_message", localize($e->getMessage(), 'accessparser'));            
+}
 
 $page = $_GET['page'];
 
@@ -32,5 +47,6 @@ $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString($_GET, 'page=
 $limit = $uiPager -> getPageLimit();
 
 $panthera -> template -> push('lines', array_slice($lines, $limit[0], $limit[1]));
+$panthera -> template -> push('path', $panthera->config->getKey('path_to_server_log'));
 $panthera -> template -> display($tpl);
 pa_exit();
