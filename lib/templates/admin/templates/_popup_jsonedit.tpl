@@ -38,9 +38,6 @@ function jsonEditSave(responseType)
     {if="!$popup"}
     <div id="topContent" style="min-height: 50px;">
         <div class="searchBarButtonArea">
-            <div style="float: left; display: inline-block; margin-left: 10px;">
-                <input type="button" value="{function="localize('Close')"}" onclick="panthera.popup.close()">
-            </div>
         
             <input type="button" value=" {function="localize('Serialize')"} " onclick="jsonEditSave('');" style="float: right; margin-right: 15px;">
             <input type="button" value=" {function="localize('print_r')"} " onclick="jsonEditSave('print_r');" style="float: right; margin-right: 15px;"> 
@@ -73,6 +70,7 @@ function jsonEditSave(responseType)
                 
             <input type="hidden" name="responseType" id="responseType" value="">
             
+           {if="$popup"}
             <div style="padding-top: 15px;">
                 <div style="display: inline-block; float: left; margin-left: 10px;">
                     <input type="button" value="{function="localize('Close')"}" onclick="panthera.popup.close()">
@@ -80,6 +78,7 @@ function jsonEditSave(responseType)
             
                 <input type="button" value=" {function="localize('Serialize')"} " onclick="jsonEditSave('');" style="margin-right: 45px; float: right;">
             </div>
+           {/if}
         </div>
     </div>
 </form>
