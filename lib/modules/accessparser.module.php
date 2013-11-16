@@ -25,12 +25,13 @@ class accessParser
 {
     protected $lineArray = array();
     protected $matches = array();
+    protected $cacheResults;
     
      /**
       * Read log from file and return it as array (by lines)
       *
       * @param $linesCount amount of lines that will be read
-      * @return bool/array
+      * @return array
       * @author Mateusz Warzyński
       * @author Damian Kęska
       */
@@ -72,17 +73,20 @@ class accessParser
         $this->lineArray = array_reverse($this->lineArray); // because of line 49 we must reverse array
         
         // execute function to parse log
-        if (!$this -> parseLog())
+        $this->parseLog();
+        
+        // return results
+        if (count($this->cacheResults)) {
+            return $this->cacheResults;
+        } else
             return $this->matches;
-        else
-            return true;
     }
 
     /**
       * Parse log (line by line)
       *     notice that lineArray must be defined
       * 
-      * @return bool
+      * @return void
       * @author Mateusz Warzyński
       */
 
@@ -105,19 +109,21 @@ class accessParser
         
         foreach ($this->lineArray as $number => $line) {
             preg_match($regex , $line, $matches);
-            $this->matches[$number]['client_address'] = $matches[2];
-            $this->matches[$number]['date'] = $matches[4];
-            $this->matches[$number]['time'] = $matches[5];
-            $this->matches[$number]['processing_request_time'] = $matches[6];
-            $this->matches[$number]['http_method'] = $matches[7];
-            $this->matches[$number]['url_request'] = $matches[8];
-            $this->matches[$number]['protocol'] = $matches[9];
-            $this->matches[$number]['status'] = $matches[10];
-            $this->matches[$number]['response_size'] = $matches[11]; // in bytes
-            $this->matches[$number]['referer'] = $matches[12];
-            $this->matches[$number]['browser_headers'] = $matches[13];
+            $newLine['client_address'] = $matches[2];
+            $newLine['date'] = $matches[4];
+            $newLine['time'] = $matches[5];
+            $newLine['processing_request_time'] = $matches[6];
+            $newLine['http_method'] = $matches[7];
+            $newLine['url_request'] = $matches[8];
+            $newLine['protocol'] = $matches[9];
+            $newLine['status'] = $matches[10];
+            $newLine['response_size'] = $matches[11]; // in bytes
+            $newLine['referer'] = $matches[12];
+            $newLine['browser_headers'] = $matches[13];
             
-            if ($this->matches[$number] == $lastCachedLine) // just to be precise
+            if ($newLine != $lastCachedLine) // just to be precise
+                $this->matches[] = $newLine;
+            else
                 break;
         }
         
@@ -128,18 +134,14 @@ class accessParser
         if ($panthera->cache)
         {
             if (isset($results))
-                $results = array_merge($this->matches, $results);
+                $this->cacheResults = array_merge($this->matches, $results);
             else
-                $results = $this->matches;
+                $this->cacheResults = $this->matches;
             
-            $panthera -> cache -> set('parsedAccessLog', $results, 86400);
-            unset($results);
-            
-            return true;
+            $panthera -> cache -> set('parsedAccessLog', $this->cacheResults, 86400);
             
         } else {
             $panthera -> logging -> output('Error. Cannot get access to cache.', 'accessparser');
-            return false;
         }
     }
 }
