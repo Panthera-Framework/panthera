@@ -40,7 +40,7 @@ class accessParser
     {
         global $panthera;
         
-        $path = $panthera -> config -> getKey('path_to_server_log', '/var/www/localhost/htdocs/other/lighttpd_log', 'string');
+        $path = $panthera -> config -> getKey('path_to_server_log', '/var/log/lighttpd/access.log', 'string');
 
         $fp = fopen($path, "r");
 
@@ -109,7 +109,13 @@ class accessParser
         
         foreach ($this->lineArray as $number => $line) {
             preg_match($regex , $line, $matches);
-            $newLine['client_address'] = $matches[2];
+            
+            if (!isset($matches[10]))
+                break;
+            if (strlen($matches[1]) < 6)
+                $newLine['client_address'] = $matches[2];
+            else
+                $newLine['client_address'] = $matches[1];
             $newLine['date'] = $matches[4];
             $newLine['time'] = $matches[5];
             $newLine['processing_request_time'] = $matches[6];
