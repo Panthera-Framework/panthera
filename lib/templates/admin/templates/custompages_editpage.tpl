@@ -36,7 +36,7 @@ jQuery(document).ready(function($) {
       */
 
     $('#save_form').submit(function () {
-        panthera.jsonPOST({ data: '#save_form', messageBox: 'userinfoBox', mce: 'tinymce_all'});
+        panthera.jsonPOST({ data: '#save_form', messageBox: 'w2ui', mce: 'tinymce_all'});
         return false;
     });
 
