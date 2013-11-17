@@ -73,7 +73,7 @@ $defaults['upload'] = array('link' => 'panthera.popup.toggle(\'_ajax.php?display
 $defaults['contact'] = array('link' => '?display=contact&cat=admin', 'name' => array('Contact'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/contact.png', 'linkType' => 'ajax');
 $defaults['custom'] = array('link' => '?display=custom&cat=admin', 'name' => array('Custom pages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/custom-pages.png', 'linkType' => 'ajax');
 $defaults['messages'] = array('link' => '?display=messages&cat=admin', 'name' => array('Quick messages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/messages.png', 'linkType' => 'ajax');
-$defaults['pmessages'] = array('link' => '?display=privatemessages&cat=admin', 'name' => array('Private messages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Actions-mail-flag-icon.png', 'linkType' => 'ajax');
+//$defaults['pmessages'] = array('link' => '?display=privatemessages&cat=admin', 'name' => array('Private messages'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/Actions-mail-flag-icon.png', 'linkType' => 'ajax');
 $defaults['users'] = array('link' => '?display=users&cat=admin', 'name' => array('Users'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png', 'linkType' => 'ajax');
 
 $panthera -> logging -> startTimer();

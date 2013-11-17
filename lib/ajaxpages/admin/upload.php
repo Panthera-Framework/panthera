@@ -33,35 +33,60 @@ if (isset($_GET['popup']))
 
     // ==== DELETE UPLOADS ====
 
+    /**
+      * Delete selected files
+      *
+      * @author Mateusz Warzyński
+      * @author Damian Kęska
+      */
+    
     if ($_GET['action'] == 'delete')
     {
-        $id = intval($_POST['id']);
-
-        $file = new uploadedFile('id', $id);
-
-        // check if file exists
-        if (!$file -> exists())
-            ajax_exit(array('status' => 'failed', 'message' => localize('File does not exists', 'files')));
-
-        // check if user is author or just can manage all uploads
-        if ($file -> author_id != $user -> id and !getUserRightAttribute($user, 'can_manage_all_uploads'))
-            ajax_exit(array('status' => 'failed', 'message' => localize('You are not allowed to manage other users uploads', 'files')));
-
-        // check if user can delete own uploads
-        if (!getUserRightAttribute($user, 'can_delete_own_uploads'))
-            ajax_exit(array('status' => 'failed', 'message' => localize('You dont have permissions to delete your own uploads', 'files')));
-
-        if (pantheraUpload::deleteUpload($id, $file->location))
+        $ids = explode(",", $_GET['id']);
+        
+        $files = count($ids);
+        $deleted = 0;
+        
+        foreach ($ids as $id)
+        {
+            $file = new uploadedFile('id', $id);
+            
+            $canDelete = true;
+    
+            // check if file exists
+            if (!$file -> exists())
+                $canDelete = false;
+                //ajax_exit(array('status' => 'failed', 'message' => localize('File does not exists', 'files')));
+    
+            // check if user is author or just can manage all uploads
+            if ($file -> author_id != $user -> id and !getUserRightAttribute($user, 'can_manage_all_uploads'))
+                $canDelete = false;
+                //ajax_exit(array('status' => 'failed', 'message' => localize('You are not allowed to manage other users uploads', 'files')));
+    
+            // check if user can delete own uploads
+            if (!getUserRightAttribute($user, 'can_delete_own_uploads'))
+                $canDelete = false;
+                //ajax_exit(array('status' => 'failed', 'message' => localize('You dont have permissions to delete your own uploads', 'files')));
+            if ($canDelete) {
+                if (pantheraUpload::deleteUpload($id, $file->location))
+                    $deleted = $deleted+1;
+            }
+    
+            // maybe permissions error?
+            //$panthera -> logging -> output ('upload::Cannot delete upload, check permissions of a file ' .$file->location);
+            // ajax_exit(array('status' => 'failed', 'message' => localize('Unknown error')));
+        } 
+        
+        if ($deleted == $files)
             ajax_exit(array('status' => 'success'));
-
-        // maybe permissions error?
-        $panthera -> logging -> output ('upload::Cannot delete upload, check permissions of a file ' .$file->location);
-        ajax_exit(array('status' => 'failed', 'message' => localize('Unknown error')));
+        else
+            ajax_exit(array('status' => 'success', 'message' => localize("Cannot delete some files!", 'upload')));
     }
     
     /**
       * Display file upload page
       *
+      * @author Mateusz Warzyński
       * @author Damian Kęska
       */
     
@@ -104,6 +129,7 @@ if (isset($_GET['popup']))
             ajax_exit(array('status' => 'failed', 'message' => localize('File is too big, allowed maximum size is:'). ' ' .filesystem::bytesToSize($panthera -> config -> getKey('upload_max_size'))));
 
         $directory = 'default';
+        
         $mime = '';
 
         // get mime type
@@ -144,10 +170,19 @@ if (isset($_GET['popup']))
     /**
       * List of uploaded files
       *
+      * @author Mateusz Warzyński 
       * @author Damian Kęska
       */
-      
-    $by = array('uploader_login' => $panthera -> user -> login);
+    
+    if (!isset($_GET['directory']))
+        $directory = 'default';
+    else
+        $directory = $_GET['directory'];
+    
+    $by = new whereClause();
+    $by -> add( 'AND', 'uploader_login', '=', $panthera -> user -> login);
+    $by -> add( 'AND', 'category', '=', $directory);
+    
     $panthera -> template -> push('seeOtherUsersUploads', False);
     
     if ($permissions['admin'] and isset($_GET['otherUsers']))
@@ -222,9 +257,35 @@ if (isset($_GET['popup']))
     {
         $template -> push('upload_files', True);
     }
+
+    $viewType = $panthera -> session -> get('upload.view.type.'.$directory);
+
+    if (!$viewType) {
+        $panthera -> session -> set('upload.view.type.'.$directory, 'blank');
+        $viewType = 'blank';
+    }
+    
+    if (isset($_GET['changeView'])) {
+        
+        if ($_GET['changeView'] == 'blank') {
+            $viewType = 'blank';
+        } else {
+            $viewType = 'images';
+        }
+        
+        $panthera -> session -> set('upload.view.type.'.$directory, $viewType);
+    }
+    
+    if ($viewType == 'blank')
+        $viewChange = 'images';
+    else
+        $viewChange = 'blank';
     
     $panthera -> template -> push('max_file_size', $panthera -> config -> getKey('upload_max_size', 3145728, 'int')); // default 3 mbytes
     $panthera -> template -> push('files', $filesTpl);
+    $panthera -> template -> push('view_type', $viewType);
+    $panthera -> template -> push('view_change', $viewChange);
+    $panthera -> template -> push('directory', $directory);
     $panthera -> template -> push('callback_name', $_GET['callback']);
     $panthera -> template -> push('user_login', $user->login);
     $panthera -> template -> display('upload.tpl');

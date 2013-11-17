@@ -33,7 +33,7 @@ $(document).ready(function(){
             </tr>
          </thead>
          <tbody>
-             <tr>
+             <tr style="color: white;">
                 <th>{function="localize('Select a file', 'upload')"}</th>
                 <td><input type="file" name="input_file"> <input type="hidden" name="MAX_FILE_SIZE" value="{$max_file_size}" /></td>
              </tr>
