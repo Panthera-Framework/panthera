@@ -9,6 +9,21 @@
 
 if (!defined('IN_PANTHERA'))
     exit;
+
+/**
+  * Upload categories management (wrapper for `upload_categories` table in DB)
+  *
+  * @package Panthera\modules\filesystem
+  * @author Mateusz Warzyński
+  */
+
+class uploadCategory extends pantheraFetchDB
+{
+    protected $_tableName = 'upload_categories';
+    protected $_idColumn = 'id';
+    protected $_constructBy = array('id', 'name');
+}
+
   
 /**
   * Uploaded file management (wrapper for `uploads` table in DB)
@@ -117,16 +132,68 @@ class uploadedFile extends pantheraFetchDB
   * Upload functions
   *
   * @package Panthera\modules\filesystem
+  * @author Mateusz Warzyński
   * @author Damian Kęska
   */
 
 class pantheraUpload
 {
     /**
+     * Create new upload category
+     *
+     * @param string $name of category
+     * @param int $id of author
+     * @param array $mimeType of allowed files 
+     * @author Mateusz Warzyński
+     * @return string
+     */
+     
+    public static function createUploadCategory($name, $author_id, $mimeType)
+    {
+        global $panthera;
+        
+        $user = new pantheraUser('id', $author_id);
+        
+        if (!$user->exists()) {
+            $panthera -> logging -> output('Author ID is invalid, there is no user with this ID.', 'upload');
+            return False;
+        }
+        
+        if (!$mimeType) {
+            return False;
+        }
+        
+        if (strlen($name) < 2) {
+            return False;
+        }
+        
+        $values = array('name' => $name, 'author_id' => $author_id, 'mime_type' => $mimeType);
+        
+        $panthera -> db -> query('INSERT INTO `{$db_prefix}upload_categories` (`id`, `name`, `author_id`, `created`, `modified`, `mime_type`) VALUES (NULL, :name, :author_id, NOW(), NOW(), :mime_type);', $values);
+        
+        return $panthera -> db -> sql -> lastInsertId();   
+    }
+    
+    /**
+     * Delete upload category
+     *
+     * @param int $id of category
+     * @author Mateusz Warzyński
+     * @return string
+     */
+     
+    public static function deleteUploadCategory($id)
+    {
+        
+    }
+    
+
+    /**
      * Handle file upload
      *
      * @param $_FILE['input_name'], category name = 'default'
      * @author Damian Kęska
+     * @author Mateusz Warzyński
      * @return string
      */
 
@@ -159,6 +226,10 @@ class pantheraUpload
             $category = '_private';
 
         $uploadDir = SITE_DIR. '/' .$panthera -> config -> getKey('upload_dir'). '/' .$category;
+        
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir);         
+        }
 
         // if file name already exists find new unique name
         if (is_file($uploadDir. '/' .$name))
