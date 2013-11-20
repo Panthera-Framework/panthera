@@ -49,7 +49,7 @@ if (isset($_POST['login']))
         $u -> changePassword($_POST['password']);
         $u -> mail = $_POST['email'];
     } else {
-        createNewUser($_POST['login'], encodePassword($_POST['password']), $_POST['login'], 'admin', serialize(array('admin' => True)), $panthera -> locale -> getActive(), $_POST['email'], '');
+        createNewUser($_POST['login'], $_POST['password'], $_POST['login'], 'admin', serialize(array('admin' => True)), $panthera -> locale -> getActive(), $_POST['email'], '');
         $u = new pantheraUser('login', $_POST['login']);
         userCreateSessionById($u->id); // login user, so we can skip the login step after installation
     }

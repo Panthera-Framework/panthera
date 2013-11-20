@@ -407,9 +407,9 @@ if ($_GET['action'] == 'account') {
 
     if (strlen($_POST['passwd']) > 6) 
     {
-        $password = encodePassword($_POST['passwd']);
+        $password = $_POST['passwd'];
         
-        if (!verifyPassword($_POST['retyped_passwd'], $password))
+        if (!verifyPassword($_POST['retyped_passwd'], encodePassword($password)))
         {
             ajax_exit(array('status' => 'failed', 'message' =>  localize('Passwords does not match', 'users')));
         }

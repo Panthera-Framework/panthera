@@ -469,7 +469,18 @@ function createNewUser($login, $passwd, $full_name, $primary_group, $attributes,
     if ($ip == '')
         $ip = $_SERVER['REMOTE_ADDR'];
 
-    $array = array('login' => $login, 'passwd' => $passwd, 'full_name' => $full_name, 'primary_group' => $primary_group, 'attributes' => $attributes, 'language' => $language, 'mail' => $mail, 'jabber' => $jabber, 'profile_picture' => $profile_picture, 'ip' => $ip);
+    $array = array(
+        'login' => $login,
+        'passwd' => encodePassword($passwd),
+        'full_name' => $full_name,
+        'primary_group' => $primary_group,
+        'attributes' => $attributes,
+        'language' => $language,
+        'mail' => $mail,
+        'jabber' => $jabber,
+        'profile_picture' => $profile_picture,
+        'ip' => $ip
+    );
 
     $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}users` (`id`, `login`, `passwd`, `full_name`, `primary_group`, `joined`, `attributes`, `language`, `mail`, `jabber`, `profile_picture`, `lastlogin`, `lastip`) VALUES (NULL, :login, :passwd, :full_name, :primary_group, NOW(), :attributes, :language, :mail, :jabber, :profile_picture, NOW(), :ip);', $array);
 

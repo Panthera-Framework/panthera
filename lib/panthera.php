@@ -779,7 +779,7 @@ class pantheraCore
         }
 
         // get hashing algorithm
-        $this -> hashingAlgorithm = $this->config->getKey('hashing_algorithm');
+        $this -> hashingAlgorithm = $this->config->getKey('hashing_algorithm', 'sha512', 'string');
         $this -> logging -> output ('Using "' .$this->hashingAlgorithm. '" algorithm', 'pantheraCore');
 
         /** End of Cryptography support **/
@@ -948,17 +948,20 @@ class pantheraCore
         }
         
         $this->logging->startTimer();
-
-        if(is_file(PANTHERA_DIR. '/modules/' .$module. '.module.php'))
+        $f = '';
+        
+        if (is_file(PANTHERA_DIR. '/modules/' .$module. '.module.php'))
         {
-            @include_once PANTHERA_DIR. '/modules/' .$module. '.module.php';
-            $this->logging->output('Imported "' .$module. '" from /lib/modules', 'pantheraCore');
-            $this->modules[$module] = True;
-            
+            $f = PANTHERA_DIR. '/modules/' .$module. '.module.php';
         } elseif (is_file(SITE_DIR. '/content/modules/' .$module. '.module.php')) {
-            @include_once SITE_DIR. '/content/modules/' .$module. '.module.php';
-            $this->logging->output('Imported "' .$module. '" from /content/modules', 'pantheraCore');
-
+            $f = SITE_DIR. '/content/modules/' .$module. '.module.php';
+        }
+        
+        if ($f)
+        {
+            include $f;
+            
+            $this->logging->output('Imported "' .$module. '" from /lib/modules', 'pantheraCore');
             $this->modules[$module] = True;
         } else {
             $this->logging->output('Cannot import "' .$module. '" module', 'pantheraCore');

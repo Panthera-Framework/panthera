@@ -503,9 +503,6 @@ class fwconsole extends cliApp
 
         if (isset($data['login']))
         {
-            // get mix from password and salt
-            $data['password'] = md5($this->panthera->config->getKey('salt').$data['password']);
-
             // check if language given by user exists in locales
             if (isset($data['lang']))
             {

@@ -10,7 +10,6 @@
 class httplib
 {
     public static $userAgent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36';
-    protected $sessionResource;
     protected $cookiesTempFile = '';
     
     // proxy settings
@@ -170,11 +169,12 @@ class httplib
       * @param string $method
       * @param array $options
       * @param string|array $postFields
+      * @param bool $uploadingFile Are we uploading a file? Default - False
       * @return string
       * @author Damian Kęska
       */
 
-    public function get($url, $method=null, $options=null, $postFields=null)
+    public function get($url, $method=null, $options=null, $postFields=null, $uploadingFile=False)
     {
         global $panthera;
     
@@ -187,12 +187,7 @@ class httplib
         $panthera -> logging -> output('Preparing to ' .$method. ' web url "' .$url. '"', 'httplib');
         
         // restoring session from previous connection on this object        
-        if ($this->sessionResource)
-        {
-            $curl = $this->sessionResource;
-        } else {
-            $curl = $this->sessionResource = curl_init();
-        }
+        $curl = curl_init();
         
         // initialize curl resource
         curl_setopt($curl, CURLOPT_URL, $url);
@@ -266,7 +261,7 @@ class httplib
         
         if ($method == 'POST')
         {
-            if (!is_array($postFields))
+            if (is_array($postFields) and !$uploadingFile)
             {
                 $postFields = http_build_query($postFields);
             }
@@ -278,6 +273,8 @@ class httplib
         if (!@$options['disablecookies'])
         {
             // cookies
+            curl_setopt($curl, CURLOPT_COOKIESESSION, false); // force keep old cookies
+            curl_setopt($curl, CURLOPT_COOKIEFILE, $this->getTempFile());
             curl_setopt($curl, CURLOPT_COOKIEJAR, $this->getTempFile());
         }
         
@@ -289,7 +286,7 @@ class httplib
         }
         
         $panthera -> logging -> output('Request finished', 'httplib');
-        //curl_close($curl);
+        curl_close($curl);
         
         return $data;
     }

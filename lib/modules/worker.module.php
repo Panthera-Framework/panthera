@@ -301,7 +301,7 @@ class pantheraWorker extends cliApp
     
     protected function _clientSendData($data)
     {
-        $socket = stream_socket_client($this->argv['long']['socket'], $errorno, $errorstr, 32);
+        $socket = @stream_socket_client($this->argv['long']['socket'], $errorno, $errorstr, 32);
         
         if (!$socket)
         {
