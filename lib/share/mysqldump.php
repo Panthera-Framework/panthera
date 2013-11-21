@@ -10,13 +10,15 @@
 /**
  * The Backup_Database class
  */
+ 
 class Backup_Database {
     protected $host = '';
     protected $username = '';
     protected $passwd = '';
     protected $dbName = '';
     protected $charset = '';
-    public $resutType = 'string';
+    protected $conn = '';
+    public $resultType = 'string';
     public $replacePrefix = False;
     public $dropTables = True;
  
@@ -32,36 +34,28 @@ class Backup_Database {
       * @author Daniel López Azaña <http://www.daniloaz.com>
       */
      
-    function Backup_Database($host, $username, $passwd, $dbName, $charset = 'utf8')
+    public function __construct($host, $username, $passwd, $dbName, $charset = 'utf8')
     {
         $this->host     = $host;
         $this->username = $username;
         $this->passwd   = $passwd;
         $this->dbName   = $dbName;
         $this->charset  = $charset;
-        $this->initializeDatabase();
+        
+        $this->conn = new PDO('mysql:host=' .$this->host. ';dbname=' .$this->dbName, $this->username, $this->passwd);
+        $this->conn -> query('SET NAMES ' .$this->charset);
     }
- 
-    protected function initializeDatabase()
-    {
-        $conn = mysql_connect($this->host, $this->username, $this->passwd);
-        mysql_select_db($this->dbName, $conn);
-        if (! mysql_set_charset ($this->charset, $conn))
-        {
-            mysql_query('SET NAMES '.$this->charset);
-        }
-    }
- 
+    
     /**
      * Backup the whole database or just some tables
      * Use '*' for whole database or 'table1 table2 table3...'
      * @param string $tables
      * @return SQL Dump as string
      */
+     
     public function backupTables($tables = '*', $backupData=True)
     {
         global $panthera;
-    
     
             /**
             * Tables to export
@@ -69,15 +63,20 @@ class Backup_Database {
             if($tables == '*')
             {
                 $tables = array();
-                $result = mysql_query('SHOW TABLES');
-                while($row = mysql_fetch_row($result))
+                $result = $this->conn->query('SHOW TABLES');
+                $result -> execute();
+                foreach ($result->fetchAll() as $row)
                 {
                     $tables[] = $row[0];
                 }
-            }
-            else
-            {
+                
+            } else {
                 $tables = is_array($tables) ? $tables : explode(',',$tables);
+            }
+            
+            if (!isset($_SERVER["SERVER_NAME"]))
+            {
+                $_SERVER["SERVER_NAME"] = 'Unknown';
             }
 
             // header
@@ -91,8 +90,9 @@ class Backup_Database {
                 $result = array();
  
             /**
-            * Iterate tables
-            */
+             * Iterate tables
+             */
+            
             foreach($tables as $table)
             {
                 if ($this->resultType == "array")
@@ -102,8 +102,9 @@ class Backup_Database {
  
                 if ($backupData == True)
                 {
-                    $result = mysql_query('SELECT * FROM '.$table);
-                    $numFields = mysql_num_fields($result);
+                    $result = $this->conn->query('SELECT * FROM '.$table);
+                    $result -> execute();
+                    $numFields = $result->columnCount();
                 }
                 
                 $fixedTableName = $table;
@@ -115,20 +116,23 @@ class Backup_Database {
                 if ($this->dropTables == True)
                     $sql .= 'DROP TABLE IF EXISTS `'.$fixedTableName.'`;';
                     
-                $row2 = mysql_fetch_row(mysql_query('SHOW CREATE TABLE '.$table));
-                $sql.= "\n\n".str_replace('CREATE TABLE `' .$table. '`', 'CREATE TABLE `' .$fixedTableName. '`', $row2[1]).";\n\n";
+                $q = $this->conn->query('SHOW CREATE TABLE '.$table);
+                $q -> execute();
+                $row = $q -> fetch(PDO::FETCH_ASSOC);
+                $sql.= "\n\n".str_replace('CREATE TABLE `' .$table. '`', 'CREATE TABLE `' .$fixedTableName. '`', $row['Create Table']).";\n\n";
  
                 if ($backupData == True)
                 {
                     for ($i = 0; $i < $numFields; $i++)
                     {
-                        while($row = mysql_fetch_row($result))
+                        foreach ($result->fetchAll() as $row)
                         {
                             $sql .= 'INSERT INTO `'.$fixedTableName.'` VALUES(';
                             for($j=0; $j<$numFields; $j++)
                             {
                                 $row[$j] = addslashes($row[$j]);
-                                $row[$j] = ereg_replace("\n","\\n",$row[$j]);
+                                $row[$j] = str_replace("\n", "\\n", $row[$j]);
+                                
                                 if (isset($row[$j]))
                                 {
                                     $sql .= '"'.$row[$j].'"' ;

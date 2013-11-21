@@ -54,7 +54,7 @@ class SQLDump
     public static function initSQLDump()
     {
         global $panthera;
-        return new Backup_Database($panthera->config->getKey('db_host'), $panthera->config->getKey('db_user'), $panthera->config->getKey('db_password'), $panthera->config->getKey('db_name'));
+        return new Backup_Database($panthera->config->getKey('db_host'), $panthera->config->getKey('db_username'), $panthera->config->getKey('db_password'), $panthera->config->getKey('db_name'));
     }
 
     public static function createTemplatesFromDB($dropTables=True)
@@ -141,8 +141,38 @@ class SQLDump
         return $rFiles;
     }
     
+    /**
+      * Backup job for crontab
+      *
+      * @param $data
+      * @return $data
+      * @author Damian Kęska
+      */
+    
     public static function cronjob($data='')
     {
+        global $panthera;
+    
+        if ($panthera->db->getSocketType() == 'mysql')
+        {
+            $name = $panthera->config->getKey('db_name'). '-' .date('Y.m.d_G:i:s'). '.sql';
+
+            $dump = SQLDump::make();
+
+            if ($dump != '')
+            {
+                $fp = fopen(SITE_DIR. '/content/backups/db/' .$name, 'wb');
+                fwrite($fp, $dump);
+                fclose($fp);
+                
+                print("Wrote backup to ".SITE_DIR. "/content/backups/db/" .$name."\n");
+            }
+        } elseif ($panthera->db->getSocketType() == 'sqlite') {
+            $name = date('Y.m.d_G:i:s'). '-' .$panthera->config->getKey('db_file');
+            copy(SITE_DIR. '/content/database/' .$panthera->config->getKey('db_file'), SITE_DIR. '/content/backups/db/' .$name);
+            print("Wrote backup to ".SITE_DIR. "/content/backups/db/" .$name. "\n");
+        }
+        
         return $data;
     }
 }
