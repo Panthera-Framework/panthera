@@ -7,10 +7,12 @@ function callBack()
 {
     callback = eval("{$callback_name}");
 
-    if (typeof callback == 'function')
+    if (typeof callback == 'function' && $("#file_link").val() != '')
     {
         // callback ( link, mime, type, directory, id, description, author )
-        callback($('#file_link').val(), $('#file_mime').val(), $('#file_type').val(), $('#file_directory').val(), $('#file_id').val(), $('#file_description').val(), $('#file_author').val());
+        callback($('#file_link').val(), $('#file_mime').val(), $('#file_type').val(), $('#file_directory').val(), $('#file_id').val(), $('#file_description').val(), $('#file_author').val(), $('#file_name').val());
+    } else {
+        w2alert("{function="localize('There is no selected file', 'upload')"}!");
     }
 }
 

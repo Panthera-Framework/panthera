@@ -31,7 +31,7 @@ function sliderChangeImage(src)
     });
 }
 
-function upload_file_callback(link, mime, type, directory, id, description, author)
+function upload_file_callback(link, mime, type, directory, id, description, author, name)
 {
     if(type != 'image')
     {
@@ -44,6 +44,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
     $('#upload_file').val(link);
     $('#upload_id').val(id);
     $('#description').val(description);
+    $('#title').val(name);
     sliderChangeImage(link);
 }
 </script>
@@ -90,7 +91,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
         <tbody>
             <tr>
                 <td>{function="localize('Title', 'gallery')"}</td>
-                <td><input type="text" name="title" style="width: 500px;"></td>
+                <td><input type="text" name="title" id="title" style="width: 500px;"></td>
             </tr>
             <tr>
                 <td>{function="localize('Description', 'gallery')"}</td>
