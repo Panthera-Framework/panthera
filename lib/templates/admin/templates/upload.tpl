@@ -10,40 +10,13 @@ function callBack()
     if (typeof callback == 'function')
     {
         // callback ( link, mime, type, directory, id, description, author )
-        callback($('#file_link').attr("href"), $('#file_mime').html(), $('#file_type').html(), $('#file_directory').html(), $('#file_id').val(), $('#file_description').html(), $('#file_author').html());
+        callback($('#file_link').val(), $('#file_mime').val(), $('#file_type').val(), $('#file_directory').val(), $('#file_id').val(), $('#file_description').val(), $('#file_author').val());
     }
-}
-
-function initUploadBox() {
-    $('.uploadBox').click(function () {
-        item = jQuery('#'+this.id);
-        id = item.attr('rel');
-        
-        $('#file_description').html(jQuery('#box_description_' +id).val());
-        $('#file_name').html($('#box_title_' +id).html());
-        $('#file_author').html($('#box_author_' +id).val());
-        $('#file_mime').html($('#box_mime_' +id).val());
-        $('#file_link').attr('href', $('#box_link_' +id).val());
-        $('#file_directory').html($('#box_directory_' +id).val());
-        $('#file_type').html($('#box_type_' +id).val());
-        $('#file_id').val($('#box_id_' +id).val());
-        $('#file_k').val(id);
-        $('#file_informations_window').show();
-        $('#_upl_select_file').show();
-        $('#file_delete').show();
-
-        if ($('#box_delete_'+id).val() == "1")
-            $('#file_delete').removeAttr('disabled');
-        else
-            $('#file_delete').attr('disabled', 'disabled');
-
-    });
 }
 
 var uploadProgress = new panthera.ajaxLoader($('#upload_list_window'));
 
 $(document).ready(function(){
-    initUploadBox();
     
     $('#upload_list_window').bind('dragenter', function() {
         $(this).css( { 'box-shadow' : '10px 10px 5px red;' });
@@ -94,6 +67,12 @@ $(document).ready(function(){
     });
 });
 
+function changeCategory()
+{
+    var category = $("#upload_category").val();
+    panthera.popup.toggle('?display=upload&cat=admin&directory='+category+'&popup=True');
+}
+
 function getUploadsPage(data)
 {
     panthera.htmlPOST({ url: '?display=upload&cat=admin&popup=true&action=display_list', data: data, spinner: uploadProgress, 'success': '#upload_list'});
@@ -116,7 +95,7 @@ function deleteSelectedFiles()
                 panthera.jsonGET( { url: '{$AJAX_URL}?display=upload&cat=admin&action=delete&id='+ids+'&popup=true', messageBox: 'w2ui', success: function (response) {
                         if (response.status == 'success')
                         {
-                            panthera.popup.toggle('?display=upload&cat=admin&popup=True;');
+                            panthera.popup.toggle('?display=upload&cat=admin&directory={$setCategory}&popup=True;');
                         }
                 
                     }
@@ -127,39 +106,78 @@ function deleteSelectedFiles()
 }
 
 /**
-  * Select file (change background-color or opacity and add id to global array 'selected')
+  * Select file
+  *     if callback, set only one file which you may callback to ajaxpage
+  *     if !callback, you are able to select more than one file to remove
   *
   * @author Mateusz Warzyński
   */
 
 function selectFile(id)
 {
-    $("#file_delete").show();
+    {if="$callback"}
     
-   {if="$view_type == 'images'"}
+        $('#file_title').attr('value', $('#item_title_' +id).val());
+        $('#file_description').attr('value', $('#item_description_' +id).val());
+        $('#file_name').attr('value', $('#item_title_' +id).val());
+        $('#file_author').attr('value', $('#item_author_' +id).val());
+        $('#file_mime').attr('value', $('#item_mime_' +id).val());
+        $('#file_link').attr('value', $('#item_link_' +id).val());
+        $('#file_directory').attr('value', $('#item_directory_' +id).val());
+        $('#file_type').attr('value', $('#item_type_' +id).val());
+        $('#file_id').attr('value', $('#item_id_' +id).val());
     
-    var opacity = $("#file_"+id).css("opacity");
+        if (selected[0] != undefined)
+            var old_id = selected[0];
+        else
+            var old_id = -1;
+            
+        selected = new Array;
+        selected.push(id);
     
-    if (opacity == "1") {
+       {if="$view_type == 'images'"}
+        
         $("#file_"+id).css("opacity", "0.5");
-        selected.push(id)
-    } else {
-        $("#file_"+id).css("opacity", "1");
-        removeFromArrayByValue(selected, id);
-    }
-   
-   {else}
-   
-    var color = $("#file_"+id).css("background-color");
-   
-    if (color == "rgb(255, 255, 255)") {
+        $("#file_"+old_id).css("opacity", "1");
+       
+       {else}
+       
         $("#file_"+id).css("background-color", "rgba(86, 104, 123, 0.70)");
-        selected.push(id)
-    } else {
-        $("#file_"+id).css("background-color", "#ffffff");
-        removeFromArrayByValue(selected, id);
-    }
-    
+        $("#file_"+old_id).css("background-color", "#ffffff");
+       
+       {/if} 
+        
+    {else}
+        $("#file_delete").slideDown();
+        
+       {if="$view_type == 'images'"}
+        
+        var opacity = $("#file_"+id).css("opacity");
+        
+        if (opacity == "1") {
+            $("#file_"+id).css("opacity", "0.5");
+            selected.push(id)
+        } else {
+            $("#file_"+id).css("opacity", "1");
+            removeFromArrayByValue(selected, id);
+        }
+       
+       {else}
+       
+        var color = $("#file_"+id).css("background-color");
+       
+        if (color == "rgb(255, 255, 255)") {
+            $("#file_"+id).css("background-color", "rgba(86, 104, 123, 0.70)");
+            selected.push(id)
+        } else {
+            $("#file_"+id).css("background-color", "#ffffff");
+            removeFromArrayByValue(selected, id);
+        }
+       {/if}
+       
+       if (selected.length == 0)
+            $("#file_delete").slideUp();
+            
    {/if}
 }
 
@@ -206,36 +224,51 @@ table tbody tr td {
 
 <div id="header" style="display: block; text-align: center; color: white;">
     <div style="position: absolute; top: 10px; right: 20px; margin-top: 0;">
-        <input type="button" value="{function="localize('Change view', 'upload')"}" onclick="panthera.popup.create('?display=upload&cat=admin&changeView={$view_change}&popup=true')" />
+        <input type="button" value="{function="localize('Change view', 'upload')"}" onclick="panthera.popup.create('?display=upload&cat=admin&changeView={$view_change}&directory={$setCategory}&popup=true')" />
     </div>
-    <p style="font-size: 22px;">{function="localize('Category', 'upload')"}:&nbsp;{$directory}</p>
+    <p style="font-size: 22px;">{function="localize('Category', 'upload')"}:&nbsp;
+        {$directory}
+        <select onChange="changeCategory();" id="upload_category">
+           {loop="$categories"}
+            <option {if="$setCategory == $value.name"} selected {/if}>{$value.name}</option>
+           {/loop}
+        </select>
+    </p>
 </div>
 
 <div id="content">
    {if="$view_type == 'images'"}
     <div class="uploadBoxCentered">
     
-    {$i=0}
-    {loop="$files"}
-    {$i=$i+1}
-            <div class="uploadBox" id="file_{$value.id}" rel="{$key}" style="background-color: #404C5A;" onclick="selectFile({$value.id});">
-              <div class="boxInner" style="position: relative;">
-                    <div class="boxImg"><img src="{$value.icon}" id="box_img_{$key}"></div>
-                    <div class="titleBox" id="box_title_{$key}">{$value.name}</div>
-                    <input type="hidden" id="box_delete_{$key}" value="{if="$value.ableToDelete == True"}1{else}0{/if}">
-                    <input type="hidden" id="box_description_{$key}" value="{$value.description}">
-                    <input type="hidden" id="box_id_{$key}" value="{$value.id}">
-                    <input type="hidden" id="box_author_{$key}" value="{$value.author}">
-                    <input type="hidden" id="box_mime_{$key}" value="{$value.mime}">
-                    <input type="hidden" id="box_type_{$key}" value="{$value.type}">
-                    <input type="hidden" id="box_link_{$key}" value="{$value.link}">
-                    <input type="hidden" id="box_directory_{$key}" value="{$value.directory}">
-              </div>
-            </div>
-    {/loop}
+     {if="count($files) < 1"}
+        <p style="color: white; text-align: center;">{function="localize('There are no uploaded files', 'upload')"}.</p>
+     {else}
+    
+        {$i=0}
+        {loop="$files"}
+        {$i=$i+1}
+                <div class="uploadBox" id="file_{$value.id}" rel="{$key}" style="background-color: #404C5A;" onclick="selectFile({$value.id});">
+                  <div class="boxInner" style="position: relative;">
+                        <div class="boxImg"><img src="{$value.icon}" id="item_img_{$key}"></div>
+                        <div class="titleBox">{$value.name}</div>
+                        
+                        <input type="hidden" id="item_title_{$value.id}" value="{$value.name}">
+                        <input type="hidden" id="item_delete_{$value.id}" value="{if="$value.ableToDelete == True"}1{else}0{/if}">
+                        <input type="hidden" id="item_description_{$value.id}" value="{$value.description}">
+                        <input type="hidden" id="item_id_{$value.id}" value="{$value.id}">
+                        <input type="hidden" id="item_author_{$value.id}" value="{$value.author}">
+                        <input type="hidden" id="item_mime_{$value.id}" value="{$value.mime}">
+                        <input type="hidden" id="item_type_{$value.id}" value="{$value.type}">
+                        <input type="hidden" id="item_link_{$value.id}" value="{$value.link}">
+                        <input type="hidden" id="item_directory_{$value.id}" value="{$value.directory}">
+                  </div>
+                </div>
+        {/loop}
+      {/if}
     </div>
    
    {else}
+
     <div style="text-align: center;">
      <table style="margin-top: 5px; margin-bottom: 12px; display: inline-table;">
         <thead>
@@ -248,21 +281,40 @@ table tbody tr td {
        
         <tbody>
         
-        {$i=0}
-        {loop="$files"}
-        {$i=$i+1}
-          <tr id="file_{$value.id}" onclick="selectFile({$value.id});" style="background-color: #ffffff">
-            
-            <td style="padding-top: 4px; padding-right: 6px; padding-left: 6px;">
-                <img src="{$value.icon}" style="max-height: 30px; max-width: 30px;">
-            </td>
-            
-            <td>{$value.name}</td>
-            <td>{$value.description}</td>
-            <td>{$value.mime}</td>
-            <td>{$value.author}</td>
-          </tr>
-        {/loop}            
+        {if="count($files) < 1"}
+        
+            <tr style="background-color: #ffffff">
+                
+                <td colspan="5">{function="localize('There are no uploaded files', 'upload')"}.</td>
+            </tr>
+        
+        {else}
+        
+            {loop="$files"}
+              <tr id="file_{$value.id}" onclick="selectFile({$value.id});" style="background-color: #ffffff">
+                
+                <td style="padding-top: 4px; padding-right: 6px; padding-left: 6px;">
+                    <img src="{$value.icon}" style="max-height: 30px; max-width: 30px;">
+                </td>
+                
+                <td>{$value.name}</td>
+                <td>{$value.description}</td>
+                <td>{$value.mime}</td>
+                <td>{$value.author}</td>
+                
+                <input type="hidden" id="item_title_{$value.id}" value="{$value.name}">
+                <input type="hidden" id="item_delete_{$value.id}" value="{if="$value.ableToDelete == True"}1{else}0{/if}">
+                <input type="hidden" id="item_description_{$value.id}" value="{$value.description}">
+                <input type="hidden" id="item_id_{$value.id}" value="{$value.id}">
+                <input type="hidden" id="item_author_{$value.id}" value="{$value.author}">
+                <input type="hidden" id="item_mime_{$value.id}" value="{$value.mime}">
+                <input type="hidden" id="item_type_{$value.id}" value="{$value.type}">
+                <input type="hidden" id="item_link_{$value.id}" value="{$value.link}">
+                <input type="hidden" id="item_directory_{$value.id}" value="{$value.directory}">
+                
+              </tr>
+            {/loop}
+        {/if}            
         
         </tbody>
     </table>
@@ -281,9 +333,24 @@ table tbody tr td {
     <input type="button" value="{function="localize('Show other users files', 'files')"}" onclick="panthera.popup.create('?display=upload&cat=admin&otherUsers=true&popup=true')">
     {/if}
     {/if}
+
+    <input type="text" id="file_name" style="display: none;">
+    <input type="text" id="file_description" style="display: none;">
+    <input type="text" id="file_author" style="display: none;">
+    <input type="text" id="file_type" style="display: none;">
+    <input type="text" id="file_mime" style="display: none;">
+    <input type="text" id="file_link" style="display: none;">
+    <input type="text" id="file_directory" style="display: none;">
+    <input type="text" id="file_id" style="display: none;">
+    <input type="text" id="file_k" style="display: none;">
     
-    {if="$upload_files == True"}<input type='button' value="{function="localize('Add new file', 'files')"}" style="margin-right: 5px; float: right;" onclick="panthera.popup.toggle('?display=upload&cat=admin&action=uploadFileWindow&popup=True')">{/if}
-    <input type="button" value="{function="localize('Select this file', 'files')"}" style="float: right; margin-right: 5px; display: none;" onclick="callBack();" id="_upl_select_file">
-    <input type="button" value="{function="localize('Delete selected files', 'files')"}" style="float: right; margin-right: 5px; display: none;" id="file_delete" onclick="deleteSelectedFiles();">
+    {if="$callback"}
+        <input type="button" value="{function="localize('Select this file', 'files')"}" style="float: right; margin-right: 5px;" onclick="callBack();" id="_upl_select_file">
+    {else}
+      {if="$upload_files == True"}
+        <input type='button' value="{function="localize('Add new file', 'files')"}" style="margin-right: 5px; float: right;" onclick="panthera.popup.toggle('?display=upload&cat=admin&action=uploadFileWindow&directory={$setCategory}&popup=True')">
+      {/if}
+        <input type="button" value="{function="localize('Delete selected files', 'files')"}" style="float: right; margin-right: 5px; display: none;" id="file_delete" onclick="deleteSelectedFiles();">
+    {/if}
   </div>
  </div>

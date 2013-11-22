@@ -17,13 +17,17 @@ $panthera -> importModule('pager');
 $panthera -> locale -> loadDomain('files');
 
 $permissions = array(
-    'admin' => checkUserPermissions($panthera->user, True)
+    'admin' => checkUserPermissions($panthera->user, True),
 );
+
+$canManageUpload = getUserRightAttribute($user, 'can_manage_upload');
+$canManageUploadCategories = getUserRightAttribute($user, 'can_manage_upload_categories');
+$canAddFiles = getUserRightAttribute($user, 'can_add_files');
 
 $panthera -> template -> push ('permissions', $permissions);
 
 if (isset($_GET['popup']))
-{
+{   
     if (!checkUserPermissions($panthera->user))
     {
         $noAccess = new uiNoAccess; $noAccess -> display();
@@ -94,7 +98,17 @@ if (isset($_GET['popup']))
     {
         if (!getUserRightAttribute($user, 'can_upload_files'))
             ajax_exit(array('status' => 'failed', 'message' => localize('You are not allowed to upload files', 'files')));
-            
+        
+        $countCategories = pantheraUpload::getUploadCategories('', False, False);
+        $categories = pantheraUpload::getUploadCategories('', $countCategories, 0);
+        
+        if (isset($_GET['directory']))
+            $category = $_GET['directory'];
+        else
+            $category = 'default';
+        
+        $panthera -> template -> push('setCategory', $category);
+        $panthera -> template -> push('categories', $categories);
         $panthera -> template -> display('upload_newfile.tpl');
         pa_exit();
     }
@@ -110,7 +124,7 @@ if (isset($_GET['popup']))
     {
         if (!getUserRightAttribute($user, 'can_upload_files'))
             ajax_exit(array('status' => 'failed', 'message' => localize('You are not allowed to upload files', 'files')));
-            
+        
         // handle base64 encoded upload in post field "image"
         if (isset($_POST['image']))
         {
@@ -128,7 +142,27 @@ if (isset($_GET['popup']))
         if ($_FILES['input_file']['size'] > $panthera -> config -> getKey('upload_max_size') or filesize($_FILES['input_file']['tmp_name']) > $panthera -> config -> getKey('upload_max_size'))
             ajax_exit(array('status' => 'failed', 'message' => localize('File is too big, allowed maximum size is:'). ' ' .filesystem::bytesToSize($panthera -> config -> getKey('upload_max_size'))));
 
-        $directory = 'default';
+        if (isset($_GET['directory']))
+            $category = $_GET['directory'];
+        else 
+            $category = $_POST['input_category'];
+        
+        $countCategories = pantheraUpload::getUploadCategories('', False, False);
+        
+        if (!$countCategories)
+            ajax_exit(array('status' => 'failed', 'message' => localize('There is no created upload category!', 'upload')));
+
+        $categories = pantheraUpload::getUploadCategories('', $countCategories, 0);
+        
+        foreach ($categories as $c)
+            $categoryList[$c['name']] = True;
+        
+        if (!array_key_exists($category, $categoryList)) {
+            if ($canManageUploadCategories or $permissions['admin']) { 
+                if (!pantheraUpload::createUploadCategory($category, $panthera->user->id, 'all'))
+                    ajax_exit(array('status' => 'failed', 'message' => localize('Given category does not exist!', 'upload')));
+            }
+        }
         
         $mime = '';
 
@@ -156,7 +190,7 @@ if (isset($_GET['popup']))
             ajax_exit(array('status' => 'failed', 'message' => localize('Description is too long, out of 512 characters range')));
         }
         
-        $uploadID = pantheraUpload::handleUpload($_FILES['input_file'], $directory, $user->id, $user->login, $protected, $public, $mime, $description);
+        $uploadID = pantheraUpload::handleUpload($_FILES['input_file'], $category, $user->id, $user->login, $protected, $public, $mime, $description);
 
         if ($uploadID)
         {
@@ -175,13 +209,32 @@ if (isset($_GET['popup']))
       */
     
     if (!isset($_GET['directory']))
-        $directory = 'default';
+        $category = 'default';
     else
-        $directory = $_GET['directory'];
+        $category = $_GET['directory'];
+    
+    $countCategories = pantheraUpload::getUploadCategories('', False, False);
+        
+    if (!$countCategories) {
+        if ($canManageUploadCategories or $permissions['admin']) {
+            pantheraUpload::createUploadCategory('default', $panthera->user->id, 'all');
+            $countCategories = 1;
+        }  else {
+            ajax_exit(array('status' => 'failed', 'message' => localize('Cannot create default category. Check your permissions!')));
+        }
+    }
+
+    $categories = pantheraUpload::getUploadCategories('', $countCategories, 0);
+    
+    foreach ($categories as $c)
+        $categoryList[$c['name']] = True;
+        
+    if (!array_key_exists($category, $categoryList))
+        ajax_exit(array('status' => 'failed', 'message' => localize('Given category is invalid!')));
     
     $by = new whereClause();
-    $by -> add( 'AND', 'uploader_login', '=', $panthera -> user -> login);
-    $by -> add( 'AND', 'category', '=', $directory);
+    
+    $by -> add( 'AND', 'category', '=', $category);
     
     $panthera -> template -> push('seeOtherUsersUploads', False);
     
@@ -196,10 +249,9 @@ if (isset($_GET['popup']))
     }
     
     if ($panthera->session->get('pa.upload.otherusers'))
-    {
-        $by = '';
         $panthera -> template -> push('seeOtherUsersUploads', True);
-    }
+    else
+        $by -> add( 'AND', 'uploader_login', '=', $panthera -> user -> login);
     
     $page = intval(@$_GET['page']);
     $count = pantheraUpload::getUploadedFiles($by, False);
@@ -280,7 +332,15 @@ if (isset($_GET['popup']))
         $viewChange = 'images';
     else
         $viewChange = 'blank';
-    
+
+    if (isset($_GET['callback']))
+        $callback = True;
+    else
+        $callback = False;
+
+    $panthera -> template -> push('callback', $callback);
+    $panthera -> template -> push('categories', $categories);
+    $panthera -> template -> push('setCategory', $category);
     $panthera -> template -> push('max_file_size', $panthera -> config -> getKey('upload_max_size', 3145728, 'int')); // default 3 mbytes
     $panthera -> template -> push('files', $filesTpl);
     $panthera -> template -> push('view_type', $viewType);

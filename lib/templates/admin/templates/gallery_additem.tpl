@@ -98,7 +98,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
             </tr>
             <tr>
                 <td>{function="localize('File', 'gallery')"}</td>
-                <td><input type="text" name="link" style="width: 500px;" id="upload_file" disabled> <input type="button" value="{function="localize('Upload file', 'gallery')"}" onclick="createPopup('_ajax.php?display=upload&cat=admin&popup=true&callback=upload_file_callback', 1300, 550);"><input type="hidden" name="upload_id" id="upload_id"></td>
+                <td><input type="text" name="link" style="width: 500px;" id="upload_file" disabled> <input type="button" value="{function="localize('Upload file', 'gallery')"}" onclick="createPopup('_ajax.php?display=upload&cat=admin&directory=gallery&popup=true&callback=upload_file_callback', 1300, 550);"><input type="hidden" name="upload_id" id="upload_id"></td>
             </tr>
             <tr>
                 <td>{function="localize('Visibility', 'gallery')"}</td>

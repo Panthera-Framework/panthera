@@ -173,7 +173,7 @@ class pantheraUpload
         
         return $panthera -> db -> sql -> lastInsertId();   
     }
-    
+
     /**
      * Delete upload category
      *
@@ -181,12 +181,36 @@ class pantheraUpload
      * @author Mateusz Warzyński
      * @return string
      */
-     
+
     public static function deleteUploadCategory($id)
     {
-        
+        global $panthera;
+
+        if ($panthera -> db -> query ('DELETE FROM `{$db_prefix}upload_categories` WHERE `id` = :id', array('id' => $id)))
+            return True;
+
+        return False;
     }
-    
+
+    /**
+      * Get upload categories from database
+      *
+      * @param mixed $by Array of values or nothing '' to just match all records
+      * @param int $limit Query limit
+      * @param int $limitFrom Offset to start from
+      * @param string $orderBy Column to sort by
+      * @param string $direction Sort ascending or descending
+      *
+      * @return array 
+      * @author Mateusz Warzyński
+      */
+
+    public static function getUploadCategories($by='', $limit=0, $limitFrom=0, $orderBy='id', $direction='ASC')
+    {
+          global $panthera;
+          return $panthera->db->getRows('upload_categories', $by, $limit, $limitFrom, '', $orderBy, $direction);
+    }
+
 
     /**
      * Handle file upload
