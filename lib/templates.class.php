@@ -202,7 +202,7 @@ class pantheraTemplate extends pantheraClass
         
         // automatic webroot merge (for debugging purposes)
         if ($this->debugging)
-            $this->webrootMerge();
+            libtemplate::webrootMerge();
     }
 
     /**

@@ -50,6 +50,8 @@ class debpopupPlugin extends pantheraPlugin
         $panthera -> template -> push('debugMessages', $debugMessages);
         $template = filterInput($panthera -> template -> display('debpopup.tpl', True, True, '', '_system'), 'wysiwyg');
         
+        print("<script type='text/javascript' src='js/panthera.js'></script>");
+        print("<script type='text/javascript' src='js/admin/pantheraUI.js'></script>");
         print("<script type='text/javascript'>var w = window.open('','name','height=400,width=1000'); w.document.write(htmlspecialchars_decode('".$template."')); w.document.close();</script>");
     }
     
