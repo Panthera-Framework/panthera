@@ -1018,7 +1018,7 @@ class pantheraCore
 
     public function getPermission($name)
     {
-        if (array_has_key($name, $this->permissionsTable))
+        if (isset($this->permissionsTable[$name]))
             return $this->permissionsTable[$name];
     }
 

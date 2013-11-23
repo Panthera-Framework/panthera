@@ -39,6 +39,12 @@ class debpopupPlugin extends pantheraPlugin
     public function display()
     {
         global $panthera;
+        
+        // user must be logged in on admin account
+        if (!checkUserPermissions($panthera->user, True))
+        {
+            return False;
+        }
     
         if ($this->displayed)
         {
@@ -47,7 +53,40 @@ class debpopupPlugin extends pantheraPlugin
         
         $this -> displayed = True;
         $debugMessages = nl2br($panthera -> logging -> getOutput());
+        $lines = explode("\n", $debugMessages);
+        $linesArray = array();
+        
+        foreach ($lines as $line)
+        {
+            if (strlen($line) < 5)
+                continue;
+        
+            $timingPos = strpos($line, ']');
+            
+            if ($timingPos !== False)
+            {
+                $boldTimeDiff = False;
+            
+                $timing = explode(', ', str_replace('[', '', str_replace(']', '', substr($line, 0, $timingPos))));
+                
+                $categoryPos = strpos(substr($line, $timingPos+1, strlen($line)), ']'); // substr => string ' [pantheraCore] Imported "filesystem" from /lib/modules<br />' (length=61)
+                $category = substr($line, $timingPos+3, $categoryPos-2);
+                
+                if (strpos($timing[1], 'real') !== False)
+                {
+                    $boldTimeDiff = true;
+                }
+                
+                $message = substr($line, $categoryPos+$timingPos+3, -6);
+                
+                $linesArray[] = array('timing' => $timing, 'category' => $category, 'message' => $message, 'boldTimeDiff' => $boldTimeDiff);
+            } else {
+                $linesArray[] = array('message' => $line);
+            }
+        }
+        
         $panthera -> template -> push('debugMessages', $debugMessages);
+        $panthera -> template -> push('debugArray', $linesArray);
         $template = filterInput($panthera -> template -> display('debpopup.tpl', True, True, '', '_system'), 'wysiwyg');
         
         print("<script type='text/javascript' src='js/panthera.js'></script>");
