@@ -31,7 +31,7 @@ function sliderChangeImage(src)
     });
 }
 
-function upload_file_callback(link, mime, type, directory, id, description, author)
+function upload_file_callback(link, mime, type, directory, id, description, author, name)
 {
     if(type != 'image')
     {
@@ -44,6 +44,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
     $('#upload_file').val(link);
     $('#upload_id').val(id);
     $('#description').val(description);
+    $('#title').val(name);
     sliderChangeImage(link);
 }
 </script>
@@ -90,7 +91,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
         <tbody>
             <tr>
                 <td>{function="localize('Title', 'gallery')"}</td>
-                <td><input type="text" name="title" style="width: 500px;"></td>
+                <td><input type="text" name="title" id="title" style="width: 500px;"></td>
             </tr>
             <tr>
                 <td>{function="localize('Description', 'gallery')"}</td>
@@ -98,7 +99,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
             </tr>
             <tr>
                 <td>{function="localize('File', 'gallery')"}</td>
-                <td><input type="text" name="link" style="width: 500px;" id="upload_file" disabled> <input type="button" value="{function="localize('Upload file', 'gallery')"}" onclick="createPopup('_ajax.php?display=upload&cat=admin&popup=true&callback=upload_file_callback', 1300, 550);"><input type="hidden" name="upload_id" id="upload_id"></td>
+                <td><input type="text" name="link" style="width: 500px;" id="upload_file" disabled> <input type="button" value="{function="localize('Upload file', 'gallery')"}" onclick="createPopup('_ajax.php?display=upload&cat=admin&directory=gallery&popup=true&callback=upload_file_callback', 1300, 550);"><input type="hidden" name="upload_id" id="upload_id"></td>
             </tr>
             <tr>
                 <td>{function="localize('Visibility', 'gallery')"}</td>

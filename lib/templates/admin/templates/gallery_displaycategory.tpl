@@ -71,7 +71,7 @@
             uploadProgress.ajaxLoaderInit();
 
         }, callback: function (content, fileName, fileNum, fileCount) {
-                panthera.jsonPOST({ url: '?display=upload&cat=admin&action=handle_file&popup=true', isUploading: true, async: false, data: { 'image': content, 'fileName': fileName}, success: function (response) {
+                panthera.jsonPOST({ url: '?display=upload&cat=admin&action=handle_file&directory=gallery&popup=true', isUploading: true, async: false, data: { 'image': content, 'fileName': fileName}, success: function (response) {
                         if (response.status == "success")
                         {
                             multiuploadFiles.push(response.upload_id);
