@@ -109,7 +109,7 @@ if (isset($_GET['popup']))
         
         $panthera -> template -> push('setCategory', $category);
         $panthera -> template -> push('categories', $categories);
-        $panthera -> template -> display('upload_newfile.tpl');
+        $panthera -> template -> display('upload_popup_newfile.tpl');
         pa_exit();
     }
 
@@ -348,7 +348,7 @@ if (isset($_GET['popup']))
     $panthera -> template -> push('directory', $directory);
     $panthera -> template -> push('callback_name', $_GET['callback']);
     $panthera -> template -> push('user_login', $user->login);
-    $panthera -> template -> display('upload.tpl');
+    $panthera -> template -> display('upload_popup.tpl');
     pa_exit();
 }
 
