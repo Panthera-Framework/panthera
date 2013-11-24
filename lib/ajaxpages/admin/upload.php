@@ -21,7 +21,7 @@ $permissions = array(
 );
 
 $canManageUpload = getUserRightAttribute($user, 'can_manage_upload');
-$canManageUploadCategories = getUserRightAttribute($user, 'can_manage_upload_categories');
+// $canManageUploadCategories = getUserRightAttribute($user, 'can_manage_upload_categories');
 $canAddFiles = getUserRightAttribute($user, 'can_add_files');
 
 $panthera -> template -> push ('permissions', $permissions);
@@ -109,7 +109,7 @@ if (isset($_GET['popup']))
         
         $panthera -> template -> push('setCategory', $category);
         $panthera -> template -> push('categories', $categories);
-        $panthera -> template -> display('upload_newfile.tpl');
+        $panthera -> template -> display('upload_popup_newfile.tpl');
         pa_exit();
     }
 
@@ -158,7 +158,7 @@ if (isset($_GET['popup']))
             $categoryList[$c['name']] = True;
         
         if (!array_key_exists($category, $categoryList)) {
-            if ($canManageUploadCategories or $permissions['admin']) { 
+            if ($canManageUpload or $permissions['admin']) { 
                 if (!pantheraUpload::createUploadCategory($category, $panthera->user->id, 'all'))
                     ajax_exit(array('status' => 'failed', 'message' => localize('Given category does not exist!', 'upload')));
             }
@@ -216,7 +216,7 @@ if (isset($_GET['popup']))
     $countCategories = pantheraUpload::getUploadCategories('', False, False);
         
     if (!$countCategories) {
-        if ($canManageUploadCategories or $permissions['admin']) {
+        if ($canManageUpload or $permissions['admin']) {
             pantheraUpload::createUploadCategory('default', $panthera->user->id, 'all');
             $countCategories = 1;
         }  else {
@@ -348,6 +348,54 @@ if (isset($_GET['popup']))
     $panthera -> template -> push('directory', $directory);
     $panthera -> template -> push('callback_name', $_GET['callback']);
     $panthera -> template -> push('user_login', $user->login);
+    $panthera -> template -> display('upload_popup.tpl');
+    pa_exit();
+}
+
+
+if ($_GET['action'] == 'addCategory')
+{
+    if (!strlen($_POST['name']))
+        ajax_exit(array('status' => 'failed', 'message' => localize('Name is empty.', 'upload')));
+    
+    if (!strlen($_POST['mime']))
+        ajax_exit(array('status' => 'failed', 'message' => localize('Mime is empty.', 'upload')));
+    
+    if ($canManageUpload or $permissions['admin']) {
+        if (pantheraUpload::createUploadCategory($_POST['name'], $panthera->user->id, $_POST['mime']))
+            ajax_exit(array('status' => 'success'));
+    } else {
+        ajax_exit(array('status' => 'failed', 'message' => localize('You have not permissions to create upload category.', 'upload')));
+    }
+    
+    ajax_exit(array('status' => 'failed'));
+    
+} elseif ($_GET['action'] == 'deleteCategory')
+{
+    if (!strlen($_GET['id']))
+        ajax_exit(array('status' => 'failed', 'message' => localize('Id is empty!', 'upload')));
+    
+    if ($canManageUpload or $permissions['admin']) {
+        if (pantheraUpload::deleteUploadCategory($_GET['id']))
+            ajax_exit(array('status' => 'success'));
+    } else {
+        ajax_exit(array('status' => 'failed', 'message' => localize('You have not permission to perform this action!', 'upload')));
+    }
+    
+    ajax_exit(array('status' => 'failed'));
+} elseif ($_GET['action'] == 'set_mime')
+{
+    ajax_exit(array('status' => 'failed'));
+} else {
+    $sBar = new uiSearchbar('uiTop');
+    $sBar -> setQuery($_GET['query']);
+    $sBar -> setAddress('?' .getQueryString('GET', '', array('_', 'page', 'query')));
+    $sBar -> navigate(True);
+    $sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_upload,can_add_files', localize('Manage permissions'));
+    
+    $countCategories = pantheraUpload::getUploadCategories('', False, False);
+    $categories = pantheraUpload::getUploadCategories('', $countCategories, 0);
+    $panthera -> template -> push('categories', $categories);
     $panthera -> template -> display('upload.tpl');
     pa_exit();
 }
