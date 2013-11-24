@@ -13,7 +13,8 @@ $(document).ready(function(){
             success: function(response) {
                 if (response.status == "success")
                 {
-                    panthera.popup.create('?display=upload&cat=admin&popup=True');
+                    var category = $("#category").val();
+                    panthera.popup.create('?display=upload&cat=admin&directory='+category+'&popup=True');
                 }
             } 
         });
@@ -40,6 +41,16 @@ $(document).ready(function(){
              <tr>
                  <th>{function="localize('Description', 'upload')"}</th>
                  <td><input type="text" name="input_description" style="width: 95%;"></td>
+             </tr>
+             <tr>
+                 <th>{function="localize('Category', 'upload')"}</th>
+                 <td>
+                     <select name="input_category" style="width: 95%;" id="category">
+                         {loop="$categories"}
+                            <option {if="$value.name == $setCategory"} selected {/if}>{$value.name}</option>
+                         {/loop}
+                     </select>
+                 </td>
              </tr>
          </tbody>
          <tfoot>
