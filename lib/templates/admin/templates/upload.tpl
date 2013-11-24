@@ -3,6 +3,31 @@
 var selected = new Array;
 
 /**
+  * Delete upload category
+  *
+  * @author Mateusz Warzyński
+  */
+
+function removeUploadCategory(id)
+{
+    w2confirm('{function="localize('Are you sure you want to delete this category?', 'upload')"}', function (responseText) {
+        
+            if (responseText == 'Yes')
+            {
+                panthera.jsonGET( { url: '{$AJAX_URL}?display=upload&cat=admin&action=deleteCategory&id='+id, messageBox: 'w2ui', success: function (response) {
+                        if (response.status == 'success')
+                        {
+                            navigateTo('?display=upload&cat=admin');
+                        }
+                
+                    }
+                });
+            }
+        
+    });
+}
+
+/**
   * Delete selected files
   *
   * @author Mateusz Warzyński
@@ -151,7 +176,7 @@ function transformArrayToString(array) {
 </div>
 
 <div id="createCategory" style="display: none;">
-   <form action="?{function="getQueryString('GET', 'action=createCategory', '_')"}" method="POST" id="newCategoryForm">
+   <form action="?display=upload&cat=admin&action=addCategory" method="POST" id="newCategoryForm">
     <table class="formTable" style="margin: 0 auto; margin-top: 30px; margin-bottom: 30px;">
         
         <tbody>

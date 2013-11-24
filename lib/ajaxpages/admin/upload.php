@@ -355,9 +355,33 @@ if (isset($_GET['popup']))
 
 if ($_GET['action'] == 'addCategory')
 {
+    if (!strlen($_POST['name']))
+        ajax_exit(array('status' => 'failed', 'message' => localize('Name is empty.', 'upload')));
+    
+    if (!strlen($_POST['mime']))
+        ajax_exit(array('status' => 'failed', 'message' => localize('Mime is empty.', 'upload')));
+    
+    if ($canManageUpload or $permissions['admin']) {
+        if (pantheraUpload::createUploadCategory($_POST['name'], $panthera->user->id, $_POST['mime']))
+            ajax_exit(array('status' => 'success'));
+    } else {
+        ajax_exit(array('status' => 'failed', 'message' => localize('You have not permissions to create upload category.', 'upload')));
+    }
+    
     ajax_exit(array('status' => 'failed'));
-} elseif ($_GET['action'] == 'delete_category')
+    
+} elseif ($_GET['action'] == 'deleteCategory')
 {
+    if (!strlen($_GET['id']))
+        ajax_exit(array('status' => 'failed', 'message' => localize('Id is empty!', 'upload')));
+    
+    if ($canManageUpload or $permissions['admin']) {
+        if (pantheraUpload::deleteUploadCategory($_GET['id']))
+            ajax_exit(array('status' => 'success'));
+    } else {
+        ajax_exit(array('status' => 'failed', 'message' => localize('You have not permission to perform this action!', 'upload')));
+    }
+    
     ajax_exit(array('status' => 'failed'));
 } elseif ($_GET['action'] == 'set_mime')
 {
