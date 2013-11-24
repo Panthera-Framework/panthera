@@ -225,7 +225,7 @@ table tbody tr td {
 
 
 <div id="header" style="display: block; width: 65%; margin: 0 auto; height: 35px; text-align: center; color: white;">
-    <div style="position: relative; float: right; margin-top: 20px;">
+    <div style="position: relative; float: right; margin-top: 10px;">
         {if="$permissions.admin"}
             {if="$seeOtherUsersUploads"}
             <input type="button" value="{function="localize('Hide other users files', 'files')"}" onclick="panthera.popup.create('?display=upload&cat=admin&otherUsers=false&popup=true')">
@@ -236,11 +236,14 @@ table tbody tr td {
     </div>
     <p style="font-size: 12px; float: left; margin-top: 20px;"><b>{function="localize('Category', 'upload')"}:</b>&nbsp;
         {$directory}
-        <select onChange="changeCategory();" id="upload_category">
+        
+        <div class="select" style="margin-top: 14px; margin-left: 3px;">
+         <select onChange="changeCategory();" id="upload_category">
            {loop="$categories"}
             <option {if="$setCategory == $value.name"} selected {/if}>{$value.name}</option>
            {/loop}
-        </select>
+         </select>
+        </div>
     </p>
 </div>
 

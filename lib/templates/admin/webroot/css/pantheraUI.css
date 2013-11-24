@@ -235,8 +235,34 @@ body {
 
 /* Forms */
 
-select {
-    border: solid 1px #6e8093;
+.select {
+   display: inline-block;
+   float: left;
+   width: 236px;
+   height: 24px;
+   margin: 0;
+   overflow: hidden;
+   background: url('../images/admin/pantheraUI/select.png') no-repeat right #404c5a;
+   border: solid 1px #6e8093;
+}
+
+.select select {
+    background: transparent;
+    width: 237px;
+    padding: 3px;
+    font-size: 14px;
+    color: white;
+    border: 0;
+    border-radius: 0;
+    height: 23px;
+    outline: 0;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+select option {
+    background-color: #6e8093; 
+    color: #fff;
 }
 
 
