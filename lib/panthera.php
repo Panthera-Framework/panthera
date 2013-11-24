@@ -967,6 +967,18 @@ class pantheraCore
             $this->logging->output('Cannot import "' .$module. '" module', 'pantheraCore');
         }
     }
+    
+    /**
+      * Simply list all modules
+      *
+      * @return array
+      * @author Damian Kęska
+      */
+    
+    public function listModules()
+    {
+        return $this->modules;
+    }
 
     /**
 	 * Check if module exists
@@ -1057,7 +1069,8 @@ class pantheraCore
     public function add_option($hookName, $function)
     {
         // create array with hooks group
-        if(!array_key_exists($hookName, $this->hooks))
+        
+        if (!isset($this->hooks[$hookName]))
         {
             $this->hooks[$hookName] = array();
         }
@@ -1067,14 +1080,14 @@ class pantheraCore
         {
             if(count($function) != 2)
             {
-                $this->logging->output("panthera::Invalid function array specified to add_option, requires to be first argument a class type and second a function name of that class");
+                $this->logging->output("Invalid function array specified to add_option, requires to be first argument a class type and second a function name of that class", 'pantheraCore');
                 return False;
             }
 
         } else { // and here is just a simple function
             if(!function_exists($function))
             {
-                $this->logging->output("panthera::Hooked function ".$function." does not exists.");
+                $this->logging->output("Hooked function ".$function." does not exists.", 'pantheraCore');
                 return False;
             }
         }

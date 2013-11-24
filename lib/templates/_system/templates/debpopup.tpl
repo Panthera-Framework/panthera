@@ -44,7 +44,7 @@
     <body>
         <div id="logoBar">
             <div class="centerWithContent pantheraLogo">
-                <span><a href="{$PANTHERA_URL}/pa-admin.php">Panthera Debugger</a></span>
+                <span><a>Panthera Debugger</a></span>
             </div>
             
             <!-- Menubar -->

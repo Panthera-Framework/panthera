@@ -63,8 +63,8 @@ class debpopupPlugin extends pantheraPlugin
     {
         global $panthera;
         
-        // user must be logged in on admin account
-        if (!checkUserPermissions($panthera->user, True))
+        // user must be logged in on admin account or have can_use_popup_debugger set to true
+        if (!getUserRightAttribute($panthera->user, 'can_use_popup_debugger'))
         {
             return False;
         }
@@ -152,6 +152,37 @@ class debpopupPlugin extends pantheraPlugin
             )
         );
         
+        $tables['usermeta'] = array(
+            'name' => 'User meta',
+            'items' => $this->iterateInputArray($panthera->user->acl->listAll()),
+            'header' => array(
+                'key', 'value'
+            )
+        );
+        
+        $tables['modules'] = $this->getModulesList();
+        
+        /*$tables['autoloader'] = array(
+            'name' => 'Autoloader cache',
+            'items' => $this->iterateInputArray($panthera -> config -> getKey('autoloader')),
+            'header' => array(
+                'Class', 'Module'
+            )
+        );*/
+        
+        /*$tables['pantheraconfig'] = array(
+            'name' => 'Loaded config',
+            'items' => $this->iterateInputArray($panthera -> config -> getOverlay()),
+            'header' => array(
+                'Key', 'Value'
+            )
+        );*/
+        
+        $tables['hooks'] = $this->getHooks();
+        
+        // allow other plugins to modify this list
+        $tables = $panthera -> get_filters('debpopup.tables', $tables);
+        
         $panthera -> template -> push('debugTables', $tables);
         $panthera -> template -> push('debugMessages', $debugMessages);
         $panthera -> template -> push('debugArray', $linesArray);
@@ -160,6 +191,84 @@ class debpopupPlugin extends pantheraPlugin
         print("<script type='text/javascript' src='js/panthera.js'></script>");
         print("<script type='text/javascript' src='js/admin/pantheraUI.js'></script>");
         print("<script type='text/javascript'>var w = window.open('','name','height=400,width=1000'); w.document.write(htmlspecialchars_decode('".$template."')); w.document.close();</script>");
+    }
+    
+    protected function getHooks()
+    {
+        global $panthera;
+        
+        $hooks = $panthera -> getAllHooks();
+        $array = array();
+        
+        foreach ($hooks as $hookName => $elements)
+        {
+            $t = '';
+        
+            foreach ($elements as $element)
+            {
+                if (is_array($element))
+                {
+                    if (is_object($element[0]))
+                    {
+                        $t .= get_class($element[0]). ' -> ' .$element[1]. '( )<br />';
+                        continue;
+                    }
+                    
+                    $t .= $element[0]. '::' .$element[1]. '( )<br />';
+                    continue;
+                }
+                
+                $t .= $element. '( )<br />';
+            }
+            
+            $array[] = array($hookName, $t);
+        }
+        
+        $item = array(
+            'name' => 'Hooks',
+            'items' => $array,
+            'header' => array(
+                'Hook name', 'Hooked functions'
+            )
+        );
+        
+        return $item;
+    }
+    
+    /**
+      * Generating modules list with list of classes
+      *
+      * @return array
+      * @author Damian Kęska
+      */
+    
+    protected function getModulesList()
+    {
+        global $panthera;
+        
+        $array = array();
+        $autoloader = $panthera -> config -> getKey('autoloader');
+        $classList = array();
+        
+        foreach ($autoloader as $class => $module)
+        {
+            $classList[$module][] = $class;
+        }
+        
+        foreach ($panthera->listModules() as $module => $enabled)
+        {
+            $array[] = array($module, implode(', ', $classList[$module]));
+        }
+    
+        $item = array(
+            'name' => 'Modules',
+            'items' => $array,
+            'header' => array(
+                'Module', 'Included classes'
+            )
+        );
+        
+        return $item;
     }
     
     /**
