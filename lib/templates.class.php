@@ -28,7 +28,7 @@ class pantheraTemplate extends pantheraClass
         'scripts' => array()
     );
     protected $panthera;
-    protected $vars = array();
+    public $vars = array();
     protected $cacheConfig = False;
     public $tpl;
     public $name;

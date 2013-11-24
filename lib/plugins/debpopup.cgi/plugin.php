@@ -30,6 +30,29 @@ class debpopupPlugin extends pantheraPlugin
     );
     
     /**
+      * Rewrite array into array(key, value)
+      *
+      * @param array $input
+      * @return array
+      * @author Damian Kęska
+      */
+    
+    public function iterateInputArray($input)
+    {
+        $getItems = array();
+        foreach ($input as $key => $value) 
+        { 
+            if (is_array($value))
+            {
+                $value = json_encode($value, JSON_PRETTY_PRINT);
+            }
+        
+            $getItems[] = array(htmlspecialchars($key), nl2br(htmlspecialchars($value))); 
+        }
+        return $getItems;
+    }
+    
+    /**
       * Display the popup
       *
       * @returns void
@@ -51,14 +74,18 @@ class debpopupPlugin extends pantheraPlugin
             return False;
         }
         
+        $tables = array();
+        
         $this -> displayed = True;
         $debugMessages = nl2br($panthera -> logging -> getOutput());
+        
+        // parse debug log to array
         $lines = explode("\n", $debugMessages);
         $linesArray = array();
         
         foreach ($lines as $line)
         {
-            if (strlen($line) < 5)
+            if (strlen($line) < 2)
                 continue;
         
             $timingPos = strpos($line, ']');
@@ -79,12 +106,53 @@ class debpopupPlugin extends pantheraPlugin
                 
                 $message = substr($line, $categoryPos+$timingPos+3, -6);
                 
-                $linesArray[] = array('timing' => $timing, 'category' => $category, 'message' => $message, 'boldTimeDiff' => $boldTimeDiff);
+                $linesArray[] = array($timing[0], $timing[1], $category, $message);
             } else {
-                $linesArray[] = array('message' => $line);
+                $linesArray[] = array('', '', '', $line);
             }
         }
         
+        $tables['debug'] = array(
+            'name' => 'Debugger log',
+            'items' => $linesArray, 
+            'header' => array(
+                'Time', 'Diffirence', 'Category', 'Message'
+            )
+        );
+
+        $tables['get'] = array(
+            'name' => 'Input $_GET',
+            'items' => $this->iterateInputArray($_GET),
+            'header' => array(
+                'key', 'value'
+            )
+        );
+        
+        $tables['post'] = array(
+            'name' => 'Input $_POST',
+            'items' => $this->iterateInputArray($_POST),
+            'header' => array(
+                'key', 'value'
+            )
+        );
+        
+        $tables['server'] = array(
+            'name' => 'Input $_SERVER',
+            'items' => $this->iterateInputArray($_SERVER),
+            'header' => array(
+                'key', 'value'
+            )
+        );
+        
+        $tables['tplvars'] = array(
+            'name' => 'Template variables',
+            'items' => $this->iterateInputArray($panthera->template->vars),
+            'header' => array(
+                'key', 'value'
+            )
+        );
+        
+        $panthera -> template -> push('debugTables', $tables);
         $panthera -> template -> push('debugMessages', $debugMessages);
         $panthera -> template -> push('debugArray', $linesArray);
         $template = filterInput($panthera -> template -> display('debpopup.tpl', True, True, '', '_system'), 'wysiwyg');

@@ -17,49 +17,87 @@
         $(document).ready(function() {
             x = 0;  //horizontal coord
             y = document.height; //vertical coord
-            window.scroll(x,y);
+            
+            if (!localStorage.getItem("debpopupTab") || localStorage.getItem("debpopupTab") == "debug")
+            {
+                window.scroll(x,y);
+            }
+            
+            if (localStorage.getItem("debpopupTab"))
+            {
+                showTable(localStorage.getItem("debpopupTab"));
+            }
         });
+        
+        function showTable(tabName)
+        {
+            if ($("#tab_"+tabName).length)
+            {
+                $(".allTabs").hide();
+                $("#tab_"+tabName).show();
+                localStorage.setItem("debpopupTab", tabName);
+            }
+        }
         </script>
     </head>
     
     <body>
         <div id="logoBar">
             <div class="centerWithContent pantheraLogo">
-                <span><a href="http://panthera.kablownia.org:82/darbs-tools//pa-admin.php">Debugging</a></span>
+                <span><a href="{$PANTHERA_URL}/pa-admin.php">Panthera Debugger</a></span>
             </div>
             
             <!-- Menubar -->
             
             <div id="menuBarVisibleLayer">
                 <div class="centerWithContent" id="menuBar">
+                {loop="$debugTables"}
                     <span class="menuItem">
-                        <a href="#"><img src="images/admin/pantheraUI/transparent.png" class="pantheraIcon icon-{$PANTHERA_URL}/images/admin/menu/dashboard.png menuIcon" alt="Dash"> 
-                            <span class="menuText">Messages log</span>
+                        <a onclick="showTable('{$key}');">
+                            <img src="images/admin/pantheraUI/transparent.png" class="pantheraIcon menuIcon" alt="Dash"> 
+                            <span class="menuText">{$value.name}</span>
                         </a>
                     </span>
+                {/loop}
                 </div>
             </div>
         </div>
         
         <div id="ajax_content" class="centerWithContent">
-            <div id="tab_debug">
-                <table>
+            {$i=0}
+            {loop="$debugTables"}
+            {$i=$i+1}
+            <div id="tab_{$key}" class="allTabs" {if="$i > 1"}style="display: none;"{/if}>
+                {if="$value.items"}
+                <table style="width: 100%;">
                     <thead>
-                        <th style="padding-left: 5px;">Time</th>
-                        <th style="padding-left: 5px;">Diffirence</th>
-                        <th style="padding-left: 5px;">Category</th>
-                        <th style="padding-left: 5px;">Message</th>
+                        {$tableVal=$value}
+                        {loop="$tableVal.header"}
+                            <th style="padding-left: 5px;">{$value}</th>
+                        {/loop}
                     </thead>
                     
-                    <tbody>
-                    {loop="$debugArray"}
+                    <tbody class="hovered">
+                    {loop="$tableVal.items"}
+                        {if="$value"}
                         <tr>
-                            <td style="padding: 5px;">{$value.timing[0]}</td><td style="padding: 5px;">{$value.timing[1]}</td><td style="padding: 5px;">{$value.category}</td><td style="padding: 5px;">{$value.message}</td>
+                            {loop="$value"}
+                                <td style="padding: 5px;">{$value}</td>
+                            {/loop}
                         </tr>
+                        {/if}
                     {/loop}
                     </tbody>
                 </table>
+                {else}
+                {if="$value.content"}
+                {$value.content}
+                {else}
+                Empty.
+                {/if}
+                {/if}
             </div>
+            {/loop}
         </div>
     </body>
 </html>
