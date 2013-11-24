@@ -1074,39 +1074,26 @@ ul.dropdown li:hover > a.dir {
 .uploadBox
 {
 	display: inline-block;
-	height: 90px;
-	margin-right: 10px;
 	position: relative;
-	width: 120px;
+	width: 24.2%;
 }
 .boxInner
 {
 	background: #56687B;
 	border: solid rgba(0, 0, 0, 0.5) 1px;
-	bottom: 10px;
-	left: 10px;
-	moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-	ms-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-	o-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-	overflow: hidden;
-	position: absolute;
-	right: 10px;
-	top: 10px;
-	webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+	margin-top: 5px;
+	height: 120px;
 }
 .boxInner img
 {
 	cursor: pointer;
-	max-height: 56px;
-	max-width: 120px;
-	min-height: 40px;
-	min-width: 40px;
+	max-height: 120px;
+	max-width: 100%;
 }
 .boxImg
 {
 	align: top;
-	max-height: 65px;
-	max-width: 65px;
+	width: 100%;
 	vertical-align: middle;
 }
 .boxInner .titleBox
@@ -1130,6 +1117,9 @@ ul.dropdown li:hover > a.dir {
 	margin: 0 auto;
 	margin-bottom: 30px;
 	margin-top: 30px;
+	padding-left: 1px;
+	padding-top: 3px;
+	padding-bottom: 8px;
 	min-height: 300px;
 	position: relative;
 	width: 65%;
