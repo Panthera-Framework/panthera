@@ -30,6 +30,13 @@ $path = False;
 if (!defined('PAGES_DISABLE_LIB'))
 {
     $path = getContentDir('/pages/' .$display. '.php');
+    
+    // disabled pages can be empty pages
+    if (filesize($path) < 8)
+    {
+        $path = false;
+    }
+    
 } else {
     if (is_dir(SITE_DIR. '/content/pages/' .$display. '.php'))
         $path = SITE_DIR. '/content/pages/' .$display. '.php';
