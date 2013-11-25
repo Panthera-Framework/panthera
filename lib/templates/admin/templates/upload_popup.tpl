@@ -224,17 +224,26 @@ table tbody tr td {
 </style>
 
 
-<div id="header" style="display: block; text-align: center; color: white;">
-    <div style="position: absolute; top: 10px; right: 20px; margin-top: 0;">
-        <input type="button" value="{function="localize('Change view', 'upload')"}" onclick="panthera.popup.create('?display=upload&cat=admin&changeView={$view_change}&directory={$setCategory}&popup=true')" />
+<div id="header" style="display: block; width: 65%; margin: 0 auto; height: 35px; text-align: center; color: white;">
+    <div style="position: relative; float: right; margin-top: 10px;">
+        {if="$permissions.admin"}
+            {if="$seeOtherUsersUploads"}
+            <input type="button" value="{function="localize('Hide other users files', 'files')"}" onclick="panthera.popup.create('?display=upload&cat=admin&otherUsers=false&popup=true')">
+            {else}
+            <input type="button" value="{function="localize('Show other users files', 'files')"}" onclick="panthera.popup.create('?display=upload&cat=admin&otherUsers=true&popup=true')">
+            {/if}
+        {/if}
     </div>
-    <p style="font-size: 22px;">{function="localize('Category', 'upload')"}:&nbsp;
+    <p style="font-size: 12px; float: left; margin-top: 20px;"><b>{function="localize('Category', 'upload')"}:</b>&nbsp;
         {$directory}
-        <select onChange="changeCategory();" id="upload_category">
+        
+        <div class="select" style="margin-top: 14px; margin-left: 3px;">
+         <select onChange="changeCategory();" id="upload_category">
            {loop="$categories"}
             <option {if="$setCategory == $value.name"} selected {/if}>{$value.name}</option>
            {/loop}
-        </select>
+         </select>
+        </div>
     </p>
 </div>
 
@@ -245,14 +254,14 @@ table tbody tr td {
      {if="count($files) < 1"}
         <p style="color: white; text-align: center;">{function="localize('There are no uploaded files', 'upload')"}.</p>
      {else}
-    
+      <div style="text-align: center;">
         {$i=0}
         {loop="$files"}
         {$i=$i+1}
                 <div class="uploadBox" id="file_{$value.id}" rel="{$key}" style="background-color: #404C5A;" onclick="selectFile({$value.id});">
                   <div class="boxInner" style="position: relative;">
-                        <div class="boxImg"><img src="{$value.icon}" id="item_img_{$key}"></div>
-                        <div class="titleBox">{$value.name}</div>
+                        <div class="boxImg"><img src="{$value.icon}" id="item_img_{$key}" {if="$value.type == 'image'"} style="width: 100%;" {/if}></div>
+                        <div class="titleBox"><b>{$value.name}</b></div>
                         
                         <input type="hidden" id="item_title_{$value.id}" value="{$value.name}">
                         <input type="hidden" id="item_delete_{$value.id}" value="{if="$value.ableToDelete == True"}1{else}0{/if}">
@@ -266,12 +275,13 @@ table tbody tr td {
                   </div>
                 </div>
         {/loop}
-      {/if}
+      </div>
+     {/if}
     </div>
    
    {else}
 
-    <div style="text-align: center;">
+    <div style="text-align: center; margin-top: 20px;">
      <table style="margin-top: 5px; margin-bottom: 12px; display: inline-table;">
         <thead>
             <th>{function="localize('Icon', 'upload')"}</th>
@@ -323,18 +333,11 @@ table tbody tr td {
    </div>
   {/if}
   
+  
   <div style="width: 65%; margin: 0 auto; padding-bottom: 10px;">
-    <div style="display: inline-block; font-size: 12px; color: white;">{$uiPagerName="adminUpload"}{include="ui.pager"}</div>
-    
+    <div style="text-align: center; font-size: 12px; color: white; margin-bottom: -20px;">{$uiPagerName="adminUpload"}{include="ui.pager"}</div>
     <input type="button" value="{function="localize('Close')"}" style="float: right;" onclick="panthera.popup.close();">
-    
-    {if="$permissions.admin"}
-    {if="$seeOtherUsersUploads"}
-    <input type="button" value="{function="localize('Hide other users files', 'files')"}" onclick="panthera.popup.create('?display=upload&cat=admin&otherUsers=false&popup=true')">
-    {else}
-    <input type="button" value="{function="localize('Show other users files', 'files')"}" onclick="panthera.popup.create('?display=upload&cat=admin&otherUsers=true&popup=true')">
-    {/if}
-    {/if}
+    <input type="button" value="{function="localize('Change view', 'upload')"}" style="float: right;" onclick="panthera.popup.create('?display=upload&cat=admin&changeView={$view_change}&directory={$setCategory}&popup=true')">
 
     <input type="text" id="file_name" style="display: none;">
     <input type="text" id="file_description" style="display: none;">
@@ -347,12 +350,12 @@ table tbody tr td {
     <input type="text" id="file_k" style="display: none;">
     
     {if="$callback"}
-        <input type="button" value="{function="localize('Select this file', 'files')"}" style="float: right; margin-right: 5px;" onclick="callBack();" id="_upl_select_file">
+        <input type="button" value="{function="localize('Select this file', 'files')"}" style="float: left; margin-left: 5px;" onclick="callBack();" id="_upl_select_file">
     {else}
       {if="$upload_files == True"}
-        <input type='button' value="{function="localize('Add new file', 'files')"}" style="margin-right: 5px; float: right;" onclick="panthera.popup.toggle('?display=upload&cat=admin&action=uploadFileWindow&directory={$setCategory}&popup=True')">
+        <input type='button' value="{function="localize('Add new file', 'files')"}" style="margin-left: 5px; float: left;" onclick="panthera.popup.toggle('?display=upload&cat=admin&action=uploadFileWindow&directory={$setCategory}&popup=True')">
       {/if}
-        <input type="button" value="{function="localize('Delete selected files', 'files')"}" style="float: right; margin-right: 5px; display: none;" id="file_delete" onclick="deleteSelectedFiles();">
+        <input type="button" value="{function="localize('Delete selected files', 'files')"}" style="float: left; margin-left: 5px; display: none;" id="file_delete" onclick="deleteSelectedFiles();">
     {/if}
   </div>
  </div>

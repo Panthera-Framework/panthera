@@ -235,8 +235,34 @@ body {
 
 /* Forms */
 
-select {
-    border: solid 1px #6e8093;
+.select {
+   display: inline-block;
+   float: left;
+   width: 236px;
+   height: 24px;
+   margin: 0;
+   overflow: hidden;
+   background: url('../images/admin/pantheraUI/select.png') no-repeat right #404c5a;
+   border: solid 1px #6e8093;
+}
+
+.select select {
+    background: transparent;
+    width: 237px;
+    padding: 3px;
+    font-size: 14px;
+    color: white;
+    border: 0;
+    border-radius: 0;
+    height: 23px;
+    outline: 0;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+select option {
+    background-color: #404c5a; 
+    color: #fff;
 }
 
 
@@ -272,7 +298,7 @@ a:active {
 
 .dash .dashItem a {
     color: #fff;
-    font-size: 10px;
+    font-size: 11px;
     line-height: 15px;
     text-decoration: none;
 }
@@ -1074,39 +1100,26 @@ ul.dropdown li:hover > a.dir {
 .uploadBox
 {
 	display: inline-block;
-	height: 90px;
-	margin-right: 10px;
 	position: relative;
-	width: 120px;
+	width: 24.2%;
 }
 .boxInner
 {
 	background: #56687B;
 	border: solid rgba(0, 0, 0, 0.5) 1px;
-	bottom: 10px;
-	left: 10px;
-	moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-	ms-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-	o-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-	overflow: hidden;
-	position: absolute;
-	right: 10px;
-	top: 10px;
-	webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+	margin-top: 5px;
+	height: 120px;
 }
 .boxInner img
 {
 	cursor: pointer;
-	max-height: 56px;
-	max-width: 120px;
-	min-height: 40px;
-	min-width: 40px;
+	max-height: 120px;
+	max-width: 100%;
 }
 .boxImg
 {
 	align: top;
-	max-height: 65px;
-	max-width: 65px;
+	width: 100%;
 	vertical-align: middle;
 }
 .boxInner .titleBox
@@ -1130,6 +1143,9 @@ ul.dropdown li:hover > a.dir {
 	margin: 0 auto;
 	margin-bottom: 30px;
 	margin-top: 30px;
+	padding-left: 1px;
+	padding-top: 3px;
+	padding-bottom: 8px;
 	min-height: 300px;
 	position: relative;
 	width: 65%;
