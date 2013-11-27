@@ -1101,19 +1101,19 @@ ul.dropdown li:hover > a.dir {
 {
 	display: inline-block;
 	position: relative;
-	width: 24.2%;
+	width: 16%;
 }
 .boxInner
 {
 	background: #56687B;
 	border: solid rgba(0, 0, 0, 0.5) 1px;
 	margin-top: 5px;
-	height: 120px;
+	height: 80px;
 }
 .boxInner img
 {
 	cursor: pointer;
-	max-height: 120px;
+	max-height: 80px;
 	max-width: 100%;
 }
 .boxImg
