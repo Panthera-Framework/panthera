@@ -328,6 +328,15 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
                   <td><p>{$jabber}</p></td>
                 </tr>
               {/if}
+              
+              {if="count($user_fields) > 0"}
+               {loop="$user_fields"}
+                <tr>
+                  <td>{$key}</td>
+                  <td>{$value}</td>
+                </tr>
+               {/loop}
+              {/if}
 
              </tbody>
             </table>
