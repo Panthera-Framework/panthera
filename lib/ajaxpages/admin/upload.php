@@ -273,6 +273,14 @@ if (isset($_GET['popup']))
         if ($value -> uploader_id != $user -> id and !getUserRightAttribute($user, 'can_manage_all_uploads') and !$value -> __get('public'))
             continue;
 
+        $name = filesystem::mb_basename($value->location);
+        
+        // cut string
+        if (strlen($name) > 13) {
+            $string = explode(".", $name);
+            $name = substr($name, 0, 13)."...".end($string);
+        }
+        
         // get site url
         $url = $panthera -> config -> getKey('url');
         $location = pantheraUrl($value->location);
@@ -290,7 +298,7 @@ if (isset($_GET['popup']))
             $ableToDelete = True;
 
         $filesTpl[] = array(
-            'name' => filesystem::mb_basename($value->location),
+            'name' => $name,
             'mime' => $value->mime,
             'description' => $value->description,
             'location' => $location,
@@ -337,6 +345,8 @@ if (isset($_GET['popup']))
         $callback = True;
     else
         $callback = False;
+
+    // max_string_length = 27
 
     $panthera -> template -> push('callback', $callback);
     $panthera -> template -> push('categories', $categories);
@@ -386,6 +396,20 @@ if ($_GET['action'] == 'addCategory')
 } elseif ($_GET['action'] == 'set_mime')
 {
     ajax_exit(array('status' => 'failed'));
+} elseif ($_GET['action'] == 'saveSettings') {
+        
+    if (!$permissions['admin'])
+        ajax_exit(array('status' => 'failed', 'message' => localize("You haven't permission to execute this function!", 'upload')));
+        
+    $max = $_GET['maxFileSize'];
+    
+    if (!intval($max)) {
+        ajax_exit(array('status' => 'failed', 'message' => localize("Failed. Please, increase your maximum file size.", 'upload')));
+    }
+
+    $panthera -> config -> setKey('upload_max_size', $max);
+    ajax_exit(array('status' => 'success', 'message' => localize("Settings have been successfully saved!")));
+    
 } else {
     $sBar = new uiSearchbar('uiTop');
     $sBar -> setQuery($_GET['query']);
@@ -393,9 +417,15 @@ if ($_GET['action'] == 'addCategory')
     $sBar -> navigate(True);
     $sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_upload,can_add_files', localize('Manage permissions'));
     
+    $panthera -> template -> push('fileMaxSize', $panthera -> config -> getKey('upload_max_size'));
+    
     $countCategories = pantheraUpload::getUploadCategories('', False, False);
     $categories = pantheraUpload::getUploadCategories('', $countCategories, 0);
     $panthera -> template -> push('categories', $categories);
+    
+    $titlebar = new uiTitlebar(localize('Upload management'));
+    $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/uploads.png', 'left');
+    
     $panthera -> template -> display('upload.tpl');
     pa_exit();
 }

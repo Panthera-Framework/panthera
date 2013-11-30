@@ -218,7 +218,7 @@ function transformArrayToString(array) {
 </script>
 
 <style type="text/css">
-table tbody tr td {
+.uploadTable tbody tr td {
     font-size: 11px;
 }
 </style>
@@ -282,7 +282,7 @@ table tbody tr td {
    {else}
 
     <div style="text-align: center; margin-top: 20px;">
-     <table style="margin-top: 5px; margin-bottom: 12px; display: inline-table;">
+     <table style="margin-top: 5px; margin-bottom: 12px; display: inline-table;" class="uploadTable">
         <thead>
             <th>{function="localize('Icon', 'upload')"}</th>
             <th>{function="localize('Name', 'upload')"}</th>
