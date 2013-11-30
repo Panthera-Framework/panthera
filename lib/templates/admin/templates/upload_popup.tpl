@@ -225,7 +225,7 @@ table tbody tr td {
 
 
 <div id="header" style="display: block; width: 65%; margin: 0 auto; height: 35px; text-align: center; color: white;">
-    <div style="position: relative; float: right; margin-top: 10px;">
+    <div style="position: relative; float: right; margin-top: 14px;">
         {if="$permissions.admin"}
             {if="$seeOtherUsersUploads"}
             <input type="button" value="{function="localize('Hide other users files', 'files')"}" onclick="panthera.popup.create('?display=upload&cat=admin&otherUsers=false&popup=true')">
