@@ -169,7 +169,7 @@ function selectFile(id)
         var color = $("#file_"+id).css("background-color");
        
         if (color == "rgb(255, 255, 255)") {
-            $("#file_"+id).css("background-color", "rgba(86, 104, 123, 0.70)");
+            $("#file_"+id).css("background-color", "#f3f3f3");
             selected.push(id)
         } else {
             $("#file_"+id).css("background-color", "#ffffff");
@@ -218,8 +218,11 @@ function transformArrayToString(array) {
 </script>
 
 <style type="text/css">
-.uploadTable tbody tr td {
+.uploadTable thead tr th {
     font-size: 11px;
+}
+.uploadTable tbody tr td {
+    color: black;
 }
 </style>
 
@@ -282,13 +285,15 @@ function transformArrayToString(array) {
    {else}
 
     <div style="text-align: center; margin-top: 20px;">
-     <table style="margin-top: 5px; margin-bottom: 12px; display: inline-table;" class="uploadTable">
+     <table style="margin-top: 5px; margin-bottom: 30px; display: inline-table; width: 65.3%; margin-left: 29px;" class="uploadTable">
         <thead>
+           <tr style="border: 1px solid #4d565c; border-bottom: 0;">
             <th>{function="localize('Icon', 'upload')"}</th>
             <th>{function="localize('Name', 'upload')"}</th>
             <th>{function="localize('Description', 'upload')"}</th>
             <th>{function="localize('Mime type', 'upload')"}</th>
             <th>{function="localize('Author', 'upload')"}</th>
+           </tr>
         </thead>
        
         <tbody>
@@ -305,13 +310,13 @@ function transformArrayToString(array) {
             {loop="$files"}
               <tr id="file_{$value.id}" onclick="selectFile({$value.id});" style="background-color: #ffffff">
                 
-                <td style="padding-top: 4px; padding-right: 6px; padding-left: 6px;">
+                <td style="padding-top: 4px; padding-right: 6px; padding-left: 6px; width: 30px;">
                     <img src="{$value.icon}" style="max-height: 30px; max-width: 30px;">
                 </td>
                 
-                <td>{$value.name}</td>
-                <td>{$value.description}</td>
-                <td>{$value.mime}</td>
+                <td style="width: 200px;">{$value.name}</td>
+                <td style="width: 200px;">{$value.description}</td>
+                <td style="width: 80px;">{$value.mime}</td>
                 <td>{$value.author}</td>
                 
                 <input type="hidden" id="item_title_{$value.id}" value="{$value.name}">
