@@ -264,6 +264,29 @@ if (isset($_GET['popup']))
     $uiPager -> setActive($page); // ?display=upload&cat=admin&popup=true&action=display_list
     $uiPager -> setLinkTemplatesFromConfig('upload.tpl');
     $limit = $uiPager -> getPageLimit();
+    
+    $viewType = $panthera -> session -> get('upload.view.type.'.$directory);
+
+    if (!$viewType) {
+        $panthera -> session -> set('upload.view.type.'.$directory, 'blank');
+        $viewType = 'blank';
+    }
+    
+    if (isset($_GET['changeView'])) {
+        
+        if ($_GET['changeView'] == 'blank') {
+            $viewType = 'blank';
+        } else {
+            $viewType = 'images';
+        }
+        
+        $panthera -> session -> set('upload.view.type.'.$directory, $viewType);
+    }
+    
+    if ($viewType == 'blank')
+        $viewChange = 'images';
+    else
+        $viewChange = 'blank';
 
     $files = pantheraUpload::getUploadedFiles($by, $limit[1], $limit[0]); // raw list
     $filesTpl = array(); // list passed to template
@@ -275,10 +298,12 @@ if (isset($_GET['popup']))
 
         $name = filesystem::mb_basename($value->location);
         
-        // cut string
-        if (strlen($name) > 13) {
-            $string = explode(".", $name);
-            $name = substr($name, 0, 13)."...".end($string);
+        if ($viewType == 'images') {
+            // cut string
+            if (strlen($name) > 13) {
+                $string = explode(".", $name);
+                $name = substr($name, 0, 13)."...".end($string);
+            }
         }
         
         // get site url
@@ -317,29 +342,6 @@ if (isset($_GET['popup']))
     {
         $template -> push('upload_files', True);
     }
-
-    $viewType = $panthera -> session -> get('upload.view.type.'.$directory);
-
-    if (!$viewType) {
-        $panthera -> session -> set('upload.view.type.'.$directory, 'blank');
-        $viewType = 'blank';
-    }
-    
-    if (isset($_GET['changeView'])) {
-        
-        if ($_GET['changeView'] == 'blank') {
-            $viewType = 'blank';
-        } else {
-            $viewType = 'images';
-        }
-        
-        $panthera -> session -> set('upload.view.type.'.$directory, $viewType);
-    }
-    
-    if ($viewType == 'blank')
-        $viewChange = 'images';
-    else
-        $viewChange = 'blank';
 
     if (isset($_GET['callback']))
         $callback = True;
