@@ -273,7 +273,8 @@ class pantheraGroup extends pantheraFetchDB
       *
       * @param string $name Group name
       * @param string $description Optional description
-      * @return bool
+      * @return bool False if group already exists, True if created
+      * @exceptions Exception('Group name is too short', 851)
       * @author Damian Kęska
       */
 
@@ -282,7 +283,7 @@ class pantheraGroup extends pantheraFetchDB
         global $panthera;
 
         if (strlen($name) < 3)
-            throw new Exception('Group name is too short');
+            throw new Exception('Group name is too short', 851);
 
         // check if group already exists
         $g = new pantheraGroup('name', $name);
@@ -468,7 +469,29 @@ function createNewUser($login, $passwd, $full_name, $primary_group, $attributes,
 
     if ($ip == '')
         $ip = $_SERVER['REMOTE_ADDR'];
-
+        
+    $test = new pantheraUser('login', $login);
+    
+    if ($test -> exists())
+    {
+        throw new Exception('User already exists', 863);
+        return False;
+    }
+    
+    if (!$panthera -> locale -> exists($language))
+    {
+        throw new Exception('Selected locale does not exists', 864);
+        return False;
+    }
+    
+    $test = new pantheraGroup('name', $primary_group);
+    
+    if (!$test -> exists())
+    {
+        throw new Exception('Selected group does not exists', 865);
+        return False;
+    }
+    
     $array = array(
         'login' => $login,
         'passwd' => encodePassword($passwd),

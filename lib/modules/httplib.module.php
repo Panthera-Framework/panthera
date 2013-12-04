@@ -33,6 +33,11 @@ class httplib
         $panthera -> add_option('page_load_ends', array($this, 'cleanup'));
     }
     
+    public function __destruct()
+    {
+        $this->cleanup();
+    }
+    
     /**
       * Set proxy connection
       *

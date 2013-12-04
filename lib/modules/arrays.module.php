@@ -50,3 +50,37 @@ function array_reset_keys($array)
 
     return $newArray;
 }
+
+/**
+ * Limit array by selected range eg. keys from range 40 to 50
+ *
+ * @param array $array
+ * @param int $offset
+ * @param int $limit
+ * @return array
+ * @author Damian Kęska
+ */
+    
+function limitArray($array, $offset=0, $limit=0)
+{
+    $newArray = array();
+    
+    if ($offset == 0 and $limit == 0)
+        return $array;
+        
+    $c = count($array);
+    $i = 0;
+        
+    foreach ($array as $key => $value)
+    {
+        $i++;
+                
+        // rewrite only elements matching our range            
+        if ($i >= $limit and $i <= ($limit+$offset))
+        {
+            $newArray[$key] = $value;
+        }
+    }
+    
+    return $newArray;
+ }

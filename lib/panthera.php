@@ -2057,7 +2057,7 @@ function r_dump()
   *
   * @param object|string $obj
   * @param bool $return Return as string
-  * @return mixed 
+  * @return string|bool 
   * @author Damian Kęska
   */
 
@@ -2075,6 +2075,8 @@ function object_info($obj, $return=False)
     {
         return ReflectionObject::export($obj, $return);
     }
+    
+    return False;
 }
 
 /**

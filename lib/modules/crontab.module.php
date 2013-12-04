@@ -35,7 +35,7 @@ class crontab extends pantheraFetchDB
       * @author Damian Kęska
       */
     
-    public function getData()
+    public function getData($serialize=False)
     {
         return unserialize($this->__get('data'));
     }
@@ -129,6 +129,11 @@ class crontab extends pantheraFetchDB
 
             $filePath = getContentDir($data['file']);
             $this->panthera->logging->output('crontab::Including ' .$filePath, 'crontab');
+            
+            if (!$filePath)
+            {
+                $filePath = $data['file'];
+            }
             
             if (!is_file($filePath))
                 return 'ERR_CANNOT_INCLUDE_FILE';

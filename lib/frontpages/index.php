@@ -23,7 +23,14 @@ if (is_file('content/front.php'))
 // enable frontside panels
 frontsidePanels::init();
 
-$display = str_replace('/', '', addslashes($_GET['display']));
+
+// a small posibility to change "?display" to other param name
+$displayVar = 'display';
+
+if (isset($config['indexDisplayVar']))
+    $displayVar = $config['indexDisplayVar'];
+
+$display = str_replace('/', '', addslashes($_GET[$displayVar]));
 $template -> setTemplate($panthera->config->getKey('template'));
 $path = False;
 

@@ -129,7 +129,7 @@ class pantheraWorker extends cliApp
             
             if ($request['type'] == 'job')
             {
-                $this -> panthera -> logging -> output('Got a job request', 'pantheraWorker');
+                $this -> panthera -> logging -> output("Got a job request, processed " .$this->processedItems. " of " .count($this->db), 'pantheraWorker');
                 $newArr = array();
                 $i = 0;
             
@@ -148,7 +148,7 @@ class pantheraWorker extends cliApp
                     }
                 }
                 
-               @fwrite($client, json_encode($newArr));
+                @fwrite($client, json_encode($newArr));
             } elseif ($request['type'] == 'results') {
                 $this -> panthera -> logging -> output('Got results from worker, passing to parser', 'pantheraWorker');
                 @fwrite($client, json_encode(array('response' => $this->parseResults($request['data']))));

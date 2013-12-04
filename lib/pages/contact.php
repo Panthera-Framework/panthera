@@ -32,7 +32,9 @@ if (isset($_GET['send']))
     
     if (is_array($result))
     {
-        $panthera -> template -> display('p_contactErrorMsg', $result['error']);
+        $panthera -> template -> push('p_contactErrorMsg', $result['error']);
+    } else {
+        $panthera -> template -> push('p_contactSuccess', True);
     }
 }
 
