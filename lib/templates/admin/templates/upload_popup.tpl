@@ -168,11 +168,17 @@ function selectFile(id)
        
         var color = $("#file_"+id).css("background-color");
        
-        if (color == "rgb(255, 255, 255)") {
-            $("#file_"+id).css("background-color", "#f3f3f3");
+       // 3d4957
+       
+        if (color != "rgb(61, 73, 87)") {
+            $("#file_"+id).css("background-color", "#3d4957");
+            $("#file_"+id).css("color", "white");
+            $("#file_"+id).attr("first-color", color);
             selected.push(id)
         } else {
-            $("#file_"+id).css("background-color", "#ffffff");
+            var first_color = $("#file_"+id).attr("first-color");
+            $("#file_"+id).css("color", "black");
+            $("#file_"+id).css("background-color", first_color);
             removeFromArrayByValue(selected, id);
         }
        {/if}
@@ -221,7 +227,7 @@ function transformArrayToString(array) {
 .uploadTable thead tr th {
     font-size: 11px;
 }
-.uploadTable tbody tr td {
+.uploadTable tbody tr {
     color: black;
 }
 </style>
@@ -300,7 +306,7 @@ function transformArrayToString(array) {
         
         {if="count($files) < 1"}
         
-            <tr style="background-color: #ffffff">
+            <tr>
                 
                 <td colspan="5">{function="localize('There are no uploaded files', 'upload')"}.</td>
             </tr>
@@ -308,7 +314,7 @@ function transformArrayToString(array) {
         {else}
         
             {loop="$files"}
-              <tr id="file_{$value.id}" onclick="selectFile({$value.id});" style="background-color: #ffffff">
+              <tr id="file_{$value.id}" onclick="selectFile({$value.id});">
                 
                 <td style="padding-top: 4px; padding-right: 6px; padding-left: 6px; width: 30px;">
                     <img src="{$value.icon}" style="max-height: 30px; max-width: 30px;">
