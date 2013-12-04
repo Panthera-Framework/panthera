@@ -264,52 +264,7 @@ if (isset($_GET['popup']))
     $uiPager -> setActive($page); // ?display=upload&cat=admin&popup=true&action=display_list
     $uiPager -> setLinkTemplatesFromConfig('upload.tpl');
     $limit = $uiPager -> getPageLimit();
-
-    $files = pantheraUpload::getUploadedFiles($by, $limit[1], $limit[0]); // raw list
-    $filesTpl = array(); // list passed to template
-
-    foreach ($files as $key => $value)
-    {
-        if ($value -> uploader_id != $user -> id and !getUserRightAttribute($user, 'can_manage_all_uploads') and !$value -> __get('public'))
-            continue;
-
-        // get site url
-        $url = $panthera -> config -> getKey('url');
-        $location = pantheraUrl($value->location);
-        $icon = '';
-        $ableToDelete = False; // can user delete this file?
-        $link = $value->getLink();
-
-        // getting icon by mime type
-        $fileType = filesystem::fileTypeByMime($value->mime);
-        $icon = $value->getThumbnail('200');
-        $panthera -> logging -> output ('Checking for icon: ' .$icon. ' for type ' .$fileType, 'upload');
-        
-        // give user rights to delete file, create the button
-        if (($user->id == $value->uploader_id and getUserRightAttribute($user, 'can_delete_own_uploads')) or getUserRightAttribute($user, 'can_manage_all_uploads'))
-            $ableToDelete = True;
-
-        $filesTpl[] = array(
-            'name' => filesystem::mb_basename($value->location),
-            'mime' => $value->mime,
-            'description' => $value->description,
-            'location' => $location,
-            'link' => $link,
-            'uploader_login' => $value->uploader_login,
-            'ableToDelete' => $ableToDelete,
-            'icon' => $icon,
-            'author' => $value->uploader_login,
-            'directory' => $value->category,
-            'type' => $fileType,
-            'id' => $value->id
-        );
-    }
-
-    if (getUserRightAttribute($user, 'can_upload_files'))
-    {
-        $template -> push('upload_files', True);
-    }
-
+    
     $viewType = $panthera -> session -> get('upload.view.type.'.$directory);
 
     if (!$viewType) {
@@ -333,10 +288,67 @@ if (isset($_GET['popup']))
     else
         $viewChange = 'blank';
 
+    $files = pantheraUpload::getUploadedFiles($by, $limit[1], $limit[0]); // raw list
+    $filesTpl = array(); // list passed to template
+
+    foreach ($files as $key => $value)
+    {
+        if ($value -> uploader_id != $user -> id and !getUserRightAttribute($user, 'can_manage_all_uploads') and !$value -> __get('public'))
+            continue;
+
+        $name = filesystem::mb_basename($value->location);
+        
+        if ($viewType == 'images') {
+            // cut string
+            if (strlen($name) > 13) {
+                $string = explode(".", $name);
+                $name = substr($name, 0, 13)."...".end($string);
+            }
+        }
+        
+        // get site url
+        $url = $panthera -> config -> getKey('url');
+        $location = pantheraUrl($value->location);
+        $icon = '';
+        $ableToDelete = False; // can user delete this file?
+        $link = $value->getLink();
+
+        // getting icon by mime type
+        $fileType = filesystem::fileTypeByMime($value->mime);
+        $icon = $value->getThumbnail('200');
+        $panthera -> logging -> output ('Checking for icon: ' .$icon. ' for type ' .$fileType, 'upload');
+        
+        // give user rights to delete file, create the button
+        if (($user->id == $value->uploader_id and getUserRightAttribute($user, 'can_delete_own_uploads')) or getUserRightAttribute($user, 'can_manage_all_uploads'))
+            $ableToDelete = True;
+
+        $filesTpl[] = array(
+            'name' => $name,
+            'mime' => $value->mime,
+            'description' => $value->description,
+            'location' => $location,
+            'link' => $link,
+            'uploader_login' => $value->uploader_login,
+            'ableToDelete' => $ableToDelete,
+            'icon' => $icon,
+            'author' => $value->uploader_login,
+            'directory' => $value->category,
+            'type' => $fileType,
+            'id' => $value->id
+        );
+    }
+
+    if (getUserRightAttribute($user, 'can_upload_files'))
+    {
+        $template -> push('upload_files', True);
+    }
+
     if (isset($_GET['callback']))
         $callback = True;
     else
         $callback = False;
+
+    // max_string_length = 27
 
     $panthera -> template -> push('callback', $callback);
     $panthera -> template -> push('categories', $categories);
@@ -386,6 +398,20 @@ if ($_GET['action'] == 'addCategory')
 } elseif ($_GET['action'] == 'set_mime')
 {
     ajax_exit(array('status' => 'failed'));
+} elseif ($_GET['action'] == 'saveSettings') {
+        
+    if (!$permissions['admin'])
+        ajax_exit(array('status' => 'failed', 'message' => localize("You haven't permission to execute this function!", 'upload')));
+        
+    $max = $_GET['maxFileSize'];
+    
+    if (!intval($max)) {
+        ajax_exit(array('status' => 'failed', 'message' => localize("Failed. Please, increase your maximum file size.", 'upload')));
+    }
+
+    $panthera -> config -> setKey('upload_max_size', $max);
+    ajax_exit(array('status' => 'success', 'message' => localize("Settings have been successfully saved!")));
+    
 } else {
     $sBar = new uiSearchbar('uiTop');
     $sBar -> setQuery($_GET['query']);
@@ -393,9 +419,15 @@ if ($_GET['action'] == 'addCategory')
     $sBar -> navigate(True);
     $sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_upload,can_add_files', localize('Manage permissions'));
     
+    $panthera -> template -> push('fileMaxSize', $panthera -> config -> getKey('upload_max_size'));
+    
     $countCategories = pantheraUpload::getUploadCategories('', False, False);
     $categories = pantheraUpload::getUploadCategories('', $countCategories, 0);
     $panthera -> template -> push('categories', $categories);
+    
+    $titlebar = new uiTitlebar(localize('Upload management'));
+    $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/uploads.png', 'left');
+    
     $panthera -> template -> display('upload.tpl');
     pa_exit();
 }

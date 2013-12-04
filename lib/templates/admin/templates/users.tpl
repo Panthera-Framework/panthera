@@ -137,7 +137,7 @@ function removeUser(id)
                   <th>
                       <input type="button" value="{function="localize('Upload file', 'users')"}" onclick="createPopup('_ajax.php?display=upload&cat=admin&popup=true&callback=upload_file_callback', 1300, 550);" style="width: 160px;">
                       <div class="galleryImageFrame" style="margin-top: 7px;">
-                        <div class="paGalleryFrameContent">
+                        <div class="paGalleryFrameContent" style="max-width: {$avatar_dimensions[0]}px; max-height: {$avatar_dimensions[1]}px;">
                             <img src="{$PANTHERA_URL}/images/default_avatar.png" id="avatar_image" style="max-width: {$avatar_dimensions[0]}px; max-height: {$avatar_dimensions[1]}px;">
                         </div>
                       </div>

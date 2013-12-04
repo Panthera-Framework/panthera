@@ -1,6 +1,6 @@
-<script type="text/javascript">
+{$site_header}
 
-var selected = new Array;
+<script type="text/javascript">
 
 /**
   * Delete upload category
@@ -28,139 +28,22 @@ function removeUploadCategory(id)
 }
 
 /**
-  * Delete selected files
+  * Save settings to database
   *
   * @author Mateusz Warzyński
   */
- 
-function deleteSelectedFiles()
+
+function saveSettings()
 {
-    var ids = transformArrayToString(selected); 
+    var maxFileSize = $("#maxFileSize").val();
     
-    w2confirm('{function="localize('Are you sure you want to delete those files?', 'upload')"}', function (responseText) {
-        
-            if (responseText == 'Yes')
+    panthera.jsonGET( { url: '{$AJAX_URL}?display=upload&cat=admin&action=saveSettings&maxFileSize='+maxFileSize, messageBox: 'w2ui', success: function (response) {
+            if (response.status == 'success')
             {
-                panthera.jsonGET( { url: '{$AJAX_URL}?display=upload&cat=admin&action=delete&id='+ids+'&popup=true', messageBox: 'w2ui', success: function (response) {
-                        if (response.status == 'success')
-                        {
-                            panthera.popup.toggle('?display=upload&cat=admin&directory={$setCategory}&popup=True;');
-                        }
-                
-                    }
-                });
+                navigateTo('?display=upload&cat=admin');
             }
-        
+        }
     });
-}
-
-/**
-  * Select file
-  *     if callback, set only one file which you may callback to ajaxpage
-  *     if !callback, you are able to select more than one file to remove
-  *
-  * @author Mateusz Warzyński
-  */
-
-function selectFile(id)
-{
-    {if="$callback"}
-    
-        $('#file_title').attr('value', $('#item_title_' +id).val());
-        $('#file_description').attr('value', $('#item_description_' +id).val());
-        $('#file_name').attr('value', $('#item_title_' +id).val());
-        $('#file_author').attr('value', $('#item_author_' +id).val());
-        $('#file_mime').attr('value', $('#item_mime_' +id).val());
-        $('#file_link').attr('value', $('#item_link_' +id).val());
-        $('#file_directory').attr('value', $('#item_directory_' +id).val());
-        $('#file_type').attr('value', $('#item_type_' +id).val());
-        $('#file_id').attr('value', $('#item_id_' +id).val());
-    
-        if (selected[0] != undefined)
-            var old_id = selected[0];
-        else
-            var old_id = -1;
-            
-        selected = new Array;
-        selected.push(id);
-    
-       {if="$view_type == 'images'"}
-        
-        $("#file_"+id).css("opacity", "0.5");
-        $("#file_"+old_id).css("opacity", "1");
-       
-       {else}
-       
-        $("#file_"+id).css("background-color", "rgba(86, 104, 123, 0.70)");
-        $("#file_"+old_id).css("background-color", "#ffffff");
-       
-       {/if} 
-        
-    {else}
-        $("#file_delete").slideDown();
-        
-       {if="$view_type == 'images'"}
-        
-        var opacity = $("#file_"+id).css("opacity");
-        
-        if (opacity == "1") {
-            $("#file_"+id).css("opacity", "0.5");
-            selected.push(id)
-        } else {
-            $("#file_"+id).css("opacity", "1");
-            removeFromArrayByValue(selected, id);
-        }
-       
-       {else}
-       
-        var color = $("#file_"+id).css("background-color");
-       
-        if (color == "rgb(255, 255, 255)") {
-            $("#file_"+id).css("background-color", "rgba(86, 104, 123, 0.70)");
-            selected.push(id)
-        } else {
-            $("#file_"+id).css("background-color", "#ffffff");
-            removeFromArrayByValue(selected, id);
-        }
-       {/if}
-       
-       if (selected.length == 0)
-            $("#file_delete").slideUp();
-            
-   {/if}
-}
-
-/**
-  * Remove value from array
-  *
-  * @author Mateusz Warzyński
-  */
-
-function removeFromArrayByValue(array, value) {
-    for(var i=0; i<array.length; i++) {
-
-        if(array[i] == value) {
-            array.splice(i, 1);
-            break;
-        }
-
-    }
-}
-
-/**
-  * Transform array to string ([0, 1] -> "0,1")
-  *
-  * @author Mateusz Warzyński
-  */
-
-function transformArrayToString(array) {
-    var returnString = array[0];
-    
-    for(var i=1; i<array.length; i++) {
-        returnString = returnString+','+array[i];
-    }
-    
-    return returnString;
 }
 </script>
 
@@ -171,7 +54,8 @@ function transformArrayToString(array) {
     {include="ui.searchbar"}
 
     <div class="searchBarButtonArea">
-        <input type="button" value="{function="localize('Create category', 'upload')"}" onclick="panthera.popup.toggle('element:#createCategory')">
+        <input type="button" value="{function="localize('Create category', 'upload')"}" onclick="panthera.popup.toggle('element:#createCategory');">
+        <input type="button" value="{function="localize('File list', 'upload')"}" onclick="panthera.popup.toggle('_ajax.php?display=upload&cat=admin&popup=true');">
     </div>
 </div>
 
@@ -218,7 +102,6 @@ function transformArrayToString(array) {
    </script>
 </div>
 
-
 <!-- Content -->
 <div class="ajax-content" style="text-align: center;">
     <table style="display: inline-block;">
@@ -236,8 +119,7 @@ function transformArrayToString(array) {
            {if="count($categories) > 1"}
             {loop="$categories"}
             <tr> 
-                
-                <td>{$value.name}</td>
+                <td><a href="#" onclick="panthera.popup.toggle('_ajax.php?display=upload&cat=admin&directory={$value.name}&popup=true');">{$value.name}</a></td>
                 <td>{$value.created}</td>
                 <td>{$value.mime_type}</td>
                 <td>
@@ -252,6 +134,27 @@ function transformArrayToString(array) {
                 <td colspan="5">{function="localize('No upload categories found, create new one using button upper', 'upload')"}</td>
             </tr>
            {/if}
+        </tbody>
+    </table> <br/>
+    
+    <table style="display: inline-block; margin-top: 30px;">
+        <thead>
+            <tr>
+                <th colspan="2">{function="localize('Settings')"}</th>
+            </tr>
+        </thead>
+    
+        <tbody>
+            <tr>
+                <td valign="top">
+                    <p>{function="localize('Upload maximum size', 'upload')"}:
+                  <br>
+                    <small><span style="color: grey;">{function="localize('Set maximum size of uploaded files (in bytes)', 'upload')"}.</span></small>
+                    </p>
+                </td>
+                <td><input type="number" id="maxFileSize" value="{$fileMaxSize}" style="width: 95%;" onchange="$('#saveButton').slideDown();"></td>
+            </tr>
+            <tr id="saveButton" style="display: none;"><td colspan="2"><input type="button" value="Save" onclick="saveSettings();" style="float: right;"></td></tr>
         </tbody>
     </table>
 </div>

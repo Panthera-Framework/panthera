@@ -407,9 +407,9 @@ if ($_GET['action'] == 'account') {
 
     if (strlen($_POST['passwd']) > 6) 
     {
-        $password = $_POST['passwd'];
+        $password = encodePassword($_POST['passwd']);
         
-        if (!verifyPassword($_POST['retyped_passwd'], encodePassword($password)))
+        if (!verifyPassword($_POST['retyped_passwd'], $password))
         {
             ajax_exit(array('status' => 'failed', 'message' =>  localize('Passwords does not match', 'users')));
         }
@@ -603,6 +603,7 @@ if ($_GET['action'] == 'account') {
             $users[] = array('login' => 'test', 'full_name' => 'Testowy, nie istniejący user', 'primary_group' => 'non_existing', 'joined' => 'today', 'language' => 'Marsjański', 'id' => 1);
         }*/
 
+        $template -> push('avatar_dimensions', explode('x', $panthera -> config -> getKey('avatar_dimensions', '80x80', 'string')));
         $panthera -> template -> push('locales_added', $panthera->locale->getLocales());
         $panthera -> template -> push('users_list', $users);
         $panthera -> template -> push('view_users', True);

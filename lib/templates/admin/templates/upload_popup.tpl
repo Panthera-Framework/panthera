@@ -168,11 +168,17 @@ function selectFile(id)
        
         var color = $("#file_"+id).css("background-color");
        
-        if (color == "rgb(255, 255, 255)") {
-            $("#file_"+id).css("background-color", "rgba(86, 104, 123, 0.70)");
+       // 3d4957
+       
+        if (color != "rgb(61, 73, 87)") {
+            $("#file_"+id).css("background-color", "#3d4957");
+            $("#file_"+id).css("color", "white");
+            $("#file_"+id).attr("first-color", color);
             selected.push(id)
         } else {
-            $("#file_"+id).css("background-color", "#ffffff");
+            var first_color = $("#file_"+id).attr("first-color");
+            $("#file_"+id).css("color", "black");
+            $("#file_"+id).css("background-color", first_color);
             removeFromArrayByValue(selected, id);
         }
        {/if}
@@ -218,14 +224,17 @@ function transformArrayToString(array) {
 </script>
 
 <style type="text/css">
-table tbody tr td {
+.uploadTable thead tr th {
     font-size: 11px;
+}
+.uploadTable tbody tr {
+    color: black;
 }
 </style>
 
 
 <div id="header" style="display: block; width: 65%; margin: 0 auto; height: 35px; text-align: center; color: white;">
-    <div style="position: relative; float: right; margin-top: 10px;">
+    <div style="position: relative; float: right; margin-top: 14px;">
         {if="$permissions.admin"}
             {if="$seeOtherUsersUploads"}
             <input type="button" value="{function="localize('Hide other users files', 'files')"}" onclick="panthera.popup.create('?display=upload&cat=admin&otherUsers=false&popup=true')">
@@ -282,20 +291,22 @@ table tbody tr td {
    {else}
 
     <div style="text-align: center; margin-top: 20px;">
-     <table style="margin-top: 5px; margin-bottom: 12px; display: inline-table;">
+     <table style="margin-top: 5px; margin-bottom: 30px; display: inline-table; width: 65.3%; margin-left: 29px;" class="uploadTable">
         <thead>
+           <tr style="border: 1px solid #4d565c; border-bottom: 0;">
             <th>{function="localize('Icon', 'upload')"}</th>
             <th>{function="localize('Name', 'upload')"}</th>
             <th>{function="localize('Description', 'upload')"}</th>
             <th>{function="localize('Mime type', 'upload')"}</th>
             <th>{function="localize('Author', 'upload')"}</th>
+           </tr>
         </thead>
        
         <tbody>
         
         {if="count($files) < 1"}
         
-            <tr style="background-color: #ffffff">
+            <tr>
                 
                 <td colspan="5">{function="localize('There are no uploaded files', 'upload')"}.</td>
             </tr>
@@ -303,15 +314,15 @@ table tbody tr td {
         {else}
         
             {loop="$files"}
-              <tr id="file_{$value.id}" onclick="selectFile({$value.id});" style="background-color: #ffffff">
+              <tr id="file_{$value.id}" onclick="selectFile({$value.id});">
                 
-                <td style="padding-top: 4px; padding-right: 6px; padding-left: 6px;">
+                <td style="padding-top: 4px; padding-right: 6px; padding-left: 6px; width: 30px;">
                     <img src="{$value.icon}" style="max-height: 30px; max-width: 30px;">
                 </td>
                 
-                <td>{$value.name}</td>
-                <td>{$value.description}</td>
-                <td>{$value.mime}</td>
+                <td style="width: 200px;">{$value.name}</td>
+                <td style="width: 200px;">{$value.description}</td>
+                <td style="width: 80px;">{$value.mime}</td>
                 <td>{$value.author}</td>
                 
                 <input type="hidden" id="item_title_{$value.id}" value="{$value.name}">
