@@ -353,8 +353,8 @@ class cloned_images extends cloned_plugin
                 $httplib = new httplib;
                 
                 try {
-                    $httplib->timeout = 8;
-                    $response = $httplib->request($src);
+                    $httplib->timeout = 3;
+                    $response = httplib::request($src);
                     $image = new SimpleImage();
                     $image -> loadFromString($response->body);
 
