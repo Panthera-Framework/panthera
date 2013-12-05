@@ -8,6 +8,167 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
+if (!defined('IN_PANTHERA'))
+    exit;
+  
+global $panthera;
+  
+/**
+  * Panels data model
+  * 
+  * @package Panthera/modules/notes
+  * @author Mateusz Warzyński
+  */
+
+class panel extends pantheraFetchDB
+{
+    protected $_tableName = 'panels';
+    protected $_idColumn = 'id';
+    protected $_constructBy = array('id', 'array');
+    
+    
+    /**
+      * Get panels
+      *
+      * @return array 
+      * @author Mateusz Warzyński
+      */
+    
+    public static function getPanels($by, $limit=0, $limitFrom=0, $orderBy='id', $order='DESC')
+    {
+        global $panthera;
+        
+        if (!$panthera->user)
+            return False;
+        
+        return $panthera->db->getRows('panels', $by, $limit, $limitFrom, 'panel', $orderBy, $order);
+    }
+    
+    /**
+      * Create new panel
+      *
+      * @param string $placement 
+      * @param int $order
+      * @param string $module
+      * @param string $template
+      * @param string $title
+      * @param bool $enabled
+      * @param string $storage 
+      * @return bool 
+      * @author Mateusz Warzyński
+      */
+    
+    public static function createPanel($placement, $order, $module, $template, $title, $enabled, $storage)
+    {
+        global $panthera;
+        
+        if (!$panthera->user)
+            return False;
+        
+        $array = array('placement' => $placement, 'order' => $order, 'module' => $module, 'template' => $template, 'title' => $title, 'enabled' => $enabled, 'storage' => htmlspecialchars($storage));
+
+        if (!$panthera->db->query('INSERT INTO `{$db_prefix}panels` (`id`, `placement`, `order`, `module`, `template`, `title`, `enabled`, `storage`) VALUES (NULL, :placement, :order, :module, :template, :title, :enabled, :storage);', $array))
+            return False;
+        
+        return True;
+    }
+    
+    /**
+      * Remove panel
+      *
+      * @return bool 
+      * @author Mateusz Warzyński
+      */
+      
+    public function remove()
+    {
+        if (!$panthera->user)
+            return False;
+        
+        if (!$this->panthera->db->query('DELETE FROM `{$db_prefix}panels` WHERE `id` = :id', array('id' => $this->id)))
+            return False;
+        
+        return True;
+    }
+    
+}
+
+/**
+  * Placement data model
+  * 
+  * @package Panthera/modules/notes
+  * @author Mateusz Warzyński
+  */
+
+class panelsPlacement extends pantheraFetchDB
+{
+    protected $_tableName = 'panels_placement';
+    protected $_idColumn = 'id';
+    protected $_constructBy = array('id', 'array');
+    
+    
+    /**
+      * Get panel placements
+      *
+      * @return array 
+      * @author Mateusz Warzyński
+      */
+    
+    public static function getPlacements($by, $limit=0, $limitFrom=0, $orderBy='id', $order='DESC')
+    {
+        global $panthera;
+        
+        if (!$panthera->user)
+            return False;
+        
+        return $panthera->db->getRows('panels_placement', $by, $limit, $limitFrom, 'placement', $orderBy, $order);
+    }
+    
+    /**
+      * Create new panel placement
+      *
+      * @param string $name 
+      * @param string $title
+      * @return bool 
+      * @author Mateusz Warzyński
+      */
+    
+    public static function createPlacement($name, $title)
+    {
+        global $panthera;
+        
+        if (!$panthera->user)
+            return False;
+        
+        $array = array('name' => $name, 'title' => $title);
+
+        if (!$panthera->db->query('INSERT INTO `{$db_prefix}panels_placement` (`placementid`, `name`, `title`) VALUES (NULL, :name, :title);', $array))
+            return False;
+        
+        return True;
+    }
+    
+    /**
+      * Remove panel placement
+      *
+      * @return bool 
+      * @author Mateusz Warzyński
+      */
+      
+    public function remove()
+    {
+        if (!$panthera->user)
+            return False;
+        
+        if (!$this->panthera->db->query('DELETE FROM `{$db_prefix}panels_placement` WHERE `id` = :id', array('id' => $this->id)))
+            return False;
+        
+        return True;
+    }
+    
+}
+  
+  
 /**
   * Menu panel main class
   *
