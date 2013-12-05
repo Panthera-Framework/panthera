@@ -438,7 +438,7 @@ input[type=button]:hover, input[type=submit]:hover {
     background: url('../images/admin/pantheraUI/button2.png');
 }
 
-input[type="text"], input[type="number"], input[type="password"] {
+input[type="text"], input[type="number"], input[type="password"], textarea {
     background: #3d4957;
     outline: 1px solid #3d4957;
     border: solid 1px #7c8a98;
@@ -448,7 +448,7 @@ input[type="text"], input[type="number"], input[type="password"] {
     min-width: 200px;
 }
 
-input[type="text"]:hover, input[type="number"]:hover, input[type="password"]:hover {
+input[type="text"]:hover, input[type="number"]:hover, input[type="password"]:hover, textarea:hover {
     background: #3d4957;
 }
 

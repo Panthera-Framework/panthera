@@ -366,9 +366,18 @@ class crontab extends pantheraFetchDB
     public static function createJob($jobname, $function, $data, $minute='*', $hour='*', $day='*', $month='*', $dayOfWeek='*', $year='*')
     {
         global $panthera;
-
+        
         if (is_array($function))
         {
+            // autoload specified class from autoloader
+            $autoloader = $panthera -> config -> getKey('autoloader');
+        
+            if (isset($autoloader[$function[0]]) and !class_exists($function[0]))
+            {
+                $panthera -> importModule($autoloader[$function[0]]);
+            }
+        
+            // check if class and it's method exists
             if(class_exists($function[0]))
             {
                 $refl = new ReflectionMethod($function[0], $function[1]);
@@ -392,24 +401,6 @@ class crontab extends pantheraFetchDB
         $cron = Cron\CronExpression::factory($minute. ' ' .$hour. ' ' .$day. ' ' .$month. ' ' .$dayOfWeek. ' ' .$year);
         $time = $cron -> getNextRunDate();
         $time = $time->getTimeStamp();
-
-        /*if (($minute > 60 or $minute < 1) and $minute != '*')
-            throw new Exception('Minutes must be &isin; <1,60>');
-
-        if (($hour > 24 or $hour < 1) and $hour != '*')
-            throw new Exception('Hours must be &isin; <1,24>');
-
-        if (($day > 31 or $day < 1) and $day != '*')
-            throw new Exception('Day must be &isin; <1,31>');
-
-        if (($month > 12 or $month < 1) and $month != '*')
-            throw new Exception('Day must be &isin; <1,12>');
-
-        if (($dayOfWeek < 0 or $dayOfWeek > 7) and $dayOfWeek != '*')
-            throw new Exception('Day of week must be &isin; <0,7>');
-
-        if (($year > 0 or $year < date('Y')) and $dayOfWeek != '*')
-            throw new Exception('Year must be &isin; <' .date('Y'). ',&infin;)');*/
 
         $array = array('data' => serialize(array('function' => $function, 'data' => $data, 'file' => str_replace(PANTHERA_DIR, '', $fileName), 'fullFileName' => $fileName)), 'jobname' => $jobname, 'minute' => $minute, 'hour' => $hour, 'day' => $day, 'month' => $month, 'weekday' => $dayOfWeek, 'year' => $year, 'next_interation' => $time);
 
