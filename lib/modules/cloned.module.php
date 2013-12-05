@@ -356,7 +356,7 @@ class cloned_images extends cloned_plugin
                     $httplib->timeout = 3;
                     $response = httplib::request($src);
                     $image = new SimpleImage();
-                    $image -> loadFromString($response->body);
+                    $image -> loadFromString($response);
 
                     $width = $image -> getWidth();
                     $height = $image -> getHeight();
