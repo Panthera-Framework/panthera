@@ -1,6 +1,40 @@
 {$site_header}
 {include="ui.titlebar"}
 
+<style>
+  .ui-autocomplete {
+    max-height: 100px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
+    z-index: 999999999999;
+    border: solid 1px #56687B;
+    border-radius: 0;
+  }
+  
+  .ui-menu-item {
+    background: #404C5A;
+    color: white;
+  }
+  
+  .ui-state-focus:hover {
+    background: white;
+  }
+  
+  .ui-menu-item a {
+    font-size: 11px;
+    color: white;
+  }
+  
+  .ui-menu-item a:hover {
+    color: #404C5A;
+  }
+  
+  * html .ui-autocomplete {
+    height: 100px;
+  }
+</style>
+
 <div id="topContent">
     {$uiSearchbarName="uiTop"}
     {include="ui.searchbar"}
@@ -31,13 +65,13 @@
                     </tr>
                     
                     <tr>
-                        <th>{function="localize('Function name', 'crontab')"}:</th>
-                        <td><input type="text" name="function"></td>
+                        <th>{function="localize('Class name', 'crontab')"}:</th>
+                        <td><div class="ui-widget"><input type="text" name="class" id="className"></div></td>
                     </tr>
                     
                     <tr>
-                        <th>{function="localize('Class name', 'crontab')"}:</th>
-                        <td><input type="text" name="class"></td>
+                        <th>{function="localize('Function name', 'crontab')"}:</th>
+                        <td><input type="text" name="function" id="functionName"></td>
                     </tr>
                     
                     <tr>
@@ -156,6 +190,31 @@
             $('#time_year').val(t[5]);
         }
     });
+    
+    $( "#className" ).autocomplete({
+      source: [
+          {loop="$autoloadClasses"}
+          "{$key}",
+          {/loop}
+      ]
+    });
+    
+    $( "#functionName").click(function() {
+        $( "#functionName" ).autocomplete({
+          source: function (request, uiResponse) {
+            //query = request.term;
+            
+            panthera.jsonPOST({url: '?display=crontab&cat=admin&action=getClassFunctions', data: 'className='+$('#className').val(), success: function (response) 
+            {
+                if (response.status == 'success')
+                    uiResponse(response.result);
+            }});
+          }
+        });
+    
+    });
+    
+    
     </script>
 </div>
 
@@ -179,7 +238,7 @@
                 {loop="$cronjobs"}
                 <tr>
                     <td>{$value.id}</td>
-                    <td>{$value.name}</td>
+                    <td><a href="?display=crontab&cat=admin&action=jobDetails&jobid={$value.id}" class="ajax_link">{$value.name}</a></td>
                     <td>{$value.crontab_string}</td>
                     <td>#{$value.count_executed}</td>
                     <td>{$value.count_left}</td>

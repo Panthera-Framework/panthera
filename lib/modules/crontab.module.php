@@ -117,6 +117,7 @@ class crontab extends pantheraFetchDB
         //print("Execute: ".$this->jobname."\n");
         // we are starting, so the start time should be resetted
         $this -> start_time = 0;
+        $t = microtime_float();
     
         if (intval($this->__get('count_left')) == 0)
             return "JOB_FINISHED";
@@ -132,7 +133,7 @@ class crontab extends pantheraFetchDB
             
             if (!$filePath)
             {
-                $filePath = $data['file'];
+                $filePath = $data['fullFileName'];
             }
             
             if (!is_file($filePath))
@@ -140,7 +141,7 @@ class crontab extends pantheraFetchDB
                 
             //print("Including: ".$filePath."\n");
             
-            include_once($filePath);
+            include_once $filePath;
             
             $return = '';
             
@@ -190,9 +191,47 @@ class crontab extends pantheraFetchDB
             if ($this->__get('count_left') != -1)
                 $this->__set('count_left', (intval($this->__get('count_left'))-1));
                 
+            $this -> updateExecutionTimeStats(microtime_float()-$t);
+            $this -> log = $this -> panthera -> logging -> getOutput();
+                
             return $return;
             // $this->unlock();
         //}
+    }
+    
+    /**
+      * Update job execution time statistics
+      *
+      * @param float $time
+      * @return void
+      * @author Damian Kęska
+      */
+    
+    protected function updateExecutionTimeStats($time)
+    {
+        $data = unserialize($this->__get('data'));
+        
+        if (!isset($data['timing']))
+        {
+            $data['timing'] = array();
+        }
+        
+        if (!isset($data['maxtiming']))
+        {
+            $data['maxtiming'] = 15;
+        }
+        
+        $maxTiming = $data['maxtiming'];
+        
+        if (count($data['timing']) >= $maxTiming)
+        {
+            ksort($data['timing']);
+            reset($data['timing']);
+            unset($data['timing'][key($data['timing'])]);
+        }
+        
+        $data['timing'][time()] = $time;
+        $this -> __set('data', serialize($data));
     }
 
     /**

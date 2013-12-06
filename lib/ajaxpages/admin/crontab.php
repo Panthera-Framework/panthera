@@ -62,6 +62,188 @@ if ($_GET['action'] == 'postANewJob')
     ajax_exit(array('status' => 'success', 'time' => date('G:i:s d.m.Y', $time), 'timestamp' => $time));
 }
 
+
+
+/**
+  * Get list of class methods (useful for ajax autocompletion
+  *
+  * @author Damian Kęska
+  */
+
+if ($_GET['action'] == 'getClassFunctions')
+{
+    $className = $_POST['className'];
+    
+    if (!class_exists($className))
+    {
+        $autoloader = $panthera -> config -> getKey('autoloader');
+        
+        if (isset($autoloader[$className]))
+        {
+            $panthera -> importModule($autoloader[$className]);
+        }
+    }
+    
+    // if it still does not exists
+    if (!class_exists($className))
+    {
+        ajax_exit(array('status' => 'failed'));
+    }
+    
+    $methods = @get_class_methods($className);
+    ajax_exit(array('status' => 'success', 'result' => $methods));
+}
+
+if ($_GET['action'] == 'saveJobDetails')
+{
+    $job = new crontab('jobid', intval($_GET['jobid']));
+    
+    if (!$job->exists())
+    {
+        $noAccess = new uiNoAccess; 
+        $noAccess -> display();
+    }
+    
+    try {
+        $cron = Cron\CronExpression::factory($_POST['minute']. ' ' .$_POST['hour']. ' ' .$_POST['day']. ' ' .$_POST['month']. ' ' .$_POST['weekday']. ' ' .$_POST['year']);
+        $time = $cron -> getNextRunDate();
+        $time = $time->getTimeStamp();
+    } catch (Exception $e) {
+        ajax_exit(array('status' => 'failed', 'message' => slocalize('Invalid crontab syntax, details: %s', 'crontab', $e -> getMessage())));
+    }
+    
+    if ($_POST['class'])
+    {
+        if (!class_exists($_POST['class']))
+        {
+            $autoloader = $panthera -> config -> getKey('autoloader');
+        
+            if (isset($autoloader[$_POST['class']]))
+            {
+                $panthera -> importModule($autoloader[$_POST['class']]);
+            }
+        }
+        
+        if (!class_exists($_POST['class']))
+        {
+            ajax_exit(array('status' => 'failed', 'message' => localize('Invalid class name specified', 'crontab')));
+        }
+        
+        if (!method_exists($_POST['class'], $_POST['function']))
+        {
+            ajax_exit(array('status' => 'failed', 'message' => localize('Invalid class method name specified', 'crontab')));
+        }
+    
+        $function = array($_POST['class'], $_POST['function']);
+    } else {
+    
+        if (!function_exists($_POST['function']))
+        {
+            ajax_exit(array('status' => 'failed', 'message' => localize('Invalid function name specified', 'crontab')));
+        }
+    
+        $function = $_POST['function'];
+    }
+    
+    $countLeft = $_POST['count_left'];
+    
+    if (!is_numeric($countLeft) or intval($countLeft) < -1 or intval($countLeft) == 0)
+    {
+        $countLeft = -1;
+    }
+    
+    $countLeft = intval($countLeft);
+    
+    
+    $job -> jobname = $_POST['jobname'];
+    $job -> minute = $_POST['minute'];
+    $job -> hour = $_POST['hour'];
+    $job -> day = $_POST['day'];
+    $job -> month = $_POST['month'];
+    $job -> weekday = $_POST['weekday'];
+    $job -> year = $_POST['year'];
+    $job -> count_left = $countLeft;
+    
+    try {
+        $job -> save();
+    } catch (Exception $e) {
+        ajax_exit(array('status' => 'failed', 'message' => slocalize('Cannot save cronjob, details: %s', 'crontab', $e -> getMessage())));
+    }
+    
+    ajax_exit(array('status' => 'success'));
+}
+
+
+
+/**
+  * Editing job details form
+  *
+  * @author Damian Kęska
+  */
+
+
+if ($_GET['action'] == 'jobDetails')
+{
+    $job = new crontab('jobid', intval($_GET['jobid']));
+    
+    if (!$job->exists())
+    {
+        $noAccess = new uiNoAccess; 
+        $noAccess -> display();
+    }
+    
+    $data = unserialize($job -> __get('data'));
+    
+    $function = $data['function'];
+    $class = '';
+    
+    if (is_array($data['function']))
+    {
+        $class = $data['function'][0];
+        $function = $data['function'][1];
+    }
+    
+    $left = $job->count_left;
+
+    if ($left == -1)
+    {
+        $left = localize('infinitely', 'crontab');
+    }
+    
+    $timing = array();
+    
+    foreach ($data['timing'] as $key => $value)
+    {
+        $timing[date('G:i d.m.Y', $key)] = $value;
+    }
+    
+    $jobDetails = array(
+        'id' => $job->jobid,
+        'name' => $job->jobname,
+        'next_iteration' => date('G:i:s d.m.Y', $job->next_interation),
+        'crontab_string' => $job->minute. ' ' .$job->hour. ' ' .$job->day. ' ' .$job->month. ' ' .$job->year. ' ' .$job->weekday,
+        'count_left' => $left,
+        'count_executed' => $job->count_executed,
+        'created' => date('G:i:s d.m.Y', strtotime($job->created)),
+        'function' => $function,
+        'class' => $class,
+        'log' => $job->log,
+        'timing' => $timing,
+        'minute' => $job->minute,
+        'hour' => $job->hour,
+        'day' => $job->day,
+        'month' => $job->month,
+        'year' => $job->year,
+        'weekday' => $job->weekday
+    );
+    
+    new uiTitlebar(slocalize('Editing crontab job id #%s', 'crontab', $job->jobid));
+    $panthera -> template -> push('timing', $timing);
+    $panthera -> template -> push('cronjob', $jobDetails);
+    $panthera -> template -> display('crontab_job.tpl');
+    pa_exit();
+}
+
 /**
   * List of all cronjobs
   *
@@ -69,6 +251,8 @@ if ($_GET['action'] == 'postANewJob')
   * @return mixed 
   * @author Damian Kęska
   */
+ 
+new uiTitlebar(localize('Scheduled jobs management - crontab', 'crontab'));
   
 $sBar = new uiSearchbar('uiTop');
 //$sBar -> setMethod('POST');
@@ -117,6 +301,7 @@ foreach ($jobsTmp as $job)
     );
 }
 
+$panthera -> template -> push('autoloadClasses', $panthera -> config -> getKey('autoloader'));
 $panthera -> template -> push('cronjobs', $jobs);
 $panthera -> template -> display('crontab.tpl');
 pa_exit();

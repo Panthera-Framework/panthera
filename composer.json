@@ -6,7 +6,6 @@
         "phpmailer/phpmailer": ">=v5.2.6",
         "firephp/firephp-core": ">=v0.4.0",
         "facebook/php-sdk": ">=v3.2.2",
-        "nategood/httpful": ">=0.2.6",
         "ircmaxell/password-compat": "dev-master",
         "mobiledetect/mobiledetectlib": "2.6.4"
     }
