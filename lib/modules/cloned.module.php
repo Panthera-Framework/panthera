@@ -13,8 +13,8 @@ if (!defined('IN_PANTHERA'))
   
 global $panthera;
 require_once PANTHERA_DIR. '/share/phpQuery.php';
-require_once PANTHERA_DIR. '/share/httpful/src/Httpful/Bootstrap.php';
 $panthera -> importModule('simpleimage');
+$panthera -> importModule('httplib');
 
 /**
   * Mass content ripping module class
@@ -350,12 +350,13 @@ class cloned_images extends cloned_plugin
             /* OPTIONS WITH REQUIRED DOWNLOAD */
             if ($requiresDownload == True)
             {
-                \Httpful\Bootstrap::init();
+                $httplib = new httplib;
                 
                 try {
-                    $response = \Httpful\Request::get($src)/*->addOnCurlOption(CURLOPT_MUTE, True)*/->timeout(5)->sendIt();
+                    $httplib->timeout = 3;
+                    $response = httplib::request($src);
                     $image = new SimpleImage();
-                    $image -> loadFromString($response->body);
+                    $image -> loadFromString($response);
 
                     $width = $image -> getWidth();
                     $height = $image -> getHeight();

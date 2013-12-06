@@ -76,9 +76,6 @@ class note extends pantheraFetchDB
     /**
       * Remove note
       *
-      * @param string $title 
-      * @param string $content
-      * @param string $permissions
       * @return bool 
       * @author Mateusz Warzyński
       */
