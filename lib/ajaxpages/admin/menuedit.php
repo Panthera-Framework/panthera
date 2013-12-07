@@ -57,8 +57,8 @@ if ($_GET['action'] == 'quickAddFromPopup') {
 /**
  *
  * Saving menu elements
- * Returns json
  *
+ * @return json
  * @author Mateusz Warzyński
  */
 
@@ -106,8 +106,8 @@ if ($_GET['action'] == 'save_item') {
 /**
  *
  * Adding menu elements
- * Returns json
  *
+ * @return json
  * @author Mateusz Warzyński
  */
 
@@ -155,8 +155,8 @@ if ($_GET['action'] == 'add_item') {
 /**
  *
  * Removing menu elements
- * Returns json
  *
+ * @return json
  * @author Mateusz Warzyński
  */
 
@@ -173,8 +173,8 @@ if ($_GET['action'] == 'remove_item') {
 /**
  *
  * Adding menu categories
- * Returns json
  *
+ * @return json
  * @author Mateusz Warzyński
  */
 
@@ -200,8 +200,8 @@ if ($_GET['action'] == 'add_category') {
 /**
  *
  * Removing menu categories
- * Returns json
  *
+ * @return json
  * @author Mateusz Warzyński
  */
 
@@ -329,3 +329,5 @@ $template -> push('menu_categories', $c);
 
 $titlebar = new uiTitlebar(localize('Menu management for site and administration panel', 'menuedit'));
 $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png', 'left');
+
+pa_exit();
