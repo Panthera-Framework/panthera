@@ -12,7 +12,7 @@ customNextBtn = false;
 <div class="content" style="margin-left: 0px;">
     <p style="margin-top: 20px;"><b>{function="localize('Crontab syntax entries', 'installer')"}</b></p>
     
-    <p><span class="description">{function="localize('Internal crontab module placed inside of Panthera Framework does not have possibility to work as a deamon, so it requires a real Unix-like crontab to work and to execute jobs in correct time', 'installer')"}.</span></p>
+    <p><span class="description">{function="localize('Internal crontab module placed inside of Panthera Framework does not have possibility to work as a daemon, so it requires a real Unix-like crontab to work and to execute jobs in correct time', 'installer')"}.</span></p>
     
     <p style="margin-top: 5px; color: #C2C2C2;"><code>
     <i># {function="localize('open crontab joblist using text editor', 'installer')"}<br>
