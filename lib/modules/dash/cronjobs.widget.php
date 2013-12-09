@@ -29,7 +29,7 @@ class cronjobs_dashWidget extends pantheraClass
             $interval = $current->diff($next);
             $leftInterval = str_replace('0d ', '', $interval->format('%R%dd %hh %im'));
             
-            $jobsTpl[] = array('name' => $job -> jobname, 'timeleft' => $leftInterval, 'crontime' => $job->minute. ' ' .$job->hour. ' ' .$job->day. ' ' .$job->month. ' ' .$job->year. ' ' .$job->weekday, 'count' => $job->count_executed);
+            $jobsTpl[] = array('id' => $job->jobid, 'name' => $job -> jobname, 'timeleft' => $leftInterval, 'crontime' => $job->minute. ' ' .$job->hour. ' ' .$job->day. ' ' .$job->month. ' ' .$job->year. ' ' .$job->weekday, 'count' => $job->count_executed);
         }
         
         $this -> panthera -> template -> push ('cronjobsWidgetJobs', $jobsTpl);

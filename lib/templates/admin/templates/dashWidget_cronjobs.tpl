@@ -9,7 +9,7 @@
         {if="count($cronjobsWidgetJobs) > 0"}
             {loop="$cronjobsWidgetJobs"}
             <tr>
-                <td style="width: 60px;">#{$value.count}</td><td>{$value.name} ({$value.timeleft})</td><td>{$value.crontime}</td>
+                <td style="width: 60px;">#{$value.count}</td><td><a href="?display=crontab&cat=admin&action=jobDetails&jobid={$value.id}" class="ajax_link">{$value.name} ({$value.timeleft})</a></td><td>{$value.crontime}</td>
              </tr>
             {/loop}
         {else}
