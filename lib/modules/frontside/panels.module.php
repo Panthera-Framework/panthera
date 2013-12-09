@@ -102,7 +102,7 @@ class panel extends pantheraFetchDB
 
 class panelsPlacement extends pantheraFetchDB
 {
-    protected $_tableName = 'panels_placement';
+    protected $_tableName = 'panels_placements';
     protected $_idColumn = 'id';
     protected $_constructBy = array('id', 'array');
     
@@ -114,14 +114,14 @@ class panelsPlacement extends pantheraFetchDB
       * @author Mateusz Warzyński
       */
     
-    public static function getPlacements($by, $limit=0, $limitFrom=0, $orderBy='id', $order='DESC')
+    public static function getPlacements($by, $limit=0, $limitFrom=0, $orderBy='placementid', $order='DESC')
     {
         global $panthera;
         
         if (!$panthera->user)
             return False;
         
-        return $panthera->db->getRows('panels_placement', $by, $limit, $limitFrom, 'placement', $orderBy, $order);
+        return $panthera->db->getRows('panels_placements', $by, $limit, $limitFrom, 'placement', $orderBy, $order);
     }
     
     /**
@@ -142,7 +142,7 @@ class panelsPlacement extends pantheraFetchDB
         
         $array = array('name' => $name, 'title' => $title);
 
-        if (!$panthera->db->query('INSERT INTO `{$db_prefix}panels_placement` (`placementid`, `name`, `title`) VALUES (NULL, :name, :title);', $array))
+        if (!$panthera->db->query('INSERT INTO `{$db_prefix}panels_placements` (`placementid`, `name`, `title`) VALUES (NULL, :name, :title);', $array))
             return False;
         
         return True;
@@ -160,7 +160,7 @@ class panelsPlacement extends pantheraFetchDB
         if (!$panthera->user)
             return False;
         
-        if (!$this->panthera->db->query('DELETE FROM `{$db_prefix}panels_placement` WHERE `id` = :id', array('id' => $this->id)))
+        if (!$this->panthera->db->query('DELETE FROM `{$db_prefix}panels_placements` WHERE `placementid` = :placementid', array('placementid' => $this->placementid)))
             return False;
         
         return True;
