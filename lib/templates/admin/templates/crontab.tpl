@@ -1,39 +1,19 @@
 {$site_header}
 {include="ui.titlebar"}
 
-<style>
-  .ui-autocomplete {
-    max-height: 100px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    display: block;
-    z-index: 999999999999;
-    border: solid 1px #56687B;
-    border-radius: 0;
-  }
-  
-  .ui-menu-item {
-    background: #404C5A;
-    color: white;
-  }
-  
-  .ui-state-focus:hover {
-    background: white;
-  }
-  
-  .ui-menu-item a {
-    font-size: 11px;
-    color: white;
-  }
-  
-  .ui-menu-item a:hover {
-    color: #404C5A;
-  }
-  
-  * html .ui-autocomplete {
-    height: 100px;
-  }
-</style>
+<script type="text/javascript">
+function removeJob(jobid)
+{
+    panthera.jsonPOST({url: '?display=crontab&cat=admin&action=removeJob', data: 'jobid='+jobid, success: function (response) {
+            if (response.status == 'success')
+            {
+                //$('#job_id_'+jobid).remove();
+                navigateTo(window.location.href);
+            }
+        }
+    });
+}
+</script>
 
 <div id="topContent">
     {$uiSearchbarName="uiTop"}
@@ -71,7 +51,7 @@
                     
                     <tr>
                         <th>{function="localize('Function name', 'crontab')"}:</th>
-                        <td><input type="text" name="function" id="functionName"></td>
+                        <td><div class="ui-widget"><input type="text" name="function" id="functionName"></div></td>
                     </tr>
                     
                     <tr>
@@ -213,8 +193,6 @@
         });
     
     });
-    
-    
     </script>
 </div>
 
@@ -230,13 +208,14 @@
                     <th>{function="localize('Count left', 'crontab')"}</th>
                     <th>{function="localize('Next iteration time', 'crontab')"}</th>
                     <th>{function="localize('Created', 'crontab')"}</th>
+                    <th>{function="localize('Options', 'custompages')"}</th>
                 </tr>
             </thead>
             
             <tbody class="hovered">
                 {if="count($cronjobs) > 0"}
                 {loop="$cronjobs"}
-                <tr>
+                <tr id="job_id_{$value.id}">
                     <td>{$value.id}</td>
                     <td><a href="?display=crontab&cat=admin&action=jobDetails&jobid={$value.id}" class="ajax_link">{$value.name}</a></td>
                     <td>{$value.crontab_string}</td>
@@ -244,6 +223,11 @@
                     <td>{$value.count_left}</td>
                     <td>{$value.next_iteration}</td>
                     <td>{$value.created}</td>
+                    <td>
+                        <a href="#" onclick="removeJob({$value.id})">
+                        <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove', 'messages')"}">
+                        </a>
+                    </td>
                 </tr>
                 {/loop}
                 {else}

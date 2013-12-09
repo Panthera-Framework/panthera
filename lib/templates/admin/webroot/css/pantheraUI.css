@@ -1150,3 +1150,35 @@ ul.dropdown li:hover > a.dir {
 	position: relative;
 	width: 65%;
 }
+
+.ui-autocomplete {
+    max-height: 100px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
+    z-index: 999999999999;
+    border: solid 1px #56687B;
+    border-radius: 0;
+  }
+  
+  .ui-menu-item {
+    background: #404C5A;
+    color: white;
+  }
+  
+  .ui-state-focus:hover {
+    background: white;
+  }
+  
+  .ui-menu-item a {
+    font-size: 11px;
+    color: white;
+  }
+  
+  .ui-menu-item a:hover {
+    color: #404C5A;
+  }
+  
+  * html .ui-autocomplete {
+    height: 100px;
+}

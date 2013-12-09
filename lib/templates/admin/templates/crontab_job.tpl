@@ -34,6 +34,10 @@ $(document).ready(function() {
 <form action="?display=crontab&cat=admin&action=saveJobDetails&jobid={$cronjob.id}" method="POST" id="saveJobDetailsFrom">
 <div id="topContent">
     <div class="searchBarButtonArea">
+        <div style="float: left; display: inline-block; margin-left: 10px;">
+            <input type="button" value="{function="localize('Back to jobs list', 'messages')"}" onclick="navigateTo('?display=crontab&cat=admin')">
+        </div>
+    
         <input type="submit" value="{function="localize('Save', 'crontab')"}">
     </div>
 </div>

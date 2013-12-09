@@ -176,6 +176,32 @@ if ($_GET['action'] == 'saveJobDetails')
 
 
 /**
+  * Remove a crontab job
+  *
+  * @author Damian Kęska
+  */
+
+if ($_GET['action'] == 'removeJob')
+{
+    $test = new crontab('jobid', $_POST['jobid']);
+    
+    if (!$test -> exists())
+    {
+        ajax_exit(array('status' => 'failed', 'message' => localize('Selected job does not exists', 'crontab')));
+    }
+    
+    // this error should never happen (unless database is broken etc.)
+    if (!crontab::removeJob($_POST['jobid']))
+    {
+        ajax_exit(array('status' => 'failed', 'message' => localize('Cannot remove selected job, unknown error', 'crontab')));
+    }
+
+    ajax_exit(array('status' => 'success'));
+}
+
+
+
+/**
   * Editing job details form
   *
   * @author Damian Kęska
