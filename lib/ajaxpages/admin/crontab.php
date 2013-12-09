@@ -263,7 +263,26 @@ if ($_GET['action'] == 'jobDetails')
         'weekday' => $job->weekday
     );
     
+    $cron = Cron\CronExpression::factory($jobDetails['crontab_string']);
+    $time = time();
+    $runtimes = array();
+    
+    $max = 15;
+    
+    if ($job->count_left > 0)
+    {
+        $max = $job -> count_left;
+    }
+    
+    for ($i = 0; $i < $max; $i++)
+    {
+        $time = $cron -> getNextRunDate(new DateTime('@' .$time));
+        $time = $time->getTimeStamp();
+        $runtimes[] = date('G:i:s d.m.Y', $time);
+    }
+    
     new uiTitlebar(slocalize('Editing crontab job id #%s', 'crontab', $job->jobid));
+    $panthera -> template -> push('runtimes', $runtimes);
     $panthera -> template -> push('timing', $timing);
     $panthera -> template -> push('cronjob', $jobDetails);
     $panthera -> template -> display('crontab_job.tpl');

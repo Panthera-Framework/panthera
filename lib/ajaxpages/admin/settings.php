@@ -181,6 +181,14 @@ $defaults['system']['pager'] = array(
     'linkType' => 'ajax'
 );
 
+$defaults['system']['crontab'] = array(
+    'link' => '?display=crontab&cat=admin',
+    'name' => localize('Crontab', 'crontab'),
+    'description' => localize('Scheduled jobs management - crontab', 'crontab'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/crontab.png',
+    'linkType' => 'ajax'
+);
+
 // Content section
 $defaults['content'] = array();
 

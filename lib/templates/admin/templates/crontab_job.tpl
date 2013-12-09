@@ -208,6 +208,24 @@ $(document).ready(function() {
         <table style="width: 100%;">
             <thead>
                 <tr>
+                    <th colspan="2">{function="localize('Next iteration time', 'crontab')"}</th>
+                </tr>
+            </thead>
+            
+            <tbody class="hovered">
+                {loop="$runtimes"}
+                <tr>
+                    <td>{$key+1}</td><td>{$value}</td>
+                </tr>
+                {/loop}
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="display: inline-block; margin: 0 auto; margin-top: 25px; width: 60%;">
+        <table style="width: 100%;">
+            <thead>
+                <tr>
                     <th>{function="localize('Last execution log', 'crontab')"}</th>
                 </tr>
             </thead>
