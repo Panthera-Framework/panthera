@@ -129,7 +129,7 @@ $tools[] = array('link' => '?display=_popup_jsonedit&cat=admin', 'name' => local
 $tools[] = array('link' => '?display=autoloader&cat=admin', 'name' => localize('Autoloader'), 'description' => localize('Autoloader cache', 'debug'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/autoloader.png');
 $tools[] = array('link' => '?display=generate_password&cat=admin', 'name' => localize('Password'), 'description' => localize('Generate password', 'debug'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/generate_password.png');
 $tools[] = array('link' => '?display=accessparser&cat=admin', 'name' => localize('Log parser'), 'description' => localize('Shows parsed server log', 'debug'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/blank.png');
-$tools[] = array('link' => '?display=googlepr&cat=admin', 'name' => localize('Log parser'), 'description' => localize('Shows parsed server log', 'debug'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/google.png');
+$tools[] = array('link' => '?display=googlepr&cat=admin', 'name' => localize('Ranking of pages'), 'description' => localize('Shows page rank of given url', 'debug'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/google.png');
 $tools = $panthera -> get_filters('ajaxpages.debug.tools', $tools);
 
 // Displaying main debug site
