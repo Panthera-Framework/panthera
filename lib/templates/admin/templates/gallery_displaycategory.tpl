@@ -269,7 +269,7 @@
   
   <div id="items_list" class="uploadBoxCentered" style="width: 94%; text-align: center; padding-top: 26px;">
     {loop="$item_list"}
-    <div class="galleryItem{if="$value->visibility == 1"} galleryItemHidden{/if} draggableGalleryItem" id="gallery_item_{$value->id}" style="display: inline-block; float: center; text-align: center; width: 220px; margin-right: 0px;">
+    <div class="galleryItem{if="$value->visibility == 0"} galleryItemHidden{/if} draggableGalleryItem" id="gallery_item_{$value->id}" style="display: inline-block; float: center; text-align: center; width: 220px; margin-right: 0px;">
         <div class="galleryImageFrame">
             <div class="paGalleryFrameContent" style="width: 220px;">
                 <a href="#edit" onclick="navigateTo('?display=gallery&cat=admin&action=edit_item_form&itid={$value->id}');"><img src="{$value->getThumbnail(300, True, True)}" class="galleryImage"></a>
