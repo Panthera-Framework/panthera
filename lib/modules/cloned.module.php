@@ -415,17 +415,20 @@ class cloned_images extends cloned_plugin
                     continue;
                 }
                 
-                $filePath = '';
-                
                 // save file
                 if ($this->options['save']) {
+                        
                     $name = basename($src).".jpg";
                     
-                    $filePath = pantheraUrl($uploadDir.$name);
-                    $image -> save($filePath);
+                    if (strpos($name, '.php') === FALSE) {
+                        $uploadDir = pantheraUrl('{$upload_dir}/cloned/');
+                        $filePath = pantheraUrl($uploadDir.$name);
+                        $image -> save($filePath);
+                        $this->results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
+                    }
                 }
                     
-                $this->results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
+                $this->results[] = array('status' => 'success', 'data' => $src);
             }
         }
         
