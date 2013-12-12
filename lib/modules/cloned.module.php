@@ -113,7 +113,7 @@ class cloned extends pantheraClass
         // if option does not exists for selected link
         if (!array_key_exists($key, $this->links[$index]['options']))
             return False;
-
+    
         // set new value
         $this->links[$index]['options'][$key] = $value;
         return True;
@@ -249,13 +249,14 @@ abstract class cloned_plugin
   *
   * @package Panthera\modules\cloned
   * @author Damian Kęska
+  * @author Mateusz Warzyński
   */
 
 class cloned_images extends cloned_plugin
 {
     // configuration options
     //private $options = array('min-width' => 0, 'max-width' => 0, 'min-height' => 0, 'max-height' => 0, 'extension' => '*', 'name_contains' => '', 'width' => 0, 'height' => 0);
-    public static $defaults = array('min-width' => -1, 'max-width' => -1, 'min-height' => -1, 'max-height' => -1, 'extension' => '*', 'name_contains' => '', 'width' => -1, 'height' => -1);
+    public static $defaults = array('min-width' => -1, 'max-width' => -1, 'min-height' => -1, 'max-height' => -1, 'extension' => '*', 'name_contains' => '', 'width' => -1, 'height' => -1, 'save' => False);
 
     public static function detect($link)
     {
@@ -268,6 +269,7 @@ class cloned_images extends cloned_plugin
       * @param bool $byPassCache
       * @return array 
       * @author Damian Kęska
+      * @author Mateusz Warzyński
       */
     
     public function parse($byPassCache=False)
@@ -284,7 +286,7 @@ class cloned_images extends cloned_plugin
             'method'=>"GET", 
               'timeout' => 10 
               ) 
-        ); 
+        );
         
         $context = stream_context_create($options); 
         $HTML = file_get_contents($this->link, false, $context);
@@ -310,6 +312,13 @@ class cloned_images extends cloned_plugin
         {
             $requiresDownload = True;
             //$tmpDir = maketmp();
+        }
+        
+        if ($this->options['save'])
+        {
+            $uploadDir = pantheraUrl('{$upload_dir}/cloned/');
+            if (!is_dir($uploadDir))
+                mkdir($uploadDir, 0777);
         }
     
         // so... lets parse the document
@@ -360,7 +369,6 @@ class cloned_images extends cloned_plugin
 
                     $width = $image -> getWidth();
                     $height = $image -> getHeight();
-                                        
                     
                 } catch (Exception $e) { 
                     $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Timeout');
@@ -406,8 +414,18 @@ class cloned_images extends cloned_plugin
                     $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'max-height');
                     continue;
                 }
+                
+                $filePath = '';
+                
+                // save file
+                if ($this->options['save']) {
+                    $name = basename($src).".jpg";
                     
-                $this->results[] = array('status' => 'success', 'data' => $src);
+                    $filePath = pantheraUrl($uploadDir.$name);
+                    $image -> save($filePath);
+                }
+                    
+                $this->results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
             }
         }
         
