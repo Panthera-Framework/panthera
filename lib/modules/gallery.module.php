@@ -66,7 +66,7 @@ class galleryItem extends pantheraFetchDB
         
         if (count($items)) {
             foreach ($items as $item)
-                $array[] = array('title' => $item->title, 'description' => $item->description, 'url_id' => seoUrl(rand(99, 9999). '-' .$item->title."_".$language), 'link' => $item->link, 'thumbnail' => $item->thumbnail, 'gallery_id' => $newCategory->id, 'visibility' => $item->visibility, 'upload_id' => $item->upload->id);
+                $array[] = array('title' => $item->title, 'description' => $item->description, 'url_id' => seoUrl(rand(99, 9999). '-' .$item->title."_".$language), 'link' => $item->link, 'thumbnail' => $item->thumbnail, 'gallery_id' => $newCategory->id, 'visibility' => $item->visibility, 'upload_id' => $item->upload->id, 'author_id' => $item->author_id, 'author_login' => $item->author_login);
             
             $query = $panthera -> db -> buildInsertString($array, True, 'gallery_items');
             $SQL = $panthera -> db -> query($query['query'], $query['values']);
@@ -97,12 +97,14 @@ class galleryItem extends pantheraFetchDB
       * @param string $link
       * @param int $gallery_id, it's a category id to which item belongs
       * @param bool $visibility of item
-      * @param $upload  
+      * @param $upload
+      * @param int $author_id
+      * @param string $author_login
       * @return object
       * @author Mateusz Warzyński
       */
     
-    public static function createGalleryItem($title, $description, $link, $gallery_id, $visibility, $upload)
+    public static function createGalleryItem($title, $description, $link, $gallery_id, $visibility, $upload, $author_id, $author_login)
     {
         global $panthera;
     
@@ -114,7 +116,7 @@ class galleryItem extends pantheraFetchDB
     
         if ($size < 5)
             $size = 240;
-    
+
         $thumb = pantheraUrl('{$upload_dir}/_thumbnails/' .$size. '_' .$fileInfo['filename']. '.jpg');
         
         if (!is_file($thumb))
@@ -131,7 +133,7 @@ class galleryItem extends pantheraFetchDB
     
         $url_id = seoUrl(rand(99, 9999). '-' .$title);
     
-        $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}gallery_items` (`id`, `title`, `description`, `created`, `url_id`, `link`, `thumbnail`, `gallery_id`, `visibility`, `upload_id`) VALUES (NULL, :title, :description, NOW(), :url_id, :link, :thumbnail, :gallery_id, :visibility, :upload_id);', array('title' => $title, 'description' => $description, 'url_id' => $url_id, 'link' => $link, 'thumbnail' => $thumbnail, 'gallery_id' => $gallery_id, 'visibility' => $visibility, 'upload_id' => $upload->id));
+        $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}gallery_items` (`id`, `title`, `description`, `created`, `url_id`, `link`, `thumbnail`, `gallery_id`, `visibility`, `upload_id`, `author_id`, `author_login`) VALUES (NULL, :title, :description, NOW(), :url_id, :link, :thumbnail, :gallery_id, :visibility, :upload_id, :author_id, :author_login);', array('title' => $title, 'description' => $description, 'url_id' => $url_id, 'link' => $link, 'thumbnail' => $thumbnail, 'gallery_id' => $gallery_id, 'visibility' => $visibility, 'upload_id' => $upload->id, 'author_id' => $author_id, 'author_login' => $author_login));
         return (bool)$SQL->rowCount();
     }
 

@@ -11,6 +11,8 @@ CREATE TABLE `{$db_prefix}gallery_items` (
   `gallery_id` mediumint(4) NOT NULL,
   `visibility` tinyint(1) NOT NULL,
   `upload_id` int(8) NOT NULL,
+  `author_id` varchar(32) NOT NULL,
+  `author_login` varchar(64) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `url_id` (`url_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

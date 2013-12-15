@@ -775,7 +775,7 @@ if (@$_GET['action'] == 'add_item')
             
             $link = pantheraUrl($file->getLink(), True);
 
-            if (galleryItem::createGalleryItem($_POST['title'], $_POST['description'], $link, $galleryID, $visibility, $file))
+            if (galleryItem::createGalleryItem($_POST['title'], $_POST['description'], $link, $galleryID, $visibility, $file, $panthera->user->id, $panthera->user->login))
             {
                 ajax_exit(array('status' => 'success', 'ctgid' => $galleryID));
             } else {
