@@ -32,7 +32,7 @@
                     panthera.jsonGET({ url: '{$AJAX_URL}?display=gallery&cat=admin&action=deleteItem&image_id='+id, success: function (response) {
                             if (response.status == "success")
                             {
-                                $('#gallery_item_'+id).remove();
+                                window.location = '';
                             }
 
                         }
