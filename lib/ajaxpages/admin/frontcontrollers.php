@@ -53,7 +53,7 @@ foreach ($files as $file)
     $controllers[] = array(
         'name' => $name,
         'linked' => $linked,
-        'modtime' => date('G:i:s d.m.Y', filemtime($file))
+        'modtime' => date($panthera -> dateFormat, filemtime($file))
     );
 }
 

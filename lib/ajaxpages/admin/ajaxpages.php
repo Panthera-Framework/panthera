@@ -40,7 +40,7 @@ $pages[] = array(
     'location' => 'lib',
     'directory' => 'admin',
     'path' => PANTHERA_DIR. '/ajaxpages/admin/settings.php',
-    'modtime' => date('G:i:s d.m.Y', filemtime(PANTHERA_DIR. '/ajaxpages/admin/settings.php')),
+    'modtime' => date($panthera -> dateFormat, filemtime(PANTHERA_DIR. '/ajaxpages/admin/settings.php')),
     'name' => 'system_info',
     'link' => '?display=settings&cat=admin&action=system_info'
 );
@@ -49,7 +49,7 @@ $pages[] = array(
     'location' => 'lib',
     'directory' => 'admin',
     'path' => PANTHERA_DIR. '/ajaxpages/admin/users.php',
-    'modtime' => date('G:i:s d.m.Y', filemtime(PANTHERA_DIR. '/ajaxpages/admin/users.php')),
+    'modtime' => date($panthera -> dateFormat, filemtime(PANTHERA_DIR. '/ajaxpages/admin/users.php')),
     'name' => 'my_account',
     'link' => '?display=users&cat=admin&action=my_account'
 );
@@ -78,7 +78,7 @@ foreach ($files as $file)
     $directory = str_replace('/ajaxpages/', '', dirname($name));
     $name = str_ireplace('.php', '', basename($name));
 
-    $pages[] = array('location' => $location, 'directory' => $directory, 'modtime' => date('G:i:s d.m.Y', filemtime($file)), 'name' => $name, 'path' => $file, 'link' => '?display=' .$name);
+    $pages[] = array('location' => $location, 'directory' => $directory, 'modtime' => date($panthera -> dateFormat, filemtime($file)), 'name' => $name, 'path' => $file, 'link' => '?display=' .$name);
 }
 
 $pages = $panthera->get_filters('ajaxpages_list', $pages);

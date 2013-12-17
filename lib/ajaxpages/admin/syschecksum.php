@@ -78,7 +78,7 @@ foreach ($files as $file)
         'name' => str_replace(SITE_DIR, '', $file),
         'sum' => $sum,
         'size' => filesystem::bytesToSize(strlen($contents)),
-        'time' => date('G:i:s d.m.Y', filemtime($file)),
+        'time' => date($panthera -> dateFormat, filemtime($file)),
         'mtime' => filemtime($file),
         'bold' => $bold,
         'size_bytes' => strlen($contents)

@@ -32,7 +32,7 @@ if (!defined('IN_PANTHERA'))
 
         $options = array ('template' => $config['template'],
                             'timezone' => $config['timezone'],
-                            'System Time' => date('G:i:s d.m.Y'),
+                            'System Time' => date($panthera -> dateFormat),
                             'url' => $panthera->config->getKey('url'),
                             'ajax_url' => $panthera->config->getKey('ajax_url'),
                             '__FILE__' => __FILE__,

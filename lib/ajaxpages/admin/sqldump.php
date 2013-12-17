@@ -129,7 +129,7 @@ foreach ($dumps as $dump)
     $dumpsTpl[] = array(
         'name' => basename($dump),
         'size' => filesystem::bytesToSize(filesize($dump)),
-        'date' => date('G:i:s d.m.Y', filemtime($dump))
+        'date' => date($panthera -> dateFormat, filemtime($dump))
     );
 }
 

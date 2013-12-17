@@ -59,6 +59,7 @@ $config -> languageSelector(True);
 $config -> add('site_title', localize('Site title', 'settings'));
 $config -> add('site_description', localize('Description', 'settings'));
 $config -> add('site_metas', localize('Tags', 'settings'));
+$config -> add('dateFormat', localize('Date format', 'settings'));
 $config -> add('url', localize('Website main directory url', 'settings'));
 $config -> add('ajax_url', localize('Ajax URL', 'settings'));
 $config -> add('redirect_after_login', localize('Redirect after login', 'settings'));
@@ -76,6 +77,7 @@ $config -> setDescription('redirect_after_login', localize('Redirect unprivilege
 $config -> setDescription('crontab_key', localize('A secret key used to execute cron jobs', 'settings'));
 $config -> setDescription('gmaps_key', localize('Google APIs key', 'settings'));
 $config -> setDescription('debug', localize('Rich featured and lightweight Panthera debugger', 'settings'));
+$config -> setDescription('dateFormat', localize('Preferred, system wide date format accessible via $panthera -> dateFormat', 'settings'));
 
 // handlers
 $config -> setFieldSaveHandler('url', 'settingsUrlHandler');

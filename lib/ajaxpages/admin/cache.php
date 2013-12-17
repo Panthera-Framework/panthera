@@ -305,7 +305,7 @@ if (extension_loaded('apc') && function_exists('apc_cache_info'))
     }
 
     if ($info['start_time'])
-        $apcInfo['start_time'] = date("G:i:s d.m.Y", $info['start_time']);
+        $apcInfo['start_time'] = date($panthera -> dateFormat, $info['start_time']);
     else
         $apcInfo['start_time'] = '?';
     

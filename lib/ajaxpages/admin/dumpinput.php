@@ -19,7 +19,7 @@ if (!getUserRightAttribute($user, 'can_dump_input')) {
 $panthera -> locale -> loadDomain('debug');
 
 if (!$panthera -> session -> cookies -> exists('Created'))
-    $panthera -> session -> cookies -> set('Created', date('G:i:s d.m.Y'), time()+60);
+    $panthera -> session -> cookies -> set('Created', date($panthera -> dateFormat), time()+60);
 
 $panthera -> session -> set('Name', 'Damien');
 

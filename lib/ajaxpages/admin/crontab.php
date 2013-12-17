@@ -59,7 +59,7 @@ if ($_GET['action'] == 'postANewJob')
         ajax_exit(array('status' => 'failed', 'message' => slocalize('Cannot create crontab, details: %s', 'crontab', $e -> getMessage())));
     }
     
-    ajax_exit(array('status' => 'success', 'time' => date('G:i:s d.m.Y', $time), 'timestamp' => $time));
+    ajax_exit(array('status' => 'success', 'time' => date($panthera -> dateFormat, $time), 'timestamp' => $time));
 }
 
 
@@ -268,11 +268,11 @@ if ($_GET['action'] == 'jobDetails')
     $jobDetails = array(
         'id' => $job->jobid,
         'name' => $job->jobname,
-        'next_iteration' => date('G:i:s d.m.Y', $job->next_interation),
+        'next_iteration' => date($panthera -> dateFormat, $job->next_interation),
         'crontab_string' => $job->minute. ' ' .$job->hour. ' ' .$job->day. ' ' .$job->month. ' ' .$job->year. ' ' .$job->weekday,
         'count_left' => $left,
         'count_executed' => $job->count_executed,
-        'created' => date('G:i:s d.m.Y', strtotime($job->created)),
+        'created' => date($panthera -> dateFormat, strtotime($job->created)),
         'function' => $function,
         'class' => $class,
         'log' => $job->log,
@@ -310,7 +310,7 @@ if ($_GET['action'] == 'jobDetails')
     {
         $time = $cron -> getNextRunDate(new DateTime('@' .($time+1)));
         $time = $time->getTimeStamp();
-        $runtimes[] = date('G:i:s d.m.Y', $time);
+        $runtimes[] = date($panthera -> dateFormat, $time);
     }
     
     new uiTitlebar(slocalize('Editing crontab job id #%s', 'crontab', $job->jobid));
@@ -377,11 +377,11 @@ foreach ($jobsTmp as $job)
     $jobs[] = array(
         'id' => $job->jobid,
         'name' => $job->jobname,
-        'next_iteration' => date('G:i:s d.m.Y', $job->next_interation),
+        'next_iteration' => date($panthera -> dateFormat, $job->next_interation),
         'crontab_string' => $job->minute. ' ' .$job->hour. ' ' .$job->day. ' ' .$job->month. ' ' .$job->year. ' ' .$job->weekday,
         'count_left' => $left,
         'count_executed' => $job->count_executed,
-        'created' => date('G:i:s d.m.Y', strtotime($job->created))
+        'created' => date($panthera -> dateFormat, strtotime($job->created))
     );
 }
 

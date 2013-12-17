@@ -728,6 +728,7 @@ class pantheraCore
     public $varCache=False;
     public $cache=False;
     public $hashingAlgorithm = 'md5';
+    public $dateFormat = 'G:i:s d.m.Y';
     // public $qSerialize = 'serialize';
 
     // exit right after all plugins are loaded
@@ -810,6 +811,8 @@ class pantheraCore
                 $this->logging->filter = $this->session->get('debug.filter');
             }
         }
+        
+        $this -> dateFormat = $this -> config -> getKey('dateFormat', 'G:i:s d.m.Y', 'string');
 
         //$this->config->getKey('pluginsContext', array(), 'array');
 
@@ -2135,14 +2138,16 @@ function microtime_float($time='')
 
 function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $months = true, $days = true, $hours = true, $mins = true, $secs = true, $display_output = true)
 {
+    global $panthera;
+
     if (is_int($timestamp_past))
     {
-        $timestamp_past = date('G:i:s d.m.Y', $timestamp_past);
+        $timestamp_past = date($panthera -> dateFormat, $timestamp_past);
     }
     
     if (is_int($timestamp_future))
     {
-        $timestamp_future = date('G:i:s d.m.Y', $timestamp_future);
+        $timestamp_future = date($panthera -> dateFormat, $timestamp_future);
     }
 
     try {

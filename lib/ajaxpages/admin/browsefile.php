@@ -76,11 +76,10 @@ if (is_file(PANTHERA_DIR. '/' .$path) or is_file(SITE_DIR. '/' .$path))
     $template -> push('group', $group['name']);
     $template -> push('size_bytes', filesize($filePath));
     $template -> push('size', filesystem::bytesToSize(filesize($filePath)));
-    $template -> push('modification_time', date('G:i:s d.m.Y', filemtime($filePath)));
+    $template -> push('modification_time', date($panthera -> dateFormat, filemtime($filePath)));
     $template -> push('mime', $mime);
     $template -> push('type', $type);
     $template -> push('action', 'view');
 } else {
     $template -> push('err', localize('file not found'));
 }
-?>

@@ -254,7 +254,7 @@ class crontab extends pantheraFetchDB
         $startTime = 0;
         
         if (intval($this->start_time) != 0)
-            $startTime = date('G:i:s d.m.Y', $this->start_time);
+            $startTime = date($this -> panthera -> dateFormat, $this->start_time);
 
         if (intval($this->start_time) != 0)
         {

@@ -58,7 +58,7 @@ foreach (DateTimeZone::listIdentifiers() as $timezone)
     $time = new DateTime('NOW');
     $time -> setTimezone(new DateTimeZone($timezone));
     
-    $timezones[$timezone] = $time -> format('G:i:s d.m.Y');
+    $timezones[$timezone] = $time -> format($panthera -> dateFormat);
 }
 
 $panthera -> template -> push ('timezone', $panthera->config->getKey('timezone'));

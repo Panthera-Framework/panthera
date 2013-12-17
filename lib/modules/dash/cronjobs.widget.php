@@ -25,7 +25,7 @@ class cronjobs_dashWidget extends pantheraClass
         foreach ($jobs as $job)
         {
             $current = new DateTime();
-            $next = new DateTime(date('G:i:s d.m.Y', $job->next_interation));
+            $next = new DateTime(date($this -> panthera -> dateFormat, $job->next_interation));
             $interval = $current->diff($next);
             $leftInterval = str_replace('0d ', '', $interval->format('%R%dd %hh %im'));
             

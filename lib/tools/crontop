@@ -43,7 +43,7 @@ class crontop
 
                 // compare dates and create "time left" counter
                 $current = new DateTime();
-                $next = new DateTime(date('G:i:s d.m.Y', $value->next_interation));
+                $next = new DateTime(date($panthera -> dateFormat, $value->next_interation));
                 $interval = $current->diff($next);
                 $leftInterval = "(".str_replace('0d ', '', $interval->format('%R%dd %hh %im')). ")";
 
@@ -51,7 +51,7 @@ class crontop
                 if (intval($interval->format('%i')) < 1)
                     $leftInterval = "(waiting)";
 
-                $data[] = array('jobid' => $value->jobid, 'Name' => $value->jobname, 'Next interation' => date('G:i:s d.m.Y', $value->next_interation). " ".$leftInterval, 'Created' => $value->created, 'Executed' => $value->count_executed. ' times', 'Left' => $left, 'Minute' => $value->minute, 'Hour' => $value->hour, 'Day' => $value->hour, 'Month' => $value->month, 'Day of week' => $value->weekday, 'Year' => $value->year);
+                $data[] = array('jobid' => $value->jobid, 'Name' => $value->jobname, 'Next interation' => date($panthera -> dateFormat, $value->next_interation). " ".$leftInterval, 'Created' => $value->created, 'Executed' => $value->count_executed. ' times', 'Left' => $left, 'Minute' => $value->minute, 'Hour' => $value->hour, 'Day' => $value->hour, 'Month' => $value->month, 'Day of week' => $value->weekday, 'Year' => $value->year);
             }
 
             $jobs = null; // free memory
@@ -67,11 +67,11 @@ class crontop
             print($window->picker->getColoredString("crontop ".PANTHERA_VERSION, 'light_cyan')."\n\n");
 
             // print new data
-            print($window->picker->getColoredString("Date:", 'cyan'). " ".date('G:i:s d.m.Y')."\n".$window->picker->getColoredString("Site:", 'cyan')." ".SITE_DIR."\n");
+            print($window->picker->getColoredString("Date:", 'cyan'). " ".date($panthera -> dateFormat)."\n".$window->picker->getColoredString("Site:", 'cyan')." ".SITE_DIR."\n");
             $renderer->render();
 
             print("\n".$window->picker->getColoredString("Total jobs:", 'cyan')." ".count($data)."\n");
-            print("\n\n".$window->picker->getColoredString("Crontab log (".date('G:i:s d.m.Y', filectime(SITE_DIR. '/content/tmp/crontab.log'))."):", 'light_cyan')."\n+------------------------+\n");
+            print("\n\n".$window->picker->getColoredString("Crontab log (".date($panthera -> dateFormat, filectime(SITE_DIR. '/content/tmp/crontab.log'))."):", 'light_cyan')."\n+------------------------+\n");
             print(file_get_contents(SITE_DIR. '/content/tmp/crontab.log'));
             print("\n+------------------------+");
 

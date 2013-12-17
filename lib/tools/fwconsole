@@ -686,11 +686,13 @@ class fwconsole extends cliApp
 
     protected function time($args)
     {
-        print("Timestamp: " .time(). "\nDate: ".date('G:i:s d.m.Y'). "\n");
+        print("Timestamp: " .time(). "\nDate: ".date($panthera -> dateFormat). "\n");
     }
 
     protected function crontab($args)
     {
+        global $panthera;
+        
         unset($args[0]);
         $this->panthera-> importModule('crontab');
 
@@ -715,7 +717,7 @@ class fwconsole extends cliApp
 
             // compare dates and create "time left" counter
             $current = new DateTime();
-            $next = new DateTime(date('G:i:s d.m.Y', $value->next_interation));
+            $next = new DateTime(date($panthera -> dateFormat, $value->next_interation));
             $interval = $current->diff($next);
             $leftInterval = "(".$interval->format('%R%i min'). ")";
 
@@ -723,7 +725,7 @@ class fwconsole extends cliApp
             if (intval($interval->format('%i')) < 1)
                 $leftInterval = "(waiting)";
 
-            $data[] = array('jobid' => $value->jobid, 'Name' => $value->jobname, 'Next interation' => date('G:i:s d.m.Y', $value->next_interation). " ".$leftInterval, 'Created' => $value->created, 'Executed' => $value->count_executed. ' times', 'Left' => $left, 'Minute' => $value->minute, 'Hour' => $value->hour, 'Day' => $value->hour, 'Month' => $value->month, 'Day of week' => $value->weekday, 'Year' => $value->year);
+            $data[] = array('jobid' => $value->jobid, 'Name' => $value->jobname, 'Next interation' => date($panthera -> dateFormat, $value->next_interation). " ".$leftInterval, 'Created' => $value->created, 'Executed' => $value->count_executed. ' times', 'Left' => $left, 'Minute' => $value->minute, 'Hour' => $value->hour, 'Day' => $value->hour, 'Month' => $value->month, 'Day of week' => $value->weekday, 'Year' => $value->year);
          }
 
         $renderer = new ArrayToTextTable($data);
