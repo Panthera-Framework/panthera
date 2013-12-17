@@ -83,6 +83,10 @@ if (isset($_POST['log']) or isset($_GET['key']))
         
         if($result and is_bool($result))
         {
+            $u -> attributes -> set('loginFailures', 0);
+            $u -> attributes -> remove('loginFailureExpiration');
+            $u -> save();
+        
             // if user cannot access Admin Panel, redirect to other location (specified in redirect_after_login config section)
             if (!getUserRightAttribute($panthera->user, 'can_access_pa'))
             {
