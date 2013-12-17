@@ -1686,6 +1686,27 @@ class _arrayObject
         $this->__changed = True;
         $this->__data[$var] = $value;
     }
+    
+    public function get($var) { return $this->__get($var); }
+    public function set($var, $value) { return $this->__set($var, $value); }
+    
+    /**
+      * Remove a variable
+      *
+      * @param string $var
+      * @return true|null
+      * @author Damian Kęska
+      */
+    
+    public function remove($var)
+    {
+        if (isset($this->__data[$var]))
+        {
+            unset($this->__data[$var]);
+            $this->__changed = True;
+            return True;
+        }
+    }
 
     public function listAll()
     {

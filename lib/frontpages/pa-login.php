@@ -2,7 +2,11 @@
 /**
   * Admin panel login front controller
   *
-  * @package Panthera\core
+  * @package Panthera\core\frontpages
+  * @config pa-login redirect_after_login
+  * @config pa-login login.failures.max
+  * @config pa-login login.failures.bantime
+  * @config ajax_url
   * @author Damian Kęska
   * @license GNU Affero General Public License 3, see license.txt
   */
@@ -48,7 +52,34 @@ if (isset($_POST['log']) or isset($_GET['key']))
                 $template -> push('message', localize('Invalid user name specified', 'messages'));
         }
     } else {
+        $u = new pantheraUser('login', $_POST['log']);
+        
+        if ($u -> attributes -> get('loginFailures') >= intval($panthera -> config -> getKey('login.failures.max', 5, 'int', 'pa-login')) and $u -> attributes -> get('loginFailures') !== 0)
+        {
+            if (intval($u -> attributes -> get('loginFailureExpiration')) <= time())
+            {
+                $u -> attributes -> set('loginFailures', 0);
+                $u -> attributes -> remove('loginFailureExpiration');
+                $u -> save();
+                
+            } else {
+                $panthera -> get_options('login.failures.exceeded', array('user' => $u, 'failures' => $u -> attributes -> get('loginFailures'), 'expiration' => $u -> attributes -> get('loginFailureExpiration')));
+                $panthera -> template -> push('flags', $localesTpl);
+                $panthera -> template -> push('message', localize('Number of login failures exceeded, please wait a moment before next try', 'messages'));
+                $panthera -> template -> setTemplate('admin');
+                $panthera -> template -> display('login.tpl');
+                pa_exit();
+                
+            }
+        }
+        
         $result = userCreateSession($_POST['log'], $_POST['pwd']);
+        
+        /**
+          * Successful login
+          *
+          * @author Damian Kęska
+          */
         
         if($result and is_bool($result))
         {
@@ -67,12 +98,38 @@ if (isset($_POST['log']) or isset($_GET['key']))
         
             pa_redirect('pa-admin.php');
             pa_exit();
+
+            /**
+              * Suspended/banned account
+              *
+              * @author Damian Kęska
+              */
+
         } elseif ($result === 'BANNED') {
             $template -> push('message', localize('This account has been suspended, please contact administrator for details', 'messages'));
-            
+            $panthera -> get_options('login.failures.suspended', array('user' => $u, 'failures' => $u -> attributes -> get('loginFailures'), 'expiration' => $u -> attributes -> get('loginFailureExpiration')));
+
+
+            /**
+              * Login failure
+              *
+              * @author Damian Kęska
+              */
+
         } elseif ($result === False) {
             $template -> push('message', localize('Invalid user name or password', 'messages'));
+            $u -> attributes -> set('loginFailures', intval($u -> attributes -> get('loginFailures'))+1);
             
+            // plugins support
+            $panthera -> get_options('login.failures.exceeded', array('user' => $u, 'failures' => $u -> attributes -> get('loginFailures'), 'expiration' => $u -> attributes -> get('loginFailureExpiration')));
+            
+            if ($u -> attributes -> get('loginFailures') >= intval($panthera -> config -> getKey('login.failures.max', 5, 'int', 'pa-login')))
+            {
+                $u -> attributes -> set('loginFailureExpiration', (time()+intval($panthera -> config -> getKey('login.failures.bantime', 300, 'int', 'pa-login')))); // 5 minutes by default
+            }
+            
+            $u -> attributes -> set('lastFailLoginIP', $_SERVER['REMOTE_ADDR']);
+            $u -> save();
         }
     }
 }
