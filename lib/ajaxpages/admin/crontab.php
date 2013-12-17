@@ -97,6 +97,7 @@ if ($_GET['action'] == 'getClassFunctions')
 if ($_GET['action'] == 'saveJobDetails')
 {
     $job = new crontab('jobid', intval($_GET['jobid']));
+    $function = null;
     
     if (!$job->exists())
     {
@@ -112,7 +113,7 @@ if ($_GET['action'] == 'saveJobDetails')
         ajax_exit(array('status' => 'failed', 'message' => slocalize('Invalid crontab syntax, details: %s', 'crontab', $e -> getMessage())));
     }
     
-    if ($_POST['class'])
+    if (isset($_POST['class']))
     {
         if (!class_exists($_POST['class']))
         {
@@ -137,12 +138,15 @@ if ($_GET['action'] == 'saveJobDetails')
         $function = array($_POST['class'], $_POST['function']);
     } else {
     
-        if (!function_exists($_POST['function']))
+        if (isset($_POST['function']))
         {
-            ajax_exit(array('status' => 'failed', 'message' => localize('Invalid function name specified', 'crontab')));
+            if (!function_exists($_POST['function']))
+            {
+                ajax_exit(array('status' => 'failed', 'message' => localize('Invalid function name specified', 'crontab')));
+            }
+        
+            $function = $_POST['function'];
         }
-    
-        $function = $_POST['function'];
     }
     
     $countLeft = $_POST['count_left'];
@@ -154,8 +158,20 @@ if ($_GET['action'] == 'saveJobDetails')
     
     $countLeft = intval($countLeft);
     
+    // save class and function
+    $data = unserialize($job -> __get('data'));
     
-    $job -> jobname = $_POST['jobname'];
+    if ($function)
+    {
+        $data['function'] = $function;
+    }
+    
+    
+    if (@$_POST['jobname'])
+    {
+        $job -> jobname = $_POST['jobname'];
+    }
+    
     $job -> minute = $_POST['minute'];
     $job -> hour = $_POST['hour'];
     $job -> day = $_POST['day'];
@@ -210,7 +226,13 @@ if ($_GET['action'] == 'removeJob')
 
 if ($_GET['action'] == 'jobDetails')
 {
-    $job = new crontab('jobid', intval($_GET['jobid']));
+
+    if (isset($_GET['jobname']))
+    {
+        $job = new crontab('jobname', $_GET['jobname']);
+    } else {
+        $job = new crontab('jobid', intval($_GET['jobid']));
+    }
     
     if (!$job->exists())
     {
@@ -263,6 +285,16 @@ if ($_GET['action'] == 'jobDetails')
         'weekday' => $job->weekday
     );
     
+    $exp = explode(',', $_GET['removeOptions']);
+    
+    foreach ($exp as $option)
+    {
+        if (isset($jobDetails[$option]))
+        {
+            unset($jobDetails[$option]);
+        }
+    }
+    
     $cron = Cron\CronExpression::factory($jobDetails['crontab_string']);
     $time = time();
     $runtimes = array();
@@ -276,7 +308,7 @@ if ($_GET['action'] == 'jobDetails')
     
     for ($i = 0; $i < $max; $i++)
     {
-        $time = $cron -> getNextRunDate(new DateTime('@' .$time));
+        $time = $cron -> getNextRunDate(new DateTime('@' .($time+1)));
         $time = $time->getTimeStamp();
         $runtimes[] = date('G:i:s d.m.Y', $time);
     }
@@ -285,7 +317,14 @@ if ($_GET['action'] == 'jobDetails')
     $panthera -> template -> push('runtimes', $runtimes);
     $panthera -> template -> push('timing', $timing);
     $panthera -> template -> push('cronjob', $jobDetails);
-    $panthera -> template -> display('crontab_job.tpl');
+    
+    if (isset($_GET['popup']))
+    {
+        $panthera -> template -> display('crontab.popup.tpl');
+    } else {
+        $panthera -> template -> display('crontab_job.tpl');
+    }
+    
     pa_exit();
 }
 

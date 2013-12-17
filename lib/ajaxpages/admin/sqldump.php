@@ -10,6 +10,8 @@
 
 // TODO: SQLite3 support
 
+ini_set('memory_limit', '256M');
+
 if (!defined('IN_PANTHERA'))
       exit;
 
@@ -57,27 +59,56 @@ if (isset($_POST['dump']))
     ajax_exit(array('status' => 'failed'));
 }
 
-if ($_GET['action'] == 'settings')
+/**
+  * Manage "sqldump" cronjob
+  *
+  * @author Damian Kęska
+  */
+
+if ($_GET['action'] == 'manageCronjob')
 {
     $job = new crontab('jobname', 'sqldump');
     
-    if (!$job -> exists())
+    if (!$job -> exists() and $_POST['management'] == 'createJob')
     {
         crontab::createJob('sqldump', array('SQLDump', 'cronjob'), '', '*', '*', '*/7'); // 7 days interval by default
         $job = new crontab('jobname', 'sqldump');
     }
     
-    if (isset($_POST['timeInterval']))
+    if (!$job -> exists() and $_POST['management'] == 'createJob')
     {
-        $string = crontab::getDefaultIntervals($_POST['getDefaultIntervals']);
+        ajax_exit(array('status' => 'failed', 'message' => slocalize('Cannot create a cronjob, database error', 'crontab')));
     }
     
-    $titlebar = new uiTitlebar(localize('Automatic backup settings', 'database'));
-    $panthera -> template -> push('jobInterval', crontab::getIntervalExpression());
-    $panthera -> template -> push('cronIntervals', crontab::getDefaultIntervals());
-    $panthera -> template -> display('settings.sqldump.tpl');
-    pa_exit();
+    if ($_POST['management'] == 'removeJob')
+    {
+        crontab::removeJob($job -> jobid);
+    }
+    
+    ajax_exit(array('status' => 'success'));
 }
+
+#if ($_GET['action'] == 'settings')
+#{
+#    $job = new crontab('jobname', 'sqldump');
+#    
+#    if (!$job -> exists())
+#    {
+#        crontab::createJob('sqldump', array('SQLDump', 'cronjob'), '', '*', '*', '*/7'); // 7 days interval by default
+#        $job = new crontab('jobname', 'sqldump');
+#    }
+#    
+#    if (isset($_POST['timeInterval']))
+#    {
+#        $string = crontab::getDefaultIntervals($_POST['getDefaultIntervals']);
+#    }
+#    
+#    $titlebar = new uiTitlebar(localize('Automatic backup settings', 'database'));
+#    $panthera -> template -> push('jobInterval', crontab::getIntervalExpression());
+#    $panthera -> template -> push('cronIntervals', crontab::getDefaultIntervals());
+#    $panthera -> template -> display('settings.sqldump.tpl');
+#    pa_exit();
+#}
 
 /**
   * Show all created dumps
@@ -102,6 +133,9 @@ foreach ($dumps as $dump)
     );
 }
 
+$job = new crontab('jobname', 'sqldump');
+
+$panthera -> template -> push('serviceAvaliable', $job -> exists());
 $panthera -> template -> push('dumps', $dumpsTpl);
 $titlebar = new uiTitlebar(localize('Backup your database to prevent data loss', 'database'));
 $panthera -> template -> display('sqldump.tpl');

@@ -89,14 +89,17 @@ class httplib
       * @author Damian Kęska
       */
     
-    public function cleanup($input)
+    public function cleanup($input='')
     {
         global $panthera;
     
         if ($this->cookiesTempFile)
         {
-            $panthera -> logging -> output('Cleaning up file "' .$this->cookiesTempFile. '"', 'httplib');
-            unlink($this->cookiesTempFile);
+			if ($panthera)
+				$panthera -> logging -> output('Cleaning up file "' .$this->cookiesTempFile. '"', 'httplib');
+				
+			if (is_file($this->cookiesTempFile))
+				@unlink($this->cookiesTempFile);
         }
         
         return $input;
@@ -189,6 +192,11 @@ class httplib
             $options = array();
         }
         
+        if (!$method)
+        {
+            $method = 'GET';
+        }
+        
         $panthera -> logging -> output('Preparing to ' .$method. ' web url "' .$url. '"', 'httplib');
         
         // restoring session from previous connection on this object        
@@ -214,9 +222,11 @@ class httplib
         {
             curl_setopt($curl, CURLOPT_PROXY, $this->proxy);
             
-            if ($this->proxyType == 'socks4' or $this->proxyType == 'socks5')
+            if ($this->proxyType == 'socks5')
             {
                 curl_setopt($curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+            } elseif ($this -> proxyType == 'socks4') {
+                curl_setopt($curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
             } else {
                 curl_setopt($curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
             }

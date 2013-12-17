@@ -204,6 +204,7 @@ $(document).ready(function() {
     </div>
     {/if}
     
+    {if="count($runtimes)"}
     <div style="display: inline-block; margin: 0 auto; margin-top: 25px; width: 60%;">
         <table style="width: 100%;">
             <thead>
@@ -221,6 +222,7 @@ $(document).ready(function() {
             </tbody>
         </table>
     </div>
+    {/if}
     
     <div style="display: inline-block; margin: 0 auto; margin-top: 25px; width: 60%;">
         <table style="width: 100%;">

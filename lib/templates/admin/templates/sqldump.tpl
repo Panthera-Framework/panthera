@@ -1,15 +1,7 @@
 {$site_header}
 {include="ui.titlebar"}
 
-<div id="topContent">
-    <div class="searchBarButtonArea">
-        <input type="button" value="{function="localize('Create backup', 'database')"}" onclick="makeDump();">
-        <!--<input type="button" value="{function="localize('Automatic backup settings', 'database')"}" onclick="panthera.popup.toggle('?display=sqldump&cat=admin&action=settings')">-->
-    </div>
-</div>
-
-    
-    <script type="text/javascript">
+<script type="text/javascript">
         /**
           * Make dump
           *
@@ -28,7 +20,36 @@
             return false;
         }
         
+        /**
+          * Enable or disable automatic backup cronjob - "sqldump"
+          *
+          * @author Damian Kęska
+          */
+        
+        function manageAutomaticBackup(mode)
+        {
+            panthera.jsonPOST({ url: '?display=sqldump&cat=admin&action=manageCronjob', data: 'management='+mode, messageBox: 'w2ui', success: function (response) {
+                    if (response.status == "success")
+                    {
+                        navigateTo('?{function="getQueryString('GET', '', '_,action')"}');
+                    }
+                }
+            });
+        }
     </script>
+
+<div id="topContent">
+    <div class="searchBarButtonArea">
+        <input type="button" value="{function="localize('Create backup', 'database')"}" onclick="makeDump();">
+        
+        {if="$serviceAvaliable"}
+        <input type="button" value="{function="localize('Automatic backup settings', 'database')"}" onclick="panthera.popup.toggle('?display=crontab&cat=admin&action=jobDetails&jobname=sqldump&popup&removeOptions=name,class,function')">
+        <input type="button" value="{function="localize('Disable automatic backup', 'database')"}" onclick="manageAutomaticBackup('removeJob')">
+        {else}
+        <input type="button" value="{function="localize('Enable automatic backup', 'database')"}" onclick="manageAutomaticBackup('createJob')">
+        {/if}
+    </div>
+</div>
     
 <div class="ajax-content" style="text-align: center;">
     <form action="?{function="getQueryString('GET', 'action=newCategory', '_')"}" method="POST" id="newCategoryForm">

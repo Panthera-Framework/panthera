@@ -379,8 +379,16 @@ class crontab extends pantheraFetchDB
     public static function removeJob($jobid)
     {
         global $panthera;
-
-        $panthera -> logging -> output ('crontab:removeJob jobid=' .$jobid, 'crontab');
+        
+        $job = new crontab('jobid', $jobid);
+        
+        if (!$job -> exists())
+        {
+            return True;
+        }
+        
+        $job -> clearCache();
+        $panthera -> logging -> output ('removeJob jobid=' .$jobid, 'crontab');
         $SQL = $panthera->db->query('DELETE FROM `{$db_prefix}cronjobs` WHERE `jobid` = :jobid', array('jobid' => $jobid));
         return (bool)$SQL->rowCount();
     }
