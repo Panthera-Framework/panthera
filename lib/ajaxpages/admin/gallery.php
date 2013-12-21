@@ -673,6 +673,7 @@ if ($_GET['action'] == 'edit_item_form')
             if ($category -> exists())
                 $item -> gallery_id = $_POST['gallery_id'];
 
+            $item -> save();
             ajax_exit(array('status' => 'success', 'unique' => $item->unique));
         } else
             ajax_exit(array('status' => 'failed', 'error' => localize('Error with changing item!')));
