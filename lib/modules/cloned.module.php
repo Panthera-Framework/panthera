@@ -421,6 +421,7 @@ class cloned_images extends cloned_plugin
                     $name = basename($src).".jpg";
                     
                     if (strpos($name, '.php') === FALSE) {
+                        $name = str_replace("?", '', $name);
                         $uploadDir = pantheraUrl('{$upload_dir}/cloned/');
                         $filePath = pantheraUrl($uploadDir.$name);
                         $image -> save($filePath);
