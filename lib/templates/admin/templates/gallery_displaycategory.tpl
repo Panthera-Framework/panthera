@@ -49,9 +49,9 @@
                     {
                         if (response.visible == 1)
                         {
-                            $('#gallery_item_'+id).addClass('galleryItemHidden');
+                            $('#gallery_item_'+id).css("opacity", 1);
                         } else {
-                            $('#gallery_item_'+id).removeClass('galleryItemHidden');
+                            $('#gallery_item_'+id).css("opacity", 0.5);
                         }
                     }
 
@@ -269,10 +269,10 @@
   
   <div id="items_list" class="uploadBoxCentered" style="width: 94%; text-align: center; padding-top: 26px;">
     {loop="$item_list"}
-    <div class="galleryItem{if="$value->visibility == 0"} galleryItemHidden{/if} draggableGalleryItem" id="gallery_item_{$value->id}" style="display: inline-block; float: center; text-align: center; width: 220px; margin-right: 0px;">
+    <div class="galleryItem{if="$value->visibility == 0"}galleryItemHidden{/if} draggableGalleryItem" id="gallery_item_{$value->id}" style="display: inline-block; float: center; text-align: center; width: 220px; margin-right: 0px;">
         <div class="galleryImageFrame">
             <div class="paGalleryFrameContent" style="width: 220px;">
-                <a href="#edit" onclick="navigateTo('?display=gallery&cat=admin&action=edit_item_form&itid={$value->id}');"><img src="{$value->getThumbnail(300, True, True)}" class="galleryImage"></a>
+                <a href="#edit" onclick="navigateTo('?display=gallery&cat=admin&action=edit_item_form&itid={$value->id}&page={$page}');"><img src="{$value->getThumbnail(300, True, True)}" class="galleryImage"></a>
             </div>
             <div class="paGalleryFrameOverlay">
                 <h3 style="margin-bottom: 6px; margin-top: 6px;">{$value->title}</h3>
@@ -281,9 +281,9 @@
         </div>
         <div class="galleryItemDetails">
             <div style="text-align: center;">
-                <a href="#edit" onclick="navigateTo('?display=gallery&cat=admin&action=edit_item_form&itid={$value->id}');"><img src="{$PANTHERA_URL}/images/admin/menu/mce.png" class="galleryIcon" title="{function="localize('Edit', 'messages')"}"></a>
+                <a href="#edit" onclick="navigateTo('?display=gallery&cat=admin&action=edit_item_form&itid={$value->id}&page={$page}');"><img src="{$PANTHERA_URL}/images/admin/menu/mce.png" class="galleryIcon" title="{function="localize('Edit', 'messages')"}"></a>
                 <a href="#delete" onclick="removeGalleryItem({$value->id});"><img src="{$PANTHERA_URL}/images/admin/menu/Actions-process-stop-icon.png" class="galleryIcon" title="{function="localize('Delete', 'messages')"}"></a>
-                <a href="#toggle-visibility" onclick="toggleItemVisibility({$value->id});"><img src="{$PANTHERA_URL}/images/admin/menu/search.png" class="galleryIcon" title="{function="localize('Toggle visibility', 'gallery')"}"></a>
+                <a href="#toggle-visibility" onclick="toggleItemVisibility('{$value->id}');"><img src="{$PANTHERA_URL}/images/admin/menu/search.png" class="galleryIcon" title="{function="localize('Toggle visibility', 'gallery')"}"></a>
                 <a href="#rights" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_manage_gimage_{$value->id}', 1024, 550);"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" class="galleryIcon" title="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton"></a>
                 <a href="#thumbnail" onclick="setAsCategoryThumb({$value->id}, {$category_id});"><img src="{$PANTHERA_URL}/images/admin/menu/star.png" class="galleryIcon" title="{function="localize('Set as thumbnail', 'gallery')"}"></a>
             </div>

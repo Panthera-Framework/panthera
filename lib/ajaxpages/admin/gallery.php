@@ -372,6 +372,7 @@ if (@$_GET['action'] == 'toggleItemVisibility')
         }
     
         $item -> visibility = !(bool)$item->visibility;
+        $item -> save();
         ajax_exit(array('status' => 'success', 'visible' => $item -> visibility));
     } else
         ajax_exit(array('status' => 'failed', 'error' => localize('Item does not exists')));
@@ -580,6 +581,7 @@ if ($_GET['action'] == 'displayCategory')
     $template -> push('unique', $_GET['unique']);
     $template -> push('languages', $panthera->locale->getLocales());
     $template -> push('galleryObject', $category);
+    $template -> push('page', $page);
 
     if (intval($category->meta('unique')->get('all_langs')) > 0)
         $template -> push('all_langs', True);
@@ -705,6 +707,7 @@ if ($_GET['action'] == 'edit_item_form')
         $template -> push('gallery_id', $item -> gallery_id);
         $template -> push('visibility', !$item -> visibility);
         $template -> push('upload_id', $item -> upload_id);
+        $template -> push('page', $_GET['page']);
 
         $c = gallery::fetch('');
         $template -> push('category_list', $c);
