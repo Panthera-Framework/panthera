@@ -54,22 +54,25 @@ if (isset($_POST['log']) or isset($_GET['key']))
     } else {
         $u = new pantheraUser('login', $_POST['log']);
         
-        if ($u -> attributes -> get('loginFailures') >= intval($panthera -> config -> getKey('login.failures.max', 5, 'int', 'pa-login')) and $u -> attributes -> get('loginFailures') !== 0)
+        if ($u -> exists())
         {
-            if (intval($u -> attributes -> get('loginFailureExpiration')) <= time())
+            if ($u -> attributes -> get('loginFailures') >= intval($panthera -> config -> getKey('login.failures.max', 5, 'int', 'pa-login')) and $u -> attributes -> get('loginFailures') !== 0)
             {
-                $u -> attributes -> set('loginFailures', 0);
-                $u -> attributes -> remove('loginFailureExpiration');
-                $u -> save();
-                
-            } else {
-                $panthera -> get_options('login.failures.exceeded', array('user' => $u, 'failures' => $u -> attributes -> get('loginFailures'), 'expiration' => $u -> attributes -> get('loginFailureExpiration')));
-                $panthera -> template -> push('flags', $localesTpl);
-                $panthera -> template -> push('message', localize('Number of login failures exceeded, please wait a moment before next try', 'messages'));
-                $panthera -> template -> setTemplate('admin');
-                $panthera -> template -> display('login.tpl');
-                pa_exit();
-                
+                if (intval($u -> attributes -> get('loginFailureExpiration')) <= time())
+                {
+                    $u -> attributes -> set('loginFailures', 0);
+                    $u -> attributes -> remove('loginFailureExpiration');
+                    $u -> save();
+                    
+                } else {
+                    $panthera -> get_options('login.failures.exceeded', array('user' => $u, 'failures' => $u -> attributes -> get('loginFailures'), 'expiration' => $u -> attributes -> get('loginFailureExpiration')));
+                    $panthera -> template -> push('flags', $localesTpl);
+                    $panthera -> template -> push('message', localize('Number of login failures exceeded, please wait a moment before next try', 'messages'));
+                    $panthera -> template -> setTemplate('admin');
+                    $panthera -> template -> display('login.tpl');
+                    pa_exit();
+                    
+                }
             }
         }
         
@@ -122,18 +125,22 @@ if (isset($_POST['log']) or isset($_GET['key']))
 
         } elseif ($result === False) {
             $template -> push('message', localize('Invalid user name or password', 'messages'));
-            $u -> attributes -> set('loginFailures', intval($u -> attributes -> get('loginFailures'))+1);
             
-            // plugins support
-            $panthera -> get_options('login.failures.exceeded', array('user' => $u, 'failures' => $u -> attributes -> get('loginFailures'), 'expiration' => $u -> attributes -> get('loginFailureExpiration')));
-            
-            if ($u -> attributes -> get('loginFailures') >= intval($panthera -> config -> getKey('login.failures.max', 5, 'int', 'pa-login')))
+            if ($u -> exists())
             {
-                $u -> attributes -> set('loginFailureExpiration', (time()+intval($panthera -> config -> getKey('login.failures.bantime', 300, 'int', 'pa-login')))); // 5 minutes by default
+                $u -> attributes -> set('loginFailures', intval($u -> attributes -> get('loginFailures'))+1);
+                
+                // plugins support
+                $panthera -> get_options('login.failures.exceeded', array('user' => $u, 'failures' => $u -> attributes -> get('loginFailures'), 'expiration' => $u -> attributes -> get('loginFailureExpiration')));
+                
+                if ($u -> attributes -> get('loginFailures') >= intval($panthera -> config -> getKey('login.failures.max', 5, 'int', 'pa-login')))
+                {
+                    $u -> attributes -> set('loginFailureExpiration', (time()+intval($panthera -> config -> getKey('login.failures.bantime', 300, 'int', 'pa-login')))); // 5 minutes by default
+                }
+                
+                $u -> attributes -> set('lastFailLoginIP', $_SERVER['REMOTE_ADDR']);
+                $u -> save();
             }
-            
-            $u -> attributes -> set('lastFailLoginIP', $_SERVER['REMOTE_ADDR']);
-            $u -> save();
         }
     }
 }

@@ -55,13 +55,15 @@ class libtemplate
                     
         if (!empty($customTemplates))
         {
-            foreach ($customTemplates as $template)
+            foreach ($customTemplates as $template => $mergeLib)
             {
                 $roots[ PANTHERA_DIR. '/templates/' .$template. '/webroot' ] = $template;
-                $roots[ SITE_DIR. '/content/templates/' .$template. '/webroot' ] = $template;
+                
+                if ($mergeLib)
+                    $roots[ SITE_DIR. '/content/templates/' .$template. '/webroot' ] = $template;
             }
         }
-                            
+        
         $panthera->importModule('filesystem');
         
         // array with list of changes
@@ -75,6 +77,7 @@ class libtemplate
             if (is_dir($dir))
             {
                 $files = filesystem::scandirDeeply($dir, False);
+                $panthera -> logging -> output('Found ' .count($files). ' files and/or directories in "' .$dir. '"', 'pantheraTemplate');
                 
                 // directories first need to be created
                 foreach ($files as $file)
@@ -124,6 +127,8 @@ class libtemplate
                         }
                     }
                 }
+            } else {
+                $panthera -> logging -> output('No such directory: "' .$dir. '"', 'pantheraTemplate');
             }
         }   
         

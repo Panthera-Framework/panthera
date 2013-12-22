@@ -60,7 +60,7 @@ define('IN_PANTHERA', True);
 include(PANTHERA_DIR. '/panthera.php');
 include(PANTHERA_DIR. '/database.class.php');
 
-// panthera.min mode support
+// panthera.min mode support - BE CAREFUL WHEN USING THIS MODE!
 if (!defined('SKIP_CACHE'))
     include(PANTHERA_DIR. '/cache.class.php');
 
