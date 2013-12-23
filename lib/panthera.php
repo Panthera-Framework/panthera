@@ -236,9 +236,9 @@ class pantheraLogging
 
         if (PANTHERA_MODE == 'CLI')
         {
-            $defaults = "Client addr(".$_SERVER['SSH_CLIENT'].") => CLI ".$_SERVER['SCRIPT_NAME']."\n";
+            $defaults = "Client addr(".@$_SERVER['SSH_CLIENT'].") => CLI ".@$_SERVER['SCRIPT_NAME']."\n";
         } else
-            $defaults = "Client addr(".$_SERVER['REMOTE_ADDR'].") => ".$_SERVER['REQUEST_METHOD']. " ".$_SERVER['REQUEST_URI']."\n";
+            $defaults = "Client addr(".@$_SERVER['REMOTE_ADDR'].") => ".@$_SERVER['REQUEST_METHOD']. " ".@$_SERVER['REQUEST_URI']."\n";
 
         $msg = '';
         $lastTime = 0;

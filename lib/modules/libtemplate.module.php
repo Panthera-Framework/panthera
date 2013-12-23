@@ -150,10 +150,10 @@ class libtemplate
     
         if ($template == False)
         {
-            $pantheraTemplates = scandir(PANTHERA_DIR.'/templates');
-            $contentTemplates = scandir(SITE_DIR. '/content/templates');
+            $pantheraTemplates = @scandir(PANTHERA_DIR.'/templates');
+            $contentTemplates = @scandir(SITE_DIR. '/content/templates');
             
-            if (count($pantheraTemplates) > 0)
+            if ($pantheraTemplates)
             {
                 foreach ($pantheraTemplates as $file)
                 {
@@ -163,8 +163,8 @@ class libtemplate
                     $templates[$file] = array('item' => PANTHERA_DIR.'/templates/' .$file, 'place' => 'lib');
                 }
             }
-            
-            if (count($contentTemplates) > 0)
+           	
+            if ($contentTemplates)
             {
                 foreach ($contentTemplates as $file)
                 {
@@ -177,10 +177,10 @@ class libtemplate
             
         } else {
             // list files of given template
-            $pantheraFiles = scandir(PANTHERA_DIR.'/templates/' .$template. '/templates');
-            $contentFiles = scandir(SITE_DIR.'/content/templates/' .$template. '/templates');
+            $pantheraFiles = @scandir(PANTHERA_DIR.'/templates/' .$template. '/templates');
+            $contentFiles = @scandir(SITE_DIR.'/content/templates/' .$template. '/templates');
             
-            if (count($pantheraFiles) > 0)
+            if ($pantheraFiles)
             {
                 foreach ($pantheraFiles as $file)
                 {
@@ -191,9 +191,9 @@ class libtemplate
                 }
             }
             
-            if (count($contentTemplates) > 0)
+            if ($contentFiles)
             {
-                foreach ($contentTemplates as $file)
+                foreach ($contentFiles as $file)
                 {
                     if ($file == '..' or $file == '.' or !is_file(SITE_DIR.'/content/templates/' .$template. '/templates/' .$file))
                         continue;
