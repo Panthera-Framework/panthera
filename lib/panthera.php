@@ -424,6 +424,10 @@ class pantheraConfig
     {
         if(!$key or $value === null)
             return False;
+		
+		// load configuration section first
+        if ($section !== null)
+            $this->loadSection($section);
             
         if (isset($this->overlay[$key]))
         {
