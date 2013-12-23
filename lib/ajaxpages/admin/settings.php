@@ -30,7 +30,7 @@ if (!defined('IN_PANTHERA'))
 
         $yn = array(0 => localize('False'), 1 => localize('True'));
 
-        $options = array ('template' => $config['template'],
+        $options = array ('template' => $panthera -> config -> getKey('template'),
                             'timezone' => $config['timezone'],
                             'System Time' => date($panthera -> dateFormat),
                             'url' => $panthera->config->getKey('url'),
@@ -47,6 +47,7 @@ if (!defined('IN_PANTHERA'))
                             'magic_quotes_gpc' => $yn[intval(ini_get('magic_quotes_gpc'))],
                             'register_globals' => $yn[intval(ini_get('register_globals'))],
                             'session.save_handler' => ini_get('session.save_handler'),
+                            'memory_limit' => ini_get('memory_limit'),
                             'display_errors' => $yn[ini_get('display_errors')],
                             'post_max_size' => ini_get('post_max_size'),
                             'PDO Drivers' => implode(', ', PDO::getAvailableDrivers()),

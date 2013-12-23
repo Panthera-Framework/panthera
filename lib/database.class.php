@@ -671,6 +671,7 @@ class pantheraDB
 
         if ($SQL->rowCount() > 0)
         {
+        	// this code consumes less cpu and runs faster
             $array = $SQL->fetchAll(PDO::FETCH_ASSOC);
 
             foreach ($array as $item)
@@ -681,6 +682,19 @@ class pantheraDB
                 else
                     $results[] = $item;
             }
+			
+			
+			/*
+			// this code consumes less memory but runs slower
+			while ($item = $SQL -> fetch(PDO::FETCH_ASSOC))
+			{
+				// return results as object
+				if (class_exists($returnAs))
+                    $results[] = new $returnAs('array', $item);
+                else
+                    $results[] = $item;
+			}*/
+			
         }
 
         return $results;
