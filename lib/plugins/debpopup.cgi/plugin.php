@@ -96,19 +96,22 @@ class debpopupPlugin extends pantheraPlugin
             
                 $timing = explode(', ', str_replace('[', '', str_replace(']', '', substr($line, 0, $timingPos))));
                 
-                $categoryPos = strpos(substr($line, $timingPos+1, strlen($line)), ']'); // substr => string ' [pantheraCore] Imported "filesystem" from /lib/modules<br />' (length=61)
-                $category = substr($line, $timingPos+3, $categoryPos-2);
-                
+				$memoryPos = strpos(substr($line, $timingPos+1, strlen($line)), ']'); // substr => string ' [pantheraCore] Imported "filesystem" from /lib/modules<br />' (length=61)
+                $memory = substr($line, $timingPos+3, $memoryPos-2);
+				
+                $categoryPos = substr($line, ($timingPos+3)+($memoryPos-2)+3, strlen($line));
+				$category = substr($categoryPos, 0, strpos($categoryPos, ']'));
+				
                 if (strpos($timing[1], 'real') !== False)
                 {
                     $boldTimeDiff = true;
                 }
                 
-                $message = substr($line, $categoryPos+$timingPos+3, -6);
+                $message = substr($categoryPos, strpos($categoryPos, ']')+2, strlen($categoryPos));
                 
-                $linesArray[] = array($timing[0], $timing[1], $category, $message);
+                $linesArray[] = array($timing[0], $timing[1], $memory, $category, $message);
             } else {
-                $linesArray[] = array('', '', '', $line);
+                $linesArray[] = array('', '', '', '', $line);
             }
         }
         
@@ -116,7 +119,7 @@ class debpopupPlugin extends pantheraPlugin
             'name' => 'Debugger log',
             'items' => $linesArray, 
             'header' => array(
-                'Time', 'Diffirence', 'Category', 'Message'
+                'Time', 'Diffirence', 'Memory', 'Category', 'Message'
             )
         );
 

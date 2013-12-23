@@ -131,6 +131,7 @@ class pantheraLogging
     private $_output = array();
     private $panthera;
     protected $timer = 0;
+	public $isRealMemUsage = False;
 
     /**
       * Constructor
@@ -184,7 +185,7 @@ class pantheraLogging
         // plugins support eg. firebug
         $this->panthera -> get_options('logging.output', $msg);
 
-        $this->_output[] = array($msg, $type, $time, $this->timer);
+        $this->_output[] = array($msg, $type, $time, $this->timer, memory_get_usage($this->isRealMemUsage));
         
         if ($dontResetTimer == False)
             $this->timer = 0;
@@ -253,11 +254,11 @@ class pantheraLogging
                 $executionTime = ($time-$lastTime)*1000;
             }
             
-            $msg .= "[".substr($time, 0, 9).", ".substr($executionTime, 0, 9)."ms".$real."] [".$line[1]."] ".$line[0]. "\n";
+            $msg .= "[".substr($time, 0, 9).", ".substr($executionTime, 0, 9)."ms".$real."] [".filesystem::bytesToSize($line[4])."] [".$line[1]."] ".$line[0]. "\n";
             $lastTime = $time;
         }
 
-        $msg .= "[".substr(microtime_float()-$_SERVER['REQUEST_TIME_FLOAT'], 0, 9).", ".substr((microtime_float()-$_SERVER['REQUEST_TIME_FLOAT']-$lastTime)*1000, 0, 9)."ms] [pantheraLogging] Done\n";
+        $msg .= "[".substr(microtime_float()-$_SERVER['REQUEST_TIME_FLOAT'], 0, 9).", ".substr((microtime_float()-$_SERVER['REQUEST_TIME_FLOAT']-$lastTime)*1000, 0, 9)."ms] [".filesystem::bytesToSize(memory_get_usage($this->isRealMemUsage))."]  [pantheraLogging] Done\n";
 
         return $defaults.$msg;
     }
