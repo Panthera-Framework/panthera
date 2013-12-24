@@ -25,17 +25,20 @@ class facebookWrapper
 {
     protected $panthera, $loggedIn = False;
     public $sdk, $user;
+    public $cacheTime = 60; // 60 seconds
+    public $queryCache = array();
 
     /**
       * Constructor, integrates with Panthera's database
       *
       * @param string $appid (optional - if not provided there will be selected default one from database)
       * @param string $secret (optional, same as with $appid)
+      * @param string $state Serialized Facebook object
       * @return mixed
       * @author Damian Kęska
       */
 
-    public function __construct($appid='', $secret='')
+    public function __construct($appid='', $secret='', $state='')
     {
         global $panthera;
         $this->panthera = $panthera;
@@ -50,10 +53,31 @@ class facebookWrapper
         {
             $panthera -> logging -> output('Facebook integration wrapper requires "facebook_appid" and "facebook_secret" to be configured', 'facebook');
             throw new Exception('Facebook integration wrapper requires "facebook_appid" and "facebook_secret" to be configured');
-        } 
+        }
         
-        $this->sdk = new Facebook(array('appId'  => $appid, 'secret' => $secret));
-        $panthera -> logging -> output('Using appid=' .$appid. ' and secret=' .$secret, 'facebook');
+        if ($state)
+        {
+            $panthera -> logging -> output('Trying to restore object state', 'facebook');
+            $t = unserialize($state);
+            $this -> sdk = $t['sdk'];
+            $this -> queryCache = $t['queryCache'];
+            
+        } else {
+            $this->sdk = new Facebook(array('appId'  => $appid, 'secret' => $secret));
+            $panthera -> logging -> output('Using appid=' .$appid. ' and secret=' .$secret, 'facebook');
+        }
+    }
+    
+    /**
+      * Return serialized Facebook object 
+      *
+      * @return string
+      * @author Damian Kęska
+      */
+    
+    public function serializeState()
+    {
+        return serialize(array('sdk' => $this->sdk, 'queryCache' => $this->queryCache));
     }
 
     /**
@@ -87,9 +111,9 @@ class facebookWrapper
     
     public function userLikesPage($pageID)
     {
-        $checkIfUserLikePage = $this->sdk->api(array(
+        $checkIfUserLikePage = $this->api(array(
             "method"    => "fql.query",
-            "query"     => "SELECT target_id FROM page_fan WHERE uid=me() AND target_id=".$pageID
+            "query"     => "SELECT page_id FROM page_fan WHERE uid=me() AND page_id=".$pageID
         ));
         
         return sizeof($checkIfUserLikePage);
@@ -167,7 +191,7 @@ class facebookWrapper
     {
         // if $redirect is false then it will return the url
         //$logout = $this->panthera->template->redirect($this->sdk->getLogoutUrl(), $redirect);
-        $this -> panthera -> logging -> output('facebookWrapper::Calling session destroy, cleaning up...', 'facebook');
+        $this -> panthera -> logging -> output('Calling session destroy, cleaning up...', 'facebook');
         $this->sdk->destroySession();
         $this->panthera->session->remove('facebook_code');
         $this->panthera->session->remove('facebook_state');
@@ -186,8 +210,62 @@ class facebookWrapper
 
     public function fql($query)
     {
-        $this -> panthera -> logging -> output('facebookWrapper::fql (' .$query. ')', 'facebook');
-        return $this->sdk->api(array('method' => 'fql.query', 'query' => $query));
+        $this -> panthera -> logging -> startTimer();
+        $result = $this->sdk->api(array('method' => 'fql.query', 'query' => $query));
+        $this -> panthera -> logging -> output('FQL query -> "' .$query. '"', 'facebook');
+        return $result;
+    }
+    
+    /**
+      * Make a API query
+      *
+      * @param string $arg
+      * @return mixed
+      * @author Damian Kęska
+      */
+    
+    public function api($arg, $allowCaching=False)
+    {
+        $this -> panthera -> logging -> startTimer();
+        
+        if ($allowCaching and $this -> cacheTime > 0)
+        {
+            $argID = hash('md4', serialize($arg));
+            
+            if (isset($this->queryCache[$argID]))
+            {
+                if ($this->queryCache[$argID]['expiration'] <= time())
+                {
+                    $this -> panthera -> logging -> output('Updating outdated argid=' .$argID, 'facebook');
+                    
+                    $result = $this->sdk->api($arg);
+                    $this->queryCache[$argID] = array(
+                        'result' => $result, 
+                        'expiration' => time() + $this->cacheTime
+                    );
+                } else {
+                    $this -> panthera -> logging -> output('Received item from facebook cache', 'facebook');
+                    $result = $this->queryCache[$argID]['result'];
+                }
+                
+            } else {
+                $this -> panthera -> logging -> output('Cached argid=' .$argID, 'facebook');
+            
+                $result = $this->sdk->api($arg);
+            
+                $this->queryCache[$argID] = array(
+                    'result' => $result, 
+                    'expiration' => time() + $this->cacheTime
+                );
+            }
+            
+            
+        } else {
+            $result = $this->sdk->api($arg);
+        }
+        
+        $this -> panthera -> logging -> output('Finished API request', 'facebook');
+        return $result;
     }
 
     /**
@@ -199,7 +277,7 @@ class facebookWrapper
 
     public function getUserGroups()
     {
-        $userGroups = $this->sdk->api('/me/groups');
+        $userGroups = $this->api('/me/groups');
         $groups = array();
 
         foreach ($userGroups['data'] as $key => $value)
@@ -219,7 +297,7 @@ class facebookWrapper
     public function getGroup($gid)
     {
         // parsing: https://www.facebook.com/groups/243165669123459/
-        $groupData = $this->sdk->api('/' .$gid. '/');
+        $groupData = $this->api('/' .$gid. '/');
         return new facebookGroup($this, $groupData);
     }
 }
