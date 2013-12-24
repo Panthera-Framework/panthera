@@ -124,7 +124,7 @@ if ($_GET['action'] == 'adduploads')
             }
         
             // add to gallery
-            galleryItem::createGalleryItem(basename($file->location), $file->description, pantheraUrl($file->getLink(), True), intval($_GET['gid']), True, $file);
+            galleryItem::createGalleryItem(basename($file->location), $file->description, pantheraUrl($file->getLink(), True), intval($_GET['gid']), True, $file, $panthera->user->id, $panthera->user->login);
             $added++;
         }
     }
