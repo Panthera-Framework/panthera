@@ -226,8 +226,7 @@ class pantheraLogging
 
     public function getOutput($array=False)
     {
-        global $panthera;
-        $panthera -> importModule('filesystem');
+        $this -> panthera -> importModule('filesystem');
         
         if ($array === True)
             return $this->_output;
