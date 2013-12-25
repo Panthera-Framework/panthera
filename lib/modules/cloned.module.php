@@ -279,6 +279,33 @@ class cloned_images extends cloned_plugin
         // return from cache
         if (count($this->results) > 0 and $byPassCache == False)
             return $this->results;
+        
+        if ($this->options['save'])
+        {
+            $uploadDir = pantheraUrl('{$upload_dir}/cloned/');
+            if (!is_dir($uploadDir))
+                mkdir($uploadDir, 0777);
+        }
+
+        if (strtolower(substr($this->link, -4)) == '.jpg') {
+            $httplib = new httplib;
+                
+            try {
+                $httplib->timeout = 3;
+                $response = httplib::request($this->link);
+                $image = new SimpleImage();
+                $image -> loadFromString($response);
+
+                $width = $image -> getWidth();
+                $height = $image -> getHeight();
+                    
+            } catch (Exception $e) { 
+                $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Timeout');
+                continue;
+            }
+                
+            $this -> checkOptions($width, $height, $this->link, $image);
+        }
     
         // download link data
         $options = array( 
@@ -313,21 +340,14 @@ class cloned_images extends cloned_plugin
             $requiresDownload = True;
             //$tmpDir = maketmp();
         }
-        
-        if ($this->options['save'])
-        {
-            $uploadDir = pantheraUrl('{$upload_dir}/cloned/');
-            if (!is_dir($uploadDir))
-                mkdir($uploadDir, 0777);
-        }
     
         // so... lets parse the document
         $pq = phpQuery::newDocument($HTML);
-        $images = pq('img');
+        $images = pq('img', $pq);
         
         foreach ($images as $value)
         {
-            $src = pq($value)->attr('src');
+            $src = pq($value, $pq)->attr('src');
             $lowerSrc = strtolower($src);
             $srcParsed = parse_url($src);
             
@@ -375,65 +395,79 @@ class cloned_images extends cloned_plugin
                     continue;
                 }
                 
-                /* OPTIONS WITH IMAGE SIZE */
-                
-                // width, min-width, max-width
-                if ($this->options['width'] != -1 and $width != $this->options['width'])
-                {
-                    $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'width');
-                    continue; // doesnt match
-                }
-                    
-                if ($this->options['min-width'] != -1 and $width < $this->options['min-width'])
-                {
-                    $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'min-width');
-                    continue; 
-                }
-
-                if ($this->options['max-width'] != -1 and $width > $this->options['max-width'])
-                {
-                    $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'max-width');
-                    continue;
-                }
-                    
-                // height, min-width, max-width
-                if ($this->options['height'] != -1 and $height != $this->options['height'])
-                {
-                    $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'height');
-                    continue;
-                }
-                    
-                if ($this->options['min-height'] != -1 and $height < $this->options['min-height'])
-                {
-                    $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'min-height');
-                    continue;
-                }
-                    
-                if ($this->options['max-height'] != -1 and $height > $this->options['max-height'])
-                {
-                    $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'max-height');
-                    continue;
-                }
-                
-                // save file
-                if ($this->options['save']) {
-                        
-                    $name = basename($src).".jpg";
-                    
-                    if (strpos($name, '.php') === FALSE) {
-                        $name = str_replace("?", '', $name);
-                        $uploadDir = pantheraUrl('{$upload_dir}/cloned/');
-                        $filePath = pantheraUrl($uploadDir.$name);
-                        $image -> save($filePath);
-                        $this->results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
-                    }
-                }
-                    
-                $this->results[] = array('status' => 'success', 'data' => $src);
+                $this -> checkOptions($width, $height, $src, $image);
             }
         }
         
         return $this->results;
+    }
+
+    /**
+      * Check opitons for found image (optionally save)
+      *
+      * @param int $width
+      * @param int $height
+      * @param string $src, link to image
+      * @param object $image, simpleimage object of image
+      * @return void 
+      * @author Mateusz Warzyński
+      */
+
+    private function checkOptions($width, $height, $src, $image)
+    {
+        // width, min-width, max-width
+        if ($this->options['width'] != -1 and $width != $this->options['width'])
+        {
+            $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'width');
+            continue; // doesnt match
+        }
+                    
+        if ($this->options['min-width'] != -1 and $width < $this->options['min-width'])
+        {
+            $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'min-width');
+            continue; 
+        }
+
+        if ($this->options['max-width'] != -1 and $width > $this->options['max-width'])
+        {
+            $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'max-width');
+            continue;
+        }
+                    
+        // height, min-width, max-width
+        if ($this->options['height'] != -1 and $height != $this->options['height'])
+        {
+            $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'height');
+            continue;
+        }
+                    
+        if ($this->options['min-height'] != -1 and $height < $this->options['min-height'])
+        {
+            $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'min-height');
+            continue;
+        }
+                    
+        if ($this->options['max-height'] != -1 and $height > $this->options['max-height'])
+        {
+            $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'max-height');
+            continue;
+        }
+                
+        // save file
+        if ($this->options['save']) {
+                        
+            $name = basename($src).".jpg";
+                    
+            if (strpos($name, '.php') === FALSE) {
+               $name = str_replace("?", '', $name);
+               $uploadDir = pantheraUrl('{$upload_dir}/cloned/');
+               $filePath = pantheraUrl($uploadDir.$name);
+               $image -> save($filePath);
+               $this->results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
+            }
+        }
+                    
+        $this->results[] = array('status' => 'success', 'data' => $src);
     }
 }
 
