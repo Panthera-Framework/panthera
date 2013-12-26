@@ -419,38 +419,38 @@ class cloned_images extends cloned_plugin
         if ($this->options['width'] != -1 and $width != $this->options['width'])
         {
             $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'width');
-            continue; // doesnt match
+            return False; // doesnt match
         }
                     
         if ($this->options['min-width'] != -1 and $width < $this->options['min-width'])
         {
             $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'min-width');
-            continue; 
+            return False;
         }
 
         if ($this->options['max-width'] != -1 and $width > $this->options['max-width'])
         {
             $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'max-width');
-            continue;
+            return False;
         }
                     
         // height, min-width, max-width
         if ($this->options['height'] != -1 and $height != $this->options['height'])
         {
             $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'height');
-            continue;
+            return False;
         }
                     
         if ($this->options['min-height'] != -1 and $height < $this->options['min-height'])
         {
             $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'min-height');
-            continue;
+            return False;
         }
                     
         if ($this->options['max-height'] != -1 and $height > $this->options['max-height'])
         {
             $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'max-height');
-            continue;
+            return False;
         }
                 
         // save file
@@ -464,10 +464,12 @@ class cloned_images extends cloned_plugin
                $filePath = pantheraUrl($uploadDir.$name);
                $image -> save($filePath);
                $this->results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
+               return True;
             }
         }
                     
         $this->results[] = array('status' => 'success', 'data' => $src);
+        return True;
     }
 }
 
