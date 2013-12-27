@@ -937,7 +937,7 @@ class pantheraCore
 	 *
      * @param string $module Name
      * @param bool $forceReload Reload module if already loaded
-	 * @return void
+	 * @return bool
 	 * @author Damian Kęska
 	 */
 
@@ -973,8 +973,10 @@ class pantheraCore
             
             $this->logging->output('Imported "' .$module. '" from /lib/modules', 'pantheraCore');
             $this->modules[$module] = True;
+            return True;
         } else {
             $this->logging->output('Cannot import "' .$module. '" module', 'pantheraCore');
+            return False;
         }
     }
     
