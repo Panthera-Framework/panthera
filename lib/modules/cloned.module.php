@@ -98,7 +98,7 @@ class cloned extends pantheraClass
     
         // find link's index in array
         foreach ($this->links as $k => $a)
-        {#
+        {
             if ($a['link'] == $link)
             {
                 $index = $k;
