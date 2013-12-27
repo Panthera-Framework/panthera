@@ -54,7 +54,7 @@ class cloned extends pantheraClass
             }
         }
         
-        // parser does not exists
+        // parser does not exist
         if (!class_exists('cloned_' .$parser))
             return False;
             
@@ -98,7 +98,7 @@ class cloned extends pantheraClass
     
         // find link's index in array
         foreach ($this->links as $k => $a)
-        {
+        {#
             if ($a['link'] == $link)
             {
                 $index = $k;
@@ -256,7 +256,7 @@ class cloned_images extends cloned_plugin
 {
     // configuration options
     //private $options = array('min-width' => 0, 'max-width' => 0, 'min-height' => 0, 'max-height' => 0, 'extension' => '*', 'name_contains' => '', 'width' => 0, 'height' => 0);
-    public static $defaults = array('min-width' => -1, 'max-width' => -1, 'min-height' => -1, 'max-height' => -1, 'extension' => '*', 'name_contains' => '', 'width' => -1, 'height' => -1, 'save' => False);
+    public static $defaults = array('min-width' => -1, 'max-width' => -1, 'min-height' => -1, 'max-height' => -1, 'extension' => '*', 'name_contains' => '', 'width' => -1, 'height' => -1, 'save' => False, 'resize' => False);
 
     public static function detect($link)
     {
@@ -287,24 +287,26 @@ class cloned_images extends cloned_plugin
                 mkdir($uploadDir, 0777);
         }
 
-        if (strtolower(substr($this->link, -4)) == '.jpg') {
-            $httplib = new httplib;
-                
-            try {
-                $httplib->timeout = 3;
-                $response = httplib::request($this->link);
-                $image = new SimpleImage();
-                $image -> loadFromString($response);
+        /*
+        // get domain from link
+        $parse = parse_url($this->link);
+        $parse = explode('.', $parse['host']);
 
-                $width = $image -> getWidth();
-                $height = $image -> getHeight();
-                    
-            } catch (Exception $e) { 
-                $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Timeout');
-                continue;
-            }
+        // check if there are any instructions for current link
+        if (is_file($parse[count($parse)-2].'.parser.php')) {
+            try {
                 
-            $this -> checkOptions($width, $height, $this->link, $image);
+                return $this->results;
+            } catch (Exception $e) {
+                return False;
+            }
+        }*/
+
+        $extension = strtolower(substr($this->link, -4));
+        
+        if ($extension == '.jpg' or $extension == '.png' or $extension == '.gif') {
+            $this-> getImage($this->link);
+            return $this->results;
         }
     
         // download link data
@@ -378,25 +380,7 @@ class cloned_images extends cloned_plugin
             
             /* OPTIONS WITH REQUIRED DOWNLOAD */
             if ($requiresDownload == True)
-            {
-                $httplib = new httplib;
-                
-                try {
-                    $httplib->timeout = 3;
-                    $response = httplib::request($src);
-                    $image = new SimpleImage();
-                    $image -> loadFromString($response);
-
-                    $width = $image -> getWidth();
-                    $height = $image -> getHeight();
-                    
-                } catch (Exception $e) { 
-                    $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Timeout');
-                    continue;
-                }
-                
-                $this -> checkOptions($width, $height, $src, $image);
-            }
+                $this->getImage($src);
         }
         
         return $this->results;
@@ -455,8 +439,21 @@ class cloned_images extends cloned_plugin
                 
         // save file
         if ($this->options['save']) {
-                        
-            $name = basename($src).".jpg";
+            
+            switch ($image->image_type) {
+                case IMAGETYPE_JPEG:
+                    $extension = '.jpg';
+                    break;
+                case IMAGETYPE_PNG:
+                    $extension = '.png';
+                    break;
+                case IMAGETYPE_GIF:
+                    $extension = '.gif';
+                    break;
+            }
+            
+            $name = basename($src).$extension;
+            unset($extension);
                     
             if (strpos($name, '.php') === FALSE) {
                $name = str_replace("?", '', $name);
@@ -470,6 +467,112 @@ class cloned_images extends cloned_plugin
                     
         $this->results[] = array('status' => 'success', 'data' => $src);
         return True;
+    }
+
+    /**
+      * Resize image to fit dimensions set in options
+      *
+      * @param object $image simpleimage
+      * @return bool/object 
+      * @author Mateusz Warzyński
+      */
+    
+    private function resizeImage($image) {
+        
+        $imageWidth = $image->getWidth();
+        $imageHeight = $image->getHeight();
+        
+        if ($this->options['max-width'] != -1)
+            $width = $this->options['max-width'];
+            
+        if ($this->options['min-width'] != -1 and $this->options['max-width'] == -1)
+            $width = $this->options['min-width'];
+        
+        if ($this->options['width'] != -1)
+            $widthImportant = $this->options['width'];
+            
+        if ($this->options['max-height'] != -1)
+            $height = $this->options['max-height'];
+            
+        if ($this->options['min-height'] != -1 and $this->options['max-height'] == -1)
+            $height = $this->options['min-height'];
+        
+        if ($this->options['height'] != -1)
+            $heightImportant = $this->options['height'];
+        
+        // brake ratio and resize to given values
+        if (isset($heightImportant) and isset($widthImportant)) {
+            $image->resize($widthImportant, $heightImportant);
+            unset($heightImportant); unset($widthImportant);
+            return $image;
+        } elseif (isset($heightImportant)) {
+            $height = $heightImportant;
+        } elseif (isset($widthImportant)) {
+            $width = $widthImportant;
+        }
+        
+        if ($width != -1 and !isset($height) and $width < $imageWidth) {
+            $ratio = $width / $imageWidth;
+            $image->resize($width, $imageHeight*$ratio);
+            unset($ratio); return $image;
+        } elseif (!isset($width) and $height != -1 and $height < $imageHeight) {
+            $ratio = $height / $imageHeight;
+            $image->resize($imageWidth*$ratio, $height);
+            unset($ratio); return $image;   
+        } else {
+            // TODO: implement resizing images if isset only max-width and max-height (to get best quality of image)
+            return $image;
+        }
+    }
+    
+    /**
+      * Get image from link
+      *
+      * @param string $src to image
+      * @return void 
+      * @author Mateusz Warzyński
+      */
+    
+    private function getImage($src) {
+
+        $extension = strtolower(substr($src, -4));
+        
+        // get type of image by extension
+        if ($extension == '.jpg')
+            $type = IMAGETYPE_JPEG;
+        elseif ($extension == '.png')
+            $type = IMAGETYPE_PNG;
+        elseif ($extension == '.gif')
+            $type = IMAGETYPE_GIF;
+        else
+            $type = IMAGETYPE_JPEG; // default imageType
+        
+        $httplib = new httplib;
+                
+        try {
+            $httplib->timeout = 3;
+            $response = httplib::request($src);
+            $image = new SimpleImage();
+            $image -> loadFromString($response);
+            
+            if ($this->options['resize']) {
+                $imageResized = $this->resizeImage($image, $type);
+                if ($imageResized != False) {
+                    $image = $imageResized;
+                    unset($imageResized);
+                }
+            }
+            
+            $width = $image->getWidth();
+            $height = $image -> getHeight();
+                    
+        } catch (Exception $e) { 
+            $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Timeout');
+            return False;
+        }
+        
+        // check options (to return validate information and optionally save image)     
+        $this -> checkOptions($width, $height, $src, $image);
     }
 }
 

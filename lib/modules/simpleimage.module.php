@@ -18,6 +18,7 @@ class SimpleImage {
       * Create image from string
       *
       * @param string $string Binary image data
+      * @param $type of image (eg. IMAGETYPE_JPEG, IMAGETYPE_GIF, IMAGETYPE_PNG)
       * @return void 
       * @author Damian Kęska
       */
@@ -43,14 +44,15 @@ class SimpleImage {
          $this->image = imagecreatefrompng($filename);
       }
    }
-   function save($filename, $image_type=IMAGETYPE_JPEG, $compression=75, $permissions=null) {
- 
-      if( $image_type == IMAGETYPE_JPEG ) {
+   
+   public function save($filename, $compression=75, $permissions=null) {
+        
+      if( $this->image_type == IMAGETYPE_JPEG ) {
          imagejpeg($this->image,$filename,$compression);
-      } elseif( $image_type == IMAGETYPE_GIF ) {
+      } elseif( $this->image_type == IMAGETYPE_GIF ) {
  
          imagegif($this->image,$filename);
-      } elseif( $image_type == IMAGETYPE_PNG ) {
+      } elseif( $this->image_type == IMAGETYPE_PNG ) {
  
          imagepng($this->image,$filename);
       }
@@ -102,5 +104,14 @@ class SimpleImage {
       $new_image = imagecreatetruecolor($width, $height);
       imagecopyresampled($new_image, $this->image, 0, 0, 0, 0, $width, $height, $this->getWidth(), $this->getHeight());
       $this->image = $new_image;
+   }
+   
+   function cropBottom($px) {
+      $width = $this -> getWidth();
+      $height = $this -> getHeight();
+      $new_image = imagecreatetruecolor($width, $height);
+      imagecopyresampled($new_image, $this->image, 0, 0, 0, 0, $width, $height, $width, $height-$px);
+      $this->image = $new_image;
+      unset($width); unset($height);
    }
 }      
