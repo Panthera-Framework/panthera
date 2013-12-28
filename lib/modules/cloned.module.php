@@ -257,6 +257,7 @@ class cloned_images extends cloned_plugin
     // configuration options
     //private $options = array('min-width' => 0, 'max-width' => 0, 'min-height' => 0, 'max-height' => 0, 'extension' => '*', 'name_contains' => '', 'width' => 0, 'height' => 0);
     public static $defaults = array('min-width' => -1, 'max-width' => -1, 'min-height' => -1, 'max-height' => -1, 'extension' => '*', 'name_contains' => '', 'width' => -1, 'height' => -1, 'save' => False, 'resize' => False);
+    public $specialized = array('parse' => False, 'createImage' => False, 'getImages' => False, 'cropBottom' => False);
 
     public static function detect($link)
     {
@@ -287,38 +288,41 @@ class cloned_images extends cloned_plugin
                 mkdir($uploadDir, 0777);
         }
 
-        /*
         // get domain from link
         $parse = parse_url($this->link);
         $parse = explode('.', $parse['host']);
+        $moduleName = $parse[count($parse)-2];
+        $module = 'cloned/'.$moduleName;
 
-        // check if there are any instructions for current link
-        if (is_file($parse[count($parse)-2].'.parser.php')) {
-            try {
-                
-                return $this->results;
-            } catch (Exception $e) {
-                return False;
+        // use specified options for this link
+        if ($panthera->importModule($module)) {
+            $plugin = new $moduleName($this);
+            $this->specialized = $plugin->getOptions();
+            
+            if ($this->specialized['parse']) {
+                $plugin -> specifiedParse();
+                return $this->results;   
             }
-        }*/
+        }
 
         $extension = strtolower(substr($this->link, -4));
         
         if ($extension == '.jpg' or $extension == '.png' or $extension == '.gif') {
-            $this-> getImage($this->link);
+                
+            if ($this->specialized['createImage'])
+                $plugin -> createImage($this->link);
+            else
+                $this -> createImage($this->link);
+            
             return $this->results;
         }
-    
-        // download link data
-        $options = array( 
-          'http'=>array( 
-            'method'=>"GET", 
-              'timeout' => 10 
-              ) 
-        );
         
-        $context = stream_context_create($options); 
-        $HTML = file_get_contents($this->link, false, $context);
+        $requiresDownload = False;
+        
+        // check if we need to download a file to check if its valid
+        if ($this->options['min-width'] != -1 or $this->options['max-width'] != -1 or $this->options['width'] != -1 or $this->options['height'] != -1 or $this->options['min-height'] != -1 or $this->options['max-height'] != -1)
+            $requiresDownload = True; //$tmpDir = maketmp();
+        
         
         // informations about url
         $url = parse_url($this->link);
@@ -333,20 +337,15 @@ class cloned_images extends cloned_plugin
             $this->options['extension'] = str_replace(' ', '', strtolower($this->options['extension'])); // remove whitespaces
             $this->options['extension'] = explode(',', $this->options['extension']); // make an array by splitting string with "," separator
         }
-        
-        // check if we need to download a file to check if its valid
-        $requiresDownload = False;
-        
-        if ($this->options['min-width'] != -1 or $this->options['max-width'] != -1 or $this->options['width'] != -1 or $this->options['height'] != -1 or $this->options['min-height'] != -1 or $this->options['max-height'] != -1)
-        {
-            $requiresDownload = True;
-            //$tmpDir = maketmp();
-        }
     
-        // so... lets parse the document
-        $pq = phpQuery::newDocument($HTML);
-        $images = pq('img', $pq);
+        // get images instances from htnl (<img src='' >)
+        if ($this->specialized['getImages'])
+            $pq = $plugin -> getImages();
+        else
+            $pq = $this -> getImages();
         
+        $images = pq('img', $pq);
+         
         foreach ($images as $value)
         {
             $src = pq($value, $pq)->attr('src');
@@ -357,6 +356,10 @@ class cloned_images extends cloned_plugin
             if (!array_key_exists('host', $srcParsed))
             {
                 $src = $url['scheme']. '://' .$url['host']. '/' .$src;
+            }
+            
+            if ($src[0].$src[1].$src[2].$src[3] != 'http') {
+                $src = 'http:'.$src;
             }
             
             /* OPTIONS */
@@ -379,11 +382,79 @@ class cloned_images extends cloned_plugin
             }
             
             /* OPTIONS WITH REQUIRED DOWNLOAD */
-            if ($requiresDownload == True)
-                $this->getImage($src);
+            if ($requiresDownload == True) {
+                if ($this->specialized['createImage'])
+                    $plugin -> createImage($src);
+                else
+                    $this -> createImage($src);
+            }
         }
         
         return $this->results;
+    }
+
+    public function createImage($src) 
+    {
+        $extension = strtolower(substr($src, -4));
+        
+        // get type of image by extension
+        if ($extension == '.jpg')
+            $type = IMAGETYPE_JPEG;
+        elseif ($extension == '.png')
+            $type = IMAGETYPE_PNG;
+        elseif ($extension == '.gif')
+            $type = IMAGETYPE_GIF;
+        else
+            $type = IMAGETYPE_JPEG; // default imageType
+        
+        $httplib = new httplib;
+        
+        try {
+            $httplib->timeout = 3;
+            $response = httplib::request($src);
+            $image = new SimpleImage();
+            $image -> loadFromString($response);
+            
+            if ($this->specialized['cropBottom'] > 0)
+                $image -> cropBottom(intval($this->specialized['cropBottom']));
+            
+            if ($this->options['resize']) {
+                $imageResized = $this->resizeImage($image, $type);
+                
+                if ($imageResized != False) {
+                    $image = $imageResized;
+                    unset($imageResized);
+                }
+            }
+            
+            $width = $image->getWidth();
+            $height = $image -> getHeight();
+            
+        } catch (Exception $e) { 
+            $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Timeout');
+            return False;
+        }
+        // check options (to return validate information and optionally save image)     
+        $this -> checkOptions($width, $height, $src, $image);
+    } 
+    
+    /**
+      * Get images instances from html content
+      *
+      * @return phpQuery object 
+      * @author Mateusz Warzyński
+      */
+
+    public function getImages()
+    {
+        // download link data
+        $options = array( 'http'=>array( 'method'=>"GET", 'timeout' => 10 ) );
+        
+        $context = stream_context_create($options); 
+        $HTML = file_get_contents($this->link, false, $context);
+        
+        // so... lets parse the document
+        return phpQuery::newDocument($HTML); 
     }
 
     /**
@@ -397,13 +468,13 @@ class cloned_images extends cloned_plugin
       * @author Mateusz Warzyński
       */
 
-    private function checkOptions($width, $height, $src, $image)
+    public function checkOptions($width, $height, $src, $image)
     {
         // width, min-width, max-width
         if ($this->options['width'] != -1 and $width != $this->options['width'])
         {
             $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'width');
-            return False; // doesnt match
+            return False; // doesn't match
         }
                     
         if ($this->options['min-width'] != -1 and $width < $this->options['min-width'])
@@ -439,34 +510,38 @@ class cloned_images extends cloned_plugin
                 
         // save file
         if ($this->options['save']) {
-            
-            switch ($image->image_type) {
-                case IMAGETYPE_JPEG:
-                    $extension = '.jpg';
-                    break;
-                case IMAGETYPE_PNG:
-                    $extension = '.png';
-                    break;
-                case IMAGETYPE_GIF:
-                    $extension = '.gif';
-                    break;
-            }
-            
-            $name = basename($src).$extension;
-            unset($extension);
-                    
-            if (strpos($name, '.php') === FALSE) {
-               $name = str_replace("?", '', $name);
-               $uploadDir = pantheraUrl('{$upload_dir}/cloned/');
-               $filePath = pantheraUrl($uploadDir.$name);
-               $image -> save($filePath);
-               $this->results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
-               return True;
-            }
+            $this->save($image, $src, $extension);
         }
                     
         $this->results[] = array('status' => 'success', 'data' => $src);
         return True;
+    }
+
+    public function save($image, $src, $extension)
+    {
+        switch ($image->image_type) {
+            case IMAGETYPE_JPEG:
+                $extension = '.jpg';
+                break;
+            case IMAGETYPE_PNG:
+                $extension = '.png';
+                break;
+            case IMAGETYPE_GIF:
+                $extension = '.gif';
+                break;
+        }
+            
+        $name = basename($src).$extension;
+        unset($extension);
+                    
+        if (strpos($name, '.php') === FALSE) {
+            $name = str_replace("?", '', $name);
+            $uploadDir = pantheraUrl('{$upload_dir}/cloned/');
+            $filePath = pantheraUrl($uploadDir.$name);
+            $image -> save($filePath);
+            $this->results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
+            return True;
+        }
     }
 
     /**
@@ -477,7 +552,7 @@ class cloned_images extends cloned_plugin
       * @author Mateusz Warzyński
       */
     
-    private function resizeImage($image) {
+    public function resizeImage($image) {
         
         $imageWidth = $image->getWidth();
         $imageHeight = $image->getHeight();
@@ -523,56 +598,6 @@ class cloned_images extends cloned_plugin
             // TODO: implement resizing images if isset only max-width and max-height (to get best quality of image)
             return $image;
         }
-    }
-    
-    /**
-      * Get image from link
-      *
-      * @param string $src to image
-      * @return void 
-      * @author Mateusz Warzyński
-      */
-    
-    private function getImage($src) {
-
-        $extension = strtolower(substr($src, -4));
-        
-        // get type of image by extension
-        if ($extension == '.jpg')
-            $type = IMAGETYPE_JPEG;
-        elseif ($extension == '.png')
-            $type = IMAGETYPE_PNG;
-        elseif ($extension == '.gif')
-            $type = IMAGETYPE_GIF;
-        else
-            $type = IMAGETYPE_JPEG; // default imageType
-        
-        $httplib = new httplib;
-                
-        try {
-            $httplib->timeout = 3;
-            $response = httplib::request($src);
-            $image = new SimpleImage();
-            $image -> loadFromString($response);
-            
-            if ($this->options['resize']) {
-                $imageResized = $this->resizeImage($image, $type);
-                if ($imageResized != False) {
-                    $image = $imageResized;
-                    unset($imageResized);
-                }
-            }
-            
-            $width = $image->getWidth();
-            $height = $image -> getHeight();
-                    
-        } catch (Exception $e) { 
-            $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Timeout');
-            return False;
-        }
-        
-        // check options (to return validate information and optionally save image)     
-        $this -> checkOptions($width, $height, $src, $image);
     }
 }
 
