@@ -440,6 +440,11 @@ class pantheraTemplate extends pantheraClass
                 print('<html><head><title>Redirection</title><script type="text/javascript">window.location = "' .$location. '";</script></head><body>Click <a href="' .$location. '">here</a> if your browser didn\'t redirect you automaticaly.</body></html>');
                 pa_exit();
             break;
+            
+            case 'script_frame':
+                print('<html><head><title>Redirection</title><script type="text/javascript">window.top.location = "' .$location. '";</script></head><body>Click <a href="' .$location. '">here</a> if your browser didn\'t redirect you automaticaly.</body></html>');
+                pa_exit();
+            break;
 
             // by default return the location
             default:
