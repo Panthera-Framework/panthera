@@ -405,14 +405,13 @@ if ($_GET['action'] == 'account') {
     else
         ajax_exit(array('status' => 'failed', 'message' => localize('Login is too short!', 'users')));
 
-    if (strlen($_POST['passwd']) > 6) 
-    {
+    if (strlen($_POST['passwd']) > 6) {
+            
         $password = encodePassword($_POST['passwd']);
         
         if (!verifyPassword($_POST['retyped_passwd'], $password))
-        {
             ajax_exit(array('status' => 'failed', 'message' =>  localize('Passwords does not match', 'users')));
-        }
+        
     } else {
         ajax_exit(array('status' => 'failed', 'message' => localize('Password is too short!', 'users')));
     }

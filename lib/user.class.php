@@ -494,7 +494,7 @@ function createNewUser($login, $passwd, $full_name, $primary_group, $attributes,
     
     $array = array(
         'login' => $login,
-        'passwd' => encodePassword($passwd),
+        'passwd' => $passwd,
         'full_name' => $full_name,
         'primary_group' => $primary_group,
         'attributes' => $attributes,
