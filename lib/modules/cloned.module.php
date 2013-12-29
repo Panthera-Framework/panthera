@@ -393,7 +393,7 @@ class cloned_images extends cloned_plugin
         return $this->results;
     }
 
-    public function createImage($src) 
+    private function createImage($src) 
     {
         $extension = strtolower(substr($src, -4));
         
@@ -406,6 +406,11 @@ class cloned_images extends cloned_plugin
             $type = IMAGETYPE_GIF;
         else
             $type = IMAGETYPE_JPEG; // default imageType
+            
+        if ($type == IMAGETYPE_GIF) {
+            $this -> saveGIF($src);
+            return True;
+        }
         
         $httplib = new httplib;
         
@@ -413,7 +418,7 @@ class cloned_images extends cloned_plugin
             $httplib->timeout = 3;
             $response = httplib::request($src);
             $image = new SimpleImage();
-            $image -> loadFromString($response);
+            $image -> loadFromString($response, $type);
             
             if ($this->specialized['cropBottom'] > 0)
                 $image -> cropBottom(intval($this->specialized['cropBottom']));
@@ -445,7 +450,7 @@ class cloned_images extends cloned_plugin
       * @author Mateusz Warzyński
       */
 
-    public function getImages()
+    private function getImages()
     {
         // download link data
         $options = array( 'http'=>array( 'method'=>"GET", 'timeout' => 10 ) );
@@ -468,7 +473,7 @@ class cloned_images extends cloned_plugin
       * @author Mateusz Warzyński
       */
 
-    public function checkOptions($width, $height, $src, $image)
+    private function checkOptions($width, $height, $src, $image)
     {
         // width, min-width, max-width
         if ($this->options['width'] != -1 and $width != $this->options['width'])
@@ -517,7 +522,15 @@ class cloned_images extends cloned_plugin
         return True;
     }
 
-    public function save($image, $src, $extension)
+    /**
+      * Download image
+      *
+      * @param string $src to image
+      * @return bool 
+      * @author Mateusz Warzyński
+      */
+
+    private function save($image, $src, $extension)
     {
         switch ($image->image_type) {
             case IMAGETYPE_JPEG:
@@ -543,6 +556,28 @@ class cloned_images extends cloned_plugin
             return True;
         }
     }
+    
+    /**
+      * Download animation
+      *
+      * @param string $src to image
+      * @return bool 
+      * @author Mateusz Warzyński
+      */
+    
+    private function saveGIF($src)
+    {
+        $name = basename($src).'.gif';
+        
+        if (strpos($name, '.php') === FALSE) {
+            $name = str_replace("?", '', $name);
+            $uploadDir = pantheraUrl('{$upload_dir}/cloned/');
+            $filePath = pantheraUrl($uploadDir.$name);
+            file_put_contents($filePath, file_get_contents($src));
+            $this->results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
+            return True;
+        }
+    }
 
     /**
       * Resize image to fit dimensions set in options
@@ -552,7 +587,7 @@ class cloned_images extends cloned_plugin
       * @author Mateusz Warzyński
       */
     
-    public function resizeImage($image) {
+    private function resizeImage($image) {
         
         $imageWidth = $image->getWidth();
         $imageHeight = $image->getHeight();
