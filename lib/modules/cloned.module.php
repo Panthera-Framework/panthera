@@ -514,11 +514,11 @@ class cloned_images extends cloned_plugin
         }
                 
         // save file
-        if ($this->options['save']) {
+        if ($this->options['save'])
             $this->save($image, $src, $extension);
-        }
-                    
-        $this->results[] = array('status' => 'success', 'data' => $src);
+        else
+            $this->results[] = array('status' => 'success', 'data' => $src);   
+        
         return True;
     }
 
@@ -574,9 +574,69 @@ class cloned_images extends cloned_plugin
             $uploadDir = pantheraUrl('{$upload_dir}/cloned/');
             $filePath = pantheraUrl($uploadDir.$name);
             file_put_contents($filePath, file_get_contents($src));
-            $this->results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
-            return True;
+            
+            if ($this->checkGIFOptions($filePath)) {
+                $this->results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
+            } else {
+                unlink($filePath);
+            }
         }
+    }
+    
+    /**
+      * Check opitons for found gif
+      *
+      * @param string $src
+      * @return bool 
+      * @author Mateusz Warzyński
+      */
+
+    private function checkGIFOptions($filePath)
+    {
+        $image = imagecreatefromgif($filePath);
+    
+        $width = imagesx($image);
+        $height = imagesy($image);
+        
+        // width, min-width, max-width
+        if ($this->options['width'] != -1 and $width != $this->options['width'])
+        {
+            $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'width');
+            return False; // doesn't match
+        }
+                    
+        if ($this->options['min-width'] != -1 and $width < $this->options['min-width'])
+        {
+            $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'min-width');
+            return False;
+        }
+
+        if ($this->options['max-width'] != -1 and $width > $this->options['max-width'])
+        {
+            $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'max-width');
+            return False;
+        }
+                    
+        // height, min-width, max-width
+        if ($this->options['height'] != -1 and $height != $this->options['height'])
+        {
+            $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'height');
+            return False;
+        }
+                    
+        if ($this->options['min-height'] != -1 and $height < $this->options['min-height'])
+        {
+            $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'min-height');
+            return False;
+        }
+                    
+        if ($this->options['max-height'] != -1 and $height > $this->options['max-height'])
+        {
+            $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Filter_Mismatch', 'filter' => 'max-height');
+            return False;
+        }
+                
+        return True;
     }
 
     /**
