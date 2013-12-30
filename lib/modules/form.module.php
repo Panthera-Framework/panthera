@@ -17,6 +17,7 @@ abstract class validableForm
     public $formName = 'form';
     public $formTemplateDisabled = 'formTemplate.closed.tpl';
     public $formTemplateEnabled = 'formTemplate.tpl'; 
+    protected $fieldsList = array(); // eg. array('login', 'password', 'mail')
     
     /*
      * Default constructor
@@ -69,20 +70,6 @@ abstract class validableForm
     
     protected function _processFormValidation()
     {
-        if (!$this->forceEnable and !$this->formEnabled())
-        {
-            return False;
-        }
-        
-        // additional fields
-        $additionalFields = $this->validateAdditionalFields();
-        
-        if (!$additionalFields or is_array($additionalFields))
-        {
-            return $additionalFields;
-        }
-        
-        
         return True;
     }
     
@@ -94,7 +81,38 @@ abstract class validableForm
     
     public function validateForm()
     {
+        if (!$this->forceEnable and !$this->formEnabled())
+        {
+            return False;
+        }
+        
         $result = $this -> _processFormValidation();
+        
+        // additional fields
+        $additionalFields = $this->validateAdditionalFields();
+        
+        if (!$additionalFields or is_array($additionalFields))
+        {
+            $this -> panthera -> template -> push('formValidation', $additionalFields);
+            return $additionalFields;
+        }
+        
+        // generic fields validation
+        foreach ($this->fieldsList as $field)
+        {
+            $methodName = '_processField_' .$field;
+            
+            if (method_exists($this, $methodName))
+            {
+                $r = $this->$methodName();
+                
+                if ($r !== True and $r !== Null)
+                {
+                    return $r;
+                }
+            }
+        }
+        
         $this -> panthera -> template -> push('formValidation', $result);
         return $result;
     }
