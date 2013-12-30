@@ -218,6 +218,7 @@ if (isset($_GET['popup']))
     if (!$countCategories) {
         if ($canManageUpload or $permissions['admin']) {
             pantheraUpload::createUploadCategory('default', $panthera->user->id, 'all');
+            pantheraUpload::createUploadCategory('avatars', $panthera->user->id, 'all');
             $countCategories = 1;
         }  else {
             ajax_exit(array('status' => 'failed', 'message' => localize('Cannot create default category. Check your permissions!')));
