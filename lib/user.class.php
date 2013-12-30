@@ -461,21 +461,20 @@ function getCurrentUser()
  * @return bool
  * @package Panthera\core\user
  * @author Mateusz Warzyński
+ * @author Damian Kęska
  */
 
-function createNewUser($login, $passwd, $full_name, $primary_group, $attributes, $language, $mail='', $jabber='', $profile_picture='{$PANTHERA_URL}/images/default_avatar.png', $ip)
+function createNewUser($login, $passwd, $full_name, $primary_group='', $attributes, $language, $mail='', $jabber='', $profile_picture='{$PANTHERA_URL}/images/default_avatar.png', $ip)
 {
     global $panthera;
 
     if ($ip == '')
         $ip = $_SERVER['REMOTE_ADDR'];
-        
-    $test = new pantheraUser('login', $login);
     
-    if ($test -> exists())
+    // groups check
+    if (!$primary_group)
     {
-        throw new Exception('User already exists', 863);
-        return False;
+        $primary_group = 'users';
     }
     
     if (!$panthera -> locale -> exists($language))
@@ -492,10 +491,52 @@ function createNewUser($login, $passwd, $full_name, $primary_group, $attributes,
         return False;
     }
     
+    if ($mail)
+    {
+        if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
+        {
+            throw new Exception('Incorrect e-mail address', 866);
+        }
+    }
+    
+    if ($jabber)
+    {
+        if (!filver_var($jabber, FILTER_VALIDATE_EMAIL))
+        {
+            throw new Exception('Incorrect jabber address', 867);
+        }
+    }
+
+    // validate login
+    $test = new pantheraUser('login', $login);
+    
+    if ($test -> exists())
+    {
+        throw new Exception('User already exists', 863);
+        return False;
+    }
+    
+    $login = trim($login);
+    $regexp = $panthera -> get_filters('createNewUser.loginRegexp', '/^[a-zA-Z0-9\-\.\,\+\!]+_?[a-zA-Z0-9\-\.\,\+\!]+$/D');
+    
+    if (!preg_match($regexp, $login))
+    {
+        throw new Exception('Login contains invalid characters from range ' .$regexp, 868);
+    }
+
+    // ip address (if entered)
+    if ($ip)
+    {
+        if (!filter_var($ip, FILTER_VALIDATE_IP))
+        {
+            throw new Exception('Invalid IP address, leave empty if not required', 878);
+        }
+    }
+    
     $array = array(
-        'login' => $login,
-        'passwd' => $passwd,
-        'full_name' => $full_name,
+        'login' => strip_tags($login),
+        'passwd' => encodePassword($passwd),
+        'full_name' => strip_tags($full_name),
         'primary_group' => $primary_group,
         'attributes' => $attributes,
         'language' => $language,
