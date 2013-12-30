@@ -23,7 +23,7 @@ function removeGroup(name)
     panthera.confirmBox.create('{function="localize('Are you sure you want delete this group?', 'users')"}', function (responseText) {
        if (responseText == 'Yes')
         {
-            panthera.jsonPOST( { url: '?display=users&cat=admin&action=removeGroup', data: 'group='+name, spinner: groupSpinner, success: function (response) {
+            panthera.jsonPOST( { url: '?display=users&cat=admin&action=removeGroup', data: 'group='+name, success: function (response) {
 
                     if (response.status == "success")
                         $('#group_'+response.name).remove();
@@ -191,6 +191,35 @@ function removeUser(id)
 <!-- New group popup -->
 
 <div id="newGroupPopup" style="display: none;">
+    <script type="text/javascript">
+      $(document).ready(function () {
+
+            /**
+              * Add a new group
+              *
+              * @author Damian Kęska
+              */
+        
+            $('#createGroupForm').submit(function () {
+                panthera.jsonPOST( { data: '#createGroupForm', success: function (response) {
+        
+                        if (response.status == "success")
+                        {
+                            navigateTo('?display=users&cat=admin');
+                        } else {
+                            if (response.message != undefined)
+                            {
+                                w2alert(response.message, '{function="localize('Warning', 'acl')"}');
+                            }
+        
+                        }
+                    }
+                });
+                return false;
+            });
+      });
+    </script>
+    
     <form action="?display=users&cat=admin&action=createGroup" method="POST" id="createGroupForm">
          
          <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
@@ -230,36 +259,6 @@ function removeUser(id)
 <!-- Ajax content -->
 
 <div class="ajax-content" style="text-align: center;">
-    <script type="text/javascript">
-      $(document).ready(function () {
-
-            /**
-              * Add a new group
-              *
-              * @author Damian Kęska
-              */
-        
-            $('#createGroupForm').submit(function () {
-                panthera.jsonPOST( { data: '#createGroupForm', spinner: groupSpinner, success: function (response) {
-        
-                        if (response.status == "success")
-                        {
-                            //$('.groupTableItem').remove();
-                            $('#groupTableBody').prepend('<tr id="group_'+response.name+'" class="groupTableItem"><td><a href="?display=acl&cat=admin&action=listGroup&group='+response.name+'" class="ajax_link">'+response.name+'</a></td><td>'+response.description+'</td><td><input type="button" value="{function="localize('Remove', 'acl')"}" onclick="removeGroup(\''+response.name+'\');"></td>');
-                        } else {
-                            if (response.message != undefined)
-                            {
-                                w2alert(response.message, '{function="localize('Warning', 'acl')"}');
-                            }
-        
-                        }
-                    }
-                });
-                return false;
-            });
-      });
-    </script>
-    
     <div>
         
       <!-- Groups -->
