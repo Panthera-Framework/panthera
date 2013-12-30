@@ -146,17 +146,26 @@ class facebookWrapper
       *
       * @param array $scope Array of priviledges
       * @param mixed $redirect Set to false if you want to grab redirect link as a function return, or use "script", "meta" or "header" redirection
+      * @param string $baseURL Replace facebook generated redirection url with your's  
       * @return mixed
       * @author Damian Kęska
       */
 
-    public function loginUser($scope, $redirect=False)
+    public function loginUser($scope, $redirect=False, $baseURL=False)
     {
         $this->cleanURI();
         if ($this->sdk->getUser()) {
             return True;
         } else {
             $url = $this->sdk->getLoginUrl(array('scope' => $scope));
+            
+            if ($baseURL) 
+            {   
+                $base = parse_url($url);
+                parse_str($base['query'], $args);
+                $url = str_ireplace(urlencode($args['redirect_uri']), urlencode($baseURL), $url);
+            }
+            
             $this -> panthera -> logging -> output('facebookWrapper::Redirecting user to url=' .$url, 'facebook');
             return $this->panthera->template->redirect($url, $redirect);
         }
