@@ -184,9 +184,17 @@ $defaults['system']['pager'] = array(
 
 $defaults['system']['crontab'] = array(
     'link' => '?display=crontab&cat=admin',
-    'name' => localize('Crontab', 'crontab'),
-    'description' => localize('Scheduled jobs management - crontab', 'crontab'),
+    'name' => localize('Crontab', 'settings'),
+    'description' => localize('Scheduled jobs management - crontab', 'settings'),
     'icon' => '{$PANTHERA_URL}/images/admin/menu/crontab.png',
+    'linkType' => 'ajax'
+);
+
+$defaults['system']['upload'] = array(
+    'link' => '?display=upload&cat=admin',
+    'name' => localize('Upload management', 'settings'),
+    'description' => localize('Manage upload categories, files', 'settings'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/uploads.png',
     'linkType' => 'ajax'
 );
 
