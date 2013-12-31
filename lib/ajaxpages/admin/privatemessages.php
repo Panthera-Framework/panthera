@@ -11,12 +11,15 @@
 if (!defined('IN_PANTHERA'))
     exit;
 
+// Remove it if private message is done
+$panthera-> template -> display('no_page.tpl');
+pa_exit();
+
 $panthera -> addPermission('can_send_pmsg', localize('Can send private messages', 'pmessages'));
 $panthera -> locale -> loadDomain('pmessages');
 $panthera -> importModule('privatemessages');
 
 $canSendPMessage = getUserRightAttribute($user, 'can_send_pmsg');
-
 
 /**
   * Send new private message(s)
