@@ -13,13 +13,53 @@ function executeShellCommand()
 {
     command = $('#command_selection').val();
 
-    panthera.jsonPOST({ url: '?display=shellutils&cat=admin&exec='+command, data: '', messageBox: 'w2ui'});
+    panthera.jsonPOST({ url: '?display=shellutils&cat=admin&exec='+command, data: '', messageBox: 'undefined', success: function(response) {
+        if (response.status == 'success')
+        {
+            $("#output").html(response.message);
+        }
+    }});
     return false;
 
 }
 
 </script>
 {/if}
+
+<style>
+
+.terminal .terminal-output .format, .terminal .cmd .format,
+.terminal .cmd .prompt, .terminal .cmd .prompt div, .terminal .terminal-output div div{
+    display: inline-block;
+}
+.terminal {
+    padding: 10px;
+    position: relative;
+    width: 600px;
+    height: 400px;
+    margin-top: 20px;
+    display: inline-block;
+    overflow: scroll;
+}
+.cmd {
+    padding: 0;
+    margin: 0;
+    height: 1.3em;
+    /*margin-top: 3px; */
+}
+
+.terminal {
+    font-family: FreeMono, monospace;
+    color: #aaa;
+    background-color: #000;
+    font-size: 12px;
+    line-height: 14px;
+}
+
+#output {
+    float: left;
+}
+</style>
 
 {include="ui.titlebar"}
 
@@ -47,4 +87,8 @@ function executeShellCommand()
             </tr>
         </tbody>
       </table>
+      
+      <div class="terminal" style="height: 400px; width: 100%;">
+          <div class="cmd"><p id="output">Panthera Framework</p></div>
+      </div>
 </div>
