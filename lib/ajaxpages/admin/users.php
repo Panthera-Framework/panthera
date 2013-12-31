@@ -372,6 +372,14 @@ if ($_GET['action'] == 'account') {
     }
 
     $id = $_POST['id'];
+    
+    $usersPage = (intval(@$_GET['usersPage']));
+    
+    if ($usersPage < 0)
+        $usersPage = 0;
+    
+    $sid = 'search:' .hash('md4', $_GET['hash']);
+    $panthera -> cache -> set($sid, NULL);
 
     try {
         $cUser = getCurrentUser();
@@ -434,10 +442,13 @@ if ($_GET['action'] == 'account') {
 
     $attributes = array();
 
-    if (createNewUser($login, $password, $full_name, $primary_group, $attributes, $language, $mail, $jabber, $avatar))
+    if (createNewUser($login, $password, $full_name, $primary_group, $attributes, $language, $mail, $jabber, $avatar)) {
+        $sid = 'search:' .hash('md4', $_POST['hash']);
+        $panthera -> cache -> set($sid, NULL);
         ajax_exit(array('status' => 'success', 'message' => localize('User has been successfully added!', 'users')));
-    else
+    } else {
         ajax_exit(array('status' => 'failed', 'message' => localize('Error while adding user!', 'users')));
+    }
 
 /**
   * Show list of users
@@ -451,6 +462,8 @@ if ($_GET['action'] == 'account') {
             $noAccess = new uiNoAccess; $noAccess -> display();
             pa_exit();
         }
+        
+        $tpl = "users.tpl";
         
         $panthera -> importModule('admin/ui.searchbar');
         $panthera -> locale -> loadDomain('search');
@@ -476,11 +489,6 @@ if ($_GET['action'] == 'account') {
             'ASC' => array('title' => localize('Ascending', 'search'), 'selected' => ($_GET['direction'] == 'ASC')),
             'DESC' => array('title' => localize('Descending', 'search'), 'selected' => ($_GET['direction'] == 'DESC'))
         ));
-
-        if (@$_GET['subaction'] == 'show_table')
-            $tpl = "users_table.tpl";
-        else
-            $tpl = "users.tpl";
 
         $usersPage = (intval(@$_GET['usersPage']));
         $order = 'id'; $orderColumns = array('id', 'login', 'full_name', 'joined', 'lastlogin', 'lastip', 'mail', 'primary_group');
@@ -606,6 +614,7 @@ if ($_GET['action'] == 'account') {
         $panthera -> template -> push('locales_added', $panthera->locale->getLocales());
         $panthera -> template -> push('users_list', $users);
         $panthera -> template -> push('view_users', True);
+        $panthera -> template -> push('usersCacheHash', $_GET['query'].$_GET['order'].$_GET['direction'].$usersPage);
         
         $titlebar = new uiTitlebar(localize('All registered users on this website', 'users'));
         $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
