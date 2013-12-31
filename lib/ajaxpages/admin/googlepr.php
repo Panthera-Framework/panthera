@@ -35,23 +35,18 @@ if ($_GET['action'] == 'getPageRank')
     
     // get PageRank
     $rank = GooglePR::getRank($domain);
-    
-    if (!$rank) {
-        ajax_exit(array('status' => 'failed', 'message' => localize('Got wrong result, probably your domain is incorrect', 'googlepr')));
-    } else {
         
-        if (count($results) > 14) {
-            reset($results);
-            $firstKey = key($results);
-            unset($results[$firstKey]);
-        }
-        
-        $results[$domain] = $rank;
-        
-        $panthera -> session -> set ('googlepr.history', $results);
-        
-        ajax_exit(array( 'status' => 'success'));
+    if (count($results) > 14) {
+        reset($results);
+        $firstKey = key($results);
+        unset($results[$firstKey]);
     }
+        
+    $results[$domain] = $rank;
+        
+    $panthera -> session -> set ('googlepr.history', $results);
+        
+    ajax_exit(array( 'status' => 'success'));
 }
 
 $panthera -> template -> push('charResults', array_reverse($panthera -> session -> get ('googlepr.history')));
