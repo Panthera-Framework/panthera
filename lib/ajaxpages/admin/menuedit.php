@@ -329,5 +329,6 @@ $template -> push('menu_categories', $c);
 
 $titlebar = new uiTitlebar(localize('Menu management for site and administration panel', 'menuedit'));
 $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png', 'left');
+$template -> display($tpl);
 
 pa_exit();
