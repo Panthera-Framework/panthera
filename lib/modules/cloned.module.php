@@ -258,6 +258,7 @@ class cloned_images extends cloned_plugin
     //private $options = array('min-width' => 0, 'max-width' => 0, 'min-height' => 0, 'max-height' => 0, 'extension' => '*', 'name_contains' => '', 'width' => 0, 'height' => 0);
     public static $defaults = array('min-width' => -1, 'max-width' => -1, 'min-height' => -1, 'max-height' => -1, 'extension' => '*', 'name_contains' => '', 'width' => -1, 'height' => -1, 'save' => False, 'resize' => False);
     public $specialized = array('parse' => False, 'createImage' => False, 'getImages' => False, 'cropBottom' => False);
+    private $allowedExtensions = array('.jpg', '.png', '.gif');
 
     public static function detect($link)
     {
@@ -304,11 +305,9 @@ class cloned_images extends cloned_plugin
                 return $this->results;   
             }
         }
-
-        $extension = strtolower(substr($this->link, -4));
         
-        if ($extension == '.jpg' or $extension == '.png' or $extension == '.gif') {
-                
+        if (strpos($this->link, '.jpg') or strpos($this->link, '.png') !== false or strpos($this->link, '.gif') !== false) {
+            
             if ($this->specialized['createImage'])
                 $plugin -> createImage($this->link);
             else
@@ -393,9 +392,20 @@ class cloned_images extends cloned_plugin
         return $this->results;
     }
 
+    /**
+      * Create image from link, call other function to checkOptions and save
+      *
+      * @param $src of image 
+      * @return bool
+      * @author Mateusz Warzyński
+      */
+
     private function createImage($src) 
     {
         $extension = strtolower(substr($src, -4));
+        
+        if (!array_key_exists($extension, $this->allowedExtensions))
+            list($src, $extension) = $this->getExtension($src);
         
         // get type of image by extension
         if ($extension == '.jpg')
@@ -441,7 +451,37 @@ class cloned_images extends cloned_plugin
         }
         // check options (to return validate information and optionally save image)     
         $this -> checkOptions($width, $height, $src, $image);
-    } 
+    }
+
+    /**
+      * Get extension from link (sometimes there is some php values ?page=asdasd&picture=asdads)
+      *
+      * @return array ($link, $extension)
+      * @author Mateusz Warzyński
+      */
+
+    private function getExtension($src)
+    {
+        // get extension from link
+        if (strpos($src, '.jpg') !== false)
+            $extension = '.jpg';
+        elseif (strpos($src, '.png') !== false)
+            $extension = '.png';
+        elseif (strpos($src, '.gif') !== false)
+            $extension = '.gif';
+        else
+            return False;
+        
+        // get link to image
+        $link = explode($extension, $src);
+        $src = $link[0].$extension;
+        unset($link);
+        
+        // just to be sure...
+        $src = str_replace('?', '', $src);
+        
+        return array($src, $extension);
+    }
     
     /**
       * Get images instances from html content
