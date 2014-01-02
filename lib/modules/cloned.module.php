@@ -584,11 +584,10 @@ class cloned_images extends cloned_plugin
                 break;
         }
             
-        $name = basename($src).$extension;
+        $name = hash('md4', basename($src)).$extension;
         unset($extension);
                     
         if (strpos($name, '.php') === FALSE) {
-            $name = str_replace("?", '', $name);
             $uploadDir = pantheraUrl('{$upload_dir}/cloned/');
             $filePath = pantheraUrl($uploadDir.$name);
             $image -> save($filePath);
@@ -607,10 +606,9 @@ class cloned_images extends cloned_plugin
     
     private function saveGIF($src)
     {
-        $name = basename($src).'.gif';
+        $name = hash('md4', basename($src)).'gif';
         
         if (strpos($name, '.php') === FALSE) {
-            $name = str_replace("?", '', $name);
             $uploadDir = pantheraUrl('{$upload_dir}/cloned/');
             $filePath = pantheraUrl($uploadDir.$name);
             file_put_contents($filePath, file_get_contents($src));
