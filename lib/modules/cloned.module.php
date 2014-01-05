@@ -258,7 +258,7 @@ class cloned_images extends cloned_plugin
     //private $options = array('min-width' => 0, 'max-width' => 0, 'min-height' => 0, 'max-height' => 0, 'extension' => '*', 'name_contains' => '', 'width' => 0, 'height' => 0);
     public static $defaults = array('min-width' => -1, 'max-width' => -1, 'min-height' => -1, 'max-height' => -1, 'extension' => '*', 'name_contains' => '', 'width' => -1, 'height' => -1, 'save' => False, 'resize' => False);
     public $specialized = array('parse' => False, 'createImage' => False, 'getImages' => False, 'cropBottom' => False);
-    private $allowedExtensions = array('.jpg', '.png', '.gif');
+    private $allowedExtensions = array('.jpg', '.png', '.gif', '.jpeg');
 
     public static function detect($link)
     {
@@ -306,7 +306,7 @@ class cloned_images extends cloned_plugin
             }
         }
         
-        if (strpos($this->link, '.jpg') or strpos($this->link, '.png') !== false or strpos($this->link, '.gif') !== false) {
+        if (strpos($this->link, '.jpg') or strpos($this->link, '.png') !== false or strpos($this->link, '.gif') !== false or strpos($this->link, '.jpeg') !== false) {
             
             if ($this->specialized['createImage'])
                 $plugin -> createImage($this->link);
@@ -469,6 +469,8 @@ class cloned_images extends cloned_plugin
             $extension = '.png';
         elseif (strpos($src, '.gif') !== false)
             $extension = '.gif';
+        elseif (strpos($src, '.jpeg') !== false)
+            $extension = '.jpeg';
         else
             return False;
         
