@@ -83,10 +83,13 @@ abstract class validableForm
     {
         if (!$this->forceEnable and !$this->formEnabled())
         {
+            $this -> panthera -> logging -> output('This form is disabled, cannot validate', 'form');
             return False;
         }
         
+        $this -> panthera -> logging -> setTimer();
         $result = $this -> _processFormValidation();
+        $this -> panthera -> logging -> output('Standard validation finished, results: ' .json_encode($result), 'form');
         
         // additional fields
         $additionalFields = $this->validateAdditionalFields();
@@ -96,6 +99,8 @@ abstract class validableForm
             $this -> panthera -> template -> push('formValidation', $additionalFields);
             return $additionalFields;
         }
+        
+        $this -> panthera -> logging -> output('Scanning for validation methods eg. _processField_password', 'register');
         
         // generic fields validation
         foreach ($this->fieldsList as $field)
@@ -149,10 +154,12 @@ abstract class validableForm
     {
         if (!$this->forceEnable and !$this->formEnabled())
         {
+            $this -> panthera -> logging -> output('This form is disabled, cannot display', 'form');
             $this -> panthera -> template -> display($this->formTemplateDisabled); // template for disabled form
             pa_exit();
         }
         
+        $this -> panthera -> logging -> output('Displaying form, name=' .$this->formName, 'form');
         $this -> panthera -> template -> push('disabledFields', $this->disabledFields);
         $this -> panthera -> template -> push('registrationFields', $this->source);
         $this -> panthera -> template -> display($this->formTemplateEnabled);
