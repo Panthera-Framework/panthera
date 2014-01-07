@@ -87,7 +87,6 @@ abstract class validableForm
             return False;
         }
         
-        $this -> panthera -> logging -> setTimer();
         $result = $this -> _processFormValidation();
         $this -> panthera -> logging -> output('Standard validation finished, results: ' .json_encode($result), 'form');
         
