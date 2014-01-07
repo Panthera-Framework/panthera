@@ -1756,7 +1756,7 @@ function ajax_exit($array)
     {
         $array['message'] = str_ireplace('{$bufferedOutput}', $panthera -> outputControl -> get(), $array['message']);
     }
-
+    
     print(json_encode($array));
     pa_exit('', True);
 }

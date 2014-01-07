@@ -25,7 +25,7 @@ function recoveryCreate($login)
     if (!$user -> exists())
         return False;
 
-    $SQL = $panthera -> db -> query('SELECT `id` FROM `{$db_prefix}password_recovery` WHERE `user_login` = :login', array('login' => $login));
+    $SQL = $panthera -> db -> query('SELECT `id` FROM `{$db_prefix}password_recovery` WHERE `user_login` = :login AND `type` = "recovery"', array('login' => $login));
 
     if ($SQL -> rowCount() > 0)
         return False;
@@ -45,12 +45,12 @@ function recoveryCreate($login)
     $recoveryKey = generateRandomString($panthera->config->getKey('recovery.key.length'));
     
     // check if selected key is unique, if not generate a new one until it isnt unique
-    $SQL = $panthera -> db -> query('SELECT `id` FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key', array('key' => $recoveryKey));
+    $SQL = $panthera -> db -> query('SELECT `id` FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key AND `type` = "recovery"', array('key' => $recoveryKey));
 
     while ($SQL -> rowCount() > 0)
     {
         $recoveryKey = generateRandomString($panthera->config->getKey('recovery.key.length'));
-        $SQL = $panthera -> db -> query('SELECT `id` FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key', array('key' => $recoveryKey));
+        $SQL = $panthera -> db -> query('SELECT `id` FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key AND `type` = "recovery"', array('key' => $recoveryKey));
     }
 
     $values = array(
@@ -62,7 +62,7 @@ function recoveryCreate($login)
     // plugins support
     $values = $panthera -> get_filters('recovery.values', $values);
 
-    $SQL = $panthera -> db -> query('INSERT INTO `{$db_prefix}password_recovery` (`id`, `recovery_key`, `user_login`, `date`, `new_passwd`) VALUES (NULL, :recovery_key, :login, NOW(), :passwd)', $values);
+    $SQL = $panthera -> db -> query('INSERT INTO `{$db_prefix}password_recovery` (`id`, `recovery_key`, `user_login`, `date`, `new_passwd`, `type`) VALUES (NULL, :recovery_key, :login, NOW(), :passwd, "recovery")', $values);
 
     $messages = $panthera->config->getKey('recovery.mail.content');
     $titles = $panthera->config->getKey('recovery.mail.title');
@@ -79,8 +79,8 @@ function recoveryCreate($login)
         $title = end($titles);
     }
     
-    $message = str_replace('{$recovery_key}', $recoveryKey, 
-               str_replace('{$recovery_passwd}', $newPassword, 
+    $message = str_replace('{$recovery_key}', $recoveryKey,
+               str_replace('{$recovery_passwd}', $newPassword,
                str_replace('{$userName}', $user->getName(),
                str_replace('{$userID}', $user->id, pantheraUrl($message)))));
                
@@ -114,7 +114,7 @@ function recoveryChangePassword($key)
 {
     global $panthera;
 
-    $SQL = $panthera -> db -> query('SELECT `user_login`, `new_passwd` FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key', array('key' => $key));
+    $SQL = $panthera -> db -> query('SELECT `user_login`, `new_passwd` FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key AND `type` = "recovery"', array('key' => $key));
     
     if ($SQL -> rowCount() > 0)
     {

@@ -22,6 +22,33 @@ class userRegistration extends validableForm
     public $formTemplateDisabled = 'registrationForm.closed.tpl';
     public $formName = '';
     
+    /**
+     * Check if user verified an e-mail address
+     * 
+     * @param string $key Confirmation key
+     * @param bool $validateUser Validate user or just check
+     * @author Damian Kęska
+     */
+    
+    public static function checkEmailValidation($key, $validateUser=False)
+    {
+        global $panthera;
+        
+        $query = $panthera -> db -> query('SELECT * FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key AND `type` = "confirmation"', array('key' => $key));
+        
+        if ($query -> rowCount() > 0)
+        {
+            if ($validateUser)
+            {
+                $panthera -> db -> query('DELETE FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key', array('key' => $key));
+            }
+            
+            return (True && $validateUser);
+        }
+
+        return (False && $validateUser);
+    }
+    
     protected function _processFormValidation()
     {
         // if not posting a form
@@ -39,7 +66,7 @@ class userRegistration extends validableForm
             if (!$this->source['login'])
             {
                 return array(
-                    'message' => 'Please fill login field', 
+                    'message' => localize('Please fill login field', 'register'), 
                     'code' => 'LOGIN_FILL',
                     'field' => 'login'
                 );
@@ -48,7 +75,7 @@ class userRegistration extends validableForm
             if (strlen($this->source['login']) > $this->fieldsSettings['login']['lengthTo'] or strlen($this->source['login']) <= $this->fieldsSettings['login']['lengthFrom'])
             {
                 return array(
-                    'message' => 'Invalid login field length',
+                    'message' => localize('Invalid login field length', 'register'),
                     'settings' => $this->fieldsSettings['login'],
                     'code' => 'LOGIN_LENGTH',
                     'field' => 'login'
@@ -60,7 +87,7 @@ class userRegistration extends validableForm
             if (!preg_match($regexp, $this->source['login']))
             {
                 return array(
-                    'message' => 'Invalid characters in login, allowed only A-Z, a-z, 0-9, -, +, !, and comma',
+                    'message' => localize('Invalid characters in login, allowed only A-Z, a-z, 0-9, -, +, !, and comma', 'register'),
                     'settings' => $this->fieldsSettings['login'],
                     'code' => 'LOGIN_CHARACTERS',
                     'field' => 'login'
@@ -78,7 +105,7 @@ class userRegistration extends validableForm
             if (!$this->source['fullname'] and !$this->fieldsSettings['fullname']['optional'])
             {
                 return array(
-                    'message' => 'Please enter your full name', 
+                    'message' => localize('Please enter your full name', 'register'), 
                     'code' => 'FULLNAME_FILL',
                     'field' => 'fullname'
                 );
@@ -89,7 +116,7 @@ class userRegistration extends validableForm
                 if (strlen($this->source['fullname']) > $this->fieldsSettings['fullname']['lengthTo'] or strlen($this->source['fullname']) <= $this->fieldsSettings['fullname']['lengthFrom'])
                 {
                     return array(
-                        'message' => 'Invalid length',
+                        'message' => localize('Invalid fullname length', 'register'),
                         'settings' => $this->fieldsSettings['fullname'],
                         'code' => 'FULLNAME_LENGTH',
                         'field' => 'fullname'
@@ -109,7 +136,7 @@ class userRegistration extends validableForm
             if (!$this->source['mail'])
             {
                 return array(
-                    'message' => 'Please fill mail field correctly', 
+                    'message' => localize('Please fill mail field correctly', 'register'), 
                     'code' => 'MAIL_FILL',
                     'field' => 'mail'
                 );
@@ -118,7 +145,7 @@ class userRegistration extends validableForm
             if (strlen($this->source['mail']) > $this->fieldsSettings['mail']['lengthTo'] or strlen($this->source['mail']) <= $this->fieldsSettings['mail']['lengthFrom'])
             {
                 return array(
-                    'message' => 'Invalid login field length',
+                    'message' => localize('Invalid login field length', 'register'),
                     'settings' => $this->fieldsSettings['mail'],
                     'code' => 'MAIL_LENGTH',
                     'field' => 'mail'
@@ -128,7 +155,7 @@ class userRegistration extends validableForm
             if ($this->source['mail'] != $this->source['mail_repeat'])
             {
                 return array(
-                    'message' => 'Entered e-mail address does not match confirmation e-mail adddress',
+                    'message' => localize('Entered e-mail address does not match confirmation e-mail adddress', 'register'),
                     'settings' => $this->fieldsSettings['mail'],
                     'code' => 'MAIL_MATCH_FIELDS',
                     'field' => 'mail_repeat'
@@ -138,7 +165,7 @@ class userRegistration extends validableForm
             if (!filter_var($this->source['mail'], FILTER_VALIDATE_EMAIL))
             {
                 return array(
-                    'message' => 'Entered e-mail address is invalid',
+                    'message' => localize('Entered e-mail address is invalid', 'register'),
                     'settings' => $this->fieldsSettings['mail'],
                     'code' => 'MAIL_INVALID_FORMAT',
                     'field' => 'mail'
@@ -156,7 +183,7 @@ class userRegistration extends validableForm
             if (!$this->source['passwd'])
             {
                 return array(
-                    'message' => 'Please fill password field', // Mark: localize
+                    'message' => localize('Please fill password field', 'register'), // Mark: localize
                     'code' => 'PASSWD_FILL',
                     'field' => 'passwd'
                 );
@@ -165,7 +192,7 @@ class userRegistration extends validableForm
             if (strlen($this->source['passwd']) > $this->fieldsSettings['passwd']['lengthTo'] or strlen($this->source['passwd']) <= $this->fieldsSettings['passwd']['lengthFrom'])
             {
                 return array(
-                    'message' => 'Invalid password length', // Mark: localize
+                    'message' => localize('Invalid password length', 'register'), // Mark: localize
                     'settings' => $this->fieldsSettings['passwd'],
                     'code' => 'PASSWD_LENGTH',
                     'field' => 'passwd'
@@ -175,7 +202,7 @@ class userRegistration extends validableForm
             if ($this->source['passwd'] != $this->source['passwd_repeat'])
             {
                 return array(
-                    'message' => 'Passwords do not match', // Mark: localize
+                    'message' => localize('Passwords do not match', 'register'), // Mark: localize
                     'settings' => $this->fieldsSettings['passwd'],
                     'code' => 'PASSWD_MATCH_FIELDS',
                     'field' => 'passwd_repeat'
@@ -200,7 +227,7 @@ class userRegistration extends validableForm
             if ($fetch['mail'] == $this->source['mail'])
             {
                 return array(
-                    'message' => 'This e-mail address was already used to register another account',
+                    'message' => localize('This e-mail address was already used to register another account', 'register'),
                     'code' => 'MAIL_DUPLICATED',
                     'field' => 'mail'
                 );
@@ -209,7 +236,7 @@ class userRegistration extends validableForm
             if ($fetch['login'] == $this->source['login'])
             {
                 return array(
-                    'message' => 'This login is already taken',
+                    'message' => localize('This login is already taken', 'register'),
                     'code' => 'LOGIN_DUPLICATED',
                     'field' => 'login'
                 );
@@ -229,8 +256,16 @@ class userRegistration extends validableForm
         return True;
     }
 
+    /*
+     * Create new user
+     * 
+     * @return bool
+     */
+
     public function execute()
     {
+        $this -> panthera -> logging -> output('Creating new user', 'register');
+        
         return createNewUser(
             $this->source['login'],
             $this->source['passwd'],
@@ -241,7 +276,8 @@ class userRegistration extends validableForm
             $this->source['mail'],
             '',
             $this->panthera->config->getKey('register.avatar', '{$PANTHERA_URL}/images/default_avatar.png', 'string', 'register'),
-            $_SERVER['REMOTE_ADDR']
+            $_SERVER['REMOTE_ADDR'],
+            True
         );
     }
 

@@ -464,7 +464,7 @@ function getCurrentUser()
  * @author Damian Kęska
  */
 
-function createNewUser($login, $passwd, $full_name, $primary_group='', $attributes, $language, $mail='', $jabber='', $profile_picture='{$PANTHERA_URL}/images/default_avatar.png', $ip)
+function createNewUser($login, $passwd, $full_name, $primary_group='', $attributes, $language, $mail='', $jabber='', $profile_picture='{$PANTHERA_URL}/images/default_avatar.png', $ip='', $requiresConfirmation=False)
 {
     global $panthera;
 
@@ -521,7 +521,7 @@ function createNewUser($login, $passwd, $full_name, $primary_group='', $attribut
     
     if (!preg_match($regexp, $login))
     {
-        throw new Exception('Login contains invalid characters from range ' .$regexp, 868);
+        throw new Exception('Login contains invalid characters', 868);
     }
 
     // ip address (if entered)
@@ -546,12 +546,66 @@ function createNewUser($login, $passwd, $full_name, $primary_group='', $attribut
         'ip' => $ip
     );
 
+    
+    $SQL = true;
+    
+    if ($requiresConfirmation)
+    {
+        $confirmationKey = generateRandomString(16);
+
+        $details = array(
+            'confirmationKey' => $confirmationKey,
+            'login' => $array['login']
+        );
+        
+        $SQL = $panthera -> db -> query ('INSERT INTO `{$db_prefix}password_recovery` (`id`, `recovery_key`, `user_login`, `date`, `new_passwd`, `type`) VALUES (NULL, :confirmationKey, :login, NOW(), " ", "confirmation");', $details);
+    
+        if (!$SQL)
+        {
+            $panthera -> logging -> output('Cannot insert confirmation key to database, details: ' .$SQL->errorInfo(), 'users');
+            return False;
+        }
+        
+        $panthera -> config -> loadSection('register');
+        $messages = $panthera->config->getKey('register.verification.message', array('english' => 'Hello {$userName}, here is a link to confirm your account '.pantheraUrl('{$PANTHERA_URL}/pa-login.php?ckey=', False, 'frontend').'{$key}&login={$userName}'), 'array', 'register');
+        $titles = $panthera->config->getKey('register.verification.title', array('english' => 'Account confirmation'), 'array', 'register');
+
+        if (isset($messages[$language]))
+        {
+            $message = $messages[$language];
+            $title = $titles[$language];
+        } elseif (isset($messages['english'])) {
+            $message = $messages['english'];
+            $title = $titles['english'];
+        } else {
+            $message = end($messages);
+            $title = end($titles);
+        }
+        
+        $message = str_replace('{$key}', $confirmationKey,
+                   str_replace('{$userName}', $array['login'],
+                   str_replace('{$userID}', $user->id, pantheraUrl($message))));
+
+        $title =   str_replace('{$key}', $confirmationKey, 
+                   str_replace('{$userName}', $array['login'],
+                   str_replace('{$userID}', $user->id, pantheraUrl($title))));
+
+        $panthera -> importModule('mailing');
+        $mailRecovery = new mailMessage();
+        $mailRecovery -> setSubject($title);
+        $mailRecovery -> addRecipient($array['mail']);
+        $mailRecovery -> send($message, 'html');
+    }
+    
     $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}users` (`id`, `login`, `passwd`, `full_name`, `primary_group`, `joined`, `attributes`, `language`, `mail`, `jabber`, `profile_picture`, `lastlogin`, `lastip`) VALUES (NULL, :login, :passwd, :full_name, :primary_group, NOW(), :attributes, :language, :mail, :jabber, :profile_picture, NOW(), :ip);', $array);
-
-    if ($SQL)
-      return True;
-
-    return False;
+        
+    if (!$SQL)
+    {
+        $panthera -> logging -> output('Cannot insert new user to users table, details: ' .$SQL->errorInfo(), 'users');
+        return False;
+    }
+    
+    return True;
 }
 
 /**
@@ -576,12 +630,15 @@ function removeUser($login)
 /**
  * A simple login method
  *
+ * @param string $user Login
+ * @param string $passwd Password
+ * @param bool $forceWithoutPassword Login without password
  * @return bool|string True if success, false on failure and string with error id on error (eg. "BANNED")
  * @package Panthera\core\user
  * @author Damian Kęska
  */
 
-function userCreateSession($user, $passwd)
+function userCreateSession($user, $passwd, $forceWithoutPassword=False)
 {
     global $panthera;
 
@@ -589,6 +646,16 @@ function userCreateSession($user, $passwd)
 
     if ($usr->exists())
     {
+        if ($forceWithoutPassword)
+        {
+            $panthera -> user = $usr;
+            $panthera -> session -> uid = $usr->id;
+            $usr -> lastlogin = 'NOW()';
+            $usr -> lastip = $_SERVER['REMOTE_ADDR'];
+            $usr -> save();
+            return True;
+        }
+        
         if ($usr->isBanned())
         {
             return 'BANNED';

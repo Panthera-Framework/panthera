@@ -31,11 +31,54 @@ if(checkUserPermissions($user))
     pa_redirect('pa-admin.php');
 }
 
-if (isset($_POST['log']) or isset($_GET['key']))
+
+
+/**
+ * Get list of all locales to display flags on page
+ * 
+ * @author Damian Kęska
+ */
+
+$locales = $panthera -> locale -> getLocales();
+$localesTpl = array();
+
+foreach ($locales as $lang => $enabled)
 {
+    if ($enabled == True)
+    {
+        if (is_file(SITE_DIR. '/images/admin/flags/' .$lang. '.png'))
+            $localesTpl[] = $lang;
+    }
+}
+
+$panthera -> template -> push('flags', $localesTpl);
+
+
+
+/**
+ * Check if user posted any informations
+ * 
+ * @author Damian Kęska
+ */
+
+if (isset($_POST['log']) or isset($_GET['key']) or isset($_GET['ckey']))
+{
+    if (isset($_GET['ckey']))
+    {
+        if (userRegistration::checkEmailValidation($_GET['ckey'], True))
+        {
+            $panthera -> template -> push('message', localize('Your account has been activated', 'messages'));
+            $panthera -> template -> setTemplate('admin');
+            $panthera -> template -> display('login.tpl');
+            pa_exit();
+        }
+    }
+    
+    
     if ($_POST['recovery'] == "1" or isset($_GET['key']))
     {
         $panthera -> importModule('passwordrecovery');
+        
         if (isset($_GET['key']))
         {
             // change user password
@@ -56,6 +99,17 @@ if (isset($_POST['log']) or isset($_GET['key']))
         
         if ($u -> exists())
         {
+            $SQL = $panthera -> db -> query('SELECT * FROM `{$db_prefix}password_recovery` WHERE `user_login` = :login AND `type` = "confirmation"', array('login' => $u->login));
+            
+            if ($SQL -> rowCount() > 0)
+            {
+                $panthera -> template -> push('message', localize('Please activate you\'r account first', 'messages'));
+                $panthera -> template -> setTemplate('admin');
+                $panthera -> template -> display('login.tpl');
+                pa_exit();
+            }
+            
+            
             if ($u -> attributes -> get('loginFailures') >= intval($panthera -> config -> getKey('login.failures.max', 5, 'int', 'pa-login')) and $u -> attributes -> get('loginFailures') !== 0)
             {
                 if (intval($u -> attributes -> get('loginFailureExpiration')) <= time())
@@ -66,7 +120,6 @@ if (isset($_POST['log']) or isset($_GET['key']))
                     
                 } else {
                     $panthera -> get_options('login.failures.exceeded', array('user' => $u, 'failures' => $u -> attributes -> get('loginFailures'), 'expiration' => $u -> attributes -> get('loginFailureExpiration')));
-                    $panthera -> template -> push('flags', $localesTpl);
                     $panthera -> template -> push('message', localize('Number of login failures exceeded, please wait a moment before next try', 'messages'));
                     $panthera -> template -> setTemplate('admin');
                     $panthera -> template -> display('login.tpl');
@@ -151,20 +204,7 @@ if (strpos($_SERVER['HTTP_REFERER'], $panthera->config->getKey('ajax_url')) !== 
     $panthera->session->set('login_referer', $_SERVER['HTTP_REFERER']);
 }
 
-$locales = $panthera -> locale -> getLocales();
-$localesTpl = array();
 
-foreach ($locales as $lang => $enabled)
-{
-    if ($enabled == True)
-    {
-        if (is_file(SITE_DIR. '/images/admin/flags/' .$lang. '.png'))
-            $localesTpl[] = $lang;
-    }
-}
-
-
-$panthera -> template -> push('flags', $localesTpl);
 $panthera -> template -> setTitle(localize('Log in'));
 $template -> setTemplate('admin');
 $template -> display('login.tpl');
