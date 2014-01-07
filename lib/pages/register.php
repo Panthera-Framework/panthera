@@ -27,7 +27,14 @@ if ($registration -> isPostingAForm())
 {
     if ($registration -> validateForm() === True)
     {
-        $registration -> execute();
+        try {
+            $registration -> execute();
+        } catch (Exception $e) {
+            $panthera -> template -> push('formError', localize($e -> getMessage(), 'register'));
+            $registration -> displayForm();
+            pa_exit();
+        }
+        
         $panthera -> template -> display ('registrationForm.complete.tpl');
         pa_exit();
     }
