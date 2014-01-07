@@ -48,7 +48,7 @@
                 </tr>
             </thead>
             
-            <tbody>
+            <tbody class="hovered">
                 {$where="?display=debhook&cat=admin"}
                 {loop="$hooks"}
                 <tr><td>{$value.hook}</td><td>{$value.function}( {$value.params} )</td><td><a href="#" onclick="navigateTo('{$AJAX_URL}?display=browsefile&cat=admin&path={$value.filename}&start={$value.startline}&end={$value.endline}&back_btn={$where|base64_encode}'); return false;">{$value.declaration}</a></td></tr>
@@ -69,7 +69,7 @@
             </tr>
          </thead>
       
-        <tbody>
+        <tbody class="hovered">
          {if="$functions"}
          {loop="$functions"}
             {if="$value.type == 'method'"}
