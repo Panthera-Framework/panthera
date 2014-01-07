@@ -58,6 +58,27 @@ abstract class validableForm
             return True;
         }
     }
+
+    /**
+     * Get field's value
+     * 
+     * @param string $inputName Field name, leave empty to grab array with all fields
+     * @return null|string|array
+     * @author Damian Kęska
+     */
+    
+    public function getInput($inputName='')
+    {
+        if (!$inputName)
+        {
+            return $this->source;
+        }
+        
+        if (isset($this->source[$inputName]))
+        {
+            return $this->source[$inputName];
+        }
+    }
     
     /*
      * This function is to be extended, it's doing nothing

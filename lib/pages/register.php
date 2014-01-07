@@ -40,6 +40,7 @@ if ($registration -> isPostingAForm())
             pa_exit();
         }
         
+        $panthera -> template -> push('registrationFields', $registration -> getInput());
         $panthera -> template -> display ('registrationForm.complete.tpl');
         pa_exit();
     }
