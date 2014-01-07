@@ -87,9 +87,8 @@ function callback_getContactData(data)
   <!-- Send new mail -->
 
   <div id="newMail" style="display: none;">
+      <form action="?display=mailing&cat=admin&action=send" method="POST" id="mail_form"  style="margin: 0 auto; margin-bottom: 30px;">
       <table style="display: inline-block;" class="formTable">
-        <form action="?display=mailing&cat=admin&action=send" method="POST" id="mail_form"  style="margin: 0 auto; margin-bottom: 30px;">
-         
          <thead>
                  <tr>
                      <td colspan="2" class="formTableHeader" style="padding-top: 0px; padding-bottom: 30px;">
@@ -133,8 +132,8 @@ function callback_getContactData(data)
                  </td>
              </tr>
          </tfoot>
-         </form>
       </table>
+      </form>
       
       <script type="text/javascript">
       /**

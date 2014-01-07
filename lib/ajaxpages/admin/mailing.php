@@ -24,8 +24,8 @@ if ($_GET['action'] == 'send')
 {
     if (!$canSendMails)
         ajax_exit(array('status' => 'failed', 'message' => localize('Permission denied. You dont have access to this action', 'messages')));
-
-    if (strlen($_POST['body']) < 5)
+    
+    if (strlen($_POST['body']) < 3)
         ajax_exit(array('status' => 'failed', 'message' => localize('Message is too short')));
 
     if (!$panthera->types->validate($_POST['from'], 'email'))
