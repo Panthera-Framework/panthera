@@ -13,7 +13,7 @@ if (!defined('IN_PANTHERA'))
     exit;
 
 // allow only site administrator and guests to use registration
-if (checkUserPermissions($panthera->user, False) or ($panthera -> logging -> debug and checkUserPermissions($panthera->user, True)))
+if (checkUserPermissions($panthera->user, False) and !($panthera -> logging -> debug and checkUserPermissions($panthera->user, True)))
 {
     pa_redirect('.');
 }
