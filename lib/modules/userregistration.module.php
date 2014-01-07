@@ -277,7 +277,7 @@ class userRegistration extends validableForm
             '',
             $this->panthera->config->getKey('register.avatar', '{$PANTHERA_URL}/images/default_avatar.png', 'string', 'register'),
             $_SERVER['REMOTE_ADDR'],
-            True
+            (bool)$this -> panthera -> config -> getKey('register.confirmation.required', 1, 'bool', 'register')
         );
     }
 
