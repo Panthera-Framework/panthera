@@ -58,6 +58,7 @@ function executeShellCommand()
 
 #output {
     float: left;
+    text-align: left;
 }
 </style>
 
@@ -89,6 +90,6 @@ function executeShellCommand()
       </table>
       
       <div class="terminal" style="height: 400px; width: 100%;">
-          <div class="cmd"><p id="output">Panthera Framework</p></div>
+          <div class="cmd"><p id="output">Panthera Framework $</p></div>
       </div>
 </div>
