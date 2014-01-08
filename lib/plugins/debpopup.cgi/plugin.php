@@ -196,7 +196,7 @@ class debpopupPlugin extends pantheraPlugin
         $output .= "<script type='text/javascript' src='js/admin/pantheraUI.js'></script>";
         $output .= "<script type='text/javascript'>var w = window.open('','name','height=400,width=1000'); w.document.write(htmlspecialchars_decode('".$template."')); w.document.close();</script>";
         
-        if (!$return)
+        if (!$return or !is_bool($return))
             print($output);
         
         return $output;
