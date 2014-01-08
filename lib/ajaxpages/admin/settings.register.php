@@ -40,17 +40,19 @@ $config -> add('register.open', localize('Registration open', 'register'));
 $config -> setFieldType('register.open', 'bool');
 $config -> add('register.group', localize('Default group name', 'register')); // please note that "." is replaced to "_-_"
 $config -> add('register.avatar', localize('Default avatar', 'register'));
+$config -> setDescription('register.avatar', localize('Variables'). ': {$PANTHERA_URL}');
 $config -> add('register.confirmation.required', localize('Require mail confirmation', 'register'));
-
-// mail message
-$config -> add('register.verification.message', localize('Mail message', 'register'));
-$config -> setFieldSaveHandler('register.verification.message', 'uiSettingsMultilanguageField');
-$config -> setDescription('register.verification.message', '{$key}, {$userName}, {$userID}');
 
 // mail title
 $config -> add('register.verification.title', localize('Mail title', 'register'));
 $config -> setFieldSaveHandler('register.verification.title', 'uiSettingsMultilanguageField');
-$config -> setDescription('register.verification.title', '{$key}, {$userName}, {$userID}');
+$config -> setDescription('register.verification.title', localize('Variables'). ': {$key}, {$userName}, {$userID}');
+
+// mail message
+$config -> add('register.verification.message', localize('Mail message', 'register'));
+$config -> setFieldSaveHandler('register.verification.message', 'uiSettingsMultilanguageField');
+$config -> setDescription('register.verification.message', localize('Variables'). ': {$key}, {$userName}, {$userID}');
+$config -> setFieldType('register.verification.message', 'wysiwyg');
 
 $result = $config -> handleInput($_POST);
 

@@ -198,6 +198,14 @@ $defaults['system']['upload'] = array(
     'linkType' => 'ajax'
 );
 
+$defaults['system']['register'] = array(
+    'link' => '?display=settings.register&cat=admin',
+    'name' => localize('User registration', 'settings'),
+    'description' => localize('New users registration management', 'settings'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/register.png',
+    'linkType' => 'ajax'
+);
+
 // Content section
 $defaults['content'] = array();
 
