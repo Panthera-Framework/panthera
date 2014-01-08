@@ -206,6 +206,14 @@ $defaults['system']['register'] = array(
     'linkType' => 'ajax'
 );
 
+$defaults['system']['login'] = array(
+    'link' => '?display=settings.pa-login&cat=admin',
+    'name' => localize('Login screen settings', 'settings'),
+    'description' => '',
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/login-settings.png',
+    'linkType' => 'ajax'
+);
+
 // Content section
 $defaults['content'] = array();
 
