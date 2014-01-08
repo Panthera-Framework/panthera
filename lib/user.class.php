@@ -422,18 +422,6 @@ function getUsers($by, $limit=0, $limitFrom=0, $order='id', $direction='DESC')
 }
 
 /**
- * Get user object using it's id
- *
- * @return pantheraUser
- * @author Damian Kęska
- */
-
-function getUserById($id)
-{
-    return new pantheraUser('id', $id);
-}
-
-/**
  * Get current logged in user (if logged in)
  *
  * @return pantheraUser
@@ -447,9 +435,9 @@ function getCurrentUser()
 
     $sessionKey = $panthera->config->getKey('session_key');
 
-    if(isset($_SESSION[$sessionKey]['uid']) AND $_SESSION[$sessionKey]['uid'] != False)
+    if($panthera->session->get('uid'))
     {
-        return getUserById($_SESSION[$sessionKey]['uid']);
+        return new pantheraUser('id', $panthera->session->get('uid'));
     }
 
     return false;

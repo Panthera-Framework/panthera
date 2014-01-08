@@ -40,7 +40,7 @@ if ($_GET['action'] == 'account') {
     $panthera -> importModule('meta');
 
     if (isset($_GET['uid']) and checkUserPermissions($panthera->user, True)) {
-        $u = getUserById($_GET['uid']);
+        $u = new pantheraUser('id', $_GET['uid']);
         $panthera -> template -> push('user_uid', '&uid=' .$_GET['uid']);
     } else {
         $u = $panthera->user;
@@ -285,7 +285,7 @@ if ($_GET['action'] == 'account') {
     if ($isAdmin)
     {
         if (strlen($_POST['uid']) > 0)
-            $u = getUserById($_POST['uid']);
+            $u = new pantheraUser('id', $_POST['uid']);
         else
             ajax_exit(array('status' => 'failed', 'message' => localize('Cannot find user by selected id', 'users')));
     } else {
@@ -359,10 +359,11 @@ if ($_GET['action'] == 'account') {
     ajax_exit(array('status' => 'success', 'message' => 'Information about user has been updated'));
     
 /**
-  * Remove an user (by id)
-  *
-  * @author Mateusz Warzyński
-  */
+ * Remove an user (by id)
+ *
+ * @author Mateusz Warzyński
+ * @author Damian Kęska 
+ */
 
 } elseif ($_GET['action'] == 'removeUser') {
     // check user permissions
@@ -382,9 +383,14 @@ if ($_GET['action'] == 'account') {
     $panthera -> cache -> set($sid, NULL);
 
     try {
-        $cUser = getCurrentUser();
-        if ($cUser->id == $id)
+        // if this is current user
+        if ($id == $panthera -> user -> id)
             ajax_exit(array('status' => 'failed', 'message' => localize('You can not remove yourself', 'users')));
+
+        $u = new pantheraUser('id', $id);
+        
+        if ($u -> acl -> get('superuser') and !$panthera->user->acl->get('superuser'))
+            ajax_exit(array('status' => 'success', 'message' => localize('Cannot remove superuser', 'users')));
 
         if (removeUser($id))
             ajax_exit(array('status' => 'success', 'message' => localize('User has been removed', 'users')));
