@@ -1738,6 +1738,7 @@ class _arrayObject
  * Exit application returning serialized array in json format
  *
  * @param array $array
+ * @hook panthera.ajax_exit
  * @return string
  * @author Damian Kęska
  */
@@ -1756,6 +1757,9 @@ function ajax_exit($array)
     {
         $array['message'] = str_ireplace('{$bufferedOutput}', $panthera -> outputControl -> get(), $array['message']);
     }
+    
+    // allow plugins to modify output
+    $array = $panthera -> get_filters('panthera.ajax_exit', $array);
     
     print(json_encode($array));
     pa_exit('', True);

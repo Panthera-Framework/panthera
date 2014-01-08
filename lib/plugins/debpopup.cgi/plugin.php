@@ -53,13 +53,14 @@ class debpopupPlugin extends pantheraPlugin
     }
     
     /**
-      * Display the popup
-      *
-      * @returns void
-      * @author Damian Kęska
-      */
+     * Display the popup
+     *
+     * @param bool $return Return output instead of printing 
+     * @return void
+     * @author Damian Kęska
+     */
 
-    public function display()
+    public function display($return=False)
     {
         global $panthera;
         
@@ -191,10 +192,34 @@ class debpopupPlugin extends pantheraPlugin
         $panthera -> template -> push('debugArray', $linesArray);
         $template = filterInput($panthera -> template -> display('debpopup.tpl', True, True, '', '_system'), 'wysiwyg');
         
-        print("<script type='text/javascript' src='js/panthera.js'></script>");
-        print("<script type='text/javascript' src='js/admin/pantheraUI.js'></script>");
-        print("<script type='text/javascript'>var w = window.open('','name','height=400,width=1000'); w.document.write(htmlspecialchars_decode('".$template."')); w.document.close();</script>");
+        $output = "<script type='text/javascript' src='js/panthera.js'></script>";
+        $output .= "<script type='text/javascript' src='js/admin/pantheraUI.js'></script>";
+        $output .= "<script type='text/javascript'>var w = window.open('','name','height=400,width=1000'); w.document.write(htmlspecialchars_decode('".$template."')); w.document.close();</script>";
+        
+        if (!$return)
+            print($output);
+        
+        return $output;
     }
+
+    /**
+     * A hook for ajax_exit function
+     * 
+     * @param array $array
+     * @return $array
+     */
+
+    public function displayAjaxExit($array)
+    {
+        $array['appendHTML'] = $this->display(True);
+        return $array;
+    }
+
+    /*
+     * Get all hooks to display
+     * 
+     * @return array
+     */
     
     protected function getHooks()
     {
@@ -239,11 +264,11 @@ class debpopupPlugin extends pantheraPlugin
     }
     
     /**
-      * Generating modules list with list of classes
-      *
-      * @return array
-      * @author Damian Kęska
-      */
+     * Generating modules list with list of classes
+     *
+     * @return array
+     * @author Damian Kęska
+     */
     
     protected function getModulesList()
     {
@@ -275,16 +300,17 @@ class debpopupPlugin extends pantheraPlugin
     }
     
     /**
-      * Run plugin code on application startup
-      *
-      * @returns void
-      * @author Damian Kęska
-      */
+     * Run plugin code on application startup
+     *
+     * @returns void
+     * @author Damian Kęska
+     */
     
     public static function run()
     {
         global $panthera;
         $obj = new debpopupPlugin;
         $panthera -> add_option('template.afterRender', array($obj, 'display'));
+        $panthera -> add_option('panthera.ajax_exit', array($obj, 'displayAjaxExit'));
     }
 }
