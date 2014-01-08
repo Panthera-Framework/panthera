@@ -618,7 +618,7 @@ class cronjobs
 
         $days = $panthera -> config -> getKey('passwd_rec_expire', 7, 'int');
 	    try {
-	        $panthera -> db -> query('DELETE FROM `{$db_prefix}password_recovery` WHERE `date` < now() - interval :days days', array('days' => $days));
+	        $panthera -> db -> query('DELETE FROM `{$db_prefix}password_recovery` WHERE `type` = "recovery" AND `date` < now() - interval :days days', array('days' => $days));
 	    } catch (Exception $e) { /* pass */ }
 	 }
 }
