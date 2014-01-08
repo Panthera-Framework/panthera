@@ -87,7 +87,7 @@ class libtemplate
                         // get directory address inside of root $dir
                         $chroot = str_replace($dir, '', $file);
                         
-                        if ($chroot == '')
+                        if (!$chroot)
                             continue;
                             
                         if (!is_dir(SITE_DIR. '/' .$chroot))
@@ -103,10 +103,24 @@ class libtemplate
                 // now just simply copy files
                 foreach ($files as $file)
                 {
+                    $chroot = '';
+                    
+                    if (is_link($file))
+                    {
+                        $chroot = str_replace($dir, '', $file);
+                        $file = readlink($file);
+                        
+                        if (!is_file($file))
+                        {
+                            $file = SITE_DIR. '/' .str_replace(basename($chroot), '', $chroot).$file;
+                        }
+                    }
+                    
                     if(is_file($file))
                     {
                         // get file address inside of root $dir
-                        $chroot = str_replace($dir, '', $file);
+                        if (!$chroot)
+                            $chroot = str_replace($dir, '', $file);
                         
                         // copy file if it does not exists
                         if (!is_file(SITE_DIR. '/' .$chroot))

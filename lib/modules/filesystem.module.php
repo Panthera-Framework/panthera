@@ -437,10 +437,18 @@ class filesystem
 
         foreach ($files as $file)
         {
-            if ($file == ".." or $file == "." or is_link($dir. '/' .$file))
+            if ($file == ".." or $file == ".")
                 continue;
+            
+            if (is_link($dir. '/' .$file))
+            {
+                if (in_array(readlink($dir. '/' .$file), $list))
+                {
+                    continue;
+                }
+            }
 
-            if (is_file($dir. '/' .$file))
+            if (is_file($dir. '/' .$file) or is_link($dir. '/' .$file))
                 $list[] = $dir. '/' .$file;
             else {
             
