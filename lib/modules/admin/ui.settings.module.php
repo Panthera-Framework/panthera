@@ -117,7 +117,7 @@ class uiSettings
             return false;
         }
 
-        if (!in_array($type, array('string', 'multipleboolselect', 'select', 'packaged', 'wysiwyg')))
+        if (!in_array($type, array('string', 'multipleboolselect', 'select', 'packaged', 'wysiwyg', 'bool')))
         {
             return false;
         }

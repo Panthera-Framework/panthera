@@ -289,6 +289,6 @@ class userRegistration extends validableForm
     
     public function formEnabled()
     {
-        return (bool)$this -> panthera -> config -> getKey('register.open', 0, 'bool');
+        return (bool)$this -> panthera -> config -> getKey('register.open', 0, 'bool', 'register');
     }
 }
