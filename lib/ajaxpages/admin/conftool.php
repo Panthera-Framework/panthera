@@ -35,7 +35,7 @@ if ( $_GET['action'] == 'change' ) {
     pa_exit();
     }*/
     
-    $key     = $_POST['id'];
+    $key     = str_replace('_-_', '.', $_POST['id']);
     $value   = $_POST['value'];
     $section = $_POST['section'];
     
@@ -76,7 +76,9 @@ if ( $_GET['action'] == 'change' ) {
      */
     
 } elseif ( $_GET['action'] == 'remove' ) {
-    $key = $_POST['key'];
+    $key = str_replace('_-_', '.', $_POST['key']);
+    
+    $panthera -> logging -> output('Input key=' .$key, 'conftool');
     
     if ( $panthera->config->removeKey( $key ) )
         ajax_exit( array(
