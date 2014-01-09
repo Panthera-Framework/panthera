@@ -44,10 +44,10 @@ class facebookWrapper
         $this->panthera = $panthera;
 
         if ($appid == '')
-            $appid = $panthera->config->getKey('facebook_appid');
+            $appid = $panthera->config->getKey('facebook_appid', '', 'string', 'facebook');
 
         if ($secret == '')
-            $secret = $panthera->config->getKey('facebook_secret');
+            $secret = $panthera->config->getKey('facebook_secret', '', 'string', 'facebook');
 
         if ($appid == null or $secret == null)
         {
