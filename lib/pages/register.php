@@ -15,7 +15,7 @@ if (!defined('IN_PANTHERA'))
 // allow only site administrator and guests to use registration
 if (checkUserPermissions($panthera->user, False) and !($panthera -> logging -> debug and checkUserPermissions($panthera->user, True)))
 {
-    pa_redirect('.');
+    pa_redirect($panthera -> config -> getKey('register.redirectregistered', '.', 'string', 'register')); // where to redirect already registered users
 }
 
 // import user registration module - it's class-based module so developers can extend it easily
