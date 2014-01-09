@@ -18,6 +18,22 @@ $locales = $panthera -> locale -> getLocales();
 // logout user, TODO: CHANGE TO POST
 if (isset($_GET['logout']))
     logoutUser();
+
+/**
+ * Support for login extensions
+ * 
+ * @author Damian Kęska
+ */
+ 
+$extensions = $panthera -> config -> getKey('login.extensions', array('facebook'), 'array', 'login');
+
+foreach ($extensions as $extension)
+{
+    if ($panthera -> moduleExists('login/' .$extension))
+    {
+        $panthera -> importModule('login/' .$extension);
+    }
+}
     
 // redirect user if already logged in
 if(checkUserPermissions($user))
@@ -30,8 +46,6 @@ if(checkUserPermissions($user))
     
     pa_redirect('pa-admin.php');
 }
-
-
 
 /**
  * Get list of all locales to display flags on page
@@ -53,8 +67,6 @@ foreach ($locales as $lang => $enabled)
 
 $panthera -> template -> push('flags', $localesTpl);
 
-
-
 /**
  * Check if user posted any informations
  * 
@@ -65,7 +77,10 @@ if (isset($_POST['log']) or isset($_GET['key']) or isset($_GET['ckey']))
 {
     if (isset($_GET['ckey']))
     {
-        if (userRegistration::checkEmailValidation($_GET['ckey'], True))
+        $validation = userRegistration::checkEmailValidation($_GET['ckey'], True);
+        list($_GET['ckey'], $validation) = $panthera -> get_filters('login.registration.checkemail', array($_GET['ckey'], $validation));
+        
+        if ($validation)
         {
             $panthera -> template -> push('message', localize('Your account has been activated', 'messages'));
             $panthera -> template -> setTemplate('admin');
@@ -130,6 +145,7 @@ if (isset($_POST['log']) or isset($_GET['key']) or isset($_GET['ckey']))
         }
         
         $result = userCreateSession($_POST['log'], $_POST['pwd']);
+        $result = $panthera -> get_filters('login.createsession', $result);
         
         /**
           * Successful login
