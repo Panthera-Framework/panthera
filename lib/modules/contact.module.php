@@ -21,7 +21,7 @@ class contactFrontpage
     public $fields = array(
         'p_contactMail' => array('required' => True, 'enabled' => True),
         'p_contactName' => array('required' => False, 'enabled' => True, 'maxlength' => 32, 'minlength' => 3, 'strictCheck' => False),
-        'p_contactContent' => array('required' => True, 'enabled' => True, 'maxlength' => 8096, 'minlength' => 20, 'striphtml' => True),
+        'p_contactContent' => array('required' => True, 'enabled' => True, 'maxlength' => 8096, 'minlength' => 10, 'striphtml' => True),
         'p_contactJabber' => array('required' => False, 'enabled' => False),
         'p_contactTopic' => array('required' => True, 'enabled' => True, 'minlength' => 3, 'maxlength' => 128)
     );
