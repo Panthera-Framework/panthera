@@ -5,7 +5,7 @@ Our project bet on simplicity, we don't want to have complicated interfaces, dat
 easier to understand than data models in other frameworks. 
 
 Panthera is built on a monolithic kernel, all core elements ale built-in, we don't store every class in a single file.
-Performance and and fexibility is very important - there are serval mechanisms making Panthera based application ready to use in big environments.
+Performance and and flexibility is very important - there are serval mechanisms making Panthera based application ready to use in big environments.
 
 ## Our Team
 - Damian Kęska - co-founder, main programmer, translator, website maintainer
