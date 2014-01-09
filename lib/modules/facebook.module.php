@@ -38,7 +38,7 @@ class facebookWrapper
       * @author Damian Kęska
       */
 
-    public function __construct($appid='', $secret='', $state='')
+    public function __construct($appid='', $secret='', $state='', $skipGetUser=False)
     {
         global $panthera;
         $this->panthera = $panthera;
@@ -66,6 +66,28 @@ class facebookWrapper
             $this->sdk = new Facebook(array('appId'  => $appid, 'secret' => $secret));
             $panthera -> logging -> output('Using appid=' .$appid. ' and secret=' .$secret, 'facebook');
         }
+
+        if ($panthera -> session -> exists('facebookToken'))
+        {
+            $panthera -> logging -> output('Restoring access token from session token=' .$panthera -> session -> get('facebookToken'), 'facebook');
+            $this->sdk->setAccessToken($panthera->session->get('facebookToken'));
+        }
+        
+        if (!$skipGetUser)
+            $this->sdk->getUser();
+        
+        $panthera -> add_option('session_save', array($this, 'saveAccessToken'));
+    }
+
+    /**
+     * Save access token to session
+     * 
+     * @return null
+     */
+
+    public function saveAccessToken()
+    {
+       $this -> panthera -> session -> set('facebookToken', $this->sdk->getAccessToken());
     }
     
     /**
