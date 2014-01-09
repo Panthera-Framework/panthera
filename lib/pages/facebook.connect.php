@@ -58,3 +58,5 @@ if ($panthera->session->exists('facebookScope'))
 
 $facebook = new FacebookWrapper;
 $facebook -> loginUser($scope, 'header', $backURL);
+header('Location: ' .$backURL); // if already logged in just redirect to that url
+pa_exit();
