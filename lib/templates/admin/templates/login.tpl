@@ -56,8 +56,9 @@
         <div class="footer">
             <center><input type="submit" class="button" value="{function="localize('Sign in', 'login')"}" /></center><br>
             <input type="hidden" name="recovery" id="recovery">
-            {if="$mobileTemplate == True"}<a class="recover" onclick="window.location = 'pa-login.php?__switchdevice=mobile'" style="float: left;"/>Mobile</a>{/if}
-            {if="$tabletTemplate == True"}<a class="recover" onclick="window.location = 'pa-login.php?__switchdevice=tablet'" style="float: left; margin-left: 12px;"/>Tablet</a>{/if}
+            {if="$mobileTemplate == True"}<a class="recover" onclick="window.location = 'pa-login.php?__switchdevice=mobile'" style="float: left;">Mobile</a>{/if}
+            {if="$tabletTemplate == True"}<a class="recover" onclick="window.location = 'pa-login.php?__switchdevice=tablet'" style="float: left; margin-left: 12px;">Tablet</a>{/if}
+            {if="$facebook"}<a class="recover" href="?facebook" style="float: left; margin-left: 12px; text-decoration: none;">{function="localize('Login with Facebook', 'facebook')"}</a>{/if}
             <a class="recover" onclick="$('#recovery').val('1');" style="float: right;"/>{function="localize('Recover password', 'login')"}</a>
         </div>
 

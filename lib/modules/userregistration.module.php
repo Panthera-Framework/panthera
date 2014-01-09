@@ -266,7 +266,7 @@ class userRegistration extends validableForm
     {
         $this -> panthera -> logging -> output('Creating new user', 'register');
         
-        return createNewUser(
+        createNewUser(
             $this->source['login'],
             $this->source['passwd'],
             $this->source['fullname'],
@@ -279,6 +279,17 @@ class userRegistration extends validableForm
             $_SERVER['REMOTE_ADDR'],
             (bool)$this -> panthera -> config -> getKey('register.confirmation.required', 1, 'bool', 'register')
         );
+        
+        $u = new pantheraUser('login', $this->source['login']);
+        
+        // facebook integration
+        if ($this -> panthera -> session -> exists('registerFacebook'))
+        {
+            $u -> acl -> set('facebook', $this -> panthera -> session -> get('registerFacebook'));
+            $u -> acl -> save();
+        }
+        
+        return $u->exists();
     }
 
     /*
@@ -290,5 +301,60 @@ class userRegistration extends validableForm
     public function formEnabled()
     {
         return (bool)$this -> panthera -> config -> getKey('register.open', 0, 'bool', 'register');
+    }
+    
+    public function displayForm()
+    {
+        if ($this -> panthera -> config -> getKey('register.facebook', 1, 'bool', 'register'))
+        {
+            $facebookDetails = '';
+            
+            $this -> panthera -> importModule('facebook');
+            
+            try {
+                // a little bit cache
+                if (!$this -> panthera -> session -> exists('facebookUserInfo'))
+                {
+                    $facebook = new facebookWrapper;
+                    $facebookDetails = $facebook->api('/me');
+                   
+                    if ($facebookDetails)
+                        $this -> panthera -> session -> set('facebookUserInfo', $facebookDetails);
+                        
+                } else {
+                    $facebookDetails = $this -> panthera -> session -> get('facebookUserInfo');
+                }
+                
+            } catch (Exception $e) {
+                $this -> panthera -> logging -> output('Cannot connect to Facebook, exception: ' .$e->getMessage(), 'register');
+            }
+            
+            if (isset($_GET['facebook']))
+            {
+                if ($facebookDetails and $_GET['facebook'] != 'remove')
+                {
+                    $this->source['login'] = $facebookDetails['username'];
+                    $this->source['fullname'] = $facebookDetails['name'];
+                    $this -> panthera -> session -> set('registerFacebook', $facebookDetails['id']);
+                }
+                
+                if ($_GET['facebook'] == 'remove')
+                {
+                    $this -> panthera -> session -> remove('registerFacebook');
+                }
+            }
+            
+            $this -> panthera -> template -> push('facebookConnected', False);
+            
+            if ($this -> panthera -> session -> exists('registerFacebook'))
+            {
+                $this -> panthera -> template -> push('facebookConnected', True);
+            }
+            
+            $this -> panthera -> template -> push('facebookEnabled', True);
+            $this -> panthera -> template -> push('facebookDetails', $facebookDetails);
+        }
+        
+        return parent::displayForm();
     }
 }
