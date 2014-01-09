@@ -34,7 +34,7 @@ $display = str_replace('/', '', addslashes($_GET[$displayVar]));
 $template -> setTemplate($panthera->config->getKey('template'));
 $path = False;
 
-if (!defined('PAGES_DISABLE_LIB'))
+if (!defined('PAGES_DISABLE_LIB') and !$panthera -> config -> getKey('front.index.disablelib', 0, 'bool', 'frontindex'))
 {
     $path = getContentDir('/pages/' .$display. '.php');
     
