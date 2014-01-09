@@ -1801,7 +1801,7 @@ function pa_redirect($url)
 {
     global $panthera;
     header('HTTP/1.1 301 Moved Permanently');
-    header('Location: '.$panthera->config->getKey('url'). '/' .$url);
+    header('Location: '.$panthera->config->getKey('url'). '/' .pantheraUrl($url, False, 'frontend'));
     pa_exit();
 }
 
