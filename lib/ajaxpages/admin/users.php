@@ -378,15 +378,15 @@ if ($_GET['action'] == 'account') {
     if ($usersPage < 0)
         $usersPage = 0;
     
-    $sid = 'search:' .hash('md4', $_GET['hash']);
-    $panthera -> cache -> set($sid, NULL);
+    if ($_GET['hash'] != 0)
+        $panthera -> cache -> set($_GET['hash'], NULL);
 
     try {
         // if this is current user
-        if ($id == $panthera -> user -> id)
+        if ($id == $panthera -> user -> login)
             ajax_exit(array('status' => 'failed', 'message' => localize('You can not remove yourself', 'users')));
 
-        $u = new pantheraUser('id', $id);
+        $u = new pantheraUser('login', $id);
         
         if ($u -> acl -> get('superuser') and !$panthera->user->acl->get('superuser'))
             ajax_exit(array('status' => 'success', 'message' => localize('Cannot remove superuser', 'users')));
@@ -620,7 +620,7 @@ if ($_GET['action'] == 'account') {
         $panthera -> template -> push('locales_added', $panthera->locale->getLocales());
         $panthera -> template -> push('users_list', $users);
         $panthera -> template -> push('view_users', True);
-        $panthera -> template -> push('usersCacheHash', $_GET['query'].$_GET['order'].$_GET['direction'].$usersPage);
+        $panthera -> template -> push('usersCacheHash', $sid);
         
         $titlebar = new uiTitlebar(localize('All registered users on this website', 'users'));
         $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
