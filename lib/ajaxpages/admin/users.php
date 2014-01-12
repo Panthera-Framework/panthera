@@ -46,8 +46,10 @@ if ($_GET['action'] == 'account') {
         $u = $panthera->user;
     }
     
-    if ($u->id == $user->id)
+    if ($u->id == $user->id) {
         $permissions['canBlockUser'] = False;
+        $template -> push('user_fields', $panthera -> get_filters('user.fields', array())); // custom fields
+    }
 
     if ($u != $user)
         $panthera -> template -> push ('dontRequireOld', True);
@@ -163,9 +165,6 @@ if ($_GET['action'] == 'account') {
     $template -> push('jabber', $u->jabber);
     $template -> push('email', $u->mail);
     $template -> push('groups', $groupsTpl);
-
-    // custom fields
-    $template -> push('user_fields', $panthera -> get_filters('user.fields', array()));
 
     $aclList = array();
     $userTable = $u->acl->listAll();
