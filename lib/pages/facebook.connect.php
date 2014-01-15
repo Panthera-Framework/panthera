@@ -32,6 +32,13 @@ if ($panthera -> config -> getKey('facebook.connect.allowbackurl', 1, 'bool', 'f
     } // else back url will be taken from site configuration
 }
 
+// if this is not an absolute url, add domain and default path to website main directory
+if (!parse_url($backURL, PHP_URL_HOST))
+{
+    $panthera -> logging -> output('Got non-absolute url=' .$backURL. ', adding default domain and path', 'facebook');
+    $backURL = pantheraUrl('{$PANTHERA_URL}/') . $backURL;
+}
+
 // some logging to allow debugging
 if ($panthera -> logging -> debug)
 {
