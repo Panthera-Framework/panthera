@@ -21,6 +21,18 @@ $panthera -> config -> getKey('cookie_encrypt', 1, 'bool');
 $panthera -> locale -> loadDomain('session');
 $panthera -> locale -> loadDomain('installer');
 
+// some defaults
+$panthera -> config -> getKey('cookie_encrypt', 0, 'bool');
+$panthera -> config -> getKey('session_lifetime', (86400*30), 'int');
+$panthera -> config -> getKey('session_useragent', 1, 'bool');
+$panthera -> config -> getKey('gzip_compression', 0, 'bool');
+$panthera -> config -> getKey('header_maskphp', 1, 'bool');
+$panthera -> config -> getKey('header_framing', 'allowall', 'string');
+$panthera -> config -> getKey('header_xssprot', 0, 'bool');
+$panthera -> config -> getKey('header_nosniff', 0, 'bool');
+$panthera -> config -> getKey('hashing_algorithm', 'sha512', 'string');
+
+
 // titlebar
 $titlebar = new uiTitlebar(localize('Session, cookies and browser security settings', 'session'));
 $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/session-icon.png', 'left');
@@ -28,10 +40,18 @@ $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/session-icon.png', 'left
 // load uiSettings with "passwordrecovery" config section
 $config = new uiSettings;
 $config -> add('session_useragent', localize('Strict browser check', 'session'), new integerRange(0, 1));
+$config -> setFieldType('session_useragent', 'bool');
 $config -> add('session_lifetime', localize('Session life time', 'installer'), new integerRange(0, 999999));
+
 $config -> add('cookie_encrypt', localize('Encrypt cookies', 'installer'), new integerRange(0, 1));
+$config -> setFieldType('cookie_encrypt', 'bool');
+
 $config -> add('gzip_compression', localize('GZip compression', 'session'), new integerRange(0, 1));
+$config -> setFieldType('gzip_compression', 'bool');
+
 $config -> add('header_maskphp', localize('Mask PHP version', 'installer'), new integerRange(0, 1));
+$config -> setFieldType('header_maskphp', 'bool');
+
 $config -> add('header_framing', localize('X-Frame', 'installer'), array(
     'sameorigin' => localize('Only on same domain', 'installer'), 
     'allowall' => localize('Yes', 'installer'),
@@ -39,7 +59,11 @@ $config -> add('header_framing', localize('X-Frame', 'installer'), array(
 ));
 
 $config -> add('header_xssprot', localize('IE XSS-Protection', 'installer'), new integerRange(0, 1));
+$config -> setFieldType('header_xssprot', 'bool');
+
 $config -> add('header_nosniff', localize('No-sniff header', 'installer'), new integerRange(0, 1));
+$config -> setFieldType('header_nosniff', 'bool');
+
 $config -> add('hashing_algorithm', localize('Password hashing method', 'installer'), array(
     'blowfish' => 'blowfish - ' .localize('Slower, but provides maximum security', 'installer'),
     'md5' => 'md5 - ' .localize('Faster, but very weak', 'installer'), 
@@ -48,7 +72,7 @@ $config -> add('hashing_algorithm', localize('Password hashing method', 'install
 
 $config -> setDescription('header_xssprot', localize('Tell\'s Internet Explorer to turn on XSS-Protection mechanism', 'installer'));
 $config -> setDescription('session_useragent', localize('Useragent strict check', 'installer'));
-$config -> setDescription('cookie_encrypt_key', localize('Cookies can be encrypted with strong algorithm, so the user wont be able to read contents', 'installer'));
+$config -> setDescription('cookie_encrypt', localize('Cookies can be encrypted with strong algorithm, so the user wont be able to read contents', 'installer'));
 $config -> setDescription('session_lifetime', localize('Maximum time user can be idle (in seconds)', 'installer'));
 $config -> setDescription('header_framing', localize('Allow your website to be framed using iframe tag', 'installer'));
 $config -> setDescription('header_maskphp', localize('Force HTTP server to show false informations about PHP version', 'installer'));
