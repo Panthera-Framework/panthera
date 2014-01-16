@@ -239,6 +239,12 @@ class uiSettings
                 {
                     try {
                         $value = $this->settingsList[$key]['customSaveHandler']('save', $rKey, $value);
+                        
+                        if ($value === null)
+                        {
+                            continue;
+                        }
+                        
                     } catch (Exception $e) {
                         return array(
                             'message' => array($e->getCode(), $e -> getMessage()), 
@@ -427,6 +433,29 @@ function uiSettingsMultipleSelectBoolField($action, $key, $value)
         return $newValues;
     } else {
         return $panthera->config->getKey($key);
+    }
+}
+
+/**
+ * Custom field handler - comma seperated values
+ *
+ * @param string $action
+ * @param string $key
+ * @param mixed $value
+ * @package Panthera\adminUI
+ * @return mixed 
+ * @author Damian Kęska
+ */
+
+function uiSettingsCommaSeparated($action, $key, $value)
+{
+    global $panthera;
+    
+    if ($action == 'save')
+    {
+        return explode(',', str_replace(', ', ',', trim($value)));
+    } else {
+        return implode(', ', $panthera->config->getKey($key));
     }
 }
 
