@@ -25,7 +25,7 @@ if (isset($_GET['logout']))
  * @author Damian Kęska
  */
  
-$extensions = $panthera -> config -> getKey('login.extensions', array('facebook'), 'array', 'login');
+$extensions = $panthera -> config -> getKey('login.extensions', array('facebook'), 'array', 'pa-login');
 
 foreach ($extensions as $extension)
 {
