@@ -214,6 +214,14 @@ $defaults['system']['login'] = array(
     'linkType' => 'ajax'
 );
 
+$defaults['system']['facebook'] = array(
+    'link' => '?display=settings.facebook&cat=admin',
+    'name' => localize('Facebook integration', 'settings'),
+    'description' => '',
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/facebook.png',
+    'linkType' => 'ajax'
+);
+
 // Content section
 $defaults['content'] = array();
 

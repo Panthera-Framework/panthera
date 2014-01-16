@@ -8,7 +8,7 @@
  */
 
 global $panthera;
- 
+
 $panthera -> template -> push('facebook', True);
  
 if (isset($_GET['facebook']))
