@@ -25,7 +25,8 @@ class pantheraTemplate extends pantheraClass
         'title' => '',
         'keywords' => array(),
         'metas' => array(),
-        'scripts' => array()
+        'scripts' => array(),
+        'links' => array()
     );
     protected $panthera;
     public $vars = array();
@@ -547,22 +548,25 @@ class pantheraTemplate extends pantheraClass
             if ($this->generateLinks == True)
             {
                 // css styles, open search etc.
-                foreach ($this->attributes['links'] as $key => $value)
+                if ($this->attributes['links'])
                 {
-                    $link = '<link href="' .filterMetaTag($value['href']). '"';
-
-                    if ($value['title'] != '')
-                        $link .= ' title="' .filterMetaTag($value['title']). '"';
-
-                    if ($value['rel'] != '')
-                        $link .= ' rel="' .filterMetaTag($value['rel']). '"';
-
-                    if ($value['type'] != '')
-                        $link .= ' type="' .filterMetaTag($value['type']). '"';
-
-                    $link .= '>';
-
-                    $header .= $link."\n";
+                    foreach ($this->attributes['links'] as $key => $value)
+                    {
+                        $link = '<link href="' .filterMetaTag($value['href']). '"';
+    
+                        if ($value['title'] != '')
+                            $link .= ' title="' .filterMetaTag($value['title']). '"';
+    
+                        if ($value['rel'] != '')
+                            $link .= ' rel="' .filterMetaTag($value['rel']). '"';
+    
+                        if ($value['type'] != '')
+                            $link .= ' type="' .filterMetaTag($value['type']). '"';
+    
+                        $link .= '>';
+    
+                        $header .= $link."\n";
+                    }
                 }
             }
 
