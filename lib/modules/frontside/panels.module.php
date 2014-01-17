@@ -272,6 +272,11 @@ class frontsidePanels
         $panels = self::fetchAll($placement);
         $i = 0;
         
+        if (!is_array($panels))
+        {
+            return 0;
+        }
+        
         foreach ($panels as $panel)
         {
             $obj = False;
