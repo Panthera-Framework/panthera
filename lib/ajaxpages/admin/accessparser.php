@@ -43,10 +43,17 @@ $page = $_GET['page'];
 
 $uiPager = new uiPager('accessParserLines', count($lines), 'accessParserLines', 100);
 $uiPager -> setActive($page);
-$uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\');');
+$uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString('GET', 'page={$page}', '_'). '\');');
 $limit = $uiPager -> getPageLimit();
 
-$panthera -> template -> push('lines', array_slice($lines, $limit[0], $limit[1]));
+$results = array();
+
+if (is_array($lines))
+{
+    $results = array_slice($lines, $limit[0], $limit[1]);
+}
+
+$panthera -> template -> push('lines', $results);
 $panthera -> template -> push('path', $panthera->config->getKey('path_to_server_log'));
 $panthera -> template -> display($tpl);
 pa_exit();
