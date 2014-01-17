@@ -137,7 +137,7 @@ class meta
       * @author Damian Kęska
       */
     
-    public function get($type, $name)
+    public static function get($type, $name)
     {
         global $panthera;
         $values = array('name' => $name, 'type' => $type);
@@ -160,7 +160,7 @@ class meta
       * @author Damian Kęska
       */
     
-    public function remove($type, $name)
+    public static function remove($type, $name)
     {
         global $panthera;
         $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}metas` WHERE `name` = :name AND `type` = :type', array('name' => $name, 'type' => $type));
