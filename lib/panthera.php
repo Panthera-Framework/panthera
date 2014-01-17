@@ -33,12 +33,20 @@ function pantheraExceptionHandler($exception)
     foreach ($trace as $key => $stackPoint) {
         // I'm converting arguments to their type
         // (prevents passwords from ever getting logged as anything other than 'string')
-        $trace[$key]['args_content'] = json_encode($trace[$key]['args']);
+        $trace[$key]['args_content'] = null;
+        $trace[$key]['args'] = null;
+        $trace[$key]['class'] = null;
         
-        if (is_array($trace[$key]['args']))
-            $trace[$key]['args'] = array_map('gettype', $trace[$key]['args']);
+        if (isset($trace[$key]['args']))
+        {
+            $trace[$key]['args_content'] = json_encode($trace[$key]['args']);
         
-        $trace[$key]['class'] = $stackPoint['class'];
+            if (is_array($trace[$key]['args']))
+                $trace[$key]['args'] = array_map('gettype', $trace[$key]['args']);
+        }
+        
+        if (isset($stackPoint['class']))
+            $trace[$key]['class'] = $stackPoint['class'];
     }
 
     $stackTrace = array();
@@ -1348,7 +1356,6 @@ class pantheraCore
 
         $plugins = array();
         $configPlugins = $this->config->getKey('plugins', array(), 'array');
-        $c = str_replace(PANTHERA_WEBROOT, '{$root}', $_SERVER['SCRIPT_NAME']);
 
         foreach ($files as $key => $value)
         {
