@@ -54,6 +54,25 @@ function toggleDebugValue()
 }
 
 /**
+  * Toggle strict debugging
+  *
+  * @author Damian Kęska
+  */
+
+function toggleStrictDebugging()
+{
+    panthera.jsonGET({ data: '', url: '?display=debug&cat=admin&action=toggle_strict_debugging', success: function (response) {
+            if (response.state)
+            {
+                $('#strictDebugging').html('{function="localize('On')"}');
+            } else {
+                $('#strictDebugging').html('{function="localize('Off')"}');
+            }
+        }
+    });
+}
+
+/**
   * Save messages filter mode
   *
   * @author Damian Kęska
@@ -127,6 +146,11 @@ function saveVariable(id, value)
                     <tr>
                         <th>{function="localize('Debugger state', 'debug')"}:</th>
                         <td><a id='debug_value' onclick="toggleDebugValue();"  style="cursor: pointer; color: #fff;"> <span id="debuggerState">{if="$debug == true"}{function="localize('On')"}{else}{function="localize('Off')"}{/if}</span></a></td>
+                    </tr>
+                    
+                    <tr>
+                        <th>{function="localize('Strict debugging', 'debug')"}:</th>
+                        <td><a id='strict_debug_value' onclick="toggleStrictDebugging();"  style="cursor: pointer; color: #fff;"> <span id="strictDebugging">{if="$strictDebugging == true"}{function="localize('On')"}{else}{function="localize('Off')"}{/if}</span></a></td>
                     </tr>
                     
                     <tr style="background-color: transparent;">

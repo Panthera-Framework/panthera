@@ -34,19 +34,31 @@ function pantheraExceptionHandler($exception)
         // I'm converting arguments to their type
         // (prevents passwords from ever getting logged as anything other than 'string')
         $trace[$key]['args_content'] = json_encode($trace[$key]['args']);
-        $trace[$key]['args'] = array_map('gettype', $trace[$key]['args']);
+        
+        if (is_array($trace[$key]['args']))
+            $trace[$key]['args'] = array_map('gettype', $trace[$key]['args']);
+        
         $trace[$key]['class'] = $stackPoint['class'];
     }
 
     $stackTrace = array();
     foreach ($trace as $key => $stackPoint) {
-        $stackTrace[] = array('key' => $key, 'file' => $stackPoint['file'], 'line' => $stackPoint['line'], 'function' => $stackPoint['function'], 'args' => implode(', ', $stackPoint['args']), 'args_json' => $stackPoint['args_content'], 'class' => $stackPoint['class']);
+        $args = '';
+        
+        if (is_array($stackPoint['args']))
+        {
+            $args = implode(', ', $stackPoint['args']);
+        }
+        
+        $stackTrace[] = array('key' => $key, 'file' => $stackPoint['file'], 'line' => $stackPoint['line'], 'function' => $stackPoint['function'], 'args' => $args, 'args_json' => $stackPoint['args_content'], 'class' => $stackPoint['class']);
 
         $function = $stackPoint['function'];
 
         if ($stackPoint['class'] != '')
-            $function = $stackPoint['class']. ' -> ' .$stackPoint['function']. '(' .implode(', ', $stackPoint['args']). ')';
-
+        {
+            $function = $stackPoint['class']. ' -> ' .$stackPoint['function']. '(' .$args. ')';
+        }
+        
         $panthera->logging->output($key. ' => ' .$function. ' in ' .$stackPoint['file']. ' on line ' .$stackPoint['line'], 'pantheraExceptionHandler');
     }
 
@@ -85,15 +97,44 @@ function pantheraExceptionHandler($exception)
 function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $errline='unknown')
 {
     global $panthera;
-
-    if (error_get_last())
+    
+    if (error_get_last() or $errno)
     {
         $details = error_get_last();
-
-        if ($errno == E_NOTICE)
+        
+        // skip those error codes
+        $skipErrorCodes = array(
+            E_DEPRECATED,
+            E_NOTICE,
+            0,
+            E_WARNING,
+            E_USER_NOTICE,
+            E_STRICT,
+            E_DEPRECATED,
+            E_COMPILE_WARNING,
+            E_CORE_WARNING,
+            E_WARNING,
+        );
+        
+        // we will show warning messages in debugging mode
+        if ($panthera->logging->debug and $panthera->logging->strict)
+        {
+            $skipErrorCodes = array(
+                E_DEPRECATED,
+                E_NOTICE,
+                0,
+                E_USER_NOTICE,
+            );
+        }
+        
+        $panthera -> logging -> output($errstr. ' in ' .$errfile. ' on line ' .$errline, 'PHP');
+        
+        if (in_array($errno, $skipErrorCodes))
+        {
             return True;
-
-        if(strpos('PHP Startup', $errstr) != -1)
+        }
+        
+        if(strpos('PHP Startup', $errstr) !== False)
             return True;
 
         if ($panthera->config->getKey('debug'))
@@ -104,9 +145,9 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
             $stack = debug_backtrace( false );
 
             if (is_dir(SITE_DIR. '/content/templates/error_debug.php'))
-                include_once(SITE_DIR. '/content/templates/error_debug.php');
+                include_once SITE_DIR. '/content/templates/error_debug.php';
             else
-                include_once(PANTHERA_DIR. '/templates/error_debug.php');
+                include_once PANTHERA_DIR. '/templates/error_debug.php';
 
             exit;
         }
@@ -132,6 +173,7 @@ class pantheraLogging
     private $panthera;
     protected $timer = 0;
 	public $isRealMemUsage = False;
+    public $strict = False;
 
     /**
       * Constructor
@@ -778,6 +820,11 @@ class pantheraCore
         // debugging part two
         $this -> logging -> debug = (bool)$this->config->getKey('debug');
         
+        if ($this -> logging -> debug)
+        {
+            $this -> logging -> strict = (bool)$this->config->getKey('debug.strict', 0, 'bool');
+        }
+        
         /** Cryptography support **/
         if (!function_exists('password_hash'))
         {
@@ -815,7 +862,9 @@ class pantheraCore
             if ($this->session->get('debug.filter.mode'))
             {
                 $this->logging->filterMode = $this->session->get('debug.filter.mode');
-                $this->logging->filter = $this->session->get('debug.filter');
+                
+                if ($this->session->exists('debug.filter'))
+                    $this->logging->filter = $this->session->get('debug.filter');
             }
         }
         
@@ -2372,7 +2421,7 @@ function getQueryString($array=null, $mix=null, $except=null)
         $array = $_GET;
     elseif ($array == 'POST')
         $array = $_POST;
-    else {
+    elseif (is_string($array)) {
         parse_str($array, $array);
     }
         

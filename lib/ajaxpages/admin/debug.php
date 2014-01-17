@@ -49,6 +49,29 @@ if ($_GET['action'] == 'toggle_debug_value')
     }
     
     ajax_exit(array('status' => 'failed'));
+    
+    
+/**
+ * Toggle strict debugging
+ *
+ * @author Damian Kęska
+ */
+ 
+} elseif ($_GET['action'] == 'toggle_strict_debugging') {
+    if (!getUserRightAttribute($user, 'can_manage_debug')) 
+    {
+        $noAccess = new uiNoAccess; 
+        $noAccess -> display();
+    }
+    
+    $value = intval(!(bool)$panthera -> config -> getKey('debug.strict', 0, 'bool'));
+    
+    if ($panthera -> config -> setKey('debug.strict', $value, 'bool'))
+    {
+        ajax_exit(array('status' => 'success', 'state' => $value));
+    }
+    
+    ajax_exit(array('status' => 'failed'));
       
 /**
   * Set messages filtering mode
@@ -57,6 +80,12 @@ if ($_GET['action'] == 'toggle_debug_value')
   */
       
 } elseif ($_GET['action'] == 'setMessagesFilter') {
+    
+    if (!getUserRightAttribute($user, 'can_manage_debug')) 
+    {
+        $noAccess = new uiNoAccess; 
+        $noAccess -> display();
+    }
     
     switch ($_POST['value'])
     {
@@ -82,6 +111,12 @@ if ($_GET['action'] == 'toggle_debug_value')
   */
   
 } elseif ($_GET['action'] == 'manageFilterList') {
+    
+    if (!getUserRightAttribute($user, 'can_manage_debug')) 
+    {
+        $noAccess = new uiNoAccess; 
+        $noAccess -> display();
+    }
 
     $filters = $panthera -> session -> get('debug.filter');
     $filterName = $_POST['filter'];
@@ -157,9 +192,13 @@ $panthera -> template -> push ('exampleFilters', $exampleFilters);
 
 // list of all defined filters
 $filtersTpl = array();
-foreach ($panthera -> session -> get('debug.filter') as $filter => $enabled)
-    $filtersTpl[] = $filter;
-    
+
+if (is_array($panthera -> session -> get('debug.filter')))
+{
+    foreach ($panthera -> session -> get('debug.filter') as $filter => $enabled)
+        $filtersTpl[] = $filter;
+}   
+
 // debug.log save handlers
 $logHandlers = array();
 
@@ -173,6 +212,7 @@ $panthera -> template -> push ('filterList', implode(', ', $filtersTpl));
 $panthera -> template -> push ('logHandlers', implode(', ', $logHandlers));
 $panthera -> template -> push ('current_log', explode("\n", $panthera -> logging -> getOutput()));
 $panthera -> template -> push ('debug', $panthera -> config -> getKey('debug'));
+$panthera -> template -> push ('strictDebugging', $panthera -> config -> getKey('debug.strict'));
 $panthera -> template -> push ('tools', $tools);
 
 $titlebar = new uiTitlebar(localize('Debugging center'));
