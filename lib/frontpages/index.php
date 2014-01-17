@@ -52,13 +52,15 @@ if (!defined('PAGES_DISABLE_LIB') and !$panthera -> config -> getKey('front.inde
 // here we will include site pages
 if ($path)
 {
-    @include($path);
+    include($path);
     pa_exit();
 } else {
     define('SITE_ERROR', 404);
-    @include(SITE_DIR. '/content/pages/index.php');
+    
+    if (is_file(SITE_DIR. '/content/pages/index.php'))
+        include(SITE_DIR. '/content/pages/index.php');
 }
 
 $template -> display();
-$panthera -> finish();
+pa_exit();
 ?>

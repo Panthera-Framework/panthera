@@ -128,6 +128,7 @@ class pantheraDB
         // if database error page exists
         if (is_file($debugTemplate))
         {
+            global $panthera;
             include($debugTemplate);
             exit;        
         }
