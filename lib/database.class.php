@@ -70,7 +70,7 @@ class pantheraDB
                 $panthera -> logging -> output('Connected to SQLite3 database file ' .$config['db_file'], 'pantheraDB');
             } else {
                 $this->socketType = 'mysql';
-                $this->sql = new PDO('mysql:host='.$config['db_host'].';encoding=utf8;dbname='.$config['db_name'], $config['db_username'], $config['db_password']);
+                $this->sql = @new PDO('mysql:host='.$config['db_host'].';encoding=utf8;dbname='.$config['db_name'], $config['db_username'], $config['db_password']);
                 $panthera -> logging -> output('Connected to MySQL database, ' .$config['db_username']. '@' .$config['db_host'], 'pantheraDB');
             }
 
