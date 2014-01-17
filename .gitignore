@@ -14,3 +14,5 @@ lib/share/php-markdown
 example-app/css
 example-app/images
 example-app/js
+.project
+.settings/
