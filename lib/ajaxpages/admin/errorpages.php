@@ -11,14 +11,10 @@
 if (!defined('IN_PANTHERA'))
       exit;
 
-$tpl = 'errorpages.tpl';
-
 if (!getUserRightAttribute($user, 'can_test_error_pages')) {
     $noAccess = new uiNoAccess; $noAccess -> display();
     pa_exit();
 }
-
-$panthera -> locale -> loadDomain('errorpages');
 
 switch ($_GET['show'])
 {
@@ -29,7 +25,7 @@ switch ($_GET['show'])
 
     case 'error_debug':
         $panthera -> logging -> debug = True;
-        trigger_error("This is a test of error page", E_USER_ERROR);
+        trigger_error("Cannot divide by zero", E_USER_ERROR);
     break;
 
     case 'exception':
@@ -54,17 +50,59 @@ $pages['exception_debug'] = array('name' => 'Exception', 'file' => getErrorPageF
 
 $errorFile = getErrorPageFile('error');
 if (!$errorFile)
+{
     $errorFile = '/content/templates/error.php';
+}
 
 $exceptionsFile = getErrorPageFile('error');
-if (!$exceptionsFile)
-    $exceptionsFile = '/content/templates/exception.php';
 
-$pages['db_error'] = array('name' => 'Database error', 'file' => getErrorPageFile('db_error'), 'testname' => 'db_error', 'visibility' => localize("Public"));
-$pages['error'] = array('name' => 'Error', 'file' => $errorFile, 'testname' => 'exception', 'notice' => !(bool)getErrorPageFile('error'), 'visibility' => localize("Public"));
-$pages['exception'] = array('name' => 'Exception', 'file' => $exceptionsFile, 'testname' => 'exception', 'notice' => !(bool)getErrorPageFile('exception'), 'visibility' => localize("Public"));
-$panthera -> template -> push ('errorPages', $pages);
+if (!$exceptionsFile)
+{
+    $exceptionsFile = '/content/templates/exception.php';
+}
+
+$pages['db_error'] = array(
+    'name' => 'Database error',
+    'file' => getErrorPageFile('db_error'),
+    'testname' => 'db_error',
+    'visibility' => localize("Public")
+);
+
+$pages['error'] = array(
+    'name' => 'Error',
+    'file' => $errorFile,
+    'testname' => 'exception',
+    'notice' => !(bool)getErrorPageFile('error'),
+    'visibility' => localize("Public")
+);
+
+$pages['exception'] = array(
+    'name' => 'Exception',
+    'file' => $exceptionsFile,
+    'testname' => 'exception',
+    'notice' => !(bool)getErrorPageFile('exception'),
+    'visibility' => localize("Public")
+);
+
+$pages['notfound'] = array(
+    'name' => 'Not found (404)',
+    'file' => '/content/templates/notfound.php',
+    'testname' => 'notfound',
+    'notice' => !(bool)getErrorPageFile('notfound'),
+    'visibility' => localize("Public")
+);
+
+$pages['access'] = array(
+    'name' => 'Forbidden (403)',
+    'file' => '/content/templates/forbidden.php',
+    'testname' => 'forbidden',
+    'notice' => !(bool)getErrorPageFile('forbidden'),
+    'visibility' => localize("Public")
+);
 
 $titlebar = new uiTitlebar(localize('Test system error pages in one place', 'errorpages'));
 $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-process-stop-icon.png', 'left');
-?>
+
+$panthera -> template -> push ('errorPages', $pages);
+$panthera -> template -> display('errorpages.tpl');
+pa_exit();

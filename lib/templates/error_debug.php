@@ -28,7 +28,7 @@ if (!defined('IN_PANTHERA'))
 
             <div class="<?php echo $class;?>">
                 Message:<br>
-                <?php echo $details['message']; ?>
+                <?php echo $errstr; ?>
             </div>
 
             <div class="warning">
