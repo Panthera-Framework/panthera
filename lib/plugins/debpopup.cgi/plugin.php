@@ -46,7 +46,12 @@ class debpopupPlugin extends pantheraPlugin
             {
                 $value = json_encode($value, JSON_PRETTY_PRINT);
             }
-        
+            
+            if (is_object($value))
+            {
+                continue;
+            }
+            
             $getItems[] = array(htmlspecialchars($key), nl2br(htmlspecialchars($value))); 
         }
         return $getItems;
