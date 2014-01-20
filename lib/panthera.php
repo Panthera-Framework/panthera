@@ -70,21 +70,51 @@ function pantheraExceptionHandler($exception)
         $panthera->logging->output($key. ' => ' .$function. ' in ' .$stackPoint['file']. ' on line ' .$stackPoint['line'], 'pantheraExceptionHandler');
     }
 
-    if ($panthera->config->getKey('debug', True, 'bool'))
+    if ($panthera -> logging -> debug)
     {
-        if (is_dir(SITE_DIR. '/content/templates/exception_debug.php'))
-            include_once(SITE_DIR. '/content/templates/exception_debug.php');
-        else
-            include_once(PANTHERA_DIR. '/templates/exception_debug.php');
+        $exceptionPage = getContentDir('templates/exception_debug.php');
+        
+        if ($exceptionPage)
+        {
+            include_once $exceptionPage;
+        }
 
         $panthera->logging->saveLog();
         exit;
 
     } else {
-        if (is_dir(SITE_DIR. '/content/templates/exception.php'))
-            include_once SITE_DIR. '/content/templates/exception.php';
-        else
-            include_once PANTHERA_DIR. '/templates/exception.php';
+        if ($panthera -> config)
+        {
+            if ($panthera -> config -> getKey('dumpErrorsToFiles'))
+            {
+                $dumpName = 'exception-' .hash('md4', $exception->getFile().$exception->getLine()). '.json';
+                $fp = fopen(SITE_DIR. '/content/tmp/' .$dumpName, 'w');
+                
+                fwrite($fp, json_encode(array(
+                    'included_files' => get_included_files(),
+                    'log' => $panthera -> logging -> getOutput(),
+                    'get' => $_GET,
+                    'post' => $_POST,
+                    'server' => $_SERVER,
+                    'stack' => $stackTrace,
+                    'exception' => array(
+                        'file' => $exception->getFile(),
+                        'line' => $exception->getLine(),
+                        'message' => $exception->getMessage(),
+                        'code' => $exception->getCode()
+                    )
+                )));
+                
+                fclose($fp);
+            }
+        }
+        
+        $exceptionPage = getContentDir('templates/exception.php');
+        
+        if ($exceptionPage)
+        {
+            include_once $exceptionPage;
+        }
 
         exit;
     }
@@ -145,18 +175,56 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
         if(strpos('PHP Startup', $errstr) !== False)
             return True;
 
-        if ($panthera->config->getKey('debug'))
+        if ($panthera -> logging -> debug)
         {
             $panthera->logging->output('pantheraErrorHandler::Unexcepted error ' .json_encode($details));
             $panthera->logging->saveLog();
 
             $stack = debug_backtrace( false );
+            
+            $errorPage = getContentDir('templates/error_debug.php');
 
-            if (is_dir(SITE_DIR. '/content/templates/error_debug.php'))
-                include_once SITE_DIR. '/content/templates/error_debug.php';
-            else
-                include_once PANTHERA_DIR. '/templates/error_debug.php';
+            if ($errorPage)
+            {
+                include_once $errorPage;
+            }
 
+            exit;
+        } else {
+            if ($panthera -> config)
+            {
+                if ($panthera -> config -> getKey('dumpErrorsToFiles'))
+                {
+                    $dumpName = 'error-' .hash('md4', $errfile.$errline). '.json';
+                    $fp = fopen(SITE_DIR. '/content/tmp/' .$dumpName, 'w');
+                    
+                    fwrite($fp, json_encode(array(
+                        'included_files' => get_included_files(),
+                        'log' => $panthera -> logging -> getOutput(),
+                        'get' => $_GET,
+                        'post' => $_POST,
+                        'server' => $_SERVER,
+                        'stack' => $stack,
+                        'error' => array(
+                            'file' => $errfile,
+                            'line' => $errline,
+                            'message' => $errstr,
+                            'code' => $errno,
+                        )
+                    )));
+                    
+                    fclose($fp);
+                }
+            }
+            
+            
+            $errorPage = getContentDir('templates/error.php');
+            
+            if ($errorPage)
+            {
+                include_once $errorPage;
+            }
+            
             exit;
         }
     }

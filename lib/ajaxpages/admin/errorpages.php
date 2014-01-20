@@ -71,7 +71,7 @@ $pages['db_error'] = array(
 $pages['error'] = array(
     'name' => 'Error',
     'file' => $errorFile,
-    'testname' => 'exception',
+    'testname' => 'error',
     'notice' => !(bool)getErrorPageFile('error'),
     'visibility' => localize("Public")
 );
@@ -84,6 +84,7 @@ $pages['exception'] = array(
     'visibility' => localize("Public")
 );
 
+// TODO: Implement 404 error pages
 $pages['notfound'] = array(
     'name' => 'Not found (404)',
     'file' => '/content/templates/notfound.php',
@@ -92,6 +93,7 @@ $pages['notfound'] = array(
     'visibility' => localize("Public")
 );
 
+// TODO: Implement 403 forbidden pages
 $pages['access'] = array(
     'name' => 'Forbidden (403)',
     'file' => '/content/templates/forbidden.php',
