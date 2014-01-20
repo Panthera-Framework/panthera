@@ -651,6 +651,11 @@ class navigation
             array_pop(self::$history);
             return False;
         }
+        
+        if (!is_array(self::$history))
+        {
+            self::$history = array();
+        }
     
         if(end(self::$history) != $url)
         {
@@ -699,6 +704,9 @@ class navigation
     
     public static function getBackButton()
     {
+        if (!is_array(self::$history))
+            return '';
+        
         $btn = end(self::$history);
         
         if (strpos($btn, '__navigationBack') === False)
