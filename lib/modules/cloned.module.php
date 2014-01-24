@@ -16,6 +16,36 @@ require_once PANTHERA_DIR. '/share/phpQuery.php';
 $panthera -> importModule('simpleimage');
 $panthera -> importModule('httplib');
 
+
+class clonedItem extends pantheraFetchDB
+{
+    protected $_tableName = 'cloned';
+    protected $_idColumn = 'id';
+    protected $_constructBy = array('id', 'hash');
+
+    public function __get($var)
+    {
+        return pantheraUrl(parent::__get($var));
+    }
+
+    public function __set($var, $value)
+    {
+        return parent::__set($var, pantheraUrl($value, True));
+    }
+    
+    public static function createClonedItem($hash)
+    {
+        global $panthera;
+    
+        if (strlen($hash) < 20)
+            return False;
+    
+        $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}cloned` (`id`, `hash`) VALUES (NULL, :hash);', array('hash' => $hash));
+        return (bool)$SQL->rowCount();
+    }    
+}
+
+
 /**
   * Mass content ripping module class
   *
@@ -574,6 +604,11 @@ class cloned_images extends cloned_plugin
 
     private function save($image, $src)
     {
+        $copyImage = clone $image;
+        
+        if ($this->imageClonedExists($copyImage))
+            return False;
+        
         switch ($image->image_type) {
             case IMAGETYPE_JPEG:
                 $extension = '.jpg';
@@ -594,8 +629,28 @@ class cloned_images extends cloned_plugin
             $filePath = pantheraUrl($uploadDir.$name);
             $image -> save($filePath);
             $this -> results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
+            $this -> createImageCloned($image);
             return $filePath;
         }
+    }
+    
+    public function imageClonedExists($image)
+    {
+        $image->resize(13, 13);
+        
+        $item = new clonedItem('hash', hash('md5', $image->output()));
+        unset($image);
+        
+        if ($item->exists())
+            return True;
+        
+        return False;
+    }
+    
+    public function createImageCloned($image)
+    {
+        $image->resize(13, 13);
+        return clonedItem::createClonedItem(hash('md5', $image->output()));
     }
     
     /**
@@ -608,15 +663,30 @@ class cloned_images extends cloned_plugin
     
     private function saveGIF($src)
     {
-        $name = hash('md4', basename($src)).'gif';
+        $name = hash('md4', basename($src));
+        
+        $image = new SimpleImage();
+        $image -> load($src);
+        
+        if ($this->imageClonedExists($image)) {
+            unlink($filePath);
+            return False;
+        }
+        
+        unset($image);
         
         if (strpos($name, '.php') === FALSE) {
             $uploadDir = pantheraUrl('{$upload_dir}/cloned/');
-            $filePath = pantheraUrl($uploadDir.$name);
+            $filePath = pantheraUrl($uploadDir.$name.'.gif');
             file_put_contents($filePath, file_get_contents($src));
             
             if ($this->checkGIFOptions($filePath)) {
                 $this->results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
+                
+                $image = new SimpleImage();
+                $image -> load($filePath);
+                $this->createImageCloned($image);
+                
                 return $filePath;
             } else {
                 unlink($filePath);
@@ -736,6 +806,7 @@ class cloned_images extends cloned_plugin
         }
     }
 }
+
 
 $panthera -> add_option('cloned_parsers', array('cloned_images', 'detect'));
 
