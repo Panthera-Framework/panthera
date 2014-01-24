@@ -400,8 +400,10 @@ class cloned_images extends cloned_plugin
       * @author Mateusz Warzyński
       */
 
-    private function createImage($src) 
+    public function createImage($src) 
     {
+        var_dump($src);
+        
         $extension = strtolower(substr($src, -4));
         
         if (!array_key_exists($extension, $this->allowedExtensions))
@@ -418,8 +420,7 @@ class cloned_images extends cloned_plugin
             $type = IMAGETYPE_JPEG; // default imageType
             
         if ($type == IMAGETYPE_GIF) {
-            $this -> saveGIF($src);
-            return True;
+            return $this -> saveGIF($src);
         }
         
         $httplib = new httplib;
@@ -448,9 +449,16 @@ class cloned_images extends cloned_plugin
         } catch (Exception $e) { 
             $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'Timeout');
             return False;
-        }
-        // check options (to return validate information and optionally save image)     
-        $this -> checkOptions($width, $height, $src, $image);
+        }  
+        
+        // save file
+        if ($this -> checkOptions($width, $height, $src))
+        {
+            if ($this->options['save'])
+                $this->save($image, $src);
+            else
+                $this->results[] = array('status' => 'success', 'data' => $src);   
+        } 
     }
 
     /**
@@ -501,7 +509,7 @@ class cloned_images extends cloned_plugin
         $HTML = file_get_contents($this->link, false, $context);
         
         // so... lets parse the document
-        return phpQuery::newDocument($HTML); 
+        return phpQuery::newDocument($HTML);
     }
 
     /**
@@ -515,7 +523,7 @@ class cloned_images extends cloned_plugin
       * @author Mateusz Warzyński
       */
 
-    private function checkOptions($width, $height, $src, $image)
+    private function checkOptions($width, $height, $src)
     {
         // width, min-width, max-width
         if ($this->options['width'] != -1 and $width != $this->options['width'])
@@ -555,12 +563,6 @@ class cloned_images extends cloned_plugin
             return False;
         }
                 
-        // save file
-        if ($this->options['save'])
-            $this->save($image, $src, $extension);
-        else
-            $this->results[] = array('status' => 'success', 'data' => $src);   
-        
         return True;
     }
 
@@ -572,7 +574,7 @@ class cloned_images extends cloned_plugin
       * @author Mateusz Warzyński
       */
 
-    private function save($image, $src, $extension)
+    private function save($image, $src)
     {
         switch ($image->image_type) {
             case IMAGETYPE_JPEG:
@@ -593,7 +595,7 @@ class cloned_images extends cloned_plugin
             $uploadDir = pantheraUrl('{$upload_dir}/cloned/');
             $filePath = pantheraUrl($uploadDir.$name);
             $image -> save($filePath);
-            $this->results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
+            $this -> results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
             return True;
         }
     }
@@ -617,6 +619,7 @@ class cloned_images extends cloned_plugin
             
             if ($this->checkGIFOptions($filePath)) {
                 $this->results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
+                return $filePath;
             } else {
                 unlink($filePath);
             }
