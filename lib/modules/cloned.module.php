@@ -402,8 +402,6 @@ class cloned_images extends cloned_plugin
 
     public function createImage($src) 
     {
-        var_dump($src);
-        
         $extension = strtolower(substr($src, -4));
         
         if (!array_key_exists($extension, $this->allowedExtensions))
