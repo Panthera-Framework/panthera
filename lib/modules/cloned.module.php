@@ -453,7 +453,7 @@ class cloned_images extends cloned_plugin
         if ($this -> checkOptions($width, $height, $src))
         {
             if ($this->options['save'])
-                $this->save($image, $src);
+                return $this->save($image, $src);
             else
                 $this->results[] = array('status' => 'success', 'data' => $src);   
         } 
@@ -594,7 +594,7 @@ class cloned_images extends cloned_plugin
             $filePath = pantheraUrl($uploadDir.$name);
             $image -> save($filePath);
             $this -> results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
-            return True;
+            return $filePath;
         }
     }
     
