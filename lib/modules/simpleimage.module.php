@@ -61,7 +61,10 @@ class SimpleImage {
          chmod($filename,$permissions);
       }
    }
+   
    function output($image_type=IMAGETYPE_JPEG) {
+          
+      ob_start();
  
       if( $image_type == IMAGETYPE_JPEG ) {
          imagejpeg($this->image);
@@ -72,15 +75,22 @@ class SimpleImage {
  
          imagepng($this->image);
       }
+      
+      $output = ob_get_contents();
+      ob_end_clean();
+      
+      return $output;
    }
+   
    function getWidth() {
- 
       return imagesx($this->image);
    }
+   
    function getHeight() {
  
       return imagesy($this->image);
    }
+   
    function resizeToHeight($height) {
  
       $ratio = $height / $this->getHeight();
