@@ -336,7 +336,7 @@ class cloned_images extends cloned_plugin
             }
         }
         
-        if (strpos($this->link, '.jpg') or strpos($this->link, '.png') !== false or strpos($this->link, '.gif') !== false or strpos($this->link, '.jpeg') !== false) {
+        if (strpos($this->link, '.jpg') !== false or strpos($this->link, '.png') !== false or strpos($this->link, '.gif') !== false or strpos($this->link, '.jpeg') !== false) {
             
             if ($this->specialized['createImage'])
                 $plugin -> createImage($this->link);
