@@ -287,7 +287,7 @@ class cloned_images extends cloned_plugin
     // configuration options
     //private $options = array('min-width' => 0, 'max-width' => 0, 'min-height' => 0, 'max-height' => 0, 'extension' => '*', 'name_contains' => '', 'width' => 0, 'height' => 0);
     public static $defaults = array('min-width' => -1, 'max-width' => -1, 'min-height' => -1, 'max-height' => -1, 'extension' => '*', 'name_contains' => '', 'width' => -1, 'height' => -1, 'save' => False, 'resize' => False);
-    public $specialized = array('parse' => False, 'createImage' => False, 'getImages' => False, 'cropBottom' => False);
+    public $specialized = array('parse' => False, 'createImage' => False, 'getImages' => False, 'cropBottom' => 0);
     private $allowedExtensions = array('.jpg', '.png', '.gif', '.jpeg');
 
     public static function detect($link)
@@ -627,6 +627,10 @@ class cloned_images extends cloned_plugin
         if (strpos($name, '.php') === FALSE) {
             $uploadDir = pantheraUrl('{$upload_dir}/cloned/');
             $filePath = pantheraUrl($uploadDir.$name);
+            
+            if (is_file($filePath))
+                $filePath = pantheraUrl($uploadDir.hash('md4', basename($src)).strval(rand(0, 9999)).$extension); 
+            
             $image -> save($filePath);
             $this -> results[] = array('status' => 'success', 'data' => $src, 'path' => $filePath);
             $this -> createImageCloned($image);
