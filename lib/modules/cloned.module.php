@@ -459,6 +459,13 @@ class cloned_images extends cloned_plugin
             $image = new SimpleImage();
             $image -> loadFromString($response, $type);
             
+            $copyImage = clone $image;
+            
+            if ($this->imageClonedExists($copyImage)) {
+                $this->results[] = array('data' => $src, 'status' => 'failed', 'code' => 'This image already is in database.');
+                return False;
+            }
+            
             if ($this->specialized['cropBottom'] > 0)
                 $image -> cropBottom(intval($this->specialized['cropBottom']));
             
@@ -604,11 +611,6 @@ class cloned_images extends cloned_plugin
 
     private function save($image, $src)
     {
-        $copyImage = clone $image;
-        
-        if ($this->imageClonedExists($copyImage))
-            return False;
-        
         switch ($image->image_type) {
             case IMAGETYPE_JPEG:
                 $extension = '.jpg';
@@ -638,6 +640,14 @@ class cloned_images extends cloned_plugin
         }
     }
     
+    /**
+      * Check if image hash exists in database
+      *
+      * @param simpleimage object $image 
+      * @return bool
+      * @author Mateusz Warzyński
+      */
+    
     public function imageClonedExists($image)
     {
         $image->resize(13, 13);
@@ -650,6 +660,14 @@ class cloned_images extends cloned_plugin
         
         return False;
     }
+    
+    /**
+      * Add image hash to database to prevent add this image twice..
+      *
+      * @param simpleimage object $image 
+      * @return bool
+      * @author Mateusz Warzyński
+      */
     
     public function createImageCloned($image)
     {
