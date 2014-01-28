@@ -334,6 +334,13 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
                 </tr>
               {/if}
               
+              {if="$facebookID"}
+                <tr>
+                  <td>{function="localize('Facebook ID', 'users')"} <small>({function="localize('optionally', 'users')"})</small></td>
+                  <td><p>{$facebookID}</p></td>
+                </tr>
+              {/if}
+              
               {if="count($user_fields) > 0"}
                {loop="$user_fields"}
                 <tr>
