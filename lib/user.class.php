@@ -604,12 +604,15 @@ function createNewUser($login, $passwd, $full_name, $primary_group='', $attribut
  * @author Mateusz Warzyński
  */
 
-function removeUser($login)
+function removeUser($login, $id='')
 {
     global $panthera;
-    $SQL = $panthera->db->query('DELETE FROM `{$db_prefix}users` WHERE `login` = :login', array('login' => $login));
+    $SQLUser = $panthera->db->query('DELETE FROM `{$db_prefix}users` WHERE `login` = :login', array('login' => $login));
+    
+    if ($SQLUser and $id != '')
+        $SQLMetas = $panthera->db->query('DELETE FROM `{$db_prefix}metas` WHERE `userid` = :id', array('id' => $id));
 
-    if ($SQL)
+    if ($SQLUser)
         return True;
 
     return False;

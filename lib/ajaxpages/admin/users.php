@@ -391,7 +391,7 @@ if ($_GET['action'] == 'account') {
         if ($u -> acl -> get('superuser') and !$panthera->user->acl->get('superuser'))
             ajax_exit(array('status' => 'success', 'message' => localize('Cannot remove superuser', 'users')));
 
-        if (removeUser($id))
+        if (removeUser($id, $u->id))
             ajax_exit(array('status' => 'success', 'message' => localize('User has been removed', 'users')));
 
     } catch (Exception $e) {
