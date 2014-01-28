@@ -196,6 +196,11 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
                   <th>{function="localize('Jabber', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
                   <th><input type="text" name="jabber" placeholder="user@jabber.org" value="{$jabber}"></th>
                 </tr>
+                
+                <tr>
+                  <th>{function="localize('Facebook ID', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+                  <th><input type="text" name="facebookID" placeholder="100000000000000" value="{$facebookID}"></th>
+                </tr>
 
              </tbody>
             </table>

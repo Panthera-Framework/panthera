@@ -165,6 +165,7 @@ if ($_GET['action'] == 'account') {
     $template -> push('jabber', $u->jabber);
     $template -> push('email', $u->mail);
     $template -> push('groups', $groupsTpl);
+    $template -> push('facebookID', $u->acl->get('facebook'));
 
     $aclList = array();
     $userTable = $u->acl->listAll();
@@ -330,10 +331,14 @@ if ($_GET['action'] == 'account') {
         $u -> profile_picture = filterInput($_POST['avatar'], 'strip');
     }
 
-    //     
     if (filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
     {
         $u -> mail = $_POST['email'];
+    }
+    
+    if (strlen($_POST['facebookID']) > 5)
+    {
+        $u -> acl -> set('facebook', $_POST['facebookID']);
     }
     
     if (filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
