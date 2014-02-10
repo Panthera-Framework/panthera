@@ -973,7 +973,79 @@ ul.dropdown li:hover > a.dir {
 }
 
 .galleryIcon {
-    width: 25px;
+    width: 16px;
+}
+
+.galleryBox {
+    width: 824px !important;
+    float: center;
+    display: inline-block;
+    padding: 20px !important;
+    padding-left: 40px !important;
+    padding-right: 40px !important;
+}
+
+.imageBox {
+    height: 206px;
+    width: 206px;
+    overflow: hidden;
+    display: inline-block;
+    float: left;
+    -webkit-transition-duration: 500ms;
+    -webkit-transition-property: margin-left, margin-right, margin-top;
+}
+
+.image {
+    margin: 2px 3px 3px 2px;
+    display: inline-block;
+    height: 200px;
+}
+
+.imageOptions {
+    width: 200px;
+    position: relative;
+    top: -100px;
+    opacity: 0;
+    transition: opacity .5s;
+    overflow: hidden;
+}
+
+.imageOptionsBackground {
+    background-image: -moz-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%); /* FF3.6+ */
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,1))); /* Chrome,Safari4+ */
+    background-image: -webkit-linear-gradient(top, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%); /* Chrome10+,Safari5.1+ */
+    background-image: -o-linear-gradient(top, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%); /* Opera 11.10+ */
+    background-image: -ms-linear-gradient(top, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%); /* IE10+ */
+    background-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%); /* W3C */
+    position: relative;
+    height: 83px;
+}
+
+.imageOptions p {
+    position: relative;
+    top: 35px;
+    font-size: 11px;
+    color: white;
+}
+
+#imageTitle {
+    top: 40px;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.imageOptions p a {
+    color: white;
+    font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
+    cursor: pointer;
+    font-size: 11px;
+    line-height: 18px;
+    padding-left: 5px;
+}
+
+.imageOptions p a:hover {
+    text-decoration: underline;
 }
 
 /****** Progressbar: https://github.com/rstacruz/nprogress *******/
