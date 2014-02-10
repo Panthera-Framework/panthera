@@ -146,7 +146,6 @@
 
 {if="!$all_langs"}
 <!-- Language popup -->
-
 <div id="languagePopup" style="display: none;">
     <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
         
@@ -180,7 +179,6 @@
 {/if}
 
 <!-- Settings popup -->
-
 <div id="settingsPopup" style="display: none;">
    <form action="?display=gallery&cat=admin&action=saveCategoryDetails&id={$galleryObject->id}" method="POST" id="saveCategoryDetails">
     <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
@@ -235,7 +233,7 @@
     </table>
    </form>
    
-   <script type="text/javascript">
+   <script type="text/javascript"> // saveCategoryDetails
     var saveCategoryDetailsDiv = new panthera.ajaxLoader($('#saveCategoryDetailsDiv'));
     
       /**
@@ -256,42 +254,43 @@
    </script>
 </div>
 
-
 <div id="popupOverlay" style="text-align: center; padding-top: 20px; padding-bottom: 0px;"></div>
 
 <!-- Content -->
+
 <div class="ajax-content" style="text-align: center; background-color: #56687b;">
-  <div class="uploadBoxCentered" style="min-height: 0px; width: 150px; margin-top: -30px;">
+    
+    <div class="uploadBoxCentered" style="min-height: 0px; width: 150px; margin-top: -30px;">
     <div class="addBox" style="height: 100px; width: 100%; position: relative; border-radius: 2px;" id="addNewImage" ondragover="return false;">
             <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=add_item&ctgid={$category_id}');"><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: relative; top: 30px; opacity: 0.8;" title="{function="localize('Drag and drop files to this area to start uploading', 'gallery')"}"></a>
     </div>
-  </div>  
-  
-  <div id="items_list" class="uploadBoxCentered" style="width: 94%; text-align: center; padding-top: 26px;">
-    {loop="$item_list"}
-    <div class="galleryItem{if="$value->visibility == 0"}galleryItemHidden{/if} draggableGalleryItem" id="gallery_item_{$value->id}" style="display: inline-block; float: center; text-align: center; width: 220px; margin-right: 0px;">
-        <div class="galleryImageFrame">
-            <div class="paGalleryFrameContent" style="width: 220px;">
-                <a href="#edit" onclick="navigateTo('?display=gallery&cat=admin&action=edit_item_form&itid={$value->id}&page={$page}');"><img src="{$value->getThumbnail(300, True, True)}" class="galleryImage"></a>
+  </div> 
+    
+    <div class="galleryBox uploadBoxCentered">
+       {loop="$item_list"}
+        <div class="imageBox {if="$value->visibility == 0"}galleryItemHidden{/if}" id="gallery_item_{$value->id}">
+           <div class="image" onMouseOver="$('#options_{$value->id}').css('opacity', '1.0');" onMouseOut="$('#options_{$value->id}').css('opacity', '0');">
+                <img src="{$value->getThumbnail(300, True, True)}" style="width: 200px; height: 200px;">
+            
+            <div id="options_{$value->id}" class="imageOptions">
+                <div class="imageOptionsBackground">
+                    <p id="imageTitle">{$value->getTitle(20)}</p>
+                    <p>
+                        <a onclick="navigateTo('?display=gallery&cat=admin&action=edit_item_form&itid={$value->id}&page={$page}');"><img src="{$PANTHERA_URL}/images/admin/menu/mce.png" class="galleryIcon" title="{function="localize('Edit', 'messages')"}"></a>
+                        <a onclick="removeGalleryItem({$value->id});"><img src="{$PANTHERA_URL}/images/admin/menu/Actions-process-stop-icon.png" class="galleryIcon" title="{function="localize('Delete', 'messages')"}"></a>
+                        <a onclick="toggleItemVisibility('{$value->id}');"><img src="{$PANTHERA_URL}/images/admin/menu/search.png" class="galleryIcon" title="{function="localize('Toggle visibility', 'gallery')"}"></a>
+                        <a onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_manage_gimage_{$value->id}', 1024, 550);"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" class="galleryIcon" title="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton"></a>
+                        <a onclick="setAsCategoryThumb({$value->id}, {$category_id});"><img src="{$PANTHERA_URL}/images/admin/menu/star.png" class="galleryIcon" title="{function="localize('Set as thumbnail', 'gallery')"}"></a>
+                    </p>
+                </div>
             </div>
-            <div class="paGalleryFrameOverlay">
-                <h3 style="margin-bottom: 6px; margin-top: 6px;">{$value->title}</h3>
-                {$value->description}
-            </div>
+           </div>
         </div>
-        <div class="galleryItemDetails">
-            <div style="text-align: center;">
-                <a href="#edit" onclick="navigateTo('?display=gallery&cat=admin&action=edit_item_form&itid={$value->id}&page={$page}');"><img src="{$PANTHERA_URL}/images/admin/menu/mce.png" class="galleryIcon" title="{function="localize('Edit', 'messages')"}"></a>
-                <a href="#delete" onclick="removeGalleryItem({$value->id});"><img src="{$PANTHERA_URL}/images/admin/menu/Actions-process-stop-icon.png" class="galleryIcon" title="{function="localize('Delete', 'messages')"}"></a>
-                <a href="#toggle-visibility" onclick="toggleItemVisibility('{$value->id}');"><img src="{$PANTHERA_URL}/images/admin/menu/search.png" class="galleryIcon" title="{function="localize('Toggle visibility', 'gallery')"}"></a>
-                <a href="#rights" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_manage_gimage_{$value->id}', 1024, 550);"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" class="galleryIcon" title="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton"></a>
-                <a href="#thumbnail" onclick="setAsCategoryThumb({$value->id}, {$category_id});"><img src="{$PANTHERA_URL}/images/admin/menu/star.png" class="galleryIcon" title="{function="localize('Set as thumbnail', 'gallery')"}"></a>
-            </div>
-        </div>
-    </div> 
-    {/loop}
-  </div>
-  <div style="width: 65%; margin: 0 auto;">
+       {/loop}
+    </div>
+    
+    <div style="width: 65%; margin: 0 auto;">
        <div style="display: inline-block; font-size: 12px; color: white;">{$uiPagerName="adminGalleryItems"}{include="ui.pager"}</div>
-  </div>
+    </div>
+    
 </div>
