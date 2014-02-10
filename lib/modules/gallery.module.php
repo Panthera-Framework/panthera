@@ -207,6 +207,24 @@ class galleryItem extends pantheraFetchDB
     }
     
     /**
+      * Get short title
+      *
+      * @param int $strLen, maximum amount of characters 
+      * @return string 
+      * @author Mateusz Warzyński
+      */
+      
+    public function getTitle($strLen)
+    {
+        $title = $this -> title;
+        
+        if (strlen($title) > $strLen and $strLen > 3)
+            return strval(substr($title, 0, $strLen))."...";
+        
+        return $title;
+    } 
+    
+    /**
       * Get item's gallery object
       *
       * @return object 
