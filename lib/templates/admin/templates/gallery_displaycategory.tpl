@@ -175,17 +175,17 @@ function selectImage(id)
         $("#selectedBox").css('display', 'block');
         
         selected.push(id);
-        $("#image_"+id).css('-webkit-filter', 'blur(9px)');
+        $("#image_"+id).css('-webkit-filter', 'blur(9px) contrast(1.5)');
         
         return true;
     }
     
-    if ($("#image_"+id).css('-webkit-filter') == 'blur(9px)') {
+    if ($("#image_"+id).css('-webkit-filter') == 'blur(9px) contrast(1.5)') {
         removeFromArrayByValue(selected, id);
         $("#image_"+id).css('-webkit-filter', 'none');
     } else {
         selected.push(id);
-        $("#image_"+id).css('-webkit-filter', 'blur(9px)');
+        $("#image_"+id).css('-webkit-filter', 'blur(9px) contrast(1.5)');
     }
     
     
