@@ -2,6 +2,7 @@
 
 <script type="text/javascript">
     var uploadProgress = new panthera.ajaxLoader($('#addNewImage'));
+    var selected = new Array; // array to store selected ids of gallery items
     
     function removeGalleryCategory(id)
     {
@@ -43,7 +44,7 @@
 
     function toggleItemVisibility(id)
     {
-        panthera.jsonPOST({ url: '?display=gallery&cat=admin&action=toggleItemVisibility', data: 'ctgid='+id, success: function (response) {
+        panthera.jsonPOST({ url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggleItemVisibility', data: 'ctgid='+id, success: function (response) {
 
                     if (response.status == "success")
                     {
@@ -61,7 +62,7 @@
 
     function setAsCategoryThumb(id, ctgid)
     {
-        panthera.jsonGET({ 'url': '?display=gallery&cat=admin&action=set_category_thumb&itid='+id+'&ctgid='+ctgid});
+        panthera.jsonGET({ 'url': '{$AJAX_URL}?display=gallery&cat=admin&action=set_category_thumb&itid='+id+'&ctgid='+ctgid});
     }
 
     $(document).ready(function () {
@@ -126,6 +127,134 @@
         panthera.forms.checkboxToggleLayer({ input: '#all_langs_checkbox', layer: '#language_input', reversed: true });
 
     });
+    
+    /**
+      * Transform array to string ([0, 1] -> "0,1")
+      *
+      * @author Mateusz Warzyński
+      */
+    
+    function transformArrayToString(array) {
+        var returnString = array[0];
+        
+        for(var i=1; i<array.length; i++) {
+            returnString = returnString+','+array[i];
+        }
+        
+        return returnString;
+    }
+    
+    /**
+      * Remove value from array
+      *
+      * @author Mateusz Warzyński
+      */
+    
+    function removeFromArrayByValue(array, value) {
+        for(var i=0; i<array.length; i++) {
+    
+            if(array[i] == value) {
+                array.splice(i, 1);
+                break;
+            }
+    
+        }
+    }
+    
+/**
+  * Select image
+  *
+  * @author Mateusz Warzyński
+  */
+
+function selectImage(id)
+{
+    if (selected.length == 0) {
+        $(".imageOptionsBackground").css('display', 'none');
+        $("#addBox").css('display', 'none');
+        $("#selectedBox").css('display', 'block');
+        
+        selected.push(id);
+        $("#image_"+id).css('-webkit-filter', 'blur(9px)');
+        
+        return true;
+    }
+    
+    if ($("#image_"+id).css('-webkit-filter') == 'blur(9px)') {
+        removeFromArrayByValue(selected, id);
+        $("#image_"+id).css('-webkit-filter', 'none');
+    } else {
+        selected.push(id);
+        $("#image_"+id).css('-webkit-filter', 'blur(9px)');
+    }
+    
+    
+    if (selected.length == 0) {
+        $(".imageOptionsBackground").css('display', 'block');
+        $("#addBox").css('display', 'block');
+        $("#selectedBox").css('display', 'none');
+    }
+}
+
+/**
+  * Delete selected images
+  *
+  * @author Mateusz Warzyński
+  */
+ 
+function deleteSelectedImages()
+{
+    var ids = transformArrayToString(selected); 
+    
+    w2confirm('{function="localize('Are you sure you want to delete those images?', 'gallery')"}', function (responseText) {
+        
+            if (responseText == 'Yes')
+            {
+                panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=deleteItems&images_ids='+ids, messageBox: 'w2ui', success: function (response) {
+                        if (response.status == 'success')
+                        {
+                            window.location = '';
+                        } else {
+                            window.location = '';
+                            // w2alert(response.number+' {function="localize('image(s) have not been deleted! Refresh page.')"}');
+                        }
+                
+                    }
+                });
+            }
+        
+    });
+}
+
+/**
+  * Toggle visibility of selected images
+  *
+  * @author Mateusz Warzyński
+  */
+ 
+function toggleItemVisibilitySelected()
+{
+    var ids = transformArrayToString(selected); 
+    
+    w2confirm('{function="localize('Are you sure you want to toggle visibility those images?', 'gallery')"}', function (responseText) {
+        
+            if (responseText == 'Yes')
+            {
+                panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggleItemsVisibility&ids='+ids, messageBox: 'w2ui', success: function (response) {
+                        if (response.status == 'success') {
+                            window.location = '';
+                        } else {
+                            window.location = '';
+                            // w2alert(response.number+' {function="localize('image(s) have not been toggled! Refresh page.')"}');
+                        }
+                
+                    }
+                });
+            }
+        
+    });
+}
+
 </script>
 
 {include="ui.titlebar"}
@@ -261,16 +390,25 @@
 <div class="ajax-content" style="text-align: center; background-color: #56687b;">
     
     <div class="uploadBoxCentered" style="min-height: 0px; width: 150px; margin-top: -30px;">
-    <div class="addBox" style="height: 100px; width: 100%; position: relative; border-radius: 2px;" id="addNewImage" ondragover="return false;">
+      <div class="addBox" id="addBox" id="addNewImage" ondragover="return false;">
             <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=add_item&ctgid={$category_id}');"><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: relative; top: 30px; opacity: 0.8;" title="{function="localize('Drag and drop files to this area to start uploading', 'gallery')"}"></a>
-    </div>
+      </div>
+      
+      <div id="selectedBox" class="selectedBox">
+          <a style="cursor: pointer;" onclick="deleteSelectedImages();"><img src="{$PANTHERA_URL}/images/admin/menu/Actions-process-stop-icon.png" title="{function="localize('Delete', 'messages')"}"></a>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <a style="cursor: pointer;" onclick="toggleItemVisibilitySelected();"><img src="{$PANTHERA_URL}/images/admin/menu/search.png" title="{function="localize('Toggle visibility', 'gallery')"}"></a>
+      </div>
   </div> 
     
     <div class="galleryBox uploadBoxCentered">
        {loop="$item_list"}
         <div class="imageBox {if="$value->visibility == 0"}galleryItemHidden{/if}" id="gallery_item_{$value->id}">
-           <div class="image" onMouseOver="$('#options_{$value->id}').css('opacity', '1.0');" onMouseOut="$('#options_{$value->id}').css('opacity', '0');">
-                <img src="{$value->getThumbnail(300, True, True)}" style="width: 200px; height: 200px;">
+           
+           <div class="image" onMouseOver="$('#options_{$value->id}').css('opacity', '1.0');" onMouseOut="$('#options_{$value->id}').css('opacity', '0');" style="overflow: hidden;">
+              <a alt="{function="localize('Click to select', 'gallery')"}" style="cursor: pointer;" onclick="selectImage({$value->id});">
+                <img src="{$value->getThumbnail(300, True, True)}" id="image_{$value->id}" class="imagePicture">
+              </a>
             
             <div id="options_{$value->id}" class="imageOptions">
                 <div class="imageOptionsBackground">

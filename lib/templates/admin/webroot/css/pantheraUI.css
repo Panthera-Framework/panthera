@@ -995,10 +995,32 @@ ul.dropdown li:hover > a.dir {
     -webkit-transition-property: margin-left, margin-right, margin-top;
 }
 
+.addBox {
+    height: 100px;
+    width: 100%;
+    position: relative;
+    border-radius: 2px;
+}
+
+.selectedBox {
+    padding-top: 65px;
+    display: none;
+    min-height: 0px;
+    width: 150px;
+    height: 65px;
+    margin-top: -30px;
+}
+
 .image {
     margin: 2px 3px 3px 2px;
     display: inline-block;
     height: 200px;
+}
+
+.imagePicture {
+    width: 200px;
+    height: 200px;
+    -webkit-transition-duration: 300ms;
 }
 
 .imageOptions {

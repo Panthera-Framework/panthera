@@ -171,7 +171,47 @@ if ($_GET['action'] == 'deleteItem')
     if (gallery::removeImage($id))
         ajax_exit(array('status' => 'success'));
     else
-        ajax_exit(array('status' => 'failed', 'error' => localize('Databse error, please refresh the page and try again', 'messages')));
+        ajax_exit(array('status' => 'failed', 'error' => localize('Database error, please refresh the page and try again', 'messages')));
+}
+
+/**
+  * Remove items from gallery category (for more than one image)
+  *
+  * @author Mateusz Warzyński
+  */
+
+if ($_GET['action'] == 'deleteItems')
+{
+    if (!isset($_GET['images_ids']))
+        pa_exit();
+    
+    $ids = explode(",", $_GET['images_ids']);
+    
+    $unDeleted = 0;
+    
+    foreach ($ids as $id) {
+    
+        $item = new galleryItem('id', $id);
+        
+        // display that there is no access when there is no such item
+        if (!$item -> exists())
+            continue;
+        
+        // manage all galleries and images, manage selected gallery, manage selected image
+        if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gallery_' .$item->getGalleryID()) and !getUserRightAttribute($user, 'can_manage_gimage_' .$id))
+        {
+            $unDeleted = $unDeleted + 1;
+            continue;
+        }
+    
+        if (!gallery::removeImage($id))
+            $unDeleted = $unDeleted + 1;
+    }
+    
+    if ($unDeleted)
+        ajax_exit(array('status' => 'failed', 'error' => localize("Some images have not been deleted!", 'gallery'), 'number' => $unDeleted));
+    else
+        ajax_exit(array('status' => 'success'));
 }
 
 /**
@@ -377,6 +417,45 @@ if (@$_GET['action'] == 'toggleItemVisibility')
     } else
         ajax_exit(array('status' => 'failed', 'error' => localize('Item does not exists')));
 }
+
+/**
+  * Toggle images visibility (for more than one image)
+  *
+  * @author Mateusz Warzyński
+  */
+
+if (@$_GET['action'] == 'toggleItemsVisibility')
+{ 
+    $ids = explode(",", $_GET['ids']);
+    
+    $unToggled = 0;
+    
+    foreach ($ids as $id)
+    {
+        $item = new galleryItem('id', $id);
+
+        if (!$item -> exists()) {
+            $unToggled = $unToggled +1;
+            continue;   
+        } 
+        
+        if (!$manageAll and !getUserRightAttribute($user, 'can_manage_gallery_' .$item->getGalleryID()) and !getUserRightAttribute($user, 'can_manage_gimage_' .$id))
+        {
+            $unToggled = $unToggled +1;
+            continue;
+        }
+        
+        $item -> visibility = !(bool)$item->visibility;
+        $item -> save();
+    }
+    
+    // just to check whether everything is correct
+    if ($unToggled)
+        ajax_exit(array('status' => 'failed', 'error' => localize('Some images have not been toggled.'), 'number' => $unToggled));
+    else 
+        ajax_exit(array('status' => 'success'));
+}
+
 
 /**
   * Creating a new category
