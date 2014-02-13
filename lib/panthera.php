@@ -69,6 +69,32 @@ function pantheraExceptionHandler($exception)
         
         $panthera->logging->output($key. ' => ' .$function. ' in ' .$stackPoint['file']. ' on line ' .$stackPoint['line'], 'pantheraExceptionHandler');
     }
+    
+    if ($panthera -> config)
+    {
+        if ($panthera -> config -> getKey('dumpErrorsToFiles'))
+        {
+            $dumpName = 'exception-' .hash('md4', $exception->getFile().$exception->getLine()). '.json';
+            $fp = fopen(SITE_DIR. '/content/tmp/' .$dumpName, 'w');
+                
+            fwrite($fp, json_encode(array(
+                'included_files' => get_included_files(),
+                'log' => $panthera -> logging -> getOutput(),
+                'get' => $_GET,
+                'post' => $_POST,
+                'server' => $_SERVER,
+                'stack' => $stackTrace,
+                'exception' => array(
+                    'file' => $exception->getFile(),
+                    'line' => $exception->getLine(),
+                    'message' => $exception->getMessage(),
+                    'code' => $exception->getCode()
+                )
+            )));
+                
+            fclose($fp);
+        }
+    }
 
     if ($panthera -> logging -> debug)
     {
@@ -83,32 +109,6 @@ function pantheraExceptionHandler($exception)
         exit;
 
     } else {
-        if ($panthera -> config)
-        {
-            if ($panthera -> config -> getKey('dumpErrorsToFiles'))
-            {
-                $dumpName = 'exception-' .hash('md4', $exception->getFile().$exception->getLine()). '.json';
-                $fp = fopen(SITE_DIR. '/content/tmp/' .$dumpName, 'w');
-                
-                fwrite($fp, json_encode(array(
-                    'included_files' => get_included_files(),
-                    'log' => $panthera -> logging -> getOutput(),
-                    'get' => $_GET,
-                    'post' => $_POST,
-                    'server' => $_SERVER,
-                    'stack' => $stackTrace,
-                    'exception' => array(
-                        'file' => $exception->getFile(),
-                        'line' => $exception->getLine(),
-                        'message' => $exception->getMessage(),
-                        'code' => $exception->getCode()
-                    )
-                )));
-                
-                fclose($fp);
-            }
-        }
-        
         $exceptionPage = getContentDir('templates/exception.php');
         
         if ($exceptionPage)
@@ -165,11 +165,40 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
             );
         }
         
-        $panthera -> logging -> output($errstr. ' in ' .$errfile. ' on line ' .$errline, 'PHP');
+        if ($panthera->logging)
+        {
+            $panthera -> logging -> output($errstr. ' in ' .$errfile. ' on line ' .$errline, 'PHP');
+        }
         
         if (in_array($errno, $skipErrorCodes))
         {
             return True;
+        }
+        
+        if ($panthera -> config)
+        {
+            if ($panthera -> config -> getKey('dumpErrorsToFiles'))
+            {
+                $dumpName = 'error-' .hash('md4', $errfile.$errline). '.json';
+                $fp = fopen(SITE_DIR. '/content/tmp/' .$dumpName, 'w');
+                    
+                fwrite($fp, json_encode(array(
+                    'included_files' => get_included_files(),
+                    'log' => $panthera -> logging -> getOutput(),
+                    'get' => $_GET,
+                    'post' => $_POST,
+                    'server' => $_SERVER,
+                    'stack' => $stack,
+                    'error' => array(
+                        'file' => $errfile,
+                        'line' => $errline,
+                        'message' => $errstr,
+                        'code' => $errno,
+                    )
+                )));
+                    
+                fclose($fp);
+            }
         }
         
         if(strpos('PHP Startup', $errstr) !== False)
@@ -191,33 +220,6 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
 
             exit;
         } else {
-            if ($panthera -> config)
-            {
-                if ($panthera -> config -> getKey('dumpErrorsToFiles'))
-                {
-                    $dumpName = 'error-' .hash('md4', $errfile.$errline). '.json';
-                    $fp = fopen(SITE_DIR. '/content/tmp/' .$dumpName, 'w');
-                    
-                    fwrite($fp, json_encode(array(
-                        'included_files' => get_included_files(),
-                        'log' => $panthera -> logging -> getOutput(),
-                        'get' => $_GET,
-                        'post' => $_POST,
-                        'server' => $_SERVER,
-                        'stack' => $stack,
-                        'error' => array(
-                            'file' => $errfile,
-                            'line' => $errline,
-                            'message' => $errstr,
-                            'code' => $errno,
-                        )
-                    )));
-                    
-                    fclose($fp);
-                }
-            }
-            
-            
             $errorPage = getContentDir('templates/error.php');
             
             if ($errorPage)
