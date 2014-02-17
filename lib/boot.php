@@ -53,31 +53,63 @@ if (get_magic_quotes_gpc()) {
 
 // panthera main directory
 define('PANTHERA_DIR', realpath($config['lib']));
-define('PANTHERA_VERSION', '1.3.4-DEV');
+define('PANTHERA_VERSION', '1.4-DEV');
 define('IN_PANTHERA', True);
 
+/**
+ * Core functions and classes
+ */
+
 // include core functions
-include(PANTHERA_DIR. '/panthera.php');
-include(PANTHERA_DIR. '/database.class.php');
+include_once PANTHERA_DIR. '/panthera.php';
+include_once PANTHERA_DIR. '/database.class.php';
 
 // panthera.min mode support - BE CAREFUL WHEN USING THIS MODE!
-if (!defined('SKIP_CACHE'))
-    include(PANTHERA_DIR. '/cache.class.php');
-
 if (!defined('SKIP_TEMPLATE'))
-    include(PANTHERA_DIR. '/templates.class.php');
+    include_once PANTHERA_DIR. '/templates.class.php';
 
 if (!defined('SKIP_USER'))
-    include(PANTHERA_DIR. '/user.class.php');
+    include_once PANTHERA_DIR. '/user.class.php';
     
 if (!defined('SKIP_LOCALE'))
-    include(PANTHERA_DIR. '/locale.class.php');
+    include_once PANTHERA_DIR. '/locale.class.php';
     
 if (!defined('SKIP_SESSION'))
-    include(PANTHERA_DIR. '/session.class.php');
+    include_once PANTHERA_DIR. '/session.class.php';
+
+if (!defined('_PANTHERA_CORE_'))
+    define('_PANTHERA_CORE_', 'pantheraCore');
+
+if (!defined('_PANTHERA_CORE_CLI'))
+    define('_PANTHERA_CORE_CLI', 'pantheraCli');
+
+if (!defined('_PANTHERA_CORE_SESSION_'))
+    define('_PANTHERA_CORE_SESSION_', 'pantheraSession');
+        
+if (!defined('_PANTHERA_CORE_DB_'))
+    define('_PANTHERA_CORE_DB_', 'pantheraDB');
+        
+if (!defined('_PANTHERA_CORE_CONFIG_'))
+    define('_PANTHERA_CORE_CONFIG_', 'pantheraConfig');
+        
+if (!defined('_PANTHERA_CORE_LOCALE_'))
+    define('_PANTHERA_CORE_LOCALE_', 'pantheraLocale');
+        
+if (!defined('_PANTHERA_CORE_LOGGING_'))
+    define('_PANTHERA_CORE_LOGGING_', 'pantheraLogging');
+        
+if (!defined('_PANTHERA_CORE_OUTPUT_CONTROL_'))
+    define('_PANTHERA_CORE_OUTPUT_CONTROL_', 'outputControl');
+        
+if (!defined('_PANTHERA_CORE_TYPES_'))
+    define('_PANTHERA_CORE_TYPES_', 'pantheraTypes');
+    
+if (!defined('_PANTHERA_CORE_TEMPLATE_'))
+    define('_PANTHERA_CORE_TEMPLATE_', 'pantheraTemplate');
 
 // core elements
-$panthera = new pantheraCore($config);
+$c = _PANTHERA_CORE_;
+$panthera = new $c($config);
 $t = str_replace(SITE_DIR, '', str_replace('//', '/', $_SERVER['DOCUMENT_ROOT'].$_SERVER['PHP_SELF']));
 
 
@@ -86,10 +118,15 @@ if ($t[0] == "/")
 
 define('PANTHERA_FRONTCONTROLLER', '/' .$t); // detect front controller
 
+/*
+ * Error handler and CLI functions
+ */
+
 // for cli we have set of functions for managing application behavor
 if (PANTHERA_MODE == 'CLI') {
     include(PANTHERA_DIR. '/cli.class.php');
-    $panthera -> cli = new pantheraCli();
+    $c = _PANTHERA_CORE_CLI_;
+    $panthera -> cli = new $c;
 } else {
     // set error handler from panthera.php only in CGI mode
     set_exception_handler('pantheraExceptionHandler');
@@ -101,6 +138,11 @@ if (PANTHERA_MODE == 'CLI') {
         navigation::loadHistoryFromSession();
 }
 
+
+/**
+ * Debugging mode
+ */
+
 // debugging
 if ($panthera->config->getKey('debug', False, 'bool') == True)
 {
@@ -109,8 +151,11 @@ if ($panthera->config->getKey('debug', False, 'bool') == True)
     $panthera -> logging -> tofile = True;
 }
 
+/**
+ * Locale and timezone
+ */
+
 date_default_timezone_set($panthera->config->getKey('timezone', 'Europe/Warsaw'));
-$sql = $panthera->db;
 
 // localisations
 if (!defined('SKIP_LOCALE'))
@@ -119,16 +164,25 @@ if (!defined('SKIP_LOCALE'))
     $panthera -> locale -> fromHeader(); // detect language from Accept-Language HTTP header
 }
 
+/*
+ * Templates
+ */
+
 // template system
 if (!defined('SKIP_TEMPLATE'))
 {
-    $template = new pantheraTemplate($panthera);
+    $c = _PANTHERA_CORE_TEMPLATE_;
+    $template = new $c($panthera);
     $panthera -> template = $template;
     $template -> push('PANTHERA_URL', $panthera->config->getKey('url'));
     $template -> push('AJAX_URL', $panthera->config->getKey('ajax_url'));
     $template -> push('site_template_css', $panthera->config->getKey('main_css'));
     $template -> push('PANTHERA_VERSION', PANTHERA_VERSION);
 }
+
+/**
+ * User and session
+ */
 
 if (!defined('SKIP_USER') and !defined('SKIP_SESSION'))
 {

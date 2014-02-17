@@ -860,7 +860,7 @@ class pantheraCore
 
     // exit right after all plugins are loaded
     public $quitAfterPlugins = False;
-
+    
     /**
 	 * Panthera core class constructor
 	 *
@@ -876,9 +876,9 @@ class pantheraCore
         if (!is_file(SITE_DIR. '/content/app.php'))
             throw new Exception('Cannot find /content/app.php, looking in SITE_DIR=' .SITE_DIR);
 
-        $this->types = new pantheraTypes($this); // data types
-        $this->logging = new pantheraLogging($this);
-        $this->outputControl = new outputControl($this);
+        $c = _PANTHERA_CORE_TYPES_; $this->types = new $c($this); // data types
+        $c = _PANTHERA_CORE_LOGGING_; $this->logging = new $c($this);
+        $c = _PANTHERA_CORE_OUTPUT_CONTROL_; $this->outputControl = new $c($this);
 
         if ((isset($config['varCache']) and isset($config['cache'])) and !defined('SKIP_CACHE'))
         {
@@ -891,8 +891,8 @@ class pantheraCore
         $this -> logging -> tofile = (bool)$config['debug_to_file'];
 
         $this -> logging -> output('Loading configuration', 'pantheraCore');
-        $this->config = new pantheraConfig($this, $config);
-        $this->db = new pantheraDB($this);
+        $c = _PANTHERA_CORE_CONFIG_; $this->config = new $c($this, $config);
+        $c = _PANTHERA_CORE_DB_; $this->db = new $c($this);
         $this->config->loadOverlay();
         
         // debugging part two
@@ -930,12 +930,14 @@ class pantheraCore
         }
         /** END OF CACHE SYSTEM **/
 
-        if (class_exists('pantheraLocale'))
-            $this->locale = new pantheraLocale($this);
+        $c = _PANTHERA_CORE_LOCALE_;
+        if (class_exists($c))
+            $this->locale = new $c($this);
 
-        if (class_exists('pantheraSession'))
+        $c = _PANTHERA_CORE_SESSION_;
+        if (class_exists($c))
         {
-            $this->session = new pantheraSession($this);
+            $this->session = new $c($this);
 
             if ($this->session->get('debug.filter.mode'))
             {
@@ -1021,6 +1023,11 @@ class pantheraCore
     public function loadCache($varCacheType, $cacheType, $sessionKey='')
     {
         // primary cache (variables cache)
+        if ($dir = getContentDir('modules/cache/varCache_' .$varCacheType. '.module.php'))
+        {
+            include_once $dir;
+        }
+        
         if (class_exists('varCache_' .$varCacheType))
         {
             try {
@@ -1032,13 +1039,20 @@ class pantheraCore
                 $this->varCache = false;
             }
         }
-
+        
         if ($cacheType != '')
         {
             // if secondary cache type is same as primary, link both
             if ($cacheType == $varCacheType)
                 $this->cache = $this->varCache;
             else {
+                
+                $dir = null;
+                
+                if ($dir = getContentDir('modules/cache/varCache_' .$cacheType. '.module.php'))
+                {
+                    include_once $dir;
+                }
 
                 // load secondary cache
                 if (class_exists('varCache_' .$cacheType))
@@ -1266,16 +1280,12 @@ class pantheraCore
         if(!array_key_exists($hookName, $this->hooks))
             return $args;
 
-        //if ($hookName == "page_load_ends")
-        //    var_dump($this->hooks['page_load_ends']);
+        $output = array();
 
         foreach ($this->hooks[$hookName] as $key => $hook)
         {
             if (gettype($hook) == "array")
             {
-                //if(!is_object($hook[0]) and !class_exists($hook[0]))
-                //    continue;
-
                 if (!method_exists($hook[0], $hook[1]))
                     continue;
 
@@ -1293,6 +1303,47 @@ class pantheraCore
         }
 
         return $args;
+    }
+    
+    /**
+      * Execute all hooks and return results from all hooks in an array
+      *
+      * @param string $hookName
+      * @param mixed $args Args to pass to hook
+      * @return array
+      * @author Damian Kęska
+      */
+    
+    public function get_filters_array($hookName, $args='')
+    {
+        if(!array_key_exists($hookName, $this->hooks))
+            return array();
+
+        $output = array();
+
+        foreach ($this->hooks[$hookName] as $key => $hook)
+        {
+            if (gettype($hook) == "array")
+            {
+                if (!method_exists($hook[0], $hook[1]))
+                    continue;
+
+                if (is_object($hook[0]))
+                {
+                    $output[get_class($hook[0]).'___'.$hook[1]] = $hook[0]->$hook[1]($args);
+                } else {
+                    $output[$hook[0].'___'.$hook[1]] = $hook[0]::$hook[1]($args);
+                }
+                
+            } else {
+                if (!function_exists($hook))
+                    continue;
+
+                $output[$hook] = $hook($args);
+            }
+        }
+
+        return $output;
     }
 
     /* ==== END OF HOOKING FUNCTIONS ==== */
