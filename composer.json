@@ -7,6 +7,7 @@
         "firephp/firephp-core": ">=v0.4.0",
         "facebook/php-sdk": ">=v3.2.2",
         "ircmaxell/password-compat": "dev-master",
-        "mobiledetect/mobiledetectlib": "2.6.4"
+        "mobiledetect/mobiledetectlib": "2.6.4",
+        "mpdf/mpdf": "dev-master"
     }
 }

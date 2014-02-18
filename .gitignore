@@ -10,6 +10,7 @@ lib/share/password-compat
 lib/share/vendor
 lib/share/mobiledetectlib
 lib/share/php-markdown
+lib/share/mpdf
 
 example-app/css
 example-app/images

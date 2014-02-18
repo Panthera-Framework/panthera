@@ -32,6 +32,9 @@ mv vendor/ircmaxell/password-compat lib/share/password-compat --force
 echo "Moving Mobile-Detect"
 mv vendor/mobiledetect/mobiledetectlib lib/share/mobiledetectlib --force
 
+echo "Moving mpdf"
+mv vendor/mpdf/mpdf lib/share/mpdf --force
+
 # This is temporary while waiting for RainTPLv3 author to merge pull requests with fixes required Panthera to work
 echo "Cloning Panthera-Framework/raintpl3 fork of RainTPLv3"
 rm -rf lib/share/raintpl3
