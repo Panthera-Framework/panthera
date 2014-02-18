@@ -228,3 +228,9 @@ $panthera -> get_options('page_load_starts');
 // if site requires installation, redirect then to installer page
 if ($panthera->config->getKey('requires_instalation') and PANTHERA_FRONTCONTROLLER != '/install.php' and PANTHERA_MODE == 'CGI')
     $panthera -> importModule('boot/installer');
+
+if (isset($_GET['__print']))
+{
+    $panthera -> importModule('boot/print');
+    printingModule::render();
+}
