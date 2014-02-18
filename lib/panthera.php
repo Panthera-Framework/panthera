@@ -1255,13 +1255,14 @@ class pantheraCore
       *
       * @param string $hookName
       * @param mixed $args Args to pass to hook
+      * @param mixed $additionalInfo Additional information to pass to function as a second argument
       * @return bool 
       * @author Damian Kęska
       */
 
-    public function get_options($hookName, $args='')
+    public function get_options($hookName, $args='', $additionalInfo=null)
     {
-        $this->get_filters($hookName, $args);
+        $this->get_filters($hookName, $args, False, $additionalInfo);
         return False;
     }
     
@@ -1271,16 +1272,18 @@ class pantheraCore
       *
       * @param string $hookName
       * @param mixed $args Args to pass to hook
+      * @param bool $fixOnFail Skip any hook that returns null or false
+      * @param mixed $additionalInfo Additional information to pass to function as a second argument
       * @return mixed 
       * @author Damian Kęska
       */
 
-    public function get_filters($hookName, $args='')
+    public function get_filters($hookName, $args='', $fixOnFail=False, $additionalInfo=null)
     {
-        if(!array_key_exists($hookName, $this->hooks))
+        if(!isset($this->hooks[$hookName]))
             return $args;
 
-        $output = array();
+        $backup = $args;
 
         foreach ($this->hooks[$hookName] as $key => $hook)
         {
@@ -1290,19 +1293,47 @@ class pantheraCore
                     continue;
 
                 if (is_object($hook[0]))
-                    $args = $hook[0]->$hook[1]($args);
+                    $args = $hook[0]->$hook[1]($args, $additionalInfo);
                 else
-                    $args = $hook[0]::$hook[1]($args);
+                    $args = $hook[0]::$hook[1]($args, $additionalInfo);
 
             } else {
                 if (!function_exists($hook))
                     continue;
 
-                $args = $hook($args);
+                $args = $hook($args, $additionalInfo);
             }
+            
+            if ($args)
+                $backup = $args;
+            
+            if (!$args and $fixOnFail)
+                $args = $backup;
         }
-
+        
         return $args;
+    }
+    
+    /*
+     * Remove hooked function
+     * 
+     * @param string $hookName Hook name
+     * @param string|array $function Function or method name
+     * @return bool
+     */
+    
+    public function remove_option($hookName, $function)
+    {
+        if (!$this->hooks[$hookName])
+        {
+            return False;
+        }
+        
+        if ($key = array_search($function, $this->hooks[$hookName]))
+        {
+            unset($this->hooks[$hookName][$key]);
+            return True;
+        }
     }
     
     /**
@@ -1310,13 +1341,14 @@ class pantheraCore
       *
       * @param string $hookName
       * @param mixed $args Args to pass to hook
+      * @param mixed $additionalInfo Additional information to pass to function as a second argument
       * @return array
       * @author Damian Kęska
       */
     
-    public function get_filters_array($hookName, $args='')
+    public function get_filters_array($hookName, $args='', $additionalInfo=null)
     {
-        if(!array_key_exists($hookName, $this->hooks))
+        if(!isset($this->hooks[$hookName]))
             return array();
 
         $output = array();
@@ -1330,16 +1362,16 @@ class pantheraCore
 
                 if (is_object($hook[0]))
                 {
-                    $output[get_class($hook[0]).'___'.$hook[1]] = $hook[0]->$hook[1]($args);
+                    $output[get_class($hook[0]).'___'.$hook[1]] = $hook[0]->$hook[1]($args, $additionalInfo);
                 } else {
-                    $output[$hook[0].'___'.$hook[1]] = $hook[0]::$hook[1]($args);
+                    $output[$hook[0].'___'.$hook[1]] = $hook[0]::$hook[1]($args, $additionalInfo);
                 }
                 
             } else {
                 if (!function_exists($hook))
                     continue;
 
-                $output[$hook] = $hook($args);
+                $output[$hook] = $hook($args, $additionalInfo);
             }
         }
 
@@ -1588,12 +1620,19 @@ class pantheraCore
 
 abstract class pantheraClass
 {
-    protected $panthera = '';
+    protected $panthera = null;
+    protected static $instance = null;
+    
+    public function getInstance()
+    {
+        return self::$instance;
+    }
 
     public function __construct()
     {
         global $panthera;
         $this->panthera = $panthera;
+        self::$instance = $this;
     }
 }
 
