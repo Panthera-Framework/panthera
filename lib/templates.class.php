@@ -517,7 +517,15 @@ class pantheraTemplate extends pantheraClass
         
         // execute hooks
         if (!$skipHooking)
-            $this->panthera->get_options('template.display', $template);
+        {
+            $template = $this->panthera->get_filters('template.display', $template, True, 
+            array(
+                'skipHooking' => $skipHooking,
+                'renderOnly' => $renderOnly,
+                'additionalVars' => $vars,
+                'altTemplateDir' => $altTemplateDir,
+            ));
+        }
         
         $siteTitle = pantheraLocale::selectStringFromArray($this->panthera->config->getKey('site_title'));
         
@@ -656,6 +664,9 @@ class pantheraTemplate extends pantheraClass
             
         $render = $this -> tpl -> draw(str_replace('.tpl', '', $file), True);
         $this -> timer = (microtime_float() - $this -> timer);
+        
+        if (!$skipHooking)
+            $render = $this->panthera->get_filters('template.display.rendered', $render, True);
             
         if ($renderOnly == True)
             return $render;        
@@ -697,9 +708,9 @@ class pantheraTemplate extends pantheraClass
       * @author Damian Kęska
       */
     
-    public function compile($template)
+    public function compile($template, $skipHooking=False, $vars='', $altTemplateDir='')
     {
-        return $this->display($template, True);
+        return $this->display($template, True, $skipHooking, $vars, $altTemplateDir);
     }
     
     /**
