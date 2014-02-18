@@ -992,6 +992,9 @@ abstract class pantheraFetchDB
             if ($panthera -> logging -> debug == True)
                 $panthera -> logging -> output(get_class($this). '::Creating object from array ' .json_encode($value), 'pantheraFetchDB');
             
+            // hooking
+            $panthera -> get_options('pantheraFetchDB.' .get_class($this). '__construct', $this, $by);
+            
             $this->_data = $value;
             $panthera -> add_option('session_save', array($this, 'save'));
             return False;
@@ -1066,6 +1069,8 @@ abstract class pantheraFetchDB
                         $panthera->logging->output(get_class($this). '::Cannot find record by "' .json_encode($by). '" (value=' .json_encode($value). ')', 'pantheraFetchDB');
                 }
             }
+
+            $panthera -> get_options('pantheraFetchDB.' .get_class($this). '__construct', $this, $by);
         }
     }
     
@@ -1099,6 +1104,8 @@ abstract class pantheraFetchDB
             $this -> panthera -> cache -> remove ($key);
             $this -> panthera -> logging -> output ('Clearing cache record, id=' .$key, 'pantheraFetchDB');
         }*/
+        
+        $index = $this -> panthera -> get_filters('pantheraFetchDB.' .get_class($this). '.clearCache', $index, True, $this);
         
         foreach ($this->_constructBy as $column)
         {
@@ -1245,8 +1252,10 @@ abstract class pantheraFetchDB
             
         if ($panthera->logging->debug == True)
             $panthera -> logging -> output ('Panthera Fetch DB class=' .get_class($this). ', changed data=' .print_r($this->_dataModified, True), 'pantheraFetchDB');
+        
+        $panthera -> get_options('pantheraFetchDB.' .get_class($this). '.save', $index);
 
-        if($this->_dataModified == True and $this->_tableName != NuLL)
+        if($this->_dataModified and $this->_tableName)
         {
             $id = (integer)$this->_data[$this->_idColumn];
 
