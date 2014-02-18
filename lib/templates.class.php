@@ -117,17 +117,19 @@ class pantheraTemplate extends pantheraClass
             }
         }
         
-        if (array_key_exists('tablet_template', $tpl))
+        if (isset($tpl['tablet_template']))
             $this->push('tabletTemplate', True);
             
-        if (array_key_exists('mobile_template', $tpl))
+        if (isset($tpl['mobile_template']))
             $this->push('mobileTemplate', True);
             
-        if (array_key_exists('mobile', $tpl) or array_key_exists('tablet', $tpl))
+        if (isset($tpl['mobile']) or isset($tpl['tablet']))
             $this->push('usingMobileTemplate', $tpl);
 
-        $this->template = $tpl;
-        $this->name = $template;
+        // add template settings from config.json as $_tpl_settings variable inside of every template
+        $this -> push ('_tpl_settings', $tpl);
+        $this -> template = $tpl;
+        $this -> name = $template;
         
         //Rain\Tpl::configure('allow_compile', False);
         
