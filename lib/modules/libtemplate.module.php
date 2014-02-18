@@ -220,4 +220,20 @@ class libtemplate
         
         return $templates;
     }
+
+    /*
+     * Check if template exists
+     * 
+     * @param string $baseTheme Directory name where template file is placed eg. admin
+     * @param string $templateName Template file name eg. index.tpl
+     * @return bool|null
+     */
+
+    public static function exists($baseTheme, $templateName)
+    {
+        if (is_file(getContentDir('templates/' .$baseTheme. '/templates/' .$templateName)))
+        {
+            return true;
+        }
+    }
 }
