@@ -26,6 +26,18 @@
         
         panthera.locale.add({'Yes': '{function="localize('Yes')"}', 'No': '{function="localize('No')"}', 'Close': '{function="localize('Close')"}'});
         </script>
+        
+        {if="$_tpl_settings['compact']"}
+        <style>
+            .content {
+                width: 100%;
+            }
+            
+            .textTitleBar {
+                margin-left: 5px;
+            }
+        </style>
+        {/if}
     </head>
     
     <body>
