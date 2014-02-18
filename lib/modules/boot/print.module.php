@@ -39,7 +39,7 @@ class printingModule
      * @return modified template name to display
      */
     
-    public static function printPlain($name)
+    public static function printPlain($name, $details)
     {
         global $panthera;
         
@@ -47,6 +47,7 @@ class printingModule
         
         if (libtemplate::exists($panthera -> template -> name, 'printable/' .$name))
         {
+            $panthera -> get_options('printing.plain', $name, $details);
             $panthera -> logging -> output('Preparing print template "printable/' .$name. '" from ' .$panthera -> template -> name, 'printingModule');
             return 'printable/' .$name;
         } else {
@@ -64,7 +65,7 @@ class printingModule
      * @return null
      */
     
-    public static function printPDF($name)
+    public static function printPDF($name, $details)
     {
         global $panthera;
         
@@ -73,7 +74,16 @@ class printingModule
         
         if (libtemplate::exists($panthera -> template -> name, 'printable-pdf/' .$name))
         {
+            $panthera -> get_options('printing.pdf', $name, $details);
             $panthera -> logging -> output('Preparing print PDF template "printable-pdf/' .$name. '" from ' .$panthera -> template -> name, 'printingModule');
+            
+            // check if template is embedded (only rendered, not displayed) if yes redirect to printable version
+            if ($details['renderOnly'])
+            {
+                return 'printable-pdf/' .$name;
+            }
+            
+            
             include_once PANTHERA_DIR. '/share/mpdf/mpdf.php';
             
             $content = $panthera -> template -> compile('printable-pdf/' .$name);
