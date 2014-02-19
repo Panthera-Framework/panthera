@@ -74,6 +74,18 @@ class pantheraAutoloader
         
         return $autoload;
     }
+
+    /*
+     * Get list of cached classes
+     * 
+     * @return array
+     */
+
+    public static function getClasses()
+    {
+        global $panthera;
+        return $panthera -> config -> getKey('autoloader');
+    }
     
     /**
       * Get list of declared class in PHP file (without including it)
