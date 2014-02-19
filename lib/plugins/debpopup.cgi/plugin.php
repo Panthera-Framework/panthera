@@ -60,12 +60,12 @@ class debpopupPlugin extends pantheraPlugin
     /**
      * Display the popup
      *
-     * @param bool $return Return output instead of printing 
-     * @return void
+     * @param string $content
+     * @return string
      * @author Damian Kęska
      */
 
-    public function display($return=False)
+    public function display($content)
     {
         global $panthera;
         
@@ -209,10 +209,7 @@ class debpopupPlugin extends pantheraPlugin
             $output .= "<script type='text/javascript'>var w = window.open('','name','height=400,width=1000'); \nw.document.write(htmlspecialchars_decode('".$template."')); \nw.document.close();</script>";
         }
         
-        if (!$return or !is_bool($return))
-            print($output);
-        
-        return $output;
+        return $content.$output;
     }
 
     /**
@@ -323,7 +320,7 @@ class debpopupPlugin extends pantheraPlugin
     {
         global $panthera;
         $obj = new debpopupPlugin;
-        $panthera -> add_option('template.afterRender', array($obj, 'display'));
+        $panthera -> add_option('template.display.rendered', array($obj, 'display'));
         $panthera -> add_option('panthera.ajax_exit', array($obj, 'displayAjaxExit'));
     }
 }
