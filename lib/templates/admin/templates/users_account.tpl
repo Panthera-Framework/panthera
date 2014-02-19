@@ -170,7 +170,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
                   <th>
                     <select name="primary_group" style="width: 160px;">
                         {loop="$groups"}
-                          <option value="{$value.name}" {if="$value.name == $primary_group"} selected {/if}>{$value.name}</option>
+                          <option value="{$value.group_id}" {if="$value.group_id == $primary_group"} selected {/if}>{$value.name}</option>
                         {/loop}
                     </select>
                   </th>
@@ -197,11 +197,12 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
                   <th><input type="text" name="jabber" placeholder="user@jabber.org" value="{$jabber}"></th>
                 </tr>
                 
+                {if="$permissions.canEditOthers"}
                 <tr>
                   <th>{function="localize('Facebook ID', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
                   <th><input type="text" name="facebookID" placeholder="100000000000000" value="{$facebookID}"></th>
                 </tr>
-
+                {/if}
              </tbody>
             </table>
          </form>
@@ -302,7 +303,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
 
                 <tr>
                   <td>{function="localize('Primary group', 'users')"}</td>
-                  <td><p>{$primary_group}</p></td>
+                  <td><p>{$group_name}</p></td>
                 </tr>
 
                 <tr>

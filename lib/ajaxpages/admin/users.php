@@ -148,7 +148,7 @@ if ($_GET['action'] == 'account') {
     $groupsTpl = array();
 
     foreach ($groups as $group) {
-        $groupsTpl[] = array('name' => $group->name);
+        $groupsTpl[] = array('name' => $group->name, 'group_id' => $group->group_id);
     }
 
     $template -> push('locales_added', $localesActive);
@@ -159,6 +159,7 @@ if ($_GET['action'] == 'account') {
     $template -> push('profile_picture', pantheraUrl($u->profile_picture));
     $template -> push('full_name', $u->full_name);
     $template -> push('primary_group', $u->primary_group);
+    $template -> push('group_name', $u->group_name);
     $template -> push('joined', $u->joined);
     $template -> push('user_language', $u->language);
     $template -> push('isBanned', $u->isBanned());
@@ -331,14 +332,10 @@ if ($_GET['action'] == 'account') {
         $u -> profile_picture = filterInput($_POST['avatar'], 'strip');
     }
 
+    // TODO: e-mail confirmation
     if (filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
     {
         $u -> mail = $_POST['email'];
-    }
-    
-    if (strlen($_POST['facebookID']) > 5)
-    {
-        $u -> acl -> set('facebook', $_POST['facebookID']);
     }
     
     if (filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
@@ -355,7 +352,17 @@ if ($_GET['action'] == 'account') {
     
     if ($isAdmin)
     {
-        $u -> primary_group = $_POST['primary_group'];
+        $g = new pantheraGroup('id', $_POST['primary_group']);
+        
+        if ($g -> exists())
+        {
+            $u -> primary_group = intval($_POST['primary_group']);
+        }
+        
+        if (strlen($_POST['facebookID']) > 5)
+        {
+            $u -> acl -> set('facebook', intval($_POST['facebookID']));
+        }
     }
     
     $u -> save();
@@ -473,7 +480,6 @@ if ($_GET['action'] == 'account') {
             $noAccess = new uiNoAccess; $noAccess -> display();
             pa_exit();
         }
-        
         $tpl = "users.tpl";
         
         $panthera -> importModule('admin/ui.searchbar');
@@ -573,11 +579,11 @@ if ($_GET['action'] == 'account') {
                 // superuser cant be listed, it must be hidden
                 if ($w -> attributes -> superuser and !$user->attributes->superuser)
                     continue;
-
+                
                 $users[] = array(
                     'login' => $w->login, 
                     'name' => $w->getName(), 
-                    'primary_group' => $w->primary_group, 
+                    'primary_group' => $w->group_name, 
                     'joined' => $w->joined, 
                     'language' => $w->language, 
                     'id' => $w->id, 
@@ -604,7 +610,11 @@ if ($_GET['action'] == 'account') {
 
             foreach ($groups as $group)
             {
-                $groupsTpl[] = array('name' => $group->name, 'description' => $group->description, 'id' => $group->group_id);
+                $groupsTpl[] = array(
+                    'name' => $group->name, 
+                    'description' => $group->description, 
+                    'id' => $group->group_id
+                );
             }
 
             $panthera -> template -> push('groups', $groupsTpl);
