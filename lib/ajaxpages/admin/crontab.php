@@ -179,6 +179,7 @@ if ($_GET['action'] == 'saveJobDetails')
     $job -> weekday = $_POST['weekday'];
     $job -> year = $_POST['year'];
     $job -> count_left = $countLeft;
+    $job -> enabled = intval($_POST['enabled']);
     
     try {
         $job -> save();
@@ -197,7 +198,7 @@ if ($_GET['action'] == 'saveJobDetails')
   * @author Damian Kęska
   */
 
-if ($_GET['action'] == 'removeJob')
+if ($_GET['action'] == 'removeJob' or $_GET['action'] == 'toggleEnabled')
 {
     $test = new crontab('jobid', $_POST['jobid']);
     
@@ -206,16 +207,20 @@ if ($_GET['action'] == 'removeJob')
         ajax_exit(array('status' => 'failed', 'message' => localize('Selected job does not exists', 'crontab')));
     }
     
-    // this error should never happen (unless database is broken etc.)
-    if (!crontab::removeJob($_POST['jobid']))
+    if ($_GET['action'] == 'removeJob')
     {
-        ajax_exit(array('status' => 'failed', 'message' => localize('Cannot remove selected job, unknown error', 'crontab')));
+        // this error should never happen (unless database is broken etc.)
+        if (!crontab::removeJob($_POST['jobid']))
+        {
+            ajax_exit(array('status' => 'failed', 'message' => localize('Cannot remove selected job, unknown error', 'crontab')));
+        }
+    } elseif ($_GET['action'] == 'toggleEnabled') {
+        $test -> enabled = !$test -> enabled;
+        $test -> save();
     }
-
+    
     ajax_exit(array('status' => 'success'));
 }
-
-
 
 /**
   * Editing job details form
@@ -282,7 +287,8 @@ if ($_GET['action'] == 'jobDetails')
         'day' => $job->day,
         'month' => $job->month,
         'year' => $job->year,
-        'weekday' => $job->weekday
+        'weekday' => $job->weekday,
+        'enabled' => $job->enabled,
     );
     
     $exp = explode(',', $_GET['removeOptions']);
@@ -381,7 +387,8 @@ foreach ($jobsTmp as $job)
         'crontab_string' => $job->minute. ' ' .$job->hour. ' ' .$job->day. ' ' .$job->month. ' ' .$job->year. ' ' .$job->weekday,
         'count_left' => $left,
         'count_executed' => $job->count_executed,
-        'created' => date($panthera -> dateFormat, strtotime($job->created))
+        'created' => date($panthera -> dateFormat, strtotime($job->created)),
+        'enabled' => $job -> enabled,
     );
 }
 

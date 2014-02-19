@@ -16,6 +16,7 @@ CREATE TABLE `{$db_prefix}cronjobs` (
   `count_executed` bigint(16) NOT NULL DEFAULT '0' COMMENT 'execution times',
   `created` datetime NOT NULL,
   `start_time` int(64) NOT NULL,
+  `enabled` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`jobid`),
   UNIQUE KEY `jobname` (`jobname`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4884 DEFAULT CHARSET=utf8;

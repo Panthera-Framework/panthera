@@ -88,6 +88,15 @@ $(document).ready(function() {
                 </tr>
                 
                 <tr>
+                    <td>{function="localize('Enabled', 'crontab')"}:</td>
+                    <td><select name="enabled">
+                            <option value="0">{function="localize('No')"}</option>
+                            <option value="1" {if="$cronjob.enabled"}selected{/if}>{function="localize('Yes')"}</option>
+                        </select>
+                    </td>
+                </tr>
+                
+                <tr>
                     <td>{function="localize('Created', 'crontab')"}:</td>
                     <td>{$cronjob.created}</td>
                 </tr>

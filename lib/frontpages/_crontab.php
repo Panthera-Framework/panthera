@@ -53,6 +53,11 @@ $key = $_GET['_appkey'];
 
 function startJob($job)
 {
+    if (!$job -> enabled)
+    {
+        return False;
+    }
+    
     if ($job -> locked() == False)
     {
         $job->lock();

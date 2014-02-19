@@ -115,6 +115,13 @@ class crontab extends pantheraFetchDB
     public function execute()
     {
         //print("Execute: ".$this->jobname."\n");
+        
+        // don't start a disabled job
+        if (!$this -> enabled)
+        {
+            return False;
+        }
+        
         // we are starting, so the start time should be resetted
         $this -> start_time = 0;
         $t = microtime_float();
@@ -410,7 +417,7 @@ class crontab extends pantheraFetchDB
 	 * @author Damian Kęska
 	 */
 
-    public static function createJob($jobname, $function, $data, $minute='*', $hour='*', $day='*', $month='*', $dayOfWeek='*', $year='*')
+    public static function createJob($jobname, $function, $data, $minute='*', $hour='*', $day='*', $month='*', $dayOfWeek='*', $year='*', $enabled)
     {
         global $panthera;
         
@@ -449,9 +456,23 @@ class crontab extends pantheraFetchDB
         $time = $cron -> getNextRunDate();
         $time = $time->getTimeStamp();
 
-        $array = array('data' => serialize(array('function' => $function, 'data' => $data, 'file' => str_replace(PANTHERA_DIR, '', $fileName), 'fullFileName' => $fileName)), 'jobname' => $jobname, 'minute' => $minute, 'hour' => $hour, 'day' => $day, 'month' => $month, 'weekday' => $dayOfWeek, 'year' => $year, 'next_interation' => $time);
+        $array = array('data' => serialize(array(
+            'function' => $function, 
+            'data' => $data, 
+            'file' => str_replace(PANTHERA_DIR, '', $fileName), 
+            'fullFileName' => $fileName)), 
+            'jobname' => $jobname, 
+            'minute' => $minute, 
+            'hour' => $hour, 
+            'day' => $day, 
+            'month' => $month, 
+            'weekday' => $dayOfWeek, 
+            'year' => $year, 
+            'next_interation' => $time,
+            'enabled' => intval($enabled),
+        );
 
-        $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}cronjobs` (`jobid`, `jobname`, `data`, `minute`, `hour`, `day`, `month`, `year`, `weekday`, `next_interation`, `created`) VALUES (NULL, :jobname, :data, :minute, :hour, :day, :month, :year, :weekday, :next_interation, NOW())', $array);
+        $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}cronjobs` (`jobid`, `jobname`, `data`, `minute`, `hour`, `day`, `month`, `year`, `weekday`, `next_interation`, `created`, `enabled`) VALUES (NULL, :jobname, :data, :minute, :hour, :day, :month, :year, :weekday, :next_interation, NOW(), :enabled)', $array);
         
         return (bool)$SQL->rowCount();
     }

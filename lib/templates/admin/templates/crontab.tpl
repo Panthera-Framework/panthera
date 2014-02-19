@@ -2,9 +2,9 @@
 {include="ui.titlebar"}
 
 <script type="text/javascript">
-function removeJob(jobid)
+function manageJob(jobid, action)
 {
-    panthera.jsonPOST({url: '?display=crontab&cat=admin&action=removeJob', data: 'jobid='+jobid, success: function (response) {
+    panthera.jsonPOST({url: '?display=crontab&cat=admin&action='+action, data: 'jobid='+jobid, success: function (response) {
             if (response.status == 'success')
             {
                 //$('#job_id_'+jobid).remove();
@@ -208,6 +208,7 @@ function removeJob(jobid)
                     <th>{function="localize('Count left', 'crontab')"}</th>
                     <th>{function="localize('Next iteration time', 'crontab')"}</th>
                     <th>{function="localize('Created', 'crontab')"}</th>
+                    <th>{function="localize('Enabled', 'crontab')"}</th>
                     <th>{function="localize('Options', 'custompages')"}</th>
                 </tr>
             </thead>
@@ -215,7 +216,7 @@ function removeJob(jobid)
             <tbody class="hovered">
                 {if="count($cronjobs) > 0"}
                 {loop="$cronjobs"}
-                <tr id="job_id_{$value.id}">
+                <tr id="job_id_{$value.id}" style="{if="!$value.enabled"}opacity: 0.4;{/if}">
                     <td>{$value.id}</td>
                     <td><a href="?display=crontab&cat=admin&action=jobDetails&jobid={$value.id}" class="ajax_link">{$value.name}</a></td>
                     <td>{$value.crontab_string}</td>
@@ -223,9 +224,14 @@ function removeJob(jobid)
                     <td>{$value.count_left}</td>
                     <td>{$value.next_iteration}</td>
                     <td>{$value.created}</td>
+                    <td>{if="$value.enabled"}{function="localize('Yes')"}{else}{function="localize('No')"}{/if}</td>
                     <td>
-                        <a href="#" onclick="removeJob({$value.id})">
-                        <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove', 'messages')"}">
+                        <a href="#" onclick="manageJob({$value.id}, 'removeJob')">
+                            <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove', 'messages')"}">
+                        </a>
+                        
+                        <a href="#" onclick="manageJob({$value.id}, 'toggleEnabled')">
+                            <img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/System-search.svg" style="max-height: 22px;" alt="{function="localize('Remove', 'messages')"}">
                         </a>
                     </td>
                 </tr>
