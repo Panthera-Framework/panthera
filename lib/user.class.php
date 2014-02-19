@@ -26,7 +26,7 @@ class pantheraUser extends pantheraFetchDB
     protected $_joinColumns = array(
         array('LEFT JOIN', 'groups', array('group_id' => 'primary_group'), array('name' => 'group_name'))
     );
-    protected $_unsetColumns = array('created', 'modified', 'mod_time', 'last_result', 'group_name', 'group_id');
+    protected $_unsetColumns = array('created', 'modified', 'mod_time', 'last_result', 'group_name');
     protected $cache = 0;
     protected $cacheID = 0;
 
@@ -400,8 +400,8 @@ class pantheraGroup extends pantheraFetchDB
         } elseif ($limit === False) {
             $what = 'count(*)';
         }
-    
-        $SQL = $this -> panthera -> db -> query('SELECT ' .$what. ' FROM `{$db_prefix}users` WHERE `primary_group` = :groupName' .$limitQuery, array('groupName' => $this->name));
+        
+        $SQL = $this -> panthera -> db -> query('SELECT ' .$what. ' FROM `{$db_prefix}users` WHERE `primary_group` = :gid ' .$limitQuery, array('gid' => $this->group_id));
         
         if ($limit === False)
         {
