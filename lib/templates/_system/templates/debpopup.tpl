@@ -14,7 +14,58 @@
         </style>
         
         <script type="text/javascript">
+        var tablesData = JSON.parse(atob("{$debugTables|json_encode|base64_encode}"));
+        
         $(document).ready(function() {
+            i = 0;
+            
+            htmlCode = "";
+            
+            for(table in tablesData)
+            {
+                i++;
+                
+                htmlCode += "<div id=\"tab_"+i+"\" class=\"allTabs\"";
+                
+                if (i > 1)
+                {
+                    htmlCode += "style=\"display: none;\"";
+                }
+                
+                htmlCode += ">";
+                
+                if (!tablesData[table]["items"])
+                {
+                    htmlCode += "</div>";
+                    continue;
+                }
+                
+                htmlCode += "<table style=\"width: 100%;\"><thead>";
+                
+                for (item in tablesData[table]["header"])
+                {
+                   htmlCode += "<th style=\"padding-left: 5px;\">"+tablesData[table]["header"][item]+"</th>";
+                }
+
+                htmlCode += "</thead><tbody class=\"hovered\">";
+                
+                for (item in tablesData[table]["items"])
+                {
+                    htmlCode += "<tr>";
+                    
+                    for (column in tablesData[table]["items"][item])
+                    {
+                        htmlCode += "<td style=\"padding: 5px;\">"+tablesData[table]["items"][item][column]+"</td>";
+                    }
+                    
+                    htmlCode += "</tr>";
+                }
+                
+                htmlCode += "</div>";
+            }
+            
+            $(".popupContent").append(htmlCode);
+
             x = 0;  //horizontal coord
             y = document.height; //vertical coord
             
@@ -63,7 +114,8 @@
             </div>
         </div>
         
-        <div id="ajax_content" class="centerWithContent">
+        <div id="ajax_content" class="centerWithContent popupContent">
+            {*}
             {$i=0}
             {loop="$debugTables"}
             {$i=$i+1}
@@ -98,6 +150,7 @@
                 {/if}
             </div>
             {/loop}
+            {/*}
         </div>
     </body>
 </html>
