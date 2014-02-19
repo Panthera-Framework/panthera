@@ -17,6 +17,7 @@ if (!getUserRightAttribute($panthera->user, 'can_manage_cache')) {
 }
 
 $panthera -> locale -> loadDomain('cache');
+$panthera -> importModule('autoloader.tools');
 
 /**
   * Saving cache and varCache settings
@@ -28,6 +29,11 @@ if ($_GET['action'] == 'save')
 {
     $cache = $_POST['cache'];
     $varcache = $_POST['varcache'];
+    
+    if ($dir = getContentDir('modules/cache/varCache_' .$cache. '.module.php'))
+    {
+        include_once $dir;
+    }
 
     // check if selected cache is avaliable
     if (!class_exists('varCache_' .$cache))
@@ -532,7 +538,7 @@ if (class_exists('Redis'))
 $cacheList['db'] = True; // db is always available
 
 // get list of avaliable cache methods from list of declared classes
-foreach (get_declared_classes() as $className)
+foreach (pantheraAutoLoader::getClasses() as $key => $className)
 {
     if (substr($className, 0, 9) == 'varCache_')
     {
