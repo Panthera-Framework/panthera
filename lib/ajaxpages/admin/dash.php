@@ -218,7 +218,7 @@ if ($panthera->config->getKey('dash.enableWidgets', 1, 'bool', 'dash') and getUs
     // last logged in users
     if ($settings['lastLogged'] === True)
     {
-        $u = getUsers('', 10, 0, 'lastlogin', 'DESC');
+        $u = pantheraUser::fetchAll('', 10, 0, 'lastlogin', 'DESC');
         $users = array();
 
         foreach ($u as $key => $value)

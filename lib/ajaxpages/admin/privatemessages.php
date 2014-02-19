@@ -235,7 +235,7 @@ if ($_GET['action'] == 'select') {
         $w -> add( 'OR', 'full_name', 'LIKE', '%' .$_GET['query']. '%');
     }
             
-    $usersTotal = getUsers($w, False);
+    $usersTotal = pantheraUser::fetchAll($w, False);
             
     // uiPager
     $panthera -> importModule('admin/ui.pager');
@@ -245,7 +245,7 @@ if ($_GET['action'] == 'select') {
     $limit = $uiPager -> getPageLimit();
 
     $users = array();
-    $usersData = getUsers($w, $limit[1], $limit[0]);
+    $usersData = pantheraUser::fetchAll($w, $limit[1], $limit[0]);
 
     foreach ($usersData as $w) {
         // superuser cant be listed, it must be hidden

@@ -558,7 +558,7 @@ if ($_GET['action'] == 'account') {
         // if does not exists in cache
         if (!isset($usersTotal))
         {
-            $usersTotal = getUsers($w, False, False, $order);
+            $usersTotal = pantheraUser::fetchAll($w, False, False, $order);
         }
         
         // uiPager
@@ -572,7 +572,7 @@ if ($_GET['action'] == 'account') {
         if (!isset($users))
         {
             $users = array();
-            $usersData = getUsers($w, $limit[1], $limit[0], $order, $direction);
+            $usersData = pantheraUser::fetchAll($w, $limit[1], $limit[0], $order, $direction);
 
             foreach ($usersData as $w)
             {
@@ -621,10 +621,10 @@ if ($_GET['action'] == 'account') {
         }
 
         // find all recent 1-10 users
-        // var_dump(getUsers('', 10, 0));
+        // var_dump(pantheraUser::fetchAll('', 10, 0));
 
         // find all recent 1-10 users with default language set to "polski"
-        // var_dump(getUsers(array('language' => 'polski'), 10, 0));
+        // var_dump(pantheraUser::fetchAll(array('language' => 'polski'), 10, 0));
 
         /*for ($i=0; $i<100; $i++)
         {

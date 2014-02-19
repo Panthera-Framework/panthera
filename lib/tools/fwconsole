@@ -740,9 +740,9 @@ class fwconsole extends cliApp
         $by = cliApp::syntaxBy($args);
 
         if (count($by) > 0)
-            $users = getUsers($by);
+            $users = pantheraUser::fetchAll($by);
         else
-            $users = getUsers();
+            $users = pantheraUser::fetchAll();
 
         $usersList = array();
 

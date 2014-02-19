@@ -18,17 +18,13 @@ if (!defined('IN_PANTHERA'))
 class pantheraUser extends pantheraFetchDB
 {
     protected $_tableName = 'users';
-    protected $_idColumn = 'id';
     protected $_constructBy = array('id', 'login', 'full_name', 'last_result', 'array');
     protected $attributes; // on this data we will operate
     public $acl;
-    protected $changed;
     protected $_joinColumns = array(
         array('LEFT JOIN', 'groups', array('group_id' => 'primary_group'), array('name' => 'group_name'))
     );
     protected $_unsetColumns = array('created', 'modified', 'mod_time', 'last_result', 'group_name');
-    protected $cache = 0;
-    protected $cacheID = 0;
 
     //public function __construct($id, $panthera)
     public function __construct($by, $value)
@@ -413,19 +409,6 @@ class pantheraGroup extends pantheraFetchDB
     }
 }
 
-/**
- * Search for users matching criterium specified in $by (array of values eg. array('language' => 'polski')). Returns array of pantheraUser objects.
- *
- * @return array
- * @package Panthera\core\user
- * @author Damian Kęska
- */
-
-function getUsers($by, $limit=0, $limitFrom=0, $order='id', $direction='DESC')
-{
-    global $panthera;
-    return $panthera->db->getRows('users', $by, $limit, $limitFrom, 'pantheraUser', $order, $direction);
-}
 
 /**
  * Get current logged in user (if logged in)
