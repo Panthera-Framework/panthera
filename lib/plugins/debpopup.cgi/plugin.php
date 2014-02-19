@@ -195,11 +195,19 @@ class debpopupPlugin extends pantheraPlugin
         $panthera -> template -> push('debugTables', $tables);
         $panthera -> template -> push('debugMessages', $debugMessages);
         $panthera -> template -> push('debugArray', $linesArray);
-        $template = filterInput($panthera -> template -> display('debpopup.tpl', True, True, '', '_system'), 'wysiwyg');
         
         $output = "<script type='text/javascript' src='js/panthera.js'></script>";
         $output .= "<script type='text/javascript' src='js/admin/pantheraUI.js'></script>";
-        $output .= "<script type='text/javascript'>var w = window.open('','name','height=400,width=1000'); w.document.write(htmlspecialchars_decode('".$template."')); w.document.close();</script>";
+        $template = filterInput($panthera -> template -> display('debpopup.tpl', True, True, '', '_system'), 'wysiwyg');
+        
+        if (extension_loaded('zlib') and !defined('_DEBPOPUP_DISABLE_COMPRESS_') and $panthera -> config -> getKey('debpopup.zlib', 1, 'bool', 'debpopup'))
+        {
+            $template = base64_encode(gzcompress(str_replace('\n', "\n", $template), 9));
+            $output .= "<script type='text/javascript' src='js/jsxcompressor.min.js'></script>";
+            $output .= "<script type='text/javascript'>var compressed = '".$template."';\nvar w = window.open('','name','height=400,width=1000'); \nw.document.write(htmlspecialchars_decode(JXG.decompress(compressed))); \nw.document.close();</script>";
+        } else {
+            $output .= "<script type='text/javascript'>var w = window.open('','name','height=400,width=1000'); \nw.document.write(htmlspecialchars_decode('".$template."')); \nw.document.close();</script>";
+        }
         
         if (!$return or !is_bool($return))
             print($output);
