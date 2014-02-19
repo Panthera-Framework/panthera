@@ -1306,7 +1306,7 @@ abstract class pantheraFetchDB
         if ($panthera->logging->debug == True)
             $panthera -> logging -> output ('Panthera Fetch DB class=' .get_class($this). ', changed data=' .print_r($this->_dataModified, True), 'pantheraFetchDB');
         
-        $panthera -> get_options('pantheraFetchDB.' .get_class($this). '.save', $index);
+        $panthera -> get_options('pantheraFetchDB.' .get_class($this). '.save', $this);
 
         if($this->_dataModified and $this->_tableName)
         {
@@ -1327,7 +1327,7 @@ abstract class pantheraFetchDB
             $SQL = $panthera->db->query('UPDATE `{$db_prefix}' .$this->_tableName. '` SET ' .$set[0]. ' WHERE `' .$this->_idColumn. '` = :' .$this->_idColumn. ';', $set[1]);
             
             // update cache
-            $this -> updateCache();
+            $this -> clearCache();
             //$panthera->logging->output('Updated cache id=' .$this->cacheID, 'pantheraFetchDB');
             //$panthera->cache->set($this->cacheID, $this->_data, $panthera->db->cache);
                  
