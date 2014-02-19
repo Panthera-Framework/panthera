@@ -171,7 +171,7 @@ function selectImage(id)
 {
     if (selected.length == 0) {
         $(".imageOptionsBackground").css('display', 'none');
-        $("#addBox").css('display', 'none');
+        $("#addNewImage").css('display', 'none');
         $("#selectedBox").css('display', 'block');
         
         selected.push(id);
@@ -191,7 +191,7 @@ function selectImage(id)
     
     if (selected.length == 0) {
         $(".imageOptionsBackground").css('display', 'block');
-        $("#addBox").css('display', 'block');
+        $("#addNewImage").css('display', 'block');
         $("#selectedBox").css('display', 'none');
     }
 }
@@ -390,7 +390,7 @@ function toggleItemVisibilitySelected()
 <div class="ajax-content" style="text-align: center; background-color: #56687b;">
     
     <div class="uploadBoxCentered" style="min-height: 0px; width: 150px; margin-top: -30px;">
-      <div class="addBox" id="addBox" id="addNewImage" ondragover="return false;">
+      <div class="addBox" id="addNewImage" ondragover="return false;">
             <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=add_item&ctgid={$category_id}');"><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: relative; top: 30px; opacity: 0.8;" title="{function="localize('Drag and drop files to this area to start uploading', 'gallery')"}"></a>
       </div>
       
