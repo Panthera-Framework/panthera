@@ -81,7 +81,7 @@ if (!defined('_PANTHERA_CORE_'))
     define('_PANTHERA_CORE_', 'pantheraCore');
 
 if (!defined('_PANTHERA_CORE_CLI'))
-    define('_PANTHERA_CORE_CLI', 'pantheraCli');
+    define('_PANTHERA_CORE_CLI_', 'pantheraCli');
 
 if (!defined('_PANTHERA_CORE_SESSION_'))
     define('_PANTHERA_CORE_SESSION_', 'pantheraSession');
