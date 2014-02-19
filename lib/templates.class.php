@@ -679,10 +679,6 @@ class pantheraTemplate extends pantheraClass
                 
             print($render);
             
-            // execute hooks
-            if (!$skipHooking)
-                $this->panthera->get_options('template.afterRender', $template);
-            
             $this->panthera->outputControl->flushAndFinish();
         }
     }
