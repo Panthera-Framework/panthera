@@ -25,7 +25,7 @@
             {
                 i++;
                 
-                htmlCode += "<div id=\"tab_"+i+"\" class=\"allTabs\"";
+                htmlCode += "<div id=\"tab_"+table+"\" class=\"allTabs\"";
                 
                 if (i > 1)
                 {
@@ -61,8 +61,10 @@
                     htmlCode += "</tr>";
                 }
                 
-                htmlCode += "</div>";
+                htmlCode += "</tbody></table></div>";
             }
+            
+            console.log(htmlCode);
             
             $(".popupContent").append(htmlCode);
 
