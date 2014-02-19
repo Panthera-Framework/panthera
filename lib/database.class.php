@@ -630,6 +630,7 @@ class pantheraDB
         }
         
         $whereClause = '';
+        $q = array('', '');
 
         if(is_array($by) or is_object($by))
         {

@@ -115,9 +115,12 @@ switch ($_GET['menu'])
         foreach ($menuDB as $key => $item)
         {
             // @feature: hiding items
-            if ($item['hidden'])
+            if (isset($item['hidden']))
             {
-                continue;
+                if ($item['hidden'])
+                {
+                    continue;
+                }
             }
             
             $num++;

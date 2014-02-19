@@ -330,9 +330,12 @@ foreach ($listDB as $sectionName => $section)
 {
     foreach ($section as $key => $value)
     {
-        if ($value['hidden'])
+        if (isset($value['hidden']))
         {
-            unset($listDB[$sectionName][$key]);
+            if ($value['hidden'])
+            {
+                unset($listDB[$sectionName][$key]);
+            }
         }
     }
 }

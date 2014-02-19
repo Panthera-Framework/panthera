@@ -462,6 +462,9 @@ class pantheraLocale
         {
             if ($getOriginalString)
                 return $input[0];
+            
+            if (count($input) == 1)
+                $input[1] = '';
         
             return localize($input[0], $input[1]);
         }
