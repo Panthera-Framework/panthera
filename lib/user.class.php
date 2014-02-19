@@ -23,6 +23,12 @@ class pantheraUser extends pantheraFetchDB
     protected $attributes; // on this data we will operate
     public $acl;
     protected $changed;
+    protected $_joinColumns = array(
+        array('LEFT JOIN', 'groups', array('group_id' => 'primary_group'), array('name' => 'group_name'))
+    );
+    protected $_unsetColumns = array('created', 'modified', 'mod_time', 'last_result', 'group_name', 'group_id');
+    protected $cache = 0;
+    protected $cacheID = 0;
 
     //public function __construct($id, $panthera)
     public function __construct($by, $value)
@@ -38,7 +44,7 @@ class pantheraUser extends pantheraFetchDB
             $this->attributes = new _arrayObject(@unserialize($this->_data['attributes']));
 
             // user meta values (permissions)
-            $this -> acl = new metaAttributes($this->panthera, 'u', $this->id, $this->cache);
+            $this -> acl = new metaAttributes($this->panthera, 'u', $this->name, $this->cache);
 
             // merge group rights with user rights
             $this -> acl -> loadOverlay('g', $this->_data['primary_group']);
@@ -264,7 +270,7 @@ class pantheraGroup extends pantheraFetchDB
 
         if ($this->exists())
         {
-            $this -> acl = new metaAttributes($this->panthera, 'g', $this->name, $this->cache);
+            $this -> acl = new metaAttributes($this->panthera, 'g', $this->group_id, $this->cache);
         }
     }
 

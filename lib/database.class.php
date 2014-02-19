@@ -170,6 +170,11 @@ class pantheraDB
         $this->sqlCount++;
         $query = str_ireplace('{$db_prefix}', $this->prefix, $query);
         
+        if ($this->panthera->logging->debug == True)
+        {
+            $this->panthera->logging->output('query( ' .$query. ' , ' .json_encode($values). ' )', 'pantheraDB');
+        }
+        
         if ($this->socketType == "sqlite")
         {
             $query = $this->translateToSQLite($query);
@@ -218,11 +223,6 @@ class pantheraDB
                 return False;
         }
         
-        if ($this->panthera->logging->debug == True)
-        {
-            $this->panthera->logging->output('query( ' .$query. ' , ' .json_encode($values). ' )', 'pantheraDB');
-        }
-            
         return $sth;
     }
     
@@ -911,6 +911,59 @@ abstract class pantheraFetchDB
     protected $panthera;
     protected $cache = 0;
     protected $cacheID = "";
+    protected $_joinColumns = array(
+        /*array('LEFT JOIN', 'groups', array('group_id' => 'primary_group'), array('name' => 'group'))*/
+    );
+    
+    /*
+     * Build a joined tables query
+     * 
+     * @return string
+     */
+    
+    public function buildJoinQuery($selectString=False)
+    {
+        $sql = '';
+        
+        if (!$this->_joinColumns)
+            return "";
+        
+        
+        if ($selectString)
+        {
+            foreach ($this->_joinColumns as $table)
+            {
+                foreach ($table[3] as $column => $alias)
+                {
+                    $sql .= '{$db_prefix}' .$table[1]. '.' .$column. ' as ' .$alias. ',';
+                }
+            }
+            
+            return ', ' .trim($sql, ', ');
+        }
+        
+        foreach ($this->_joinColumns as $table)
+        {
+            // LEFT JOIN table ON
+            $sql .= $table[0]. ' {$db_prefix}' .$table[1]. ' ON ';
+            
+            foreach ($table[2] as $left => $right)
+            {
+                $exp = explode(':', $left);
+                
+                if (count($exp) == 1)
+                {
+                    $exp[1] = $exp[0];
+                    $exp[0] = "";
+                }
+                
+                // AND table1.column = table2.column
+                $sql .= $exp[0]. ' {$db_prefix}' .$table[1]. '.' .$exp[1]. ' = {$db_prefix}' .$this->_tableName. '.' .$right. ' ';
+            }
+        }
+        
+        return $sql;
+    }
     
     /**
       * Return data row in array or serialized array format
@@ -954,7 +1007,7 @@ abstract class pantheraFetchDB
           */
         
         // get cache life time from database class
-        if ($panthera->cacheType('cache') == 'memory' and $panthera->db->cache > 0)
+        if ($panthera->cacheType('cache') == 'memory' and $panthera->db->cache > 0 and $this->cache !== -1 and $this->cache !== False)
         {
             $this->cache = $panthera->db->cache;
         }
@@ -978,7 +1031,7 @@ abstract class pantheraFetchDB
         }
         
         // check if child class has met requirements - if the table name is provided
-        if ($this->_tableName == NuLL)
+        if (!$this->_tableName)
             throw new Exception('$this->_tableName was not specified, cannot construct object of ' .get_class($this). ' extended by pantheraFetchDB');
             
         /**
@@ -1014,9 +1067,9 @@ abstract class pantheraFetchDB
                     }
 
                     $q = $w -> show();
-                    $SQL = $panthera->db->query('SELECT * FROM `{$db_prefix}' .$this->_tableName. '` WHERE '.$q[0]. ' ORDER BY `id` DESC LIMIT 0,1', $q[1]);
+                    $SQL = $panthera->db->query('SELECT {$db_prefix}' .$this->_tableName. '.*' .$this->buildJoinQuery(1). ' FROM `{$db_prefix}' .$this->_tableName. '` ' .$this->buildJoinQuery(). ' WHERE '.$q[0]. ' ORDER BY `id` DESC LIMIT 0,1', $q[1]);
                 } else
-                    $SQL = $panthera->db->query('SELECT * FROM `{$db_prefix}' .$this->_tableName. '` ORDER BY `id`');
+                    $SQL = $panthera->db->query('SELECT {$db_prefix}' .$this->_tableName. '.*' .$this->buildJoinQuery(1). ' FROM `{$db_prefix}' .$this->_tableName. '` ' .$this->buildJoinQuery(). ' ORDER BY `id`');
             }
             
             /**
@@ -1024,13 +1077,13 @@ abstract class pantheraFetchDB
               *
               */
             
-            if ($SQL == NULL and is_object($by))
+            if (!$SQL and is_object($by))
             {
                 if (get_class($by) != "whereClause")
                     throw new Exception('Input $by must be a whereClause object or a string with column name');
             
                 $clause = $by->show();
-                $SQL = $panthera->db->query('SELECT * FROM `{$db_prefix}' .$this->_tableName. '` WHERE ' .$clause[0], $clause[1]);
+                $SQL = $panthera->db->query('SELECT {$db_prefix}' .$this->_tableName. '.*' .$this->buildJoinQuery(1). ' FROM `{$db_prefix}' .$this->_tableName. '` ' .$this->buildJoinQuery(). ' WHERE ' .$clause[0], $clause[1]);
                 //$by = $clause[0]; // caching object cannot be realized, its almost impossible
                 //$value = $clause[1];
                 
@@ -1046,7 +1099,7 @@ abstract class pantheraFetchDB
             // if we dont have array to take fetched data we must fetch it by our own
             if (in_array($by, $this->_constructBy) and $SQL == NULL)
             {
-                $SQL = $panthera->db->query('SELECT * FROM `{$db_prefix}' .$this->_tableName. '` WHERE `' .$by. '` = :' .$by, array($by => $value));
+                $SQL = $panthera->db->query('SELECT {$db_prefix}' .$this->_tableName. '.*' .$this->buildJoinQuery(1). ' FROM `{$db_prefix}' .$this->_tableName. '` ' .$this->buildJoinQuery(). ' WHERE `' .$by. '` = :' .$by, array($by => $value));
             }
 
             // getting results and building a object
