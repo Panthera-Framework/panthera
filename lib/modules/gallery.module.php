@@ -125,7 +125,7 @@ class galleryItem extends pantheraFetchDB
             $simpleImage = new simpleImage();
             $simpleImage -> load(pantheraUrl($upload->location));
             $simpleImage -> resizeToWidth($size);
-            $simpleImage -> save(SITE_DIR. '/' .$thumb);
+            $simpleImage -> save(SITE_DIR. '/' .$thumb, 100);
             $panthera -> logging -> output('createGalleryItem::Saving thumbnail to file "' .SITE_DIR. '/' .$thumb. '"');
         }
     
