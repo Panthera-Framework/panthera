@@ -45,7 +45,7 @@ class SimpleImage {
       }
    }
    
-   public function save($filename, $compression=75, $permissions=null) {
+   public function save($filename, $compression=99, $permissions=null) {
         
       if( $this->image_type == IMAGETYPE_JPEG ) {
          imagejpeg($this->image,$filename,$compression);
@@ -62,18 +62,17 @@ class SimpleImage {
       }
    }
    
-   function output($image_type=IMAGETYPE_JPEG) {
+   function output($image_type=IMAGETYPE_JPEG, $compression=99) {
           
       ob_start();
  
-      if( $image_type == IMAGETYPE_JPEG ) {
-         imagejpeg($this->image);
+      if ($image_type == IMAGETYPE_JPEG ) 
+      {
+         imagejpeg($this->image, null, $compression);
       } elseif( $image_type == IMAGETYPE_GIF ) {
- 
-         imagegif($this->image);
+         imagegif($this->image, null);
       } elseif( $image_type == IMAGETYPE_PNG ) {
- 
-         imagepng($this->image);
+         imagepng($this->image, null);
       }
       
       $output = ob_get_contents();
@@ -82,46 +81,50 @@ class SimpleImage {
       return $output;
    }
    
-   function getWidth() {
+   function getWidth() 
+   {
       return imagesx($this->image);
    }
    
-   function getHeight() {
- 
+   function getHeight() 
+   {
       return imagesy($this->image);
    }
    
-   function resizeToHeight($height) {
- 
+   function resizeToHeight($height) 
+   {
       $ratio = $height / $this->getHeight();
       $width = $this->getWidth() * $ratio;
       $this->resize($width,$height);
    }
  
-   function resizeToWidth($width) {
+   function resizeToWidth($width) 
+   {
       $ratio = $width / $this->getWidth();
       $height = $this->getheight() * $ratio;
       $this->resize($width,$height);
    }
  
-   function scale($scale) {
+   function scale($scale) 
+   {
       $width = $this->getWidth() * $scale/100;
       $height = $this->getheight() * $scale/100;
       $this->resize($width,$height);
    }
  
-   function resize($width,$height) {
+   function resize($width,$height) 
+   {
       $new_image = imagecreatetruecolor($width, $height);
       imagecopyresampled($new_image, $this->image, 0, 0, 0, 0, $width, $height, $this->getWidth(), $this->getHeight());
       $this->image = $new_image;
    }
    
-   function cropBottom($px) {
+   function cropBottom($px) 
+   {
       $width = $this -> getWidth();
       $height = $this -> getHeight();
       $new_image = imagecreatetruecolor($width, $height);
       imagecopyresampled($new_image, $this->image, 0, 0, 0, 0, $width, $height, $width, $height-$px);
       $this->image = $new_image;
-      unset($width); unset($height);
    }
 }      
