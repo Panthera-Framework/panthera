@@ -37,7 +37,18 @@ if (!$cpage or !$cpage->exists())
 $tags = unserialize($cpage->meta_tags);
 $panthera -> template -> putKeywords($tags);
 $panthera -> template -> setTitle($cpage->title);
-$panthera -> template -> push('custom_name', $cpage->title);
-$panthera -> template -> push('custom_content', $cpage->html);
+
+if ($cpage -> description)
+{
+    $panthera -> template -> addMetaTag('description', str_replace("\n", ' ', strip_tags($cpage->description)));
+}
+
+// add facebook og:image tag, property type
+if ($cpage -> image)
+{
+    $panthera -> template -> addMetaTag('og:image', $cpage -> image, True);
+}
+
+$panthera -> template -> push('custompage', $cpage -> getData());
 $panthera -> template -> display($templateFile);
 pa_exit();

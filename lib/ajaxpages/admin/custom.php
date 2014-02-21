@@ -72,6 +72,17 @@ if ($_GET['action'] == 'post_form')
             $cpage -> title = $title;
         }
     }
+
+    if (isset($_POST['content_description'])) 
+    {
+        $cpage -> description = htmlspecialchars($_POST['content_description']);
+    }
+    
+    if (isset($_POST['content_image'])) 
+    {
+        if (filter_var($_POST['content_image'], FILTER_VALIDATE_URL))
+            $cpage -> image = htmlspecialchars($_POST['content_image']);
+    }
     
     if (strlen($_POST['page_content_custom']) < 10)
         ajax_exit(array('status' => 'failed', 'message' => localize('Message is too short', 'custompages')));
@@ -228,7 +239,7 @@ if ($_GET['action'] == "edit_page")
         }
 
         $tags = @unserialize($cpage -> meta_tags);
-        print(json_encode(array('tags' => $tags)));
+        ajax_exit(array('tags' => $tags));
         pa_exit();
     }
     /**
@@ -241,21 +252,10 @@ if ($_GET['action'] == "edit_page")
     $html = str_replace("\r", '\\r', $html);
     $html = htmlspecialchars($html, ENT_QUOTES);
 
-    $template -> push('custompage_title', $cpage -> title);
-    $template -> push('custompage_title_escaped', addslashes($cpage -> title));
-    $template -> push('custompage_url_id', $cpage -> url_id);
-    $template -> push('custompage_unique', $cpage -> unique);
-    $template -> push('custompage_id', $cpage -> id);
-    $template -> push('custompage_author_name', $cpage -> author_name);
-    $template -> push('custompage_author_id', $cpage -> author_id);
-    $template -> push('custompage_created', $cpage -> created);
-    $template -> push('custompage_modified', $cpage -> mod_time);
-    $template -> push('custompage_mod_author', $cpage -> mod_author_name);
-    $template -> push('custompage_mod_author_id', $cpage -> mod_author_id);
-    $template -> push('custompage_html', $html);
-    $template -> push('tag_list', @unserialize($cpage -> meta_tags));
-    $template -> push('action', 'edit_page');
-    $template -> push('languages', $panthera -> locale -> getLocales());
+    $panthera -> template -> push('custompage', $cpage -> getData());
+    $panthera -> template -> push('tag_list', @unserialize($cpage -> meta_tags));
+    $panthera -> template -> push('action', 'edit_page');
+    $panthera -> template -> push('languages', $panthera -> locale -> getLocales());
     
     $url = $panthera -> config -> getKey('custompage', array('url_id' => 'custom,{$id}.html', 'unique' => 'custom.{$id}.html', 'id' => 'custom-{$id}.html'), 'array');
     
@@ -270,10 +270,10 @@ if ($_GET['action'] == "edit_page")
     
     if (meta::get('var', 'cp_gen_' .$cpage->unique))
     {
-        $template -> push ('allPages', True);
-        $template -> push ('custompage_language', 'all');
+        $panthera -> template -> push ('allPages', True);
+        $panthera -> template -> push ('custompage_language', 'all');
     } else
-        $template -> push ('custompage_language', $cpage -> language);
+        $panthera -> template -> push ('custompage_language', $cpage -> language);
 
     if ($cpage -> admin_tpl != '')
         $tpl = $cpage -> admin_tpl;
@@ -305,7 +305,7 @@ if ($_GET['action'] == "edit_page")
 	$titlebar = new uiTitlebar($cpage->title." (".$cpage->language.")");
 	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/custom-pages.png', 'left');
 	
-    $template -> display($tpl);
+    $panthera -> template -> display($tpl);
     pa_exit();
     
 } elseif (@$_GET['action'] == "add_page") {
