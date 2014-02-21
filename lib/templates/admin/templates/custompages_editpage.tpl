@@ -20,7 +20,15 @@ function deleteTag (htmlid)
 
 function initEditor()
 {
-    mceSetContent('page_content', htmlspecialchars_decode("{$custompage_html}"));
+    mceSetContent('page_content', htmlspecialchars_decode("{$custompage.html}"));
+}
+
+function upload_file_callback(data, mime)
+{
+    if (mime.substr(0, 5) == 'image')
+    {
+        $('#content_image').val(data);
+    }
 }
 </script>
 {function="uiMce::display()"}
@@ -73,7 +81,7 @@ jQuery(document).ready(function($) {
 {$titleBarInclude='custompages_editpage.titlebar'}
 {include="ui.titlebar"}
 
-<form action="{$AJAX_URL}?id={$custompage_unique}&lang={$custompage_language}&display=custom&cat=admin&action=post_form&pid={$custompage_id}" method="POST" id="save_form">
+<form action="{$AJAX_URL}?id={$custompage.unique}&lang={$custompage_language}&display=custom&cat=admin&action=post_form&pid={$custompage.id}" method="POST" id="save_form">
 <div id="topContent">
     <div class="searchBarButtonArea">
     
@@ -89,7 +97,7 @@ jQuery(document).ready(function($) {
             </ul>
         </div>
        
-        <input type="button" value="{function="localize('Add to menu', 'menuedit')"}" onclick="createPopup('_ajax.php?display=menuedit&cat=admin&popup=true&action=quickAddFromPopup&link={$custompage_url_id_address}&title={$custompage_title}&language={$custompage_language}');">
+        <input type="button" value="{function="localize('Add to menu', 'menuedit')"}" onclick="createPopup('_ajax.php?display=menuedit&cat=admin&popup=true&action=quickAddFromPopup&link={$custompage_url_id_address}&title={$custompage.title}&language={$custompage_language}');">
         <input type="submit" value="{function="localize('Save page', 'custompages')"}">
     </div>
 </div>
@@ -107,11 +115,21 @@ jQuery(document).ready(function($) {
         
             <tbody>
                 <tr id="tr_title">
-                    <td>{function="localize('Title', 'custompages')"}:</td><td><input type="text" name="content_title" value="{$custompage_title_escaped}"></td>
+                    <td>{function="localize('Title', 'custompages')"}:</td><td><input type="text" name="content_title" value="{$custompage.title|addslashes}" style="width: 99%;"></td>
+                </tr>
+                
+                <tr id="tr_description">
+                    <td>{function="localize('Description', 'custompages')"}:</td><td><input type="text" name="content_description" value="{$custompage.description|addslashes}" style="width: 99%;"></td>
+                </tr>
+                
+                <tr id="tr_image">
+                    <td>{function="localize('Image', 'custompages')"}:<br><small>{function="localize('Page image or thumbnail', 'custompages')"}</small></td><td><input type="text" id="content_image" name="content_image" value="{$custompage.image|addslashes}"> 
+                        <input type="button" value="Select" onclick="panthera.popup.toggle('_ajax.php?display=upload&cat=admin&popup=true&callback=upload_file_callback');">
+                    </td>
                 </tr>
                 
                 <tr id="tr_for_all_languages">
-                    <td>{function="localize('Set this page for all languages', 'custompages')"}:<br><small>{function="localize('Content of this static page will be visibile in all languages', 'custompages')"}</td>
+                    <td>{function="localize('Set this page for all languages', 'custompages')"}:<br><small>{function="localize('Content of this static page will be visibile in all languages', 'custompages')"}</small></td>
                     <td><input type="checkbox" name="for_all_languages" value="1" {if="$allPages == True}checked{/if"}></td>
                 </tr>
                 
@@ -128,7 +146,7 @@ jQuery(document).ready(function($) {
                 
                 <tr id="try_url_id">
                     <td style="width: 60%;">{function="localize('SEO name', 'custompages')"}:<br><small>{function="localize('Must be unique', 'custompages')"}, (A-Z, a-z, 0-9, -, _, ., ,, +, %)</small></td>
-                    <td><input type="text" name="url_id" value="{$custompage_url_id}" style="width: 99%;"></td>
+                    <td><input type="text" name="url_id" value="{$custompage.url_id}" style="width: 99%;"></td>
                 </tr>
             </tbody>
         </table>
