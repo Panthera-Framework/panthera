@@ -22,7 +22,7 @@ if (!defined('IN_PANTHERA'))
 
 function pantheraExceptionHandler($exception)
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
 
     $panthera->logging->output('pantheraExceptionHandler::Unhandled exception, starts;');
     $panthera->logging->output($exception->getMessage());
@@ -134,7 +134,7 @@ function pantheraExceptionHandler($exception)
 
 function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $errline='unknown')
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
     
     if (error_get_last() or $errno)
     {
@@ -989,7 +989,7 @@ class pantheraCore
      * @return pantheraCore object
      */
 
-    public function getInstance()
+    public static function getInstance()
     {
         return self::$instance;
     }
@@ -1496,7 +1496,7 @@ class pantheraCore
 
     public function loadPlugins($pluginsDir='')
     {
-        global $panthera, $user, $template;
+        $panthera = pantheraCore::getInstance();
 
         if ($pluginsDir == '')
             $pluginsDir = array(PANTHERA_DIR. '/plugins', SITE_DIR. '/content/plugins');
@@ -1643,8 +1643,7 @@ abstract class pantheraClass
 
     public function __construct()
     {
-        global $panthera;
-        $this->panthera = $panthera;
+        $this->panthera = pantheraCore::getInstance();
         self::$instance = $this;
     }
 }
@@ -1660,7 +1659,7 @@ abstract class pantheraClass
 
 function __pantheraAutoloader($class)
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
 
     if ($panthera)
     {
@@ -1974,7 +1973,7 @@ class _arrayObject
 
 function ajax_exit($array)
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
 
     if ($panthera -> logging -> debug == True)
         $panthera -> logging -> output('ajax_exit: ' .json_encode($array), 'pantheraCore');
@@ -2004,7 +2003,7 @@ function ajax_exit($array)
 
 function pa_exit($string='', $ajaxExit=False)
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
 
     // just to be sure in logs
     $panthera -> logging -> output('Called pa_exit, goodbye.', 'pantheraCore');
@@ -2028,7 +2027,7 @@ function pa_exit($string='', $ajaxExit=False)
 
 function pa_redirect($url)
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
     header('HTTP/1.1 301 Moved Permanently');
     header('Location: '.$panthera->config->getKey('url'). '/' .pantheraUrl($url, False, 'frontend'));
     pa_exit();
@@ -2095,7 +2094,7 @@ function seoUrl($string) {
 
 function pantheraUrl($url, $reverse=False, $type='')
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
 
     $var = array( );
     
@@ -2152,7 +2151,7 @@ function isJson($string) {
 
 function isDebugging()
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
     return $panthera->logging->debug;
 }
 
@@ -2380,7 +2379,7 @@ function microtime_float($time='')
 
 function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $months = true, $days = true, $hours = true, $mins = true, $secs = true, $display_output = true)
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
 
     if (is_int($timestamp_past))
     {
@@ -2546,7 +2545,7 @@ function filterInput($input, $filtersList)
 
 function encodePassword($password)
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
 
     $salted = $panthera->config->getKey('salt').$password;
 
@@ -2571,7 +2570,7 @@ function encodePassword($password)
 
 function verifyPassword($password, $hash)
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
 
     $salted = $panthera->config->getKey('salt').$password;
 
@@ -2654,7 +2653,7 @@ function stripNewLines($str)
 
 function captureStdout($function, $a=null, $b=null, $c=null, $d=null, $e=null, $f=null)
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
     
     // capture old output if any
     $before = $panthera -> outputControl -> get();
