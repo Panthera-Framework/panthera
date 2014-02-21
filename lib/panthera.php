@@ -845,6 +845,7 @@ class pantheraCore
     protected $_savedSession;
     protected $permissionsTable = array();
     protected $modules = array();
+    protected static $instance = null;
 
     public $config;
     public $db;
@@ -870,6 +871,7 @@ class pantheraCore
 
     public function __construct($config) 
     {
+        self::$instance = $this;
         $config['SITE_DIR'] = realpath($config['SITE_DIR']);
         define('SITE_DIR', $config['SITE_DIR']); // get SITE_DIR from configuration if avaliable
 
@@ -979,6 +981,17 @@ class pantheraCore
             PANTHERA_DIR. '/plugins', 
             SITE_DIR. '/content/plugins'
         );
+    }
+
+    /**
+     * Get self instance
+     * 
+     * @return pantheraCore object
+     */
+
+    public function getInstance()
+    {
+        return self::$instance;
     }
     
     /**
