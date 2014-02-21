@@ -14,7 +14,9 @@ CREATE TABLE "{$db_prefix}custom_pages" (
   "mod_author_name" VARCHAR NOT NULL,
   "mod_author_id" INTEGER NOT NULL,
   "mod_time" timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  "admin_tpl" VARCHAR NOT NULL
+  "admin_tpl" VARCHAR NOT NULL,
+  "description" VARCHAR NOT NULL,
+  "image" VARCHAR NOT NULL  
 );
 
 CREATE INDEX "{$db_prefix}custom_pages_url_id" ON "{$db_prefix}custom_pages" ("url_id");
