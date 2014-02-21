@@ -297,8 +297,13 @@ class pantheraTemplate extends pantheraClass
 	 * @author Damian Kęska
 	 */
 
-    public function addMetaTag($meta, $content)
+    public function addMetaTag($meta, $content, $isProperty=False)
     {
+        if ($isProperty)
+        {
+            $meta .= '::property';
+        }
+        
         $this->attributes['metas'][$meta] = $content;
         return True;
     }
@@ -602,7 +607,14 @@ class pantheraTemplate extends pantheraClass
                 // put all metas
                 foreach ($this->attributes['metas'] as $key => $value)
                 {
-                    $header .= '<meta name="' .filterMetaTag($key). '" content="' .filterMetaTag($value). '">';
+                    $exp = explode('::', $key);
+                    
+                    if (count($exp) == 1)
+                        $exp[1] = 'name';
+                    else
+                        $exp[1] = 'property';
+                    
+                    $header .= '<meta ' .$exp[1]. '="' .filterMetaTag($exp[0]). '" content="' .filterMetaTag($value). '">';
                     $header .= "\n";
                 }
             }
