@@ -19,6 +19,9 @@ require 'content/app.php';
 // include custom functions to default front controller
 if (is_file('content/front.php'))
     require 'content/front.php';
+
+// front controllers utils
+include PANTHERA_DIR. '/frontController.class.php';
     
 // enable frontside panels
 frontsidePanels::init();
@@ -52,7 +55,19 @@ if (!defined('PAGES_DISABLE_LIB') and !$panthera -> config -> getKey('front.inde
 // here we will include site pages
 if ($path)
 {
-    include($path);
+    include $path;
+    
+    $controllerName = $display. 'Controller';
+    
+    if (class_exists($display. 'ControllerCore'))
+        $controllerName = $display. 'ControllerCore';
+
+    if (class_exists($controllerName))
+    {
+        $controller = new $controllerName;
+        print($controller -> display());
+    }
+    
     pa_exit();
 } else {
     define('SITE_ERROR', 404);
