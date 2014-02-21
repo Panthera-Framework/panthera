@@ -7,48 +7,109 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
-$panthera -> importModule('custompages');
-$mode = 'fallback';
-$cpage = null;
-
-// to be set manually
-if (!isset($templateFile))
-    $templateFile = 'custom.tpl';
-
-if (isset($_GET['forceNativeLanguage']))
-    $mode = 'forceNative';
-
-if (isset($_GET['url_id']))
+/**
+ * Custom pages front controller
+ * 
+ * @package Panthera\core\pages
+ * @author Damian Kęska
+ */
+  
+class customControllerCore extends frontController
 {
-    $cpage = customPage::getBy('url_id', $_GET['url_id'], '', $mode);
+    protected $mode = 'fallback';
+    protected $cpage = null;
+    protected $requirements = array('custompages'); // list of required modules
     
-} elseif(isset($_GET['id'])) {
-    $cpage = new customPage('id', $_GET['id']);
+    /**
+     * Constructor
+     * 
+     * @return object :)
+     */
     
-} elseif(isset($_GET['unique'])) {
-    $cpage = customPage::getBy('unique', $_GET['unique'], '', $mode);
+    public function __construct()
+    {
+        parent::__construct();
+        $this -> setMode();
+        $this -> buildObject();
+        $this -> checkExists();
+    }
+    
+    /**
+     * Set language selection mode
+     * 
+     * @input $_GET['forceNativeLanguage']
+     * @return null
+     */
+    
+    public function setMode()
+    {
+        if (isset($_GET['forceNativeLanguage']))
+            $this -> mode = 'forceNative';
+    }
+    
+    /**
+     * Try to build object
+     * 
+     * @return null
+     */
+    
+    public function buildObject()
+    {
+        if (isset($_GET['url_id']))
+        {
+            $this -> cpage = customPage::getBy('url_id', $_GET['url_id'], '', $this -> mode);
+            
+        } elseif(isset($_GET['id'])) {
+            $this -> cpage = new customPage('id', $_GET['id']);
+            
+        } elseif(isset($_GET['unique'])) {
+            $this -> cpage = customPage::getBy('unique', $_GET['unique'], '', $this -> mode);
+        }
+    }
+    
+    /**
+     * Check if page exists in database
+     * 
+     * @return null
+     */
+    
+    public function checkExists()
+    {
+        $panthera = pantheraCore::getInstance();
+        
+        if (!$this -> cpage or !$this -> cpage->exists())
+        {
+            pa_redirect($panthera -> config -> getKey('err404.url', '?404', 'string', 'errors'));
+        }
+    }
+    
+    /**
+     * Display
+     * 
+     * @return null
+     */
+    
+    public function display()
+    {
+        $panthera = pantheraCore::getInstance();
+        
+        $tags = unserialize($this -> cpage -> meta_tags);
+        $panthera -> template -> putKeywords($tags);
+        $panthera -> template -> setTitle($this -> cpage -> title);
+        
+        if ($this -> cpage -> description)
+        {
+            $panthera -> template -> addMetaTag('description', str_replace("\n", ' ', strip_tags($this -> cpage -> description)));
+        }
+        
+        // add facebook og:image tag, property type
+        if ($this -> cpage -> image)
+        {
+            $panthera -> template -> addMetaTag('og:image', $this -> cpage -> image, True);
+        }
+        
+        $panthera -> template -> push('custompage', $this -> cpage -> getData());
+        $panthera -> template -> display('custom.tpl');
+        pa_exit();
+    }   
 }
-
-if (!$cpage or !$cpage->exists())
-{
-    pa_redirect($panthera -> config -> getKey('err404.url', '?404', 'string', 'errors'));
-}
-   
-$tags = unserialize($cpage->meta_tags);
-$panthera -> template -> putKeywords($tags);
-$panthera -> template -> setTitle($cpage->title);
-
-if ($cpage -> description)
-{
-    $panthera -> template -> addMetaTag('description', str_replace("\n", ' ', strip_tags($cpage->description)));
-}
-
-// add facebook og:image tag, property type
-if ($cpage -> image)
-{
-    $panthera -> template -> addMetaTag('og:image', $cpage -> image, True);
-}
-
-$panthera -> template -> push('custompage', $cpage -> getData());
-$panthera -> template -> display($templateFile);
-pa_exit();

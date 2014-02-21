@@ -61,7 +61,10 @@ if ($path)
     
     if (class_exists($display. 'ControllerCore'))
         $controllerName = $display. 'ControllerCore';
-
+    
+    if (frontController::$searchFrontControllerName)
+        $controllerName = frontController::$searchFrontControllerName;
+    
     if (class_exists($controllerName))
     {
         $controller = new $controllerName;

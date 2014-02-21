@@ -17,6 +17,7 @@
 class contactControllerCore extends frontController
 {
     protected $contact;
+    protected $requirements = array('contact'); // list of required modules
     
     /**
      * Constructor
@@ -26,10 +27,7 @@ class contactControllerCore extends frontController
     
     public function __construct()
     {
-        $panthera = pantheraCore::getInstance();
-        
         // just in case
-        $panthera -> importModule('contact');
         $this -> contact = new contactFrontpage;
         $this -> configure();
         $this -> handleData();
@@ -89,7 +87,6 @@ class contactControllerCore extends frontController
     public function display()
     {
         $panthera = pantheraCore::getInstance();
-        
         $panthera -> template -> display('contact.tpl');
         pa_exit();
     }
