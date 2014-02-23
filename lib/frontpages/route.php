@@ -12,7 +12,7 @@
 require_once 'content/app.php';
 
 //$panthera -> routing -> map('GET|POST', '/', 'home#index', 'index');
-$panthera -> routing -> map('GET|POST', 'contact', array('front' => 'index.php', 'GET' => array('display' => 'contact')), 'contact');
+//$panthera -> routing -> map('GET|POST', 'contact', array('front' => 'index.php', 'GET' => array('display' => 'contact')), 'contact');
 //$panthera -> routing -> map('GET|POST', 'contact,post-[i:postid]', array('front' => 'index.php', 'GET' => array('display' => 'contact', 'post' => true)), 'contactPost');
 //$panthera -> routing -> unmap('index');
 //$panthera -> routing -> unmap('contactPost');
