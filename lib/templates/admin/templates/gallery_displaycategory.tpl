@@ -176,18 +176,20 @@ function selectImage(id)
         
         selected.push(id);
         $("#image_"+id).css('-webkit-filter', 'blur(9px) contrast(1.5)');
+        $("#image_"+id).css('opacity', '0.5');
         
         return true;
     }
     
-    if ($("#image_"+id).css('-webkit-filter') == 'blur(9px) contrast(1.5)') {
+    if ($("#image_"+id).css('-webkit-filter') == 'blur(9px) contrast(1.5)' || $("#image_"+id).css('opacity') == '0.5') {
         removeFromArrayByValue(selected, id);
         $("#image_"+id).css('-webkit-filter', 'none');
+        $("#image_"+id).css('opacity', '1');
     } else {
         selected.push(id);
         $("#image_"+id).css('-webkit-filter', 'blur(9px) contrast(1.5)');
+        $("#image_"+id).css('opacity', '0.5');
     }
-    
     
     if (selected.length == 0) {
         $(".imageOptionsBackground").css('display', 'block');
