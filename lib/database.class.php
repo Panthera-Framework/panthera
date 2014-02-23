@@ -170,11 +170,6 @@ class pantheraDB
         $this->sqlCount++;
         $query = str_ireplace('{$db_prefix}', $this->prefix, $query);
         
-        if ($this->panthera->logging->debug == True)
-        {
-            $this->panthera->logging->output('query( ' .$query. ' , ' .json_encode($values). ' )', 'pantheraDB');
-        }
-        
         if ($this->socketType == "sqlite")
         {
             $query = $this->translateToSQLite($query);
@@ -221,6 +216,11 @@ class pantheraDB
                 
             if (!$sth -> execute())
                 return False;
+        }
+        
+        if ($this->panthera->logging->debug == True)
+        {
+            $this->panthera->logging->output('query( ' .$query. ' , ' .json_encode($values). ' )', 'pantheraDB');
         }
         
         return $sth;
