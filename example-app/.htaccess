@@ -1,6 +1,5 @@
 RewriteEngine On
-RewriteRule ^index.html$  index.php
-RewriteRule ^index$  index.php
-RewriteRule ^index.py$  index.php
-RewriteRule ^index.pyc$  index.php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule . route.php [L]
 
