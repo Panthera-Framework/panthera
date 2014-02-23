@@ -556,7 +556,11 @@ class pantheraConfig
                 if ($section === null)
                     $section = '';
             
-                $this->overlay_modified[(string)$key] = True;
+                if ($this->overlay_modified[(string)$key] != 'created')
+                {
+                    $this->overlay_modified[(string)$key] = True;
+                }
+                
                 $this->overlay[(string)$key][2] = $section;
             }
             
@@ -566,7 +570,10 @@ class pantheraConfig
                 return True;
             }
                 
-            $this->overlay_modified[(string)$key] = True;
+            if ($this->overlay_modified[(string)$key] != 'created')
+            {
+                $this->overlay_modified[(string)$key] = True;
+            }
             
         } else {
             if ($section === null)
@@ -577,7 +584,7 @@ class pantheraConfig
             $this->overlay[(string)$key][2] = $section;
             $this->overlay_modified[(string)$key] = 'created';
         }
-
+        
         if($type !== '__none')
         {
             if ($this->panthera->types->exists($type))
@@ -710,6 +717,8 @@ class pantheraConfig
 
     public function save()
     {
+        $this -> panthera -> logging -> output('Preparing to save config overlay', 'pantheraConfig');
+        
         if (count($this->overlay_modified) > 0)
         {
             $this->panthera->logging->output('Saving config overlay to SQL', 'pantheraConfig');
@@ -793,6 +802,8 @@ class pantheraConfig
                 $this->panthera->logging->output('Updating config_overlay cache', 'pantheraConfig');
                 $this->panthera->cache->set('config_overlay', $this->overlay, 3600);
             }
+            
+            return true;
         }
     }
 
@@ -853,6 +864,7 @@ class pantheraCore
     public $template;
     public $session;
     public $pluginsDir;
+    public $router;
     public $varCache=False;
     public $cache=False;
     public $hashingAlgorithm = 'md5';
@@ -931,7 +943,12 @@ class pantheraCore
             $this->loadCache($varCacheType, $cacheType);
         }
         /** END OF CACHE SYSTEM **/
-
+        
+        $c = _PANTHERA_CORE_ROUTER_;
+        include_once PANTHERA_DIR. '/router.class.php';
+        $this -> routing = new $c;
+        $this -> routing -> setBasePath(parse_url($this -> config -> getKey('url'), PHP_URL_PATH));
+            
         $c = _PANTHERA_CORE_LOCALE_;
         if (class_exists($c))
             $this->locale = new $c($this);
