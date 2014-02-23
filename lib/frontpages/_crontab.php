@@ -11,7 +11,7 @@
 //define('SKIP_SESSION', True);
 //define('SKIP_TEMPLATE', True);
 
-require 'content/app.php';
+require_once 'content/app.php';
 
 @set_time_limit(3600);
 

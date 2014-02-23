@@ -106,7 +106,7 @@ define('PANTHERA_FORCE_DEBUGGING', True);
 define('SKIP_CACHE', False);
 
 // app starts here
-require $config['lib']. '/boot.php';
+require_once $config['lib']. '/boot.php';
 
 // initialize installer
 $panthera -> locale -> loadDomain('installer');

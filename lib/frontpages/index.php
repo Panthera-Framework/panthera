@@ -14,7 +14,7 @@ if (!is_file('content/app.php'))
     exit;
 }
 
-require 'content/app.php';
+require_once 'content/app.php';
 
 // include custom functions to default front controller
 if (is_file('content/front.php'))

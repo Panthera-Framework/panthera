@@ -7,7 +7,7 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
-require 'content/app.php';
+require_once 'content/app.php';
 
 if (!checkUserPermissions($panthera->user, True) and !getUserRightAttribute($panthera->user, 'can_access_pa'))
 {

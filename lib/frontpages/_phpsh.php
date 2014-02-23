@@ -9,7 +9,7 @@
   */
   
 # include app config and libs
-require 'content/app.php';
+require_once 'content/app.php';
 
 if (PANTHERA_MODE == 'cgi')
     die('This script is not avaliable in CGI mode.');

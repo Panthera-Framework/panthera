@@ -11,7 +11,7 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
-require 'content/app.php';
+require_once 'content/app.php';
 
 $locales = $panthera -> locale -> getLocales();
 

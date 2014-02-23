@@ -107,6 +107,9 @@ if (!defined('_PANTHERA_CORE_TYPES_'))
 if (!defined('_PANTHERA_CORE_TEMPLATE_'))
     define('_PANTHERA_CORE_TEMPLATE_', 'pantheraTemplate');
 
+if (!defined('_PANTHERA_CORE_ROUTER_'))
+    define('_PANTHERA_CORE_ROUTER_', 'routing');
+
 // core elements
 $c = _PANTHERA_CORE_;
 $panthera = new $c($config);
