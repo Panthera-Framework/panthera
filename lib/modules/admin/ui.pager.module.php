@@ -17,7 +17,7 @@
 class uiPager
 {
     public static $pagers;
-    protected $barName = "";
+    protected $name = '';
     
     public function __construct ($name, $totalItems, $maxOnPage='', $defaultOnPage=16)
     {
@@ -46,6 +46,17 @@ class uiPager
         );
         
         $panthera -> add_option('template.display', array($this, 'applyToTemplate'));
+    }
+    
+    /**
+     * Get ui.Pager instance name
+     * 
+     * @return string
+     */
+    
+    public function getName()
+    {
+        return $this->name;
     }
     
     /**
@@ -125,19 +136,17 @@ class uiPager
         $c = count($array);
         $i = 0;
         
-        foreach ($array as $domainName => $domain)
+        foreach ($array as $key => $value)
         {
-            foreach ($domain as $key => $value)
-            {
-                $i++;
+            $i++;
                 
-                // rewrite only elements matching our range            
-                if ($i >= $limit[0] and $i <= ($limit[0]+$limit[1]))
-                {
-                    $newArray[$domainName][$key] = $value;
-                }
+            // rewrite only elements matching our range            
+            if ($i >= $limit[0] and $i <= ($limit[0]+$limit[1]))
+            {
+                $newArray[$key] = $value;
             }
         }
+        
         return $newArray;
     }
     
@@ -265,7 +274,7 @@ class uiPager
     }
     
     /**
-      * Send all search bars to template
+      * Send all pagers to template
       *
       * @return void
       * @author Damian Kęska
