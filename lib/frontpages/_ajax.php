@@ -10,6 +10,9 @@
 
 require_once 'content/app.php';
 
+// front controllers utils
+include PANTHERA_DIR. '/frontController.class.php';
+
 // only for registered users
 /*if (!checkUserPermissions($user))
 {
@@ -78,6 +81,22 @@ $pageFile = getContentDir('ajaxpages/' .$display. '.php');
 if ($pageFile)
 {
     include $pageFile;
+    $name = str_replace($cat, '', $display);
+    
+    $controllerName = $name. 'AjaxController';
+    
+    if (class_exists($name. 'AjaxControllerCore'))
+        $controllerName = $name. 'AjaxControllerCore';
+    
+    if (frontController::$searchFrontControllerName)
+        $controllerName = frontController::$searchFrontControllerName;
+    
+    if (class_exists($controllerName))
+    {
+        $controller = new $controllerName;
+        print($controller -> display());
+        pa_exit();
+    }
 }
 
 // set default template if none selected
