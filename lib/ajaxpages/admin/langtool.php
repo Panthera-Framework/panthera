@@ -38,6 +38,30 @@ function updateMissingStringsCache($locale)
     return $missingStrings;
 }
 
+public function langtoolLimitArray($array, $limit)
+{
+    $newArray = array();
+        
+    $c = count($array);
+    $i = 0;
+        
+    foreach ($array as $domainName => $domain)
+    {
+        foreach ($domain as $key => $value)
+        {
+            $i++;
+                
+            // rewrite only elements matching our range            
+            if ($i >= $limit[0] and $i <= ($limit[0]+$limit[1]))
+            {
+                $newArray[$domainName][$key] = $value;
+            }
+        }
+    }
+    
+    return $newArray;
+}
+
 $permissions = array(
     'management' => getUserRightAttribute($panthera->user, 'langtool_management'),
     'admin' => checkUserPermissions($panthera->user, True)
@@ -100,7 +124,7 @@ if (@$_GET['display'] == 'langtool')
             $uiPager -> setActive(intval($_GET['page']));
             $uiPager -> setLinkTemplatesFromConfig('langtool_domains.tpl');
             
-            $d = $uiPager -> limitArray($missingStrings);
+            $d = langtoolLimitArray($missingStrings, $uiPager->getPageLimit());
             
             $panthera -> template -> push('missingTranslations', $d); // limit array results to satisfy current page
         } else {
