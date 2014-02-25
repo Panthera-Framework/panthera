@@ -947,8 +947,8 @@ class pantheraCore
         $c = _PANTHERA_CORE_ROUTER_;
         include_once PANTHERA_DIR. '/router.class.php';
         $this -> routing = new $c;
-        $this -> routing -> setBasePath(parse_url($this -> config -> getKey('url'), PHP_URL_PATH));
-            
+        $this -> routing -> setBasePath(rtrim(parse_url($this -> config -> getKey('url'), PHP_URL_PATH), '/'). '/');
+        
         $c = _PANTHERA_CORE_LOCALE_;
         if (class_exists($c))
             $this->locale = new $c($this);
@@ -1192,7 +1192,7 @@ class pantheraCore
 
     public function moduleImported($module)
     {
-        return array_key_exists($module, $this->modules);
+        return isset($this->modules[$module]);
     }
 
 
