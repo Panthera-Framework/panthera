@@ -97,4 +97,28 @@ abstract class frontController extends pantheraClass {
     {
         return $this->display();
     }
+    
+    /**
+     * Get list of avaliable front controllers
+     * 
+     * @return array
+     */
+    
+    public static function getControllersList()
+    {
+        $files = scandir(SITE_DIR. '/');
+        $list = array();
+        
+        foreach ($files as $file)
+        {
+            $pathinfo = pathinfo($file);
+            
+            if ($pathinfo['extension'] != 'php' or $pathinfo['basename'] == 'route.php')
+                continue;
+            
+            $list[] = $pathinfo['basename'];
+        }
+        
+        return $list;
+    }
 }
