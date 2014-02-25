@@ -121,4 +121,27 @@ abstract class frontController extends pantheraClass {
         
         return $list;
     }
+    
+    /**
+     * Simple action dispatcher. Just type ?display=name in url to invoke $this->nameAction() method
+     * 
+     * @param string $action Optional action name to manually invoke
+     * @return mixed
+     */
+    
+    public function dispatchAction($action='')
+    {
+        if (!$action and isset($_GET['action']))
+            $action = $_GET['action'];
+            
+        if (!$action)
+            return False;
+        
+        $method = $action. 'Action';
+        
+        if(method_exists($this, $method))
+        {
+            return $this -> $method();
+        }
+    }
 }
