@@ -286,6 +286,14 @@ $defaults['content']['custompages'] = array(
     'linkType' => 'ajax'
 );
 
+$defaults['content']['routing'] = array(
+    'link' => '?display=routing&cat=admin',
+    'name' => localize('SEO links management', 'routing'),
+    'description' => localize('Front-end urls rewriting', 'settings'),
+    'icon' => '{$PANTHERA_URL}/images/admin/menu/routing.png',
+    'linkType' => 'ajax'
+);
+
 // hook some icons
 $defaults = $panthera -> get_filters('ajaxpages.settings', $defaults);
 

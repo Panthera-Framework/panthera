@@ -54,30 +54,36 @@
     </thead>
     
     <tbody class="hovered">
-        {loop="$body"}
-            {$row=$value}
-            <tr>
-            {loop="$header"}
-                <td id="td_{$row.__id_html}_{$key}" class="td_{$row.__id_html}">{$row[$key]}</td>
+        {if="$body"}
+            {loop="$body"}
+                {$row=$value}
+                <tr>
+                {loop="$header"}
+                    <td id="td_{$row.__id_html}_{$key}" class="td_{$row.__id_html}">{$row[$key]}</td>
+                {/loop}
+                
+                {if="$editButtons or $deleteButtons"}
+                    <td>
+                        {if="$editButtons"}
+                        <a href="#" onclick="tableActionEdit('{$tableID}', '{$row.__id}')">
+                            <img src="{$PANTHERA_URL}/images/admin/ui/edit.png" style="max-height: 22px;" alt="Usuń">
+                        </a>
+                        {/if}
+                        
+                        {if="$deleteButtons"}
+                        <a href="#" onclick="tableActionRemove('{$tableID}', '{$row.__id}')">
+                            <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="Usuń">
+                        </a>
+                        {/if}
+                    </td>
+                {/if}
+                </tr>
             {/loop}
-            
-            {if="$editButtons or $deleteButtons"}
-                <td>
-                    {if="$editButtons"}
-                    <a href="#" onclick="tableActionEdit('{$tableID}', '{$row.__id}')">
-                        <img src="{$PANTHERA_URL}/images/admin/ui/edit.png" style="max-height: 22px;" alt="Usuń">
-                    </a>
-                    {/if}
-                    
-                    {if="$deleteButtons"}
-                    <a href="#" onclick="tableActionRemove('{$tableID}', '{$row.__id}')">
-                        <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="Usuń">
-                    </a>
-                    {/if}
-                </td>
-            {/if}
+        {else}
+            <tr>
+                <td colspan="{function="count($header)"}">{function="localize('No data to display', 'admin')"}</td>
             </tr>
-        {/loop}
+        {/if}
     </tbody>
     
     {if="$pagerID"}
