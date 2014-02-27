@@ -168,7 +168,7 @@ class pantheraDB
     public function query($query, $values=NuLL, $retry=False)
     {
         $this->sqlCount++;
-        $query = str_ireplace('{$db_prefix}', $this->prefix, $query);
+        $query = str_ireplace('{$db_prefix}', $this->prefix, $query, 1);
         
         if ($this->socketType == "sqlite")
         {
@@ -278,7 +278,7 @@ class pantheraDB
     
     public function execute($SQL)
     {
-        $SQL = str_ireplace('{$db_prefix}', $this->prefix, $SQL);
+        $SQL = str_ireplace('{$db_prefix}', $this->prefix, $SQL, 1);
         return $this->sql->exec($SQL);
     }
     
