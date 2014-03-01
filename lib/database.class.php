@@ -168,7 +168,7 @@ class pantheraDB
     public function query($query, $values=NuLL, $retry=False)
     {
         $this->sqlCount++;
-        $query = preg_replace('/\{\$db_prefix\}/i', $this->prefix, $query, 1);
+        $query = str_ireplace('{$db_prefix}', $this->prefix, $query);
         
         if ($this->socketType == "sqlite")
         {
@@ -278,7 +278,7 @@ class pantheraDB
     
     public function execute($SQL)
     {
-        $SQL = preg_replace('/\{\$db_prefix\}/i', $this->prefix, $SQL, 1);
+        $SQL = str_ireplace('{$db_prefix}', $this->prefix, $SQL);
         return $this->sql->exec($SQL);
     }
     
@@ -359,7 +359,7 @@ class pantheraDB
             
             if (is_file($file))
             {
-                $SQL = preg_replace('/\{\$db_prefix\}/i', $this->prefix, file_get_contents($file));
+                $SQL = str_ireplace('{$db_prefix}', $this->prefix, file_get_contents($file));
                 
                 try {
                     $this->sql->exec($SQL);
