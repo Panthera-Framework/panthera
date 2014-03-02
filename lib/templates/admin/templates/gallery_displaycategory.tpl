@@ -271,7 +271,7 @@ function toggleItemVisibilitySelected()
         <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=gallery&cat=admin');" style="float: left; margin-left: 10px;">
        {if="!$all_langs"} <input type="button" value="{function="localize('Other languages', 'gallery')"}" onclick="panthera.popup.toggle('element:#languagePopup')"> {/if}
         <input type="button" value="{function="localize('Settings')"}" onclick="panthera.popup.toggle('element:#settingsPopup')">
-        <input type="button" value="{function="localize('Delete')"}" onclick="removeGalleryCategory({$category_id});">
+        <input type="button" value="{function="localize('Delete category', 'gallery')"}" onclick="removeGalleryCategory({$category_id});">
     </div>
 </div>
 
@@ -430,6 +430,7 @@ function toggleItemVisibilitySelected()
     </div>
     
     <div style="width: 65%; margin: 0 auto;">
+        <style> a { color: white; } </style>
        <div style="display: inline-block; font-size: 12px; color: white;">{$uiPagerName="adminGalleryItems"}{include="ui.pager"}</div>
     </div>
     
