@@ -79,7 +79,7 @@
                             {loop="$flags"}
                                 <li>
                                     <a href="?{function="getQueryString('GET', '', array('_', '_locale'))"}&_locale={$value}&cat=admin">
-                                        <img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 12px; margin: 1px;"> {$value}
+                                        <img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 12px; margin: 1px; vertical-align: middle;"> {$value}
                                     </a>
                                 </li>
                             {/loop}
