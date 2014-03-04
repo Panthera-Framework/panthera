@@ -70,12 +70,13 @@ class pantheraDB
                 $panthera -> logging -> output('Connected to SQLite3 database file ' .$config['db_file'], 'pantheraDB');
             } else {
                 $this->socketType = 'mysql';
-                $this->sql = @new PDO('mysql:host='.$config['db_host'].';encoding=utf8;dbname='.$config['db_name'], $config['db_username'], $config['db_password']);
+                $this->sql = @new PDO('mysql:host='.$config['db_host'].';encoding=utf8;charset=utf8;dbname='.$config['db_name'], $config['db_username'], $config['db_password']);
                 $panthera -> logging -> output('Connected to MySQL database, ' .$config['db_username']. '@' .$config['db_host'], 'pantheraDB');
             }
 
             $this->sql->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->sql->setAttribute(PDO::ATTR_TIMEOUT, $config['db_timeout']);
+            $this->sql->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             
             if (isset($config['db_autocommit']))
                 $this->sql->setAttribute(PDO::ATTR_AUTOCOMMIT, $config['db_autocommit']);
