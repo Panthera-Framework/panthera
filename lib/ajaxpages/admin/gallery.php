@@ -1043,22 +1043,28 @@ if ($_GET['action'] == 'edit_category')
     pa_exit();
 }
 
-// here we will store query and other filter params
+// here we will store query and other filter params (eg. language)
 $filter = array();
 
 $sBar = new uiSearchbar('uiTop');
-//$sBar -> setMethod('POST');
 $sBar -> setQuery($_GET['query']);
 $sBar -> setAddress('?' .getQueryString('GET', '', array('_', 'page', 'query')));
 $sBar -> navigate(True);
 $sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_galleries,can_read_own_galleries,can_read_all_galleries', localize('Manage permissions'));
 
-// only in selected language
 if ($_GET['language']) 
 {
-    $filter['language'] = $_GET['language'];
-    $template -> push('current_lang', $_GET['language']);
-} else {
+    $languages = $panthera -> locale -> getLocales();
+
+    // check if given language exists
+    if ($languages[$_GET['language']]) {
+        $template -> push('current_lang', $_GET['language']);
+        $filter['language'] = $_GET['language'];   
+    }
+}
+
+// set default language if not set
+if (!$filter['language']) {
     $activeLanguage = $panthera -> locale -> getActive();
     $filter['language'] = $activeLanguage;
     $template -> push('current_lang', $activeLanguage);
@@ -1066,9 +1072,7 @@ if ($_GET['language'])
 
 // search query
 if ($_GET['query'])
-{
     $filter['title*LIKE*'] = '%' .trim(strtolower($_GET['query'])). '%';
-}
 
 $page = intval($_GET['page']);
 $itemsCount = gallery::fetch($filter, False);
@@ -1082,47 +1086,7 @@ $limit = $uiPager -> getPageLimit();
 // get categories for current page
 $categories = gallery::fetch($filter, $limit[1], $limit[0]);
 
-// with title filter
-$categoriesFiltered = array();
-
-foreach ($categories as $category)
-{
-    if ($_GET['filter'] != '')
-    {
-        if (!stristr($category->title, $_GET['filter']))
-            continue;
-    }
-    
-    $categoriesFiltered[$category->unique] = $category->getData();
-
-    // create an array with information about categories
-    /*
-    if (isset($categoriesFiltered[$category->unique])) {
-        $categoriesFiltered[$category->unique]['langs'] = $categoriesFiltered[$category->unique]['langs'].', '.$category->language;
-        $categoriesFiltered[$category->unique]['ids'] = $categoriesFiltered[$category->unique]['ids'].'.'.$category->id;
-        
-        if ($category->language == 'english')
-            $categoriesFiltered[$category->unique]['language'] = 'english';
-        
-        if (!$categoriesFiltered[$category->unique]['visibility_all'] and (bool)$category->visibility)
-            $categoriesFiltered[$category->unique]['visibility_all'] = (bool)$category->visiblity;
-        
-    } else {
-        $categoriesFiltered[$category->unique] = $category->getData();
-        $categoriesFiltered[$category->unique]['langs'] = $category->language;
-        $categoriesFiltered[$category->unique]['ids'] = $category->id;
-        $categoriesFiltered[$category->unique]['visibility_all'] = (bool)$category->visibility;
-    }*/
-}
-
-if (defined('GALLERY_FILTER'))
-{
-    $template -> push('category_filter', $_GET['filter'].GALLERY_FILTER);
-    $template -> push('category_filter_complete', $_GET['filter'].GALLERY_FILTER);
-} else
-    $template -> push('category_filter', $_GET['filter']);
-
-$template -> push('category_list', $categoriesFiltered);
+$template -> push('category_list', $categories);
 $template -> push('languages', $panthera -> locale -> getLocales());
 $template -> push('page', $page);
 
