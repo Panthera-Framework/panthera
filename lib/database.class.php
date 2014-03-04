@@ -72,14 +72,20 @@ class pantheraDB
                 $this->socketType = 'mysql';
                 $this->sql = @new PDO('mysql:host='.$config['db_host'].';encoding=utf8;charset=utf8;dbname='.$config['db_name'], $config['db_username'], $config['db_password']);
                 $panthera -> logging -> output('Connected to MySQL database, ' .$config['db_username']. '@' .$config['db_host'], 'pantheraDB');
+                
+                if (isset($config['db_mysql_buffered_queries']))
+                    $this->sql->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, (bool)$config['db_mysql_buffered_queries']);
             }
 
             $this->sql->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->sql->setAttribute(PDO::ATTR_TIMEOUT, $config['db_timeout']);
-            $this->sql->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $this->sql->setAttribute(PDO::ATTR_TIMEOUT, intval($config['db_timeout']));
+            $this->sql->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             
+            if (isset($config['db_emulate_prepares']))
+                $this->sql->setAttribute(PDO::ATTR_EMULATE_PREPARES, (bool)$config['db_emulate_prepares']);
+                
             if (isset($config['db_autocommit']))
-                $this->sql->setAttribute(PDO::ATTR_AUTOCOMMIT, $config['db_autocommit']);
+                $this->sql->setAttribute(PDO::ATTR_AUTOCOMMIT, (bool)$config['db_autocommit']);
                 
             $this->prefix = $config['db_prefix'];
 
