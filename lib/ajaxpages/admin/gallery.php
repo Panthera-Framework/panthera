@@ -1054,10 +1054,14 @@ $sBar -> navigate(True);
 $sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_galleries,can_read_own_galleries,can_read_all_galleries', localize('Manage permissions'));
 
 // only in selected language
-if ($_GET['lang']) 
+if ($_GET['language']) 
 {
-    $filter['language'] = $_GET['lang'];
-    $template -> push('current_lang', $_GET['lang']);
+    $filter['language'] = $_GET['language'];
+    $template -> push('current_lang', $_GET['language']);
+} else {
+    $activeLanguage = $panthera -> locale -> getActive();
+    $filter['language'] = $activeLanguage;
+    $template -> push('current_lang', $activeLanguage);
 }
 
 // search query
@@ -1070,13 +1074,13 @@ $page = intval($_GET['page']);
 $itemsCount = gallery::fetch($filter, False);
 
 // pager
-$uiPager = new uiPager('galleryCategories', $itemsCount, 'adminGalleryCategories');
+$uiPager = new uiPager('adminGalleryCategories', $itemsCount, 'adminGalleryCategories');
 $uiPager -> setActive($page);
 $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString('GET', 'page={$page}', '_'). '\');');
 $limit = $uiPager -> getPageLimit();
 
 // get categories for current page
-$categories = gallery::fetch($filter, $limit[1], $limit[2]);
+$categories = gallery::fetch($filter, $limit[1], $limit[0]);
 
 // with title filter
 $categoriesFiltered = array();
@@ -1088,8 +1092,11 @@ foreach ($categories as $category)
         if (!stristr($category->title, $_GET['filter']))
             continue;
     }
+    
+    $categoriesFiltered[$category->unique] = $category->getData();
 
     // create an array with information about categories
+    /*
     if (isset($categoriesFiltered[$category->unique])) {
         $categoriesFiltered[$category->unique]['langs'] = $categoriesFiltered[$category->unique]['langs'].', '.$category->language;
         $categoriesFiltered[$category->unique]['ids'] = $categoriesFiltered[$category->unique]['ids'].'.'.$category->id;
@@ -1105,7 +1112,7 @@ foreach ($categories as $category)
         $categoriesFiltered[$category->unique]['langs'] = $category->language;
         $categoriesFiltered[$category->unique]['ids'] = $category->id;
         $categoriesFiltered[$category->unique]['visibility_all'] = (bool)$category->visibility;
-    }
+    }*/
 }
 
 if (defined('GALLERY_FILTER'))
@@ -1116,7 +1123,8 @@ if (defined('GALLERY_FILTER'))
     $template -> push('category_filter', $_GET['filter']);
 
 $template -> push('category_list', $categoriesFiltered);
-$template -> push('set_locale', $panthera -> locale -> getActive());
+$template -> push('languages', $panthera -> locale -> getLocales());
+$template -> push('page', $page);
 
 $titlebar = new uiTitlebar(localize('Gallery'));
 $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');

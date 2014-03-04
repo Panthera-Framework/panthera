@@ -7,7 +7,7 @@
         panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggleGalleryVisibility&ctgid='+array, messageBox: 'w2ui', success: function (response) {
                 if (response.status == 'success')
                 {
-                    navigateTo('?display=gallery&cat=admin');
+                    navigateTo('?display=gallery&cat=admin&language={$current_lang}');
                 }
             }
         });
@@ -22,7 +22,7 @@
                 panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=deleteCategory&id='+array, messageBox: 'w2ui', success: function (response) {
                         if (response.status == 'success')
                         {
-                            navigateTo('?display=gallery&cat=admin');
+                            navigateTo('?display=gallery&cat=admin&language={$current_lang}');
                         }
                 
                     }
@@ -41,7 +41,24 @@
     {include="ui.searchbar"}
 
     <div class="searchBarButtonArea">
+        <span data-searchbardropdown="#searchDropdown" id="searchDropdownSpan" style="position: relative; cursor: pointer;">
+             <input type="button" value="{function="localize('Switch language', 'custompages')"}">
+        </span>
+        
+        <div id="searchDropdown" class="searchBarDropdown searchBarDropdown-tip searchBarDropdown-relative">
+            <ul class="searchBarDropdown-menu">
+            {loop="$languages"}
+                <li style="text-align: left;">
+                    <a href="" style="cursor: pointer;" onclick="navigateTo('?display=gallery&cat=admin&language={$key}');">
+                        <img src="{$PANTHERA_URL}/images/admin/flags/{$key}.png" style="height: 12px; margin: 1px; vertical-align: middle;"> {$key}
+                    </a>
+                </li>
+            {/loop}
+            </ul>
+        </div>
+        
         <input type="button" value="{function="localize('Create new gallery', 'gallery')"}" onclick="panthera.popup.toggle('element:#createGallery')">
+
     </div>
 </div>
 
@@ -81,7 +98,7 @@
         </tfoot>
         
     </table>
-    <input type="text" name="language" value="{$set_locale}" style="display: none;">
+    <input type="text" name="language" value="{$current_lang}" style="display: none;">
    </form>
    
    <script type="text/javascript">
@@ -89,7 +106,7 @@
             panthera.jsonPOST( { data: '#newGalleryForm', messageBox: 'w2ui', success: function (response) {
                     if (response.status == 'success')
                     {
-                        navigateTo('?display=gallery&cat=admin&filter={$category_filter}');
+                        navigateTo('?display=gallery&cat=admin&filter={$category_filter}&language={$current_lang}');
                     }
                 } 
             });
@@ -108,14 +125,14 @@
                 <th>&nbsp;</th>
                 <th>{function="localize('Title', 'gallery')"}</th>
                 <th>{function="localize('Created', 'gallery')"}</th>
-                <th>{function="localize('Languages', 'gallery')"}</th>
+                <th>{function="localize('Language', 'gallery')"}</th>
                 <th>&nbsp;</th>
             </tr>
         </thead>
 
         <tbody class="hovered">
             {loop="$category_list"}
-            <tr id="galleryCategory_row_{$value.id}" style="height: 59px; {if="!$value.visibility_all"}opacity: 0.5;{/if}"> 
+            <tr id="galleryCategory_row_{$value.id}" style="height: 59px; {if="!$value.visibility"}opacity: 0.5;{/if}"> 
                 
                 {if="$value.thumb_url"}
                 <td style="padding-top: 4px; padding-right: 10px; padding-left: 10px;">
@@ -131,13 +148,13 @@
                 </a>
                 </td>
                 <td>{$value.created} {function="localize('by')"} {$value.author_login}</td>
-                <td>{$value.langs}</td>
+                <td>{$value.language}</td>
                 
                 <td>
-                    <a href="#" onclick="toggleGalleriesVisibility('{$value.ids}');">
+                    <a href="#" onclick="toggleGalleriesVisibility('{$value.id}');">
                     <img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/System-search.svg" style="max-height: 22px;" id="hide_btn_{$value.id}" title="{function="localize('Show or hide', 'messages')"}">
                     </a>
-                    <a href="#" onclick="removeGalleryCategories('{$value.ids}');">
+                    <a href="#" onclick="removeGalleryCategories('{$value.id}');">
                     <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" title="Remove">
                     </a>
                 </td>
@@ -148,4 +165,6 @@
             </tr>
         </tbody>
     </table>
+    
+    <div style="margin-top: 10px; margin-left: 8px; color: #404c5a; font-size: 12px;">{$uiPagerName="adminGalleryCategories"}{include="ui.pager"}</div>
 </div>
