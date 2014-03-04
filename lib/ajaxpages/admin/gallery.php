@@ -782,9 +782,9 @@ if ($_GET['action'] == 'edit_item_form')
         $template -> push('title', $item -> title);
         $template -> push('description', $item -> description);
         $template -> push('link', pantheraUrl($item -> link));
-        $template -> push('thumbnail', pantheraUrl($item -> thumbnail)); // We haven't script to make thumbnails yet. Later we'll delete this line. /M.
+        $template -> push('thumbnail', pantheraUrl($item -> thumbnail));
         $template -> push('gallery_id', $item -> gallery_id);
-        $template -> push('visibility', !$item -> visibility);
+        $template -> push('visibility', $item -> visibility);
         $template -> push('upload_id', $item -> upload_id);
         $template -> push('page', $_GET['page']);
 
