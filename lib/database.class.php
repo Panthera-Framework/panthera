@@ -12,10 +12,9 @@
   * @author Damian Kęska
   */
 
-class pantheraDB
+class pantheraDB extends pantheraClass
 {
     public $sql, $prefix, $sqlCount=0, $cache=120;
-    protected $panthera; 
     protected $socketType;
     protected $fixMissing=False;
     protected $deepCount=0;
@@ -33,7 +32,7 @@ class pantheraDB
 
     public function __construct($panthera, $alternativeConfig='', $dontTriggerError=False)
     {
-        $this->panthera = $panthera;
+        parent::__construct();
         $config = $panthera->config->getConfig();
 
         if ($alternativeConfig != '')
