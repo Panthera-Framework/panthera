@@ -696,6 +696,7 @@ if ($_GET['action'] == 'displayCategory')
 	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/gallery.png', 'left');
     
     $template -> push('category_visibility', $category->visibility);
+    $template -> push('current_lang', $language);
     
     $template -> display('gallery_displaycategory.tpl');
     pa_exit();

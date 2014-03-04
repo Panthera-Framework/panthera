@@ -268,7 +268,7 @@ function toggleItemVisibilitySelected()
     <div class="separatorHorizontal"></div>
     
     <div class="searchBarButtonArea">
-        <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=gallery&cat=admin');" style="float: left; margin-left: 10px;">
+        <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=gallery&cat=admin&language={$current_lang}');" style="float: left; margin-left: 10px;">
        {if="!$all_langs"} <input type="button" value="{function="localize('Other languages', 'gallery')"}" onclick="panthera.popup.toggle('element:#languagePopup')"> {/if}
         <input type="button" value="{function="localize('Settings')"}" onclick="panthera.popup.toggle('element:#settingsPopup')">
         <input type="button" value="{function="localize('Delete category', 'gallery')"}" onclick="removeGalleryCategory({$category_id});">
