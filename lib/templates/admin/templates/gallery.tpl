@@ -77,6 +77,7 @@
         </thead>
         
         <tbody>
+          
           <tr>
             <th>{function="localize('Name', 'gallery')"}:</th>
             <th><input type="text" name="name" style="width: 95%;"></th>
@@ -86,6 +87,20 @@
             <th>{function="localize('Visibility', 'gallery')"}:</th>
             <th><input type="radio" name="visibility" value="1" checked> {function="localize('Yes')"} <input type="radio" name="visibility" value="0"> {function="localize('No')"}</th>
           </tr>
+          
+          <tr>
+            <th>{function="localize('Language', 'gallery')"}:</th>
+            <th>
+                <div class="select" style="margin-top: 14px; margin-left: 3px;">
+                 <select name="language">
+                   {loop="$languages"}
+                    <option {if="$key == $current_lang"} selected {/if}>{$key}</option>
+                   {/loop}
+                 </select>
+                </div>
+            </th>
+          </tr>
+          
         </tbody>
         
         <tfoot>

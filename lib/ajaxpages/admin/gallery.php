@@ -1052,10 +1052,10 @@ $sBar -> setAddress('?' .getQueryString('GET', '', array('_', 'page', 'query')))
 $sBar -> navigate(True);
 $sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_galleries,can_read_own_galleries,can_read_all_galleries', localize('Manage permissions'));
 
+$languages = $panthera -> locale -> getLocales();
+
 if ($_GET['language']) 
 {
-    $languages = $panthera -> locale -> getLocales();
-
     // check if given language exists
     if ($languages[$_GET['language']]) {
         $template -> push('current_lang', $_GET['language']);
@@ -1087,7 +1087,7 @@ $limit = $uiPager -> getPageLimit();
 $categories = gallery::fetch($filter, $limit[1], $limit[0]);
 
 $template -> push('category_list', $categories);
-$template -> push('languages', $panthera -> locale -> getLocales());
+$template -> push('languages', $languages);
 $template -> push('page', $page);
 
 $titlebar = new uiTitlebar(localize('Gallery'));
