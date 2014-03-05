@@ -77,6 +77,7 @@
         </thead>
         
         <tbody>
+          
           <tr>
             <th>{function="localize('Name', 'gallery')"}:</th>
             <th><input type="text" name="name" style="width: 95%;"></th>
@@ -86,6 +87,20 @@
             <th>{function="localize('Visibility', 'gallery')"}:</th>
             <th><input type="radio" name="visibility" value="1" checked> {function="localize('Yes')"} <input type="radio" name="visibility" value="0"> {function="localize('No')"}</th>
           </tr>
+          
+          <tr>
+            <th>{function="localize('Language', 'gallery')"}:</th>
+            <th>
+                <div class="select" style="margin-top: 14px; margin-left: 3px;">
+                 <select name="language">
+                   {loop="$languages"}
+                    <option {if="$key == $current_lang"} selected {/if}>{$key}</option>
+                   {/loop}
+                 </select>
+                </div>
+            </th>
+          </tr>
+          
         </tbody>
         
         <tfoot>
@@ -132,29 +147,29 @@
 
         <tbody class="hovered">
             {loop="$category_list"}
-            <tr id="galleryCategory_row_{$value.id}" style="height: 59px; {if="!$value.visibility"}opacity: 0.5;{/if}"> 
+            <tr id="galleryCategory_row_{$value->id}" style="height: 59px; {if="!$value->visibility"}opacity: 0.5;{/if}"> 
                 
-                {if="$value.thumb_url"}
+                {if="$value->thumb_url"}
                 <td style="padding-top: 4px; padding-right: 10px; padding-left: 10px;">
-                    <a href="?display=gallery&cat=admin&action=displayCategory&unique={$value.unique}&language={$value.language}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value.id}'>
-                    <img src="{$value.thumb_url|pantheraUrl}" style="max-width: 50px; height: 50px;">
+                    <a href="?display=gallery&cat=admin&action=displayCategory&unique={$value->unique}&language={$value->language}" class='ajax_link' id='gallery_title_{$value->id}'>
+                    <img src="{$value->thumb_url|pantheraUrl}" style="max-width: 50px; height: 50px;">
                     </a>
                 </td>
                 {/if}
                 
-                <td {if="!$value.thumb_url"}colspan="2"{/if}>
-                <a href="?display=gallery&cat=admin&action=displayCategory&unique={$value.unique}&language={$value.language}{if="$category_filter_complete"}&filter={$category_filter_complete}{/if}" class='ajax_link' id='gallery_title_{$value.id}'>
-                {$value.title}
+                <td {if="!$value->thumb_url"}colspan="2"{/if}>
+                <a href="?display=gallery&cat=admin&action=displayCategory&unique={$value->unique}&language={$value->language}" class='ajax_link' id='gallery_title_{$value->id}'>
+                {$value->title}
                 </a>
                 </td>
-                <td>{$value.created} {function="localize('by')"} {$value.author_login}</td>
-                <td>{$value.language}</td>
+                <td>{$value->created} {function="localize('by')"} {$value->author_login}</td>
+                <td>{$value->language}</td>
                 
                 <td>
-                    <a href="#" onclick="toggleGalleriesVisibility('{$value.id}');">
-                    <img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/System-search.svg" style="max-height: 22px;" id="hide_btn_{$value.id}" title="{function="localize('Show or hide', 'messages')"}">
+                    <a href="#" onclick="toggleGalleriesVisibility('{$value->id}');">
+                    <img src="{$PANTHERA_URL}/images/admin/tango-icon-theme/System-search.svg" style="max-height: 22px;" id="hide_btn_{$value->id}" title="{function="localize('Show or hide', 'messages')"}">
                     </a>
-                    <a href="#" onclick="removeGalleryCategories('{$value.id}');">
+                    <a href="#" onclick="removeGalleryCategories('{$value->id}');">
                     <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" title="Remove">
                     </a>
                 </td>
