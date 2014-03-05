@@ -26,7 +26,7 @@ class databaseAjaxControllerCore extends frontController
     /**
      * Get PDO attributes about database
      * 
-     * @param null
+     * @author Mateusz Warzyński
      * @return array
      */
     
@@ -55,7 +55,7 @@ class databaseAjaxControllerCore extends frontController
     /**
      * Get Panthera attributes about database
      * 
-     * @param null
+     * @author Mateusz Warzyński
      * @return array
      */
     
@@ -73,12 +73,12 @@ class databaseAjaxControllerCore extends frontController
         if ($this->panthera->config->getKey('db_emulate_prepares') != NULL)
             $pantheraAttributes[] = array('name' => localize('Emulate prepared queries', 'database'), 'value' => $this->panthera->config->getKey('db_emulate_prepares'));
         else
-            $pantheraAttributes[] = array('name' => localize('Emulate prepared queries', 'database'), 'value' => 'False');
+            $pantheraAttributes[] = array('name' => localize('Emulate prepared queries', 'database'), 'value' => false, 'type' => 'bool');
         
         if ($this->panthera->config->getKey('db_mysql_buffered_queries') != NULL)
             $pantheraAttributes[] = array('name' => localize('Buffered MySQL queries', 'database'), 'value' => $this->panthera->config->getKey('db_mysql_buffered_queries'));
         else
-            $pantheraAttributes[] = array('name' => localize('Buffered MySQL queries', 'database'), 'value' => 'False');
+            $pantheraAttributes[] = array('name' => localize('Buffered MySQL queries', 'database'), 'value' => false, 'type' => 'bool');
             
         if ($this->panthera->config->getKey('db_autocommit') != NULL)
             $pantheraAttributes[] = array('name' => localize('Automatic commit mode', 'database'), 'value' => $this->panthera->config->getKey('db_autocommit'), 'type' => 'bool');
