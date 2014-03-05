@@ -490,27 +490,34 @@ class pantheraDB extends pantheraClass
       * Build a simple "UPDATE" string
       *
       * @param array $array
+      * @param array|string $ignoreColumns
       * @return array with query and values
       * @author Damian Kęska
       */
     
-    public function buildUpdateString($array, $ignore=null)
+    public function buildUpdateString($array, $ignoreColumns=null)
     {
         if (!is_array($array))
         {
             return False;
         }
         
-        if (!is_array($ignore))
+        if (!is_array($ignoreColumns))
         {
-            $ignore = array();
+            $ignoreColumns = array();
+        }
+        
+        if (is_string($ignoreColumns))
+        {
+            $ignoreColumns = trim(str_replace(' ', '', $ignoreColumns), ', ');
+            $ignoreColumns = explode(',', $ignoreColumns);
         }
         
         $updateString = '';
         
         foreach ($array as $key => $value)
         {
-            if (in_array($key, $ignore))
+            if (in_array($key, $ignoreColumns))
             {
                 continue;
             }
@@ -522,13 +529,14 @@ class pantheraDB extends pantheraClass
     }
     
     /**
-      * Build a SQL insert query string with single or multiple rows
-      *
-      * @param array $array Input array containing keys and values eg. array('id' => 1, 'title' => 'Test'), and for multiple rows: array(array('id' => 1, 'title' => 'First'), array('id' => 2, 'title' => 'Second'))
-      * @param bool $multipleRows If $array contains multiple rows please set it to true
-      * @return array with query and values
-      * @author Damian Kęska
-      */
+     * Build a SQL insert query string with single or multiple rows
+     *
+     * @param array $array Input array containing keys and values eg. array('id' => 1, 'title' => 'Test'), and for multiple rows: array(array('id' => 1, 'title' => 'First'), array('id' => 2, 'title' => 'Second'))
+     * @param bool $multipleRows If $array contains multiple rows please set it to true
+     * @param string $tableName Table name
+     * @return array with query and values
+     * @author Damian Kęska
+     */
     
     public function buildInsertString($array, $multipleRows=False, $tableName='')
     {
@@ -609,7 +617,111 @@ class pantheraDB extends pantheraClass
             );
         }
     }
+
+    /**
+     * Make an INSERT query
+     *
+     * @param string $table Table name
+     * @param array $array Input array containing keys and values eg. array('id' => 1, 'title' => 'Test'), and for multiple rows: array(array('id' => 1, 'title' => 'First'), array('id' => 2, 'title' => 'Second'))
+     * @param bool $multipleRows If $array contains multiple rows please set it to true
+     * @return PDOStatement
+     * @author Damian Kęska
+     */
+
+    public function insert($table, $array, $multipleRows=False)
+    {
+        $str = $this -> buildInsertString($array, $multipleRows, $table);
+        return $this -> query ($str['query'], $str['values']);
+    }
     
+    /**
+     * Make a UPDATE query
+     * 
+     * @param string $table Table to query on
+     * @param array $setArray List of columns an it's values eg. array('id' => 1, 'name' => 'Anne')
+     * @param whereClause|string $whereClause Optional whereClause object (see whereClause class) or just a string like "`id` = 1 AND `name` = 'Anne'"
+     * @param array|string List of columns to ignore eg. timestamps - array('date', 'id') or "date, id"
+     * @return PDOStatement
+     */
+    
+    public function update($table, $setArray, $whereClause=null, $ignoreColumns=null)
+    {
+        $setString = $this->buildUpdateString($setArray, $ignoreColumns);
+        $query = 'UPDATE `{$db_prefix}' .$table. '` SET ' .$setString['query'];
+        
+        $vars = $setString['values'];
+        
+        if (!$whereClause and $whereClause !== null)
+        {
+            throw new Exception('$whereClause is empty but not a null value, please make sure you don\'t want to delete entire data from table', 7842);
+        }
+        
+        if (is_object($whereClause))
+        {
+            if (!method_exists($whereClause, 'show'))
+            {
+                throw new Exception('$whereClause variable does not contain a valid object with show() method', 587);
+            }
+            
+            $show = $whereClause->show();
+            $query .= ' WHERE ' .$show[0];
+            $vars = array_merge($vars, $show[1]);
+        } elseif (is_string($whereClause)) {
+            $query .= ' WHERE ' .$whereClause;   
+        }
+        
+        return $this -> query($query, $vars);
+    }
+    
+    /**
+     * Delete query
+     * 
+     * @param string $table Table name to operate on
+     * @param whereClause|string $whereClause whereClause class object or just a string
+     * @param string $orderBy Optional column name to order by
+     * @param string $orderDirection ASC or DESC (use with $orderBy)
+     * @param int $limit Limit rows deletion
+     */
+    
+    public function delete($table, $whereClause=null, $orderBy=null, $orderDirection='ASC', $limit=null)
+    {
+        $query = 'DELETE FROM `{$db_prefix}' .$table. '`';
+        $vars = array();
+        
+        // take care about mistakes when $whereClause == "" but is not a null value
+        if (!$whereClause and $whereClause !== null)
+        {
+            throw new Exception('$whereClause is empty but not a null value, please make sure you don\'t want to delete entire data from table', 7842);
+        }
+        
+        if (is_string($whereClause))
+        {
+            $query .= ' WHERE ' .$whereClause;
+            
+        } elseif (is_object($whereClause)) {
+            
+            if (!method_exists($whereClause, 'show'))
+            {
+                throw new Exception('$whereClause variable does not contain a valid object with show() method', 587);
+            }
+            
+            $show = $whereClause->show();
+            $query .= ' WHERE ' .$show[0];
+            $vars = array_merge($vars, $show[1]);
+        }
+        
+        if (is_string($orderBy))
+        {
+            $query .= ' ORDER BY `' .$orderBy. '` ' .$orderDirection;
+        }
+        
+        if (is_int($limit))
+        {
+            $query .= ' LIMIT ' .$limit;
+        }
+        
+        return $this -> query($query, $vars);
+    }
     
     /**
       * Get rows from selected database and return as array of data or array of specified class's objects
