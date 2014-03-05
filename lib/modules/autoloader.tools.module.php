@@ -26,7 +26,7 @@ class pantheraAutoloader
 
     public static function updateCache($data='')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $panthera -> importModule('filesystem');
         $panthera -> logging -> startTimer();
         
@@ -83,7 +83,7 @@ class pantheraAutoloader
 
     public static function getClasses()
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         return $panthera -> config -> getKey('autoloader');
     }
     
