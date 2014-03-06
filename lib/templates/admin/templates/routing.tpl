@@ -103,6 +103,9 @@
 </div>
 
 <div id="topContent">
+    {$uiSearchbarName="uiTop"}
+    {include="ui.searchbar"}
+
     <div class="searchBarButtonArea">
         <input type="button" value="{function="localize('Add new route', 'routing')"}" onclick="panthera.popup.toggle('element:#newRoutePopup')">
     </div>

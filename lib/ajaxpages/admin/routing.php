@@ -237,10 +237,26 @@ class routingAjaxControllerCore extends frontController
         $this -> table -> addActionCallback('editForm', array($this, 'editFormAction'));
         $this -> table -> dispatchAction();
         
+        $sBar = new uiSearchbar('uiTop');
+        $this -> table -> adduiSearchbar($sBar);
+        $sBar -> navigate(True);
+        
+        if ($sBar -> getQuery())
+        {
+            $this -> data = $sBar -> filterData($this -> data, $sBar -> getQuery());
+        }
+        
+        $filters = $sBar -> getFilters();
+        
+        if (isset($filters['order']) and isset($filters['direction']))
+        {
+            $this -> data = $sBar -> orderBy($this -> data, $filters['order'], $filters['direction']);
+        }
+        
         // hooking
         $this -> table = $this -> panthera -> get_filters('admin.routing.table', $this -> table, True);
         
-        // append data to table
+        // append data to pager
         $this -> data = $this -> page($this -> data);
         
         // append data and draw
