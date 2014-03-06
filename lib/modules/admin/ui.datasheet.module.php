@@ -56,6 +56,43 @@ class uiDatasheet extends pantheraClass
     }
     
     /**
+     * Integrate with ui.Searchbar
+     * Adds sorting columns to ui.Searchbar
+     * 
+     * @param uiSearchbar $sBar Searchbar object
+     * @return bool
+     */
+    
+    public function adduiSearchbar(uiSearchbar $sBar)
+    {
+        $columns = array();
+        
+        foreach ($this -> header as $name => $data)
+        {
+            if($data['sortable'])
+            {
+                $columns[$name] = array(
+                    'title' => $data['title'],
+                    'selected' => ($_GET['order'] == $name),
+                );
+            }
+        }
+        
+        if ($columns)
+        {
+            $filters = $sBar -> getFilters();
+            
+            $sBar -> addSetting('order', localize('Order by', 'search'), 'select', $columns);
+            $sBar -> addSetting('direction', localize('Direction', 'search'), 'select', array(
+                'ASC' => array('title' => localize('Ascending', 'search'), 'selected' => ($filters['direction'] == 'ASC')),
+                'DESC' => array('title' => localize('Descending', 'search'), 'selected' => ($filters['direction'] == 'DESC'))
+            ));
+            
+            return true;
+        }
+    }
+    
+    /**
      * Set primary key column that identifies every record (for sorting, deleting, editing etc.)
      * 
      * @param string $column Column name
