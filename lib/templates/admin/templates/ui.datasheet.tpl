@@ -81,7 +81,7 @@
             {/loop}
         {else}
             <tr>
-                <td colspan="{function="count($header)+1"}">{function="localize('No data to display', 'admin')"}</td>
+                <td colspan="{$emptyTableColspan}" style="text-align: center;">{function="localize('No data to display', 'admin')"}</td>
             </tr>
         {/if}
     </tbody>
@@ -89,7 +89,7 @@
     {if="$pagerID"}
     <tfoot style="background-color: transparent;">
         <tr>
-            <td colspan="{function="count($header)+1"}" class="pager">
+            <td colspan="{$emptyTableColspan}" class="pager">
                 {$uiPagerName=$pagerID}{include="ui.pager"}
             </td>
         </tr>

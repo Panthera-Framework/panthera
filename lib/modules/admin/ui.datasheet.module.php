@@ -252,6 +252,7 @@ class uiDatasheet extends pantheraClass
             'idColumn' => $this -> idColumn,
             'tableID' => $this -> tableID,
             'header' => $this -> header,
+            'emptyTableColspan' => (count($this->header)+1),
             'body' => $this -> data,
             'pagerID' => $this -> pagerID,
             'editButtons' => $this -> editButtons,
