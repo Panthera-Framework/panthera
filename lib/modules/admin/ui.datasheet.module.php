@@ -128,7 +128,7 @@ class uiDatasheet extends pantheraClass
      * @param bool $sortable Optional is sortable column?
      */
     
-    public function headerAddColumn($columnDataName, $columnTitle, $alignment='', $bold=False, $italics=False, $underline=False, $sortable=False)
+    public function headerAddColumn($columnDataName, $columnTitle, $alignment='', $bold=False, $italics=False, $underline=False, $sortable=False, $colspan=0)
     {
         if ($alignment != 'left' and $alignment != 'center' and $alignment != 'right' and $alignment != '')
         {
@@ -148,6 +148,7 @@ class uiDatasheet extends pantheraClass
             'italics' => (bool)$italics,
             'underline' => (bool)$underline,
             'sortable' => (bool)$sortable,
+            'colspan' => intval($colspan),
         );
     }
     

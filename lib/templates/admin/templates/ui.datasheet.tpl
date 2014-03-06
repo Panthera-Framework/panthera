@@ -35,7 +35,7 @@
 <table>
     <thead>
         {loop="$header"}
-            <th>
+            <th{if="$value.colspan"} colspan="{$value.colspan}"{/if}>
                 {if="$value.bold"}<b>{/if}
                 {if="$value.italics"}<i>{/if}
                 {if="$value.underline"}<u>{/if}
@@ -81,7 +81,7 @@
             {/loop}
         {else}
             <tr>
-                <td colspan="{function="count($header)"}">{function="localize('No data to display', 'admin')"}</td>
+                <td colspan="{function="count($header)+1"}">{function="localize('No data to display', 'admin')"}</td>
             </tr>
         {/if}
     </tbody>
@@ -89,7 +89,7 @@
     {if="$pagerID"}
     <tfoot style="background-color: transparent;">
         <tr>
-            <td colspan="7" class="pager">
+            <td colspan="{function="count($header)+1"}" class="pager">
                 {$uiPagerName=$pagerID}{include="ui.pager"}
             </td>
         </tr>
