@@ -2,7 +2,7 @@
 /**
   * Simple menu module allows generating lists of menus, storing them in databases
   *
-  * @package Panthera\modules\core
+  * @package Panthera\modules\core\simplemenu
   * @author Damian Kęska
   * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
@@ -10,19 +10,39 @@
 
 if (!defined('IN_PANTHERA'))
     exit;
-  
-class simpleMenu
-{
-    private $_menu = array(), $panthera, $active, $cache = 0;
 
-    public function __construct()
+/**
+  * Simple menu module allows generating lists of menus, storing them in databases
+  *
+  * @package Panthera\modules\core\simplemenu
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  */
+  
+class simpleMenu extends pantheraClass
+{
+    protected $_menu = array();
+    protected $active;
+    protected $cache = 0;
+
+    /**
+     * Constructor
+     * 
+     * @param string $category Category name to load from database
+     */
+
+    public function __construct($category=null)
     {
-        global $panthera;
-        $this->panthera = $panthera;
+        parent::__construct();
+        
+        if ($category)
+        {
+            $this -> loadFromDB($category);
+        }
         
         // configure caching
-        if ($panthera->cacheType('cache') == 'memory' and $panthera->db->cache > 0)
-            $this->cache = $panthera->db->cache;
+        if ($this -> panthera->cacheType('cache') == 'memory' and $this -> panthera->db->cache > 0)
+            $this->cache = $this -> panthera->db->cache;
     }
     
     /**
@@ -171,7 +191,7 @@ class simpleMenu
 
     public static function getItems($menu, $limit=0, $limitFrom=0, $orderBy='order', $order='DESC')
     {
-          global $panthera;
+          $panthera = pantheraCore::getInstance();
           return $panthera->db->getRows('menus', array('type' => $menu), $limit, $limitFrom, '', $orderBy, $order);  
     }
 
@@ -184,7 +204,7 @@ class simpleMenu
 
     public static function createItem($type, $title, $attributes, $link, $language, $url_id, $order, $icon, $tooltip)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}menus` (`id`, `type`, `title`, `attributes`, `link`, `language`, `url_id`, `order`, `icon`, `tooltip`) VALUES (NULL, :type, :title, :attributes, :link, :language, :url_id, :order, :icon, :tooltip);', array('type' => $type, 'order' => $order, 'title' => $title, 'attributes' => $attributes, 'link' => $link, 'language' => $language, 'url_id' => $url_id, 'icon' => $icon, 'tooltip' => $tooltip));
         
         // clear menu cache
@@ -197,13 +217,13 @@ class simpleMenu
     /**
      * Remove menu item
      *
-     * @return pantheraUser
+     * @return bool
      * @author Mateusz Warzyński
      */
 
     public static function removeItem($id)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         // reload menu cache
         if ($panthera->cache)
@@ -224,13 +244,13 @@ class simpleMenu
     /**
      * Create menu category
      *
-     * @return pantheraUser
+     * @return bool
      * @author Mateusz Warzyński
      */
 
     public static function createCategory($type_name, $title, $description, $parent, $elements)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}menu_categories` (`id`, `type_name`, `title`, `description`, `parent`, `elements`) VALUES (NULL, :type_name, :title, :description, :parent, :elements);', array('type_name' => $type_name, 'title' => $title, 'description' => $description, 'parent' => $parent, 'elements' => $elements));
         return (bool)$SQL->rowCount();
     }
@@ -239,13 +259,13 @@ class simpleMenu
     /**
      * Remove menu category
      *
-     * @return pantheraUser
+     * @return bool
      * @author Mateusz Warzyński
      */
      
     public static function removeCategory($id)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}menu_categories` WHERE `id` = :id', array('id' => $id));
         return (bool)$SQL->rowCount();
     }
@@ -260,7 +280,7 @@ class simpleMenu
     
     public static function updateItemsCount($categoryName)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $SQL = $panthera -> db -> query ('SELECT count(*) FROM `{$db_prefix}menus` WHERE `type` = :type', array('type' => $categoryName));
         $fetch = $SQL -> fetch(PDO::FETCH_ASSOC);
         $panthera -> db -> query('UPDATE `{$db_prefix}menu_categories` SET `elements` = :elements WHERE `type_name` = :categoryName', array('elements' => $fetch['count(*)'], 'categoryName' => $categoryName));
@@ -275,22 +295,41 @@ class simpleMenu
 
     public static function getCategories($by, $limit=0, $limitFrom=0)
     {
-          global $panthera;
-          return $panthera->db->getRows('menu_categories', $by, $limit, $limitFrom, 'menuCategory');  
+        $panthera = pantheraCore::getInstance();
+        return $panthera->db->getRows('menu_categories', $by, $limit, $limitFrom, 'menuCategory');  
     }
 }
 
+/**
+  * Simple menu category class
+  *
+  * @package Panthera\modules\core\simplemenu
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  */
 
 class menuCategory extends pantheraFetchDB
 {
     protected $_tableName = 'menu_categories';
     protected $_idColumn = 'id';
-    protected $_constructBy = array('id', 'type_name', 'array');
+    protected $_constructBy = array(
+        'id', 'type_name', 'array',
+    );
 }
+
+/**
+  * Simple menu item class
+  *
+  * @package Panthera\modules\core\simplemenu
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  */
 
 class menuItem extends pantheraFetchDB
 {
     protected $_tableName = 'menus';
     protected $_idColumn = 'id';
-    protected $_constructBy = array('id', 'url_id', 'title');
+    protected $_constructBy = array(
+        'id', 'url_id', 'title',
+    );
 }
