@@ -38,7 +38,7 @@ function updateMissingStringsCache($locale)
     return $missingStrings;
 }
 
-public function langtoolLimitArray($array, $limit)
+function langtoolLimitArray($array, $limit)
 {
     $newArray = array();
         
