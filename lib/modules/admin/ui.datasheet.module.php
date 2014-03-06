@@ -66,6 +66,7 @@ class uiDatasheet extends pantheraClass
     public function adduiSearchbar(uiSearchbar $sBar)
     {
         $columns = array();
+        $filters = $sBar -> getFilters();
         
         foreach ($this -> header as $name => $data)
         {
@@ -73,15 +74,13 @@ class uiDatasheet extends pantheraClass
             {
                 $columns[$name] = array(
                     'title' => $data['title'],
-                    'selected' => ($_GET['order'] == $name),
+                    'selected' => ($filters['order'] == $name),
                 );
             }
         }
         
         if ($columns)
         {
-            $filters = $sBar -> getFilters();
-            
             $sBar -> addSetting('order', localize('Order by', 'search'), 'select', $columns);
             $sBar -> addSetting('direction', localize('Direction', 'search'), 'select', array(
                 'ASC' => array('title' => localize('Ascending', 'search'), 'selected' => ($filters['direction'] == 'ASC')),
