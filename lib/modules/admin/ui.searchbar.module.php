@@ -20,6 +20,13 @@ class uiSearchbar
     protected static $searchBars;
     protected $barName = "";
     
+    /**
+     * Constructor
+     * 
+     * @param string $barName Search bar name that will be used to identify this searchbar in template
+     * @return null :D
+     */
+    
     public function __construct ($barName)
     {
         global $panthera;
@@ -29,11 +36,133 @@ class uiSearchbar
             'icons' => array(), 
             'settings' => array(), 
             'formAction' => '?' .getQueryString('GET', '', '_,query'), 
-            'formMethod' => 'POST', 
+            'formMethod' => 'GET', 
             'navigate' => False, 
             'query' => @$_GET['query']
         );
+        
         $panthera -> add_option('template.display', array($this, 'applyToTemplate'));
+    }
+    
+    /**
+     * List all filter values (user input)
+     * 
+     * @return array Array with list of entered values
+     */
+    
+    public function getFilters()
+    {
+        $sBar = self::$searchBars[$this->barName];
+        $array = $_GET;
+        $output = array();
+        
+        if ($sBar['formMethod'] == 'POST')
+        {
+            $array = $_POST;
+        }
+        
+        foreach (self::$searchBars[$this->barName]['settings'] as $id => $values)
+        {
+            if (isset($array[$id]))
+            {
+                $output[$id] = $array[$id];
+            }
+        }
+        
+        return $output;
+    }
+    
+    /**
+     * Sort array in SQL-like method
+     * 
+     * @param array $array Input array to be sorted
+     * @param string $column Column to order by
+     * @param string $direction Optional direction - ASC or DESC
+     * @param string $sortingFunction Optional sorting function name, asort by default
+     */
+    
+    public function orderBy($array, $column, $direction='ASC', $sortingFunction='asort')
+    {
+        $sorter=array();
+        $ret=array();
+        
+        reset($array);
+        
+        foreach ($array as $ii => $va) 
+        {
+            $sorter[$ii]=$va[$column];
+        }
+        
+        $sortingFunction($sorter);
+        
+        foreach ($sorter as $ii => $va) 
+        {
+            $ret[$ii]=$array[$ii];
+        }
+        
+        $array = $ret;
+        
+        if (strtolower($direction) == 'desc')
+        {
+            $array = array_reverse($array);
+        }
+        
+        return $array;
+    }
+    
+    /**
+     * Search in array for specified keywords
+     * 
+     * @param array $inputData Two dimensional array with data
+     * @param string $queryString Query string
+     * @param array $fields Optional list of fields to perform search on
+     */
+    
+    public function filterData($inputData, $queryString, $fields=null)
+    {
+        foreach ($inputData as $rowID => $data)
+        {
+            $found = False;
+            
+            foreach ($data as $key => $value)
+            {
+                $cols++;
+                
+                if ($fields)
+                {
+                    if (!in_array($key, $fields))
+                        continue;
+                }
+                
+                if (strpos($value, $queryString) !== False)
+                {
+                    $found = True;
+                }
+            }
+            
+            if (!$found)
+                unset($inputData[$rowID]);
+        }
+        
+        return $inputData;
+    }
+    
+    /**
+     * Get current query string
+     * 
+     * @return string Current query string
+     */
+    
+    public function getQuery()
+    {
+        if (self::$searchBars[$this->barName]['method'] == 'POST')
+        {
+            self::$searchBars[$this->barName]['query'] = $_POST['query'];
+        } else {
+            self::$searchBars[$this->barName]['query'] = $_GET['query'];   
+        }
+        
+        return self::$searchBars[$this->barName]['query'];
     }
     
     /**
@@ -85,13 +214,31 @@ class uiSearchbar
     
         if (!in_array($type, array('checkbox', 'text', 'select')))
         {
-            throw new Exception('Unsupported setting type "' .$type. '" in uiSearchbar id="' .$this->barName. '"');
+            throw new Exception('Unsupported setting type "' .$type. '" in uiSearchbar id="' .$this->barName. '"', 8795);
         }
     
-        $setting = array('id' => $id, 'title' => $title, 'type' => $type, 'value' => $value, 'active' => (bool)$active);
+        $setting = array(
+            'id' => $id,
+            'title' => $title,
+            'type' => $type,
+            'value' => $value,
+            'active' => (bool)$active,
+        );
+        
         self::$searchBars[$this->barName]['settings'][$id] = $setting;
         
         return True;
+    }
+    
+    /**
+     * Return list of settings fields
+     * 
+     * @return array Array with settings, every row should contain id, title, type, value, active fields
+     */
+    
+    public function getSettings()
+    {
+        return self::$searchBars[$this->barName]['settings'];
     }
     
     /**
