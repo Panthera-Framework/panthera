@@ -8,7 +8,7 @@
  * @license GNU LGPLv3, see license.txt
  */
  
-class databaseAjaxControllerCore extends frontController
+class databaseAjaxControllerCore extends pageController
 {
     protected $uiTitlebar = array(
         'Database management', 'database'
