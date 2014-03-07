@@ -30,6 +30,18 @@ abstract class frontController extends pantheraClass {
     protected $uiTitlebar = array();
     protected $uiTitlebarObject = null;
     
+    // permissions list for action dispatcher
+    protected $actionPermissions = array(
+        /* 'delete' => array('admin'), */
+        /* 'edit' => 'admin', */
+    );
+    
+    // permissions required to view this page
+    protected $permissions = '';
+    
+    // are we using uiNoAccess?
+    protected $useuiNoAccess = null;
+    
     /**
      * Initialize front controller
      * 
@@ -40,6 +52,11 @@ abstract class frontController extends pantheraClass {
     {
         // run pantheraClass constructor to get Panthera Framework object
         parent::__construct();
+        
+        if ($this -> permissions)
+        {
+            $this -> checkPermissions($this -> permissions);
+        }
         
         if ($this->requirements)
         {
@@ -74,6 +91,65 @@ abstract class frontController extends pantheraClass {
             $this -> uiTitlebarObject = new uiTitlebar($name);
         }
         
+        // enable ui.NoAccess for admin panel by default
+        if (isset($_GET['cat']) and $this -> useuiNoAccess === null)
+        {
+            if($_GET['cat'] == 'admin')
+            {
+                $this -> useuiNoAccess = true;
+            }
+        }
+    }
+
+    /**
+     * Check user permissions
+     * Will use uiNoAccess if user permissions are insufficient
+     * 
+     * @param array|string $permissions List of permissions or just a single permission string
+     * @param bool $dontCallNoAccess Don't call uiNoAccess on fail
+     */
+
+    public function checkPermissions($permissions, $dontCallNoAccess=False)
+    {
+        $valid = false;
+        
+        // single permission check
+        if (is_string($permissions))
+        {
+            $valid = getUserRightAttribute($this->panthera->user, $permissions);
+            
+            // multiple permissions
+        } elseif (is_array($permissions)) {
+            
+            foreach ($permissions as $permission)
+            {
+                if (getUserRightAttribute($this->panthera->user, $permission))
+                {
+                    $valid = true;
+                }
+            }   
+        }
+        
+        if ($valid)
+        {
+            return $valid;
+        }        
+        
+        if (!$dontCallNoAccess)
+        {
+            // show information if permissions check failed
+            $noAccess = new uiNoAccess;
+            
+            if (!is_array($permissions))
+            {
+                $permissions = array($permissions);
+            }
+            
+            $noAccess -> addMetas($permissions);
+            $noAccess -> display();
+        }
+        
+        return $valid;
     }
     
     /**
@@ -138,6 +214,11 @@ abstract class frontController extends pantheraClass {
             return False;
         
         $method = $action. 'Action';
+        
+        if (isset($this->actionPermissions[$action]))
+        {
+            $this -> checkPermissions($this->actionPermissions[$action], $this->useuiNoAccess);
+        }
         
         if(method_exists($this, $method))
         {
