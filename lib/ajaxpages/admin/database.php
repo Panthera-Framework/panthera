@@ -22,6 +22,8 @@ class databaseAjaxControllerCore extends frontController
         'TIMEOUT' => 'Connection timeout', 'SERVER_INFO' => 'Server info', 'SERVER_VERSION' => 'Server version'
     );
     
+    protected $permissions = 'can_manage_databases';
+    
     
     /**
      * Get PDO attributes about database
@@ -108,10 +110,6 @@ class databaseAjaxControllerCore extends frontController
     
     public function display()
     {
-        if (!getUserRightAttribute($this -> panthera -> user, 'can_manage_databases')) {
-            $noAccess = new uiNoAccess; $noAccess -> display();
-        }
-        
         $this -> panthera -> locale -> loadDomain('database');
         
         $this -> panthera -> template -> push('sql_attributes', $this->getAttributes());
