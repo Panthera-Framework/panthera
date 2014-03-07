@@ -15,7 +15,7 @@
  */
 
 
-abstract class frontController extends pantheraClass {
+abstract class pageController extends pantheraClass {
     
     // list of required modules
     protected $requirements = array();
@@ -180,7 +180,7 @@ abstract class frontController extends pantheraClass {
      * @return array
      */
     
-    public static function getControllersList()
+    public static function getFrontControllersList()
     {
         $files = scandir(SITE_DIR. '/');
         $list = array();
@@ -189,13 +189,97 @@ abstract class frontController extends pantheraClass {
         {
             $pathinfo = pathinfo($file);
             
-            if ($pathinfo['extension'] != 'php' or $pathinfo['basename'] == 'route.php')
+            if ($pathinfo['extension'] != 'php')
                 continue;
             
             $list[] = $pathinfo['basename'];
         }
         
         return $list;
+    }
+    
+    /**
+     * List controller protected and public attributes with it's default values
+     * 
+     * @param string $name Controller name eg. "contact" (contact.Controller.php)
+     * @param string $path Path to look for controller eg. pages or ajaxpages/admin
+     * @return array|bool
+     */
+    
+    public static function getControllerAttributes($name, $path='pages')
+    {
+        $file = getContentDir($path. '/' .$name. '.Controller.php');
+        
+        if (!$file)
+            return False;
+        
+        include $file;
+        
+        $name = static::getControllerName($name);
+
+        // invalid controller class name        
+        if (!$name)
+            return False;
+        
+        $reflection = new ReflectionClass($name);
+        $props = $reflection -> getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
+        
+        foreach ($props as $property)
+        {
+            $propsReturn[$property->getName()] = $property->getValue();
+        }
+        
+        return $propsReturn;
+    }
+    
+    /**
+     * Lookup for controller class name
+     * 
+     * @param string $name Controller name
+     * @return string|null
+     */
+    
+    public static function getControllerName($name)
+    {
+        $custom = '____non_existent_controller___';
+        
+        if (static::$searchFrontControllerName)
+            $custom = static::$searchFrontControllerName;
+        
+        $controllerNames = array(
+            $custom,
+            $name. 'ControllerSystem',
+            $name. 'ControllerCore',
+            $name. 'Controller',
+            $name. 'AjaxControllerSystem',
+            $name. 'AjaxControllerCore',
+            $name. 'AjaxController',
+        );
+        
+        foreach ($controllerNames as $className)
+        {
+            if (class_exists($className))
+            {
+                return $className;
+            }
+        }
+    }
+    
+    /**
+     * Create a new instance of controller (if exists)
+     * 
+     * @param string $name Controller name
+     * @return object|null
+     */
+    
+    public static function getController($name)
+    {
+        $name = static::getControllerName($name);
+        
+        if ($name)
+        {
+            return new $name;
+        }
     }
     
     /**

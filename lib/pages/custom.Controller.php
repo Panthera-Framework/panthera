@@ -14,7 +14,7 @@
  * @author Damian Kęska
  */
   
-class customControllerCore extends frontController
+class customControllerCore extends pageController
 {
     protected $mode = 'fallback';
     protected $cpage = null;

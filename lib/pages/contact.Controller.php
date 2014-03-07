@@ -14,7 +14,7 @@
  * @author Damian Kęska
  */
   
-class contactControllerCore extends frontController
+class contactControllerCore extends pageController
 {
     protected $contact;
     protected $requirements = array('contact'); // list of required modules

@@ -21,7 +21,7 @@ if (is_file('content/front.php'))
     require 'content/front.php';
 
 // front controllers utils
-include PANTHERA_DIR. '/frontController.class.php';
+include PANTHERA_DIR. '/pageController.class.php';
     
 // enable frontside panels
 frontsidePanels::init();
@@ -39,8 +39,8 @@ $path = False;
 
 if (!defined('PAGES_DISABLE_LIB') and !$panthera -> config -> getKey('front.index.disablelib', 0, 'bool', 'frontindex'))
 {
-    $path = getContentDir('/pages/' .$display. '.php');
-    
+    $path = getContentDir('/pages/' .$display. '.Controller.php'); if (!$path) { $path = getContentDir('/pages/' .$display. '.php'); }
+
     // disabled pages can be empty pages
     if (filesize($path) < 8)
     {
@@ -57,18 +57,12 @@ if ($path)
 {
     include $path;
     
-    $controllerName = $display. 'Controller';
+    $controller = pageController::getController($display);
     
-    if (class_exists($display. 'ControllerCore'))
-        $controllerName = $display. 'ControllerCore';
-    
-    if (frontController::$searchFrontControllerName)
-        $controllerName = frontController::$searchFrontControllerName;
-    
-    if (class_exists($controllerName))
+    if ($controller)
     {
-        $controller = new $controllerName;
         print($controller -> display());
+        pa_exit();
     }
     
     pa_exit();

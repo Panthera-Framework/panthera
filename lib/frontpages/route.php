@@ -49,7 +49,7 @@ if ($match)
         }
     }
     
-    $panthera -> logging -> output('Including front controller from path ' .SITE_DIR. '/' .$controller, 'routing');
+    $panthera -> logging -> output('Including front page from path ' .SITE_DIR. '/' .$controller, 'routing');
     
     if (is_file(SITE_DIR. '/' .$controller))
     {

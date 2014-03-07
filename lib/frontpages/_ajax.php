@@ -11,7 +11,7 @@
 require_once 'content/app.php';
 
 // front controllers utils
-include PANTHERA_DIR. '/frontController.class.php';
+include PANTHERA_DIR. '/pageController.class.php';
 
 // only for registered users
 /*if (!checkUserPermissions($user))
@@ -75,7 +75,13 @@ $panthera -> add_option('page_load_ends', array('navigation', 'appendCurrentPage
 
 // execute plugins
 $panthera -> get_options('ajax_page');
-$pageFile = getContentDir('ajaxpages/' .$display. '.php');
+
+// path to objective controller
+$pageFile = getContentDir('ajaxpages/' .$display. '.Controller.php');
+
+// try structural controller if there is no objective one
+if (!$pageFile)
+    $pageFile = getContentDir('ajaxpages/' .$display. '.php');
 
 // find page and load it
 if ($pageFile)
@@ -83,17 +89,11 @@ if ($pageFile)
     include $pageFile;
     $name = str_replace($cat, '', $display);
     
-    $controllerName = $name. 'AjaxController';
+    // try to run objective controller
+    $controller = pageController::getController($name);
     
-    if (class_exists($name. 'AjaxControllerCore'))
-        $controllerName = $name. 'AjaxControllerCore';
-    
-    if (frontController::$searchFrontControllerName)
-        $controllerName = frontController::$searchFrontControllerName;
-    
-    if (class_exists($controllerName))
+    if ($controller)
     {
-        $controller = new $controllerName;
         print($controller -> display());
         pa_exit();
     }
