@@ -1,10 +1,13 @@
 {$site_header}
 
 {include="ui.titlebar"}
+
+<div id="topContent">
+    {$uiSearchbarName="uiTop"}
+    {include="ui.searchbar"}
+</div>
+
 <div class="ajax-content" style="text-align: center;">
-    <div style="margin: 0 auto; display: inline-block; width: 80%;">
-        <h1>{function="localize('Pages index', 'ajaxpages')"}</h1>
-    </div><br>
     <table style="display: inline-block;">
             <thead>
                 <tr>
@@ -21,6 +24,10 @@
                     </th>
                     
                     <th>
+                        <b>{function="localize('Objective interface', 'ajaxpages')"}</b>
+                    </th>
+                    
+                    <th>
                         <b>{function="localize('Modification time', 'ajaxpages')"}</b>
                     </th>
                     
@@ -29,16 +36,23 @@
                     </th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="hovered">
+                 {if="$pages"}
                  {loop="$pages"}
                     <tr>
                         <td>{$value.location}</td>
                         <td>{$value.directory}</td>
                         <td><a href="{$value.link}&cat=admin" class="ajax_link">{$value.name}</a></td>
+                        <td>{if="$value.objective"}{function="localize('Yes')"}{else}{function="localize('No')"}{/if}</td>
                         <td>{$value.modtime}</td>
                         <td><small>{$value.path}</small></td>
                     </tr>
                  {/loop}
+                 {else}
+                    <tr>
+                        <td colspan="6" style="text-align: center;">{function="localize('No data to display', 'admin')"}</td>
+                    </tr>
+                 {/if}
             </tbody>
     </table>
 </div>
