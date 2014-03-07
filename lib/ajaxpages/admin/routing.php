@@ -20,6 +20,8 @@ class routingAjaxControllerCore extends frontController
         'SEO links management', 'routing'
     );
     
+    protected $permissions = 'admin.routing';
+    
     protected $data = array();
     
     /**
