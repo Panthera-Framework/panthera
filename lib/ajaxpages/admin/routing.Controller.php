@@ -8,7 +8,7 @@
  * @license GNU LGPLv3, see license.txt
  */
 
-class routingAjaxControllerCore extends frontController
+class routingAjaxControllerCore extends pageController
 {
     protected $requirements = array(
         'admin/ui.datasheet',
@@ -199,7 +199,7 @@ class routingAjaxControllerCore extends frontController
         {
             if ($row[$this->table->idColumn] == $id)
             {
-                $this -> panthera -> template -> push ('controllers', frontController::getControllersList());
+                $this -> panthera -> template -> push ('controllers', pageController::getFrontControllersList());
                 $this -> panthera -> template -> push('itemRow', $row);
                 $this -> panthera -> template -> push('tableID', $this->table->tableID);
                 $this -> panthera -> template -> push('rowID', base64_encode($row[$this->table->idColumn]));
@@ -264,7 +264,7 @@ class routingAjaxControllerCore extends frontController
         // append data and draw
         $this -> table -> appendData($this -> data);
         
-        $this -> panthera -> template -> push ('controllers', frontController::getControllersList());
+        $this -> panthera -> template -> push ('controllers', pageController::getFrontControllersList());
         $this -> panthera -> template -> push ('table', $this -> table -> draw());
         
         return $this -> panthera -> template -> compile('routing.tpl');
