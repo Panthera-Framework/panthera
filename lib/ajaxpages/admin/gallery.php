@@ -1093,7 +1093,4 @@ class galleryAjaxControllerCore extends pageController
         return $this -> panthera -> template -> compile('gallery.tpl');
     }
 }
-
-// get active locale with override if avaliable
-/* $language = $panthera -> locale -> getFromOverride($_GET['language']);
-  
+ 
