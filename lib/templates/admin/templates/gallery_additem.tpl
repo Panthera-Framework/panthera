@@ -62,7 +62,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
   
 {include="ui.titlebar"}
 
-<form action="?display=gallery&cat=admin&action=add_item&subaction=add" method="POST" id="add_item_form">
+<form action="?display=gallery&cat=admin&action=addItem&subaction=add" method="POST" id="add_item_form">
   
 <div id="topContent" style="min-height: 50px;">
     <div class="searchBarButtonArea">

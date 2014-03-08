@@ -62,7 +62,7 @@
 
     function setAsCategoryThumb(id, ctgid)
     {
-        panthera.jsonGET({ 'url': '{$AJAX_URL}?display=gallery&cat=admin&action=set_category_thumb&itid='+id+'&ctgid='+ctgid});
+        panthera.jsonGET({ 'url': '{$AJAX_URL}?display=gallery&cat=admin&action=setCategoryThumb&itid='+id+'&ctgid='+ctgid});
     }
 
     $(document).ready(function () {
@@ -84,7 +84,7 @@
                 // finished
                 if (fileNum == fileCount)
                 {
-                    panthera.jsonPOST({ url: '?display=gallery&cat=admin&action=adduploads&gid={$category_id}', isUploading: true, data: { 'ids': JSON.stringify(multiuploadFiles) }});
+                    panthera.jsonPOST({ url: '?display=gallery&cat=admin&action=addUploads&gid={$category_id}', isUploading: true, data: { 'ids': JSON.stringify(multiuploadFiles) }});
                     uploadProgress.stop();
                     navigateTo(window.location);
                 }
@@ -393,7 +393,7 @@ function toggleItemVisibilitySelected()
     
     <div class="uploadBoxCentered" style="min-height: 0px; width: 150px; margin-top: -30px;">
       <div class="addBox" id="addNewImage" ondragover="return false;">
-            <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=add_item&ctgid={$category_id}');"><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: relative; top: 30px; opacity: 0.8;" title="{function="localize('Drag and drop files to this area to start uploading', 'gallery')"}"></a>
+            <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=addItem&ctgid={$category_id}');"><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: relative; top: 30px; opacity: 0.8;" title="{function="localize('Drag and drop files to this area to start uploading', 'gallery')"}"></a>
       </div>
       
       <div id="selectedBox" class="selectedBox">
@@ -416,7 +416,7 @@ function toggleItemVisibilitySelected()
                 <div class="imageOptionsBackground">
                     <p id="imageTitle">{$value->getTitle(20)}</p>
                     <p>
-                        <a onclick="navigateTo('?display=gallery&cat=admin&action=edit_item_form&itid={$value->id}&page={$page}');"><img src="{$PANTHERA_URL}/images/admin/menu/mce.png" class="galleryIcon" title="{function="localize('Edit', 'messages')"}"></a>
+                        <a onclick="navigateTo('?display=gallery&cat=admin&action=editItemForm&itid={$value->id}&page={$page}');"><img src="{$PANTHERA_URL}/images/admin/menu/mce.png" class="galleryIcon" title="{function="localize('Edit', 'messages')"}"></a>
                         <a onclick="removeGalleryItem({$value->id});"><img src="{$PANTHERA_URL}/images/admin/menu/Actions-process-stop-icon.png" class="galleryIcon" title="{function="localize('Delete', 'messages')"}"></a>
                         <a onclick="toggleItemVisibility('{$value->id}');"><img src="{$PANTHERA_URL}/images/admin/menu/search.png" class="galleryIcon" title="{function="localize('Toggle visibility', 'gallery')"}"></a>
                         <a onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_manage_gimage_{$value->id}', 1024, 550);"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" class="galleryIcon" title="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton"></a>
