@@ -47,19 +47,17 @@ class SimpleImage {
    
    public function save($filename, $compression=99, $permissions=null) {
         
-      if( $this->image_type == IMAGETYPE_JPEG ) {
-         imagejpeg($this->image,$filename,$compression);
-      } elseif( $this->image_type == IMAGETYPE_GIF ) {
- 
-         imagegif($this->image,$filename);
-      } elseif( $this->image_type == IMAGETYPE_PNG ) {
- 
-         imagepng($this->image,$filename);
-      }
-      if( $permissions != null) {
- 
-         chmod($filename,$permissions);
-      }
+      if( $this->image_type == IMAGETYPE_JPEG )
+         imagejpeg($this->image, $filename, $compression);
+      
+      elseif( $this->image_type == IMAGETYPE_GIF )
+         imagegif($this->image, $filename);
+      
+      elseif( $this->image_type == IMAGETYPE_PNG )
+         imagepng($this->image, $filename);
+      
+      if($permissions != null)
+         chmod($filename, $permissions);
    }
    
    function output($image_type=IMAGETYPE_JPEG, $compression=99) {
