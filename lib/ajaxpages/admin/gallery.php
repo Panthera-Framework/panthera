@@ -393,7 +393,7 @@ class galleryAjaxControllerCore extends pageController
         // implement searchbar
         $sBar = new uiSearchbar('uiTop');
         $sBar -> setQuery($_GET['query']);
-        $sBar -> setAddress('?display=gallery&cat=admin&action=displayCategory&unique='.$_GET['unique']);
+        $sBar -> setAddress('?display=gallery&cat=admin&action=displayCategory&unique='.$_GET['unique'].'&language='.$_GET['language']);
         $sBar -> navigate(True);
         
         // add options for order (specify column to search)
