@@ -171,13 +171,9 @@ class galleryAjaxControllerCore extends pageController
 
     public function addUploadsAction()
     {
-        // TODO: addUploadsAction, change in template name of action (now is upper 'U')
         
         // check user permissions
         $this -> checkUserPermission('manageAll', array('can_manage_gallery_'.$_GET['gid']));
-    
-        // $panthera -> importModule('filesystem');
-        // TODO: if autoloader works fine and import `filesystem` automatically, remove upper line 
          
         // get ids (of files) from decoded json array
         $files = json_decode($_POST['ids']);
