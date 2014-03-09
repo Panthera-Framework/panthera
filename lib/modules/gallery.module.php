@@ -190,7 +190,7 @@ class galleryItem extends pantheraFetchDB
                 else
                     $simpleImage -> resizeToWidth($size); // resize to width
 
-                $simpleImage -> save($thumb, 99, 777);
+                $simpleImage -> save($thumb, 99, 755);
 
                 if(is_file($thumb))
                     return $thumb;
