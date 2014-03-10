@@ -36,6 +36,9 @@ abstract class pageController extends pantheraClass {
         /* 'edit' => 'admin', */
     );
     
+    // default action to execute on page display (eg. main will execute $this->mainAction() by $this->dispatchAction())
+    protected $defaultAction = null;
+    
     // permissions required to view this page
     protected $permissions = '';
     
@@ -213,20 +216,27 @@ abstract class pageController extends pantheraClass {
         if (!$file)
             return False;
         
-        include $file;
+        include_once $file;
         
         $name = static::getControllerName($name);
-
+        
+        if (!$name and static::$searchFrontControllerName)
+            $name = static::$searchFrontControllerName;
+        
         // invalid controller class name        
         if (!$name)
             return False;
         
+        var_dump($name);
         $reflection = new ReflectionClass($name);
+        $instance = $reflection -> newInstanceWithoutConstructor();
+        
         $props = $reflection -> getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
         
         foreach ($props as $property)
         {
-            $propsReturn[$property->getName()] = $property->getValue();
+            $property -> setAccessible(True);
+            $propsReturn[$property->getName()] = $property->getValue($instance);
         }
         
         return $propsReturn;
@@ -248,12 +258,12 @@ abstract class pageController extends pantheraClass {
         
         $controllerNames = array(
             $custom,
-            $name. 'ControllerSystem',
-            $name. 'ControllerCore',
             $name. 'Controller',
-            $name. 'AjaxControllerSystem',
-            $name. 'AjaxControllerCore',
+            $name. 'ControllerCore',
+            $name. 'ControllerSystem',
             $name. 'AjaxController',
+            $name. 'AjaxControllerCore',
+            $name. 'AjaxControllerSystem',
         );
         
         foreach ($controllerNames as $className)
@@ -293,6 +303,9 @@ abstract class pageController extends pantheraClass {
     {
         if (!$action and isset($_GET['action']))
             $action = $_GET['action'];
+
+        if (!$action and $this->defaultAction)
+            $action = $this->defaultAction;
             
         if (!$action)
             return False;
