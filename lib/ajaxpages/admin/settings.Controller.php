@@ -21,7 +21,6 @@ class settingsAjaxControllerSystem extends pageController
 {
     protected $actionPermissions = array(
         'system_info' => 'can_see_system_info',
-        'main' => 'kupa',
     );
     
     protected $defaultAction = 'main';
