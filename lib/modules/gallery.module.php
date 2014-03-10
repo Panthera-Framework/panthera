@@ -48,14 +48,11 @@ class galleryItem extends pantheraFetchDB
       * @author Mateusz Warzyński
       */
     
-    public static function copyGalleryItems($unique, $language, $id)
+    public static function copyGalleryItems($createdId, $id)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
-        $statement = new whereClause();
-        $statement -> add('', 'unique', '=', $unique);
-        $statement -> add('AND', 'language', '=', $language);
-        $newCategory = new galleryCategory($statement, null);
+        $newCategory = new galleryCategory('id', $createdId);
         
         if (!$newCategory->exists())
             return false;
@@ -65,8 +62,20 @@ class galleryItem extends pantheraFetchDB
         $items = galleryItem::getGalleryItems($w, '', '', 'id', 'ASC');
         
         if (count($items)) {
-            foreach ($items as $item)
-                $array[] = array('title' => $item->title, 'description' => $item->description, 'url_id' => seoUrl(rand(99, 9999). '-' .$item->title."_".$language), 'link' => $item->link, 'thumbnail' => $item->thumbnail, 'gallery_id' => $newCategory->id, 'visibility' => $item->visibility, 'upload_id' => $item->upload->id, 'author_id' => $item->author_id, 'author_login' => $item->author_login);
+            
+            foreach ($items as $item) {
+                $array[] = array('title' => $item -> title,
+                    'description' => $item -> description,
+                    'url_id' => seoUrl(rand(99, 9999). '-' .$item -> title."_".$language),
+                    'link' => $item -> link,
+                    'thumbnail' => $item -> thumbnail,
+                    'gallery_id' => $newCategory -> id,
+                    'visibility' => $item -> visibility,
+                    'upload_id' => $item -> upload_id,
+                    'author_id' => $item -> author_id,
+                    'author_login' => $item -> author_login
+                );
+            }
             
             $query = $panthera -> db -> buildInsertString($array, True, 'gallery_items');
             $SQL = $panthera -> db -> query($query['query'], $query['values']);
@@ -181,7 +190,7 @@ class galleryItem extends pantheraFetchDB
                 else
                     $simpleImage -> resizeToWidth($size); // resize to width
 
-                $simpleImage -> save($thumb, IMAGETYPE_JPEG, 85);
+                $simpleImage -> save($thumb, 99, 755);
 
                 if(is_file($thumb))
                     return $thumb;
