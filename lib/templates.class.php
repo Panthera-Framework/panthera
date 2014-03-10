@@ -212,17 +212,22 @@ class pantheraTemplate extends pantheraClass
     }
 
     /**
-	 * Push a PHP variable to template ( works like smarty->assign() )
+	 * Push a PHP variable to template (works like smarty->assign())
 	 *
-     * @param string $key
-     * @param mixed $value
+     * @param string|array $key Key name, or array with multiple keys
+     * @param mixed $value Value for single key, optional if first argument is an array
 	 * @return bool
 	 * @author Damian Kęska
 	 */
 
-    public function push ($key, $value)
+    public function push ($key, $value='')
     {
-        //$this->tpl->assign($key, $value, 'nocache');
+        if (is_array($key))
+        {
+            $this -> vars = array_merge($this -> vars, $key);
+            return True;
+        }
+
         $this->vars[$key] = $value;
         return True;
     }
