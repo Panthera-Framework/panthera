@@ -74,11 +74,19 @@ function pantheraExceptionHandler($exception)
     {
         if ($panthera -> config -> getKey('dumpErrorsToFiles'))
         {
+            if (!is_dir(SITE_DIR. '/content/tmp/dumps'))
+                mkdir(SITE_DIR. '/content/tmp/dumps');
+            
             $dumpName = 'exception-' .hash('md4', $exception->getFile().$exception->getLine()). '.json';
-            $fp = fopen(SITE_DIR. '/content/tmp/' .$dumpName, 'w');
+            $fp = fopen(SITE_DIR. '/content/tmp/dumps/' .$dumpName, 'w');
                 
             fwrite($fp, json_encode(array(
                 'included_files' => get_included_files(),
+                'phpversion' => phpversion(),
+                'uname' => @php_uname(),
+                'constants' => get_defined_constants(),
+                'extensions' => get_loaded_extensions(),
+                'panthera_version' => PANTHERA_VERSION,
                 'log' => $panthera -> logging -> getOutput(),
                 'get' => $_GET,
                 'post' => $_POST,
@@ -179,11 +187,19 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
         {
             if ($panthera -> config -> getKey('dumpErrorsToFiles'))
             {
+                if (!is_dir(SITE_DIR. '/content/tmp/dumps'))
+                    mkdir(SITE_DIR. '/content/tmp/dumps');
+                
                 $dumpName = 'error-' .hash('md4', $errfile.$errline). '.json';
-                $fp = fopen(SITE_DIR. '/content/tmp/' .$dumpName, 'w');
+                $fp = fopen(SITE_DIR. '/content/tmp/dumps/' .$dumpName, 'w');
                     
                 fwrite($fp, json_encode(array(
                     'included_files' => get_included_files(),
+                    'phpversion' => phpversion(),
+                    'uname' => @php_uname(),
+                    'constants' => get_defined_constants(),
+                    'extensions' => get_loaded_extensions(),
+                    'panthera_version' => PANTHERA_VERSION,
                     'log' => $panthera -> logging -> getOutput(),
                     'get' => $_GET,
                     'post' => $_POST,
