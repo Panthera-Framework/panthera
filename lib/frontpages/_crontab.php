@@ -44,7 +44,7 @@ try {crontab::createJob('expired_passwd_recovery', array('cronjobs', 'removeExpi
 try {crontab::createJob('autoloader_cache', array('pantheraAutoloader', 'updateCache'), '', '0', '23', '*/1'); } catch (Exception $e) {}
 
 // clean up database var_cache
-try {crontab::createJob('db_varcache', array('cronjobs', 'cleanupDBvarCache'), '', '*/1'); } catch (Exception $e) {}
+try {crontab::createJob('db_varcache', array('cronjobs', 'cleanupDBvarCache'), '', '*/15'); } catch (Exception $e) {}
 
 // clean up files var cache
 try {crontab::createJob('files_varcache', array('cronjobs', 'cleanupFilesvarCache'), '', '*/45'); } catch (Exception $e) {}
