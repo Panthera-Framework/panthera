@@ -318,7 +318,7 @@ class crontab extends pantheraFetchDB
 
     public static function getLockedJobs($timeout=3600)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
 
         $time = (time()-$timeout);
 
@@ -349,7 +349,7 @@ class crontab extends pantheraFetchDB
 
     public static function getJobs($by='', $limit=0, $limitFrom=0, $sortBy='jobid', $sortHow='DESC')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         return $panthera->db->getRows('cronjobs', $by, $limit, $limitFrom, 'crontab', $sortBy, $sortHow);  
     }
 
@@ -362,7 +362,7 @@ class crontab extends pantheraFetchDB
 
     public static function getJobsForWork()
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $SQL = $panthera -> db -> query('SELECT * FROM `{$db_prefix}cronjobs` WHERE `next_interation` <= :time', array('time' => time()));
 
         $jobs = array();
@@ -385,7 +385,7 @@ class crontab extends pantheraFetchDB
 
     public static function removeJob($jobid)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         $job = new crontab('jobid', $jobid);
         
@@ -417,9 +417,9 @@ class crontab extends pantheraFetchDB
 	 * @author Damian Kęska
 	 */
 
-    public static function createJob($jobname, $function, $data, $minute='*', $hour='*', $day='*', $month='*', $dayOfWeek='*', $year='*', $enabled)
+    public static function createJob($jobname, $function, $data, $minute='*', $hour='*', $day='*', $month='*', $dayOfWeek='*', $year='*', $enabled=True)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if (is_array($function))
         {
@@ -542,7 +542,7 @@ class cronjobs
 
     public static function unlockCrashedJobs($data='')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
 
         $timeout = (time()-$panthera->config->getKey('crontab_timeout', '3600', 'int'));
         $jobs = crontab::getJobs('');
@@ -584,7 +584,7 @@ class cronjobs
 
     public static function cleanRunSockets($data='')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $panthera -> db -> query('DELETE FROM `{$db_prefix}run` WHERE `expired` < :expiretime', array('expiretime' => (microtime(true)-15)));
     }
     
@@ -597,7 +597,7 @@ class cronjobs
 	 
 	 public static function optimizeRunTable($data='')
 	 {
-	    global $panthera;
+	    $panthera = pantheraCore::getInstance();
 	    print("Optimizing ".$panthera -> db -> prefix."_run table.");
 	    
 	    if ($panthera->db->getSocketType() == 'mysql')
@@ -618,7 +618,7 @@ class cronjobs
 	 
 	 public static function removeExpiredSubscriptions ($data='')
 	 {
-	    global $panthera;
+	    $panthera = pantheraCore::getInstance();
 
         $days = $panthera -> config -> getKey('newsletter_expire', 2, 'int');
 	    try {
@@ -635,7 +635,7 @@ class cronjobs
 	 
 	 public static function removeExpiredPasswdRecovery($data='')
 	 {
-	    global $panthera;
+	    $panthera = pantheraCore::getInstance();
 
         $days = $panthera -> config -> getKey('passwd_rec_expire', 7, 'int');
 	    try {
