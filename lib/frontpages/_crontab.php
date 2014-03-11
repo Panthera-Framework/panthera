@@ -19,7 +19,11 @@ $panthera -> config -> loadOverlay('crontab');
 $panthera -> importModule('crontab');
 
 // dont mess debug.log file
-$panthera -> logging -> tofile = true;
+$panthera -> logging -> debug = True;
+$panthera -> logging -> tofile = false;
+$panthera -> logging -> filterMode = 'blacklist';
+$panthera -> logging -> filter['crontab'] = True;
+$panthera -> logging -> filter['pantheraFetchDB'] = True;
 
 // Cleaning up the crashed jobs
 //try {crontab::createJob('fix_cron_crash', array('cronjobs', 'unlockCrashedJobs'), '', '*/1'); } catch (Exception $e) {}
@@ -39,8 +43,11 @@ try {crontab::createJob('expired_passwd_recovery', array('cronjobs', 'removeExpi
 // Update Panthera Autoloader cache at 23:00 everyday
 try {crontab::createJob('autoloader_cache', array('pantheraAutoloader', 'updateCache'), '', '0', '23', '*/1'); } catch (Exception $e) {}
 
-// clean up var_cache
+// clean up database var_cache
 try {crontab::createJob('db_varcache', array('cronjobs', 'cleanupDBvarCache'), '', '*/1'); } catch (Exception $e) {}
+
+// clean up files var cache
+try {crontab::createJob('files_varcache', array('cronjobs', 'cleanupFilesvarCache'), '', '*/45'); } catch (Exception $e) {}
 
 // removeExpiredSubscriptions
 
@@ -98,10 +105,8 @@ if ($key == $panthera -> config -> getKey('crontab_key', generateRandomString(64
     // create Panthera socket to show in "process list"
     run::openSocket('crontab', intval(getmypid()), array('client' => $_SERVER['REMOTE_ADDR'], 'url' => $_SERVER['REQUEST_URI'], 'user' => 'system'));
     
-    $panthera -> logging -> debug = FALSE;
     // get all expired jobs to start working
     $jobs = crontab::getJobsForWork();
-    $panthera -> logging -> debug = TRUE;
     
     // cont the jobs
     $jobsCount = 0;

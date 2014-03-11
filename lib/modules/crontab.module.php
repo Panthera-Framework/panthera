@@ -644,7 +644,7 @@ class cronjobs
 	 }
      
     /**
-     * Built-in crontab function to remove expired var cache keys
+     * Built-in crontab function to remove expired database var cache keys
      *
      * @return void
      * @author Damian Kęska
@@ -655,6 +655,70 @@ class cronjobs
          $panthera = pantheraCore::getInstance();
          $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}var_cache` WHERE expire < ' .time(). ' AND expire != -1;');
          $panthera -> logging -> output('Removed ' .$SQL -> rowCount(). ' outdated keys', 'pantheraCache');
+     }
+     
+     /**
+      * Cleanup expired files var cache keys
+      * 
+      * @return void
+      * @author Damian Kęska
+      */
+     
+     public static function cleanupFilesvarCache($data='')
+     {
+         $panthera = pantheraCore::getInstance();
+         
+         $time = microtime(TRUE);
+         
+         $cache = null;
+         
+         if ($panthera -> varCache -> name == 'files')
+            $cache = $panthera -> varCache;
+         
+         if ($panthera -> cache -> name == 'files')
+            $cache = $panthera -> cache;
+            
+         if (!$cache)
+         {
+             $panthera -> logging -> output('Files cache disabled', 'pantheraCache');
+             return FALSE;
+         }
+         
+         $dir = filesystem::scandirDeeply($cache -> cacheDir, False);
+         
+         foreach ($dir as $key => $item)
+         {
+             if (is_dir($item))
+                continue;
+
+             if (basename($item) == 'index.phps')
+                continue;
+             
+             $read = unserialize(file_get_contents($item));
+             
+             if (intval($read['expiration']) < time() and intval($read['expiration']) !== -1)
+             {
+                 $panthera -> logging -> output('Removing expired key "' .str_replace('.phps', '', basename($item)). '"', 'pantheraCache');
+                 unlink($item);
+                 unset($dir[$key]);
+             }
+         }
+         
+         foreach ($dir as $key => $item)
+         {
+             if ($key === 0)
+                continue;
+             
+             if (is_file($item))
+                continue;
+             
+             if ((count(scandir($item)) == 2) or !is_readable($item))
+             {
+                 rmdir($item);
+             }
+         }
+         
+         $panthera -> logging -> output('Files cache cleanup finished in ' .(microtime(TRUE)-$time). 's', 'pantheraCache');
      }
 }
 
