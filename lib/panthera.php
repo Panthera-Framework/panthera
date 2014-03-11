@@ -23,7 +23,6 @@ if (!defined('IN_PANTHERA'))
 function pantheraExceptionHandler($exception)
 {
     $panthera = pantheraCore::getInstance();
-
     $panthera->logging->output('pantheraExceptionHandler::Unhandled exception, starts;');
     $panthera->logging->output($exception->getMessage());
     $panthera->logging->output($exception->getFile(). ' on line ' .$exception->getLine());
@@ -77,14 +76,14 @@ function pantheraExceptionHandler($exception)
             if (!is_dir(SITE_DIR. '/content/tmp/dumps'))
                 mkdir(SITE_DIR. '/content/tmp/dumps');
             
-            $dumpName = 'exception-' .hash('md4', $exception->getFile().$exception->getLine()). '.json';
+            $dumpName = 'exception-' .hash('md4', $exception->getFile().$exception->getLine()). '.phps';
             $fp = fopen(SITE_DIR. '/content/tmp/dumps/' .$dumpName, 'w');
                 
-            fwrite($fp, json_encode(array(
+            $array = array(
                 'included_files' => get_included_files(),
                 'phpversion' => phpversion(),
                 'uname' => @php_uname(),
-                'constants' => get_defined_constants(),
+                'constants' => get_defined_constants(TRUE),
                 'extensions' => get_loaded_extensions(),
                 'panthera_version' => PANTHERA_VERSION,
                 'log' => $panthera -> logging -> getOutput(),
@@ -97,9 +96,11 @@ function pantheraExceptionHandler($exception)
                     'line' => $exception->getLine(),
                     'message' => $exception->getMessage(),
                     'code' => $exception->getCode()
-                )
-            )));
-                
+                ),
+            );
+            
+            fwrite($fp, serialize($array));
+            
             fclose($fp);
         }
     }
@@ -190,14 +191,14 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
                 if (!is_dir(SITE_DIR. '/content/tmp/dumps'))
                     mkdir(SITE_DIR. '/content/tmp/dumps');
                 
-                $dumpName = 'error-' .hash('md4', $errfile.$errline). '.json';
+                $dumpName = 'error-' .hash('md4', $errfile.$errline). '.phps';
                 $fp = fopen(SITE_DIR. '/content/tmp/dumps/' .$dumpName, 'w');
                     
-                fwrite($fp, json_encode(array(
+                fwrite($fp, serialize(array(
                     'included_files' => get_included_files(),
                     'phpversion' => phpversion(),
                     'uname' => @php_uname(),
-                    'constants' => get_defined_constants(),
+                    'constants' => get_defined_constants(TRUE),
                     'extensions' => get_loaded_extensions(),
                     'panthera_version' => PANTHERA_VERSION,
                     'log' => $panthera -> logging -> getOutput(),
