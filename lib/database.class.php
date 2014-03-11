@@ -300,10 +300,10 @@ class pantheraDB extends pantheraClass
     
     protected function _fixMissingMySQL ($e, $query, $values)
     {
-        $this->panthera -> logging -> output('Called fixMissing MySQL tables recovery', 'pantheraDB');
-    
         if ($e -> getCode() == "42S02" and stristr($query, 'CREATE TABLE') === False and stristr($query, 'DROP TABLE') === False)
         {
+            $this->panthera -> logging -> output('Called fixMissing MySQL tables recovery', 'pantheraDB');
+            
             $this->countMissingTables($e);
         
             preg_match("/'.*?'/", $e->getMessage(), $matches);
@@ -350,10 +350,9 @@ class pantheraDB extends pantheraClass
     
     protected function _fixMissingSQLite($e, $query, $values)
     {
-        $this->panthera -> logging -> output('Called fixMissing SQLite3 tables recovery (' .$e->getMessage(). ')', 'pantheraDB');
-    
         if (strpos($e->getMessage(), 'no such table') !== False and strpos($query, 'CREATE TABLE') === False and stristr($query, 'DROP TABLE') === False)
         {
+            $this->panthera -> logging -> output('Called fixMissing SQLite3 tables recovery (' .$e->getMessage(). ')', 'pantheraDB');
             $this->countMissingTables($e);
             
             $dbName = explode('no such table: ', $e->getMessage());
@@ -1034,6 +1033,7 @@ class whereClause
 
 abstract class pantheraFetchDB
 {
+    protected $cacheGroup = 'pantheraFetchDB';
     protected $_dataModified = False; // save modifications to database?
     protected $_data = null; // cache of database row
     protected $_tableName = null; // table name
@@ -1198,6 +1198,7 @@ abstract class pantheraFetchDB
     {
         global $panthera;
         $this->panthera = $panthera;
+        $this->cacheGroup = get_class($this);
         
         // if it's just empty object
         if ($by === null)
@@ -1227,14 +1228,14 @@ abstract class pantheraFetchDB
         {    
             $this->cacheID = $panthera->db->prefix.$this->_tableName. '.' .serialize($by). '.' .$value;
         } else {
-            $panthera -> logging -> output('Cache disabled for this ' .get_class($this). ' object', 'pantheraFetchDB');
+            $panthera -> logging -> output('Cache disabled for this ' .get_class($this). ' object', $this->cacheGroup);
         }   
          
         if ($this->cacheID)
         {
             if ($panthera->cache->exists($this->cacheID))
             {
-                $panthera->logging->output('Found record in cache by id=' .$this->cacheID, 'pantheraFetchDB');
+                $panthera->logging->output('Found record in cache by id=' .$this->cacheID, $this->cacheGroup);
                 $this->_data = $panthera->cache->get($this->cacheID);
                 return True;
             }
@@ -1253,7 +1254,7 @@ abstract class pantheraFetchDB
         if ($by == 'array' and in_array('array', $this->_constructBy))
         {
             if ($panthera -> logging -> debug == True)
-                $panthera -> logging -> output(get_class($this). '::Creating object from array ' .json_encode($value), 'pantheraFetchDB');
+                $panthera -> logging -> output(get_class($this). '::Creating object from array ' .json_encode($value), $this->cacheGroup);
             
             // hooking
             $panthera -> get_options('pantheraFetchDB.' .get_class($this). '__construct', $this, $by);
@@ -1298,7 +1299,7 @@ abstract class pantheraFetchDB
                 //$value = $clause[1];
                 
                 if($panthera->logging->debug == True)
-                    $panthera->logging->output(get_class($this). ':: Skipped cache in construction by object ' .$clause[0]. ' ' .json_encode($clause[1]), 'pantheraFetchDB');
+                    $panthera->logging->output(get_class($this). ':: Skipped cache in construction by object ' .$clause[0]. ' ' .json_encode($clause[1]), $this->cacheGroup);
             }
             
             /**
@@ -1323,13 +1324,13 @@ abstract class pantheraFetchDB
                     $this -> updateCache();
                     
                     if($panthera->logging->debug == True)
-                        $panthera->logging->output(get_class($this). '::Found a record by "' .json_encode($by). '" (value=' .json_encode($value). ')', 'pantheraFetchDB');
+                        $panthera->logging->output(get_class($this). '::Found a record by "' .json_encode($by). '" (value=' .json_encode($value). ')', $this->cacheGroup);
 
                     $panthera -> add_option('session_save', array($this, 'save'));
 
                 } else {
                     if($panthera->logging->debug == True)
-                        $panthera->logging->output(get_class($this). '::Cannot find record by "' .json_encode($by). '" (value=' .json_encode($value). ')', 'pantheraFetchDB');
+                        $panthera->logging->output(get_class($this). '::Cannot find record by "' .json_encode($by). '" (value=' .json_encode($value). ')', $this->cacheGroup);
                 }
             }
 
@@ -1353,7 +1354,7 @@ abstract class pantheraFetchDB
         
         if (!$this -> panthera -> cache or !$this->cacheID)
         {
-            $this -> panthera -> logging -> output ('Cannot clear cache if cache is disabled', 'pantheraFetchDB');
+            $this -> panthera -> logging -> output ('Cannot clear cache if cache is disabled', $this->cacheGroup);
             return False;
         }
         
@@ -1380,7 +1381,7 @@ abstract class pantheraFetchDB
                 //    continue;
                 
                 $this -> panthera -> cache -> remove($cacheID);
-                $this -> panthera -> logging -> output ('Clearing cache record, id=' .$cacheID, 'pantheraFetchDB');
+                $this -> panthera -> logging -> output ('Clearing cache record, id=' .$cacheID, $this->cacheGroup);
             }
         }
         
@@ -1421,7 +1422,7 @@ abstract class pantheraFetchDB
         
         // update single record
         $this -> panthera -> cache -> set($this->cacheID, $this->_data, 'pantheraFetchDB_' .get_class($this));
-        $this -> panthera->logging->output('Updated cache id=' .$this->cacheID, 'pantheraFetchDB');
+        $this -> panthera->logging->output('Updated cache id=' .$this->cacheID, $this->cacheGroup);
     }
     
     /**
@@ -1486,7 +1487,7 @@ abstract class pantheraFetchDB
         // dont allow create new keys (because we will save those keys in database and we cant create new columns)
         if(!isset($this->_data[$var]))
         {
-            $this->panthera->logging->output(get_class($this). '::Trying to set non-existing property "' .$var. '"', 'pantheraFetchDB');
+            $this->panthera->logging->output(get_class($this). '::Trying to set non-existing property "' .$var. '"', $this->cacheGroup);
             return False;
         }
         
@@ -1496,7 +1497,7 @@ abstract class pantheraFetchDB
 
         $this->_dataModified = True;        
         $this->_data[$var] = $value;
-        $this->panthera->logging->output(get_class($this). '::set ' .$var. ' to ' .$value, 'pantheraFetchDB');
+        $this->panthera->logging->output(get_class($this). '::set ' .$var. ' to ' .$value, $this->cacheGroup);
     }
     
     /**
@@ -1514,7 +1515,7 @@ abstract class pantheraFetchDB
             $panthera = $this->panthera;
             
         if ($panthera->logging->debug == True)
-            $panthera -> logging -> output ('Panthera Fetch DB class=' .get_class($this). ', changed data=' .print_r($this->_dataModified, True), 'pantheraFetchDB');
+            $panthera -> logging -> output ('Panthera Fetch DB class=' .get_class($this). ', changed data=' .print_r($this->_dataModified, True), $this->cacheGroup);
         
         $panthera -> get_options('pantheraFetchDB.' .get_class($this). '.save', $this);
 
@@ -1522,7 +1523,7 @@ abstract class pantheraFetchDB
         {
             $id = (integer)$this->_data[$this->_idColumn];
 
-            $panthera->logging->output(get_class($this). '::Saving modified data ' .$this->_idColumn. '=' .$id, 'pantheraFetchDB');
+            $panthera->logging->output(get_class($this). '::Saving modified data ' .$this->_idColumn. '=' .$id, $this->cacheGroup);
             $copied = $this->_data;
             unset($copied[$this->_idColumn]);
 
