@@ -95,8 +95,10 @@ if ($key == $panthera -> config -> getKey('crontab_key', generateRandomString(64
     // create Panthera socket to show in "process list"
     run::openSocket('crontab', intval(getmypid()), array('client' => $_SERVER['REMOTE_ADDR'], 'url' => $_SERVER['REQUEST_URI'], 'user' => 'system'));
     
+    $panthera -> logging -> debug = FALSE;
     // get all expired jobs to start working
     $jobs = crontab::getJobsForWork();
+    $panthera -> logging -> debug = TRUE;
     
     // cont the jobs
     $jobsCount = 0;
