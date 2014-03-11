@@ -290,10 +290,10 @@ class pantheraLogging
         // filter
         if ($this->filterMode == 'blacklist')
         {
-            if (array_key_exists($type, $this->filter))
+            if (isset($this->filter[$type]))
                 return False;
         } else if ($this->filterMode == 'whitelist') {
-            if (!array_key_exists($type, $this->filter))
+            if (!isset($this->filter[$type]))
                 return False;
         }
 
