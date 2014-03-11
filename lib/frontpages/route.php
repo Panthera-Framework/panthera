@@ -21,8 +21,6 @@ $match = $panthera -> routing -> resolve();
 
 if ($match)
 {
-    $controller = $match['target']['front'];
-    
     // add params to $_GET
     if (isset($match['target']['GET']))
     {
@@ -34,6 +32,37 @@ if ($match)
     {
         $_POST = array_merge($_POST, $match['target']['POST']);
     }
+    
+    // support for redirections
+    if (isset($match['target']['redirect']))
+    {
+        $http = substr($match['target']['redirect'], 0, 7);
+        
+        if (!isset($match['target']['code']))
+            $match['target']['code'] = 302;
+            
+        if (count($_GET))
+        {
+            if (parse_url($match['target']['redirect'], PHP_URL_QUERY))
+            {
+                $match['target']['redirect'] .= '&' .http_build_query($_GET);
+            } else {
+                $match['target']['redirect'] .= '?' .http_build_query($_GET);
+            }
+        }
+            
+        
+        if ($http == 'http://' or $http == 'https:/')
+        {
+            header('Location: ' .$match['target']['redirect'], TRUE, $match['target']['code']);
+            pa_exit();
+        }
+        
+        pa_redirect($match['target']['redirect'], $match['target']['code']);
+        pa_exit();
+    }
+    
+    $controller = $match['target']['front'];
     
     // merge all parameters from URL
     if ($match['params'])

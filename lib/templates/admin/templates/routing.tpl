@@ -6,6 +6,18 @@
       <script type="text/javascript">
       
         var canonicalLink = '{function="getQueryString('GET', '', 'action')"}';
+        
+        function selectRoutingType()
+        {
+            if ($('input[name=routingType]:checked').val() == '1')
+            {
+                $('.routing_type_http_redirection').show();
+                $('.routing_type_controller').hide();
+            } else {
+                $('.routing_type_http_redirection').hide();
+                $('.routing_type_controller').show();
+            }
+        }
       
         $(document).ready(function () {
 
@@ -52,6 +64,11 @@
                 </tr>
                 
                 <tr>
+                    <th>{function="localize('Routing type', 'routing')"}</th>
+                    <th><input type="radio" name="routingType" id="routingType" value="1" onchange="selectRoutingType();"> {function="localize('HTTP redirection', 'routing')"}<br><input type="radio" id="routingType" name="routingType" value="2" checked onchange="selectRoutingType();"> {function="localize('Controller', 'routing')"}</th>
+                </tr>
+                
+                <tr class="routing_type_controller">
                     <th>{function="localize('Controller', 'routing')"}</th>
                     <th>
                         <select name="controller">
@@ -78,9 +95,28 @@
                     <th><input type="text" name="staticget"></th>
                 </tr>
                 
-                <tr>
+                <tr class="routing_type_controller">
                     <th>{function="localize('Static POST parameters', 'routing')"}</th>
                     <th><input type="text" name="staticpost"></th>
+                </tr>
+                
+                <tr class="routing_type_http_redirection" style="display: none;">
+                    <th>{function="localize('Redirection URL', 'routing')"}</th>
+                    <th><input type="text" name="redirect"></th>
+                </tr>
+                
+                <tr class="routing_type_http_redirection" style="display: none;">
+                    <th>{function="localize('Redirection code', 'routing')"}</th>
+                    <th>
+                        <select name="code">
+                            <option value=""></option>
+                            <option value="300">{function="localize('300 multiple choices', 'routing')"}</option>
+                            <option value="301">{function="localize('301 moved permanently', 'routing')"}</option>
+                            <option value="302">{function="localize('302 found', 'routing')"}</option>
+                            <option value="303">{function="localize('303 see other', 'routing')"}</option>
+                            <option value="307">{function="localize('307 temporary redirect', 'routing')"}</option>
+                        </select>
+                    </th>
                 </tr>
              </tbody>
              

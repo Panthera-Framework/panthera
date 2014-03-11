@@ -68,6 +68,8 @@ class routingAjaxControllerCore extends pageController
                     'methods' => implode(', ', explode('|', $route[0])),
                     'staticget' => $get,
                     'staticpost' => $post,
+                    'redirect' => $route[2]['redirect'],
+                    'code' => $route[2]['code'],
                 );
             }
         }
@@ -133,6 +135,20 @@ class routingAjaxControllerCore extends pageController
         $controller = addslashes($_POST['controller']);
         $route = $_POST['path'];
         $method = $_POST['method'];
+        $redirect = $_POST['redirect'];
+        $redirectCode = intval($_POST['code']);
+        
+        $codes = array(
+            '300', '301', '302', '303', '307',
+        );
+        
+        parse_str($_POST['staticget'], $argsGET);
+        parse_str($_POST['staticpost'], $argsPOST);
+        
+        $target = array(
+            'GET' => $argsGET,
+            'POST' => $argsPOST,
+        );
         
         if (isset($_POST['oldid']))
         {
@@ -157,23 +173,32 @@ class routingAjaxControllerCore extends pageController
             ));
         }
         
-        if (!is_file(SITE_DIR. '/' .$controller))
+        if (!$redirectCode)
         {
-            ajax_exit(array(
-                'status' => 'failed', 
-                'message' => localize('Front controller not found', 'routing'),
-                'field' => 'controller',
-            ));
+            if (!is_file(SITE_DIR. '/' .$controller))
+            {
+                ajax_exit(array(
+                    'status' => 'failed', 
+                    'message' => localize('Front controller not found', 'routing'),
+                    'field' => 'controller',
+                ));
+            }
+            
+            $target['front'] = $controller;
+        } else {
+            
+            if (!in_array($redirectCode, $codes))
+            {
+                ajax_exit(array(
+                    'status' => 'failed', 
+                    'message' => localize('Invalid redirect code', 'routing'),
+                    'field' => 'code',
+                ));
+            }
+            
+            $target['redirect'] = $redirect;
+            $target['code'] = $redirectCode;
         }
-        
-        parse_str($_POST['staticget'], $argsGET);
-        parse_str($_POST['staticpost'], $argsPOST);
-        
-        $target = array(
-            'front' => $controller,
-            'GET' => $argsGET,
-            'POST' => $argsPOST,
-        );
         
         if ($method != 'GET' and $method != 'POST' and $method != 'GET|POST')
         {
@@ -229,6 +254,8 @@ class routingAjaxControllerCore extends pageController
         $this -> table -> headerAddColumn('methods', localize('HTTP methods', 'routing'), '', False, False, False, True);
         $this -> table -> headerAddColumn('staticget', localize('Static GET parameters', 'routing'));
         $this -> table -> headerAddColumn('staticpost', localize('Static POST parameters', 'routing'));
+        $this -> table -> headerAddColumn('redirect', localize('Redirection', 'routing'), '', False, False, False, True);
+        $this -> table -> headerAddColumn('code', localize('Redirection Code', 'routing'), '', False, False, False, True);
         $this -> table -> setIdColumn('name');
         $this -> table -> deleteButtons = True;
         $this -> table -> editButtons = True;

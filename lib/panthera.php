@@ -2059,11 +2059,15 @@ function pa_exit($string='', $ajaxExit=False)
  * @author Damian Kęska
  */
 
-function pa_redirect($url)
+function pa_redirect($url, $code=null)
 {
     $panthera = pantheraCore::getInstance();
-    header('HTTP/1.1 301 Moved Permanently');
-    header('Location: '.$panthera->config->getKey('url'). '/' .pantheraUrl($url, False, 'frontend'));
+    
+    if (is_int($code))
+        header('Location: '.$panthera->config->getKey('url'). '/' .pantheraUrl($url, False, 'frontend'), TRUE, $code);
+    else
+        header('Location: '.$panthera->config->getKey('url'). '/' .pantheraUrl($url, False, 'frontend'));
+    
     pa_exit();
 }
 

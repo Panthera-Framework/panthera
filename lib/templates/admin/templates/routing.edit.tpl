@@ -1,3 +1,26 @@
+<script type="text/javascript">
+function selectRoutingType()
+{
+    if ($('input[name=routingTypeX]:checked').val() == '1')
+    {
+        $('.routing_type_http_redirection').show();
+        $('.routing_type_controller').hide();
+    } else {
+        $('.routing_type_http_redirection').hide();
+        $('.routing_type_controller').show();
+    }
+}
+
+$(document).ready(function() {
+    {if="$itemRow.redirect or $itemRow.code"}
+    $('input[name=routingTypeX][value=1]').attr('checked', true);
+    {else}
+    $('input[name=routingTypeX][value=2]').attr('checked', true);
+    {/if}
+    selectRoutingType();
+});
+</script>
+
 <form action="?{function="getQueryString('GET', 'action=new', 'action')"}&action=edit" method="POST" id="editRouteForm">
          <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
              <thead>
@@ -21,6 +44,11 @@
                 </tr>
                 
                 <tr>
+                    <th>{function="localize('Routing type', 'routing')"}</th>
+                    <th><input type="radio" name="routingTypeX" id="routingTypeX" value="1" {if="$itemRow.redirect or $itemRow.code"}checked{/if} onchange="selectRoutingType();"> {function="localize('HTTP redirection', 'routing')"}<br><input type="radio" id="routingTypeX" name="routingTypeX" value="2" {if="!$itemRow.redirect and !$itemRow.code"}checked{/if} onchange="selectRoutingType();"> {function="localize('Controller', 'routing')"}</th>
+                </tr>
+                
+                <tr class="routing_type_controller">
                     <th>{function="localize('Controller', 'routing')"}</th>
                     <th>
                         <select name="controller">
@@ -47,9 +75,28 @@
                     <th><input type="text" name="staticget" value="{$itemRow.staticget}"></th>
                 </tr>
                 
-                <tr>
+                <tr class="routing_type_controller">
                     <th>{function="localize('Static POST parameters', 'routing')"}</th>
                     <th><input type="text" name="staticpost" value="{$itemRow.staticpost}"></th>
+                </tr>
+                
+                <tr class="routing_type_http_redirection" style="display: none;">
+                    <th>{function="localize('Redirection URL', 'routing')"}</th>
+                    <th><input type="text" name="redirect" value="{$itemRow.redirect}"></th>
+                </tr>
+                
+                <tr class="routing_type_http_redirection" style="display: none;">
+                    <th>{function="localize('Redirection code', 'routing')"}</th>
+                    <th>
+                        <select name="code">
+                            <option value=""></option>
+                            <option value="300"{if="$itemRow.code == 300"} selected{/if}>{function="localize('300 multiple choices', 'routing')"}</option>
+                            <option value="301"{if="$itemRow.code == 301"} selected{/if}>{function="localize('301 moved permanently', 'routing')"}</option>
+                            <option value="302"{if="$itemRow.code == 302"} selected{/if}>{function="localize('302 found', 'routing')"}</option>
+                            <option value="303"{if="$itemRow.code == 303"} selected{/if}>{function="localize('303 see other', 'routing')"}</option>
+                            <option value="307"{if="$itemRow.code == 307"} selected{/if}>{function="localize('307 temporary redirect', 'routing')"}</option>
+                        </select>
+                    </th>
                 </tr>
              </tbody>
              
