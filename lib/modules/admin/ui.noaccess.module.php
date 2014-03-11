@@ -64,6 +64,8 @@ class uiNoAccess
     
     public function display()
     {
+        @header('HTTP/1.1 403 Forbidden');
+        
         if ($_SERVER['REQUEST_METHOD'] == 'POST' and $_SERVER['HTTP_X_REQUESTED_WITH'])
         {
             if (!$this->settings['message'])
