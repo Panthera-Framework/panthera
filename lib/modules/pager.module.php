@@ -17,7 +17,7 @@
 
 class Pager
 {
-    public $max, $perPage, $pages, $maxLinks=4;
+    public $max, $perPage, $pages, $maxLinks=16;
 
     /**
 	 * Constructor
@@ -41,10 +41,10 @@ class Pager
         }
         
         if (gettype($this->max) == "array")
-            $this->max = 5;
+            $this->max = 24;
 
         if (gettype($this->perPage) == "array")
-            $this->perPage = 5;
+            $this->perPage = 24;
             
         $this->pages = (int)ceil(($this->max / $this->perPage));
     }
@@ -57,7 +57,7 @@ class Pager
       * @author Damian Kęska
       */
     
-    public static function getPagerFromTable($name, $defaultOnPage=16)
+    public static function getPagerFromTable($name, $defaultOnPage=24)
     {
         global $panthera;
         $panthera -> logging -> output ('Getting pager name "' .$name. '" from pager table', 'Pager');
@@ -67,10 +67,10 @@ class Pager
         {
             if (intval($defaultOnPage) < 1)
             {
-                $defaultOnPage = 16;
+                $defaultOnPage = 24;
             }
         
-            $pagerData[$name] = array('perPage' => 5, 'maxLinks' => $defaultOnPage);
+            $pagerData[$name] = array('perPage' => $defaultOnPage, 'maxLinks' => 8);
             $panthera -> config -> setKey('pager', $pagerData, 'array', 'ui');
             $panthera -> config -> save(); // just in case...
         }
