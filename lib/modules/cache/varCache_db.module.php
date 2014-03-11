@@ -2,7 +2,7 @@
 /**
   * Database cache support
   * 
-  * @package Panthera\modules\cache\varCache_db
+  * @package Panthera\core\cache
   * @author Damian Kęska
   * @license GNU Affero General Public License 3, see license.txt
   */

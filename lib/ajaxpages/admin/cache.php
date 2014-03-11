@@ -535,6 +535,7 @@ if (class_exists('Redis'))
 }
 
 
+$cacheList['files'] = True;
 $cacheList['db'] = True; // db is always available
 
 // get list of avaliable cache methods from list of declared classes
