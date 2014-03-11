@@ -642,6 +642,20 @@ class cronjobs
 	        $panthera -> db -> query('DELETE FROM `{$db_prefix}password_recovery` WHERE `type` = "recovery" AND `date` < now() - interval :days days', array('days' => $days));
 	    } catch (Exception $e) { /* pass */ }
 	 }
+     
+    /**
+     * Built-in crontab function to remove expired var cache keys
+     *
+     * @return void
+     * @author Damian Kęska
+     */
+     
+     public static function cleanupDBvarCache($data='')
+     {
+         $panthera = pantheraCore::getInstance();
+         $panthera -> db -> query('DELETE FROM `{$db_prefix}var_cache` WHERE expire < ' .time(). ';');
+         $panthera -> logging -> output('Removed ' .$SQL -> rowCount(). ' outdated keys', 'pantheraCache');
+     }
 }
 
 
