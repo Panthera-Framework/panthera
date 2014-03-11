@@ -40,7 +40,7 @@ class pantheraUser extends pantheraFetchDB
             $this->attributes = new _arrayObject(@unserialize($this->_data['attributes']));
 
             // user meta values (permissions)
-            $this -> acl = new metaAttributes($this->panthera, 'u', $this->name, $this->cache);
+            $this -> acl = new metaAttributes($this->panthera, 'u', $this->id, $this->cache);
 
             // merge group rights with user rights
             $this -> acl -> loadOverlay('g', $this->_data['primary_group']);
