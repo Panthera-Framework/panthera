@@ -28,21 +28,39 @@ class varCache_db
       * Get entry from cache
       *
       * @param string $var Cache variable
-      * @return mixed 
+      * @return mixed Key's value or null if key was not found
       * @author Damian Kęska
       */
 
-    public function get($var)
+    public function get($var, $dontRemove=False)
     {
         // return from memory
-        if (array_key_exists($var, $this->cache))
+        if (isset($this->cache[$var]))
+        {
+            if (intval($this->cache[$var][1]) < time() and intval($this->cache[$var][1]) !== -1 and !$dontRemove)
+            {
+                $this -> remove($var);
+                return null;
+            }
+            
             return $this->cache[$var][0];
-    
+        }
+        
+        // get from database
         $SQL = $this->panthera->db->query('SELECT `value`, `expire` FROM `{$db_prefix}var_cache` WHERE `var` = :var', array('var' => $var));
         
-        if ($SQL->rowCount() > 0)
+        if ($SQL -> rowCount() > 0)
         {
             $Array = $SQL -> fetch();
+            
+            // if key is expired, remove it
+            if (intval($Array['expire']) < time() and intval($Array['expire']) !== -1 and !$dontRemove)
+            {
+                unset($this -> cache[$var]);
+                $this -> remove($var);
+                return null;
+            }
+            
             $v = unserialize($Array['value']);
             
             $this->cache[$var] = array($v, $Array['expire']); // update memory cache
@@ -77,9 +95,9 @@ class varCache_db
       * @author Damian Kęska
       */
     
-    public function exists($var)
+    public function exists($var, $dontRemove=False)
     {
-        if ($this->get($var) !== null)
+        if ($this->get($var, $dontRemove) !== null)
             return True;
             
         return False;
@@ -122,33 +140,30 @@ class varCache_db
     
     public function set($var, $value, $expire=-1)
     {
-        if(!is_int($expire))
+        if(!is_int($expire) and $expire)
             $expire = $this->panthera->getCacheTime($expire);
         
-        if($expire < 1)
+        if($expire === 0 or $expire === '')
             $expire = 3600;
     
         if ($expire > 0)
             $expire = time()+$expire;
-        else
+        elseif ($expire < 0)
             $expire = -1;
             
         try {
             $this->cache[$var] = $value;
         
-            if (!$this->exists($var))
+            if (!$this->exists($var, True))
             {
                 $SQL = $this -> panthera -> db -> query ('INSERT INTO `{$db_prefix}var_cache` (`var`, `value`, `expire`) VALUES (:var, :value, :expire)', array('var' => $var, 'value' => serialize($value), 'expire' => $expire));
             } else {
-            
-                if ($expire > 0)
-                    $SQL = $this-> panthera -> db -> query ('UPDATE `{$db_prefix}var_cache` SET `value` = :value, `expire` = :expire WHERE `var` = :var', array('var' => $var, 'value' => serialize($value), 'expire' => $expire));
-                else
-                    $SQL = $this-> panthera -> db -> query ('UPDATE `{$db_prefix}var_cache` SET `value` = :value WHERE `var` = :var', array('var' => $var, 'value' => serialize($value)));
+                $SQL = $this-> panthera -> db -> query ('UPDATE `{$db_prefix}var_cache` SET `value` = :value, `expire` = :expire WHERE `var` = :var', array('var' => $var, 'value' => serialize($value), 'expire' => $expire));
             }
             
             // true or false if affected any row
             return (bool)$SQL -> rowCount();
+            
         } catch (Exception $e) {
             $this -> panthera -> logging -> output('Something went wrong in database varCache (database exception: ' .$e->getMessage(). ') set for var=' .$var, 'cache');
         }

@@ -653,7 +653,7 @@ class cronjobs
      public static function cleanupDBvarCache($data='')
      {
          $panthera = pantheraCore::getInstance();
-         $panthera -> db -> query('DELETE FROM `{$db_prefix}var_cache` WHERE expire < ' .time(). ';');
+         $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}var_cache` WHERE expire < ' .time(). ' AND expire != -1;');
          $panthera -> logging -> output('Removed ' .$SQL -> rowCount(). ' outdated keys', 'pantheraCache');
      }
 }
