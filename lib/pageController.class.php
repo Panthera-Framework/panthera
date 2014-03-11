@@ -227,7 +227,6 @@ abstract class pageController extends pantheraClass {
         if (!$name)
             return False;
         
-        var_dump($name);
         $reflection = new ReflectionClass($name);
         $instance = $reflection -> newInstanceWithoutConstructor();
         
