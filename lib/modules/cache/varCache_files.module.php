@@ -6,14 +6,28 @@
   * @author Damian Kęska
   * @license GNU Lesser General Public License 3, see license.txt
   */
+  
+/**
+  * Filesystem based cache
+  * 
+  * @package Panthera\core\cache
+  */
 
 class varCache_files extends pantheraClass
 {
-    protected $cacheDir = '';
+    public $name = 'files';
+    public $type = 'files';
+    public $cacheDir = '';
     protected $memory = array();
     protected $indexEnabled = TRUE;
     protected $indexInterval = 3600; // every 1 hour (depends on traffic)
     protected $indexMaxSize = 2048; // 2 kbytes, scale this value to optimize performance
+    
+    /**
+     * Constructor
+     * 
+     * @return null
+     */
     
     public function __construct ($panthera, $sessionKey='')
     {
@@ -70,6 +84,9 @@ class varCache_files extends pantheraClass
                     // first is cache name, second is expiration
                     $exp = explode(' ', $record);
                     $file = $this->cacheDir. '/' .substr($exp[0], 0, 3). '/' .$exp[0]. '.phps';
+                    
+                    if (!is_file($file))
+                        continue;
                     
                     if (filemtime($file) < intval($exp[1]))
                     {
@@ -257,7 +274,10 @@ class varCache_files extends pantheraClass
             if ($i == 1)
                 continue;
             
-            @unlink($dir);
+            if (is_dir($dir))
+                rmdir($dir);
+            else
+                @unlink($dir);
         }
         
         return TRUE;
