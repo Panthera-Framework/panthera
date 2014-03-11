@@ -1,23 +1,32 @@
 <?php
 /**
-  * Cronjobs widget
-  *
-  * @param string 
-  * @return mixed 
-  * @author Damian Kęska
-  */
+ * Cronjobs widget
+ *
+ * @package Panthera\core\modules\crontab
+ * @author Damian Kęska
+ */
   
 if (!defined('IN_PANTHERA'))
     exit;
+
+/**
+ * Cronjobs widget
+ *
+ * @package Panthera\core\modules\crontab
+ * @author Damian Kęska
+ */
   
 class cronjobs_dashWidget extends pantheraClass
 {
-    //public $template = 'cronjobs';
+    /**
+     * Main function that display widget
+     * 
+     * @return string
+     */
 
     public function display()
     {
         $this->panthera->importModule('crontab');
-        
         $jobs = crontab::getJobs('', 10);
         
         $jobsTpl = array();
@@ -33,5 +42,6 @@ class cronjobs_dashWidget extends pantheraClass
         }
         
         $this -> panthera -> template -> push ('cronjobsWidgetJobs', $jobsTpl);
+        return $this -> panthera -> template -> compile('dashWidgets/cronjobs.tpl');
     }
 }

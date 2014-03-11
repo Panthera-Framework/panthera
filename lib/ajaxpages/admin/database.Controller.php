@@ -118,4 +118,3 @@ class databaseAjaxControllerCore extends pageController
         return $this -> panthera -> template -> compile('database.tpl');
     }
 }
-?>
