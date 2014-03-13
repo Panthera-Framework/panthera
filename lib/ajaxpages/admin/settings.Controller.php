@@ -213,7 +213,10 @@ class settingsAjaxControllerSystem extends pageController
         
         if ($sBar->getQuery())
         {
-            $list = $sBar->filterData($listD, $sBar->getQuery());
+            foreach ($list as $categoryName => $category)
+            {
+                $list[$categoryName] = $sBar->filterData($category, $sBar->getQuery());
+            }
         }
         
         // check for permissions
