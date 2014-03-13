@@ -143,12 +143,14 @@ abstract class pageController extends pantheraClass {
             // show information if permissions check failed
             $noAccess = new uiNoAccess;
             
-            if (!is_array($permissions))
+            if (!is_array($permissions) and $permissions)
             {
                 $permissions = array($permissions);
             }
             
-            $noAccess -> addMetas($permissions);
+            if ($permissions)
+                $noAccess -> addMetas($permissions);
+            
             $noAccess -> display();
         }
         
