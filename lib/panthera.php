@@ -2737,3 +2737,23 @@ class pantheraPlugin
     
     public static function run() {}
 }
+
+/**
+  * Create array of defined size, filled with null values (useful for creating for loop in RainTPL)
+  *
+  * @param int $range Count of iterations
+  * @package Panthera\pantheraCore
+  * @author Damian Kęska
+  */
+
+function forRange($range=0)
+{
+    $arr = array();
+    
+    for ($i=0; $i<$range; $i++)
+    {
+        $arr[] = null;
+    }
+    
+    return $arr;
+}
