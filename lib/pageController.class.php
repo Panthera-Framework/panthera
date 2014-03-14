@@ -29,12 +29,17 @@ abstract class pageController extends pantheraClass {
     // ui.Titlebar integration eg. array('SEO links management', 'routing')
     protected $uiTitlebar = array();
     protected $uiTitlebarObject = null;
+    protected $actionuiTitlebar = array(); // diffirent titlebars per action eg. 'edit' => array('This is a test', 'domainname')
     
     // permissions list for action dispatcher
     protected $actionPermissions = array(
         /* 'delete' => array('admin'), */
         /* 'edit' => 'admin', */
+        /* 'edit' => 'gallery_edit_{$id}', */
     );
+    
+    // list of variables to replace in permission names eg. array('id' => 1) and template example: gallery_{$id}
+    protected $permissionsVariables = array();
     
     // default action to execute on page display (eg. main will execute $this->mainAction() by $this->dispatchAction())
     protected $defaultAction = null;
@@ -294,6 +299,27 @@ abstract class pageController extends pantheraClass {
     }
     
     /**
+     * Add new variable to permissions variables
+     * 
+     * @param string|array $var Single variable or multiple variables
+     * @param string|int $value Variable value
+     * @author Damian Kęska
+     * @return bool
+     */
+    
+    protected function pushPermissionVariable($var, $value=null)
+    {
+        if (is_array($var))
+        {
+            $this -> permissionsVariables = array_merge($this -> permissionsVariables, $var);
+        } else {
+            $this -> permissionsVariables[$var] = $value;   
+        }
+        
+        return TRUE;
+    }
+    
+    /**
      * Simple action dispatcher. Just type ?display=name in url to invoke $this->nameAction() method
      * 
      * @param string $action Optional action name to manually invoke
@@ -315,7 +341,32 @@ abstract class pageController extends pantheraClass {
         
         if (isset($this->actionPermissions[$action]))
         {
+            if (!is_array($this -> actionPermissions[$action]))
+            {
+                $this -> actionPermissions[$action] = array($this -> actionPermissions[$action]);
+            }
+            
+            if ($this->permissionsVariables)
+            {
+                foreach ($this -> actionPermissions[$action] as $key => $value)
+                {
+                    foreach ($this->permissionsVariables as $variableName => $variableValue)
+                    {
+                        $this -> actionPermissions[$action][$key] = str_replace('{$' .$variableName. '}', $variableValue, $value);
+                    }
+                }
+            }
+            
             $this -> checkPermissions($this->actionPermissions[$action], $this->useuiNoAccess);
+        }
+        
+        // diffirent titlebar for every action
+        if (isset($this->actionuiTitlebar[$action]))
+        {
+            if (isset($this->actionuiTitlebar[$action][1]))
+                $this -> uiTitlebarObject = new uiTitlebar(localize($this->actionuiTitlebar[$action][0], $this->actionuiTitlebar[$action][1]));
+            else
+                $this -> uiTitlebarObject = new uiTitlebar(localize($this->actionuiTitlebar[$action][0]));
         }
         
         if(method_exists($this, $method))
