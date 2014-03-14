@@ -1043,6 +1043,8 @@ abstract class pantheraFetchDB
     protected $panthera;
     protected $cache = 0;
     protected $cacheID = "";
+    protected $treeID = '';
+    protected $treeParent = '';
     protected $_joinColumns = array(
         /*array('LEFT JOIN', 'groups', array('group_id' => 'primary_group'), array('name' => 'group'))*/
     );
@@ -1064,7 +1066,9 @@ abstract class pantheraFetchDB
             'unsetColumns' => $this->_unsetColumns,
             'constructBy' => $this->_constructBy,
             'joinColumns' => $this->_joinColumns,
-            'tableName' => $this->_tableName
+            'tableName' => $this->_tableName,
+            'treeID' => $this->treeID,
+            'treeParent' => $this->treeParent,
         );
     }
     
@@ -1183,6 +1187,81 @@ abstract class pantheraFetchDB
         $info = $obj->_getClassInfo();
         
         return $panthera->db->getRows($info['tableName'], $by, $limit, $limitFrom, $obj, $order, $direction);
+    }
+
+    /**
+     * Build a multidimensional results tree
+     * 
+     * @param array $categories Array of categories with subcategories included in a 2 dimensional row
+     * @param object|null $item Optional item to start looking for subitems
+     * @param string $idColumn ID column
+     * @param string $parentColumn Column where is stored parent id
+     * @return array
+     */
+
+    public static function resultsToTree($categories, $item=null, $idColumn='id', $parentColumn='parent')
+    {
+        if ($item)
+        {
+            $map = array(
+                'item' => $item, 
+                'subcategories' => array(),
+            );
+            
+            foreach ($categories as $key => $object)
+            {
+                if ($object -> get($parentColumn) == $item -> get($idColumn))
+                {
+                    $map['subcategories'][$object->get($idColumn)] = static::resultsToTree($categories, $object, $idColumn, $parentColumn);
+                }
+            }
+            
+            return $map;
+        }
+        
+        $map = array();
+        
+        // find all items without category
+        foreach ($categories as $key => $category)
+        {
+            if (!$category -> parent)
+            {
+                $map[$category -> get($idColumn)] = array(
+                    'item' => $category,
+                    'subcategories' => array(),
+                );
+            }
+        }
+        
+        foreach ($map as $name => $attr)
+        {
+            $map[$name] = static::resultsToTree($categories, $attr['item'], $idColumn, $parentColumn);
+        }
+        
+        return $map;
+    }
+    
+    /**
+     * Fetch items tree eg. categories -> subcategories -> subcategories -> ...
+     *
+     * @args pantheraFetchDB::fetchAll()
+     * @see pantheraFetchDB::fetchAll()
+     * @return array|bool
+     * @author Damian Kęska
+     */
+
+    public static function fetchTree()
+    {
+        $c = get_called_class();
+        $obj = new $c(null, null);
+        $info = $obj->_getClassInfo();
+        
+        if (!$info['treeID'] or !$info['treeParent'])
+            return FALSE;
+        
+        $results = call_user_func_array('static::fetchAll', func_get_args());
+
+        return static::resultsToTree($results, null, $info['treeID'], $info['treeParent']);
     }
     
     /**
@@ -1498,6 +1577,19 @@ abstract class pantheraFetchDB
         $this->_dataModified = True;        
         $this->_data[$var] = $value;
         $this->panthera->logging->output(get_class($this). '::set ' .$var. ' to ' .$value, $this->cacheGroup);
+    }
+    
+    /**
+     * Alias to __get
+     * 
+     * @author Damian Kęska
+     * @param string $var Variable name
+     * @return mixed
+     */
+    
+    public function get($var)
+    {
+        return $this->__get($var);
     }
     
     /**
