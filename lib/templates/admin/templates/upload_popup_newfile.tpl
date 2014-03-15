@@ -24,7 +24,7 @@ $(document).ready(function(){
 });
 </script>
 
-<form action="?display=upload&cat=admin&action=handleFile&popup=true" method="POST" enctype="multipart/form-data" id="upload_form">
+<form action="?display=upload&cat=admin&action=popupHandleFile&popup=true" method="POST" enctype="multipart/form-data" id="upload_form">
     <table class="formTable" style="margin: 0 auto; margin-top: 30px; margin-bottom: 30px;" id="upload_box_window">
         <thead>
             <tr>

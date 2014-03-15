@@ -290,7 +290,7 @@ class uploadAjaxControllerCore extends pageController
     
     public function popupHandleFileAction()
     {
-        if (!$this -> userPermissions('canUploadFiles'))
+        if (!$this -> checkPermissions('canUploadFiles'))
             ajax_exit(array('status' => 'failed', 'message' => localize('You are not allowed to upload files', 'files')));
         
         // handle base64 encoded upload in post field "image"
@@ -324,7 +324,7 @@ class uploadAjaxControllerCore extends pageController
         if (!array_key_exists($category, $categoryList)) {
             if ($canManageUpload or $permissions['admin']) {
                 // create upload category, specially for this upload
-                if (!pantheraUpload::createUploadCategory($category, $panthera->user->id, 'all'))
+                if (!pantheraUpload::createUploadCategory($category, $this->panthera->user->id, 'all'))
                     ajax_exit(array('status' => 'failed', 'message' => localize('Given category does not exist!', 'upload')));
                 
             }
@@ -355,7 +355,7 @@ class uploadAjaxControllerCore extends pageController
         if (strlen($description) > 511)
             ajax_exit(array('status' => 'failed', 'message' => localize('Description is too long, out of 512 characters range')));
         
-        $uploadID = pantheraUpload::handleUpload($_FILES['input_file'], $category, $user->id, $user->login, $protected, $public, $mime, $description);
+        $uploadID = pantheraUpload::handleUpload($_FILES['input_file'], $category, $this->panthera->user->id, $this->panthera->user->login, $protected, $public, $mime, $description);
 
         if ($uploadID)
             ajax_exit(array('status' => 'success', 'upload_id' => $uploadID));
