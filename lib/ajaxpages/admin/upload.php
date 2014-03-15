@@ -157,7 +157,7 @@ class uploadAjaxControllerCore extends pageController
         
         $this -> panthera -> template -> push('seeOtherUsersUploads', False);
         
-        if ($permissions['admin'] and isset($_GET['otherUsers']))
+        if ($this->userPermissions['isAdmin'] and isset($_GET['otherUsers']))
         {
             if ($_GET['otherUsers'] == 'true')
                 $this -> panthera -> session -> set('pa.upload.otherusers', true);
@@ -322,7 +322,7 @@ class uploadAjaxControllerCore extends pageController
             $categoryList[$c['name']] = True;
         
         if (!array_key_exists($category, $categoryList)) {
-            if ($canManageUpload or $permissions['admin']) {
+            if ($this->userPermissions['canManageUpload'] or $this->userPermissions['isAdmin']) {
                 // create upload category, specially for this upload
                 if (!pantheraUpload::createUploadCategory($category, $this->panthera->user->id, 'all'))
                     ajax_exit(array('status' => 'failed', 'message' => localize('Given category does not exist!', 'upload')));
