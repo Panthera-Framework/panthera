@@ -35,7 +35,7 @@ $(document).ready(function(){
             
             fileReader.onload = (function(file) {
                 // upload a single file
-                panthera.jsonPOST({ url: '?display=upload&cat=admin&action=handle_file&popup=true', spinner: uploadProgress, data: { 'image': this.result, 'fileName': fileName.name}});
+                panthera.jsonPOST({ url: '?display=upload&cat=admin&action=popupHandleFile', spinner: uploadProgress, data: { 'image': this.result, 'fileName': fileName.name}});
                 
             });
             
@@ -60,7 +60,7 @@ $(document).ready(function(){
       */
     
     panthera.multiuploadArea({ id: '#upload_list_window', callback: function (content, fileName, fileNum, fileCount) {
-            panthera.jsonPOST({ url: '?display=upload&cat=admin&action=handle_file&popup=true', isUploading: true, spinner: uploadProgress, data: { 'image': content, 'fileName': fileName}});
+            panthera.jsonPOST({ url: '?display=upload&cat=admin&action=popupHandleFile', isUploading: true, spinner: uploadProgress, data: { 'image': content, 'fileName': fileName}});
             
             // finished
             if (fileNum == fileCount)
@@ -77,7 +77,7 @@ function changeCategory()
 
 function getUploadsPage(data)
 {
-    panthera.htmlPOST({ url: '?display=upload&cat=admin&popup=true&action=display_list', data: data, spinner: uploadProgress, 'success': '#upload_list'});
+    panthera.htmlPOST({ url: '?display=upload&cat=admin&popup=true&action=displayList', data: data, spinner: uploadProgress, 'success': '#upload_list'});
 }
 
 /**
@@ -94,7 +94,7 @@ function deleteSelectedFiles()
         
             if (responseText == 'Yes')
             {
-                panthera.jsonGET( { url: '{$AJAX_URL}?display=upload&cat=admin&action=delete&id='+ids+'&popup=true', messageBox: 'w2ui', success: function (response) {
+                panthera.jsonGET( { url: '{$AJAX_URL}?display=upload&cat=admin&action=popupDelete&id='+ids, messageBox: 'w2ui', success: function (response) {
                         if (response.status == 'success')
                         {
                             panthera.popup.toggle('?display=upload&cat=admin&directory={$setCategory}&popup=True;');
@@ -364,7 +364,7 @@ function transformArrayToString(array) {
         <input type="button" value="{function="localize('Select this file', 'files')"}" style="float: left; margin-left: 5px;" onclick="callBack();" id="_upl_select_file">
     {else}
       {if="$upload_files == True"}
-        <input type='button' value="{function="localize('Add new file', 'files')"}" style="margin-left: 5px; float: left;" onclick="panthera.popup.toggle('?display=upload&cat=admin&action=uploadFileWindow&directory={$setCategory}&popup=True')">
+        <input type='button' value="{function="localize('Add new file', 'files')"}" style="margin-left: 5px; float: left;" onclick="panthera.popup.toggle('?display=upload&cat=admin&action=popupUploadFileWindow&directory={$setCategory}&popup=True')">
       {/if}
         <input type="button" value="{function="localize('Delete selected files', 'files')"}" style="float: left; margin-left: 5px; display: none;" id="file_delete" onclick="deleteSelectedFiles();">
     {/if}
