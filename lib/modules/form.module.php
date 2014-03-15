@@ -28,7 +28,7 @@ abstract class validableForm
     
     public function __construct($source=Null, $forceEnable=False)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $this -> panthera = $panthera;
         $this -> forceEnable = (bool)$forceEnable;
         

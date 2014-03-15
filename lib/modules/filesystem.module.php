@@ -73,7 +73,7 @@ class uploadedFile extends pantheraFetchDB
 
     public function getThumbnail($size='', $create=False, $leaveSmaller=True)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
 
         $panthera -> importModule('simpleImage');
 
@@ -150,7 +150,7 @@ class pantheraUpload
      
     public static function createUploadCategory($name, $author_id, $mimeType)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         $user = new pantheraUser('id', $author_id);
         
@@ -184,7 +184,7 @@ class pantheraUpload
 
     public static function deleteUploadCategory($id)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
 
         if ($panthera -> db -> query ('DELETE FROM `{$db_prefix}upload_categories` WHERE `id` = :id', array('id' => $id)))
             return True;
@@ -207,7 +207,7 @@ class pantheraUpload
 
     public static function getUploadCategories($by='', $limit=0, $limitFrom=0, $orderBy='id', $direction='ASC')
     {
-          global $panthera;
+          $panthera = pantheraCore::getInstance();
           return $panthera->db->getRows('upload_categories', $by, $limit, $limitFrom, '', $orderBy, $direction);
     }
 
@@ -223,7 +223,7 @@ class pantheraUpload
 
     public static function handleUpload($file, $category, $uploaderID, $uploaderLogin, $protected, $public, $mime='', $description='')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
 
         if ($file['size'] > $panthera -> config -> getKey('upload_max_size'))
             return False;
@@ -371,7 +371,7 @@ class pantheraUpload
 
     public static function getUploadedFiles($by='', $limit=0, $limitFrom=0, $orderBy='id', $inc='DESC')
     {
-          global $panthera;
+          $panthera = pantheraCore::getInstance();
           return $panthera->db->getRows('uploads', $by, $limit, $limitFrom, 'uploadedFile', $orderBy, $inc);
     }
     
@@ -385,7 +385,7 @@ class pantheraUpload
 
     public static function deleteUpload($id, $location)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
 
         if ($panthera -> db -> query ('DELETE FROM `{$db_prefix}uploads` WHERE `id` = :id', array('id' => $id)))
         {

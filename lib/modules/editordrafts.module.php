@@ -52,7 +52,7 @@ class editorDraft extends pantheraFetchDB
     
     public static function removeDraft($id)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
     
         if (is_numeric($id))
         {
@@ -85,7 +85,7 @@ class editorDraft extends pantheraFetchDB
     
     public static function createDraft($content, $user='', $id='')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
 
         if (!is_numeric($user))
         {
@@ -147,7 +147,7 @@ class editorDraft extends pantheraFetchDB
       
     public static function fetch($by, $limit=0, $limitFrom=0, $orderBy='id', $order='DESC')
     {
-          global $panthera;
+          $panthera = pantheraCore::getInstance();
           return $panthera->db->getRows('editor_drafts', $by, $limit, $limitFrom, '', $orderBy, $order);
     }
     

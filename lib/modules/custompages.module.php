@@ -91,7 +91,7 @@ class customPage extends pantheraFetchDB
 
     public static function fetch($by, $limit=0, $limitFrom=0, $orderBy='id', $order='DESC')
     {
-          global $panthera;
+          $panthera = pantheraCore::getInstance();
           return $panthera->db->getRows('custom_pages', $by, $limit, $limitFrom, 'customPage', $orderBy, $order);
     }
     
@@ -104,7 +104,7 @@ class customPage extends pantheraFetchDB
 
     public static function create($title, $language, $author_name, $author_id, $unique, $url_id, $admin_tpl='')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $array = array('unique' => $unique, 'url_id' => $url_id, 'title' => $title, 'meta_tags' => '', 'html' => '', 'author_name' => $author_name, 'author_id' => $author_id, 'language' => $language, 'mod_author_name' => $author_name, 'mod_author_id' => $author_id, 'admin_tpl' => $admin_tpl);
 
         $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}custom_pages` (`id`, `unique`, `url_id`, `title`, `meta_tags`, `html`, `author_name`, `author_id`, `language`, `created`, `mod_author_name`, `mod_author_id`, `mod_time`, `admin_tpl`) VALUES (NULL, :unique, :url_id, :title, :meta_tags, :html, :author_name, :author_id, :language, NOW(), :mod_author_name, :mod_author_id, NOW(), :admin_tpl);', $array);
@@ -125,7 +125,7 @@ class customPage extends pantheraFetchDB
 
     public static function remove($where)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $dbSet = $panthera->db->dbSet($where, $sep = " AND ");
         $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}custom_pages` WHERE ' .$dbSet[0], $dbSet[1]);
         return (bool)$SQL->rowCount();
@@ -140,7 +140,7 @@ class customPage extends pantheraFetchDB
 
     public static function removeById($id)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $SQL = $panthera->db->query('DELETE FROM `{$db_prefix}custom_pages` WHERE `id` = :id', array('id' => $id));
 
         if ($SQL)
@@ -162,7 +162,7 @@ class customPage extends pantheraFetchDB
     
     public static function getBy($field, $value, $language='', $languageFallback='fallback')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $panthera -> importModule('meta');
         
         // if not specified language it will be taken from active session

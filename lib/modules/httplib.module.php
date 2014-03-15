@@ -28,7 +28,7 @@ class httplib
  
     public function __construct()
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         $panthera -> add_option('page_load_ends', array($this, 'cleanup'));
     }
@@ -91,7 +91,7 @@ class httplib
     
     public function cleanup($input='')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
     
         if ($this->cookiesTempFile)
         {
@@ -140,7 +140,7 @@ class httplib
     
     public function getTempFile()
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
     
         if (!$this->cookiesTempFile)
         {
@@ -184,7 +184,7 @@ class httplib
 
     public function get($url, $method=null, $options=null, $postFields=null, $uploadingFile=False)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
     
         // compatibility
         if (!is_array($options))

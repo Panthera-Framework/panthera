@@ -40,7 +40,7 @@ class facebookWrapper
 
     public function __construct($appid='', $secret='', $state='', $skipGetUser=False)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $this->panthera = $panthera;
 
         if ($appid == '')

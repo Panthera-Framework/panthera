@@ -38,7 +38,7 @@ class accessParser
     
     public function readLog($linesCount=500)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         $path = $panthera -> config -> getKey('path_to_server_log', '', 'string');
 
@@ -58,17 +58,17 @@ class accessParser
         $n = 0;
         while ($n < $linesCount/4) // in 1024 bytes are more lines than only one (1/4 -> 114) | (1 -> 440) with $linesCount = 100
         {                          // checked using lighttpd log - estimate number may be different in case of other servers 
-                $position = $position - $bufferSize;
-                fseek($fp, $position);
-                $buffer = fread($fp, $bufferSize);
-                $data = $buffer.$data;
-                
-                // check if there is a line
-                if (strpos($buffer, "\n") !== False) {
-                    $n++;
-                } elseif ($buffer == '') {
-                    $linesCount = $n;
-                }
+        	$position = $position - $bufferSize;
+            fseek($fp, $position);
+            $buffer = fread($fp, $bufferSize);
+            $data = $buffer.$data;
+               
+            // check if there is a line
+            if (strpos($buffer, "\n") !== False) {
+            	$n++;
+            } elseif ($buffer == '') {
+                $linesCount = $n;
+            }
         }
         
         $lines = explode("\n", $data);
@@ -76,16 +76,16 @@ class accessParser
         for ($i = 1; $i <= count($lines)-2; $i++)
             $this->lineArray[] = $lines[$i];
 
-        $this->lineArray = array_reverse($this->lineArray); // because of line 49 we must reverse array
+        $this -> lineArray = array_reverse($this->lineArray); // because of line 49 we must reverse array
         
         // execute function to parse log
-        $this->parseLog();
+        $this -> parseLog();
         
         // return results
-        if (count($this->cacheResults)) {
-            return $this->cacheResults;
-        } else
-            return $this->matches;
+        if (count($this -> cacheResults))
+            return $this -> cacheResults;
+        else
+            return $this -> matches;
     }
 
     /**
@@ -98,7 +98,7 @@ class accessParser
 
     protected function parseLog()
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if (!count($this->lineArray))
             return false;
@@ -145,7 +145,7 @@ class accessParser
         unset($matches);
         unset($regex);
 
-        if ($panthera->cache)
+        if ($panthera -> cache)
         {
             if (isset($results))
                 $this->cacheResults = array_merge($this->matches, $results);

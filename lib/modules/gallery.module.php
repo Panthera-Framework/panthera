@@ -11,7 +11,7 @@
 if (!defined('IN_PANTHERA'))
     exit;
   
-global $panthera;
+$panthera = pantheraCore::getInstance();
 $panthera -> addPermission('can_view_galleryItem', localize('Can view gallery items', 'messages'));
 $panthera -> addPermission('can_edit_galleryItem', localize('Can edit gallery items', 'messages'));
 
@@ -94,7 +94,7 @@ class galleryItem extends pantheraFetchDB
     
     public static function getGalleryItems($by, $limit=0, $limitFrom=0, $orderBy='id', $orderDirection='DESC')
     {
-          global $panthera;
+          $panthera = pantheraCore::getInstance();
           return $panthera->db->getRows('gallery_items', $by, $limit, $limitFrom, 'galleryItem', $orderBy, $orderDirection);
     }
     
@@ -115,7 +115,7 @@ class galleryItem extends pantheraFetchDB
     
     public static function createGalleryItem($title, $description, $link, $gallery_id, $visibility, $upload, $author_id, $author_login)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
     
         $thumbnail = '';
     
@@ -302,7 +302,7 @@ class gallery
 
     public static function getRecentPicture($gallery_id='', $count=1)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
 
         $count = intval($count);
 
@@ -340,7 +340,7 @@ class gallery
     
     public static function removeImage($id)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}gallery_items` WHERE `id` = :id', array('id' => $id));
         return (bool)$SQL->rowCount();
     }
@@ -361,7 +361,7 @@ class gallery
     
     public static function createCategory($title, $login, $user_id, $language, $visibility, $user_full_name, $unique='')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if (!$unique)
         {
@@ -383,7 +383,7 @@ class gallery
     
     public static function removeCategory($id)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         // delete every item from this category
         $w = new whereClause();
@@ -452,7 +452,7 @@ class gallery
     
     public static function fetch($by, $limit=0, $limitFrom=0, $orderBy='id', $orderDirection='DESC')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         return $panthera->db->getRows('gallery_categories', $by, $limit, $limitFrom, 'galleryCategory', $orderBy, $orderDirection);
     }
 }
