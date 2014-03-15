@@ -67,7 +67,7 @@ class newsletterManagement
 
     public static function create($title, $users=null, $type=null)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
     
         // convert to integer, just to be safe
         if ($users)
@@ -110,7 +110,7 @@ class newsletterManagement
     
     public static function remove($by, $id)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if ($by == 'title')
             $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}newsletters` WHERE `title` = :title', array('title' => intval($id)));
@@ -130,7 +130,7 @@ class newsletterManagement
     
     public static function search($by='', $limit=0, $limitFrom=0, $orderBy='nid', $order='DESC')
     {
-          global $panthera;
+          $panthera = pantheraCore::getInstance();
           return $panthera->db->getRows('newsletters', $by, $limit, $limitFrom, 'newsletters', $orderBy, $order);
     }
     
@@ -162,7 +162,7 @@ class newsletterManagement
     
     public static function cronjob($msg, $job)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         print("Initializing newsletter job...\n");
         
@@ -256,7 +256,7 @@ class newsletterManagement
     
     public static function confirmUser($confirmationKey)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $SQL = $panthera -> db -> query('SELECT `id` FROM `{$db_prefix}newsletter_users` WHERE `activate_id` = :activate_id', array('activate_id' => $confirmationKey));
         
         // reset `activate_id` to = "", so the subscription will be marked as confirmed
@@ -281,7 +281,7 @@ class newsletterManagement
     
     public static function removeSubscriber($id)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}newsletter_users` WHERE `id` = :id', array('id' => $id));
         
@@ -298,7 +298,7 @@ class newsletterManagement
     
     public static function unsubscribe($unsubscribe_id)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $SQL = $panthera -> db -> query('SELECT `id` FROM `{$db_prefix}newsletter_users` WHERE `unsubscribe_id` = :unsubscribe_id', array('unsubscribe_id' => $unsubscribe_id));
         
         // reset `activate_id` to = "", so the subscription will be marked as confirmed
@@ -323,7 +323,7 @@ class newsletterManagement
     
     public static function updateUsersCount($categoryID)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $SQL = $panthera -> db -> query ('SELECT count(*) FROM `{$db_prefix}newsletter_users` WHERE `nid` = :nid', array('nid' => $categoryID));
         $fetch = $SQL -> fetch(PDO::FETCH_ASSOC);
         $panthera -> db -> query('UPDATE `{$db_prefix}newsletters` SET `users` = :users WHERE `nid` = :categoryID', array('users' => $fetch['count(*)'], 'categoryID' => $categoryID));
@@ -352,7 +352,7 @@ class newsletterType_mail implements newsletterType
 
     public static function validate ($address)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         return $panthera -> types -> validate($address, 'email');
     }
     
@@ -368,7 +368,7 @@ class newsletterType_mail implements newsletterType
     
     public static function send($address, $content, $topic, $from='')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         // initialize the connection only once
         if (!self::$connection)

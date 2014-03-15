@@ -29,7 +29,7 @@ class mailMessage
 
     public function __construct($debug=False)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $this->panthera = $panthera;
 
         // initialize phpmailer

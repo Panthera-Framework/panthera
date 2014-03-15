@@ -11,7 +11,7 @@
 if (!defined('IN_PANTHERA'))
     exit;
   
-global $panthera;
+$panthera = pantheraCore::getInstance();
 
 /**
   * Quick messsages data model
@@ -132,7 +132,7 @@ class quickMessage extends pantheraFetchDB
 
     public static function getQuickMessages($by, $limit=0, $limitFrom=0, $orderBy='id', $order='DESC')
     {
-          global $panthera;
+          $panthera = pantheraCore::getInstance();
           return $panthera->db->getRows('quick_messages', $by, $limit, $limitFrom, 'quickMessage', $orderBy, $order);
     }
     
@@ -157,7 +157,7 @@ class quickMessage extends pantheraFetchDB
 
     public static function create($title, $content, $login, $full_name, $url_id, $language, $category, $visibility=0, $icon='')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $array = array('unique' => md5(rand(1,500).$title), 'title' => $title, 'message' => $content, 'author_login' => $login, 'author_full_name' => $full_name, 'visibility' => $visibility, 'mod_author_login' => $login, 'mod_author_full_name' => $full_name, 'url_id' => $url_id, 'language' => $language, 'category_name' => $category, 'icon' => $icon);
 
         $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}quick_messages` (`id`, `unique`, `title`, `message`, `author_login`, `author_full_name`, `mod_time`, `visibility`, `mod_author_login`, `mod_author_full_name`, `url_id`, `language`, `category_name`, `icon`) VALUES (NULL, :unique, :title, :message, :author_login, :author_full_name, NOW(), :visibility, :mod_author_login, :mod_author_full_name, :url_id, :language, :category_name, :icon);', $array);
@@ -172,7 +172,7 @@ class quickMessage extends pantheraFetchDB
 
     function remove($id)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         // clear cache first
         if ($panthera->cache)
@@ -214,7 +214,7 @@ class quickCategory extends pantheraFetchDB
 
     public static function getCategories($by, $limit=0, $limitFrom=0, $orderBy='category_id', $order='DESC')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         return $panthera->db->getRows('qmsg_categories', $by, $limit, $limitFrom, '', $orderBy, $order);
     }
     
@@ -231,7 +231,7 @@ class quickCategory extends pantheraFetchDB
     
     public static function create($title, $description, $categoryName='', $authorId='')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if (strlen($title) == 0)
         {
@@ -284,7 +284,7 @@ class quickCategory extends pantheraFetchDB
     
     public static function remove($categoryName)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $panthera -> db -> query('DELETE FROM `{$db_prefix}qmsg_categories` WHERE `category_name` = :categoryName', array('categoryName' => $categoryName));
     }
 }

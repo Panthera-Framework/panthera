@@ -53,7 +53,7 @@ class SQLDump
 
     public static function initSQLDump()
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         return new Backup_Database($panthera->config->getKey('db_host'), $panthera->config->getKey('db_username'), $panthera->config->getKey('db_password'), $panthera->config->getKey('db_name'));
     }
 
@@ -151,7 +151,7 @@ class SQLDump
     
     public static function cronjob($data='')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
     
         if ($panthera->db->getSocketType() == 'mysql')
         {

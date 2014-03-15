@@ -12,7 +12,7 @@
 if (!defined('IN_PANTHERA'))
     exit;
   
-global $panthera;
+$panthera = pantheraCore::getInstance();
 
 /**
   * Notes data model
@@ -37,7 +37,7 @@ class note extends pantheraFetchDB
     
     public static function getNotes($limit=0, $limitFrom=0, $orderBy='id', $order='DESC')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if (!$panthera->user)
             return False;
@@ -57,7 +57,7 @@ class note extends pantheraFetchDB
     
     public static function createNote($title, $content) //  $permissions
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if (!$panthera->user)
             return False;

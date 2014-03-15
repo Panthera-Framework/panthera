@@ -32,7 +32,7 @@ class userRegistration extends validableForm
     
     public static function checkEmailValidation($key, $validateUser=False)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         $query = $panthera -> db -> query('SELECT * FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key AND `type` = "confirmation"', array('key' => $key));
         
