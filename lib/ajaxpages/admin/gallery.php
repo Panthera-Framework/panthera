@@ -84,7 +84,7 @@ class galleryAjaxControllerCore extends pageController
         $gallery -> meta('unique') -> save();
         $gallery -> save();
 
-        ajax_exit(array('status' => 'success', 'language' => $gallery -> language, 'unique' => $gallery -> unique));
+        ajax_exit(array('status' => 'success', 'language' => $gallery->language, 'unique' => $gallery->unique));
     }
 
 
