@@ -11,8 +11,8 @@
 if (!defined('PANTHERA_INSTALLER'))
     return False;
     
-// we will use this ofcourse
-global $panthera;
+// we will use this of course
+$panthera = pantheraCore::getInstance();
 global $installer;
 
 /**
@@ -124,7 +124,7 @@ if (isset($_POST['db_prefix']))
   */
 
 } elseif (isset($_POST['save'])) {
-    if ($panthera->session->exists('installer.database'))
+    if ($panthera -> session -> exists('installer.database'))
     {
         $panthera -> importModule('appconfig');
         $app = new appConfigEditor();
