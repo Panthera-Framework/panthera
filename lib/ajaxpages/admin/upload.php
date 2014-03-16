@@ -463,7 +463,7 @@ class uploadAjaxControllerCore extends pageController
             $this -> popupDisplay();
         
         // send permissions data to template
-        $this -> panthera -> template -> push ('permissions', $this->userPermissions);
+        // $this -> panthera -> template -> push ('permissions', $this->userPermissions);
         
         // initialize searchBar
         $searchBar = new uiSearchbar('uiTop');

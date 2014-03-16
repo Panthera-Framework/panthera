@@ -384,7 +384,7 @@ class galleryAjaxControllerCore extends pageController
     public function displayCategoryAction()
     {
         // check permissions
-        if (!$this -> userPermissions['manageAll'] and !getUserRightAttribute($this -> panthera -> user, 'can_read_all_galleries'))
+        if (!$this->userPermissions['manageAll'] and !$this->checkPermissions('can_read_all_galleries'))
             $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gallery_'.$category->id)); // check special permissions
         
         // implement searchbar
@@ -509,13 +509,13 @@ class galleryAjaxControllerCore extends pageController
             if (count($header['scripts']) > 0)
             {
                 foreach ($header['scripts'] as $key => $value)
-                    $panthera -> template -> addScript($value);
+                    $this -> panthera -> template -> addScript($value);
             }
     
             if (count($header['styles']) > 0)
             {
                 foreach ($header['styles'] as $key => $value)
-                    $panthera -> template -> addStyle($value);
+                    $this -> panthera -> template -> addStyle($value);
             }
         }
         
@@ -681,7 +681,7 @@ class galleryAjaxControllerCore extends pageController
             $item -> title = filterInput($_POST['title'], 'quotehtml');
             $item -> description = filterInput($_POST['description'], 'quotehtml');
             $item -> link = pantheraUrl($file -> getLink());
-            $item -> thumbnail = $file -> getThumbnail($panthera->config->getKey('gallery_thumbs_width', 200, 'int'), True);
+            $item -> thumbnail = $file -> getThumbnail($this->panthera->config->getKey('gallery_thumbs_width', 200, 'int'), True);
             $item -> upload_id = $_POST['upload_id'];
     
             $category = new galleryCategory('id', $_POST['gallery_id']);
