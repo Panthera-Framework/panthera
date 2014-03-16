@@ -7,6 +7,9 @@
  * @author Damian Kęska
  * @license GNU Lesser General Public License 3, see license.txt
  */
+
+if (!defined('IN_PANTHERA'))
+    exit;
  
 /**
  * Settings ajax page controller

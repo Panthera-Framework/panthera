@@ -493,7 +493,7 @@ $(document).ready(function () {
                 {/if}
             </tbody>
         </table>
-        <input type="button" value="{function="localize('Clear cache of this server', 'cache')"}" onclick="clearCache('memcached', {$value.num});" style="float: right; margin-right: 31px; margin-top: 10px;" id="button_{$value.num}">
+        <input type="button" value="{function="localize('Clear cache of this server', 'cache')"}" onclick="clearCache('memcached', '{$value.num}');" style="float: right; margin-right: 31px; margin-top: 10px;" id="button_{$value.num}">
     </div>
    {/loop}
   {/if}
