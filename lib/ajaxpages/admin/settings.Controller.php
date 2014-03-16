@@ -136,7 +136,7 @@ class settingsAjaxControllerSystem extends pageController
      * @return array List of settings icons
      */
 
-    public function getItemsList()
+    public function getItemsList($defaults)
     {
         return $this -> panthera -> config -> getKey('ajaxpages.settings.items', $defaults, 'array', 'settings');
     }
@@ -171,7 +171,7 @@ class settingsAjaxControllerSystem extends pageController
         $defaultsSum = hash('md4', serialize($defaults));
         
         // settings main menu
-        $listDB = $this -> getItemsList();
+        $listDB = $this -> getItemsList($defaults);
         
         if ($this -> panthera -> config -> getKey('settings.items.checksum') != $defaultsSum)
         {
