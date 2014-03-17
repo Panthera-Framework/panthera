@@ -145,6 +145,75 @@ abstract class pageController extends pantheraClass {
         
         return $valid;
     }
+
+    /**
+     * Add new variable to permissions variables
+     * 
+     * @param string|array $var Single variable or multiple variables
+     * @param string|int $value Variable value
+     * @author Damian Kęska
+     * @return bool
+     */
+    
+    protected function pushPermissionVariable($var, $value=null)
+    {
+        if (is_array($var))
+            $this -> permissionsVariables = array_merge($this -> permissionsVariables, $var);
+        else
+            $this -> permissionsVariables[$var] = $value;
+        
+        return TRUE;
+    }
+    
+    /**
+     * Simple action dispatcher. Just type ?display=name in url to invoke $this->nameAction() method
+     * 
+     * @param string $action Optional action name to manually invoke
+     * @return mixed
+     */
+    
+    public function dispatchAction($action='')
+    {
+        if (!$action and isset($_GET['action']))
+            $action = $_GET['action'];
+
+        if (!$action and $this->defaultAction)
+            $action = $this->defaultAction;
+            
+        if (!$action)
+            return False;
+        
+        $method = $action. 'Action';
+        
+        if (isset($this->actionPermissions[$action]))
+        {
+            if (!is_array($this -> actionPermissions[$action]))
+                $this -> actionPermissions[$action] = array($this -> actionPermissions[$action]);
+            
+            if ($this->permissionsVariables)
+            {
+                foreach ($this -> actionPermissions[$action] as $key => $value)
+                {
+                    foreach ($this->permissionsVariables as $variableName => $variableValue)
+                        $this -> actionPermissions[$action][$key] = str_replace('{$' .$variableName. '}', $variableValue, $value);
+                }
+            }
+            
+            $this -> checkPermissions($this->actionPermissions[$action], $this->useuiNoAccess);
+        }
+        
+        // diffirent titlebar for every action
+        if (isset($this->actionuiTitlebar[$action]))
+        {
+            if (isset($this->actionuiTitlebar[$action][1]))
+                $this -> uiTitlebarObject = new uiTitlebar(localize($this->actionuiTitlebar[$action][0], $this->actionuiTitlebar[$action][1]));
+            else
+                $this -> uiTitlebarObject = new uiTitlebar(localize($this->actionuiTitlebar[$action][0]));
+        }
+        
+        if(method_exists($this, $method))
+            return $this -> $method();
+    }
     
     /**
      * Dummy function
@@ -276,74 +345,5 @@ abstract class pageController extends pantheraClass {
         
         if ($name)
             return new $name;
-    }
-    
-    /**
-     * Add new variable to permissions variables
-     * 
-     * @param string|array $var Single variable or multiple variables
-     * @param string|int $value Variable value
-     * @author Damian Kęska
-     * @return bool
-     */
-    
-    protected function pushPermissionVariable($var, $value=null)
-    {
-        if (is_array($var))
-            $this -> permissionsVariables = array_merge($this -> permissionsVariables, $var);
-        else
-            $this -> permissionsVariables[$var] = $value;
-        
-        return TRUE;
-    }
-    
-    /**
-     * Simple action dispatcher. Just type ?display=name in url to invoke $this->nameAction() method
-     * 
-     * @param string $action Optional action name to manually invoke
-     * @return mixed
-     */
-    
-    public function dispatchAction($action='')
-    {
-        if (!$action and isset($_GET['action']))
-            $action = $_GET['action'];
-
-        if (!$action and $this->defaultAction)
-            $action = $this->defaultAction;
-            
-        if (!$action)
-            return False;
-        
-        $method = $action. 'Action';
-        
-        if (isset($this->actionPermissions[$action]))
-        {
-            if (!is_array($this -> actionPermissions[$action]))
-                $this -> actionPermissions[$action] = array($this -> actionPermissions[$action]);
-            
-            if ($this->permissionsVariables)
-            {
-                foreach ($this -> actionPermissions[$action] as $key => $value)
-                {
-                    foreach ($this->permissionsVariables as $variableName => $variableValue)
-                        $this -> actionPermissions[$action][$key] = str_replace('{$' .$variableName. '}', $variableValue, $value);
-                }
-            }
-            
-            $this -> checkPermissions($this->actionPermissions[$action], $this->useuiNoAccess);
-        }
-        
-        // diffirent titlebar for every action
-        if (isset($this->actionuiTitlebar[$action]))
-        {
-            if (isset($this->actionuiTitlebar[$action][1]))
-                $this -> uiTitlebarObject = new uiTitlebar(localize($this->actionuiTitlebar[$action][0], $this->actionuiTitlebar[$action][1]));
-            else
-                $this -> uiTitlebarObject = new uiTitlebar(localize($this->actionuiTitlebar[$action][0]));
-        }
-        
-        if(method_exists($this, $method))
-            return $this -> $method();
     }
 }
