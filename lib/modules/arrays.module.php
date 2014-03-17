@@ -99,24 +99,20 @@ function limitArray($array, $offset=0, $limit=0)
  * @author Damian Kęska
  */
 
-function arrayWalkRecursive($array, $callback, $additional=null, $depth=1)
+function arrayWalkRecursive(&$array, $callback, $additional=null, $depth=1)
 {
-    foreach ($array as $key => $value)
+    foreach ($array as $key => &$value)
     {
         if (is_array($value))
-        {
             continue;
-        }
         
         $additional = $callback($key, $value, $depth, $additional);
     }
     
-    foreach ($array as $key => $value)
+    foreach ($array as $key => &$value)
     {
         if (!is_array($value))
-        {
             continue;
-        }
         
         $additional = arrayWalkRecursive($value, $callback, $additional, $depth++);
     }
