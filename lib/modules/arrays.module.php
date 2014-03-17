@@ -57,6 +57,7 @@ function array_reset_keys($array)
  * @param array $array
  * @param int $offset
  * @param int $limit
+ * @package Panthera\modules\arrays
  * @return array
  * @author Damian Kęska
  */
@@ -83,4 +84,41 @@ function limitArray($array, $offset=0, $limit=0)
     }
     
     return $newArray;
- }
+}
+
+/**
+ * Walk an array recursively counting deep level
+ *
+ * @param array $array Input array
+ * @param callable $callback Callback function($key, $value, $depth, $additional)
+ * @param mixed $additional Additional argument to be passed to every callback
+ * @param int $depth Depth counter
+ * @package Panthera\modules\arrays
+ * @return mixed
+ * @author Damian Kęska
+ */
+
+function arrayWalkRecursive($array, $callback, $additional=null, $depth=1)
+{
+    foreach ($array as $key => $value)
+    {
+        if (is_array($value))
+        {
+            continue;
+        }
+        
+        $additional = $callback($key, $value, $depth, $additional);
+    }
+    
+    foreach ($array as $key => $value)
+    {
+        if (!is_array($value))
+        {
+            continue;
+        }
+        
+        $additional = arrayWalkRecursive($value, $callback, $additional, $depth++);
+    }
+    
+    return $additional;
+}
