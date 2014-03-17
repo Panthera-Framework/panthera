@@ -10,6 +10,8 @@
 if (!defined('IN_PANTHERA'))
     exit;
 
+$panthera = pantheraCore::getInstance();
+
 // check if user have right meta attributes to see this page
 if (!getUserRightAttribute($panthera->user, 'can_manage_cache')) {
     $noAccess = new uiNoAccess; $noAccess -> display();
@@ -242,24 +244,22 @@ if ($_GET['action'] == 'save')
         
         case 'memcached':
             $id = $_POST['id'];
+            
             $memcached = new pantheraMemcached($panthera);
             $stats = $memcached -> getStats();
             $serverPort = null;
 
             // get server and port from id
-            $i=0;
+            $i = 0;
             foreach ($stats as $server => $attributes)
             {
                 if ($id == $i)
-                {
                     $serverPort = $server;
-                }
                 
                 $i++;
             }
 
-            if ($serverPort)
-            {
+            if ($serverPort) {
                 $server = explode(':', $serverPort);
                 $m = new Memcached;
                 $m -> addServer($server[0], $server[1]);

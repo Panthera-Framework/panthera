@@ -52,7 +52,7 @@ class FBGroup extends pantheraFetchDB
 
 function getFBGroups($by, $limit=0, $limitFrom=0)
 {
-      global $panthera;
+      $panthera = pantheraCore::getInstance();
       return $panthera->db->getRows('fb_groups', $by, $limit, $limitFrom, 'FBGroup', 'members_count', 'DESC');  
 }
 
@@ -67,7 +67,7 @@ function getFBGroups($by, $limit=0, $limitFrom=0)
 
 function removeFBGroup($groupId)
 {
-      global $panthera;
+      $panthera = pantheraCore::getInstance();
       $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}fb_groups` WHERE `groupid` = :id', array('id' => $groupId));
 
       return (bool)$SQL->rowCount();
@@ -87,7 +87,7 @@ function removeFBGroup($groupId)
  
 function createFBGroup($id, $name, $membersCount, $ownerID)
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
     $array = array('groupid' => $id, 'name' => $name, 'members_count' => $membersCount, 'ownerid' => $ownerID); 
 
     $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}fb_groups` (`groupid`, `name`, `members_count`, `ownerid`, `added`) VALUES (:groupid, :name, :members_count, :ownerid, NOW());', $array);
@@ -105,7 +105,7 @@ function createFBGroup($id, $name, $membersCount, $ownerID)
 
 function fbGroupPostMessage($msg)
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
 
     // import facebook sdk and wrapper
     $panthera -> importModule('facebook');

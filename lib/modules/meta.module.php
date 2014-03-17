@@ -10,7 +10,7 @@
 if (!defined('IN_PANTHERA'))
     exit;
 
-global $panthera;
+$panthera = pantheraCore::getInstance();
 
 // load permissions domain
 $panthera -> locale -> loadDomain('permissions');
@@ -53,7 +53,7 @@ class meta
 
     public static function getUsers($tag, $group=False, $value=False)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
 
         $type = 'u';
 
@@ -97,7 +97,7 @@ class meta
 
     public static function removeAcl($name, $user, $group=False)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
 
         $type = 'u';
 
@@ -122,7 +122,7 @@ class meta
     
     public static function create($name, $value, $type, $objectid=null)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $values = array('name' => $name, 'value' => serialize($value), 'type' => $type, 'userid' => $objectid);
         $SQL = $panthera -> db -> query ('INSERT INTO `{$db_prefix}metas` (`metaid`, `name`, `value`, `type`, `userid`) VALUES (NULL, :name, :value, :type, :userid);', $values);
         return (bool)$SQL->rowCount();
@@ -139,7 +139,7 @@ class meta
     
     public static function get($type, $name)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $values = array('name' => $name, 'type' => $type);
         $SQL = $panthera -> db -> query ('SELECT `value` FROM `{$db_prefix}metas` WHERE `name` = :name AND `type` = :type', $values);
         
@@ -162,7 +162,7 @@ class meta
     
     public static function remove($type, $name)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}metas` WHERE `name` = :name AND `type` = :type', array('name' => $name, 'type' => $type));
         return (bool)$SQL->rowCount();
     }

@@ -8,7 +8,7 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
-global $panthera;
+$panthera = pantheraCore::getInstance();
 
 /**
   * Group of static methods providing locales management
@@ -84,7 +84,7 @@ class localesManagement
     
     public static function create($locale, $copy='')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if ($locale == '')
             return False;
@@ -211,7 +211,7 @@ class localesManagement
 
     public static function removeDomain($locale, $domain)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
     
         if (is_file(SITE_DIR. '/content/locales/' .$locale. '/' .$domain. '.phps'))
         {
@@ -238,7 +238,7 @@ class localesManagement
 
     public static function renameDomain($locale, $domain, $newName)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
     
         // check if destination already exists
         if (is_file(SITE_DIR. '/content/locales/' .$locale. '/' .$newName. '.phps'))
@@ -331,7 +331,7 @@ class localesManagement
     
     public static function scanForMissingStrings($tree, $locale='')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $panthera -> importModule('filesystem');
         
         if (!$locale)
@@ -457,7 +457,7 @@ class localeDomain
 
     public function __construct($localeName, $domain)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $this->panthera = $panthera;
         $this->locale = $localeName;
         $this->domain = $domain;

@@ -18,7 +18,7 @@
 
 function recoveryCreate($login)
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
 
     $user = new pantheraUser('login', $login);
 
@@ -112,7 +112,7 @@ function recoveryCreate($login)
 
 function recoveryChangePassword($key)
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
 
     $SQL = $panthera -> db -> query('SELECT `user_login`, `new_passwd` FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key AND `type` = "recovery"', array('key' => $key));
     

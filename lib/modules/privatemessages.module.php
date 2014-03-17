@@ -12,7 +12,7 @@
 if (!defined('IN_PANTHERA'))
     exit;
   
-global $panthera;
+$panthera = pantheraCore::getInstance();
 
 /**
  * Private messages data model
@@ -38,7 +38,7 @@ class privateMessage extends pantheraFetchDB
     
     public static function moveToLabel($messageId, $label)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if (!$panthera->user)
             return False;
@@ -65,7 +65,7 @@ class privateMessage extends pantheraFetchDB
     
     public static function blockUser($blockedUserId)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if (!$panthera->user)
             return False;
@@ -93,7 +93,7 @@ class privateMessage extends pantheraFetchDB
     
     public static function unBlockUser($recordId)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if (!$panthera->user)
             return False;
@@ -113,7 +113,7 @@ class privateMessage extends pantheraFetchDB
     
     public static function getBlockedUsers()
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if (!$panthera->user)
             return False;
@@ -134,7 +134,7 @@ class privateMessage extends pantheraFetchDB
     
     public static function sendMessage($title, $content, $recipient_login)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         $recipient = new pantheraUser('login', $recipient_login);
         
@@ -162,7 +162,7 @@ class privateMessage extends pantheraFetchDB
     
     public static function getMessages($limit=0, $limitFrom=0, $orderBy='sent', $order='DESC')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if (!$panthera->user)
             return False;
@@ -229,7 +229,7 @@ class privateMessage extends pantheraFetchDB
       
     public static function sendToGroup($groupName, $title, $content)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if (!$panthera->user)
             return False;
@@ -262,7 +262,7 @@ class privateMessage extends pantheraFetchDB
     
     public static function getConversation($interlocutor, $title)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if (!$panthera->user)
             return False;
@@ -284,7 +284,7 @@ class privateMessage extends pantheraFetchDB
 
     public static function removeGroup($interlocutor, $title)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if (!$panthera->user)
             return False;

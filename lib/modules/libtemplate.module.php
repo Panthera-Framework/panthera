@@ -27,7 +27,7 @@ class libtemplate
     
     public static function webrootMerge($customTemplates=array())
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
     
         $mainTemplate = $panthera -> config -> getKey('template');
         

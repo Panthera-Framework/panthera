@@ -59,7 +59,7 @@ class Pager
     
     public static function getPagerFromTable($name, $defaultOnPage=24)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $panthera -> logging -> output ('Getting pager name "' .$name. '" from pager table', 'Pager');
         $pagerData = $panthera -> config -> getKey('pager', array(), 'array', 'ui');
         

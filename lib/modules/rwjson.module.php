@@ -31,7 +31,7 @@ class writableJSON
 
     public function __construct ($file)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
     
         if (!is_file($file))
         {

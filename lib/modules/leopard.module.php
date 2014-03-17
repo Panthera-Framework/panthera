@@ -32,7 +32,7 @@ class leopardPackage
     
     public function __construct($destination)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $this -> panthera = $panthera;
         
         // default manifest
@@ -405,7 +405,7 @@ class leopardPackage
     
     public function buildFromDirectory($directory)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if (!is_dir($directory))
         {
@@ -604,7 +604,7 @@ class leopard
 
     protected static function rebuildDB()
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         self::$database = array();
         
         // selecting all packages from database
@@ -756,7 +756,7 @@ class leopard
 
     protected static function preInstallCheck($packageName, $package, $overwriteFS=True, $overwritePKGS=False)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
 
         $packageMeta = $package -> manifest();
         
@@ -820,7 +820,7 @@ class leopard
     
     public static function install($packageFile, $overwriteFS=True, $overwritePKGS=False)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         // TODO: Panthera run locks checking
         
@@ -971,7 +971,7 @@ class leopard
 
     public static function remove($packageName, $dontRestoreBackup=False)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         // TODO: Dependency support and option to remove only single package without its dependencies
         

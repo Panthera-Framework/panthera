@@ -55,7 +55,7 @@ class contactFrontpage
     
     public function __construct($language='')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
     
         if (!$language)
             $language = $panthera->locale->getActive();
@@ -75,7 +75,7 @@ class contactFrontpage
             'mail' => 'example@example.com'
         );
         
-        $this->settings = $panthera -> config -> getKey($fieldName, $contactDefaults, 'array', 'contact');
+        $this->settings = $panthera->config->getKey($fieldName, $contactDefaults, 'array', 'contact');
         $panthera -> add_option('template.display', array($this, 'applyToTemplate'));
         $this -> checkCanSend();
     }
@@ -90,17 +90,15 @@ class contactFrontpage
     
     public function checkCanSend()
     {
-        global $panthera;
-
-        if ($this->protection['cookie'])
+        $panthera = pantheraCore::getInstance();
+		
+        if ($this -> protection['cookie'])
         {
             if ($panthera -> session -> cookies -> get($this->protection['cookie']['name']))
-            {
                 $this -> canSend = False;
-            }
         }
         
-        $this->canSend = $panthera -> get_filters('contact.checkCanSend.canSend', $this->canSend);
+        $this->canSend = $panthera->get_filters('contact.checkCanSend.canSend', $this->canSend);
     }
     
     /**
@@ -113,7 +111,7 @@ class contactFrontpage
     
     public function executeProtection()
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
     
         if ($this->protection['cookie'])
         {
@@ -134,14 +132,12 @@ class contactFrontpage
     
     protected function sendMessage($array)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
     
         if (!isset($array['p_contactMail']))
-        {
             $array['p_contactMail'] = $this->from;
-        }
         
-        $this->executeProtection();
+        $this -> executeProtection();
         $panthera -> logging -> output ('Got input array=' .var_export($array, true), 'contact');
 
         $topic = str_ireplace('{$p_contactTopic}', @$array['p_contactTopic'], $this->topicTemplate);
@@ -160,7 +156,7 @@ class contactFrontpage
         $message -> setFrom ($array['p_contactMail']);
         $message -> addRecipient($this->settings['mail']);
 
-        return $message -> send($content, $this->type);
+        return $message->send($content, $this->type);
     }
     
     /**
@@ -174,172 +170,136 @@ class contactFrontpage
 
     public function handleData($array)
     {
-        global $panthera;
+		$panthera = pantheraCore::getInstance();
         
         if (!$this->canSend)
-        {
             return array('error' => localize('The mailing form is not avaliable at this time', 'contactpage'), 'messageid' => 'PROTECTION_CANNOT_SEND');
-        }
     
         // plugins support
         list($array, $valid) = $panthera -> get_filters('contact.handledata', array($array, True));
         
         if ($valid !== True)
-        {
             return $valid;
-        }
     
         // contact e-mail address of user that is sending a form
         if ($this->fields['p_contactMail']['enabled'])
         {
             // if its a required field
             if (!$array['p_contactMail'] and $this->fields['p_contactMail']['required'])
-            {
                 return array('error' => localize('Contact e-mail address is required', 'contactpage'), 'messageid' => 'REQUIRED_FIELD_EMAIL', 'field' => 'p_contactMail');
-            }
         
             if ($array['p_contactMail'])
             {
                 if (!filter_var($array['p_contactMail'], FILTER_VALIDATE_EMAIL))
-                {
                     return array('error' => localize('Invalid e-mail address', 'contactpage'), 'messageid' => 'INVALID_FIELD_EMAIL', 'field' => 'p_contactMail');
-                }
             }
         }
         
         
         // name and surname
-        if ($this->fields['p_contactName']['enabled'])
+        if ($this -> fields['p_contactName']['enabled'])
         {
             // if its a required field
             if (!$array['p_contactName'] and $this->fields['p_contactName']['required'])
-            {
                 return array('error' => localize('Please enter a valid name and surname', 'contactpage'), 'messageid' => 'REQUIRED_FIELD_NAME', 'field' => 'p_contactName');
-            }
         
             if ($array['p_contactName'])
             {
                 // more strict check
-                if ($this->fields['p_contactName']['strictCheck'])
+                if ($this -> fields['p_contactName']['strictCheck'])
                 {
                     $exp = explode(' ', $array['p_contactName']);
                     
                     if (count($exp) != 2)
-                    {
                         return array('error' => localize('Please enter a valid name and surname', 'contactpage'), 'messageid' => 'INVALID_FIELD_NAME', 'field' => 'p_contactName');
-                    }
                 }
                 
                 // max length
-                if ($this->fields['p_contactName']['maxlength'])
+                if ($this -> fields['p_contactName']['maxlength'])
                 {
                     if (strlen($array['p_contactName']) > $this->fields['p_contactName']['maxlength'])
-                    {
                         return array('error' => localize('You\'r name and surname is too long', 'contactpage'), 'messageid' => 'TOO_LONG_FIELD_NAME', 'field' => 'p_contactName');
-                    }
                 }
                 
                 // min length
-                if ($this->fields['p_contactName']['minlength'])
+                if ($this -> fields['p_contactName']['minlength'])
                 {
                     if (strlen($array['p_contactName']) < $this->fields['p_contactName']['minlength'])
-                    {
                         return array('error' => localize('You\'r name and surname is too short', 'contactpage'), 'messageid' => 'TOO_SHORT_FIELD_NAME', 'field' => 'p_contactName');
-                    }
                 }
                 
                 // completly remove HTML tags
                 if ($array['p_contactName'])
-                {
                     $array['p_contactName'] = strip_tags($array['p_contactName']);
-                }
             }
         }
         
         
         // content field
-        if ($this->fields['p_contactContent']['enabled'])
+        if ($this -> fields['p_contactContent']['enabled'])
         {
             // if its a required field
             if (!$array['p_contactContent'] and $this->fields['field']['required'])
-            {
                 return array('error' => localize('Please fill the content field', 'contactpage'), 'messageid' => 'REQUIRED_FIELD_CONTENT', 'field' => 'p_contactContent');
-            }
             
             if ($array['p_contactContent'])
             {
                 // max length
-                if ($this->fields['p_contactContent']['maxlength'])
+                if ($this -> fields['p_contactContent']['maxlength'])
                 {
                     if (strlen($array['p_contactContent']) > $this->fields['p_contactContent']['maxlength'])
-                    {
                         return array('error' => localize('The content is too long', 'contactpage'), 'messageid' => 'TOO_LONG_FIELD_CONTENT', 'field' => 'p_contactContent');
-                    }
                 }
                 
                 // min length
-                if ($this->fields['p_contactContent']['minlength'])
+                if ($this -> fields['p_contactContent']['minlength'])
                 {
                     if (strlen($array['p_contactContent']) < $this->fields['p_contactContent']['minlength'])
-                    {
                         return array('error' => localize('The content is too short', 'contactpage'), 'messageid' => 'TOO_SHORT_FIELD_CONTENT', 'field' => 'p_contactContent');
-                    }
                 }
                 
                 // quote all HTML tags
-                if ($this->fields['name']['striphtml'])
-                {
+                if ($this -> fields['name']['striphtml'])
                     $array['p_contactContent'] = htmlspecialchars($array['p_contactContent']);
-                }
             }
         }
         
         
         // jabber field
-        if ($this->fields['p_contactJabber']['enabled'])
+        if ($this -> fields['p_contactJabber']['enabled'])
         {
             // if its a required field
             if (!$array['p_contactJabber'] and $this->fields['p_contactJabber']['required'])
-            {
                 return array('error' => localize('Contact e-mail address is required', 'contactpage'), 'messageid' => 'REQUIRED_FIELD_JABBER', 'field' => 'p_contactJabber');
-            }
         
             if ($array['p_contactJabber'])
             {
                 if (!filter_var($array['p_contactJabber'], FILTER_VALIDATE_EMAIL))
-                {
                     return array('error' => localize('Invalid Jabber address', 'contactpage'), 'messageid' => 'INVALID_FIELD_JABBER', 'field' => 'p_contactJabber');
-                }
             }
         }
         
         // topic field
-        if ($this->fields['p_contactTopic']['enabled'])
+        if ($this -> fields['p_contactTopic']['enabled'])
         {
             // if its a required field
             if (!$array['p_contactTopic'] and $this->fields['p_contactTopic']['required'])
-            {
                 return array('error' => localize('Please enter a valid topic', 'contactpage'), 'messageid' => 'REQUIRED_FIELD_TOPIC', 'field' => 'p_contactTopic');
-            }
             
             if ($array['p_contactTopic'])
             {
                 // max length
-                if ($this->fields['p_contactTopic']['maxlength'])
+                if ($thisc-> fields['p_contactTopic']['maxlength'])
                 {
                     if (strlen($array['p_contactTopic']) > $this->fields['p_contactTopic']['maxlength'])
-                    {
                         return array('error' => localize('The topic is too long', 'contactpage'), 'messageid' => 'TOO_LONG_FIELD_TOPIC', 'field' => 'p_contactTopic');
-                    }
                 }
                 
                 // min length
-                if ($this->fields['p_contactTopic']['minlength'])
+                if ($this -> fields['p_contactTopic']['minlength'])
                 {
                     if (strlen($array['p_contactTopic']) < $this->fields['p_contactTopic']['minlength'])
-                    {
                         return array('error' => localize('The topic is too short', 'contactpage'), 'messageid' => 'TOO_SHORT_FIELD_TOPIC', 'field' => 'p_contactTopic');
-                    }
                 }
                 
                 // completly remove HTML tags
@@ -359,7 +319,8 @@ class contactFrontpage
     
     public function applyToTemplate()
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
+		
         $panthera -> template -> push ('p_contactText', $this->settings['text']);
         $panthera -> template -> push ('p_contactMap', $this->settings['map']);
         $panthera -> template -> push ('p_contactMail', $this->settings['mail']);

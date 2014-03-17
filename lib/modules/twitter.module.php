@@ -21,7 +21,7 @@ include(PANTHERA_DIR. '/share/twitter/tmhOAuth.php');
       
       public function __construct()
       {
-            global $panthera;
+            $panthera = pantheraCore::getInstance();
             $this->panthera = $panthera;           
       }
 }*/
@@ -40,7 +40,7 @@ class twitterWrapper
       
       public function __construct()
       {
-            global $panthera;
+            $panthera = pantheraCore::getInstance();
             $this -> panthera = $panthera;
               
             // login to Panthera-Framework application

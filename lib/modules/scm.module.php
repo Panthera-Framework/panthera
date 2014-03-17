@@ -8,7 +8,7 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
-global $panthera;
+$panthera = pantheraCore::getInstance();
 
 /**
   * Remote repository cloning functions
@@ -31,7 +31,7 @@ class scm
 
     public static function cloneBranch ($url, $destination, $branch='master')
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $panthera -> importModule('filesystem');
         
         // convert links in non-url format, eg. git urls without ssh:// protocol
@@ -80,7 +80,7 @@ class scm
         // example zip tarball: https://bitbucket.org/thilina/icehrm-opensource/get/default.zip
         // example project: https://bitbucket.org/thilina/icehrm-opensource
         
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $exp = explode('/', $parsedUrl['path']);
         
         if (count($exp) < 2)
@@ -154,7 +154,7 @@ class scm
     
     protected static function githubClone($url, $branch, $parsedUrl, $destination)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $exp = explode('/', $parsedUrl['path']);
 
         if (count($exp) < 2)
@@ -216,7 +216,7 @@ class scm
     
     protected static function downloadArchive($url, $destination)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $panthera -> logging -> output('Downloading archive from "' .$url. '"', 'scm');
         
         $context = stream_context_create(array('http'=> array('timeout' => 25)));

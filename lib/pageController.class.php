@@ -62,39 +62,31 @@ abstract class pageController extends pantheraClass {
         parent::__construct();
         
         if ($this -> permissions)
-        {
             $this -> checkPermissions($this -> permissions);
-        }
         
         if ($this->requirements)
         {
-            foreach ($this -> requirements as $module)
+            foreach ($this->requirements as $module)
             {
                 $this -> panthera -> importModule($module);
                 
                 if (!$this -> panthera -> moduleImported($module))
-                {
                     throw new Exception('Cannot preimport required module "' .$module. '"', 234);
-                }
             }
         }
         
-        if ($this->overlays)
+        if ($this -> overlays)
         {
             foreach ($this -> overlays as $overlay)
-            {
                 $this -> panthera -> config -> loadOverlay($overlay);
-            }
         }
         
-        if ($this->uiTitlebar)
+        if ($this -> uiTitlebar)
         {
-            if (isset($this->uiTitlebar[1]))
-            {
+            if (isset($this -> uiTitlebar[1]))
                 $name = localize($this->uiTitlebar[0], $this->uiTitlebar[1]);
-            } else {
+            else
                 $name = localize($this->uiTitlebar[0]);
-            }
             
             $this -> uiTitlebarObject = new uiTitlebar($name);
         }
@@ -103,9 +95,7 @@ abstract class pageController extends pantheraClass {
         if (isset($_GET['cat']) and $this -> useuiNoAccess === null)
         {
             if($_GET['cat'] == 'admin')
-            {
                 $this -> useuiNoAccess = true;
-            }
         }
     }
 
@@ -126,22 +116,18 @@ abstract class pageController extends pantheraClass {
         {
             $valid = getUserRightAttribute($this->panthera->user, $permissions);
             
-            // multiple permissions
+        // multiple permissions
         } elseif (is_array($permissions)) {
             
             foreach ($permissions as $permission)
             {
                 if (getUserRightAttribute($this->panthera->user, $permission))
-                {
                     $valid = true;
-                }
             }   
         }
         
         if ($valid)
-        {
             return $valid;
-        }        
         
         if (!$dontCallNoAccess)
         {
@@ -149,9 +135,7 @@ abstract class pageController extends pantheraClass {
             $noAccess = new uiNoAccess;
             
             if (!is_array($permissions) and $permissions)
-            {
                 $permissions = array($permissions);
-            }
             
             if ($permissions)
                 $noAccess -> addMetas($permissions);
@@ -275,9 +259,7 @@ abstract class pageController extends pantheraClass {
         foreach ($controllerNames as $className)
         {
             if (class_exists($className))
-            {
                 return $className;
-            }
         }
     }
     
@@ -293,9 +275,7 @@ abstract class pageController extends pantheraClass {
         $name = static::getControllerName($name);
         
         if ($name)
-        {
             return new $name;
-        }
     }
     
     /**
@@ -310,11 +290,9 @@ abstract class pageController extends pantheraClass {
     protected function pushPermissionVariable($var, $value=null)
     {
         if (is_array($var))
-        {
             $this -> permissionsVariables = array_merge($this -> permissionsVariables, $var);
-        } else {
-            $this -> permissionsVariables[$var] = $value;   
-        }
+        else
+            $this -> permissionsVariables[$var] = $value;
         
         return TRUE;
     }
@@ -342,18 +320,14 @@ abstract class pageController extends pantheraClass {
         if (isset($this->actionPermissions[$action]))
         {
             if (!is_array($this -> actionPermissions[$action]))
-            {
                 $this -> actionPermissions[$action] = array($this -> actionPermissions[$action]);
-            }
             
             if ($this->permissionsVariables)
             {
                 foreach ($this -> actionPermissions[$action] as $key => $value)
                 {
                     foreach ($this->permissionsVariables as $variableName => $variableValue)
-                    {
                         $this -> actionPermissions[$action][$key] = str_replace('{$' .$variableName. '}', $variableValue, $value);
-                    }
                 }
             }
             
@@ -370,8 +344,6 @@ abstract class pageController extends pantheraClass {
         }
         
         if(method_exists($this, $method))
-        {
             return $this -> $method();
-        }
     }
 }

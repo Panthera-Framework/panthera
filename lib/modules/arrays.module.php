@@ -18,18 +18,21 @@
  * @author Lohoris <http://stackoverflow.com/questions/2699086/sort-multidimensional-array-by-value-2>
  */
 
-function aasort (&$array, $key) {
-    $sorter=array();
-    $ret=array();
+function aasort (&$array, $key)
+{    	
+    $sorter = array();
+    $ret = array();
     reset($array);
-    foreach ($array as $ii => $va) {
-        $sorter[$ii]=$va[$key];
-    }
+    
+    foreach ($array as $ii => $va)
+        $sorter[$ii] = $va[$key];
+
     asort($sorter);
-    foreach ($sorter as $ii => $va) {
-        $ret[$ii]=$array[$ii];
-    }
-    $array=$ret;
+	
+    foreach ($sorter as $ii => $va)
+        $ret[$ii] = $array[$ii];
+    
+    $array = $ret;
 }
 
 /**
@@ -78,9 +81,7 @@ function limitArray($array, $offset=0, $limit=0)
                 
         // rewrite only elements matching our range            
         if ($i >= $limit and $i <= ($limit+$offset))
-        {
             $newArray[$key] = $value;
-        }
     }
     
     return $newArray;

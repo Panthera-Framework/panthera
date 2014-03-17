@@ -10,6 +10,8 @@
 
 if (!defined('IN_PANTHERA'))
     exit;
+  
+$panthera = pantheraCore::getInstance();
 
 if (!getUserRightAttribute($user, 'can_update_config_overlay') and !getUserRightAttribute($user, 'can_edit_session_settings'))
 {
@@ -19,7 +21,7 @@ if (!getUserRightAttribute($user, 'can_update_config_overlay') and !getUserRight
 
 function settingsUrlHandler($action, $key, $value)
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
 
     if ($action == 'save')
     {
@@ -38,7 +40,7 @@ function settingsUrlHandler($action, $key, $value)
         return $value;
     }
     
-    return $panthera->config->getKey($key);
+    return $panthera -> config -> getKey($key);
 }
 
 $panthera -> config -> getKey('cookie_encrypt', 1, 'bool');
