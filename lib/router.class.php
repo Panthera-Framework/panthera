@@ -2,6 +2,7 @@
 /**
  * Application routing class
  * 
+ * @package Panthera\core\routing
  * @author Danny van Kooten
  * @author Koen Punt
  * @author John Long
@@ -16,11 +17,21 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+ 
+/**
+ * Routing resolving, links management
+ * 
+ * @package Panthera\core\routing
+ * @author Danny van Kooten
+ * @author Koen Punt
+ * @author John Long
+ * @author Niahoo Osef
+ * @author Damian Kęska
+ */
 
 class routing {
 
     protected $routes = array();
-    protected $namedRoutes = array();
     protected $compiledRegexes = array();
     protected $basePath = '';
     protected $matchTypes = array(
@@ -31,6 +42,7 @@ class routing {
         '**' => '.++',
         ''   => '[^/\.]++'
     );
+    protected $cacheType = 'varcache'; // varcache or config
     
     /**
      * Get routing cache
@@ -40,12 +52,17 @@ class routing {
     
     public function getCache()
     {
-        $data = $this -> panthera -> config -> getKey('routing.cache');
+        $data = null;
+        
+        if ($this->cacheType == 'varcache')
+            $data = $this -> panthera -> varCache -> get('routing.cache');
+        
+        if ($this->cacheType == 'config' or !$data)
+            $data = $this -> panthera -> config -> getKey('routing.cache');
         
         if ($data)
         {
             $this -> routes = $data['routes'];
-            $this -> namedRoutes = $data['namedRoutes'];
             $this -> compiledRegexes = $data['compiledRegexes'];
         }
         
@@ -62,11 +79,13 @@ class routing {
     {
         $data = array(
             'routes' => $this->routes,
-            'namedRoutes' => $this->namedRoutes,
             'compiledRegexes' => $this->compiledRegexes,
         );
         
-        $this -> panthera -> config -> setKey('routing.cache', $data, 'array');
+        if ($this->cacheType == 'varcache')
+            $this -> panthera -> varCache -> set('routing.cache', $data, -1); // 7 days
+        else
+            $this -> panthera -> config -> setKey('routing.cache', $data, 'array');
     }
     /**
       * Create router in one call from config.
@@ -75,6 +94,7 @@ class routing {
       * @param string $basePath
       * @param array $matchTypes
       */
+      
     public function __construct( $routes = array(), $basePath = '', $matchTypes = array() )
     {
         $this -> panthera = pantheraCore::getInstance();
@@ -123,14 +143,8 @@ class routing {
     public function map($method='GET|POST', $route, $target, $name)
     {
         $this->routes[$name] = array($method, $route, $target, $name);
-
-        if($name) 
-        {
-            $this->namedRoutes[$name] = $route;
-        }
-        
+        $this->compileRoute($route);
         $this -> saveCache();
-
         return;
     }
     
@@ -148,13 +162,58 @@ class routing {
             $route = $this->routes[$name][1];
             
             unset($this->routes[$name]);
-            unset($this->namedRoutes[$name]);
             unset($this->compiledRegexes[$route]);
             
             $this->saveCache();
             
             return True;
         }
+    }
+    
+    /**
+     * Get list of routes
+     * 
+     * @author Damian Kęska
+     * @return array
+     */
+    
+    public function getRoutes()
+    {
+        return $this->routes;
+    }
+    
+    /**
+     * Get list of route parameters
+     * 
+     * @param string $routeName Name of the route
+     * @author Damian Kęska
+     * @throws Exception When route does not exists
+     * @return array
+     */
+    
+    public function getParams($routeName)
+    {
+        if(!isset($this->routes[$routeName])) 
+        {
+            throw new \Exception("Route '{$routeName}' does not exist.");
+        }
+        
+        $route = $this->routes[$routeName][1];
+        $compiled = $this -> compileRoute($this->routes[$routeName][1]);
+        $fields = array();
+        
+        if (isset($compiled['matches']))
+        {
+            $matches = $compiled['matches'];
+            
+            foreach($matches as $match)
+            {
+                list($block, $pre, $type, $param, $optional) = $match;
+                $fields[] = $param;
+            }
+        }
+        
+        return $fields;
     }
 
     /**
@@ -164,28 +223,33 @@ class routing {
      *
      * @param string $routeName The name of the route.
      * @param array @params Associative array of parameters to replace placeholders with.
+     * @param array|string $get Optional $_GET parameters
      * @return string The URL of the route with named parameters in place.
      */
-    public function generate($routeName, array $params = array()) 
+    public function generate($routeName, array $params = array(), $get=null) 
     {
-        // Check if named route exists
-        if(!isset($this->namedRoutes[$routeName])) 
+        // Check if route exists
+        if(!isset($this->routes[$routeName])) 
         {
             throw new \Exception("Route '{$routeName}' does not exist.");
         }
 
-        // Replace named parameters
-        $route = $this->namedRoutes[$routeName];
+        // get parameters
+        $route = $this->routes[$routeName][1];
 
         // prepend base path to route url again
         $url = $this->basePath . $route;
+        
+        $compiled = $this -> compileRoute($this->routes[$routeName][1]);
 
-        if (preg_match_all('`(/|\.|)\[([^:\]]*+)(?::([^:\]]*+))?\](\?|)`', $route, $matches, PREG_SET_ORDER))
+        if (isset($compiled['matches']))
         {
-            foreach($matches as $match) 
+            $matches = $compiled['matches'];
+            
+            foreach($matches as $match)
             {
                 list($block, $pre, $type, $param, $optional) = $match;
-
+                
                 if ($pre) 
                 {
                     $block = substr($block, 1);
@@ -198,10 +262,28 @@ class routing {
                     $url = str_replace($pre . $block, '', $url);
                 }
             }
-
-
         }
-
+        
+        if ($get and is_string($get))
+            parse_str($get, $get);
+        
+        if (!is_array($get))
+            $get = array();
+        
+        /*if (isset($this->routes[$routeName][2]['GET']))
+        {
+            if (is_array($this->routes[$routeName][2]['GET']))
+                $get = array_merge($get, $this->routes[$routeName][2]['GET']);
+        }*/
+        
+        if (count($get))
+        {
+            if (!parse_url($url, PHP_URL_QUERY))
+                $url .= '?';
+            
+            $url .= http_build_query($get);
+        }
+        
         return $url;
     }
 
@@ -211,6 +293,7 @@ class routing {
      * @param string $requestMethod
      * @return array|boolean Array with route information on success, false on failure (no match).
      */
+     
     public function resolve($requestUrl = null, $requestMethod = null) 
     {
         $this -> panthera -> logging -> startTimer();
@@ -292,6 +375,7 @@ class routing {
                 }
 
                 $regex = $this->compileRoute($route);
+                $regex = $regex['regex'];
                 $match = @preg_match($regex, $requestUrl, $params);
             }
 
@@ -367,8 +451,28 @@ class routing {
 
         }
         
-        $this->compiledRegexes[$originalRoute] = "`^$route$`";
+        $this->compiledRegexes[$originalRoute] = array(
+            'regex' => "`^$route$`",
+            'matches' => $matches
+        );
+        
         $this -> saveCache();
         return "`^$route$`";
     }
+}
+
+/**
+ * Alias to $panthera->routing->generate() (for use inside of templates)
+ * 
+ * @param string $routeName Route name
+ * @param array $params Array of parameters
+ * @param array|string $get Optional $_GET parameters
+ * @package Panthera\core\routing
+ * @return string
+ */
+
+function getRoute($routeName, $params, $get)
+{
+    $panthera = pantheraCore::getInstance();
+    return $panthera -> routing -> getRoute($routeName, $params, $get);
 }
