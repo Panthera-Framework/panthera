@@ -10,7 +10,7 @@
         
             if (responseText == 'Yes')
             {
-                panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=deleteCategory&id='+id, messageBox: 'w2ui', success: function (response) {
+                panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=deleteCategory&categoryid='+id, messageBox: 'w2ui', success: function (response) {
                         if (response.status == 'success')
                         {
                             navigateTo('?display=gallery&cat=admin');
@@ -30,7 +30,7 @@
             if (responseText == 'Yes')
             {
 
-                    panthera.jsonGET({ url: '{$AJAX_URL}?display=gallery&cat=admin&action=deleteItem&image_id='+id, success: function (response) {
+                    panthera.jsonGET({ url: '{$AJAX_URL}?display=gallery&cat=admin&action=deleteItem&itemid='+id, success: function (response) {
                             if (response.status == "success")
                             {
                                 window.location = '';
@@ -44,16 +44,14 @@
 
     function toggleItemVisibility(id)
     {
-        panthera.jsonPOST({ url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggleItemVisibility', data: 'ctgid='+id, success: function (response) {
+        panthera.jsonPOST({ url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggleItemVisibility&itemid='+id, data: '', success: function (response) {
 
                     if (response.status == "success")
                     {
                         if (response.visible == 1)
-                        {
                             $('#gallery_item_'+id).css("opacity", 1);
-                        } else {
+                        else
                             $('#gallery_item_'+id).css("opacity", 0.5);
-                        }
                     }
 
                 }
@@ -62,7 +60,7 @@
 
     function setAsCategoryThumb(id, ctgid)
     {
-        panthera.jsonGET({ 'url': '{$AJAX_URL}?display=gallery&cat=admin&action=setCategoryThumb&itid='+id+'&ctgid='+ctgid});
+        panthera.jsonGET({ 'url': '{$AJAX_URL}?display=gallery&cat=admin&action=setCategoryThumb&itemid='+id+'&categoryid='+ctgid});
     }
 
     $(document).ready(function () {
@@ -72,7 +70,7 @@
             uploadProgress.ajaxLoaderInit();
 
         }, callback: function (content, fileName, fileNum, fileCount) {
-                panthera.jsonPOST({ url: '?display=upload&cat=admin&action=handle_file&directory=gallery&popup=true', isUploading: true, async: false, data: { 'image': content, 'fileName': fileName}, success: function (response) {
+                panthera.jsonPOST({ url: '?display=upload&cat=admin&action=handleFile&directory=gallery&popup=true', isUploading: true, async: false, data: { 'image': content, 'fileName': fileName}, success: function (response) {
                         if (response.status == "success")
                         {
                             multiuploadFiles.push(response.upload_id);
@@ -84,7 +82,7 @@
                 // finished
                 if (fileNum == fileCount)
                 {
-                    panthera.jsonPOST({ url: '?display=gallery&cat=admin&action=addUploads&gid={$category_id}', isUploading: true, data: { 'ids': JSON.stringify(multiuploadFiles) }});
+                    panthera.jsonPOST({ url: '?display=gallery&cat=admin&action=addUploads&categoryid={$category_id}', isUploading: true, data: { 'ids': JSON.stringify(multiuploadFiles) }});
                     uploadProgress.stop();
                     navigateTo(window.location);
                 }
@@ -212,7 +210,7 @@ function deleteSelectedImages()
         
             if (responseText == 'Yes')
             {
-                panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=deleteItems&images_ids='+ids, messageBox: 'w2ui', success: function (response) {
+                panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=deleteItems&itemid='+ids, messageBox: 'w2ui', success: function (response) {
                         if (response.status == 'success')
                         {
                             window.location = '';
@@ -242,7 +240,7 @@ function toggleItemVisibilitySelected()
         
             if (responseText == 'Yes')
             {
-                panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggleItemsVisibility&ids='+ids, messageBox: 'w2ui', success: function (response) {
+                panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggleItemsVisibility&itemid='+ids, messageBox: 'w2ui', success: function (response) {
                         if (response.status == 'success') {
                             window.location = '';
                         } else {
@@ -393,7 +391,7 @@ function toggleItemVisibilitySelected()
     
     <div class="uploadBoxCentered" style="min-height: 0px; width: 150px; margin-top: -30px;">
       <div class="addBox" id="addNewImage" ondragover="return false;">
-            <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=addItem&ctgid={$category_id}');"><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: relative; top: 30px; opacity: 0.8;" title="{function="localize('Drag and drop files to this area to start uploading', 'gallery')"}"></a>
+            <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=addItem&categoryid={$category_id}');"><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: relative; top: 30px; opacity: 0.8;" title="{function="localize('Drag and drop files to this area to start uploading', 'gallery')"}"></a>
       </div>
       
       <div id="selectedBox" class="selectedBox">
@@ -416,7 +414,7 @@ function toggleItemVisibilitySelected()
                 <div class="imageOptionsBackground">
                     <p id="imageTitle">{$value->getTitle(20)}</p>
                     <p>
-                        <a onclick="navigateTo('?display=gallery&cat=admin&action=editItemForm&itid={$value->id}&page={$page}');"><img src="{$PANTHERA_URL}/images/admin/menu/mce.png" class="galleryIcon" title="{function="localize('Edit', 'messages')"}"></a>
+                        <a onclick="navigateTo('?display=gallery&cat=admin&action=editItemForm&itemid={$value->id}&page={$page}');"><img src="{$PANTHERA_URL}/images/admin/menu/mce.png" class="galleryIcon" title="{function="localize('Edit', 'messages')"}"></a>
                         <a onclick="removeGalleryItem({$value->id});"><img src="{$PANTHERA_URL}/images/admin/menu/Actions-process-stop-icon.png" class="galleryIcon" title="{function="localize('Delete', 'messages')"}"></a>
                         <a onclick="toggleItemVisibility('{$value->id}');"><img src="{$PANTHERA_URL}/images/admin/menu/search.png" class="galleryIcon" title="{function="localize('Toggle visibility', 'gallery')"}"></a>
                         <a onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_manage_gimage_{$value->id}', 1024, 550);"><img src="{$PANTHERA_URL}/images/admin/menu/users.png" class="galleryIcon" title="{function="localize('Manage permissions', 'messages')"}" id="permissionsButton"></a>
