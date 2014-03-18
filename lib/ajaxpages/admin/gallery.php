@@ -641,6 +641,9 @@ class galleryAjaxControllerCore extends pageController
             }
 
         }
+        
+        // save changes
+        $item -> save();
     
         // send response to template
         ajax_exit($response);
