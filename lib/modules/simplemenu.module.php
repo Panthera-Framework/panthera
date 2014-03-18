@@ -90,8 +90,6 @@ class simpleMenu extends pantheraClass
         {
             foreach ($rows as $row)
             {
-                $attr = @unserialize($row['attributes']);
-
                 if (!is_array($attr))
                     $attr = array('active' => False);
 
@@ -99,11 +97,11 @@ class simpleMenu extends pantheraClass
                 if ($this->active == $row['url_id'])
                     $attr['active'] = True;
                 else
-                    $attr['active'] = False;     
+                    $attr['active'] = False;
 
-                $row['link'] = pantheraUrl($row['link']);
+                $row['link'] = pantheraUrl($row['link'], false, 'frontend');
 
-                $this -> add($row['url_id'], $row['title'], $row['link'], $attr, $row['icon'], $row['tooltip']);
+                $this -> add($row['url_id'], $row['title'], $row['link'], $row['attributes'], $row['icon'], $row['tooltip'], $row['route'], $row['routedata'], $row['routeget'], $row['enabled']);
             }
                 
             return True;
@@ -137,9 +135,37 @@ class simpleMenu extends pantheraClass
       * @author Damian Kęska
       */
 
-    public function add($item, $title, $link, $attributes='', $icon='', $tooltip='')
+    public function add($item, $title, $link, $attributes='', $icon='', $tooltip='', $route='', $routeData='', $routeGET='', $enabled=true)
     {
-        $this->_menu[(string)$item] = array('link' => $link, 'name' => $item, 'title' => $title, 'attributes' => $attributes, 'icon' => $icon, 'tooltip' => $tooltip);
+        if (!intval($enabled))
+            return False;
+        
+        if ($route)
+        {
+            try {
+                if (!is_array($routeData))
+                    $routeData = unserialize($routeData);
+                
+                $link = $this -> panthera -> routing -> generate($route, $routeData, $routeGET);
+            } catch (Exception $e) {
+                $this -> panthera -> logging -> output('Cannot add menu item, routing generate failed: ' .$e->getMessage(), 'simpleMenu');
+            }
+        }
+        
+        $this->_menu[(string)$item] = array(
+            'link' => $link, 
+            'name' => $item, 
+            'title' => $title, 
+            'attributes' => $attributes, 
+            'icon' => $icon, 
+            'tooltip' => $tooltip,
+            'route' => $route,
+            'routedata' => $routeData,
+            'routeget' => $routeGET,
+            'enabled' => $enabled,
+        );
+        
+        return True;
     }
 
     /**
@@ -191,8 +217,8 @@ class simpleMenu extends pantheraClass
 
     public static function getItems($menu, $limit=0, $limitFrom=0, $orderBy='order', $order='DESC')
     {
-          $panthera = pantheraCore::getInstance();
-          return $panthera->db->getRows('menus', array('type' => $menu), $limit, $limitFrom, '', $orderBy, $order);  
+        $panthera = pantheraCore::getInstance();
+        return $panthera->db->getRows('menus', array('type' => $menu), $limit, $limitFrom, '', $orderBy, $order);  
     }
 
     /**
@@ -202,10 +228,38 @@ class simpleMenu extends pantheraClass
      * @author Damian Kęska, Mateusz Warzyński
      */
 
-    public static function createItem($type, $title, $attributes, $link, $language, $url_id, $order, $icon, $tooltip)
+    public static function createItem($type, $title, $attributes, $link, $language='all', $url_id='', $order=1, $icon='', $tooltip='', $route='', $routeData='', $routeGET='', $enabled=False)
     {
         $panthera = pantheraCore::getInstance();
-        $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}menus` (`id`, `type`, `title`, `attributes`, `link`, `language`, `url_id`, `order`, `icon`, `tooltip`) VALUES (NULL, :type, :title, :attributes, :link, :language, :url_id, :order, :icon, :tooltip);', array('type' => $type, 'order' => $order, 'title' => $title, 'attributes' => $attributes, 'link' => $link, 'language' => $language, 'url_id' => $url_id, 'icon' => $icon, 'tooltip' => $tooltip));
+        
+        if (!$language)
+            $language = 'all';
+        
+        if (!$panthera -> locale -> exists($language) and $language != 'all' and $language)
+        {
+            throw new Exception('Cannot create item in unknown language', 1339);
+        }
+        
+        if ($routeData and !is_array($routeData))
+        {
+            throw new Exception('Invalid route data: non empty but not an array', 1340);
+        }
+        
+        $SQL = $panthera -> db -> insert('menus', array(
+            'type' => $type, 
+            'order' => $order, 
+            'title' => $title, 
+            'attributes' => $attributes, 
+            'link' => $link, 
+            'language' => $language, 
+            'url_id' => $url_id, 
+            'icon' => $icon, 
+            'tooltip' => $tooltip,
+            'route' => $route,
+            'routedata' => serialize($routeData),
+            'routeget' => serialize($routeGET),
+            'enabled' => (bool)$enabled,
+        ));
         
         // clear menu cache
         if ($panthera->cache)
@@ -285,19 +339,6 @@ class simpleMenu extends pantheraClass
         $fetch = $SQL -> fetch(PDO::FETCH_ASSOC);
         $panthera -> db -> query('UPDATE `{$db_prefix}menu_categories` SET `elements` = :elements WHERE `type_name` = :categoryName', array('elements' => $fetch['count(*)'], 'categoryName' => $categoryName));
     }
-
-    /**
-     * Get menu categories
-     *
-     * @return pantheraUser
-     * @author Damian Kęska
-     */
-
-    public static function getCategories($by, $limit=0, $limitFrom=0)
-    {
-        $panthera = pantheraCore::getInstance();
-        return $panthera->db->getRows('menu_categories', $by, $limit, $limitFrom, 'menuCategory');  
-    }
 }
 
 /**
@@ -315,6 +356,8 @@ class menuCategory extends pantheraFetchDB
     protected $_constructBy = array(
         'id', 'type_name', 'array',
     );
+    protected $treeID = 'type_name';
+    protected $treeParent = 'parent';
 }
 
 /**

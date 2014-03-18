@@ -2,6 +2,8 @@
 
 <script type="text/javascript">
 
+var menuID = "";
+
 /**
   * Make our elements sortable...
   *
@@ -16,11 +18,15 @@ $(document).ready(function(){
         return ui;
     };
 
-    $('.categoryTable tbody').sortable({ helper: fixHelper });
+    $('.categoryTable tbody').sortable({
+        helper: fixHelper, 
+        cancel: ".ui-state-disabled",
+        update: function (e, ui) {
+            panthera.jsonPOST({ url: "?display=menuedit&cat=admin&action=saveOrder&category={$cat_type}", data: 'order='+getTableOrder()});
+        }
+    });
     $('.categoryTable tbody').disableSelection();
 });
-
-var spinner = new panthera.ajaxLoader($('#menu_category'));
 
 /**
   * Order table
@@ -46,19 +52,6 @@ function getTableOrder()
 }
 
 /**
-  * Save ordered menu
-  *
-  * @author Mateusz Warzyński
-  */
-
-function saveMenuOrder(id)
-{
-    panthera.jsonPOST({ url: "?display=menuedit&cat=admin&action=save_order", data: 'id='+id+'&order='+getTableOrder(), spinner: spinner});
-
-    return false;
-}
-
-/**
   * Remove menu item from database
   *
   * @author Mateusz Warzyński
@@ -69,10 +62,9 @@ function removeItem(id)
     w2confirm('{function="localize('Are you sure you want delete this item?', 'menuedit')"}', function (responseText) {
         if (responseText == 'Yes')
         {
-            panthera.jsonPOST({ url: '{$AJAX_URL}?display=menuedit&cat=admin&action=remove_item&item_id='+id, data: '', messageBox: 'userinfoBox', spinner: spinner, success: function (response) {
+            panthera.jsonPOST({ url: '{$AJAX_URL}?display=menuedit&cat=admin&action=itemRemove&item_id='+id, data: '', success: function (response) {
                     if (response.status == "success") {
-                        jQuery('#item_'+id).slideUp();
-                        jQuery('#item_'+id).remove();
+                        navigateTo('?display=menuedit&cat=admin&action=getCategory&category={$category}');
                     }
                 }
             });
@@ -85,7 +77,13 @@ function removeItem(id)
 
 <div id="topContent" style="min-height: 50px;">
     <div class="searchBarButtonArea">
+        <div style="float: left; display: inline-block; margin-left: 10px;">
+            <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=menuedit&cat=admin');">
+        </div>
+    
+        {if="$newItemButton"}
         <input type="button" value="{function="localize('Add item', 'menuedit')"}" onclick="panthera.popup.toggle('element:#newItem')">
+        {/if}
     </div>
 </div>
 
@@ -103,7 +101,7 @@ function removeItem(id)
     $('#add_item_form').submit(function () {
         panthera.jsonPOST({ data: '#add_item_form', messageBox: 'w2ui', success: function (response) {
                 if (response.status == "success")
-                    navigateTo('?display=menuedit&cat=admin&action=category&category={$cat_type}');
+                    navigateTo('?display=menuedit&cat=admin&action=getCategory&category={$cat_type}');
             }
         });
     
@@ -112,7 +110,7 @@ function removeItem(id)
     });
     </script>
 
-    <form id="add_item_form" method="POST" action="?display=menuedit&cat=admin&action=add_item">
+    <form id="add_item_form" method="POST" action="?display=menuedit&cat=admin&action=createItem">
         <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
             <thead>
                  <tr>
@@ -198,7 +196,7 @@ function removeItem(id)
             {if="count($menus) > 0"}
             {loop="$menus"}
             <tr id="item_{$value.id}">
-                <td><a href="{$AJAX_URL}?display=menuedit&cat=admin&action=item&id={$value.id}" class="ajax_link">{$value.title}</a><input type="hidden" id="sortable_{$value.id}" class="sortable_hidden" value="{$value.id}"></td>
+                <td><a href="{$AJAX_URL}?display=menuedit&cat=admin&action=getItem&item_id={$value.id}" class="ajax_link">{$value.title}</a><input type="hidden" id="sortable_{$value.id}" class="sortable_hidden" value="{$value.id}"></td>
                 <td><a href="{$value.link}" target="_blank">{$value.link_original}</a></td>
                 <td>{$value.language}</td>
                 <td>{$value.url_id}</td>

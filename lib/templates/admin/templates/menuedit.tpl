@@ -12,7 +12,7 @@ function removeMenuCategory(id)
     panthera.confirmBox.create('{function="localize('Are you sure you want delete this category?', 'menuedit')"}', function (responseText) {
        if (responseText == 'Yes')
         {
-            panthera.jsonPOST({ url: '{$AJAX_URL}?display=menuedit&cat=admin&action=remove_category&category_id='+id, data: '', messageBox: 'w2ui', success: function (response) {
+            panthera.jsonPOST({ url: '{$AJAX_URL}?display=menuedit&cat=admin&action=categoryRemove&category='+id, data: '', messageBox: 'w2ui', success: function (response) {
                     if (response.status == "success")
                         navigateTo('?display=menuedit&cat=admin');
                 }
@@ -26,7 +26,9 @@ function removeMenuCategory(id)
 
 <div id="topContent" style="min-height: 50px;">
     <div class="searchBarButtonArea">
+        {if="$newCategoryButton"}
         <input type="button" value="{function="localize('Add category', 'menuedit')"}" onclick="panthera.popup.toggle('element:#newCategory')">
+        {/if}
     </div>
 </div>
 
@@ -56,7 +58,7 @@ function removeMenuCategory(id)
     
     </script>
 
-    <form id="add_category_form" method="POST" action="?display=menuedit&cat=admin&action=add_category">
+    <form id="add_category_form" method="POST" action="?display=menuedit&cat=admin&action=createCategory">
         <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
             <thead>
                  <tr>
@@ -76,16 +78,18 @@ function removeMenuCategory(id)
             </tfoot>
             <tbody>
                 <tr>
-                    <th>{function="localize('Type name', 'menuedit')"}</th>
-                    <th><input type="text" name="category_type_name" style="width: 99%;"></th>
-                </tr>
-                <tr>
                     <th>{function="localize('Title', 'menuedit')"}</th>
                     <th><input type="text" name="category_title" style="width: 99%;"></th>
                 </tr>
+                
                 <tr>
                     <th>{function="localize('Description', 'menuedit')"}</th>
                     <th><input type="text" name="category_description" style="width: 99%;"></th>
+                </tr>
+                
+                <tr>
+                    <th><small>{function="localize('ID', 'menuedit')"} ({function="localize('Optional')"})</small></th>
+                    <th><input type="text" name="category_type_name" style="width: 99%;"></th>
                 </tr>
             </tbody>
         </table>
@@ -102,32 +106,30 @@ function removeMenuCategory(id)
       <table style="display: inline-block;">
           <thead>
               <tr>
-                  <th scope="col" class="rounded-company" style="width: 250px;">{function="localize('Name', 'menuedit')"}</th>
-                  <th>{function="localize('Title', 'menuedit')"}</th>
+                  <th style="width: 250px;">{function="localize('Title', 'menuedit')"}</th>
+                  <th>{function="localize('ID', 'menuedit')"}</th>
                   <th>{function="localize('Description', 'menuedit')"}</th>
                   <th>{function="localize('Elements', 'menuedit')"}</th>
                   <th>{function="localize('Options', 'messages')"}</th>
               </tr>
           </thead>
 
-          <tbody>
+          <tbody class="hovered">
             {if="$menu_categories == False"}
               <tr>
                   <td colspan="5">{function="localize('No any categories found, use above button to create one', 'menuedit')"}.</td>
               </tr>
             {else}
              {loop="$menu_categories"}
-              <tr id="category_{$value.id}">
-                  <td><a href="?display=menuedit&cat=admin&action=category&category={$value.name}" class="ajax_link">{$value.name}</a></td>
-                  <td>{$value.title}</td>
-                  <td>{$value.description}</td>
-                  <td>{$value.elements}</td>
-                  <td>
-                      <a href="#" onclick="removeMenuCategory({$value.id});">
-                            <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
-                      </a>
-                  </td>
-              </tr>
+                 {$depth=0}
+                 {$z=$value}
+                 
+                 {*} This would happen if current user don't have enought rights to view this category so it shouldn't be listed{/*}
+                 {if="!$z.item"}
+                    {continue}
+                 {/if}
+                 
+                 {include="menuedit.categoryrow.tpl"}
              {/loop}
             {/if}
           </tbody>
