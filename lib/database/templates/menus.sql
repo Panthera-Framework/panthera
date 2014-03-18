@@ -11,6 +11,10 @@ CREATE TABLE `{$db_prefix}menus` (
   `order` smallint(3) NOT NULL,
   `icon` varchar(256) NOT NULL COMMENT 'url adress to icon',
   `tooltip` varchar(128) NOT NULL,
+  `route` varchar(32) NOT NULL,
+  `routedata` varchar(512) NOT NULL,
+  `routeget` varchar(512) NOT NULL,
+  `enabled` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 

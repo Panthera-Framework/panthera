@@ -10,5 +10,9 @@ CREATE TABLE "{$db_prefix}menus" (
   "url_id" VARCHAR NOT NULL,
   "order" INT NOT NULL,
   "icon" VARCHAR NOT NULL,
-  "tooltip" VARCHAR NOT NULL
+  "tooltip" VARCHAR NOT NULL,
+  "route" VARCHAR NOT NULL DEFAULT '',
+  "routedata" VARCHAR NOT NULL DEFAULT '',
+  "routeget" VARCHAR NOT NULL DEFAULT '',
+  "enabled" INT NOT NULL DEFAULT 0
 );
