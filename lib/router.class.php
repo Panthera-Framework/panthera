@@ -70,6 +70,18 @@ class routing {
     }
     
     /**
+     * Check if route exists
+     * 
+     * @param string $name Route name
+     * @return bool
+     */
+    
+    public function exists($name)
+    {
+        return isset($this->routes[$name]);
+    }
+    
+    /**
      * Save routing cache
      * 
      * @return null
@@ -195,7 +207,7 @@ class routing {
     {
         if(!isset($this->routes[$routeName])) 
         {
-            throw new \Exception("Route '{$routeName}' does not exist.");
+            throw new Exception("Route '{$routeName}' does not exist.");
         }
         
         $route = $this->routes[$routeName][1];
@@ -231,7 +243,7 @@ class routing {
         // Check if route exists
         if(!isset($this->routes[$routeName])) 
         {
-            throw new \Exception("Route '{$routeName}' does not exist.");
+            throw new Exception("Route '{$routeName}' does not exist.");
         }
 
         // get parameters
