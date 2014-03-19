@@ -67,15 +67,15 @@ class uploadedFile extends pantheraFetchDB
       * @param string|int $size Optional size eg. 100x100 or 200
       * @param bool $create Create thumbnail if does not exists (optional, False by default)
       * @param bool $leaveSmaller Leave smaller thumbnail if its too small to resize (optiona, True by default)
-      * @return string Link to thumbnail 
+      * 
       * @author Damian Kęska
+      * @author Mateusz Warzyński 
+      * @return string Link to thumbnail 
       */
 
     public function getThumbnail($size='', $create=False, $leaveSmaller=True)
     {
         $panthera = pantheraCore::getInstance();
-
-        $panthera -> importModule('simpleImage');
 
         $fileType = filesystem::fileTypeByMime($this->__get('mime'));
         $fileInfo = pathinfo($this->__get('location'));
@@ -108,8 +108,7 @@ class uploadedFile extends pantheraFetchDB
                     }
                 }
 
-                $simpleImage -> save($thumb, IMAGETYPE_JPEG, 85);     
-                chmod($thumb, 0655);  
+                $simpleImage -> save($thumb, 99, 0655);
 
                 if(is_file($thumb))
                     return $thumb;
@@ -132,6 +131,7 @@ class uploadedFile extends pantheraFetchDB
   * Upload functions
   *
   * @package Panthera\modules\filesystem
+  * 
   * @author Mateusz Warzyński
   * @author Damian Kęska
   */
@@ -144,6 +144,7 @@ class pantheraUpload
      * @param string $name of category
      * @param int $id of author
      * @param array $mimeType of allowed files 
+     * 
      * @author Mateusz Warzyński
      * @return string
      */
@@ -178,6 +179,7 @@ class pantheraUpload
      * Delete upload category
      *
      * @param int $id of category
+     * 
      * @author Mateusz Warzyński
      * @return string
      */
@@ -201,8 +203,8 @@ class pantheraUpload
       * @param string $orderBy Column to sort by
       * @param string $direction Sort ascending or descending
       *
-      * @return array 
       * @author Mateusz Warzyński
+      * @return array 
       */
 
     public static function getUploadCategories($by='', $limit=0, $limitFrom=0, $orderBy='id', $direction='ASC')
@@ -216,6 +218,7 @@ class pantheraUpload
      * Handle file upload
      *
      * @param $_FILE['input_name'], category name = 'default'
+     *
      * @author Damian Kęska
      * @author Mateusz Warzyński
      * @return string
@@ -259,11 +262,12 @@ class pantheraUpload
         if (is_file($uploadDir. '/' .$name))
         {
             $i= 0;
+            
             while (True)
-            {
+            {   
                 $i++;
-                if (!is_file($uploadDir. '/' .$i. '_' .$name))
-                {
+                
+                if (!is_file($uploadDir. '/' .$i. '_' .$name)) {
                     $name = $i. '_' .$name;
                     break;
                 }
@@ -323,8 +327,9 @@ class pantheraUpload
       * @param string $content Content encoded in base64 (without HTML data header)
       * @param string $fileName
       * @param string $type Mime type
-      * @return bool 
+     * 
       * @author Damian Kęska
+      * @return bool 
       */
 
     public static function makeFakeUpload($formName, $content, $fileName, $type='text/plain')
@@ -341,8 +346,9 @@ class pantheraUpload
       *
       * @param string $data Data encoded in base64 with HTML data header
       * @param bool $decode Decode base64 content (optional)
-      * @return array of two elements - mime and content (encoded in base64)
+      * 
       * @author Damian Kęska
+      * @return array of two elements - mime and content (encoded in base64)
       */
 
     public static function parseEncodedUpload($data, $decode=False)
@@ -365,21 +371,22 @@ class pantheraUpload
       * @param string $orderBy Column to sort by
       * @param string $inc Sort ascending or descending
       *
-      * @return array 
       * @author Damian Kęska
+      * @return array 
       */
 
     public static function getUploadedFiles($by='', $limit=0, $limitFrom=0, $orderBy='id', $inc='DESC')
     {
           $panthera = pantheraCore::getInstance();
-          return $panthera->db->getRows('uploads', $by, $limit, $limitFrom, 'uploadedFile', $orderBy, $inc);
+          return $panthera -> db -> getRows('uploads', $by, $limit, $limitFrom, 'uploadedFile', $orderBy, $inc);
     }
     
      /**
       * Delete a file
       *
-      * @param string $variable
       * @package Panthera\Package
+      * @param string $variable
+      * 
       * @author Damian Kęska
       */
 
@@ -397,11 +404,10 @@ class pantheraUpload
             $thumbs = glob($fileInfo['dirname']. '/../_thumbnails/*_' .$fileInfo['filename']. '.' .$fileInfo['extension']);
             
             foreach ($thumbs as $thumb)
-            {
                 @unlink($thumb);
-            }
             
             @unlink($location);
+            
             if (!is_file($location))
                 return True;
         }
@@ -423,6 +429,7 @@ class filesystem
      * Recursive directories scanning
      *
      * @param string (directory), bool (show only files?)
+     * 
      * @author Damian Kęska
      * @return string
      */
@@ -443,14 +450,13 @@ class filesystem
             if (is_link($dir. '/' .$file))
             {
                 if (in_array(readlink($dir. '/' .$file), $list))
-                {
                     continue;
-                }
             }
 
-            if (is_file($dir. '/' .$file) or is_link($dir. '/' .$file))
-                $list[] = $dir. '/' .$file;
-            else {
+            if (is_file($dir. '/' .$file) or is_link($dir. '/' .$file)) {
+                $list[] = $dir. '/' .$file;   
+            
+            } else {
             
                 //if (!$filesOnly)
                 //    $list[] = $dir. '/' .$file;
@@ -467,13 +473,14 @@ class filesystem
     }
     
     /**
-      * Remove directory recursively
-      *
-      * @param string $dir Path
-      * @return bool 
-      * @see http://pl1.php.net/manual/en/function.rmdir.php
-      * @author erkethan@free.fr
-      */
+     * Remove directory recursively
+     *
+     * @param string $dir Path
+     * @see http://pl1.php.net/manual/en/function.rmdir.php
+     * 
+     * @author erkethan@free.fr
+     * @return bool 
+     */
 
     public static function deleteDirectory($dir)
     { 
@@ -502,14 +509,15 @@ class filesystem
     }
     
     /**
-      * Make a recursive copy of a directory
-      *
-      * @param string $src
-      * @param string $dst
-      * @return void
-      * @see http://stackoverflow.com/questions/9835492/move-all-files-and-folders-in-a-folder-to-another 
-      * @author Baba
-      */
+     * Make a recursive copy of a directory
+     *
+     * @see http://stackoverflow.com/questions/9835492/move-all-files-and-folders-in-a-folder-to-another
+     * @param string $src
+     * @param string $dst
+     * 
+     * @author Baba
+     * @return void
+     */
 
     public static function recurseCopy($src, $dst) 
     { 
@@ -521,11 +529,9 @@ class filesystem
             if ($file != '.' and $file != '..')
             { 
                 if (is_dir($src . '/' . $file)) 
-                { 
                     self::recurseCopy($src . '/' . $file,$dst . '/' . $file); 
-                } else { 
-                    copy($src . '/' . $file,$dst . '/' . $file); 
-                } 
+                else
+                    copy($src . '/' . $file,$dst . '/' . $file);  
             } 
         }
          
@@ -536,6 +542,7 @@ class filesystem
      * Get file basename
      *
      * @param string Path
+     * 
      * @author Damian Kęska
      * @return string
      */
@@ -548,106 +555,33 @@ class filesystem
     /**
      * Recognize mime type by file extension
      *
-     * @param string (file name)
-     * @author Damian Kęska
+     * @param string $fileName, path to file
+     * 
+     * @author Mateusz Warzyński
      * @return string
      */
 
-    public static function getFileMimeType($file)
+    public static function getFileMimeType($fileName)
     {
-        $pathinfo = pathinfo($file);
-
-        $exts = array();
-
-        // images
-        $exts['jpg'] = 'image/jpeg';
-        $exts['jpeg'] = 'image/jpeg';
-        $exts['jpe'] = 'image/jpeg';
-        $exts['png'] = 'image/png';
-        $exts['gif'] = 'image/gif';
-        $exts['tif'] = 'image/tiff';
-        $exts['tiff'] = 'image/tiff';
-        $exts['xcf'] = 'image/xcf'; // gimp
-        $exts['ico'] = 'image/x-icon';
-        $exts['bmp'] = 'image/bmp';
-        $exts['svg'] = 'image/svg+xml';
-
-        // archives
-        $exts['tar'] = 'application/x-tar';
-        $exts['tgz'] = 'application/x-compressed';
-        $exts['gz'] = 'application/x-gzip';
-        $exts['z'] = 'application/x-compress';
-        $exts['rar'] = 'application/x-rar-compressed';
-        $exts['zip'] = 'application/zip';
-        $exts['7z'] = 'application/x-7z-compressed';
-
-        // websites
-        $exts['swf'] = 'application/x-shockwave-flash';
-        $exts['js'] = 'application/x-javascript';
-        $exts['html'] = 'text/html';
-        $exts['htm'] = 'text/html';
-        $exts['stm'] = 'text/html';
-        $exts['css'] = 'text/css';
-        $exts['php'] = 'application/x-php';
-
-        // programming
-        $exts['c'] = 'text/plain';
-        $exts['cpp'] = 'text/plain';
-
-        // documents
-        $exts['txt'] = 'text/plain';
-        $exts['pdf'] = 'application/pdf';
-        $exts['rtf'] = 'application/rtf';
-        $exts['tpl'] = 'text/html';
-
-        // LibreOffice / OpenOffice / StarOffice
-        $exts['odt'] = 'application/vnd.oasis.opendocument.text';
-        $exts['ott'] = 'application/vnd.oasis.opendocument.text-template';
-        $exts['oth'] = 'application/vnd.oasis.opendocument.text-web';
-        $exts['odm'] = 'application/vnd.oasis.opendocument.text-master';
-        $exts['odg'] = 'application/vnd.oasis.opendocument.graphics';
-        $exts['otg'] = 'application/vnd.oasis.opendocument.graphics-template';
-        $exts['odp'] = 'application/vnd.oasis.opendocument.presentation';
-        $exts['odp'] = 'application/vnd.oasis.opendocument.presentation-template';
-        $exts['ods'] = 'application/vnd.oasis.opendocument.spreadsheet';
-        $exts['ots'] = 'application/vnd.oasis.opendocument.spreadsheet-template';
-        $exts['odc'] = 'application/vnd.oasis.opendocument.chart';
-        $exts['odf'] = 'application/vnd.oasis.opendocument.formula';
-        $exts['odb'] = 'application/vnd.oasis.opendocument.database';
-        $exts['odi'] = 'application/vnd.oasis.opendocument.image';
-        $exts['oxt'] = 'application/vnd.openofficeorg.extension';
-
-        // MS Word
-        $exts['pps'] = 'application/vnd.ms-powerpoint';
-        $exts['ppt'] = 'application/vnd.ms-powerpoint';
-        $exts['pot'] = 'application/vnd.ms-powerpoint';
-        $exts['doc'] = 'application/msword';
-        $exts['xls'] = 'application/xls';
-
-        // video
-        $exts['mpeg'] = 'video/mpeg';
-        $exts['mpg'] = 'video/mpeg';
-        $exts['mpa'] = 'video/mpeg';
-        $exts['mpe'] = 'video/mpeg';
-        $exts['avi'] = 'video/x-msvideo';
-
-        // audio
-        $exts['mp3'] = 'audio/mpeg';
-
-        if (array_key_exists(strtolower($pathinfo['extension']), $exts))
-            return $exts[strtolower($pathinfo['extension'])];
-        else // not recognized: application/octet-stream 
-            return 'application/octet-stream';
+        // use finfo to detect mime type
+        $finfo = finfo_open(FILEINFO_MIME);
+        $mimetype = finfo_file($finfo, $fileName);
+        
+        // close finfo resource 
+        finfo_close($finfo);
+        
+        return $mimetype;
     }
     
     /**
      * Colorize PHP code and return in table
      *
-     * @author fsx.nr01@gmail.com, Damian Kęska
-     *
      * @param string $source_code PHP source code
      * @param int $start Line to start from
-     * @param int $end Line to finish 
+     * @param int $end Line to finish
+     * 
+     * @author fsx.nr01@gmail.com
+     * @author Damian Kęska 
      * @return string
      */
 
@@ -684,6 +618,8 @@ class filesystem
      * Get panthera file type classification by mime type
      *
      * @param string $mime Input mime type
+     * 
+     * @author Damian Kęska
      * @return string
      */
 
@@ -726,33 +662,36 @@ class filesystem
      *
      * @param int $bytes Size in bytes to convert
      * @param int $precision Rounding precision
+     * @author Mateusz Warzyński
+     * @author Damian Kęska
      * @return string
      */
 
     public static function bytesToSize($bytes, $precision = 2)
-    {  
+    {
+        // size rate  
         $kilobyte = 1024;
         $megabyte = $kilobyte * 1024;
         $gigabyte = $megabyte * 1024;
         $terabyte = $gigabyte * 1024;
        
-        if (($bytes >= 0) && ($bytes < $kilobyte)) {
+        if (($bytes >= 0) && ($bytes < $kilobyte))
             return $bytes . ' B';
      
-        } elseif (($bytes >= $kilobyte) && ($bytes < $megabyte)) {
+        elseif (($bytes >= $kilobyte) && ($bytes < $megabyte))
             return round($bytes / $kilobyte, $precision) . ' KB';
      
-        } elseif (($bytes >= $megabyte) && ($bytes < $gigabyte)) {
+        elseif (($bytes >= $megabyte) && ($bytes < $gigabyte))
             return round($bytes / $megabyte, $precision) . ' MB';
      
-        } elseif (($bytes >= $gigabyte) && ($bytes < $terabyte)) {
+        elseif (($bytes >= $gigabyte) && ($bytes < $terabyte))
             return round($bytes / $gigabyte, $precision) . ' GB';
      
-        } elseif ($bytes >= $terabyte) {
+        elseif ($bytes >= $terabyte)
             return round($bytes / $terabyte, $precision) . ' TB';
-        } else {
+        
+        else
             return $bytes . ' B';
-        }
     }
 }
 
