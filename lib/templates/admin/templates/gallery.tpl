@@ -4,7 +4,7 @@
     
     function toggleGalleriesVisibility(array)
     {
-        panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggleGalleryVisibility&ctgid='+array, messageBox: 'w2ui', success: function (response) {
+        panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=toggleGalleryVisibility&categoryid='+array, messageBox: 'w2ui', success: function (response) {
                 if (response.status == 'success')
                 {
                     navigateTo('?display=gallery&cat=admin&language={$current_lang}');
@@ -19,7 +19,7 @@
         
             if (responseText == 'Yes')
             {
-                panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=deleteCategory&id='+array, messageBox: 'w2ui', success: function (response) {
+                panthera.jsonGET( { url: '{$AJAX_URL}?display=gallery&cat=admin&action=deleteCategory&categoryid='+array, messageBox: 'w2ui', success: function (response) {
                         if (response.status == 'success')
                         {
                             navigateTo('?display=gallery&cat=admin&language={$current_lang}');

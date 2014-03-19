@@ -21,6 +21,12 @@ class galleryAjaxControllerCore extends pageController
     
     protected $userPermissions = array();
     
+    protected $actionPermissions = array(
+        'canManageGalleries' => array('can_manage_galleries', 'can_manage_gallery_{$category}'),
+        'canManageItem' => array('can_manage_galleries', 'can_manage_gallery_{$category}', 'can_manage_gimage_{$item}'),
+        'canReadGallery' => array('can_read_all_galleries')
+    );
+
     
     
     /**
@@ -33,10 +39,10 @@ class galleryAjaxControllerCore extends pageController
     public function saveCategoryDetailsAction()
     {
         // check user permissions
-        $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gallery_'.$_GET['id']));
+        $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gallery_'.$_GET['categoryid']));
     
         // get gallery by given id
-        $gallery = new galleryCategory('id', intval($_GET['id']));
+        $gallery = new galleryCategory('id', intval($_GET['categoryid']));
         
         // be sure that given gallery exists
         if (!$gallery -> exists())
@@ -101,10 +107,10 @@ class galleryAjaxControllerCore extends pageController
     public function deleteCategoryAction()
     {
         // recognize type of given variable
-        if (strpos($_GET['id'], '.'))
-            $id = explode(".", $_GET['id']);
+        if (strpos($_GET['categoryid'], '.'))
+            $id = explode(".", $_GET['categoryid']);
         else
-            $id = intval($_GET['id']);
+            $id = intval($_GET['categoryid']);
         
         // if got more than one id, call special function
         if (is_array($id))
@@ -172,9 +178,8 @@ class galleryAjaxControllerCore extends pageController
 
     public function addUploadsAction()
     {
-        
         // check user permissions
-        $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gallery_'.$_GET['gid']));
+        $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gallery_'.$_GET['id']));
          
         // get ids (of files) from decoded json array
         $files = json_decode($_POST['ids']);
@@ -227,13 +232,13 @@ class galleryAjaxControllerCore extends pageController
     public function toggleGalleryVisibilityAction()
     {
         // recognize type of given value
-        if (strpos($_GET['ctgid'], '.'))
-            $id = explode(".", $_GET['ctgid']);
+        if (strpos($_GET['categoryid'], '.'))
+            $id = explode(".", $_GET['categoryid']);
         else
-            $id = intval($_GET['ctgid']);
+            $id = intval($_GET['categoryid']);
         
         if (is_array($id))
-            $this->toggleGalleriesVisibility($id);
+            $this -> toggleGalleriesVisibility($id);
         
         
         // check permissions
@@ -567,19 +572,20 @@ class galleryAjaxControllerCore extends pageController
     
     public function setCategoryThumbAction()
     {
-        $ctgid = intval($_GET['ctgid']);
+        $ctgid = intval($_GET['categoryid']);
     
         // check user rights
         if (!$this -> userPermissions['manageAll'])
             $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gallery_'.$ctgid));
     
-        $item = new galleryItem('id', intval($_GET['itid']));
+        $item = new galleryItem('id', intval($_GET['itemid']));
         $category = new galleryCategory('id', $ctgid);
     
         // if item and gallery exist set default thumbnail
-        if ($item -> exists() and $category -> exists()) {
+        if ($item->exists() and $category->exists()) {
              $category -> thumb_id = $item -> id;
              $category -> thumb_url = $item -> link;
+             $category -> save();
              ajax_exit(array('status' => 'success'));
         } else {
              ajax_exit(array('status' => 'failed', 'error' => localize('Error with changing gallery thumbnail!', 'gallery')));
@@ -595,7 +601,7 @@ class galleryAjaxControllerCore extends pageController
 
     public function editCategoryAction()
     {
-        $id = intval($_GET['ctgid']);
+        $id = intval($_GET['categoryid']);
         
         // check permissions
         if ($this -> userPermissions['manageAll'])
@@ -635,6 +641,9 @@ class galleryAjaxControllerCore extends pageController
             }
 
         }
+        
+        // save changes
+        $item -> save();
     
         // send response to template
         ajax_exit($response);
@@ -652,9 +661,9 @@ class galleryAjaxControllerCore extends pageController
 
     public function editItemFormAction()
     {
-        if ($_GET['subaction'] == 'edit_item')
+        if ($_GET['subaction'] == 'editItem')
         {
-            $item = new galleryItem('id', intval($_GET['id']));
+            $item = new galleryItem('id', intval($_GET['itemid']));
             $_POST['upload_id'] = intval($_POST['upload_id']);
             
             // check permissions
@@ -696,7 +705,7 @@ class galleryAjaxControllerCore extends pageController
     
 
         // get gallery image
-        $item = new galleryItem('id', intval($_GET['itid']));
+        $item = new galleryItem('id', intval($_GET['itemid']));
     
         // check if image exists
         if (!$item -> exists())
@@ -753,7 +762,7 @@ class galleryAjaxControllerCore extends pageController
                 $_POST['description'] = filterInput($_POST['description'], 'quotehtml');
                 $uploadID = intval($_POST['upload_id']);
                 $visibility = intval((bool)intval($_POST['visibility']));
-                $galleryID = intval($_POST['gallery_id']);
+                $galleryID = intval($_POST['categoryid']);
                 
                 // check permissions
                 if ($this -> userPermissions['manageAll'])
@@ -787,7 +796,7 @@ class galleryAjaxControllerCore extends pageController
             pa_exit();
         }
         
-        $id = intval($_GET['ctgid']);
+        $id = intval($_GET['categoryid']);
         
         // check user permissions
         if ($this -> userPermissions['manageAll'])
@@ -803,7 +812,7 @@ class galleryAjaxControllerCore extends pageController
             pa_exit();
         
         $this -> panthera -> template -> push('category_list', $c);
-        $this -> panthera -> template -> push('category_id', $_GET['ctgid']);
+        $this -> panthera -> template -> push('category_id', $_GET['categoryid']);
         $this -> panthera -> template -> push('gallery_name', $category->title);
         $this -> panthera -> template -> push('unique', $category->unique);
         $this -> panthera -> template -> push('language_item', $category->language);
@@ -830,7 +839,7 @@ class galleryAjaxControllerCore extends pageController
     public function deleteItemAction()
     {
         // get id from $_GET
-        $id = intval($_GET['image_id']);
+        $id = intval($_GET['itemid']);
     
         // create image object
         $item = new galleryItem('id', $id);
@@ -860,11 +869,11 @@ class galleryAjaxControllerCore extends pageController
     
     public function deleteItemsAction()
     {
-        if (!isset($_GET['images_ids']))
+        if (!isset($_GET['itemid']))
             pa_exit();
         
         // create an array from given string
-        $ids = explode(",", $_GET['images_ids']);
+        $ids = explode(",", $_GET['itemid']);
 
         // define control variable
         $notDeleted = 0;
@@ -906,10 +915,11 @@ class galleryAjaxControllerCore extends pageController
     
     public function toggleItemVisibilityAction()
     {
-        if ($_POST['ctgid'])
+        if (!isset($_GET['itemid']))
+            ajax_exit(array('status' => 'failed', 'message' => localize('Please, specify the category.', 'gallery')));
         
         // get image by id
-        $item = new galleryItem('id', intval($_POST['ctgid']));
+        $item = new galleryItem('id', intval($_GET['itemid']));
     
         // check if image exists
         if (!$item -> exists())
@@ -938,7 +948,7 @@ class galleryAjaxControllerCore extends pageController
     protected function toggleItemsVisibilityAction()
     {
         // create an array
-        $ids = explode(",", $_GET['ids']);
+        $ids = explode(",", $_GET['itemid']);
     
         // define control variable
         $notToggled = 0;
@@ -984,10 +994,13 @@ class galleryAjaxControllerCore extends pageController
     {
         // get user permissions
         $this -> userPermissions = array(
-            // "viewOnly" => getUserRightAttribute($this -> panthera-> user, 'can_read_own_galleries'),
-            // "viewOnlyAll"  => getUserRightAttribute($this -> panthera -> user, 'can_read_all_galleries'),
             "manageAll" => getUserRightAttribute($this -> panthera -> user, 'can_manage_galleries')
         );
+        
+        /* Prepare for checking permissions for action functions manually
+        $this -> pushPermissionVariable('item', $_REQUEST['item_id']); 
+        $this -> pushPermissionVariable('category', $_REQUEST['category']);
+        */
 
         // load language domain
         $this -> panthera -> locale -> loadDomain('gallery');

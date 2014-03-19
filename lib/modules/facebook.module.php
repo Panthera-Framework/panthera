@@ -41,7 +41,7 @@ class facebookWrapper
     public function __construct($appid='', $secret='', $state='', $skipGetUser=False)
     {
         $panthera = pantheraCore::getInstance();
-        $this->panthera = $panthera;
+        $this -> panthera = $panthera;
 
         if ($appid == '')
             $appid = $panthera->config->getKey('facebook_appid', '', 'string', 'facebook');
@@ -63,18 +63,18 @@ class facebookWrapper
             $this -> queryCache = $t['queryCache'];
             
         } else {
-            $this->sdk = new Facebook(array('appId'  => $appid, 'secret' => $secret));
+            $this -> sdk = new Facebook(array('appId'  => $appid, 'secret' => $secret));
             $panthera -> logging -> output('Using appid=' .$appid. ' and secret=' .$secret, 'facebook');
         }
 
         if ($panthera -> session -> exists('facebookToken'))
         {
             $panthera -> logging -> output('Restoring access token from session token=' .$panthera -> session -> get('facebookToken'), 'facebook');
-            $this->sdk->setAccessToken($panthera->session->get('facebookToken'));
+            $this -> sdk -> setAccessToken($panthera->session->get('facebookToken'));
         }
         
         if (!$skipGetUser)
-            $this->sdk->getUser();
+            $this -> sdk -> getUser();
         
         $panthera -> add_option('session_save', array($this, 'saveAccessToken'));
     }
@@ -113,11 +113,11 @@ class facebookWrapper
 
     public function setProxy($url, $auth='')
     {
-        $this->sdk->CURL_OPTS['CURLOPT_PROXY'] = $url;
-        $this->sdk->CURL_OPTS['CURLOPT_SSL_VERIFYPEER'] = False;
+        $this -> sdk -> CURL_OPTS['CURLOPT_PROXY'] = $url;
+        $this -> sdk -> CURL_OPTS['CURLOPT_SSL_VERIFYPEER'] = False;
 
         if ($auth != '')
-            $this->sdk->CURL_OPTS['CURLOPT_PROXYUSERPWD'] = $auth;
+            $this -> sdk -> CURL_OPTS['CURLOPT_PROXYUSERPWD'] = $auth;
 
         return True;
     }
@@ -155,8 +155,8 @@ class facebookWrapper
             return True;
 
         try {
-            $this -> user = $this->sdk->api('/me');
-            $this->loggedIn = True;
+            $this -> user = $this -> sdk -> api('/me');
+            $this -> loggedIn = True;
             return True;
         } catch (Exception $e) {
             return False;
@@ -175,14 +175,15 @@ class facebookWrapper
 
     public function loginUser($scope, $redirect=False, $baseURL=False)
     {
-        $this->cleanURI();
-        if ($this->sdk->getUser()) {
+        $this -> cleanURI();
+		
+        if ($this -> sdk -> getUser()) {
             return True;
         } else {
             $url = $this->sdk->getLoginUrl(array('scope' => $scope));
             
             if ($baseURL) 
-            {   
+            {
                 $base = parse_url($url);
                 parse_str($base['query'], $args);
                 $url = str_ireplace(urlencode($args['redirect_uri']), urlencode($baseURL), $url);
@@ -223,9 +224,9 @@ class facebookWrapper
         // if $redirect is false then it will return the url
         //$logout = $this->panthera->template->redirect($this->sdk->getLogoutUrl(), $redirect);
         $this -> panthera -> logging -> output('Calling session destroy, cleaning up...', 'facebook');
-        $this->sdk->destroySession();
-        $this->panthera->session->remove('facebook_code');
-        $this->panthera->session->remove('facebook_state');
+        $this -> sdk -> destroySession();
+        $this -> panthera -> session -> remove('facebook_code');
+        $this -> panthera -> session -> remove('facebook_state');
         $_REQUEST['code'] = '';
         $_REQUEST['state'] = '';
         return True;
@@ -242,7 +243,7 @@ class facebookWrapper
     public function fql($query)
     {
         $this -> panthera -> logging -> startTimer();
-        $result = $this->sdk->api(array('method' => 'fql.query', 'query' => $query));
+        $result = $this -> sdk -> api(array('method' => 'fql.query', 'query' => $query));
         $this -> panthera -> logging -> output('FQL query -> "' .$query. '"', 'facebook');
         return $result;
     }
@@ -263,14 +264,14 @@ class facebookWrapper
         {
             $argID = hash('md4', serialize($arg));
             
-            if (isset($this->queryCache[$argID]))
+            if (isset($this -> queryCache[$argID]))
             {
-                if ($this->queryCache[$argID]['expiration'] <= time())
+                if ($this -> queryCache[$argID]['expiration'] <= time())
                 {
                     $this -> panthera -> logging -> output('Updating outdated argid=' .$argID, 'facebook');
                     
-                    $result = $this->sdk->api($arg);
-                    $this->queryCache[$argID] = array(
+                    $result = $this -> sdk -> api($arg);
+                    $this -> queryCache[$argID] = array(
                         'result' => $result, 
                         'expiration' => time() + $this->cacheTime
                     );
@@ -282,9 +283,9 @@ class facebookWrapper
             } else {
                 $this -> panthera -> logging -> output('Cached argid=' .$argID, 'facebook');
             
-                $result = $this->sdk->api($arg);
+                $result = $this -> sdk -> api($arg);
             
-                $this->queryCache[$argID] = array(
+                $this -> queryCache[$argID] = array(
                     'result' => $result, 
                     'expiration' => time() + $this->cacheTime
                 );
@@ -292,7 +293,7 @@ class facebookWrapper
             
             
         } else {
-            $result = $this->sdk->api($arg);
+            $result = $this -> sdk -> api($arg);
         }
         
         $this -> panthera -> logging -> output('Finished API request', 'facebook');
@@ -308,7 +309,7 @@ class facebookWrapper
 
     public function getUserGroups()
     {
-        $userGroups = $this->api('/me/groups');
+        $userGroups = $this -> api('/me/groups');
         $groups = array();
 
         foreach ($userGroups['data'] as $key => $value)
@@ -328,7 +329,7 @@ class facebookWrapper
     public function getGroup($gid)
     {
         // parsing: https://www.facebook.com/groups/243165669123459/
-        $groupData = $this->api('/' .$gid. '/');
+        $groupData = $this -> api('/' .$gid. '/');
         return new facebookGroup($this, $groupData);
     }
 }
@@ -368,7 +369,7 @@ class facebookGroup
 
     public function getUsers()
     {
-        return $this->facebook->fql('SELECT uid FROM group_member WHERE gid = ' .$this->groupData['id']);
+        return $this -> facebook -> fql('SELECT uid FROM group_member WHERE gid = ' .$this->groupData['id']);
     }
 
     /**
@@ -380,7 +381,7 @@ class facebookGroup
 
     public function getOwner()
     {
-        return $this->groupData['owner'];
+        return $this -> groupData['owner'];
     }
 
     /**
@@ -394,7 +395,7 @@ class facebookGroup
     public function __get($var)
     {
         if (array_key_exists($var, $this->groupData))
-            return $this->groupData[$var];
+            return $this -> groupData[$var];
     }
 
     /**
@@ -432,6 +433,6 @@ class facebookGroup
                 $data['description'] = $description;
         }
 
-        return $this->facebook->sdk->api('/' .$this->groupData['id']. '/feed', 'POST', $data);
+        return $this -> facebook -> sdk -> api('/' .$this->groupData['id']. '/feed', 'POST', $data);
     }
 }

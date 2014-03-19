@@ -48,9 +48,7 @@ class pantheraAutoloader
         foreach ($modules as $moduleFile)
         {
             if(stripos($moduleFile, '.module.php') === False)
-            {
                 continue;
-            }
         
             $moduleName = str_ireplace(PANTHERA_DIR. '/modules/', '', 
                           str_ireplace(SITE_DIR. '/content/modules/', '', 
@@ -61,9 +59,7 @@ class pantheraAutoloader
             foreach ($classes as $className)
             {
                 if(substr($className, 0, 1) == '\\')
-                {
                     $className = substr($className, 1);
-                }
             
                 $autoload[$className] = $moduleName;
             }
@@ -115,13 +111,14 @@ class pantheraAutoloader
                         break;
                 }
             }
+			
             if ($tokens[$i][0]===T_CLASS)
             {
                 for ($j=$i+1;$j<$count;++$j)
-                    if ($tokens[$j]==='{')
-                    {
-                        $classes[]=$namespace."\\".$tokens[$i+2][1];
-                    }
+                {
+                	if ($tokens[$j]==='{')
+                        $classes[]=$namespace."\\".$tokens[$i+2][1];	
+                }
             }
         }
         return $classes;

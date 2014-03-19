@@ -110,7 +110,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
             <tr>
                 <td>{function="localize('Category', 'gallery')"}</td>
                 <td>
-                    <select name="gallery_id">
+                    <select name="categoryid">
                     {loop="$category_list"}
                     <option value="{$value->id}" {if="$value->id == $category_id"} selected="selected"{/if}>{$value->title} ({$value->language})</option>
                     {/loop}

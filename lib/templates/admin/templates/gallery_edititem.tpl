@@ -6,7 +6,7 @@ var progress = new panthera.ajaxLoader($('#change_item_form'));
 
 $(document).ready(function () {
     $("#change_item_form").submit(function () {
-        panthera.jsonPOST({ data: '#change_item_form', async: true, url: '{$AJAX_URL}?display=gallery&cat=admin&action=edit_item_form&subaction=edit_item&id={$id}', messageBox: 'w2ui', spinner: progress,
+        panthera.jsonPOST({ data: '#change_item_form', async: true, url: '{$AJAX_URL}?display=gallery&cat=admin&action=editItemForm&subaction=editItem&itemid={$id}', messageBox: 'w2ui', spinner: progress,
             success: function (response) {
                 if (response.status == "success")
                     navigateTo('{$AJAX_URL}?display=gallery&cat=admin&action=displayCategory&unique={$unique}&language={$language_item}&page={$page}');
@@ -57,7 +57,7 @@ sliderChangeImage('{$link}');
 
 {include="ui.titlebar"}
 
-<form action="?display=gallery&cat=admin&action=edit_item_form&subaction=edit_item&id={$id}" method="POST" id="change_item_form">
+<form action="?display=gallery&cat=admin&action=editItemForm&subaction=editItem&itemid={$id}" method="POST" id="change_item_form">
 
 <div id="topContent" style="min-height: 50px;">
     <div class="searchBarButtonArea">
