@@ -19,7 +19,17 @@ class uploadAjaxControllerCore extends pageController
     
     protected $uiTitlebar = array();
     
-    protected $userPermissions = array();
+    protected $permissions = '';
+        
+    protected $actionPermissions = array(
+        'addCategory' => array('can_manage_upload'),
+        'deleteCategory' => array('can_manage_upload'),
+        'popupHandleFile' => array('can_manage_upload', 'can_upload_files'),
+        'popupDelete' => _CONTROLLER_PERMISSION_INLINE_,
+        'popupUploadFileWindow' => array('can_manage_upload', 'can_upload_files'),
+        'setMime' => array(),
+        'saveSettings' => array('can_manage_upload'),
+    );
     
     
     /**
@@ -30,15 +40,11 @@ class uploadAjaxControllerCore extends pageController
      */
     
     public function saveSettingsAction()
-    {
-        if (!$this->userPermissions['isAdmin'])
-            ajax_exit(array('status' => 'failed', 'message' => localize("You haven't permission to execute this function!", 'upload')));
-            
+    {       
         $max = $_GET['maxFileSize'];
         
-        if (!intval($max)) {
+        if (!intval($max))
             ajax_exit(array('status' => 'failed', 'message' => localize("Failed. Please, increase your maximum file size.", 'upload')));
-        }
     
         $this -> panthera -> config -> setKey('upload_max_size', $max);
         ajax_exit(array('status' => 'success', 'message' => localize("Settings have been successfully saved!")));   
@@ -73,13 +79,11 @@ class uploadAjaxControllerCore extends pageController
     {
         if (!strlen($_GET['id']))
             ajax_exit(array('status' => 'failed', 'message' => localize('Id is empty!', 'upload')));
-        
-        if ($this->userPermissions['canManageUpload'] or $this->userPermissions['isAdmin']) {
-            if (pantheraUpload::deleteUploadCategory($_GET['id']))
-                ajax_exit(array('status' => 'success'));
-        } else {
+
+        if (pantheraUpload::deleteUploadCategory($_GET['id']))
+            ajax_exit(array('status' => 'success'));
+        else
             ajax_exit(array('status' => 'failed', 'message' => localize('You have not permission to perform this action!', 'upload')));
-        }
         
         ajax_exit(array('status' => 'failed'));
     }
@@ -102,13 +106,9 @@ class uploadAjaxControllerCore extends pageController
         if (!strlen($_POST['mime']))
             ajax_exit(array('status' => 'failed', 'message' => localize('Mime is empty.', 'upload')));
         
-        if ($this->userPermissions['canManageUpload'] or $this->userPermissions['isAdmin']) {
-            if (pantheraUpload::createUploadCategory($_POST['name'], $this->panthera->user->id, $_POST['mime']))
-                ajax_exit(array('status' => 'success'));
-        } else {
-            ajax_exit(array('status' => 'failed', 'message' => localize('You have not permissions to create upload category.', 'upload')));
-        }
-        
+        if (pantheraUpload::createUploadCategory($_POST['name'], $this->panthera->user->id, $_POST['mime']))
+            ajax_exit(array('status' => 'success'));
+
         ajax_exit(array('status' => 'failed'));
     }
     
@@ -134,7 +134,7 @@ class uploadAjaxControllerCore extends pageController
             
         if (!$countCategories) {
             // create important categories
-            if ($this->userPermissions['canManageUpload'] or $this->userPermissions['isAdmin']) {
+            if ($this->checkPermissions('can_manage_upload')) {
                 pantheraUpload::createUploadCategory('default', $this->panthera->user->id, 'all');
                 pantheraUpload::createUploadCategory('gallery', $this->panthera->user->id, 'all');
                 pantheraUpload::createUploadCategory('avatars', $this->panthera->user->id, 'all');
@@ -157,7 +157,8 @@ class uploadAjaxControllerCore extends pageController
         
         $this -> panthera -> template -> push('seeOtherUsersUploads', False);
         
-        if ($this->userPermissions['isAdmin'] and isset($_GET['otherUsers']))
+        // if you are admin, you can see files which belong to other users
+        if (checkUserPermissions($this->panthera->user, True) and isset($_GET['otherUsers']))
         {
             if ($_GET['otherUsers'] == 'true')
                 $this -> panthera -> session -> set('pa.upload.otherusers', true);
@@ -236,7 +237,7 @@ class uploadAjaxControllerCore extends pageController
             $this -> panthera -> logging -> output ('Checking for icon: ' .$icon. ' for type ' .$fileType, 'upload');
             
             // give user rights to delete file, create the button
-            if (($user->id == $value->uploader_id and getUserRightAttribute($user, 'can_delete_own_uploads')) or getUserRightAttribute($user, 'can_manage_all_uploads'))
+            if (($user->id == $value->uploader_id and $this->checkPermissions('can_delete_own_uploads')) or $this->checkPermissions('can_manage_all_uploads'))
                 $ableToDelete = True;
     
             $filesTpl[] = array(
@@ -289,10 +290,7 @@ class uploadAjaxControllerCore extends pageController
      */
     
     public function popupHandleFileAction()
-    {
-        if (!$this -> checkPermissions('canUploadFiles'))
-            ajax_exit(array('status' => 'failed', 'message' => localize('You are not allowed to upload files', 'files')));
-        
+    {   
         // handle base64 encoded upload in post field "image"
         if (isset($_POST['image']))
         {
@@ -322,12 +320,11 @@ class uploadAjaxControllerCore extends pageController
             $categoryList[$c['name']] = True;
         
         if (!array_key_exists($category, $categoryList)) {
-            if ($this->userPermissions['canManageUpload'] or $this->userPermissions['isAdmin']) {
-                // create upload category, specially for this upload
-                if (!pantheraUpload::createUploadCategory($category, $this->panthera->user->id, 'all'))
-                    ajax_exit(array('status' => 'failed', 'message' => localize('Given category does not exist!', 'upload')));
-                
-            }
+            
+            // create upload category, specially for this upload
+            if (!pantheraUpload::createUploadCategory($category, $this->panthera->user->id, 'all'))
+                ajax_exit(array('status' => 'failed', 'message' => localize('Given category does not exist!', 'upload')));
+
         }
         
         $mime = '';
@@ -375,9 +372,6 @@ class uploadAjaxControllerCore extends pageController
     
     public function popupUploadFileWindowAction()
     {
-        if (!$this->checkPermissions('can_upload_files'))
-            ajax_exit(array('status' => 'failed', 'message' => localize('You are not allowed to upload files', 'files')));
-        
         $countCategories = pantheraUpload::getUploadCategories('', False, False);
         $categories = pantheraUpload::getUploadCategories('', $countCategories, 0);
         
@@ -422,11 +416,11 @@ class uploadAjaxControllerCore extends pageController
             
     
             // check if user is author or just can manage all uploads
-            if ($file->author_id != $this->panthera->user->id and !getUserRightAttribute($this->panthera->user, 'can_manage_all_uploads'))
+            if ($file->author_id != $this->panthera->user->id and !$this->checkPermissions('can_manage_all_uploads', True))
                 $canDelete = false;
     
             // check if user can delete own uploads
-            if (!getUserRightAttribute($this->panthera->user, 'can_delete_own_uploads'))
+            if (!$this->checkPermissions('can_delete_own_uploads', True))
                 $canDelete = false;
                 
             if ($canDelete) {
@@ -445,13 +439,6 @@ class uploadAjaxControllerCore extends pageController
     
     public function display()
     {
-        // get user permissions
-        $this -> userPermissions = array(
-            "canManageUpload" => $this->checkPermissions('can_manage_upload'),
-            "canAddFiles"  => $this->checkPermissions('can_add_files'),
-            "isAdmin" => checkUserPermissions($this->panthera->user, True)
-        );
-        
         // load language domain
         $this -> panthera -> locale -> loadDomain('files');
         

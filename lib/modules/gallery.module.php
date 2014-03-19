@@ -157,9 +157,6 @@ class galleryItem extends pantheraFetchDB
     
     public function getThumbnail($size='', $create=False)
     {
-        $this -> panthera -> importModule('simpleImage');
-        $this -> panthera -> importModule('filesystem');
-
         $link = pantheraUrl($this->__get('link'));
         $filePath = pantheraUrl(str_replace('{$PANTHERA_URL}/', '', pantheraUrl($link, True)));
         $mime = filesystem::getFileMimeType($filePath);
@@ -190,7 +187,7 @@ class galleryItem extends pantheraFetchDB
                 else
                     $simpleImage -> resizeToWidth($size); // resize to width
 
-                $simpleImage -> save($thumb, 99, 755);
+                $simpleImage -> save($thumb, 99, 777);
 
                 if(is_file($thumb))
                     return $thumb;
