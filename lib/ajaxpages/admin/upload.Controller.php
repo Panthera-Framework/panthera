@@ -27,7 +27,6 @@ class uploadAjaxControllerCore extends pageController
         'popupHandleFile' => array('can_manage_upload', 'can_upload_files'),
         'popupDelete' => _CONTROLLER_PERMISSION_INLINE_,
         'popupUploadFileWindow' => array('can_manage_upload', 'can_upload_files'),
-        'setMime' => array(),
         'saveSettings' => array('can_manage_upload'),
     );
     
@@ -48,21 +47,6 @@ class uploadAjaxControllerCore extends pageController
     
         $this -> panthera -> config -> setKey('upload_max_size', $max);
         ajax_exit(array('status' => 'success', 'message' => localize("Settings have been successfully saved!")));   
-    }
-    
-    
-    
-    /**
-     * Set mime type of current file
-     *
-     * @author Mateusz Warzyński 
-     * @return null
-     */
-    
-    public function setMimeAction()
-    {
-        // TODO: checking mime function - upload
-        ajax_exit(array('status' => 'failed'));
     }
     
     
@@ -295,6 +279,7 @@ class uploadAjaxControllerCore extends pageController
         if (isset($_POST['image']))
         {
             $upload = pantheraUpload::parseEncodedUpload($_POST['image']);
+            
             pantheraUpload::makeFakeUpload('input_file', $upload['content'], $_POST['fileName'], $upload['mime']);
 
             unset($_POST['image']);
@@ -344,6 +329,8 @@ class uploadAjaxControllerCore extends pageController
 
         if ($mime == '' or $mime == null)
             $mime = filesystem::getFileMimeType($_FILES['input_file']['name']);
+        
+        ajax_exit(array('mime' => $mime));
 
         $description = filterInput($_POST['input_description'], 'quotehtml');
         $protected = 0;
