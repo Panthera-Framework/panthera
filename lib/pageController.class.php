@@ -7,6 +7,8 @@
   * @license GNU Lesser General Public License 3, see license.txt
   */
 
+define('_CONTROLLER_PERMISSION_INLINE_', 2);
+  
 /**
  * Abstract interface for front controllers
  * 
@@ -187,19 +189,22 @@ abstract class pageController extends pantheraClass {
         
         if (isset($this->actionPermissions[$action]))
         {
-            if (!is_array($this -> actionPermissions[$action]))
-                $this -> actionPermissions[$action] = array($this -> actionPermissions[$action]);
-            
-            if ($this->permissionsVariables)
+            if ($this -> actionPermissions[$action] != _CONTROLLER_PERMISSION_INLINE_)
             {
-                foreach ($this -> actionPermissions[$action] as $key => $value)
+                if (!is_array($this -> actionPermissions[$action]))
+                    $this -> actionPermissions[$action] = array($this -> actionPermissions[$action]);
+                
+                if ($this->permissionsVariables)
                 {
-                    foreach ($this->permissionsVariables as $variableName => $variableValue)
-                        $this -> actionPermissions[$action][$key] = str_replace('{$' .$variableName. '}', $variableValue, $value);
+                    foreach ($this -> actionPermissions[$action] as $key => $value)
+                    {
+                        foreach ($this->permissionsVariables as $variableName => $variableValue)
+                            $this -> actionPermissions[$action][$key] = str_replace('{$' .$variableName. '}', $variableValue, $value);
+                    }
                 }
+                
+                $this -> checkPermissions($this->actionPermissions[$action], $this->useuiNoAccess);
             }
-            
-            $this -> checkPermissions($this->actionPermissions[$action], $this->useuiNoAccess);
         }
         
         // diffirent titlebar for every action
