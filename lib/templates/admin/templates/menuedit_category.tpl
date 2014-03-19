@@ -80,9 +80,13 @@ function removeItem(id)
         <div style="float: left; display: inline-block; margin-left: 10px;">
             <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=menuedit&cat=admin');">
         </div>
-    
+        
+        {if="$editCategoryButton"}
+            <input type="button" value="{function="localize('Edit category', 'menuedit')"}" onclick="panthera.popup.toggle('?display=menuedit&cat=admin&action=getCategory&subaction=edit&category={$category}&ref=getCategory')">
+        {/if}
+        
         {if="$newItemButton"}
-        <input type="button" value="{function="localize('Add item', 'menuedit')"}" onclick="panthera.popup.toggle('element:#newItem')">
+            <input type="button" value="{function="localize('Add item', 'menuedit')"}" onclick="panthera.popup.toggle('element:#newItem')">
         {/if}
     </div>
 </div>

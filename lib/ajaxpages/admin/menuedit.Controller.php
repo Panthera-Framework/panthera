@@ -19,6 +19,7 @@ class menueditAjaxControllerSystem extends pageController
         'getItem' => array('can_update_menu_{$category}', 'update_menu_item_{$item}', 'can_update_menus'),
         'getRoutes' => array('can_update_menus', 'can_update_menu_{$category}', 'update_menu_item_{$item}'),
         'getPreviewRoute' => array('can_update_menus', 'can_update_menu_{$category}', 'update_menu_item_{$item}'),
+        'saveCategory' => _CONTROLLER_PERMISSION_INLINE_,
     );
     
     protected $requirements = array(
@@ -140,6 +141,14 @@ class menueditAjaxControllerSystem extends pageController
             
             if ($category -> exists())
             {
+                if (!$this->checkPermissions('can_update_menu_' .$category->type_name, TRUE))
+                {
+                    ajax_exit(array(
+                        'status' => 'failed',
+                        'message' => slocalize('Cannot save this item to "%s" category, no enough permissions', 'menuedit', $category->title)
+                    ));
+                }
+                
                 $item -> type = $category -> type_name;
             }
         }
@@ -208,7 +217,9 @@ class menueditAjaxControllerSystem extends pageController
             ));
         }
         
-        // Todo: Check if category exists
+        // Check if category exists
+        $category = new menuCategory('type_name', $_POST['cat_type']);
+        $this -> checkCategoryExists($category);
         
         // get last item
         $lastItem = simpleMenu::getItems($_POST['cat_type'], 0, 1, 'order', 'desc');
@@ -295,11 +306,15 @@ class menueditAjaxControllerSystem extends pageController
     {
         // We cannot create category without title
         if (!$_POST['category_title'])
+        {
             ajax_exit(array(
                 'status' => 'failed',
                 'message' => localize('Please enter a category title', 'menuedit'),
             ));
-            
+        }
+        
+        // TODO: CATEGORY ALREADY EXISTS!
+           
         $title = filterInput($_POST['category_title'], 'quotehtml');
         $type_name = filterInput($_POST['category_type_name'], 'quotehtml');
             
@@ -308,7 +323,7 @@ class menueditAjaxControllerSystem extends pageController
     
         // filter all variables to avoid problems with HTML & JS injection and/or bugs with text inputs
         $description = filterInput($_POST['category_description'], 'quotehtml');
-        $parent = filterInput($POST['category_parent'], 'quotehtml');
+        $parent = filterInput($_POST['category_parent'], 'quotehtml');
         
         if ($parent)
         {
@@ -321,14 +336,21 @@ class menueditAjaxControllerSystem extends pageController
                     'message' => localize('Invalid parent category', 'menuedit'),
                 ));
             }
+            
+            if (!$this->checkPermissions('can_update_menu_' .$parentCategory->type_name, True))
+            {
+                ajax_exit(array(
+                    'status' => 'failed',
+                    'message' => slocalize('No permissions to create a subcategory in "%s"', 'menuedit', $parentCategory->title),
+                ));
+            }
         }
     
         // try to create a category
-        if (simpleMenu::createCategory($type_name, $title, $description, intval($parent), 0)) 
+        if (simpleMenu::createCategory($type_name, $title, $description, $parent, 0)) 
         {
             ajax_exit(array(
                 'status' => 'success',
-                'message' => localize('Category has been successfully added', 'menuedit'),
             ));
         }
     
@@ -350,21 +372,12 @@ class menueditAjaxControllerSystem extends pageController
     public function categoryRemoveAction($id=null)
     {
         $category = new menuCategory('type_name', $_GET['category']);
+        $this -> checkCategoryExists($category);
     
-        // check if category exists
-        if ($category -> exists())
-        {
-            simpleMenu::removeCategory($category -> id);
+        simpleMenu::removeCategory($category -> id);
             
-            ajax_exit(array(
-                'status' => 'success',
-                'message' => localize('Category has been removed', 'menuedit'),
-            ));
-        }
-    
         ajax_exit(array(
-            'status' => 'failed',
-            'message' => localize('Category not found', 'menuedit'),
+            'status' => 'success',
         ));
     }
 
@@ -575,14 +588,7 @@ class menueditAjaxControllerSystem extends pageController
     public function getCategoryAction()
     {
         $category = new menuCategory('type_name', $_GET['category']);
-        
-        if (!$category->exists())
-        {
-            ajax_exit(array(
-                'status' => 'failed',
-                'message' => localize('Category not found', 'menuedit'),
-            ));
-        }
+        $this -> checkCategoryExists($category);
         
         $items = simpleMenu::getItems($_GET['category']);
         $array = array();
@@ -624,12 +630,113 @@ class menueditAjaxControllerSystem extends pageController
             'menus' => $array,
             'category' => $_GET['category'],
             'newItemButton' => $this -> checkPermissions('can_update_menu_' .$category->cat_name, TRUE),
+            'editCategoryButton' => $this -> checkPermissions('can_update_menu_' .$category->cat_name, TRUE),
+            'action' => 'edit',
+            'object' => $category,
+            'categoriesSelectBox' => $this -> categoriesSelectBox(),
+            'ref' => filterInput($_GET['ref'], 'quotehtml'),
         ));
+        
+        // update elements count if there is any mismatch
+        if (count($array) != intval($category->elements))
+        {
+            $category -> elements = count($array);
+            $category -> save();
+        }
         
         $titlebar = new uiTitlebar(localize('Edit menu', 'menuedit')." (".localize('To change sequence of items in the category, you can drag & drop them', 'menuedit').")");
         $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png', 'left');
-        $this -> panthera -> template -> display('menuedit_category.tpl');
+        
+        if ($_GET['subaction'] == 'edit')
+            $this -> panthera -> template -> display('menuedit_edit_category.tpl');
+        else
+            $this -> panthera -> template -> display('menuedit_category.tpl');
+        
         pa_exit();
+    }
+
+    /**
+     * This method simply checks if category exists, if not its executing ajax_exit
+     * 
+     * @param menuCategory $category Category object
+     * @return bool
+     */
+
+    protected function checkCategoryExists($category)
+    {
+        if (!$category->exists())
+        {
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => localize('Category not found', 'menuedit'),
+            ));
+        }
+
+        return TRUE;
+    }
+
+    public function saveCategoryAction()
+    {
+        $category = new menuCategory('id', $_POST['category_id']);
+        $this -> checkCategoryExists($category);
+        
+        $_POST['category_type_name'] = seoUrl($_POST['category_type_name']);
+        
+        // check required permissions: 1. Can edit current category 2. Can edit destination, 3. Can edit all categories
+        $permissions = array(
+            'can_update_menu_' .$category->type_name,
+            'can_update_menus',
+        );
+        
+        if ($_POST['category_type_name'] != $category->type_name)
+        {
+            $permissions[] = 'can_update_menu_' .$_POST['category_type_name'];
+            
+            $destination = new menuCategory('type_name', $_POST['category_type_name']);
+            
+            // check if destination type_name already exists
+            if ($destination -> exists())
+            {
+                ajax_exit(array(
+                    'status' => 'failed',
+                    'message' => slocalize('Category with ID "%s" already exists and its named "%s"', 'menuedit', $_POST['category_type_name'], $destination->title),
+                ));
+            }
+        }
+        
+        // changing parent category: 1. Check if exists, 2. Check if we have permissions
+        if ($_POST['category_parent'] != $category -> parent and $_POST['category_parent'])
+        {
+            $parent = new menuCategory('type_name', $_POST['category_parent']);
+            
+            if (!$parent -> exists())
+            {
+                ajax_exit(array(
+                    'status' => 'failed',
+                    'message' => localize('Invalid parent category', 'menuedit'),
+                ));
+            }
+            
+            $permissions[] = 'can_update_menu_' .$parent->type_name;
+        }
+        
+        $this->checkPermissions($permissions);
+        
+        if ($_POST['category_type_name'])
+            $category -> type_name = $_POST['category_type_name'];
+        
+        if ($_POST['category_title'])
+            $category -> title = filterInput($_POST['category_title'], 'quotehtml');
+        
+        if ($_POST['category_parent'] != $category -> parent)
+            $category -> parent = $_POST['category_parent'];
+        
+        $category -> description = filterInput($_POST['description'], 'quotehtml');
+        $category -> save();
+        
+        ajax_exit(array(
+            'status' => 'success',
+        ));
     }
 
     /**
@@ -644,6 +751,7 @@ class menueditAjaxControllerSystem extends pageController
     {
         $categories = menuCategory::fetchTree();
         
+        // show only categories user have access to
         arrayWalkRecursive($categories, function ($key, &$value, $depth, $this) {
             if (is_object($value))
             {
@@ -671,6 +779,7 @@ class menueditAjaxControllerSystem extends pageController
         $this -> panthera -> template -> push(array(
             'menu_categories' => $categories,
             'newCategoryButton' => $this -> checkPermissions('can_update_menus', TRUE),
+            'categoriesSelectBox' => $this -> categoriesSelectBox(),
         ));
         
         $this -> uiTitlebarObject -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png', 'left');

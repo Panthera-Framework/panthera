@@ -21,6 +21,10 @@
     <td><a href="?display=menuedit&cat=admin&action=getCategory&category={$z.item->type_name}" class="ajax_link">{$z.item->description}</a></td>
     <td>{$z.item->elements}</td>
     <td>
+        <a href="#" onclick="panthera.popup.toggle('?display=menuedit&cat=admin&action=getCategory&subaction=edit&category={$z.item->type_name}');">
+            <img src="{$PANTHERA_URL}/images/admin/ui/edit.png" style="max-height: 22px;" alt="{function="localize('Edit')"}">
+        </a>
+        
         <a href="#" onclick="removeMenuCategory('{$z.item->type_name}');">
             <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
         </a>
