@@ -193,9 +193,12 @@ class uploadAjaxControllerCore extends pageController
         $files = pantheraUpload::getUploadedFiles($by, $limit[1], $limit[0]); // raw list
         $filesTpl = array(); // list passed to template
     
+        $manageAllUploads = $this->checkPermissions('can_manage_all_uploads');
+        $canDeleteOwn = $this->checkPermissions('can_delete_own_uploads');
+    
         foreach ($files as $key => $value)
         {
-            if ($value->uploader_id != $this->panthera->user->id and !$this->checkPermissions('can_manage_all_uploads') and !$value->__get('public'))
+            if ($value->uploader_id != $this->panthera->user->id and !$manageAllUploads and !$value->__get('public'))
                 continue;
     
             $name = filesystem::mb_basename($value->location);
@@ -221,7 +224,7 @@ class uploadAjaxControllerCore extends pageController
             $this -> panthera -> logging -> output ('Checking for icon: ' .$icon. ' for type ' .$fileType, 'upload');
             
             // give user rights to delete file, create the button
-            if (($user->id == $value->uploader_id and $this->checkPermissions('can_delete_own_uploads')) or $this->checkPermissions('can_manage_all_uploads'))
+            if (($this->panthera->user->id == $value->uploader_id and $canDeleteOwn) or $manageAllUploads)
                 $ableToDelete = True;
     
             $filesTpl[] = array(
