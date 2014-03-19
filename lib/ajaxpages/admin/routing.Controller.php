@@ -7,6 +7,14 @@
  * @author Damian Kęska
  * @license GNU LGPLv3, see license.txt
  */
+ 
+/**
+ * Routing management
+ * SEO links editor for Panthera Admin Panel
+ *
+ * @package Panthera\core\routing\admin
+ * @author Damian Kęska
+ */
 
 class routingAjaxControllerCore extends pageController
 {

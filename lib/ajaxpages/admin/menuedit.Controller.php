@@ -1,4 +1,21 @@
 <?php
+/**
+ * Menu editor for Panthera Framework Admin Panel
+ *
+ * @package Panthera\core\ajaxpages
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license GNU LGPLv3, see license.txt
+ */
+ 
+/**
+ * Menu editor for Panthera Framework Admin Panel
+ *
+ * @package Panthera\core\ajaxpages
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
+
 class menueditAjaxControllerSystem extends pageController
 {
     protected $uiTitlebar = array(
