@@ -2,7 +2,7 @@
 /**
   * Image processing - cropping, resizing, etc.
   *
-  * @package Panthera\modules\image
+  * @package Panthera\modules\simpleimage
   * @author Simon Jarvis
   * @copyright 2006 Simon Jarvis
   * @since 08/11/06
@@ -25,35 +25,35 @@ class SimpleImage {
    
     public function loadFromString($string, $type=IMAGETYPE_JPEG)
     {
-        $this->image = imagecreatefromstring($string);
-        $this->image_type = $type;
+        $this -> image = imagecreatefromstring($string);
+        $this -> image_type = $type;
     }
  
    function load($filename) {
+   	
       $image_info = getimagesize($filename);
-      $this->image_type = $image_info[2];
+      $this -> image_type = $image_info[2];
     
-      if( $this->image_type == IMAGETYPE_JPEG ) {
- 
-         $this->image = imagecreatefromjpeg($filename);
-      } elseif( $this->image_type == IMAGETYPE_GIF ) {
- 
-         $this->image = imagecreatefromgif($filename);
-      } elseif( $this->image_type == IMAGETYPE_PNG ) {
- 
-         $this->image = imagecreatefrompng($filename);
-      }
+      if ($this->image_type == IMAGETYPE_JPEG)
+         $this -> image = imagecreatefromjpeg($filename);
+	  
+      elseif ($this->image_type == IMAGETYPE_GIF)
+         $this -> image = imagecreatefromgif($filename);
+	  
+      elseif ($this->image_type == IMAGETYPE_PNG)
+         $this -> image = imagecreatefrompng($filename);
+      
    }
    
    public function save($filename, $compression=99, $permissions=null) {
         
-      if( $this->image_type == IMAGETYPE_JPEG )
+      if  ($this->image_type == IMAGETYPE_JPEG)
          imagejpeg($this->image, $filename, $compression);
       
-      elseif( $this->image_type == IMAGETYPE_GIF )
+      elseif ($this->image_type == IMAGETYPE_GIF)
          imagegif($this->image, $filename);
       
-      elseif( $this->image_type == IMAGETYPE_PNG )
+      elseif ($this->image_type == IMAGETYPE_PNG)
          imagepng($this->image, $filename);
       
       if($permissions != null)
@@ -65,13 +65,13 @@ class SimpleImage {
       ob_start();
  
       if ($image_type == IMAGETYPE_JPEG ) 
-      {
          imagejpeg($this->image, null, $compression);
-      } elseif( $image_type == IMAGETYPE_GIF ) {
+	  
+      elseif ($image_type == IMAGETYPE_GIF)
          imagegif($this->image, null);
-      } elseif( $image_type == IMAGETYPE_PNG ) {
+	  
+      elseif ($image_type == IMAGETYPE_PNG)
          imagepng($this->image, null);
-      }
       
       $output = ob_get_contents();
       ob_end_clean();
@@ -81,40 +81,40 @@ class SimpleImage {
    
    function getWidth() 
    {
-      return imagesx($this->image);
+      return imagesx($this -> image);
    }
    
    function getHeight() 
    {
-      return imagesy($this->image);
+      return imagesy($this -> image);
    }
    
    function resizeToHeight($height) 
    {
-      $ratio = $height / $this->getHeight();
-      $width = $this->getWidth() * $ratio;
-      $this->resize($width,$height);
+      $ratio = $height / $this -> getHeight();
+      $width = $this -> getWidth() * $ratio;
+      $this -> resize($width,$height);
    }
  
    function resizeToWidth($width) 
    {
-      $ratio = $width / $this->getWidth();
-      $height = $this->getheight() * $ratio;
-      $this->resize($width,$height);
+      $ratio = $width / $this -> getWidth();
+      $height = $this -> getheight() * $ratio;
+      $this -> resize($width, $height);
    }
  
    function scale($scale) 
    {
-      $width = $this->getWidth() * $scale/100;
-      $height = $this->getheight() * $scale/100;
-      $this->resize($width,$height);
+      $width = $this -> getWidth() * $scale/100;
+      $height = $this -> getheight() * $scale/100;
+      $this -> resize($width, $height);
    }
  
-   function resize($width,$height) 
+   function resize($width, $height) 
    {
       $new_image = imagecreatetruecolor($width, $height);
       imagecopyresampled($new_image, $this->image, 0, 0, 0, 0, $width, $height, $this->getWidth(), $this->getHeight());
-      $this->image = $new_image;
+      $this -> image = $new_image;
    }
    
    function cropBottom($px) 
@@ -122,7 +122,8 @@ class SimpleImage {
       $width = $this -> getWidth();
       $height = $this -> getHeight();
       $new_image = imagecreatetruecolor($width, $height);
+	  
       imagecopyresampled($new_image, $this->image, 0, 0, 0, 0, $width, $height, $width, $height-$px);
-      $this->image = $new_image;
+      $this -> image = $new_image;
    }
 }      
