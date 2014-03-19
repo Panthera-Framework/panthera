@@ -2028,6 +2028,22 @@ function ajax_exit($array)
 }
 
 /**
+ * Ajax equivalent of var_dump
+ * 
+ * @package Panthera\core
+ * @param mixed $mixed
+ * @return null
+ */
+
+function ajax_dump($mixed)
+{
+    ajax_exit(array(
+        'status' => 'failed',
+        'message' => r_dump($mixed),
+    ));
+}
+
+/**
  * Finish all processes and exit application
  *
  * @param string $string Optional message
