@@ -228,6 +228,9 @@ $plugins = $panthera -> loadPlugins();
 
 $panthera -> get_options('page_load_starts');
 
+if ($panthera -> config -> getKey('site.maintenance', 0, 'bool'))
+    $panthera -> importModule('boot/maintenance', true);
+
 // if site requires installation, redirect then to installer page
 if ($panthera->config->getKey('requires_instalation') and PANTHERA_FRONTCONTROLLER != '/install.php' and PANTHERA_MODE == 'CGI')
     $panthera -> importModule('boot/installer');

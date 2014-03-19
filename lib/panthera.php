@@ -1124,12 +1124,13 @@ class pantheraCore
 	 * Import module
 	 *
      * @param string $module Name
+     * @param bool $constructModule Construct $moduleModule class object
      * @param bool $forceReload Reload module if already loaded
-	 * @return bool
+	 * @return bool|object
 	 * @author Damian Kęska
 	 */
 
-    public function importModule($module, $forceReload=False)
+    public function importModule($module, $constructModule, $forceReload=False)
     {
         $module = strtolower($module);
 
@@ -1157,15 +1158,25 @@ class pantheraCore
         
         if ($f)
         {
-            include $f;
+            include_once $f;
             
             $this->logging->output('Imported "' .$module. '" from /lib/modules', 'pantheraCore');
             $this->modules[$module] = True;
-            return True;
         } else {
             $this->logging->output('Cannot import "' .$module. '" module', 'pantheraCore');
-            return False;
         }
+        
+        if ($constructModule)
+        {
+            $name = basename($module). 'Module';
+            
+            if (class_exists($name, true))
+            {
+                return new $name;
+            }
+        }
+        
+        return isset($this->modules[$module]);
     }
     
     /**

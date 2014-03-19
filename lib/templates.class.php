@@ -4,7 +4,7 @@
   *
   * @package Panthera\core\templates
   * @author Damian Kęska
-  * @license GNU Affero General Public License 3, see license.txt
+  * @license GNU Lesser General Public License 3, see license.txt
   */
 
 if (!defined('IN_PANTHERA'))

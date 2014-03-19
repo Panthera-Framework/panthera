@@ -10,6 +10,8 @@
   * @author Damian Kęska
   * @license GNU Affero General Public License 3, see license.txt
   */
+  
+define('SKIP_MAINTENANCE_CHECK', TRUE);
 
 require_once 'content/app.php';
 
