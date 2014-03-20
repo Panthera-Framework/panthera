@@ -27,7 +27,7 @@ class pantheraAutoloader
     public static function updateCache($data='')
     {
         $panthera = pantheraCore::getInstance();
-        $panthera -> importModule('filesystem');
+        
         $panthera -> logging -> startTimer();
         
         $modules = filesystem::scandirDeeply(PANTHERA_DIR. '/modules', True);
