@@ -1130,7 +1130,7 @@ class pantheraCore
 	 * @author Damian Kęska
 	 */
 
-    public function importModule($module, $constructModule, $forceReload=False)
+    public function importModule($module, $constructModule=False, $forceReload=False)
     {
         $module = strtolower($module);
 
