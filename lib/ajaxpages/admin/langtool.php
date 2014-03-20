@@ -179,7 +179,7 @@ if (@$_GET['display'] == 'langtool')
                     ajax_exit(array('status' => 'failed', 'message' => localize('Domain name is too short', 'langtool')));
 
                 if (localesManagement::createDomain($locale, $_GET['domain_name']))
-                    ajax_exit(array('status' => 'success', 'message' => localize('Done')));
+                    ajax_exit(array('status' => 'success'));
                 
                 ajax_exit(array('status' => 'failed', 'message' => localize('Cannot create domain, please check write permissions on content/locales directory and it\'s subdirectories', 'langtool')));
             }
@@ -198,7 +198,7 @@ if (@$_GET['display'] == 'langtool')
                     $domain_name = str_ireplace('.phps', '', $_GET['domain_name']);
 
                 if (localesManagement::removeDomain($locale, $domain_name))
-                    ajax_exit(array('status' => 'success', 'message' => localize('Done', 'langtool')));
+                    ajax_exit(array('status' => 'success'));
                 
                 ajax_exit(array('status' => 'failed', 'message' => localize('Cannot remove domain, please check write permissions on content/locales directory and it\'s subdirectories', 'langtool')));
             }
@@ -380,7 +380,7 @@ if (@$_GET['display'] == 'langtool')
                 
                     if (isset($_GET['createMissingDomains']))
                     {
-                        if (!localesManagement::createDomain($locale, $postData['domain']))
+                        if (!localesManagement::createDomain($postData['language'], $postData['domain']))
                         {
                             continue;
                         }
@@ -398,7 +398,7 @@ if (@$_GET['display'] == 'langtool')
                     }
                 }
             }
-            
+
             // check if domain exists
             if (!$languages[$postData['language']][$postData['domain']] -> exists())
             {
@@ -491,7 +491,7 @@ if (@$_GET['display'] == 'langtool')
             if ($domain->setString($id, $string))
             {
                 $domain->save(); // save translation
-                ajax_exit(array('status' => 'success', 'message' => localize('Saved'), 'translation' => $string, 'original' => $id, 'domain' => $name, 'language' => $locale, 'random' => rand(999, 9999)));
+                ajax_exit(array('status' => 'success', 'translation' => $string, 'original' => $id, 'domain' => $name, 'language' => $locale, 'random' => rand(999, 9999)));
             } else {
                 ajax_exit(array('status' => 'failed', 'message' => localize('Cannot save string, unknown error', 'langtool')));
             }
