@@ -36,6 +36,7 @@ if (!defined('IN_PANTHERA'))
             
             <ol id="summaryDetails">
                 <li><b>Message:</b> <span style="color: #C00;"><?php echo $errstr; ?></span></li>
+                <li><b>Place:</b> <?php echo $errfile;?> on line <?php echo $errline;?></li>
             </ol>
         </div>
         <div class="lighter">
