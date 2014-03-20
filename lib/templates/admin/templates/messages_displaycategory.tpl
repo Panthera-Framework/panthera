@@ -127,7 +127,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
 <!-- Editing a message -->
 <div style="display: none;" id="editMessagePopup">
     <form action="{$AJAX_URL}?display=messages&cat=admin&action=edit_msg&category={$category_id}" method="POST" id="edit_msg_form">
-        <table class="formTable" style="margin: 0 auto; margin-bottom: 25px;">
+        <table class="formTable" style="margin: 0 auto; margin-bottom: 25px; width: 85%;">
             <thead>
                 <tr>
                     <td colspan="2" class="formTableHeader" style="padding-top: 0px; padding-bottom: 30px;">
@@ -167,7 +167,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
                 
                 <tr>
                     <th colspan="2">
-                        <textarea name="edit_msg_content" id="edit_msg_content" style="width: 100%; height: 350px;"></textarea>
+                        <textarea name="edit_msg_content" id="edit_msg_content" style="width: 100%; height: 550px;"></textarea>
                         <input type="hidden" id="edit_msg_id" name="edit_msg_id">
                     </th>
                 </tr>
@@ -268,8 +268,8 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
 </div>
 
 <div class="ajax-content" style="text-align: center;">
-    <div style="display: inline-block;">
-    <table style="margin: 0px;">
+    <div style="display: inline-block; text-align: center;">
+    <!--<table style="margin: 0px;">
         <thead>
             <tr>
                 <th colspan="2">id</th>
@@ -312,8 +312,41 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
                 <tr><td colspan="7" style="text-align: center;">{function="localize('No items to display in this category and language', 'qmessages')"}</td></tr>
             {/if}
         </tbody>
-    </table>
+    </table>-->
     
-        <div style="position: relative; text-align: left;" class="pager">{$uiPagerName="adminQuickMessages"}{include="ui.pager"}</div>
+    {loop="$messages"}
+        <div style="text-align: left; margin: 0 auto; width: 75%; background-color: #ffffff; border: solid 1px #b8bcbf; margin-top: 15px;">
+            <div style="background-color: #f3f3f3; padding: 10px;">
+                <a onclick="$('#msg_{$value->id}_content').toggle();" style="cursor: pointer;">
+                    {if="!$value->visibility"}<i>{/if}<b {if="!$value->visibility"}style="color: grey;"{/if}>{$value->title}</b>{if="!$value->visibility"} <small>({function="localize('Not published', 'messages')"})</small></i>{/if}
+                </a>
+                
+                <a style="cursor: pointer;" onclick="deleteMessage({$value->id})">
+                    <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px; float: right; margin-right: 6px;" alt="{function="localize('Remove')"}">
+                </a>
+                
+                {if="$isAdmin"}
+                <a style="cursor: pointer;" onclick="panthera.popup.toggle('_ajax.php?display=acl&cat=admin&popup=true&name=can_qmsg_edit_{$value->id}')">
+                    <img src="{$PANTHERA_URL}/images/admin/ui/permissions.png" style="max-height: 22px; float: right; margin-right: 6px;" alt="{function="localize('Manage permissions')"}">
+                </a>
+                {/if}
+                
+                <a style="cursor: pointer;" onclick="editMessage({$value->id})">
+                    <img src="{$PANTHERA_URL}/images/admin/ui/edit.png" style="max-height: 22px; float: right; margin-right: 6px;" alt="{function="localize('Edit', 'qmessages')"}">
+                </a>
+            </div>
+            <div style="padding: 10px;" id="msg_{$value->id}_content">
+                {$value->getScrap(1400)}
+                
+                <br><br>
+                <div style="float: right; height: 25px;">
+                    <a><small>{function="slocalize('Last modified %s ago by %s', 'qmessages', elapsedTime($value->mod_time), $value->getAuthorName())"}</small></a>
+                </div>
+                <br>
+            </div>
+        </div>
+    {/loop}
+    
+        <div style="position: relative; text-align: left; margin: 0 auto; width: 75%; margin-top: 10px;" class="pager">{$uiPagerName="adminQuickMessages"}{include="ui.pager"}</div>
     </div>
 </div>

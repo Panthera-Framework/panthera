@@ -15,7 +15,7 @@ function saveStrings()
     });
     
     // serialized array will be encoded into JSON and then to Base64 and send to server
-    panthera.jsonPOST({ url: '?display=langtool&cat=admin&action=saveStrings', 'data': 'aaa=źźź&data='+Base64.encode(JSON.stringify(stringsArray)), messageBox: 'w2ui'});
+    panthera.jsonPOST({ url: '?display=langtool&cat=admin&action=saveStrings', 'data': '&data='+Base64.encode(JSON.stringify(stringsArray)), messageBox: 'w2ui'});
 }
 
 /**
@@ -55,7 +55,7 @@ function addOtherString(j, locale, domain, id)
 
         // return string from server (just in case)
         if (response.status == "success")
-              $("#td_"+j+"_"+locale).text(response.string);
+              navigateTo('?display=langtool&cat=admin&action=view_domain&locale={$language}&domain={$domain}');
 
         }
     });
@@ -159,12 +159,7 @@ function addOtherString(j, locale, domain, id)
                 // return string from server (just in case)
                 if (response.status == "success")
                 {
-                    newTable = $('#newTable').html();
-                    newTable = newTable.replace(/%original%/g, response.original);
-                    newTable = newTable.replace(/%randomid%/g, response.random);
-                    newTable = newTable.replace(/%translation%/g, response.translation);
-                    newTable = newTable.replace('class=""', 'class="translationForm"');
-                    $('#newTableAppendPoint').append(newTable);
+                    navigateTo('?display=langtool&cat=admin&action=view_domain&locale={$language}&domain={$domain}');
                 }
             }
         });
@@ -180,6 +175,46 @@ function addOtherString(j, locale, domain, id)
 
 <!-- Ajax content -->
 <div id="ajax_content" class="ajax-content" style="text-align: center;">
+    <div style="display: inline-block; width: 60%; margin-right: 50px; min-width: 800px;">
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>{function="localize('Translations', 'langtool')"}</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                {$j=0}
+                {loop="$translates"}
+                    {$k=$key}
+                    {$j=$j+1}
+                    
+                    {loop="$value"}
+                    {if="$key == $locale"}
+                    <tr>
+                        <td style="padding-top: 10px; padding-bottom: 10px;" id="translate_{$j}">
+                            <form action="#" method="POST" class="translationForm">
+                                <input type="hidden" name="domain" value="{$domain}">
+                                <input type="hidden" name="language" value="{$language}">
+                                <input type="hidden" name="original" value="{$k}" id="original_{$j}">
+                                
+                                <span style="margin-left: 20px;"><img src="{$PANTHERA_URL}/images/admin/flags/english.png" style="padding-right: 5px; margin-left: 1px;"> {$k|htmlspecialchars}</span>
+                                
+                                <div style="float: right;">
+                                    <img src="{$flag}" style="margin-right: 5px;"> 
+                                    <input type="text" name="translation" style="min-width: 300px;" value="{$value}"> 
+                                    <input type="button" value="{function="localize('Remove')"}" onclick="removeString('{$j}', '{$locale}', '{$domain}');">
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                    {/if}
+                    {/loop}
+                {/loop}
+            </tbody>
+        </table>
+
+    {*}
     {$j=0}
     {loop="$translates"}
     {$k=$key}
@@ -215,6 +250,7 @@ function addOtherString(j, locale, domain, id)
         </tbody>
     </table>
     {/loop}
+    {/*}
     
     <div id="newTableAppendPoint"></div>
 </div>

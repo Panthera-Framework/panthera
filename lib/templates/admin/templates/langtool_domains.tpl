@@ -208,7 +208,7 @@ function removeDomain(name, locale, n)
                     {$domain=$key}
                     {loop="$value"}
                 <tr>
-                    <td>
+                    <td style="padding-top: 10px; padding-bottom: 10px;">
                         <form action="#" method="POST" class="missingTranslationForm">
                             <small style="float: left;"><i>{$value.domain}</i><br>{$value.file|basename}:{$value.line}</small>
                             <input type="hidden" name="domain" value="{$value.domain}">
@@ -227,7 +227,7 @@ function removeDomain(name, locale, n)
             </tbody>
         </table>
         
-        <div style="position: relative; text-align: left;" class="pager">{$uiPagerName="adminMissingTranslations"}{include="ui.pager"}</div>
+        <div style="position: relative; text-align: left; width: 50%; margin-right: 50px; margin-left: 50px;" class="pager">{$uiPagerName="adminMissingTranslations"}{include="ui.pager"}</div>
     </div>
     {/if}
 </div>
