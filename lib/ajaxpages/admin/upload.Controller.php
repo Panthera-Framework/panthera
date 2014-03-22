@@ -314,26 +314,9 @@ class uploadAjaxControllerCore extends pageController
                 ajax_exit(array('status' => 'failed', 'message' => localize('Given category does not exist!', 'upload')));
 
         }
-        
-        $mime = '';
 
-        // get mime type
-        if (function_exists('finfo_open'))
-        {
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $mime = finfo_file($finfo, $_FILES['input_file']['tmp_name']);
-            finfo_close($finfo);
-
-        } elseif(function_exists('mime_content_type')) {
-            $mime = @mime_content_type($_FILES['input_file']['tmp_name']); // this function is deprecated, so we will try to use finfo or just to get mime type from user...   
-        } else {
-            $mime = $file['type']; // this may be a little bit dangerous but... we dont have any option   
-        }
-
-        if ($mime == '' or $mime == null)
-            $mime = filesystem::getFileMimeType($_FILES['input_file']['name']);
-        
-        ajax_exit(array('mime' => $mime));
+        // get mime type of file
+        $mime = filesystem::getFileMimeType($_FILES['input_file']['name']);
 
         $description = filterInput($_POST['input_description'], 'quotehtml');
         $protected = 0;
