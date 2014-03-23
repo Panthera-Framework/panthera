@@ -200,7 +200,7 @@ class galleryAjaxControllerCore extends pageController
                     continue;   
                 }
             
-                galleryItem::createGalleryItem( basename($file -> location),
+                galleryItem::createGalleryItem(basename($file -> location),
                     $file -> description,
                     pantheraUrl($file -> getLink(), True),
                     intval($_GET['gid']),
