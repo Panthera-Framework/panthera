@@ -61,7 +61,7 @@ class avatarsAjaxControllerCore extends pageController
         $image = new SimpleImage();
         $image -> load($_FILES['input_file']['tmp_name']);
         
-        // check dimensions
+        // check dimensions of image with ones set in database
         if ($image->getWidth() != intval($dimensions[0]) or $image->getHeight() != intval($dimensions[1]))
             ajax_exit(array('status' => 'failed', 'message' => localize('Dimensions are incorrect. It needs to be: ').$d));
         
@@ -70,7 +70,7 @@ class avatarsAjaxControllerCore extends pageController
         
         $file = new uploadedFile('id', $fileID);
         
-        // check if file exists in database
+        // check if file exists
         if (!$file -> exists())
             ajax_exit(array('status' => 'failed', 'message' => localize('Cannot handle file to avatars category.', 'avatars')));
         
@@ -81,9 +81,6 @@ class avatarsAjaxControllerCore extends pageController
         
         else
             ajax_exit(array('status' => 'failed', 'message' => localize('Cannot add avatar to gallery category.', 'avatars')));
-        
-        
-        pa_exit();
     }
     
     
@@ -121,6 +118,18 @@ class avatarsAjaxControllerCore extends pageController
         
         // send items data to template
         $this -> panthera -> template -> push('avatars', $items);
+        
+        if (isset($_GET['callback']))
+            $callback = True;
+        else
+            $callback = False;
+        
+        $d = $this -> panthera -> config -> getKey('avatar_dimensions');
+        $dimensions = explode('x', $d); 
+    
+        $this -> panthera -> template -> push('callback', $callback);
+        $this -> panthera -> template -> push('callback_name', $_GET['callback']);
+        $this -> panthera -> template -> push('dimensions', $dimensions);
         
         $this -> panthera -> template -> display('avatarsPopup.tpl');
         pa_exit();

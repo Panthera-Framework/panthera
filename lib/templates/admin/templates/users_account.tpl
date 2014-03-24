@@ -10,13 +10,8 @@ var editUser = new panthera.ajaxLoader($('#editPopup'));
   * @author Mateusz Warzyński
   */
 
-function upload_file_callback(link, mime, type, directory, id, description, author)
+function getAvatar(link, id)
 {
-    if (type != 'image') {
-        alert('{function="localize('Selected file is not a image')"}');
-        return false;
-    }
-
     $('#avatar_image').attr('src', link);
     $("#avatar_link").attr('value', link);
 }
@@ -29,7 +24,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
     <div class="searchBarButtonArea">
         {if="$permissions.canBlockUser"}<input type="button" value="{function="localize('Ban', 'users')"}" onclick="panthera.popup.toggle('element:#banUser')">{/if}
         {if="$permissions.canSeePermissions"}<input type="button" value="{function="localize('Permissions', 'users')"}" onclick="panthera.popup.toggle('element:#managePermissions')">{/if}
-        <input type="button" value="{function="localize('Edit', 'users')"}" onclick="panthera.popup.toggle('element:#editPopup')">
+        <input type="button" value="{function="localize('Edit', 'users')"}" onclick="panthera.popup.toggle('element:#editPopup', 'editUser')">
     </div>
 </div>
 
@@ -122,7 +117,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
              <tfoot>
                 <tr>
                     <td colspan="2" style="padding-top: 35px;">
-                        <input type="button" value="{function="localize('Cancel')"}" onclick="panthera.popup.close()" style="float: left; margin-left: 30px;">
+                        <input type="button" value="{function="localize('Cancel')"}" onclick="panthera.popup.close('editUser')" style="float: left; margin-left: 30px;">
                         <input type="submit" value="{function="localize('Save')"}" style="float: right; margin-right: 30px;">
                     </td>
                 </tr>
@@ -149,7 +144,7 @@ function upload_file_callback(link, mime, type, directory, id, description, auth
                 <tr>
                   <th>{function="localize('Avatar', 'users')"}</th>
                   <th>
-                      <input type="button" value="{function="localize('Upload file', 'users')"}" onclick="createPopup('_ajax.php?display=upload&cat=admin&popup=true&directory=avatars&callback=upload_file_callback', 1300, 550);" style="width: 160px;">
+                      <input type="button" value="{function="localize('Change avatar', 'users')"}" onclick="panthera.popup.toggle('?display=avatars&cat=admin&action=displayAvatars&callback=getAvatar', 'avatarPopup');" style="width: 160px;">
                       <div class="galleryImageFrame" style="margin-top: 7px;">
                         <div class="paGalleryFrameContent" style="max-width: {$avatar_dimensions[0]}px; max-height: {$avatar_dimensions[1]}px;">
                             <img src="{$profile_picture}" id="avatar_image" style="max-width: {$avatar_dimensions[0]}px; max-height: {$avatar_dimensions[1]}px;">

@@ -1,17 +1,21 @@
 <script type="text/javascript">
-var uploadProgress = new panthera.ajaxLoader($('#addNewImage'));
+var selected = new Array;
+
+var uploadProgress = new panthera.ajaxLoader($('#addNewAvatar'));
 
     $(document).ready(function () {
         var multiuploadFiles = new Array();
 
-        panthera.multiuploadArea({ id: '#addNewImage', start: function () {
+        panthera.multiuploadArea({ id: '#addNewAvatar', start: function () {
             uploadProgress.ajaxLoaderInit();
 
         }, callback: function (content, fileName, fileNum, fileCount) {
                 panthera.jsonPOST({ url: '?display=avatars&cat=admin&action=uploadAvatar', isUploading: true, async: false, data: { 'image': content, 'fileName': fileName}, success: function (response) {
                         if (response.status == "success")
                         {
-                            alert('done');
+                            panthera.popup.reload(2)
+                        } else {
+                            w2alert(response.message);
                         }
 
                     }
@@ -19,7 +23,62 @@ var uploadProgress = new panthera.ajaxLoader($('#addNewImage'));
             }
         });
     });
+
+
+function selectFile(id)
+{
+    if (selected.length == 0)
+    {
+        selected.push(id);
+        $('#avatarImage'+id).css('opacity', '0.8');
+        $('#avatarImage'+id).css('-webkit-filter', 'blur(5px)');
+        
+        $('#selectButton').css('display', 'block');
+    } else {
+        removeFromArrayByValue(selected, id);
+        $('#avatarImage'+id).css('opacity', '1');
+        $("#avatarImage"+id).css('-webkit-filter', 'none');
+    }
     
+    if (selected.length == 0)
+    {
+        $('#selectButton').css('display', 'none');
+    }
+}
+
+
+/**
+ * Remove value from array
+ *
+ * @author Mateusz Warzyński
+ */
+    
+function removeFromArrayByValue(array, value)
+{
+    for(var i=0; i<array.length; i++) {
+    
+        if(array[i] == value) {
+            array.splice(i, 1);
+            break;
+        }
+    
+    }
+}
+
+function callBack()
+{
+    id = selected[0];
+    
+    callback = eval("{$callback_name}");
+
+    if (typeof callback == 'function' && $("#avatarLink"+id).val() != '')
+        callback($('#avatarLink'+id).val(), id);
+    else
+        w2alert("{function="localize('There is no selected file', 'upload')"}!");
+        
+    panthera.popup.close('avatarPopup');
+}
+
 </script>
 
 <style type="text/css">
@@ -32,25 +91,32 @@ var uploadProgress = new panthera.ajaxLoader($('#addNewImage'));
 </style>
 
 
-<div id="content">
-    <div class="uploadBoxCentered" style="min-height: 0px; width: 150px; margin-top: -30px;">
-        <div class="addBox" id="addNewImage" ondragover="return false;">
-            <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=addItem&categoryid={$category_id}');"><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: relative; top: 30px; opacity: 0.8;" title="{function="localize('Drag and drop files to this area to start uploading', 'gallery')"}"></a>
+<div id="content" style="margin-top: 40px;">
+    
+    <div class="uploadBoxCentered" style="min-height: 0px; width: 150px; margin-top: -15px;">
+        <div id="addNewAvatar" ondragover="return false;" style="text-align: center; height: 100px;">
+            <a href="#" ><img src="{$PANTHERA_URL}/images/admin/cross_icon.png" style="position: relative; top: 30px; opacity: 0.8;" title="{function="localize('Drag and drop avatar to this area to start uploading', 'avatars')"}"></a>
         </div>
     </div>
     
     <div class="uploadBoxCentered">
+        
      {if="count($avatars) < 1"}
+        
         <p style="color: white; text-align: center;">{function="localize('There are no available avatars for you', 'upload')"}.</p>
      
      {else}
      
-      <div style="text-align: center;">
+      <div style="margin: 30px; margin-top: 20px;">
         
         {loop="$avatars"}
-                <div class="uploadBox" id="avatar_{$value->id}" rel="" style="background-color: #404C5A;" onclick="selectFile({$value->id});">
+                <div id="avatar{$value->id}" rel="" style="background-color: #404C5A; display: inline-block; position: relative;" onclick="selectFile({$value->id});">
                   <div class="boxInner" style="position: relative;">
-                        <div class="boxImg"><img src="{$value->link}" id="item_img_{$value->id}" style="width: 100%;"></div>
+                        <div style="vertical-align: middle;">
+                            <img src="{$value->link}" id="avatarImage{$value->id}" style="width: {$dimensions[1]}; height: {$dimensions[2]}; -webkit-transition-duration: 300ms;">
+                            
+                            <input type="hidden" id="avatarLink{$value->id}" value="{$value->link}">
+                        </div>
                   </div>
                 </div>
         {/loop}
@@ -60,6 +126,12 @@ var uploadProgress = new panthera.ajaxLoader($('#addNewImage'));
      {/if}
      
     </div>
-    <input type="button" value="{function="localize('Close')"}" style="float: right;" onclick="panthera.popup.close();">
+    
+    <div style="width: 65%; margin: 0 auto; padding-bottom: 10px;">
+        <input type="button" value="{function="localize('Close')"}" style="float: right;" onclick="panthera.popup.close('avatarPopup');">
+        <input type="button" value="{function="localize('Select avatar', 'avatar')"}" style="float: left; display: none;" id="selectButton" onclick="callBack();">
+    </div>
+    
+    
    </div>
  </div>
