@@ -52,8 +52,7 @@ if ($config['preconfigured'] !== True)
         if ($_SERVER['HTTPS'])
             $protocol = 'https';
 
-        $config['url'] = $protocol. '://' .$_SERVER['HTTP_HOST'].str_replace(basename($_SERVER['REQUEST_URI']), '', $_SERVER['REQUEST_URI']);
-
+        $config['url'] = $protocol. '://' .str_replace('//', '/', $_SERVER['HTTP_HOST'].str_replace(basename($_SERVER['REQUEST_URI']), '', $_SERVER['REQUEST_URI']));
     }
     
     if (!isset($config['upload_dir']))

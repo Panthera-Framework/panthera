@@ -1,24 +1,34 @@
 <?php
 /**
-  * Panthera Installer core class
-  *
-  * @package Panthera\installer
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Panthera Installer core class
+ *
+ * @package Panthera\installer
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license GNU Affero General Public License 3, see license.txt
+ */
+ 
+require_once PANTHERA_DIR. '/pageController.class.php';
 
+/**
+ * Panthera Installer core class
+ *
+ * @package Panthera\installer
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
+ 
 class pantheraInstaller
 {
     public $template = null;
 
     /**
-      * Constructor
-      *
-      * @param panthera $panthera
-      * @return void 
-      * @author Damian Kęska
-      */
+     * Constructor
+     *
+     * @param panthera $panthera
+     * @return void 
+     * @author Damian Kęska
+     */
 
     public function __construct($panthera)
     {
@@ -43,9 +53,9 @@ class pantheraInstaller
         }
         
         // merge webroot if not merged
-        if (!is_dir(SITE_DIR. '/images') or !is_dir(SITE_DIR. '/js') or !is_dir(SITE_DIR. '/css'))
-            libtemplate::webrootMerge(array('installer', 'admin'));
-        
+        if (!is_dir(SITE_DIR. '/images') or (time()-filemtime(SITE_DIR. '/images') < 3600))
+            libtemplate::webrootMerge(array('installer' => 1, 'admin' => 1));
+		
         // temporary database for installer
         $this -> config = (object)json_decode(file_get_contents($index));
         
@@ -72,13 +82,13 @@ class pantheraInstaller
     }
     
     /**
-      * Set button state
-      *
-      * @param string $button
-      * @param bool $state
-      * @return bool 
-      * @author Damian Kęska
-      */
+     * Set button state
+     *
+     * @param string $button
+     * @param bool $state
+     * @return bool 
+     * @author Damian Kęska
+     */
     
     public function setButton ($button, $state)
     {
@@ -101,11 +111,23 @@ class pantheraInstaller
     }
     
     /**
-      * Load a step, detect backward and forward moving parameters
-      *
-      * @return void 
-      * @author Damian Kęska
-      */
+     * Try to go to next step (header redirection)
+     * 
+     * @return null
+     */
+    
+    public function goToNextStep()
+    {
+        header('Location: ?_nextstep=True');
+        pa_exit();
+    }
+    
+    /**
+     * Load a step, detect backward and forward moving parameters
+     *
+     * @return void 
+     * @author Damian Kęska
+     */
     
     public function loadStep()
     {
@@ -120,6 +142,7 @@ class pantheraInstaller
                 $currentStepKey--;
                 $step = $this->config->steps[$currentStepKey];
                 $this -> db -> currentStep = $step;
+                $this -> db -> save();
             }
         }
         
@@ -132,6 +155,7 @@ class pantheraInstaller
                 $this -> db -> remove('nextStepEnabled');
                 $this -> setButton('back', True);
                 $step = $this->db->currentStep;
+                $this -> db -> save();
             }
         }
 
@@ -143,14 +167,25 @@ class pantheraInstaller
         // include step
         define('PANTHERA_INSTALLER', True);
         $this -> panthera -> importModule('installer/' .$step);
+		
+		if ($class = installerController::getControllerName($step))
+		{
+			$object = new $class;
+			$object -> installer = $this;
+            
+            if (method_exists($object, 'prepare'))
+                $object -> prepare();
+            
+			$object -> display();
+		}
     }
     
     /**
-      * Enable next step if its not the last step
-      *
-      * @return void 
-      * @author Damian Kęska
-      */
+     * Enable next step if its not the last step
+     *
+     * @return void 
+     * @author Damian Kęska
+     */
     
     public function enableNextStep()
     {
@@ -169,11 +204,11 @@ class pantheraInstaller
     }
     
     /**
-      * Display installer's template
-      *
-      * @return void 
-      * @author Damian Kęska
-      */
+     * Display installer's template
+     *
+     * @return void 
+     * @author Damian Kęska
+     */
     
     public function display()
     {
@@ -183,9 +218,41 @@ class pantheraInstaller
         $this -> panthera -> template -> push ('stepTemplate', $this->template);
         
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']))
-            $this -> panthera -> template -> display ($this->template. '.tpl');
+            $this -> panthera -> template -> display($this->template. '.tpl');
         else
             $this -> panthera -> template -> display('layout.tpl');
     }
-    
+}
+
+class installerController extends pageController 
+{
+    public $installer = null;
+	
+	/**
+     * Lookup for controller class name
+     * 
+     * @param string $name Controller name
+     * @return string|null
+     */
+	
+    public static function getControllerName($name)
+    {
+        $custom = '____non_existent_controller___';
+        
+        if (static::$searchFrontControllerName)
+            $custom = static::$searchFrontControllerName;
+        
+        $controllerNames = array(
+            $custom,
+            $name. 'InstallerController',
+            $name. 'InstallerControllerCore',
+            $name. 'InstallerControllerSystem',
+        );
+        
+        foreach ($controllerNames as $className)
+        {
+            if (class_exists($className))
+                return $className;
+        }
+    }
 }
