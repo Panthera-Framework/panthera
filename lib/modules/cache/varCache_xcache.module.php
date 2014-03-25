@@ -19,6 +19,12 @@ class varCache_xcache
     public $name = 'xcache';
     public $type = 'memory';
     protected $panthera;
+    
+    /**
+     * Constructor
+     * 
+     * @return null
+     */
 
     public function __construct ($panthera, $sessionKey='')
     {
@@ -58,6 +64,9 @@ class varCache_xcache
     
     public function clear()
     {
+        if (!ini_get('xcache.admin.user') or !ini_get('xcache.admin.pass'))
+            return FALSE;
+        
         xcache_clear_cache();
         return True;
     }
