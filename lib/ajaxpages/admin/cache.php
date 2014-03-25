@@ -435,38 +435,41 @@ $cacheList = array('xcache' => False, 'apc' => False, 'memcached' => False, 'red
 // check for requirements for built-in caching methods
 if (function_exists('xcache_set'))
 {
-    $xcacheInfo = array();
-    
-    for ($i=0; $i < xcache_count(XC_TYPE_VAR); $i++)
+    if (ini_get('xcache.admin.user') and ini_get('xcache.admin.pass'))
     {
-        $info = xcache_info(XC_TYPE_VAR, $i);
-        $xcacheInfo[$i] = array();
-        $xcacheInfo[$i]['slots'] = $info['slots'];
-        $xcacheInfo[$i]['cached'] = $info['cached'];
-        $xcacheInfo[$i]['errors'] = $info['errors'];
-        $xcacheInfo[$i]['deleted'] = $info['deleted'];
+        $xcacheInfo = array();
         
-        // size
-        $xcacheInfo[$i]['size'] = filesystem::bytesToSize($info['size']);
-        
-        $free = 0;
-        foreach ($info['free_blocks'] as $block)
+        for ($i=0; $i < xcache_count(XC_TYPE_VAR); $i++)
         {
-            $free += $block['size'];
+            $info = xcache_info(XC_TYPE_VAR, $i);
+            $xcacheInfo[$i] = array();
+            $xcacheInfo[$i]['slots'] = $info['slots'];
+            $xcacheInfo[$i]['cached'] = $info['cached'];
+            $xcacheInfo[$i]['errors'] = $info['errors'];
+            $xcacheInfo[$i]['deleted'] = $info['deleted'];
+            
+            // size
+            $xcacheInfo[$i]['size'] = filesystem::bytesToSize($info['size']);
+            
+            $free = 0;
+            foreach ($info['free_blocks'] as $block)
+            {
+                $free += $block['size'];
+            }
+            
+            $xcacheInfo[$i]['free'] = filesystem::bytesToSize($free);
+            $xcacheInfo[$i]['used'] = filesystem::bytesToSize($info['size']-$free);
+            
+            // hits and misses (usage)
+            $xcacheInfo[$i]['hits'] = $info['hits'];
+            $xcacheInfo[$i]['misses'] = $info['misses'];
+            
+            // stats
+            $xcacheInfo[$i]['hourlyStats'] = $info['hits_by_hour'];
         }
         
-        $xcacheInfo[$i]['free'] = filesystem::bytesToSize($free);
-        $xcacheInfo[$i]['used'] = filesystem::bytesToSize($info['size']-$free);
-        
-        // hits and misses (usage)
-        $xcacheInfo[$i]['hits'] = $info['hits'];
-        $xcacheInfo[$i]['misses'] = $info['misses'];
-        
-        // stats
-        $xcacheInfo[$i]['hourlyStats'] = $info['hits_by_hour'];
+        $panthera -> template -> push('xcacheInfo', $xcacheInfo);
     }
-    
-    $panthera -> template -> push('xcacheInfo', $xcacheInfo);
     $cacheList['xcache'] = True;
 }
 
