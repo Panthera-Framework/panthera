@@ -24,6 +24,7 @@ function selectLanguage() {
    <div id="fields" style="margin-top: 70px;">
     <table style="border: 0;">
       <tbody>
+          {if="$languages"}
           <tr>
               <td><p><b>{function="localize('Language', 'installer')"}:</p></b></td>
               <td style="padding-left: 10px;">
@@ -34,9 +35,11 @@ function selectLanguage() {
                     </select>
               </td>
           </tr>
+          {/if}
           
           <tr><td>&nbsp;</td></tr>
           
+          {if="$timezones"}
           <tr>
               <td><p><b>{function="localize('Timezone', 'installer')"}:</p></b></td>
               <td style="padding-left: 10px;">
@@ -47,6 +50,7 @@ function selectLanguage() {
                   </select>&nbsp;<small>({$timezone}, <i>{$currentTime}</i>)</small></p>
               </td>
           </tr>
+          {/if}
       </tbody>
      </table>
    </div>
