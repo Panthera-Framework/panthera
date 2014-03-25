@@ -54,7 +54,7 @@ class routing {
     {
         $data = null;
         
-        if ($this->cacheType == 'varcache')
+        if ($this->cacheType == 'varcache' and $this -> panthera -> varCache)
             $data = $this -> panthera -> varCache -> get('routing.cache');
         
         if ($this->cacheType == 'config' or !$data)
@@ -94,7 +94,7 @@ class routing {
             'compiledRegexes' => $this->compiledRegexes,
         );
         
-        if ($this->cacheType == 'varcache')
+        if ($this->cacheType == 'varcache' and $this -> panthera -> varCache)
             $this -> panthera -> varCache -> set('routing.cache', $data, -1); // 7 days
         else
             $this -> panthera -> config -> setKey('routing.cache', $data, 'array');
