@@ -40,6 +40,7 @@ if (extension_loaded('apc'))
     $preffered = 'apc';
 }
 
+$cacheList['files'] = True; // files is always available
 $cacheList['db'] = True; // db is always available
 
 if (isset($_POST['cache']) and isset($_POST['varCache']))
