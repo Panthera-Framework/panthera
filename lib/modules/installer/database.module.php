@@ -94,6 +94,10 @@ if (isset($_POST['db_prefix']))
 
     
     $panthera -> session -> set('installer.database', $config);
+	
+	if (!$tables)
+		$installer -> enableNextStep();
+	
     $installer -> db -> save();
     ajax_exit(array('status' => 'success', 'tables' => $tables, 'dump' => $dumpFile));
     
