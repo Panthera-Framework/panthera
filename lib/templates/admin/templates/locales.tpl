@@ -98,8 +98,8 @@ function localeAction(action, id)
                     <td style="width: 200px;">{$key}</td>
                     <td>
                         <a href="#delete" onclick="localeAction('delete', '{$key}'); return false;"><img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}"></a>
-                        <a href="#toggle-visibility" onclick="localeAction('toggle_visibility', '{$key}');"><img src="{$PANTHERA_URL}/images/admin/menu/search.png" style="max-height: 22px;" title="{function="localize('Toggle visibility', 'locales')"}"></a>
-                        <a href="#default" onclick="localeAction('set_as_default', '{$key}');"><img src="{$PANTHERA_URL}/images/admin/menu/star.png" style="max-height: 22px;" title="{function="localize('Set as default', 'locales')"}"></a>
+                        <a href="#toggle-visibility" onclick="localeAction('toggleVisibility', '{$key}');"><img src="{$PANTHERA_URL}/images/admin/menu/search.png" style="max-height: 22px;" title="{function="localize('Toggle visibility', 'locales')"}"></a>
+                        <a href="#default" onclick="localeAction('setAsDefault', '{$key}');"><img src="{$PANTHERA_URL}/images/admin/menu/star.png" style="max-height: 22px;" title="{function="localize('Set as default', 'locales')"}"></a>
                     </td>
             {/loop}
 
