@@ -43,18 +43,20 @@ class googleprAjaxControllerCore extends pageController
 	    
 	    // get PageRank
 	    $rank = GooglePR::getRank($domain);
-	        
-	    if (count($results) > 14) {
+	    
+		// limit results to display
+	    if (count($results) > 14)
+	    {
 	        reset($results);
 	        $firstKey = key($results);
 	        unset($results[$firstKey]);
 	    }
-	        
+	    
 	    $results[$domain] = $rank;
-	        
+	    
 	    $this -> panthera -> session -> set ('googlepr.history', $results);
-	        
-	    ajax_exit(array( 'status' => 'success'));
+
+	    ajax_exit(array('status' => 'success'));
 	}
     
 	
@@ -70,7 +72,7 @@ class googleprAjaxControllerCore extends pageController
     {
 		$this -> panthera -> locale -> loadDomain('googlepr');
 		
-		$this -> panthera -> template -> push('charResults', array_reverse($this -> panthera -> session -> get ('googlepr.history')));
+		$this -> panthera -> template -> push('charResults', array_reverse($this->panthera->session->get('googlepr.history')));
 		
 		return $this -> panthera -> template -> compile('googlepr.tpl');
     }
