@@ -4,7 +4,7 @@
  * Locales management
  * Manager of languages for Panthera Admin Panel
  *
- * @package Panthera\core\gallery\admin
+ * @package Panthera\core\googlepr\admin
  * @author Mateusz Warzyński
  * @author Damian Kęska
  * @license GNU LGPLv3, see license.txt
