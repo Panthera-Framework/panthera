@@ -32,7 +32,7 @@ class introductionInstallerControllerSystem extends installerController
     
     public function display()
     {
-        if (!$this->config['licence.required']))
+        if (!$this->config['licence.required'])
             $this -> installer -> enableNextStep();
         else {
             if (isset($_POST['licence_agree']))
