@@ -1,4 +1,5 @@
 <?php
+
 /**
   * Get all input variables listed
   *
@@ -8,29 +9,43 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
-if (!defined('IN_PANTHERA'))
-      exit;
+class dumpinputAjaxControllerCore extends pageController
+{
+    protected $requirements = array();
+    
+    protected $uiTitlebar = array(
+        'Dumpinput', 'settings'
+    );
+    
+    protected $permissions = 'can_dump_input';
+    
+    
+    
+    /** 
+     * Display debhook site, 
+     * 
+     * @author Mateusz Warzyński
+     * @return string
+     */
+    
+    public function display()
+    {
+        $this -> panthera -> locale -> loadDomain('debug');
 
-if (!getUserRightAttribute($user, 'can_dump_input')) {
-    $noAccess = new uiNoAccess; $noAccess -> display();
-    pa_exit();
+        if (!$this -> panthera -> session -> cookies -> exists('Created'))
+            $this -> panthera -> session -> cookies -> set('Created', date($this->panthera->dateFormat), time()+60);
+        
+        $this -> panthera -> session -> set('Name', 'Damian');
+        
+        $this -> panthera -> template -> push('cookie', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($_COOKIE, True))));
+        $this -> panthera -> template -> push('pantheraCookie', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($this->panthera->session->cookies->getAll(), True))));
+        $this -> panthera -> template -> push('pantheraSession', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($this->panthera->session->getAll(), True))));
+        $this -> panthera -> template -> push('SESSION', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($_SESSION, True))));
+        $this -> panthera -> template -> push('GET', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($_GET, True))));
+        $this -> panthera -> template -> push('POST', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($_POST, True))));
+        $this -> panthera -> template -> push('SERVER', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($_SERVER, True))));
+        
+        return $this -> panthera -> template -> compile('dumpinput.tpl');
+    }
+    
 }
-
-$panthera -> locale -> loadDomain('debug');
-
-if (!$panthera -> session -> cookies -> exists('Created'))
-    $panthera -> session -> cookies -> set('Created', date($panthera -> dateFormat), time()+60);
-
-$panthera -> session -> set('Name', 'Damien');
-
-$template -> push('cookie', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($_COOKIE, True))));
-$template -> push('pantheraCookie', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($panthera->session->cookies->getAll(), True))));
-$template -> push('pantheraSession', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($panthera->session->getAll(), True))));
-$template -> push('SESSION', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($_SESSION, True))));
-$template -> push('GET', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($_GET, True))));
-$template -> push('POST', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($_POST, True))));
-$template -> push('SERVER', str_replace("    ", "&nbsp;&nbsp;", nl2br(print_r($_SERVER, True))));
-
-$titlebar = new uiTitlebar(localize('dumpinput', 'settings'));
-$panthera -> template -> display('dumpinput.tpl');
-pa_exit();
