@@ -99,6 +99,49 @@ class quickMessage extends pantheraFetchDB
     }
     
     /**
+     * Get message crap
+     * 
+     * @param int $size Maximum length
+     * @param string|array $allowedTags List of allowed HTML tags
+     */
+    
+    public function getScrap($size=256, $allowedTags=null)
+    {
+        $message = $this -> message;
+        
+        if (!$allowedTags)
+        {
+            $allowedTags = array(
+                'p', 'b', 'u', 'i',
+                'small', 'strong', 'em', 'sub', 'sup', 'font', 'br', 'sub', 'ins', 'del', 'mark', 'var',
+                'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'h8', 'a', 
+                'img', 'span', 'div', 'map', 'area',
+                'table', 'td', 'tr', 'thead', 'tbody', 'tfoot', 'th',
+                'ul', 'ol', 'li', 'dl', 'dt', 'dd', 
+            );
+        }
+        
+        if (is_array($allowedTags))
+            $allowedTags = ltrim(rtrim(implode('><', $allowedTags), '<'), '>');
+        
+        // strip tags and cut out the size
+        $message = strip_tags($message, $allowedTags);
+        $message = substr($message, 0, $size);
+        
+        // close all unclosed tags
+        $doc = new DOMDocument();
+        $doc->loadHTML($message);
+        $message = trim($doc->saveHTML());
+        
+        if (strlen($message) < strlen($this->message))
+        {
+            $message .= '...';
+        }
+        
+        return $message;
+    }
+    
+    /**
       * Increase view count
       *
       * @param int $count
