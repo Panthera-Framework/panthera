@@ -286,6 +286,7 @@ if ($_GET['action'] == 'display_category')
             $array[] = array('id' => $message->id, 'title' => $message->title, 'mod_time' => $message->mod_time, 'visibility' => $visibility[$message->visibility], 'author_login' => $message->author_login, 'icon' => $message->icon);
         }
 
+        $panthera -> template -> push('messages', $m);
         $template->push('messages_list', $panthera->get_filters('quick_messages_list', $array));
     }
      
@@ -321,7 +322,7 @@ $sBar = new uiSearchbar('uiTop');
 $sBar -> navigate(True);
 $sBar -> setQuery($_GET['query']);
 $sBar -> setAddress('?display=messages&cat=admin');
-$sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_see_qmsg_all,can_manage_qmsg_all', localize('Manage permissions'));
+$sBar -> addIcon($panthera -> template -> getStockIcon('permissions'), '#', '?display=acl&cat=admin&popup=true&name=can_see_qmsg_all,can_manage_qmsg_all', localize('Manage permissions'));
 
 $sBar -> addSetting('order', localize('Order by', 'custompages'), 'select', array(
     'category_id' => array('title' => 'id', 'selected' => ($_GET['order'] == 'id')),
