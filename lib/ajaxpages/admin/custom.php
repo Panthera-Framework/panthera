@@ -367,7 +367,7 @@ $sBar = new uiSearchbar('uiTop');
 $sBar -> setQuery($_GET['query']);
 $sBar -> setAddress('?display=custom&cat=admin&mode=search');
 $sBar -> navigate(True);
-$sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_view_custompages', localize('Manage permissions'));
+$sBar -> addIcon($panthera -> template -> getStockIcon('permissions'), '#', '?display=acl&cat=admin&popup=true&name=can_view_custompages', localize('Manage permissions'));
 $sBar -> addSetting('only_mine', localize('Show only my pages', 'custompages'), 'checkbox', "1");
 //$sBar -> addSetting('custom_column', localize('Search in custom column', 'custompages'), 'text', '');
 
