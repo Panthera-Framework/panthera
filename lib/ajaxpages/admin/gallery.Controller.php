@@ -420,7 +420,7 @@ class galleryAjaxControllerCore extends pageController
         $category = new galleryCategory($statement, null);
 
         // add option to enable setting special permissions
-        $sBar -> addIcon( '{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_gallery_'.$category->id, localize( 'Manage permissions' ) );
+        $sBar -> addIcon($this -> panthera -> template -> getStockIcon('permissions'), '#', '?display=acl&cat=admin&popup=true&name=can_manage_gallery_'.$category->id, localize( 'Manage permissions' ) );
         
         // check all_lang parameter
         if (intval($category -> meta('unique') -> get('all_langs')) > 0) {
@@ -1016,7 +1016,7 @@ class galleryAjaxControllerCore extends pageController
         $sBar -> setQuery($_GET['query']);
         $sBar -> setAddress('?' .getQueryString('GET', '', array('_', 'page', 'query')));
         $sBar -> navigate(True);
-        $sBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_galleries,can_read_own_galleries,can_read_all_galleries', localize('Manage permissions'));
+        $sBar -> addIcon($this -> panthera -> template -> getStockIcon('permissions'), '#', '?display=acl&cat=admin&popup=true&name=can_manage_galleries,can_read_own_galleries,can_read_all_galleries', localize('Manage permissions'));
         
         // get available languages in panthera
         $languages = $this -> panthera -> locale -> getLocales();
