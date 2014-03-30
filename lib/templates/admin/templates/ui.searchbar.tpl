@@ -71,7 +71,7 @@ $(document).ready(function () {
         {if="isset($value['link'])"}
         <a href="{$value.link}"{if="isset($value['popup'])"} onclick="createPopup('{$value.popup}', 1300, 550);"{/if}{if="isset($value['alt'])"} alt="{$value.alt}"{/if}>
         {/if}
-        <img src="{$value.icon}" style="max-height: 23px; margin-left: 3px; vertical-align: middle; padding-bottom: 5px;"{if="isset($value['alt'])"} alt="{$value.alt}"{/if}>
+        <img src="images/admin/pantheraUI/transparent.png" class="pantheraIcon {$value.icon}"{if="isset($value['alt'])"} alt="{$value.alt}"{/if} style="vertical-align: middle;">
         {if="isset($value['link'])"}
         </a>
         {/if}

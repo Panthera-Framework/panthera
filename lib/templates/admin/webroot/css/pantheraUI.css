@@ -14,7 +14,6 @@ body {
 
 /* Logo bar and menu */
 
-        
 #logoBar {
     background-color: #404c5a;
     height: 75px;
@@ -58,7 +57,6 @@ body {
     height: 28px;
     float: right;
     margin-right: 5px;
-    
     position: relative;
     top: 10px;
 }
@@ -67,7 +65,7 @@ body {
     display: inline-block;
 }
 
-#menuBarVisibleLayer { /* Only just a visible layer, not a content, the content is in #menuBar */
+#menuBarVisibleLayer {/* Only just a visible layer, not a content, the content is in #menuBar */
     position: relative;
     background-color: #56687b;
     height: 21px;
@@ -79,8 +77,8 @@ body {
     position: relative;
     font-weight: 700;
     font-size: 12px;
-    vertical-align: middle;  
-    padding-left: 5px; 
+    vertical-align: middle;
+    padding-left: 5px;
     margin-bottom: 250px;
 }
 
@@ -113,7 +111,7 @@ body {
 }
 
 /* Content container */
-            
+
 .content {
     position: relative;
     background-color: #e5ebef;
@@ -121,7 +119,7 @@ body {
     min-height: 400px;
     min-width: 864px;
 }
-            
+
 .titleBar {
     position: relative;
     width: 100%;
@@ -153,19 +151,19 @@ body {
 
 .pantheraIcon {
     background: url('../images/admin/pantheraUI/icons.png') no-repeat;
-    height: 20px;
-    width: 20px;
+    height: 15px;
+    width: 15px;
     margin-right: 3px;
     display: inline-block;
 }
 
 /* Icons */
 .icon-Configure {
-    background-position: -540px -22px;
+    background-position: -540px -25px;
 }
 
 .icon-Back {
-    background-position: -269px 0px;
+    background-position: -271px 0px;
 }
 
 .icon-Home {
@@ -173,7 +171,7 @@ body {
 }
 
 .icon-Unlocked {
-    background-position: -23px -134px;
+    background-position: -27px -134px;
 }
 
 .icon-Locked {
@@ -181,15 +179,11 @@ body {
 }
 
 .icon-Users {
-    background-position: -378px 0px;
-}
-
-.icon-Search {
-    background-position: -378px 0px;
+    background-position: -378px 1px;
 }
 
 .icon-Add {
-    background-position: -343px -133px;
+    background-position: -350px -133px;
 }
 
 .icon-Settings {
@@ -205,9 +199,9 @@ body {
 }
 
 .icon-Search {
-    background-position: -347px -22px;
+    background-position: -349px -24px;
 }
-            
+
 #topContent {
     position: relative;
     min-height: 90px;
@@ -220,7 +214,7 @@ body {
 }
 
 /* Footer */
-            
+
 #footer {
     margin: 0 auto;
     margin-top: 5px;
@@ -236,14 +230,14 @@ body {
 /* Forms */
 
 .select {
-   display: inline-block;
-   float: left;
-   width: 236px;
-   height: 24px;
-   margin: 0;
-   overflow: hidden;
-   background: url('../images/admin/pantheraUI/select.png') no-repeat right #404c5a;
-   border: solid 1px #6e8093;
+    display: inline-block;
+    float: left;
+    width: 236px;
+    height: 24px;
+    margin: 0;
+    overflow: hidden;
+    background: url('../images/admin/pantheraUI/select.png') no-repeat right #404c5a;
+    border: solid 1px #6e8093;
 }
 
 .select select {
@@ -261,11 +255,9 @@ body {
 }
 
 select option {
-    background-color: #404c5a; 
+    background-color: #404c5a;
     color: #fff;
 }
-
-
 
 a {
     color: black;
@@ -290,8 +282,7 @@ a:active {
     text-align: center;
     width: 71px;
     height: 85px;
-    vertical-align:top;
-    
+    vertical-align: top;
     top: 8px;
     margin-bottom: 10px;
 }
@@ -338,15 +329,14 @@ a:active {
 /* Panthera table */
 
 table {
-    display:table;
+    display: table;
     vertical-align: top;
     /* border: 1px solid #b8bcbf; */
     border-bottom: 0px;
     border-collapse: collapse;
     text-align: left;
-    
     /* min-width: 350px; */
-    
+
     margin-right: 30px;
     color: black;
 }
@@ -396,7 +386,7 @@ td {
     height: 35px;
     padding-right: 35px;
     font-size: 13px;
-    font-weight:100;
+    font-weight: 100;
     padding-left: 20px;
 }
 
@@ -452,9 +442,8 @@ input[type="text"]:hover, input[type="number"]:hover, input[type="password"]:hov
     background: #3d4957;
 }
 
-
 .pantheraCheck {
-    width: 18px;    
+    width: 18px;
     margin: 18px auto;
     position: relative;
 }
@@ -465,7 +454,6 @@ input[type="text"]:hover, input[type="number"]:hover, input[type="password"]:hov
     width: 18px;
     height: 18px;
     top: 0;
-
     border: 1px solid #3d4957;
     background: #6e8093;
 }
@@ -484,7 +472,6 @@ input[type="text"]:hover, input[type="number"]:hover, input[type="password"]:hov
     border: 2px solid #ececec;
     border-top: none;
     border-right: none;
-
     -webkit-transform: rotate(-52deg);
     -moz-transform: rotate(-45deg);
     -o-transform: rotate(-45deg);
@@ -522,9 +509,7 @@ input[type="text"]:hover, input[type="number"]:hover, input[type="password"]:hov
     height: 28px;
 }
 
-ul.dropdown,
-ul.dropdown li,
-ul.dropdown ul {
+ul.dropdown, ul.dropdown li, ul.dropdown ul {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -569,7 +554,7 @@ ul.dropdown ul ul {
 }
 
 ul.dropdown li:hover > ul {
- visibility: visible;
+    visibility: visible;
 }
 
 ul.dropdown li {
@@ -579,10 +564,17 @@ ul.dropdown li {
     line-height: normal;
 }
 
-	ul.dropdown a:link,
-	ul.dropdown a:visited { color: #fff; text-decoration: none; }
-	ul.dropdown a:hover { color: #76b900; text-decoration: none; }
-	ul.dropdown a:active { color: #fff; }
+ul.dropdown a:link, ul.dropdown a:visited {
+    color: #fff;
+    text-decoration: none;
+}
+ul.dropdown a:hover {
+    color: #76b900;
+    text-decoration: none;
+}
+ul.dropdown a:active {
+    color: #fff;
+}
 
 /* -- level mark -- */
 
@@ -590,10 +582,10 @@ ul.dropdown ul {
     background-color: #404c5a;
     font-size: 11px;
     text-transform: none;
-	/*filter: alpha(opacity=90);
-	-moz-opacity: .9;
-	KhtmlOpacity: .9;
-	opacity: .9;*/
+    /*filter: alpha(opacity=90);
+     -moz-opacity: .9;
+     KhtmlOpacity: .9;
+     opacity: .9;*/
 }
 
 ul.dropdown ul li {
@@ -602,11 +594,16 @@ ul.dropdown ul li {
     filter: none;
 }
 
-ul.dropdown ul a:link,
-ul.dropdown ul a:visited { color: #fff; }
-ul.dropdown ul a:hover { color: #fff; text-decoration: none; }
-ul.dropdown ul a:active { color: #fff; }
-
+ul.dropdown ul a:link, ul.dropdown ul a:visited {
+    color: #fff;
+}
+ul.dropdown ul a:hover {
+    color: #fff;
+    text-decoration: none;
+}
+ul.dropdown ul a:active {
+    color: #fff;
+}
 
 ul.dropdown *.dir {
     padding-right: 38px;
@@ -622,12 +619,10 @@ ul.dropdown li a {
     padding: 7px 14px;
 }
 
-
 ul.dropdown li {
     padding: 0;
     background-color: #404c5a;
 }
-
 
 ul.dropdown li.dir {
     padding: 7px 20px 7px 14px;
@@ -636,7 +631,6 @@ ul.dropdown li.dir {
 ul.dropdown ul li.dir {
     padding-right: 15px;
 }
-
 
 ul.dropdown ul a {
     padding: 4px 5px 4px 14px;
@@ -681,7 +675,6 @@ ul.dropdown li:hover > a.dir {
     padding-bottom: 15px;
     width: 100%;
     vertical-align: center;
-    
     outline: solid 1px #6e8093;
     border-top: solid 1px #404c5a;
     background-color: #56687b;
@@ -729,7 +722,6 @@ ul.dropdown li:hover > a.dir {
     padding-top: 2px;
     font-size: 16px;
     font-weight: 700;
-    
     outline: solid 1px #3d4957;
     border-top: solid 1px #6e8093;
     border-bottom: 0px;
@@ -835,12 +827,10 @@ ul.dropdown li:hover > a.dir {
 
 .formTable tbody td {
     padding-right: 90px;
-
 }
 
 .formTable tbody th {
     padding-left: 90px;
-
 }
 
 .formTable tfoot {
@@ -883,11 +873,9 @@ ul.dropdown li:hover > a.dir {
 .galleryItem {
     width: 230px;
     max-height: 300px;
-    
     background: #56687B;
     border: solid rgba(0, 0, 0, 0.5) 1px;
-    border-radius:3px;
-    
+    border-radius: 3px;
     margin-right: 20px;
     margin-bottom: 20px;
     display: inline;
@@ -903,7 +891,7 @@ ul.dropdown li:hover > a.dir {
 }
 
 .galleryItemHidden {
-    filter:progid:DXImageTransform.Microsoft.Alpha(opacity=50);
+    filter: progid:DXImageTransform.Microsoft.Alpha(opacity=50);
     -moz-opacity: 0.4;
     -khtml-opacity: 0.4;
     opacity: 0.4;
@@ -932,13 +920,10 @@ ul.dropdown li:hover > a.dir {
     position: absolute;
     left: 0px;
     top: 0px;
-    
     background: #56687B;
     width: 100%;
     height: 100%;
-    
-    
-    filter:progid:DXImageTransform.Microsoft.Alpha(opacity=70);
+    filter: progid:DXImageTransform.Microsoft.Alpha(opacity=70);
     -moz-opacity: 0.7;
     -khtml-opacity: 0.7;
     opacity: 0.7;
@@ -1059,7 +1044,7 @@ ul.dropdown li:hover > a.dir {
 
 .imageOptions p a {
     color: white;
-    font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
+    font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
     cursor: pointer;
     font-size: 11px;
     line-height: 18px;
@@ -1074,175 +1059,161 @@ ul.dropdown li:hover > a.dir {
 
 /* Make clicks pass-through */
 #nprogress {
-  pointer-events: none;
-  -webkit-pointer-events: none;
+    pointer-events: none;
+    -webkit-pointer-events: none;
 }
 
 #nprogress .bar {
-  background: #6e8093;
-
-  position: fixed;
-  z-index: 100;
-  top: 0;
-  left: 0;
-
-  width: 100%;
-  height: 1.2px;
+    background: #6e8093;
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1.2px;
 }
 
 /* Fancy blur effect */
 #nprogress .peg {
-  display: block;
-  position: absolute;
-  right: 0px;
-  width: 100px;
-  height: 100%;
-  box-shadow: 0 0 10px #29d, 0 0 5px #29d;
-  opacity: 1.0;
-
-  -webkit-transform: rotate(3deg) translate(0px, -4px);
-  -moz-transform: rotate(3deg) translate(0px, -4px);
-  -ms-transform: rotate(3deg) translate(0px, -4px);
-  -o-transform: rotate(3deg) translate(0px, -4px);
-  transform: rotate(3deg) translate(0px, -4px);
+    display: block;
+    position: absolute;
+    right: 0px;
+    width: 100px;
+    height: 100%;
+    box-shadow: 0 0 10px #29d, 0 0 5px #29d;
+    opacity: 1.0;
+    -webkit-transform: rotate(3deg) translate(0px, -4px);
+    -moz-transform: rotate(3deg) translate(0px, -4px);
+    -ms-transform: rotate(3deg) translate(0px, -4px);
+    -o-transform: rotate(3deg) translate(0px, -4px);
+    transform: rotate(3deg) translate(0px, -4px);
 }
 
 /* Remove these to get rid of the spinner */
 #nprogress .spinner {
-  display: block;
-  position: fixed;
-  z-index: 100;
-  top: 15px;
-  right: 15px;
+    display: block;
+    position: fixed;
+    z-index: 100;
+    top: 15px;
+    right: 15px;
 }
 
 #nprogress .spinner-icon {
-  width: 14px;
-  height: 14px;
-
-  border:  solid 2px transparent;
-  border-top-color:  #29d;
-  border-left-color: #29d;
-  border-radius: 10px;
-
-  -webkit-animation: nprogress-spinner 400ms linear infinite;
-  -moz-animation:    nprogress-spinner 400ms linear infinite;
-  -ms-animation:     nprogress-spinner 400ms linear infinite;
-  -o-animation:      nprogress-spinner 400ms linear infinite;
-  animation:         nprogress-spinner 400ms linear infinite;
+    width: 14px;
+    height: 14px;
+    border: solid 2px transparent;
+    border-top-color: #29d;
+    border-left-color: #29d;
+    border-radius: 10px;
+    -webkit-animation: nprogress-spinner 400ms linear infinite;
+    -moz-animation: nprogress-spinner 400ms linear infinite;
+    -ms-animation: nprogress-spinner 400ms linear infinite;
+    -o-animation: nprogress-spinner 400ms linear infinite;
+    animation: nprogress-spinner 400ms linear infinite;
 }
 
 @-webkit-keyframes nprogress-spinner {
-  0%   { -webkit-transform: rotate(0deg);   transform: rotate(0deg); }
-  100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+0%   { -webkit-transform: rotate(0deg);   transform: rotate(0deg); }
+100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
 }
 @-moz-keyframes nprogress-spinner {
-  0%   { -moz-transform: rotate(0deg);   transform: rotate(0deg); }
-  100% { -moz-transform: rotate(360deg); transform: rotate(360deg); }
+0%   { -moz-transform: rotate(0deg);   transform: rotate(0deg); }
+100% { -moz-transform: rotate(360deg); transform: rotate(360deg); }
 }
 @-o-keyframes nprogress-spinner {
-  0%   { -o-transform: rotate(0deg);   transform: rotate(0deg); }
-  100% { -o-transform: rotate(360deg); transform: rotate(360deg); }
+0%   { -o-transform: rotate(0deg);   transform: rotate(0deg); }
+100% { -o-transform: rotate(360deg); transform: rotate(360deg); }
 }
 @-ms-keyframes nprogress-spinner {
-  0%   { -ms-transform: rotate(0deg);   transform: rotate(0deg); }
-  100% { -ms-transform: rotate(360deg); transform: rotate(360deg); }
+0%   { -ms-transform: rotate(0deg);   transform: rotate(0deg); }
+100% { -ms-transform: rotate(360deg); transform: rotate(360deg); }
 }
 @keyframes nprogress-spinner {
-  0%   { transform: rotate(0deg);   transform: rotate(0deg); }
-  100% { transform: rotate(360deg); transform: rotate(360deg); }
+0%   { transform: rotate(0deg);   transform: rotate(0deg); }
+100% { transform: rotate(360deg); transform: rotate(360deg); }
 }
 
-.wrap
-{
-	background: rgba(214, 214, 214, 0.5);
-	border: solid rgba(0, 0, 0, 0.5) 1px;
-	border-collapse: collapse;
-	float: left;
-	height: 350px;
-	margin: 10px;
-	margin-bottom: 25px;
-	margin-left: 20px;
-	margin-right: 0px;
-	moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-	ms-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-	o-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-	overflow: hidden;
-	position: relative;
-	webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-	width: 70%;
+.wrap {
+    background: rgba(214, 214, 214, 0.5);
+    border: solid rgba(0, 0, 0, 0.5) 1px;
+    border-collapse: collapse;
+    float: left;
+    height: 350px;
+    margin: 10px;
+    margin-bottom: 25px;
+    margin-left: 20px;
+    margin-right: 0px;
+    moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    ms-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    o-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    position: relative;
+    webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    width: 70%;
 }
-.uploadToolbox
-{
-	background: rgba(214, 214, 214, 0.5);
-	border: solid rgba(0, 0, 0, 0.5) 1px;
-	border-collapse: collapse;
-	float: right;
-	height: 350px;
-	margin: 10px;
-	moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-	ms-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-	o-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-	webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-	width: 25%;
+.uploadToolbox {
+    background: rgba(214, 214, 214, 0.5);
+    border: solid rgba(0, 0, 0, 0.5) 1px;
+    border-collapse: collapse;
+    float: right;
+    height: 350px;
+    margin: 10px;
+    moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    ms-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    o-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    width: 25%;
 }
-.uploadToolBoxInner
-{
-	padding-left: 20px;
-	padding-top: 10px;
+.uploadToolBoxInner {
+    padding-left: 20px;
+    padding-top: 10px;
 }
-.uploadBox
-{
-	display: inline-block;
-	position: relative;
-	width: 16%;
+.uploadBox {
+    display: inline-block;
+    position: relative;
+    width: 16%;
 }
-.boxInner
-{
-	background: #56687B;
-	border: solid rgba(0, 0, 0, 0.5) 1px;
-	margin-top: 5px;
-	height: 80px;
+.boxInner {
+    background: #56687B;
+    border: solid rgba(0, 0, 0, 0.5) 1px;
+    margin-top: 5px;
+    height: 80px;
 }
-.boxInner img
-{
-	cursor: pointer;
-	max-height: 80px;
-	max-width: 100%;
+.boxInner img {
+    cursor: pointer;
+    max-height: 80px;
+    max-width: 100%;
 }
-.boxImg
-{
-	align: top;
-	width: 100%;
-	vertical-align: middle;
+.boxImg {
+    align: top;
+    width: 100%;
+    vertical-align: middle;
 }
-.boxInner .titleBox
-{
-	background: #000;
-	background: rgba(0, 0, 0, 0.5);
-	bottom: 0;
-	color: #FFF;
-	font-size: 11px;
-	left: 0;
-	padding: 6px;
-	position: absolute;
-	right: 0;
-	text-align: center;
-	word-break: break-all;
+.boxInner .titleBox {
+    background: #000;
+    background: rgba(0, 0, 0, 0.5);
+    bottom: 0;
+    color: #FFF;
+    font-size: 11px;
+    left: 0;
+    padding: 6px;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    word-break: break-all;
 }
-.uploadBoxCentered
-{
-	background-color: #404C5A;
-	border: solid 1px #6E8093;
-	margin: 0 auto;
-	margin-bottom: 30px;
-	margin-top: 30px;
-	padding-left: 1px;
-	padding-top: 3px;
-	padding-bottom: 8px;
-	min-height: 300px;
-	position: relative;
-	width: 65%;
+.uploadBoxCentered {
+    background-color: #404C5A;
+    border: solid 1px #6E8093;
+    margin: 0 auto;
+    margin-bottom: 30px;
+    margin-top: 30px;
+    padding-left: 1px;
+    padding-top: 3px;
+    padding-bottom: 8px;
+    min-height: 300px;
+    position: relative;
+    width: 65%;
 }
 
 .ui-autocomplete {
@@ -1253,26 +1224,85 @@ ul.dropdown li:hover > a.dir {
     z-index: 999999999999;
     border: solid 1px #56687B;
     border-radius: 0;
-  }
-  
-  .ui-menu-item {
+}
+
+.ui-menu-item {
     background: #404C5A;
     color: white;
-  }
-  
-  .ui-state-focus:hover {
+}
+
+.ui-state-focus:hover {
     background: white;
-  }
-  
-  .ui-menu-item a {
+}
+
+.ui-menu-item a {
     font-size: 11px;
     color: white;
-  }
-  
-  .ui-menu-item a:hover {
+}
+
+.ui-menu-item a:hover {
     color: #404C5A;
-  }
-  
-  * html .ui-autocomplete {
+}
+
+* html .ui-autocomplete {
     height: 100px;
+}
+
+.articleTitlebar {
+    background-color: #56687b;
+    padding: 6px;
+    padding-left: 10px;
+    min-width: 800px;
+}
+
+.articleTitlebar a {
+    color: white;
+    font-size: 13px;
+}
+
+.inactiveArticle {
+    color: grey;
+}
+
+.articleUnpublished {
+    opacity: 0.6;
+}
+
+.articleContainer {
+    text-align: left;
+    margin: 0 auto;
+    width: 75%;
+    background-color: #ffffff;
+    border: solid 1px #b8bcbf;
+    margin-top: 15px;
+    min-width: 820px;
+}
+
+.articleContent {
+    margin-top: -15px;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.articleFooter {
+    float: right;
+    height: 25px;
+}
+
+.icon-Edit {
+    background-position: -161px 0px;
+}
+
+.icon-Delete {
+    background-position: -216px -134px;
+}
+
+.articleIcons {
+    float: right;
+}
+
+.menuItem img {
+    width: 20px;
+    height: 20px;
+    
 }

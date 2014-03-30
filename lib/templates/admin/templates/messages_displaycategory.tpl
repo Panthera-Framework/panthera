@@ -315,31 +315,33 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
     </table>-->
     
     {loop="$messages"}
-        <div style="text-align: left; margin: 0 auto; width: 75%; background-color: #ffffff; border: solid 1px #b8bcbf; margin-top: 15px;">
-            <div style="background-color: #f3f3f3; padding: 10px;">
+        <div class="articleContainer{if="!$value->visibility"} articleUnpublished{/if}">
+            <div class="articleTitlebar">
                 <a onclick="$('#msg_{$value->id}_content').toggle();" style="cursor: pointer;">
-                    {if="!$value->visibility"}<i>{/if}<b {if="!$value->visibility"}style="color: grey;"{/if}>{$value->title}</b>{if="!$value->visibility"} <small>({function="localize('Not published', 'messages')"})</small></i>{/if}
+                    {if="!$value->visibility"}<i>{/if}<b {if="!$value->visibility"}class="inaviteArticle"{/if}>{$value->title}</b>{if="!$value->visibility"} <small>({function="localize('Not published', 'messages')"})</small></i>{/if}
                 </a>
                 
-                <a style="cursor: pointer;" onclick="deleteMessage({$value->id})">
-                    <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px; float: right; margin-right: 6px;" alt="{function="localize('Remove')"}">
-                </a>
-                
-                {if="$isAdmin"}
-                <a style="cursor: pointer;" onclick="panthera.popup.toggle('_ajax.php?display=acl&cat=admin&popup=true&name=can_qmsg_edit_{$value->id}')">
-                    <img src="{$PANTHERA_URL}/images/admin/ui/permissions.png" style="max-height: 22px; float: right; margin-right: 6px;" alt="{function="localize('Manage permissions')"}">
-                </a>
-                {/if}
-                
-                <a style="cursor: pointer;" onclick="editMessage({$value->id})">
-                    <img src="{$PANTHERA_URL}/images/admin/ui/edit.png" style="max-height: 22px; float: right; margin-right: 6px;" alt="{function="localize('Edit', 'qmessages')"}">
-                </a>
+                <span class="articleIcons">
+                    <a style="cursor: pointer;" onclick="editMessage({$value->id})">
+                        <img src="{$PANTHERA_URL}/images/admin/pantheraUI/transparent.png" class="pantheraIcon icon-Edit" alt="Icon">
+                    </a>
+                    
+                    {if="$isAdmin"}
+                    <a style="cursor: pointer;" onclick="panthera.popup.toggle('_ajax.php?display=acl&cat=admin&popup=true&name=can_qmsg_edit_{$value->id}')">
+                        <img src="{$PANTHERA_URL}/images/admin/pantheraUI/transparent.png" class="pantheraIcon icon-Users" alt="Icon">
+                    </a>
+                    {/if}
+                    
+                    <a style="cursor: pointer;" onclick="deleteMessage({$value->id})">
+                        <img src="{$PANTHERA_URL}/images/admin/pantheraUI/transparent.png" class="pantheraIcon icon-Delete" alt="Icon">
+                    </a>
+                </span>
             </div>
-            <div style="padding: 10px;" id="msg_{$value->id}_content">
+            <div class="articleContent" id="msg_{$value->id}_content">
                 {$value->getScrap(1400)}
                 
                 <br><br>
-                <div style="float: right; height: 25px;">
+                <div class="articleFooter">
                     <a><small>{function="slocalize('Last modified %s ago by %s', 'qmessages', elapsedTime($value->mod_time), $value->getAuthorName())"}</small></a>
                 </div>
                 <br>
