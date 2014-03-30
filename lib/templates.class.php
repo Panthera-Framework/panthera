@@ -44,6 +44,7 @@ class pantheraTemplate extends pantheraClass
     public $forceKeepTemplate = False;
     public $timer = 0;
     public $engine = 'raintpl';
+    public $icons = null; // array
     
     // configurable options
     protected $debugging;
@@ -509,6 +510,65 @@ class pantheraTemplate extends pantheraClass
         
         // if nothing loaded
         return False;
+    }
+
+    /**
+     * Get sock icon path/class name (depends on used template)
+     * 
+     * @param string $iconName Icon entry name
+     * @return string Icon class name or path
+     */
+
+    public function getStockIcon($iconName)
+    {
+        if ($this->icons === null)
+        {
+            $this -> loadStockIcons();
+        }
+        
+        if (!isset($this->icons[$iconName]))
+            return '';
+        
+        return pantheraUrl($this->icons[$iconName], false, 'frontend');
+    }
+    
+    /**
+     * Load stock items
+     * 
+     * @return bool|null
+     */
+    
+    public function loadStockIcons()
+    {
+        $iconSet = null;
+        //$this -> panthera -> cache -> remove('tpl.icons.' .$this->name);
+        
+        if ($this -> panthera -> cache)
+        {
+            if ($this -> panthera -> cache -> exists('tpl.icons.' .$this->name))
+            {
+                $iconSet = $this -> panthera -> cache -> get('tpl.icons.' .$this->name);
+                $this -> icons = $iconSet;
+                $this -> panthera -> logging -> output('Loaded list of ' .count($iconSet). ' icons from cache (tpl.icons.' .$this->name. ')', 'pantheraTemplate');
+            }
+        }
+        
+        if ($iconSet === null)
+        {
+            if ($f = getContentDir('templates/' .$this->name. '/icons.ini'))
+            {
+                $iconSet = parse_ini_file($f);
+                $this->icons = $iconSet;
+                
+                if ($this -> panthera -> cache)
+                {
+                    $this -> panthera -> cache -> set('tpl.icons.' .$this->name, $iconSet, 3600);
+                    $this -> panthera -> logging -> output('Wrote list of ' .count($iconSet). ' icons to cache (tpl.icons.' .$this->name. ')', 'pantheraTemplate');
+                }
+                
+                return true;
+            }
+        }
     }
 
     /**
