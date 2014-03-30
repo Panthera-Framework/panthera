@@ -113,9 +113,9 @@ function callBack()
                 <div id="avatar{$value->id}" rel="" style="background-color: #404C5A; display: inline-block; position: relative;" onclick="selectFile({$value->id});">
                   <div class="boxInner" style="position: relative;">
                         <div style="vertical-align: middle;">
-                            <img src="{$value->link}" id="avatarImage{$value->id}" style="width: {$dimensions[1]}; height: {$dimensions[2]}; -webkit-transition-duration: 300ms;">
+                            <img src="{$value->getLink()}" id="avatarImage{$value->id}" style="width: {$dimensions[1]}; height: {$dimensions[2]}; -webkit-transition-duration: 300ms;">
                             
-                            <input type="hidden" id="avatarLink{$value->id}" value="{$value->link}">
+                            <input type="hidden" id="avatarLink{$value->id}" value="{$value->getLink()}">
                         </div>
                   </div>
                 </div>

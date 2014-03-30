@@ -47,8 +47,8 @@ class avatarsAjaxControllerCore extends pageController
             ajax_exit(array('status' => 'failed', 'message' => localize('File is too big, allowed maximum size is:').' '.filesystem::bytesToSize($this->panthera->config->getKey('upload_max_size'))));
 
 
-        // get upload and gallery objects
-        list($avatarsUpload, $avatarsGallery) = $this -> checkAvatarsCategories();
+        // get upload object
+        $avatarsUpload = $this -> checkAvatarCategory();
         
         // get mime type
         $mime = filesystem::getFileMimeType($_FILES['input_file']['name']);
@@ -72,15 +72,9 @@ class avatarsAjaxControllerCore extends pageController
         
         // check if file exists
         if (!$file -> exists())
-            ajax_exit(array('status' => 'failed', 'message' => localize('Cannot handle file to avatars category.', 'avatars')));
+            ajax_exit(array('status' => 'failed', 'message' => localize('Cannot handle file to avatars category.', 'avatars')));   
         
-        
-        // create gallery item
-        if (galleryItem::createGalleryItem('', '', pantheraUrl($file -> getLink(), True), $avatarsGallery->id, True, $file, $this->panthera->user->id, $this->panthera->user->login))
-            ajax_exit(array('status' => 'success'));
-        
-        else
-            ajax_exit(array('status' => 'failed', 'message' => localize('Cannot add avatar to gallery category.', 'avatars')));
+        ajax_exit(array('status' => 'success'));
     }
     
     
@@ -94,27 +88,15 @@ class avatarsAjaxControllerCore extends pageController
      
     public function displayAvatarsAction()
     {
-        // get avatars category (it is gallery category)
-        $avatarsGallery = new galleryCategory('unique', 'avatars');
-        
-        // check if gallery category exists
-        if (!$avatarsGallery -> exists())
-        {
-            list($upload, $gallery) = $this -> checkAvatarsCategories();
-            
-            if ($gallery -> exists())
-                $avatarsGallery = $gallery;
-            else
-                ajax_exit(array('status' => 'failed', 'message' => localize('Avatars gallery category is not created!', 'avatars')));
-        }
+        $upload = $this -> checkAvatarCategory();
         
         // create query
         $by = new whereClause();
-        $by -> add( 'AND', 'author_id', '=', $this->panthera->user->id);
-        $by -> add( 'AND', 'gallery_id', '=', $avatarsGallery->id);
+        $by -> add( 'AND', 'uploader_id', '=', $this->panthera->user->id);
+        $by -> add( 'AND', 'category', '=', $upload->name);
         
         // get avatars
-        $items = galleryItem::getGalleryItems($by);
+        $items = uploadedFile::fetchAll($by);
         
         // send items data to template
         $this -> panthera -> template -> push('avatars', $items);
@@ -125,7 +107,7 @@ class avatarsAjaxControllerCore extends pageController
             $callback = False;
         
         $d = $this -> panthera -> config -> getKey('avatar_dimensions');
-        $dimensions = explode('x', $d); 
+        $dimensions = explode('x', $d);
     
         $this -> panthera -> template -> push('callback', $callback);
         $this -> panthera -> template -> push('callback_name', $_GET['callback']);
@@ -141,10 +123,10 @@ class avatarsAjaxControllerCore extends pageController
      * Get avatar categories objects (upload, category)
      * 
      * @author Mateusz Warzyński
-     * @return array
+     * @return object
      */
      
-    protected function checkAvatarsCategories()
+    protected function checkAvatarCategory()
     {
         // get avatars upload category
         $avatarsUpload = new uploadCategory('name', 'avatars');
@@ -156,22 +138,16 @@ class avatarsAjaxControllerCore extends pageController
                 ajax_exit(array('status' => 'failed', 'message' => localize('Error! Upload category for avatars is not created.', 'avatars')));
 
             else
-                $avatarsUpload = new uploadCategory('name', 'avatars');         
-        }
-
-        // get avatars gallery category
-        $avatarsGallery = new galleryCategory('unique', 'avatars');
-        
-        if (!$avatarsGallery -> exists())
-        {
-            if (!gallery::createCategory('avatars', $this->panthera->user->login, $this->panthera->user->id, $this->panthera->locale->getActive(), False, $this->panthera->user->full_name, 'avatars'))
-                ajax_exit(array('status' => 'failed', 'message' => localize('Error! Gallery category for avatars is not created.', 'avatars')));
+                $avatarsUpload = new uploadCategory('name', 'avatars');
             
-            else
-                $avatarsGallery = new galleryCategory('unique', 'avatars');
+            if ($avatarsUpload -> exists())
+                return $avatarsUpload;
+                     
+        } else {
+            return $avatarsUpload;   
         }
         
-        return array($avatarsUpload, $avatarsGallery);
+        return False;
     }
     
     
