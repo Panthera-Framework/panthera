@@ -206,7 +206,7 @@ if ($_GET['action'] == 'remove_msg')
   * @author Damian Kęska
   */
 
-if ($_GET['action'] == 'get_msg') 
+if ($_GET['action'] == 'get_msg')
 {
     $msgid = intval($_GET['msgid']);
     $m = new quickMessage('id', $msgid);

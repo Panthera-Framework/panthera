@@ -167,19 +167,6 @@ class quickMessage extends pantheraFetchDB
     }
     
     /**
-     * Get all quick messages from `{$db_prefix}_quick_messages` matching criteries specified in parameters
-     *
-     * @return array
-     * @author Damian Kęska
-     */
-
-    public static function getQuickMessages($by, $limit=0, $limitFrom=0, $orderBy='id', $order='DESC')
-    {
-          $panthera = pantheraCore::getInstance();
-          return $panthera->db->getRows('quick_messages', $by, $limit, $limitFrom, 'quickMessage', $orderBy, $order);
-    }
-    
-    /**
       * Get modification time
       *
       * @return string 
@@ -198,10 +185,27 @@ class quickMessage extends pantheraFetchDB
      * @author Mateusz Warzyński
      */
 
-    public static function create($title, $content, $login, $full_name, $url_id, $language, $category, $visibility=0, $icon='')
+    public static function create($title, $content, $login, $full_name, $url_id, $language, $category, $visibility=0, $icon='', $unique='')
     {
         $panthera = pantheraCore::getInstance();
-        $array = array('unique' => md5(rand(1,500).$title), 'title' => $title, 'message' => $content, 'author_login' => $login, 'author_full_name' => $full_name, 'visibility' => $visibility, 'mod_author_login' => $login, 'mod_author_full_name' => $full_name, 'url_id' => $url_id, 'language' => $language, 'category_name' => $category, 'icon' => $icon);
+        
+        if (!$unique)
+            $unique = hash('md4', rand(1,500).$title);
+        
+        $array = array(
+            'unique' => $unique, 
+            'title' => $title, 
+            'message' => $content, 
+            'author_login' => $login, 
+            'author_full_name' => $full_name, 
+            'visibility' => $visibility, 
+            'mod_author_login' => $login, 
+            'mod_author_full_name' => $full_name, 
+            'url_id' => $url_id, 
+            'language' => $language, 
+            'category_name' => $category, 
+            'icon' => $icon
+        );
 
         $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}quick_messages` (`id`, `unique`, `title`, `message`, `author_login`, `author_full_name`, `mod_time`, `visibility`, `mod_author_login`, `mod_author_full_name`, `url_id`, `language`, `category_name`, `icon`) VALUES (NULL, :unique, :title, :message, :author_login, :author_full_name, NOW(), :visibility, :mod_author_login, :mod_author_full_name, :url_id, :language, :category_name, :icon);', $array);
     }
@@ -247,19 +251,6 @@ class quickCategory extends pantheraFetchDB
     protected $_tableName = 'qmsg_categories';
     protected $_idColumn = 'category_id';
     protected $_constructBy = array('category_id', 'id', 'category_name', 'array'); // `id` because its a synonym to `category_id` - see __construct of pantheraFetchDB
-    
-    /**
-     * Get all categories of quick messages from `{$db_prefix}_qmsg_categories` matching criteries specified in parameters
-     *
-     * @return array
-     * @author Damian Kęska
-     */
-
-    public static function getCategories($by, $limit=0, $limitFrom=0, $orderBy='category_id', $order='DESC')
-    {
-        $panthera = pantheraCore::getInstance();
-        return $panthera->db->getRows('qmsg_categories', $by, $limit, $limitFrom, '', $orderBy, $order);
-    }
     
     /**
       * Create a new category

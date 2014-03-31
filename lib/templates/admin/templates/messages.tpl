@@ -20,7 +20,7 @@ function removeCategory(categoryName)
     panthera.confirmBox.create('{function="localize('Are you sure you want delete this category?', 'qmessages')"}', function (responseText) {
        if (responseText == 'Yes')
         {
-            panthera.jsonPOST( { url: '?{function="getQueryString('GET', 'action=deleteCategory', '_')"}', data: 'category_name='+categoryName, messageBox: 'w2ui', success: function (response) {
+            panthera.jsonPOST( { url: '?{function="getQueryString('GET', 'action=removeCategory', '_')"}', data: 'category='+categoryName, messageBox: 'w2ui', success: function (response) {
                     if (response.status == 'success')
                     {
                         $('#category_'+categoryName).remove();
@@ -64,29 +64,29 @@ function removeCategory(categoryName)
         <tbody>
         {if="count($categories) > 0"}
             {loop="$categories"}
-            <tr id="category_{$value.category_name}">
+            <tr id="category_{$value->category_name}">
                 <td>
-                    <a href="{$AJAX_URL}?display=messages&cat=admin&action=display_category&category={$value.category_name}" class="ajax_link">{$value.title|localize}</a>
+                    <a href="{$AJAX_URL}?display=messages&cat=admin&action=displayCategory&category={$value->category_name}" class="ajax_link">{$value->title}</a>
                 </td>
                     
                 <td>
-                    {if="strlen($value.description) > 0"}<i>{$value.description}</i>{else}{function="localize('no description', 'qmessages')"}{/if}
+                    {if="strlen($value->description) > 0"}<i>{$value->description}</i>{else}{function="localize('no description', 'qmessages')"}{/if}
                 </td>
                     
                 <td>
-                    {$value.category_name}, id: {$value.category_id}
+                    {$value->category_name}, id: {$value->category_id}
                 </td>
                     
                 <td style="width: 20%;">
-                    <a href="#" onclick="removeCategory('{$value.category_name}');">
+                    <a href="#" onclick="removeCategory('{$value->category_name}');">
                         <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
                     </a>
                         
-                    <a href="#" onclick="panthera.popup.toggle('?display=acl&amp;cat=admin&amp;popup=true&amp;name=can_qmsg_manage_{$value.category_name}', 1300, 550);" alt="{function="localize('Manage permissions')"}">
+                    <a href="#" onclick="panthera.popup.toggle('?display=acl&amp;cat=admin&amp;popup=true&amp;name=can_qmsg_manage_{$value->category_name}', 1300, 550);" alt="{function="localize('Manage permissions')"}">
                         <img src="{$PANTHERA_URL}/images/admin/ui/permissions.png" style="max-height: 22px; margin-left: 3px;" alt="{function="localize('Manage permissions')"}">
                     </a>
                         
-                    <a href="#" onclick="panthera.popup.toggle('?display=menuedit&cat=admin&popup=true&action=quickAddFromPopup&link=data:text/plain;base64,{function="base64_encode('?' .getQueryString('display=messages&cat=admin&action=display_category&category=' .$value.category_name))"}&title={$value.title}');" alt="{function="localize('Add to menu', 'menuedit')"}">
+                    <a href="#" onclick="panthera.popup.toggle('?display=menuedit&cat=admin&popup=true&action=quickAddFromPopup&link=data:text/plain;base64,{function="base64_encode('?' .getQueryString('display=messages&cat=admin&action=display_category&category=' .$value->category_name))"}&title={$value->title}');" alt="{function="localize('Add to menu', 'menuedit')"}">
                         <img src="{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png" style="max-height: 22px; margin-left: 3px;" alt="{function="localize('Manage permissions')"}">
                     </a>
                 </td>
@@ -146,7 +146,7 @@ function removeCategory(categoryName)
         panthera.jsonPOST( { data: '#newCategoryForm', success: function (response) {
                 if (response.status == 'success')
                 {
-                    navigateTo('?display=messages&cat=admin');
+                    navigateTo(window.location.href);
                 }
         
             } 
