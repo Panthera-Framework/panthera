@@ -65,9 +65,9 @@ function deleteMessage(id)
     panthera.confirmBox.create('{function="localize('Are you sure you want delete this message?', 'qmessages')"}', function (responseText) {
         if (responseText == 'Yes')
         {
-            panthera.jsonPOST({ url: '{$AJAX_URL}?display=messages&cat=admin&action=removeMessage&category={$category}&msgid='+id, data: '', messageBox: 'userinfoBox', success: function (response) {
+            panthera.jsonPOST({ url: '{$AJAX_URL}?display=messages&cat=admin&action=removeMessage&category={$category_name}&msgid='+id, data: '', messageBox: 'userinfoBox', success: function (response) {
                     if (response.status == "success")
-                        jQuery('#msg_'+id+'_row').remove();
+                        navigateTo(window.location.href);
                 }
             });
         }
@@ -130,7 +130,7 @@ function upload_file_callback_new(link, mime, type, directory, id, description, 
             </ul>
         </div>
     
-        <input type="button" value="{function="localize('Post a new message', 'custompages')"}" onclick="panthera.popup.toggle('element:#createNewMessagePopup')">
+        <input type="button" value="{function="localize('Post a new message', 'qmessages')"}" onclick="panthera.popup.toggle('element:#createNewMessagePopup')">
     </div>
 </div>
 

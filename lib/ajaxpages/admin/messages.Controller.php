@@ -197,7 +197,7 @@ class messagesAjaxControllerSystem extends pageController
         
         $m -> url_id = $url_id;
         
-        $this -> panthera -> get_options('ajaxpages.messages.editMessage.object', $m);
+        $this -> panthera -> get_options_ref('ajaxpages.messages.editMessage.object', $m);
         
         try {
             $m -> save();
@@ -299,7 +299,7 @@ class messagesAjaxControllerSystem extends pageController
         // get item details to return in ajax response (this could be useful for creating dynamic items on page)
         $item = new quickMessage('url_id', $url_id);
 
-        $this -> panthera -> get_options('ajaxpages.messages.newMessage.createdItem', $item);
+        $this -> panthera -> get_options_ref('ajaxpages.messages.newMessage.createdItem', $item);
 
         ajax_exit(array(
             'status' => 'success',
@@ -324,7 +324,7 @@ class messagesAjaxControllerSystem extends pageController
             $this -> checkPermissions(false);
         }
         
-        $this -> panthera -> get_options('ajaxpages.messages.getMessage', $m);
+        $this -> panthera -> get_options_ref('ajaxpages.messages.getMessage', $m);
         
         /*$this -> checkPermissions(array(
             'can_qmsg_manage_' .$m->category_name,
@@ -439,7 +439,7 @@ class messagesAjaxControllerSystem extends pageController
         $m = quickMessage::fetchAll($w, $limit[1], $limit[0]);
         
         // pass results to template
-        $this -> panthera -> get_options('ajaxpages.messages.displayCategory.messages', $m);
+        $this -> panthera -> get_options_ref('ajaxpages.messages.displayCategory.messages', $m);
         $this -> panthera -> template -> push('messages', $m);
         $this -> panthera -> template -> push('category_title',  $category -> title);
         $this -> panthera -> template -> push('category_description', $category -> description);
