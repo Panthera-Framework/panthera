@@ -191,7 +191,7 @@ body {
 }
 
 .icon-Arrow {
-    background-position: -72px -242px;
+    background-position: -77px -247px;
 }
 
 .icon-Language {
@@ -200,6 +200,10 @@ body {
 
 .icon-Search {
     background-position: -349px -24px;
+}
+
+.icon-Flag {
+    background-position: -484px -25px;
 }
 
 #topContent {
@@ -800,6 +804,12 @@ ul.dropdown li:hover > a.dir {
     padding-right: 10px;
 }
 
+.searchBarButtonAreaLeft {
+    display: inline-block;
+    float: left;
+    margin-left: 10px;
+}
+
 .formTable {
     background: transparent;
     border: 0px;
@@ -1304,5 +1314,47 @@ ul.dropdown li:hover > a.dir {
 .menuItem img {
     width: 20px;
     height: 20px;
-    
+}
+
+.ui-tooltip, .arrow:after {
+    background: #404c5a;
+    border: 1px solid #6e8093;
+}
+.ui-tooltip {
+    padding: 5px 10px;
+    color: white;
+    font: bold 12px "Helvetica Neue", Sans-Serif;
+}
+.arrow {
+    width: 70px;
+    height: 16px;
+    overflow: hidden;
+    position: absolute;
+    left: 50%;
+    margin-left: -35px;
+    bottom: -16px;
+}
+.arrow.top {
+    top: -16px;
+    bottom: auto;
+}
+.arrow.left {
+    left: 20%;
+}
+.arrow:after {
+    content: "";
+    position: absolute;
+    left: 20px;
+    top: -20px;
+    width: 25px;
+    height: 25px;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    tranform: rotate(45deg);
+}
+.arrow.top:after {
+    bottom: -20px;
+    top: auto;
 }
