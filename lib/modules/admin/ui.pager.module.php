@@ -14,16 +14,17 @@
   * @author Damian Kęska
   */
   
-class uiPager
+class uiPager extends pantheraClass
 {
     public static $pagers;
     protected $name = '';
     
     public function __construct ($name, $totalItems, $maxOnPage='', $defaultOnPage=16)
     {
-        global $panthera;
+        parent::__construct();
+        
         $this -> name = $name;
-        $panthera -> importModule('pager');
+        $this -> panthera -> importModule('pager');
         
         if ($maxOnPage === '')
         {
@@ -32,7 +33,7 @@ class uiPager
         
         self::$pagers[$this->name] = array(
             'links' => array(),
-            'active' => 0,
+            'active' => ((isset($_GET['page']) and intval($_GET['page']) > -1) ? $_GET['page'] : 0),
             'total' => $totalItems,
             'pageMax' => $maxOnPage,
             'maxLinks' => 6,
@@ -45,7 +46,7 @@ class uiPager
             'defaultOnPage' => intval($defaultOnPage),
         );
         
-        $panthera -> add_option('template.display', array($this, 'applyToTemplate'));
+        $this -> panthera -> add_option('template.display', array($this, 'applyToTemplate'));
     }
     
     /**
@@ -271,6 +272,17 @@ class uiPager
         }
     
         return self::$pagers[$this->name]['pageLimit'];
+    }
+
+    /**
+     * Get current page number
+     * 
+     * @return int Page number
+     */
+
+    public function getPage()
+    {
+        return self::$pagers[$this->name]['active'];
     }
     
     /**
