@@ -64,8 +64,6 @@ class uiNoAccess
     
     public function display()
     {
-        @header('HTTP/1.1 403 Forbidden');
-        
         if ($_SERVER['REQUEST_METHOD'] == 'POST' and $_SERVER['HTTP_X_REQUESTED_WITH'])
         {
             if (!$this->settings['message'])
@@ -81,6 +79,7 @@ class uiNoAccess
             ajax_exit(array('status' => 'failed', 'message' => $this->settings['message']));
         }
     
+        @header('HTTP/1.1 403 Forbidden');
         $this -> panthera -> template -> push ('uiNoAccess', $this->settings); 
         $this -> panthera -> template -> display('no_access.tpl');
         pa_exit();
