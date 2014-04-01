@@ -303,6 +303,15 @@ abstract class pageController extends pantheraClass {
             $propsReturn[$property->getName()] = $property->getValue($instance);
         }
         
+        $propsReturn['__methods'] = array();
+        
+        foreach ($reflection -> getMethods() as $method)
+        {
+            $propsReturn['__methods'][$method->name] = $method->class;
+        }
+        
+        unset($propsReturn['instance']);
+        
         return $propsReturn;
     }
     
