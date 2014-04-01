@@ -22,8 +22,8 @@ function getAvatar(link, id)
 
 <div id="topContent">
     <div class="searchBarButtonArea">
-        {if="$permissions.canBlockUser"}<input type="button" value="{function="localize('Ban', 'users')"}" onclick="panthera.popup.toggle('element:#banUser')">{/if}
-        {if="$permissions.canSeePermissions"}<input type="button" value="{function="localize('Permissions', 'users')"}" onclick="panthera.popup.toggle('element:#managePermissions')">{/if}
+        {if="$permissions.canBlockUser"}<input type="button" value="{function="localize('Ban', 'users')"}" onclick="panthera.popup.toggle('element:#banUser', 'banUser')">{/if}
+        {if="$permissions.canSeePermissions"}<input type="button" value="{function="localize('Permissions', 'users')"}" onclick="panthera.popup.toggle('element:#managePermissions', 'managePermissions')">{/if}
         <input type="button" value="{function="localize('Edit', 'users')"}" onclick="panthera.popup.toggle('element:#editPopup', 'editUser')">
     </div>
 </div>
@@ -69,7 +69,7 @@ function getAvatar(link, id)
             <tfoot>
                 <tr>
                     <td colspan="2" style="padding-top: 35px;">
-                        <input type="button" value="{function="localize('No')"}" onclick="panthera.popup.close()" style="float: left; margin-left: 30px;">
+                        <input type="button" value="{function="localize('No')"}" onclick="panthera.popup.close('banUser')" style="float: left; margin-left: 30px;">
                         <input type="button" value="{function="localize('Yes')"}" style="float: right; margin-right: 30px;" onclick="toggleBan()">
                     </td>
                 </tr>
@@ -108,7 +108,7 @@ function getAvatar(link, id)
          <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
              <thead>
                  <tr>
-                     <td colspan="2" class="formTableHeader" style="padding-top: 0px; padding-bottom: 30px;">
+                     <td colspan="2" class="formTableHeader" style="padding-top: 20px; padding-bottom: 30px;">
                          <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px;">{function="localize('Edit user', 'users')"}</p>
                      </td>
                  </tr>
@@ -163,22 +163,26 @@ function getAvatar(link, id)
                 <tr>
                   <th>{function="localize('Primary group', 'users')"}</th>
                   <th>
-                    <select name="primary_group" style="width: 160px;">
-                        {loop="$groups"}
-                          <option value="{$value.group_id}" {if="$value.group_id == $primary_group"} selected {/if}>{$value.name}</option>
-                        {/loop}
-                    </select>
+                    <div class="select" style="margin-top: 14px; margin-left: 3px; width: 208px;">
+                     <select onChange="changeCategory();" name="primary_group" style="width: 210px;">
+                       {loop="$groups"}
+                        <option value="{$value.group_id}" {if="$value.group_id == $primary_group"} selected {/if}>{$value.name}</option>
+                       {/loop}
+                     </select>
+                    </div>
                   </th>
                 </tr>
                 {/if}
                 <tr>
                   <th>{function="localize('Language', 'users')"}</th>
                   <th>
-                    <select name="language" style="width: 160px;">
-                        {loop="$locales_added"}
-                          <option value="{$key}">{$key}</option>
-                        {/loop}
-                    </select>
+                    <div class="select" style="margin-top: 14px; margin-left: 3px; width: 208px;">
+                     <select onChange="changeCategory();" name="language" style="width: 210px;">
+                       {loop="$locales_added"}
+                        <option>{$key}</option>
+                       {/loop}
+                     </select>
+                    </div>
                  </th>
                 </tr>
 
