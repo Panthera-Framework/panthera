@@ -38,6 +38,49 @@ class ajaxpagesAjaxControllerCore extends pageController
     }
     
     /**
+     * 
+     */
+    
+    public function getControllersInfo()
+    {
+        if ($this -> panthera -> cache and !isset($_GET['forceResetCache']))
+        {
+            if ($this -> panthera -> cache -> exists('ajaxpages.controllersInfo'))
+                return $this -> panthera -> cache -> get('ajaxpages.controllersInfo');
+        }
+        
+        $array = array();
+        
+        foreach ($this -> files as $file)
+        {
+            if (strpos($file, '.Controller.php') !== false)
+            {
+                $controllerName = str_replace('.Controller.php', '', basename($file));
+                $path = str_replace(PANTHERA_DIR, '', 
+                        str_replace(SITE_DIR, '', 
+                        str_replace($controllerName, '', 
+                        str_replace('.Controller.php', '', $file))));
+                        
+                $path = trim($path, '/');
+                
+                $attributes = pageController::getControllerAttributes($controllerName, $path);
+                
+                if ($attributes)
+                {
+                    unset($attributes['instance']);
+                }
+                
+                $array[$file] = $attributes;
+            }
+        }
+        
+        if ($this -> panthera -> cache)
+            $this -> panthera -> cache -> set('ajaxpages.controllersInfo', $array, 360);
+        
+        return $array;
+    }
+    
+    /**
      * Displays results (everything is here)
      * 
      * @hook array ajaxpages_list.raw Raw, unfiltered list of ajax pages
@@ -53,6 +96,8 @@ class ajaxpagesAjaxControllerCore extends pageController
         
         // scan both lib and content
         $this -> files = $this -> scanDirectories();
+        
+        $controllersInfo = $this -> getControllersInfo();
         
         // list of pages
         $this -> pages = array();
@@ -99,6 +144,29 @@ class ajaxpagesAjaxControllerCore extends pageController
             
             $directory = str_replace('/ajaxpages/', '', dirname($name));
             $name = str_ireplace('.php', '', basename($name));
+            $permissions = '';
+            $title = '';
+            
+            // permissions
+            if (isset($controllersInfo[$file]))
+            {
+                if ($controllersInfo[$file]['permissions'])
+                {
+                    if (is_array($controllersInfo[$file]['permissions']))
+                        $permissions = implode(', ', $controllersInfo[$file]['permissions']);
+                    else
+                        $permissions = $controllersInfo[$file]['permissions'];
+                }
+            }
+            
+            // title
+            if (isset($controllersInfo[$file]['uiTitlebar']))
+            {
+                if (is_array($controllersInfo[$file]['uiTitlebar']))
+                    $title = localize($controllersInfo[$file]['uiTitlebar'][0], $controllersInfo[$file]['uiTitlebar'][1]);
+                else
+                    $title = localize($controllersInfo[$file]['uiTitlebar']);                
+            }
         
             $this -> pages[] = array(
                 'location' => $location,
@@ -108,7 +176,76 @@ class ajaxpagesAjaxControllerCore extends pageController
                 'path' => $file,
                 'link' => '?display=' .str_replace('.Controller', '', $name),
                 'objective' => (strpos($name, '.Controller') !== False),
+                'permissions' => $permissions,
+                'title' => $title,
             );
+            
+            if (isset($controllersInfo[$file]))
+            {
+                foreach ($controllersInfo[$file]['__methods'] as $method => $class)
+                {
+                    if (strpos($method, 'Action') === false)
+                        continue;
+                    
+                    $method = str_replace('Action', '', $method);
+                    
+                    if ($method == 'dispatch')
+                        continue;
+                    
+                    // global permissions
+                    if ($controllersInfo[$file]['permissions'])
+                    {
+                        if (is_array($controllersInfo[$file]['permissions']))
+                            $permissions = implode(', ', $controllersInfo[$file]['permissions']);
+                        else
+                            $permissions = $controllersInfo[$file]['permissions'];
+                            
+                        $warning = false;
+                    } else {
+                    
+                        // permissions per action
+                        $permissions = localize('None', 'ajaxpages');
+                        $warning = true;
+                        
+                        if (isset($controllersInfo[$file]['actionPermissions'][$method]))
+                        {
+                            if (is_array($controllersInfo[$file]['actionPermissions'][$method]))
+                            {
+                                $permissions = implode(', ', $controllersInfo[$file]['actionPermissions'][$method]);
+                                $warning = false;
+                            } elseif (is_string($controllersInfo[$file]['actionPermissions'][$method])) {
+                                $permissions = $controllersInfo[$file]['actionPermissions'][$method];
+                                $warning = false;
+                            } elseif (is_int($controllersInfo[$file]['actionPermissions'][$method])) {
+                                $permissions = localize('Permissions checked inline', 'ajaxpages');
+                                $warning = false;
+                            }
+                        }
+                    }
+
+                    $title = '';
+                    
+                    if (isset($controllersInfo[$file]['actionuiTitlebar'][$method]))
+                    {
+                        if (is_array($controllersInfo[$file]['actionuiTitlebar'][$method]))
+                            $title = localize($controllersInfo[$file]['actionuiTitlebar'][$method][0], $controllersInfo[$file]['actionuiTitlebar'][$method][1]);
+                        else
+                            $title = localize($controllersInfo[$file]['actionuiTitlebar'][$method]);
+                    }
+
+                    $this -> pages[] = array(
+                        'info' => $method,
+                        'permissions' => $permissions,
+                        'permissionsWarning' => $warning,
+                        'title' => $title,
+                    );
+                }   
+            }
+            
+            /*$this -> pages[] = array(
+                'info' => '-> displayCategories',
+                'rights' => 'can_view_article_categories',
+            );*/
         }
 
         $this -> pages = $this -> panthera -> get_filters('ajaxpages_list.raw', $this -> pages, True);
