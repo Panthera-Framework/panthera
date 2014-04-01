@@ -76,6 +76,31 @@ class avatarsAjaxControllerCore extends pageController
         
         ajax_exit(array('status' => 'success'));
     }
+
+
+    
+    /**
+     * Delete avatar
+     * 
+     * @author Mateusz Warzyński
+     * @return bool
+     */
+     
+    public function deleteAction()
+    {
+        // get file from database as object
+        $file = new uploadedFile('id', $_GET['id']);
+        
+        if ($file -> exists()) {
+            // delete file from upload
+            if (pantheraUpload::deleteUpload($file->id, $file->location))
+                ajax_exit(array('status' => 'success'));
+            else
+                ajax_exit(array('status' => 'failed', 'message' => localize('Something went wrong. Could not delete avatar, sorry.', 'avatars')));
+        } else {
+            ajax_exit(array('status' => 'failed', 'message' => localize('File does not exist.', 'avatars')));   
+        }
+    }
     
     
     
@@ -98,8 +123,16 @@ class avatarsAjaxControllerCore extends pageController
         // get avatars
         $items = uploadedFile::fetchAll($by);
         
+        // check if user does not over the limit
+        $canUpload = (count($items) < $this->panthera->config->getKey('avatars.maxAvatars', 15, 'int', 'avatars'));
+        
         // send items data to template
         $this -> panthera -> template -> push('avatars', $items);
+        $this -> panthera -> template -> push('canUpload', $canUpload);
+        
+        // send information about default avatar
+        $this -> panthera -> template -> push('defaultAvatarLocation', pantheraUrl('{$PANTHERA_URL}/images/default_avatar.png'));
+        $this -> panthera -> template -> push('defaultAvatarId', '_1');
         
         if (isset($_GET['callback']))
             $callback = True;
