@@ -18,7 +18,7 @@ class localesAjaxControllerCore extends pageController
         'Manage site localization', 'locales'
     );
     
-	
+    protected $permissions = 'can_update_locales';
 	
 	/**
      * Set language as default
