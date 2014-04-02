@@ -47,7 +47,7 @@ class twitterWrapper
             //$this -> app = new TwitterApp(new tmhOAuth(array('consumer_key' => $panthera->config->getKey('twitter_consumerKey'), 'consumer_secret' => $panthera->config->getKey('twitter_consumerSecret'))));
             
             // login to Panthera-Framework application 'by hand'
-            $this -> app = new TwitterApp(new tmhOAuth(array('consumer_key' => 'eUkuhsivfWgR6Uy1uRIA', 'consumer_secret' => 'PNsgMmGOIfQa55FMVIXU5QTtAueOgpmz4S9gQfhmI')));
+            $this -> app = new TwitterApp(new tmhOAuth(array('consumer_key' => '', 'consumer_secret' => '')));
             
       }
       
