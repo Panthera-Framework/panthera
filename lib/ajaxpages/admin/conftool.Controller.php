@@ -17,7 +17,7 @@
  * @author Mateusz Warzyński
  */
 
- class ajaxpagesAjaxControllerCore extends pageController
+ class conftoolAjaxControllerCore extends pageController
 {
     protected $permissions = 'can_update_config_overlay';
     
