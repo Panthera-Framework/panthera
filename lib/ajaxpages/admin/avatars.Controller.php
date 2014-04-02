@@ -10,6 +10,16 @@
  * @license GNU LGPLv3, see license.txt
  */
 
+/**
+ * Avatars management
+ * Manager of avatars, uploaded images to `avatars` upload category
+ *
+ * @package Panthera\core\avatars\admin
+ * @author Mateusz Warzyński
+ * @author Damian Kęska
+ * @license GNU LGPLv3, see license.txt
+ */
+ 
 class avatarsAjaxControllerCore extends pageController
 {
     protected $requirements = array(
