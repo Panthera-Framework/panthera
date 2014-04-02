@@ -19,14 +19,25 @@
 class composeNewsletterAjaxControllerCore extends pageController
 {
 	protected $permissions = 'can_compose_newsletters';
+    
+    protected $newsletter = null;
 	
 	protected $uiTitlebar = array(
 		'Compose a new message', 'newsletter'
 	);
 	
-	protected function postNewMessage($newsletter)
+    
+    
+    /**
+     * Create new newsletter message
+     * 
+     * @author Mateusz Warzyński
+     * @return null
+     */
+     
+	protected function postNewMessage()
 	{
-		$this -> checkPermissions(array('can_manage_newsletter', 'can_manage_newsletter_'.$newsletter->nid));
+		$this -> checkPermissions(array('can_manage_newsletter', 'can_manage_newsletter_'.$this->newsletter->nid));
 		    
 		// content cannot be shorten than 10 characters
 		if (strlen($_POST['content']) < 5)
@@ -37,7 +48,6 @@ class composeNewsletterAjaxControllerCore extends pageController
 		        
 		if (@$_POST['putToDrafts'] or @$_POST['saveasdraft'])
 		{
-		    $panthera -> importModule('editordrafts');
 		    editorDraft::createDraft($_POST['content'], $this->panthera->user->id);
 		        
 		    if (@$_POST['saveasdraft'])
@@ -48,13 +58,20 @@ class composeNewsletterAjaxControllerCore extends pageController
 		    'sendToAllUsers' => (bool)$_POST['sendToAllUsers']
 		);
 		
-		$newsletter -> execute($_POST['content'], htmlspecialchars($_POST['title']), $_POST['from'], $options);
+		$this -> newsletter -> execute($_POST['content'], htmlspecialchars($_POST['title']), $_POST['from'], $options);
 		
 		ajax_exit(array('status' => 'success', 'message' => localize('Sent', 'newsletter')));
 	}
 
 
-
+    
+    /**
+     * Edit footer
+     * 
+     * @author Mateusz Warzyński
+     * @return null
+     */
+     
 	public function editFooterAction()
 	{
 		$this -> checkPermissions(array('can_manage_newsletter', 'can_manage_newsletter_' .$this->newsletter->nid));
@@ -72,6 +89,13 @@ class composeNewsletterAjaxControllerCore extends pageController
 	}
 
 
+
+    /**
+     * Main function, display template
+     * 
+     * @author Mateusz Warzyński
+     * @return string
+     */
 	
 	public function display()
 	{
@@ -135,8 +159,8 @@ class composeNewsletterAjaxControllerCore extends pageController
 		
 		if (!$attr['footer']) {
 		    $attr['footer'] = '';
-		    $newsletter -> attributes = serialize($attr);
-		    $newsletter -> save();
+		    $this -> newsletter -> attributes = serialize($attr);
+		    $this -> newsletter -> save();
 		}
 		
 		$this -> panthera -> template -> push ('mailFooter', filterInput($attr['footer'], 'wysiwyg'));
