@@ -40,7 +40,7 @@ function manageFilters(filter)
 
 function toggleDebugValue()
 {
-    panthera.jsonGET({ data: '', url: '?display=debug&cat=admin&action=toggle_debug_value', success: function (response) {
+    panthera.jsonGET({ data: '', url: '?display=debug&cat=admin&action=toggleDebugValue', success: function (response) {
             if (response.state)
             {
                 $('#debuggerState').html('{function="localize('On')"}');
@@ -61,7 +61,7 @@ function toggleDebugValue()
 
 function toggleStrictDebugging()
 {
-    panthera.jsonGET({ data: '', url: '?display=debug&cat=admin&action=toggle_strict_debugging', success: function (response) {
+    panthera.jsonGET({ data: '', url: '?display=debug&cat=admin&action=toggleStrictDebugging', success: function (response) {
             if (response.state)
             {
                 $('#strictDebugging').html('{function="localize('On')"}');
