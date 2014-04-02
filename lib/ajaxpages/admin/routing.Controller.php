@@ -7,6 +7,14 @@
  * @author Damian Kęska
  * @license GNU LGPLv3, see license.txt
  */
+ 
+ /**
+  * Routing management
+  * SEO links editor for Panthera Admin Panel
+  *
+  * @package Panthera\core\routing\admin
+  * @author Damian Kęska
+  */
 
 class routingAjaxControllerCore extends pageController
 {
@@ -271,16 +279,12 @@ class routingAjaxControllerCore extends pageController
         $sBar -> navigate(True);
         
         if ($sBar -> getQuery())
-        {
             $this -> data = $sBar -> filterData($this -> data, $sBar -> getQuery());
-        }
         
         $filters = $sBar -> getFilters();
         
         if (isset($filters['order']) and isset($filters['direction']))
-        {
             $this -> data = $sBar -> orderBy($this -> data, $filters['order'], $filters['direction']);
-        }
         
         // hooking
         $this -> table = $this -> panthera -> get_filters('admin.routing.table', $this -> table, True);
