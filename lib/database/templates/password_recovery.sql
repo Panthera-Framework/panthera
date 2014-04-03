@@ -6,6 +6,7 @@ CREATE TABLE `{$db_prefix}password_recovery` (
   `user_login` varchar(32) NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `new_passwd` varchar(128) NOT NULL,
+  `type` varchar(64) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

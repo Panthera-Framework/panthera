@@ -5,5 +5,6 @@ CREATE TABLE "{$db_prefix}password_recovery" (
   "recovery_key" TEXT NOT NULL,
   "user_login" TEXT NOT NULL,
   "date" timestamp NOT NULL ,
-  "new_passwd" TEXT NOT NULL
+  "new_passwd" TEXT NOT NULL,
+  "type" TEXT NOT NULL
 );
