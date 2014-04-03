@@ -16,7 +16,7 @@
   * @author Damian Kęska
   */
 
-class routingAjaxControllerCore extends pageController
+class routingAjaxControllerSystem extends pageController
 {
     protected $requirements = array(
         'admin/ui.datasheet',
