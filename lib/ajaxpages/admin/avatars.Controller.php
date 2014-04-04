@@ -101,6 +101,9 @@ class avatarsAjaxControllerCore extends pageController
         // get file from database as object
         $file = new uploadedFile('id', $_GET['id']);
         
+        if ($file->uploader_id != $this->panthera->user and !checkUserPermissions($this->panthera->user, True) and !$this->checkPermissions('can_manage_upload', True))
+            ajax_exit('You do not have permission to execute this action.', 'avatars');
+        
         if ($file -> exists()) {
             // delete file from upload
             if (pantheraUpload::deleteUpload($file->id, $file->location))
