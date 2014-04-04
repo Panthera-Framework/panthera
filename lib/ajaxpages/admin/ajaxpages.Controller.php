@@ -153,6 +153,7 @@ class ajaxpagesAjaxControllerCore extends pageController
             $name = str_ireplace('.php', '', basename($name));
             $permissions = '';
             $title = '';
+            $permissionsWarning = False;
             
             // permissions
             if (isset($controllersInfo[$file]))
@@ -163,6 +164,12 @@ class ajaxpagesAjaxControllerCore extends pageController
                         $permissions = implode(', ', $controllersInfo[$file]['permissions']);
                     else
                         $permissions = $controllersInfo[$file]['permissions'];
+                }
+                
+                // if controller does not implement any permissions check
+                if (!$controllersInfo[$file]['permissions'] and !$controllersInfo[$file]['actionPermissions'])
+                {
+                    $permissionsWarning = True;
                 }
             }
             
@@ -185,6 +192,7 @@ class ajaxpagesAjaxControllerCore extends pageController
                 'objective' => (strpos($name, '.Controller') !== False),
                 'permissions' => $permissions,
                 'title' => $title,
+                'permissionsWarning' => $permissionsWarning,
             );
             
             if (isset($controllersInfo[$file]))

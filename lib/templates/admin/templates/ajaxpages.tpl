@@ -59,7 +59,7 @@
                             <td>{$value.directory}</td>
                             <td><a href="{$value.link}&cat=admin" class="ajax_link"><b>{$value.name}</b></a>{if="$value.title"} <i title="{function="localize('This is readable from uiTitlebar variable', 'ajaxpages')"}">({$value.title})</i>{/if}</td>
                             <td>{if="$value.objective"}{function="localize('Yes')"}{else}<a style="color: red; cursor: pointer;" title="{function="localize('Structural controllers are unsecure and not flexible, please upgrade', 'ajaxpage')"}">{function="localize('No')"}</a>{/if}</td>
-                            <td>{if="$value.permissions"}<a style="cursor: pointer;" title="{function="localize('This global permission will overwrite all action permissions', 'ajaxpages')"}"><b>{$value.permissions}</b></a>{/if}</td>
+                            <td>{if="$value.permissionsWarning"}<a title="{function="localize('Warning! This controller does not implement any permissions check! Please implement check for global or action permissions.', 'ajaxpages')"}" style="color: red; cursor: pointer;"><b>None</b></a>{else}{if="$value.permissions"}<a style="cursor: pointer;" title="{function="localize('This global permission will overwrite all action permissions', 'ajaxpages')"}"><b>{$value.permissions}</b></a>{/if}{/if}</td>
                             <td>{$value.modtime}</td>
                             <td><small>{$value.path}</small></td>
                         </tr>
