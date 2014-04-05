@@ -22,9 +22,13 @@ class pluginsAjaxControllerCore extends pageController
         'Manage plugins', 'plugins'
     );
     
-    protected $permissions = '';
+    protected $permissions = 'admin.plugins';
     
-    
+    /**
+     * Toggle plugin (on/off) action
+     * 
+     * @return null
+     */
     
     public function toggleAction()
     {
@@ -41,6 +45,12 @@ class pluginsAjaxControllerCore extends pageController
             ajax_exit(array('status' => 'failed', 'message' => localize('Cannot change plugin state, maybe it does not exists anymore')));
     }
     
+    
+    /**
+     * Main function
+     * 
+     * @return null
+     */
     
     public function display()
     {
@@ -63,21 +73,21 @@ class pluginsAjaxControllerCore extends pageController
             // be elegant!
             if ($value['info'] != null)
             {
-                if (array_key_exists('name', $value['info']))
+                if (isset($value['info']['name']))
                     $title = $value['info']['name'];
         
                 if ($value['info']['meta'] != '')
                 {
-                    if (array_key_exists('author', $value['info']['meta']))
+                    if (isset($value['info']['meta']['author']))
                         $author = $value['info']['meta']['author'];
         
-                     if (array_key_exists('description', $value['info']['meta']))
+                     if (isset($description = $value['info']['meta']['description']))
                         $description = $value['info']['meta']['description'];
         
-                     if (array_key_exists('version', $value['info']['meta']))
+                     if (isset($value['info']['meta']['version']))
                         $version = $value['info']['meta']['version'];
         
-                     if (array_key_exists('configuration', $value['info']['meta']))
+                     if (isset($value['info']['meta']['configuration']))
                         $configuration = $value['info']['meta']['configuration'];
                 }
             }
@@ -96,7 +106,6 @@ class pluginsAjaxControllerCore extends pageController
         }
         
         $this -> panthera -> template -> push('plugins', $pluginsTpl);
-        
         return $this -> panthera -> template -> compile('plugins.tpl');
     }
 
