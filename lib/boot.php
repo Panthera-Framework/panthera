@@ -219,7 +219,7 @@ if (!defined('SKIP_USER') and !defined('SKIP_SESSION'))
 if (!defined('SKIP_LOCALE') and !defined('SKIP_SESSION'))
     $locale -> fromSession();
 
-// customized startup for each website (config.php)
+// customized startup for each website (app.php)
 if (function_exists('userStartup'))
     userStartup($panthera);
 
