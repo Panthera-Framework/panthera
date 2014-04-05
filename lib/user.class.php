@@ -660,9 +660,12 @@ function logoutUser()
  * @author Damian Kęska
  */
 
-function checkUserPermissions($user, $admin=False)
+function checkUserPermissions($user=null, $admin=False)
 {
     $panthera = pantheraCore::getInstance();
+    
+    if (!$user)
+        $user = $panthera -> user;
 
     if(!$panthera->session->exists('uid'))
         return False;
