@@ -52,6 +52,9 @@ abstract class pageController extends pantheraClass {
     // are we using uiNoAccess?
     protected $useuiNoAccess = null;
     
+    // are we already added permissions icon to titlebar?
+    protected $permissionsIconPresent = False;
+    
     /**
      * Initialize front controller
      * 
@@ -83,6 +86,7 @@ abstract class pageController extends pantheraClass {
                 $this -> panthera -> config -> loadOverlay($overlay);
         }
         
+        // add uiTitlebar
         if ($this -> uiTitlebar)
         {
             if (isset($this -> uiTitlebar[1]))
@@ -91,6 +95,22 @@ abstract class pageController extends pantheraClass {
                 $name = localize($this->uiTitlebar[0]);
             
             $this -> uiTitlebarObject = new uiTitlebar($name);
+            
+            // add permissions button
+            if ($this->permissions and checkUserPermissions(null, true))
+            {
+                $perms = $this->permissions;
+
+                if (is_array($perms))
+                    $perms = implode(',', $perms);
+                
+                // get from template config (so we don't have to define paths and classes here)
+                $config = (array)$this -> panthera -> template -> getFileConfig('uititlebar.tpl');
+                $href = str_replace('{$query}', $perms, $config['permissions_href']);
+                $onclick = str_replace('{$query}', $perms, $config['permissions_onclick']);
+                
+                $this -> uiTitlebarObject -> addIcon($this -> panthera -> template -> getStockIcon('permissions'), 'right', $href, $onclick);
+            }
         }
         
         // enable ui.NoAccess for admin panel by default
@@ -210,10 +230,27 @@ abstract class pageController extends pantheraClass {
         // diffirent titlebar for every action
         if (isset($this->actionuiTitlebar[$action]))
         {
+            // create action titlebar
             if (isset($this->actionuiTitlebar[$action][1]))
                 $this -> uiTitlebarObject = new uiTitlebar(localize($this->actionuiTitlebar[$action][0], $this->actionuiTitlebar[$action][1]));
             else
                 $this -> uiTitlebarObject = new uiTitlebar(localize($this->actionuiTitlebar[$action][0]));
+            
+            // add permissions icon
+            if (isset($this->actionPermissions[$action]))
+            {
+                if ($this->actionPermissions[$action] and checkUserPermissions(null, true))
+                {
+                    $perms = $this->actionPermissions[$action];
+    
+                    // get from template config (so we don't have to define paths and classes here)
+                    $config = (array)$this -> panthera -> template -> getFileConfig('uititlebar.tpl');
+                    $href = str_replace('{$query}', $perms, $config['permissions_href']);
+                    $onclick = str_replace('{$query}', $perms, $config['permissions_onclick']);
+                    
+                    $this -> uiTitlebarObject -> addIcon($this -> panthera -> template -> getStockIcon('permissions'), 'right', $href, $onclick);
+                }
+            }
         }
         
         if(method_exists($this, $method))
