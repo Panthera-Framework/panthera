@@ -19,13 +19,11 @@
 
  class conftoolAjaxControllerCore extends pageController
 {
-    protected $permissions = 'can_update_config_overlay';
+    protected $permissions = 'admin.conftool';
     
     protected $uiTitlebar = array(
         'Configuration editor - Administration tool for developers and administrators.', 'conftool'
     );
-    
-    
     
     /**
      * Removing existing key
