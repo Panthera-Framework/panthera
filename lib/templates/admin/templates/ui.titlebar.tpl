@@ -14,7 +14,7 @@
                 <img src="images/admin/pantheraUI/transparent.png" class="pantheraIcon icon-{$value.image}" alt="Icon">
             </a>
             {else}
-            <img src="images/admin/pantheraUI/transparent.png" class="pantheraIcon icon-{$value.image}" alt="Icon" style="align: right;">
+            <img src="images/admin/pantheraUI/transparent.png" class="pantheraIcon icon-{$value.image|str_replace:'-icon',''}" alt="Icon" style="align: right;">
             {/if}
             {/loop}
             

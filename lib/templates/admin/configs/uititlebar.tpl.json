@@ -1,0 +1,4 @@
+{
+    "permissions_href": "#",
+    "permissions_onclick": "panthera.popup.toggle('?display=acl&cat=admin&popup=true&name={$query}');"
+}
