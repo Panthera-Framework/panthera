@@ -22,9 +22,7 @@ class autoloaderAjaxControllerCore extends pageController
         'Autoloader cache'
     );
     
-    protected $permissions = '';
-
-    
+    protected $permissions = 'admin.autoloader';
     
     /**
      * Main, display template function
@@ -36,19 +34,16 @@ class autoloaderAjaxControllerCore extends pageController
 
     public function display()
     {
-        // check if user is an admin
-        if(!checkUserPermissions($user, True)) {
-            $n = new uiNoAccess();
-            $n -> display();
-        }
-        
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST')
+        {
             $items = pantheraAutoloader::updateCache();
-            ajax_exit(array('status' => 'success', 'message' => slocalize('Updated autoloader cache, counting %s items', 'system', count($items))));
+            ajax_exit(array(
+                'status' => 'success',
+                'message' => slocalize('Updated autoloader cache, counting %s items', 'system', count($items)),
+            ));
         }
 
         $this -> panthera -> template -> push('autoloader', $this->panthera->config->getKey('autoloader'));
-        
         return $this -> panthera -> template -> compile('autoloader.tpl');
         
     }    
