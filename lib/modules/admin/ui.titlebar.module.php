@@ -60,23 +60,71 @@ class uiTitlebar
     }
     
     /**
-      * Add icons to toolbar
-      *
-      * @param string $icon Link to image
-      * @param string $alignment Left or right
-      * @param string $href Optional link
-      * @param string $onclick Optional onclick attribute
-      * @return mixed 
-      * @author Damian Kęska
-      */
+     * Add icons to toolbar
+     *
+     * @param string $icon Link to image
+     * @param string $alignment Left or right
+     * @param string $href Optional link (To load a link from template configuration file eg. test.tpl:varName - will use varName_href and varName_onclick)
+     * @param string $onclick Optional onclick attribute
+     * @param string $iconName Optional icon name ($icon will be taken if not specified)
+     * @return mixed 
+     * @author Damian Kęska
+     */
     
-    public function addIcon($icon, $alignment='right', $href='', $onclick='')
+    public function addIcon($icon, $alignment='right', $href='', $onclick='', $iconName='')
     {
-        $this->settings['icons'][$alignment][] = array(
+        if (strpos($href, ':') !== false and strpos($href, '.tpl') !== false and !$onclick)
+        {
+            $exp = explode(':', $href);
+            
+            if (count($exp) == 2)
+            {
+                $config = $this -> panthera -> template -> getFileConfig($exp[0]);
+                
+                if ($config)
+                {
+                    $config = (array)$config;
+                    
+                    if (isset($config[$exp[1]. '_href']))
+                        $href = $config[$exp[1]. '_href'];
+                    
+                    if (isset($config[$exp[1]. '_onclick']))
+                        $onclick = $config[$exp[1]. '_onclick'];
+                }
+            }
+        }
+        
+        if (!$iconName)
+            $iconName = $icon;
+        
+        $this->settings['icons'][$alignment][$iconName] = array(
             'image' => pantheraUrl($icon), 
             'link' => pantheraUrl($href), 
-            'onclick' => pantheraUrl($onclick)
+            'onclick' => pantheraUrl($onclick),
         );
+    }
+    
+    /**
+     * Get icon by icon or icon & alignment
+     * 
+     * @param string $icon Icon name
+     * @param string $alignment Alignment
+     * @return array
+     */
+    
+    public function getIcon($icon, $alignment='')
+    {
+        if ($alignment)
+        {
+            if (isset($this->settings['icons'][$alignment][$icon]))
+                return $this->settings['icons'][$alignment][$icon];
+        } else {
+            foreach ($this->settings['icons'] as $alignment)
+            {
+                if (isset($this->settings['icons'][$alignment][$icon]))
+                    return $this->settings['icons'][$alignment][$icon];
+            }
+        }
     }
     
     /**
