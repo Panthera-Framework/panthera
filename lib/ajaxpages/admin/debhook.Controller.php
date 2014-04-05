@@ -23,7 +23,7 @@ class debhookAjaxControllerCore extends pageController
         'Plugins debugger', 'settings'
     );
     
-    protected $permissions = 'can_see_debhook';
+    protected $permissions = 'admin.debhook';
 
     
     /**
@@ -146,7 +146,7 @@ class debhookAjaxControllerCore extends pageController
     
     
         $arrayFunctions = array_merge($userFunctions, $arrayFunctions);
-        $template -> push('functions', $arrayFunctions);
+        $this -> panthera -> template -> push('functions', $arrayFunctions);
     
          
          /* Get list of all defined hooks */
