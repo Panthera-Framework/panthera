@@ -37,6 +37,7 @@ class menueditAjaxControllerSystem extends pageController
         'getRoutes' => array('can_update_menus', 'can_update_menu_{$category}', 'update_menu_item_{$item}'),
         'getPreviewRoute' => array('can_update_menus', 'can_update_menu_{$category}', 'update_menu_item_{$item}'),
         'saveCategory' => _CONTROLLER_PERMISSION_INLINE_,
+        'main' => _CONTROLLER_PERMISSION_INLINE_,
     );
     
     protected $requirements = array(
