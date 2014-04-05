@@ -81,7 +81,7 @@ class pluginsAjaxControllerCore extends pageController
                     if (isset($value['info']['meta']['author']))
                         $author = $value['info']['meta']['author'];
         
-                     if (isset($description = $value['info']['meta']['description']))
+                     if (isset($value['info']['meta']['description']))
                         $description = $value['info']['meta']['description'];
         
                      if (isset($value['info']['meta']['version']))
