@@ -296,6 +296,7 @@ abstract class pageController extends pantheraClass {
         $instance = $reflection -> newInstanceWithoutConstructor();
         
         $props = $reflection -> getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
+        $propsReturn = array();
         
         foreach ($props as $property)
         {
