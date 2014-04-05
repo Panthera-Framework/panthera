@@ -682,6 +682,7 @@ ul.dropdown li:hover > a.dir {
     outline: solid 1px #6e8093;
     border-top: solid 1px #404c5a;
     background-color: #56687b;
+    border-bottom: solid 1px #000;
 }
 
 .popupHeader {
