@@ -17,7 +17,7 @@
 
 class ajaxpagesAjaxControllerCore extends pageController
 {
-    protected $permissions = 'can_see_ajax_pages';
+    protected $permissions = 'admin.debug.ajaxpages';
     
     protected $uiTitlebar = array(
         'Index of ajax pages', 'ajaxpages'

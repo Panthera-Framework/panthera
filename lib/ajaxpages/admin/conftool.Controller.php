@@ -116,7 +116,8 @@
      
     public function display()
     {
-        $this -> $panthera -> config -> loadOverlay('*');
+        // load configuration variables from all overlays
+        $this -> panthera -> config -> loadOverlay('*');
         
         // load needed translates
         $this -> panthera -> locale -> loadDomain('conftool');
@@ -171,9 +172,7 @@
         }
         
         $array = $this->panthera->get_filters('conftool_array', $array);
-        
         $this -> panthera -> template -> push('a', $array);
-        
         return $this -> panthera -> template -> compile('conftool.tpl');
     }
 

@@ -22,7 +22,7 @@ class autoloaderAjaxControllerCore extends pageController
         'Autoloader cache'
     );
     
-    protected $permissions = 'admin.autoloader';
+    protected $permissions = 'admin.debug.autoloader';
     
     /**
      * Main, display template function

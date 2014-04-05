@@ -23,9 +23,7 @@ class includesAjaxControllerCore extends pageController
         'Included files - List of all included files in current code execution', 'includes'
     );
     
-    protected $permissions = 'can_see_debug';
-    
-    
+    protected $permissions = 'admin.debug.includes';
     
     /**
      * Main, display template function
