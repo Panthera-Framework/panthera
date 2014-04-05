@@ -34,7 +34,7 @@ function regenerateAutoloader()
                 </th>
             </tr>
         </thead>
-        <tbody>
+        <tbody class="hovered">
             {loop="$autoloader"}
             <tr>
                 <td><b>class</b> {$key}</td>
