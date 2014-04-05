@@ -4,13 +4,13 @@
         <meta charset="utf-8">
         {$site_header}
         <link rel="icon" type="image/png" href="{$PANTHERA_URL}/images/admin/pantheraUI/favicon.ico" />
-        <link rel="stylesheet" type="text/css" href="css/jquery.dropdown.css">
-        <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
-        <link rel="stylesheet" type="text/css" href="css/pantheraUI.css">
-        <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
-        <script type="text/javascript" src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-        <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="{$PANTHERA_URL}/js/panthera.js"></script>
+        <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/admin/jquery.dropdown.css">
+        <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/admin/jquery-ui.css">
+        <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/admin/pantheraUI.css">
+        <script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery-1.10.0.min.js"></script>
+        <script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery-migrate-1.2.1.min.js"></script>
+        <script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="{$PANTHERA_URL}/js/admin/panthera.js"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/admin/pantheraUI.js"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery.dropdown.js"></script>
         

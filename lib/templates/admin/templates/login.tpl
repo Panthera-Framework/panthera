@@ -3,12 +3,12 @@
 	<head>
 	    {$site_header}
     	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    	<link rel='stylesheet' href='{$PANTHERA_URL}/css/jquery.dropdown.css' type='text/css' media='all' />
-    	<link rel='stylesheet' href='{$PANTHERA_URL}/css/login.css' type='text/css' media='all' />
+    	<link rel='stylesheet' href='{$PANTHERA_URL}/css/admin/jquery.dropdown.css' type='text/css' media='all' />
+    	<link rel='stylesheet' href='{$PANTHERA_URL}/css/admin/login.css' type='text/css' media='all' />
     	<link rel="icon" type="image/png" href="{$PANTHERA_URL}/images/admin/pantheraUI/favicon.ico" />
     	
-    	<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
-        <script type="text/javascript" src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    	<script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery-1.10.0.min.js"></script>
+        <script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery-migrate-1.2.1.min.js"></script>
     	<script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery.dropdown.js"></script>
     </head>
 

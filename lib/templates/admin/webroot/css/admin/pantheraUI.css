@@ -23,7 +23,7 @@ body {
 }
 
 .pantheraLogo {
-    background-image: url('../images/admin/pantheraUI/logo.png');
+    background-image: url('../../../images/admin/pantheraUI/logo.png');
     background-repeat: no-repeat;
     background-position: 0 2px;
     height: 52px;
@@ -150,7 +150,7 @@ body {
 }
 
 .pantheraIcon {
-    background: url('../images/admin/pantheraUI/icons.png') no-repeat;
+    background: url('../../../images/admin/pantheraUI/icons.png') no-repeat;
     height: 15px;
     width: 15px;
     margin-right: 3px;
@@ -209,7 +209,7 @@ body {
 #topContent {
     position: relative;
     min-height: 90px;
-    background: url('../images/admin/pantheraUI/searchbar-bg.png');
+    background: url('../../../images/admin/pantheraUI/searchbar-bg.png');
     background-repeat: repeat;
     border-bottom: solid #56687b 2px;
     border-left: solid #6e8093 1px;
@@ -240,7 +240,7 @@ body {
     height: 24px;
     margin: 0;
     overflow: hidden;
-    background: url('../images/admin/pantheraUI/select.png') no-repeat right #404c5a;
+    background: url('../../../images/admin/pantheraUI/select.png') no-repeat right #404c5a;
     border: solid 1px #6e8093;
 }
 
@@ -318,7 +318,7 @@ a:active {
     margin-top: 10px;
     display: inline-block;
     height: 67px;
-    background: url('../images/admin/pantheraUI/pager.png');
+    background: url('../../../images/admin/pantheraUI/pager.png');
 }
 
 /* Ajax content */
@@ -418,7 +418,7 @@ tbody tr:nth-child(even) {
 input[type=button], input[type=submit] {
     min-width: 100px;
     height: 25px;
-    background: url('../images/admin/pantheraUI/button.png');
+    background: url('../../../images/admin/pantheraUI/button.png');
     background-repeat: repeat-x;
     color: #fff;
     padding: 4px;
@@ -429,7 +429,7 @@ input[type=button], input[type=submit] {
 }
 
 input[type=button]:hover, input[type=submit]:hover {
-    background: url('../images/admin/pantheraUI/button2.png');
+    background: url('../../../images/admin/pantheraUI/button2.png');
 }
 
 input[type="text"], input[type="number"], input[type="password"], textarea {
