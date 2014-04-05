@@ -24,6 +24,7 @@ class settingsAjaxControllerSystem extends pageController
 {
     protected $actionPermissions = array(
         'system_info' => 'can_see_system_info',
+        'main' => _CONTROLLER_PERMISSION_INLINE_,
     );
     
     protected $defaultAction = 'main';
