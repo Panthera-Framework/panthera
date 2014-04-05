@@ -19,10 +19,13 @@
   
 class newsletterAjaxControllerSystem extends pageController
 {
-	protected $permission = 'can_manage_newsletter';
-	
+	protected $actionPermissions = array(
+        'createCategory' => 'admin.newsletter.management',
+        'removeCategory' => array('admin.newsletter.management', 'admin.newsletter.cat.{$nid}'),
+	);
+    
 	protected $uiTitlebar = array(
-        'Newsletter management', 'newsletter'
+        'Newsletter management', 'newsletter',
     );
 	
 	
@@ -36,7 +39,8 @@ class newsletterAjaxControllerSystem extends pageController
 	
 	public function createCategoryAction()
 	{
-		if (strlen($_POST['title']) > 2) {
+		if (strlen($_POST['title']) > 2) 
+		{
 			if (newsletterManagement::create($_POST['title'], 0, $_POST['type']))
 				ajax_exit(array('status' => 'success'));
 			else
@@ -58,7 +62,8 @@ class newsletterAjaxControllerSystem extends pageController
 	
 	public function removeCategoryAction()
 	{
-		if ($_GET['nid'] != '') {
+		if ($_GET['nid'])
+		{
 			if (newsletterManagement::remove('nid', $_GET['nid']))
 				ajax_exit(array('status' => 'success'));
 			else
@@ -81,7 +86,7 @@ class newsletterAjaxControllerSystem extends pageController
 	public function display()
 	{
 		$this -> panthera -> locale -> loadDomain('newsletter');
-		
+        $this -> pushPermissionVariable('nid', $_GET['nid']);
 		$this -> dispatchAction();
 		
 		$page = intval($_GET['page']);
