@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Google PageRank
  * Get GooglePR by given URL and show statistics
@@ -10,16 +9,22 @@
  * @license GNU LGPLv3, see license.txt
  */
 
+/**
+ * Google PageRank
+ * Get GooglePR by given URL and show statistics
+ *
+ * @package Panthera\core\googlepr\admin
+ * @author Mateusz Warzyński
+ * @author Damian Kęska
+ */
+ 
 class googleprAjaxControllerCore extends pageController
 {
-   		
-   	protected $userPermissions = array();
-		
     protected $uiTitlebar = array(
         'Google PageRank', 'googlepr'
     );
     
-	
+    protected $permissions = 'admin.googlepr';
 	
 	/**
 	  * Get Google PageRank
@@ -34,12 +39,18 @@ class googleprAjaxControllerCore extends pageController
     
 	    $results = $this -> panthera -> session -> get('googlepr.history');
 	    
-	    if (array_key_exists($domain, $results))
-	        ajax_exit(array('status' => 'failed', 'message' => localize('Result of your request is on the chart.', 'googlepr')));
+	    if (isset($results[$domain]))
+	        ajax_exit(array(
+	           'status' => 'failed',
+	           'message' => localize('Result of your request is on the chart.', 'googlepr'),
+            ));
 	
 	    // check legth of domain
 	    if (strlen($domain) < 5)
-	        ajax_exit(array('status' => 'failed', 'message' => localize('Given domain is too short', 'googlepr')));
+	        ajax_exit(array(
+	           'status' => 'failed',
+	           'message' => localize('Given domain is too short', 'googlepr'),
+            ));
 	    
 	    // get PageRank
 	    $rank = GooglePR::getRank($domain);
@@ -56,7 +67,9 @@ class googleprAjaxControllerCore extends pageController
 	    
 	    $this -> panthera -> session -> set ('googlepr.history', $results);
 
-	    ajax_exit(array('status' => 'success'));
+	    ajax_exit(array(
+	       'status' => 'success',
+        ));
 	}
     
 	
@@ -71,9 +84,7 @@ class googleprAjaxControllerCore extends pageController
     public function display()
     {
 		$this -> panthera -> locale -> loadDomain('googlepr');
-		
 		$this -> panthera -> template -> push('charResults', array_reverse($this->panthera->session->get('googlepr.history')));
-		
 		return $this -> panthera -> template -> compile('googlepr.tpl');
     }
 }
