@@ -21,7 +21,7 @@
 class googleprAjaxControllerCore extends pageController
 {
     protected $uiTitlebar = array(
-        'Google PageRank', 'googlepr'
+        'Google PageRank', 'googlepr',
     );
     
     protected $permissions = 'admin.googlepr';
@@ -64,7 +64,6 @@ class googleprAjaxControllerCore extends pageController
 	    }
 	    
 	    $results[$domain] = $rank;
-	    
 	    $this -> panthera -> session -> set ('googlepr.history', $results);
 
 	    ajax_exit(array(
@@ -83,6 +82,7 @@ class googleprAjaxControllerCore extends pageController
 	
     public function display()
     {
+        $this -> dispatchAction();
 		$this -> panthera -> locale -> loadDomain('googlepr');
 		$this -> panthera -> template -> push('charResults', array_reverse($this->panthera->session->get('googlepr.history')));
 		return $this -> panthera -> template -> compile('googlepr.tpl');

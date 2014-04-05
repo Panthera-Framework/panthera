@@ -20,6 +20,13 @@ function getPageRank()
    });
 }
 
+$(document).ready(function() {
+    $('#pageRank').submit(function() {
+        getPageRank();
+        return false;
+    });
+});
+
 </script>
 
 {include="ui.titlebar"}
@@ -50,6 +57,27 @@ function getPageRank()
             </tbody>
         </table>
         
+        {if="count($charResults)"}
+        <table style="margin: 0 auto; width: 740px; margin-top: 25px;">
+            <thead>
+                <tr>
+                    <th>{function="localize('Domain', 'googlepr')"}</th>
+                    <th>{function="localize('Page rank', 'googlepr')"}</th>
+                </tr>
+            </thead>
+            
+            <tbody class="hovered">
+                {loop="$charResults"}
+                <tr>
+                    <td>{$key}</td>
+                    <td>{$value}</td>
+                </tr>
+                {/loop}
+            </tbody>
+        </table>
+        {/if}
+        
+        {if="count($charResults) > 1"}
         <br><br>
         
         <canvas id="myChart" width="900" height="400"></canvas>
@@ -68,5 +96,6 @@ function getPageRank()
 
         var myLine = new Chart(document.getElementById("myChart").getContext("2d")).Bar(data);
         </script>
+        {/if}
     </form>
 </div>
