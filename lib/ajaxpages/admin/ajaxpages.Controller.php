@@ -75,9 +75,8 @@ class ajaxpagesAjaxControllerCore extends pageController
                 if ($attributes)
                 {
                     unset($attributes['instance']);
+                    $array[$file] = $attributes;
                 }
-                
-                $array[$file] = $attributes;
             }
         }
         
