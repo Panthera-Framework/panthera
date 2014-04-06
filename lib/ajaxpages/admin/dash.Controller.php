@@ -110,7 +110,18 @@ class dashAjaxControllerSystem extends pageController
         {
             case 'more':
                 $menu = $menuDB;
-                $menu[] = array('link' => '?display=dash&cat=admin', 'name' => localize('Less', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/tango-icon-theme/Go-previous.svg' , 'linkType' => 'ajax');
+                $menu[] = array(
+                    'link' => '?display=dash&cat=admin',
+                    'name' => localize('Less', 'dash'),
+                    'icon' => '{$PANTHERA_URL}/images/admin/tango-icon-theme/Go-previous.svg',
+                    'linkType' => 'ajax',
+                );
+                
+                foreach ($menu as &$item)
+                {
+                    if (is_array($item['name']))
+                        $item['name'] = $this -> panthera -> locale -> localizeFromArray($item['name']);
+                }
             break;
         
             case '':
@@ -135,13 +146,20 @@ class dashAjaxControllerSystem extends pageController
                         break;
                     }
                     
-                    $item['name'] = $this -> panthera -> locale -> localizeFromArray($item['name']);
+                    if (is_array($item['name']))
+                        $item['name'] = $this -> panthera -> locale -> localizeFromArray($item['name']);
+                    
                     $menu[$key] = $item;
                 }
                 
                 if ($num == $maxItems)
                 {
-                    $menu[] = array('link' => '?display=dash&cat=admin&menu=more', 'name' => localize('More', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/tango-icon-theme/Go-next.svg' , 'linkType' => 'ajax');
+                    $menu[] = array(
+                        'link' => '?display=dash&cat=admin&menu=more',
+                        'name' => localize('More', 'dash'),
+                        'icon' => '{$PANTHERA_URL}/images/admin/tango-icon-theme/Go-next.svg',
+                        'linkType' => 'ajax',
+                    );
                 }
                 
                 // main menu, there are predefined variables
