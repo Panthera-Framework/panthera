@@ -41,7 +41,7 @@ function getAvatar(link, id)
     
     function toggleBan()
     {
-        panthera.jsonPOST({ url: '?display=users&cat=admin&action=account&uid={$id}', data: 'ban=true', success: function (response) {
+        panthera.jsonPOST({ url: '?display=users&cat=admin&action=ban&uid={$id}', data: '', success: function (response) {
               if (response.status == "success")
               {
                   navigateTo("?display=users&cat=admin&action=account&uid={$id}");
@@ -104,7 +104,7 @@ function getAvatar(link, id)
         });
       </script>
       
-      <form action="?display=users&cat=admin&action=edit_user" method="POST" id="editUserForm">
+      <form action="?display=users&cat=admin&action=editUser" method="POST" id="editUserForm">
          <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
              <thead>
                  <tr>
@@ -159,6 +159,7 @@ function getAvatar(link, id)
                   <th>{function="localize('Full name', 'users')"}</th>
                   <th><input type="text" name="full_name" value="{$full_name}"></th>
                 </tr>
+                
                 {if="$permissions.canEditOthers"}
                 <tr>
                   <th>{function="localize('Primary group', 'users')"}</th>
@@ -173,6 +174,7 @@ function getAvatar(link, id)
                   </th>
                 </tr>
                 {/if}
+                
                 <tr>
                   <th>{function="localize('Language', 'users')"}</th>
                   <th>

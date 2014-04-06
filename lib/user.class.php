@@ -441,6 +441,8 @@ function createNewUser($login, $passwd, $full_name, $primary_group='', $attribut
         return False;
     }
     
+    $primary_group = $test->group_id;
+    
     if ($mail) {
         if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
             throw new Exception('Incorrect e-mail address', 866);

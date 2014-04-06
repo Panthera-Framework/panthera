@@ -32,6 +32,9 @@ class pluginsAjaxControllerCore extends pageController
     
     public function toggleAction()
     {
+        if (!getUserRightAttribute($this->panthera->user, True))
+            ajax_exit(array('status' => 'failed', 'message' => localize('You have not permissions to execute this action.', 'plugins')));
+        
         $name = addslashes($_GET['plugin']);
 
         if ($_GET['value'] == "1")

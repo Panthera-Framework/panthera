@@ -131,6 +131,10 @@ abstract class pageController extends pantheraClass {
 
     public function checkPermissions($permissions, $dontCallNoAccess=False)
     {
+        // admin can do everything
+        if (getUserRightAttribute($this->panthera->user, True))
+                return True;
+        
         $valid = false;
         
         // single permission check

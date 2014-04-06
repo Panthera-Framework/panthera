@@ -9,7 +9,7 @@
 
 function jumpToAjaxPage(id)
 {
-    panthera.htmlGET({ url: '?display=users&cat=admin&subaction=show_table&usersPage='+id, success: '#usersDiv' });
+    panthera.htmlGET({ url: '?display=users&cat=admin&subaction=showTable&usersPage='+id, success: '#usersDiv' });
 }
 
 /**
@@ -97,7 +97,7 @@ function removeUser(id)
             });
         });
       </script>
-      <form action="?display=users&cat=admin&action=add_user" method="POST" id="addUserForm">
+      <form action="?display=users&cat=admin&action=addUser" method="POST" id="addUserForm">
          
          <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
 

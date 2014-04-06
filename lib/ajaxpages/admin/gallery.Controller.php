@@ -22,9 +22,15 @@ class galleryAjaxControllerCore extends pageController
     protected $userPermissions = array();
     
     protected $actionPermissions = array(
-        'canManageGalleries' => array('can_manage_galleries', 'can_manage_gallery_{$category}'),
-        'canManageItem' => array('can_manage_galleries', 'can_manage_gallery_{$category}', 'can_manage_gimage_{$item}'),
-        'canReadGallery' => array('can_read_all_galleries')
+        'addCategory' => array('can_manage_galleries'),
+        'addItem' => array('can_manage_galleries', 'can_manage_gallery_{$category}'),
+        'addUploads' => array('can_manage_galleries', 'can_manage_gallery_{$category}'),
+        'createCategory' => array('can_manage_galleries'),
+     // 'deleteCategory' => array('can_manage_galleries', 'can_manage_gallery_{$category}'),
+        'displayCategory' => array('can_manage_galleries', 'can_read_all_galleries', 'can_manage_gallery_{$category}'),
+        'editCategory' => array('can_manage_galleries', 'can_manage_gallery_{$category}'),
+        'saveCategoryDetails' => array('can_manage_galleries', 'can_manage_gallery_{$category}'),
+        'setCategoryThumb' => array('can_manage_galleries', 'can_manage_gallery_{$category}')
     );
 
     
@@ -38,9 +44,6 @@ class galleryAjaxControllerCore extends pageController
     
     public function saveCategoryDetailsAction()
     {
-        // check user permissions
-        $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gallery_'.$_GET['categoryid']));
-    
         // get gallery by given id
         $gallery = new galleryCategory('id', intval($_GET['categoryid']));
         
@@ -178,9 +181,6 @@ class galleryAjaxControllerCore extends pageController
 
     public function addUploadsAction()
     {
-        // check user permissions
-        $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gallery_'.$_GET['id']));
-         
         // get ids (of files) from decoded json array
         $files = json_decode($_POST['ids']);
         
@@ -388,10 +388,6 @@ class galleryAjaxControllerCore extends pageController
     
     public function displayCategoryAction()
     {
-        // check permissions
-        if (!$this->userPermissions['manageAll'] and !$this->checkPermissions('can_read_all_galleries'))
-            $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gallery_'.$category->id)); // check special permissions
-        
         // implement searchbar
         $sBar = new uiSearchbar('uiTop');
         $sBar -> setQuery($_GET['query']);
@@ -551,12 +547,9 @@ class galleryAjaxControllerCore extends pageController
 
     public function addCategoryAction()
     {
-        // check permissions
-        $this -> checkPermissions('can_manage_galleries');
-    
         if ($_GET['new_title'])
         {
-            gallery::createCategory($_GET['filter'].$_GET['new_title'], $user->login, $user->id, $user->language, intval($_GET['visibility']), $user->full_name, md5(rand(999, 9999)));
+            gallery::createCategory($_GET['filter'].$_GET['new_title'], $this->panthera->user->login, $this->panthera->user->id, $this->panthera->user->language, intval($_GET['visibility']), $this->pantherauser->full_name, md5(rand(999, 9999)));
             ajax_exit(array('status' => 'success'));
         } else {
             ajax_exit(array('status' => 'failed', 'error' => localize('Title cannot be empty', 'gallery')));
@@ -573,10 +566,6 @@ class galleryAjaxControllerCore extends pageController
     public function setCategoryThumbAction()
     {
         $ctgid = intval($_GET['categoryid']);
-    
-        // check user rights
-        if (!$this -> userPermissions['manageAll'])
-            $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gallery_'.$ctgid));
     
         $item = new galleryItem('id', intval($_GET['itemid']));
         $category = new galleryCategory('id', $ctgid);
@@ -602,10 +591,6 @@ class galleryAjaxControllerCore extends pageController
     public function editCategoryAction()
     {
         $id = intval($_GET['categoryid']);
-        
-        // check permissions
-        if ($this -> userPermissions['manageAll'])
-            $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gallery_'.$id));
     
         // get category as object
         $item = new galleryCategory('id', $id);
@@ -763,10 +748,6 @@ class galleryAjaxControllerCore extends pageController
                 $uploadID = intval($_POST['upload_id']);
                 $visibility = intval((bool)intval($_POST['visibility']));
                 $galleryID = intval($_POST['categoryid']);
-                
-                // check permissions
-                if ($this -> userPermissions['manageAll'])
-                    $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gallery_'.$galleryID));
     
                 // validate category            
                 $category = new galleryCategory('id', $galleryID);
@@ -797,10 +778,6 @@ class galleryAjaxControllerCore extends pageController
         }
         
         $id = intval($_GET['categoryid']);
-        
-        // check user permissions
-        if ($this -> userPermissions['manageAll'])
-            $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gallery_'.$id));
             
         // get list of available gallery categories
         $c = gallery::fetch('');
