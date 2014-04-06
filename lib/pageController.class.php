@@ -207,9 +207,13 @@ abstract class pageController extends pantheraClass {
             $action = $this->defaultAction;
             
         if (!$action)
+        {
+            $this -> panthera -> logging -> output('No any action selected', get_class($this));
             return False;
+        }
         
         $method = $action. 'Action';
+        $this -> panthera -> logging -> output('Looking for "' .$method. '" method', get_class($this));
         
         if (isset($this->actionPermissions[$action]))
         {
