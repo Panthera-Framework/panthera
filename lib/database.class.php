@@ -1389,7 +1389,7 @@ abstract class pantheraFetchDB
             // if we dont have array to take fetched data we must fetch it by our own
             if (in_array($by, $this->_constructBy) and $SQL == NULL)
             {
-                $SQL = $panthera->db->query($this->getQuery(). ' WHERE `' .$by. '` = :' .$by, array($by => $value));
+                $SQL = $panthera->db->query($this->getQuery(). ' WHERE `' .$by. '` = :' .$by. ' LIMIT 0,1', array($by => $value));
             }
 
             // getting results and building a object
