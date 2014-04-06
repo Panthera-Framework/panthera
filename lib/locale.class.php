@@ -380,7 +380,7 @@ class pantheraLocale
 
     public static function getFromOverride($override)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $language = $panthera -> locale -> getActive();
 
         if ($panthera->locale->exists($override))
@@ -399,7 +399,7 @@ class pantheraLocale
     
     public static function selectStringFromArray($input)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         
         if (!is_array($input))
         {
@@ -480,7 +480,7 @@ class pantheraLocale
 
 function localize($string, $domain='')
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
     return $panthera->locale->_($string, $domain);
 }
 
@@ -495,7 +495,7 @@ function localize($string, $domain='')
 
 function slocalize($string, $domain)
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
 
     $args = '';
 
