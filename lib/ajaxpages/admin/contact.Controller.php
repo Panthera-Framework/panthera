@@ -18,9 +18,13 @@
   
 class contactAjaxControllerSystem extends pageController
 {
-    protected $permissions = 'can_edit_contact';
+    protected $permissions = 'admin.contact';
     protected $language = '';
     protected $fieldName = 'contact.lang.all';
+    
+    protected $uiTitlebar = array(
+        'Street adress, phone number, location etc.', 'contactpage',
+    );
     
     /**
      * Main function
@@ -98,7 +102,7 @@ class contactAjaxControllerSystem extends pageController
         $this -> dispatchAction();
         
         // titlebar
-        $this -> uiTitlebarObject = new uiTitlebar(localize('Street adress, phone number, location etc.', 'contactpage') ." (".$this->language.")");
+        $this -> uiTitlebarObject -> setTitle(localize('Street adress, phone number, location etc.', 'contactpage') ." (".$this->language.")");
         $this -> uiTitlebarObject -> addIcon('{$PANTHERA_URL}/images/admin/menu/contact.png', 'left');
         
         // push all variables to template
