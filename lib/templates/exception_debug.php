@@ -36,7 +36,7 @@ if (!defined('IN_PANTHERA'))
         
                             if (isset($trace['class']))
                                 $function = '<span class="class_name">' .$trace['class']. '</span> -> <span class="func_name">' .$trace['function']. '</span>';
-        
+                            
                             echo '<b>' .$trace['key']. ' =></b> Called ' .$function. ' (' .htmlspecialchars(substr($trace['args_json'], 0, 256)). ' ) in ' .$trace['file']. ' on line <span class="func_name">' .$trace['line']. '</span><br>';
                         }
                     ?>
