@@ -1320,11 +1320,13 @@ ul.dropdown li:hover > a.dir {
 .ui-tooltip, .arrow:after {
     background: #404c5a;
     border: 1px solid #6e8093;
+    max-width: 500px;
 }
 .ui-tooltip {
     padding: 5px 10px;
     color: white;
     font: bold 12px "Helvetica Neue", Sans-Serif;
+    max-width: 500px;
 }
 .arrow {
     width: 70px;
