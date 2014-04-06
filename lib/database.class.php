@@ -1373,7 +1373,7 @@ abstract class pantheraFetchDB
                     throw new Exception('Input $by must be a whereClause object or a string with column name');
             
                 $clause = $by->show();
-                $SQL = $panthera->db->query($this->getQuery(). ' WHERE ' .$clause[0], $clause[1]);
+                $SQL = $panthera->db->query($this->getQuery(). ' WHERE ' .$clause[0]. ' LIMIT 0,1', $clause[1]);
                 //$by = $clause[0]; // caching object cannot be realized, its almost impossible
                 //$value = $clause[1];
                 
