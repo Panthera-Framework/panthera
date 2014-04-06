@@ -28,12 +28,6 @@ class newsletterAjaxControllerSystem extends pageController
         'Newsletter management', 'newsletter',
     );
     
-    protected $actionPermissions = array(
-        'createCategory' => array('can_manage_newsletter'),
-        'removeCategory' => array('can_manage_newsletter')
-    );
-	
-    
 	
 	/**
      * Create new category action
