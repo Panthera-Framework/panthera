@@ -8,8 +8,6 @@
  * @license GNU Lesser General Public License 3, see license.txt
  */
 
-if (!defined('IN_PANTHERA'))
-    exit;
  
 /**
  * Settings ajax page controller
@@ -125,7 +123,7 @@ class settingsAjaxControllerSystem extends pageController
         $this -> panthera -> template -> push('constants', $const['user']);
         $this -> panthera -> template -> push('settings_list', $options);
         $this -> panthera -> template -> push('acl_list', $this -> panthera -> user->acl->listAll());
-        $this -> panthera -> template ->  push('action', 'system_info');
+        $this -> panthera -> template -> push('action', 'system_info');
         
         $titlebar = new uiTitlebar(localize('Panel with main settings and informations about Panthera', 'settings'));
         $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/settings.png', 'left');
@@ -185,9 +183,7 @@ class settingsAjaxControllerSystem extends pageController
                 foreach ($section as $key => $item)
                 {
                     if ($listDB[$sectionName][$key]['edited'])
-                    {
                         continue;
-                    }
                 
                     $listDB[$sectionName][$key] = $item;
                 }
@@ -205,9 +201,7 @@ class settingsAjaxControllerSystem extends pageController
                 if (isset($value['hidden']))
                 {
                     if ($value['hidden'])
-                    {
                         unset($listDB[$sectionName][$key]);
-                    }
                 }
             }
         }
@@ -218,9 +212,7 @@ class settingsAjaxControllerSystem extends pageController
         if ($sBar->getQuery())
         {
             foreach ($list as $categoryName => $category)
-            {
                 $list[$categoryName] = $sBar->filterData($category, $sBar->getQuery());
-            }
         }
         
         // check for permissions
@@ -276,9 +268,7 @@ class settingsAjaxControllerSystem extends pageController
                     continue;
                 
                 if (!$this->checkPermissions($permission[2], True))
-                {
                     unset($list[$permission[0]][$permission[1]]);
-                }
             }
         }
         
@@ -358,7 +348,7 @@ class settingsAjaxControllerSystem extends pageController
         );
         
         $defaults['system']['session'] = array(
-            'link' => '?display=settings.session&cat=admin',
+            'link' => '?display=settings_session&cat=admin',
             'name' => ucfirst(localize('session', 'settings')),
             'description' => localize('Session, cookies and browser security settings', 'settings'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/session-icon.png',
@@ -366,7 +356,7 @@ class settingsAjaxControllerSystem extends pageController
         );
         
         $defaults['system']['mce'] = array(
-            'link' => '?display=settings.mce&cat=admin',
+            'link' => '?display=settings_mce&cat=admin',
             'name' => ucfirst(localize('mce settings', 'settings')),
             'description' => localize('Text editor settings', 'settings'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/mce.png',
@@ -374,7 +364,7 @@ class settingsAjaxControllerSystem extends pageController
         );
         
         $defaults['system']['dash'] = array(
-            'link' => '?display=settings.dash&cat=admin',
+            'link' => '?display=settings_dash&cat=admin',
             'name' => localize('Dashboard', 'settings'),
             'description' => localize('Configure Admin Panel main screen', 'settings'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/dashboard.png',
@@ -382,7 +372,7 @@ class settingsAjaxControllerSystem extends pageController
         );
         
         $defaults['system']['pager'] = array(
-            'link' => '?display=settings.pager&cat=admin',
+            'link' => '?display=settings_pager&cat=admin',
             'name' => localize('Pager settings', 'settings'),
             'description' => localize('Setup all pagers used in Panthera Framework', 'settings'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/pager.png',
@@ -406,7 +396,7 @@ class settingsAjaxControllerSystem extends pageController
         );
         
         $defaults['system']['register'] = array(
-            'link' => '?display=settings.register&cat=admin',
+            'link' => '?display=settings_register&cat=admin',
             'name' => localize('User registration', 'settings'),
             'description' => localize('New users registration management', 'settings'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/register.png',
@@ -414,7 +404,7 @@ class settingsAjaxControllerSystem extends pageController
         );
         
         $defaults['system']['login'] = array(
-            'link' => '?display=settings.pa-login&cat=admin',
+            'link' => '?display=settings_palogin&cat=admin',
             'name' => localize('Login screen settings', 'settings'),
             'description' => '',
             'icon' => '{$PANTHERA_URL}/images/admin/menu/login-settings.png',
@@ -422,7 +412,7 @@ class settingsAjaxControllerSystem extends pageController
         );
         
         $defaults['system']['facebook'] = array(
-            'link' => '?display=settings.facebook&cat=admin',
+            'link' => '?display=settings_facebook&cat=admin',
             'name' => localize('Facebook integration', 'settings'),
             'description' => '',
             'icon' => '{$PANTHERA_URL}/images/admin/menu/facebook.png',
@@ -458,7 +448,7 @@ class settingsAjaxControllerSystem extends pageController
         );
         
         $defaults['content']['newsletter'] = array(
-            'link' => '?display=settings.newsletter&cat=admin',
+            'link' => '?display=settings_newsletter&cat=admin',
             'name' => localize('Newsletter settings', 'settings'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/newsletter.png',
             'linkType' => 'ajax'
@@ -480,7 +470,7 @@ class settingsAjaxControllerSystem extends pageController
         );
         
         $defaults['content']['passwordrecovery'] = array(
-            'link' => '?display=settings.passwordrecovery&cat=admin',
+            'link' => '?display=settings_passwordRecovery&cat=admin',
             'name' => ucfirst(localize('password recovery', 'settings')),
             'description' => localize('Default mail title, content, password length', 'settings'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/password-recovery.png',
@@ -488,7 +478,7 @@ class settingsAjaxControllerSystem extends pageController
         );
         
         $defaults['content']['sitesettings'] = array(
-            'link' => '?display=settings.site&cat=admin',
+            'link' => '?display=settings_site&cat=admin',
             'name' => localize('Site configuration', 'settings'),
             'description' => localize('Website URL address, title', 'settings'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/site-settings.png',
@@ -496,7 +486,7 @@ class settingsAjaxControllerSystem extends pageController
         );
         
         $defaults['content']['custompages'] = array(
-            'link' => '?display=settings.custompages&cat=admin',
+            'link' => '?display=settings_customPages&cat=admin',
             'name' => localize('Static pages configuration', 'settings'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/custom-pages.png',
             'linkType' => 'ajax'

@@ -209,7 +209,7 @@ $(document).ready(function () {
             </tr>
             {/if}
             <tr>
-                <td colspan="2"><a href="?display=settings.cachetime&cat=admin" class="ajax_link"><b>{function="localize('Cache life time settings', 'cache')"}</b></a><br><small>({function="localize('Set life time of cached entries per module', 'cache')"})</small></td>
+                <td colspan="2"><a href="?display=settings_cacheTime&cat=admin" class="ajax_link"><b>{function="localize('Cache life time settings', 'cache')"}</b></a><br><small>({function="localize('Set life time of cached entries per module', 'cache')"})</small></td>
             </tr>
         </tbody>
     </table>
