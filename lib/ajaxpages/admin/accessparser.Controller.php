@@ -27,7 +27,7 @@ class accessparserAjaxControllerCore extends pageController
         'admin/ui.pager',
     );
     
-    protected $permissions = 'can_read_log';
+    protected $permissions = 'admin.accessparser';
 
 
 
