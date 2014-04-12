@@ -13,7 +13,7 @@ function removeCustomPage(id)
     panthera.confirmBox.create('{function="localize('Are you sure you want delete this page?', 'custompages')"}', function (responseText) {
         if (responseText == 'Yes')
         {
-            panthera.jsonPOST({ url: '{$AJAX_URL}?display=custom&cat=admin&action=delete_page&pid='+id, data: '', success: function (response) {
+            panthera.jsonPOST({ url: '{$AJAX_URL}?display=custom&cat=admin&action=removePage&pid='+id, data: '', success: function (response) {
                     if (response.status == "success")
                         jQuery('#custompage_row_'+id).remove();
                 }
@@ -58,7 +58,7 @@ function getOtherCustomPages()
 
 <!-- Adding new page -->
 <div style="display: none;" id="addNewPagePopup">
-    <form action="{$AJAX_URL}?display=custom&cat=admin&action=add_page" method="POST" id="add_page">
+    <form action="{$AJAX_URL}?display=custom&cat=admin&action=createPage" method="POST" id="add_page">
         <table class="formTable" style="margin: 0 auto; margin-bottom: 25px;">
              <thead>
                  <tr>
@@ -136,7 +136,7 @@ function getOtherCustomPages()
                 {if="count($pages_list) > 0"}
                 {loop="$pages_list"}
                 <tr id="custompage_row_{$value.id}">
-                    <td><a href="{$AJAX_URL}?display=custom&cat=admin&action=edit_page&uid={$value.unique}" class="ajax_link">{$value.title|localize}</a></td>
+                    <td><a href="{$AJAX_URL}?display=custom&cat=admin&action=editPage&uid={$value.unique}" class="ajax_link">{$value.title|localize}</a></td>
                     <td>{$value.created} {function="localize('by', 'custompages')"} {$value.author_name}</td>
                     <td>{if="$value['created'] == $value['modified']"}{function="localize('without changes', 'custompages')"}{else}{$value.modified} {function="localize('by', 'custompages')"} {$value.mod_author_name}{/if}</td>
                     <td>

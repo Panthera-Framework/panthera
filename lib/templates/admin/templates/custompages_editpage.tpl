@@ -44,7 +44,7 @@ jQuery(document).ready(function($) {
       */
 
     $('#save_form').submit(function () {
-        panthera.jsonPOST({ data: '#save_form', messageBox: 'w2ui', mce: 'tinymce_all'});
+        panthera.jsonPOST({ data: '#save_form', mce: 'tinymce_all'});
         return false;
     });
 
@@ -81,18 +81,22 @@ jQuery(document).ready(function($) {
 {$titleBarInclude='custompages_editpage.titlebar'}
 {include="ui.titlebar"}
 
-<form action="{$AJAX_URL}?id={$custompage.unique}&lang={$custompage_language}&display=custom&cat=admin&action=post_form&pid={$custompage.id}" method="POST" id="save_form">
+<form action="{$AJAX_URL}?id={$custompage.unique}&lang={$custompage_language}&display=custom&cat=admin&action=savePage&pid={$custompage.id}" method="POST" id="save_form">
 <div id="topContent">
     <div class="searchBarButtonArea">
+        
+        <div class="searchBarButtonAreaLeft">
+            <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=custom&cat=admin');">
+        </div>
     
         <span data-searchbardropdown="#searchDropdown" id="searchDropdownSpan" style="position: relative; cursor: pointer;">
-             <input type="button" value="{function="localize('Switch language', 'custompages')"}">
+             <input type="button" value="{function="localize('Edit translations', 'custompages')"}">
         </span>
 
         <div id="searchDropdown" class="searchBarDropdown searchBarDropdown-tip searchBarDropdown-relative">
             <ul class="searchBarDropdown-menu">
             {loop="$languages"}
-                <li style="text-align: left;"><a href="#{$key}" onclick="navigateTo('?display=custom&cat=admin&action=edit_page&uid={$custompage_unique}&language={$key}');">{$key}</a></li>
+                <li style="text-align: left;"><a href="#{$key}" onclick="navigateTo('?display=custom&cat=admin&action=editPage&uid={$custompage.unique}&language={$key}');">{$key|ucfirst}</a></li>
             {/loop}
             </ul>
         </div>
@@ -102,17 +106,36 @@ jQuery(document).ready(function($) {
     </div>
 </div>
 
-<div id="popupOverlay" style="text-align: center; padding-top: 20px; padding-bottom: 0px;"></div>
+<style>
+    .rightTable {
+        width: 40%;
+        margin-bottom: 25px;
+        margin-top: 25px;
+        float: right;
+        vertical-align: text-top;
+    }
+    
+    .leftTable {
+        width: 55%; float: left;
+    }
+
+    @media screen and (max-width: 1351px) {
+        .customPagesTables {
+            float: left;
+            width: 100%;
+        }
+    }
+</style>
 
 <div class="ajax-content" style="text-align: center;">
-    <div style="display: inline-block; width: 70%; margin: 0 auto;">
-        <table style="width: 100%; margin-bottom: 25px;" id="table_details">
+    <div style="display: inline-block; width: 90%; margin: 0 auto;">
+        <table id="table_details" class="rightTable customPagesTables">
             <thead>
                 <tr>
-                    <th colspan="2">{function="localize('Details', 'custompages')"}</th>
+                    <th colspan="2">{function="localize('Basic page settings', 'custompages')"}</th>
                 </tr>
             </thead>
-        
+            
             <tbody>
                 <tr id="tr_title">
                     <td>{function="localize('Title', 'custompages')"}:</td><td><input type="text" name="content_title" value="{$custompage.title|addslashes}" style="width: 99%;"></td>
@@ -123,7 +146,7 @@ jQuery(document).ready(function($) {
                 </tr>
                 
                 <tr id="tr_image">
-                    <td>{function="localize('Image', 'custompages')"}:<br><small>{function="localize('Page image or thumbnail', 'custompages')"}</small></td><td><input type="text" id="content_image" name="content_image" value="{$custompage.image|addslashes}"> 
+                    <td>{function="localize('Image', 'custompages')"}:<br><small>{function="localize('Page image or thumbnail', 'custompages')"}</small></td><td><input type="text" id="content_image" name="content_image" value="{$custompage.image|addslashes}" style="min-width: 40px; width: 40%;"> 
                         <input type="button" value="Select" onclick="panthera.popup.toggle('_ajax.php?display=upload&cat=admin&popup=true&callback=upload_file_callback');">
                     </td>
                 </tr>
@@ -136,7 +159,7 @@ jQuery(document).ready(function($) {
                 <tr id="tr_save_language">
                     <td style="width: 150px;">{function="localize('Save this page in', 'custompages')"}:</td>
                     <td>
-                        <select name="new_language">
+                        <select name="new_language" title="{function="localize('Warning! Be careful with this option. If there is already a translation of this page in selected language you could overwrite it.', 'custompages')"}">
                         {loop="$languages"}
                         <option value="{$key}"{if="$key == $custompage_language"}selected{/if}>{$key}</option>   
                         {/loop}
@@ -151,9 +174,11 @@ jQuery(document).ready(function($) {
             </tbody>
         </table>
     
-        <textarea name="page_content_custom" id="page_content" style="width: 100%; height: 350px;"></textarea>
+        <div class="pageContentTextarea leftTable customPagesTables">
+            <textarea name="page_content_custom" id="page_content" style="width: 100%; height: 450px;"></textarea>
+        </div>
         
-        <table style="width: 100%; margin-bottom: 25px; margin-top: 25px;" id="table_tags">
+        <table id="table_tags" class="rightTable customPagesTables">
             <thead>
                 <tr>
                     <th colspan="2">{function="localize('Tags', 'custompages')"}</th>
@@ -172,7 +197,7 @@ jQuery(document).ready(function($) {
             {if="!isset($readOnly)"}
             <tbody>
                 <tr>
-                    <td style="width: 380px;"><input type="text" name="tag_new" id="new_tag_text" style="width: 360px;"></td>
+                    <td><input type="text" name="tag_new" id="new_tag_text" style="width: 95%;"></td>
                     <td><input type="button" value="{function="localize('Add new tag', 'custompages')"}" id="new_tag"></td>
                 </tr>
             </tbody>

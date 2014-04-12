@@ -370,6 +370,9 @@ abstract class pageController extends pantheraClass {
     
     public static function getControllerName($name)
     {
+        // replace all dots with "_"
+        $name = str_replace('.', '_', str_replace('-', '_', $name));
+        
         $custom = '____non_existent_controller___';
         
         if (static::$searchFrontControllerName)

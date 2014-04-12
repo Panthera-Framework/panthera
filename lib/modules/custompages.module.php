@@ -2,7 +2,7 @@
 /**
   * Newsletter module with support for multiple protocols like e-mail (smtp), jabber etc.
   *
-  * @package Panthera\modules\custompages
+  * @package Panthera\core\custompages
   * @author Damian Kęska
   * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
@@ -105,7 +105,19 @@ class customPage extends pantheraFetchDB
     public static function create($title, $language, $author_name, $author_id, $unique, $url_id, $admin_tpl='')
     {
         $panthera = pantheraCore::getInstance();
-        $array = array('unique' => $unique, 'url_id' => $url_id, 'title' => $title, 'meta_tags' => '', 'html' => '', 'author_name' => $author_name, 'author_id' => $author_id, 'language' => $language, 'mod_author_name' => $author_name, 'mod_author_id' => $author_id, 'admin_tpl' => $admin_tpl);
+        $array = array(
+            'unique' => $unique,
+            'url_id' => $url_id,
+            'title' => $title,
+            'meta_tags' => '',
+            'html' => '',
+            'author_name' => $author_name,
+            'author_id' => $author_id,
+            'language' => $language,
+            'mod_author_name' => $author_name,
+            'mod_author_id' => $author_id,
+            'admin_tpl' => $admin_tpl,
+        );
 
         $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}custom_pages` (`id`, `unique`, `url_id`, `title`, `meta_tags`, `html`, `author_name`, `author_id`, `language`, `created`, `mod_author_name`, `mod_author_id`, `mod_time`, `admin_tpl`) VALUES (NULL, :unique, :url_id, :title, :meta_tags, :html, :author_name, :author_id, :language, NOW(), :mod_author_name, :mod_author_id, NOW(), :admin_tpl);', $array);
 
