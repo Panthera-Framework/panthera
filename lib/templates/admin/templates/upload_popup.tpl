@@ -298,7 +298,7 @@ function transformArrayToString(array) {
             <th>{function="localize('Name', 'upload')"}</th>
             <th>{function="localize('Description', 'upload')"}</th>
             <th>{function="localize('Mime type', 'upload')"}</th>
-            <th>{function="localize('Author', 'upload')"}</th>
+            <th colspan="2">{function="localize('Author', 'upload')"}</th>
            </tr>
         </thead>
        
@@ -324,6 +324,15 @@ function transformArrayToString(array) {
                 <td style="width: 200px;">{$value.description}</td>
                 <td style="width: 80px;">{$value.mime}</td>
                 <td>{$value.author}</td>
+                <td style="width: 1px; padding-right: 5px; padding-left: 5px; z-index: 10;">
+                    <a href="{$value.link}" target="_blank" download="{$value.name}" onclick="selectFile({$value.id});" id="download{$value.id}">
+                        <img src="{$PANTHERA_URL}/images/admin/menu/downloads.png">
+                    </a>
+                </td>
+                
+                <script type="text/javascript">
+                $("file_{$value.id}").bind('mouseheld', function(e) { $('download{$value.id}').click(); });
+                </script>
                 
                 <input type="hidden" id="item_title_{$value.id}" value="{$value.name}">
                 <input type="hidden" id="item_delete_{$value.id}" value="{if="$value.ableToDelete == True"}1{else}0{/if}">
