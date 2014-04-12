@@ -20,7 +20,7 @@ class ajaxpagesAjaxControllerCore extends pageController
     protected $permissions = 'admin.debug.ajaxpages';
     
     protected $uiTitlebar = array(
-        'Index of ajax pages', 'ajaxpages'
+        'Index of ajax pages', 'ajaxpages',
     );
     
     protected $files = array(
@@ -45,7 +45,9 @@ class ajaxpagesAjaxControllerCore extends pageController
     }
     
     /**
+     * Update controllers informations
      * 
+     * @return array
      */
     
     public function getControllersInfo()

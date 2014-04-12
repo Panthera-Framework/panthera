@@ -18,12 +18,14 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
 
-class settings_cacheTimeAjaxControllerSystem extends pageController
+class settings_cachetimeAjaxControllerSystem extends pageController
 {
-    protected $permissions = array('can_update_config_overlay', 'can_edit_session_settings');
+    protected $permissions = array(
+        'admin.conftool', 
+        'admin.system.cache'
+    );
     
     protected $uiTitlebar = array('Cache life time settings', 'cache');
-    
     
     
     /**

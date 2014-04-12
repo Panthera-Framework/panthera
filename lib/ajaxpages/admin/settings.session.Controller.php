@@ -20,9 +20,14 @@
   
 class settings_sessionAjaxControllerSystem extends pageController
 {
-    protected $permissions = array('can_update_config_overlay', 'can_edit_session_settings');
+    protected $permissions = array(
+        'admin.conftool',
+        'admin.settings.session',
+    );
     
-    protected $uiTitlebar = array('Session, cookies and browser security settings', 'session');
+    protected $uiTitlebar = array(
+        'Session, cookies and browser security settings', 'session'
+    );
     
     
     

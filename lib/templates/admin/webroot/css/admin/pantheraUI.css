@@ -1361,3 +1361,7 @@ ul.dropdown li:hover > a.dir {
     bottom: -20px;
     top: auto;
 }
+
+.tableTopRow {
+    border-top: solid #b8bcbf 1px;
+}

@@ -2,7 +2,7 @@
 /**
   * Pager configuration page
   *
-  * @package Panthera\core\ajaxpages\settings_pager
+  * @package Panthera\core\ui\pager
   * @author Damian Kęska
   * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
@@ -12,16 +12,20 @@
 /**
   * Pager configuration page controller
   *
-  * @package Panthera\core\ajaxpages\settings_pager
+  * @package Panthera\core\ui\pager
   * @author Damian Kęska
   * @author Mateusz Warzyński
   */
 
 class settings_pagerAjaxControllerSystem extends pageController
 {
-    protected $permissions = array('can_update_config_overlay', 'can_edit_pager_settings');
+    protected $permissions = array(
+        'admin.conftool', 'admin.settings.pager',
+    );
     
-    protected $uiTitlebar = array('Pager settings', 'settings');
+    protected $uiTitlebar = array(
+        'Pager settings', 'settings'
+    );
     
     
     
@@ -51,9 +55,15 @@ class settings_pagerAjaxControllerSystem extends pageController
         
         if (is_array($result))
         {
-            ajax_exit(array('status' => 'failed', 'message' => $result['message'][1], 'field' => $result['field']));
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => $result['message'][1],
+                'field' => $result['field'],
+            ));
         } elseif ($result === True) {
-            ajax_exit(array('status' => 'success'));
+            ajax_exit(array(
+                'status' => 'success',
+            ));
         }
         
         return $this -> panthera -> template -> display('settings.genericTemplate.tpl');

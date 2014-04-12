@@ -2,7 +2,7 @@
 /**
   * pa-login front controller settings
   *
-  * @package Panthera\core\ajaxpages\settings_palogin
+  * @package Panthera\core\controllers\palogin
   * @author Damian Kęska
   * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
@@ -12,17 +12,21 @@
 /**
   * pa-login front controller settings
   *
-  * @package Panthera\core\ajaxpages\settings_palogin
+  * @package Panthera\core\controllers\palogin
   * @author Damian Kęska
   * @author Mateusz Warzyński
   */
   
-class settings_paloginAjaxControllerSystem extends pageController
+class settings_pa_loginAjaxControllerSystem extends pageController
 {
-    protected $permissions = array('can_update_config_overlay', 'can_edit_login_settings');
+    protected $permissions = array(
+        'admin.conftool', 
+        'admin.controllers.palogin.settings',
+    );
     
-    protected $uiTitlebar = array('User registration settings', 'register');
-    
+    protected $uiTitlebar = array(
+        'User registration settings', 'register'
+    );
     
     
     /**

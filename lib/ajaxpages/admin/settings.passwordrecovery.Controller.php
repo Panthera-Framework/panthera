@@ -2,7 +2,7 @@
 /**
   * Password recovery settings
   *
-  * @package Panthera\core\ajaxpages\settings_passwordRecovery
+  * @package Panthera\core\users\passwordrecovery
   * @author Damian Kęska
   * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
@@ -12,16 +12,21 @@
 /**
   * Password recovery settings page controller
   *
-  * @package Panthera\core\ajaxpages\settings_passwordRecovery
+  * @package Panthera\core\users\passwordrecovery
   * @author Damian Kęska
   * @author Mateusz Warzyński
   */
 
-class settings_passwordRecoveryAjaxControllerSystem extends pageController
+class settings_passwordrecoveryAjaxControllerSystem extends pageController
 {
-    protected $permissions = array('can_update_config_overlay', 'can_edit_password_recovery');
+    protected $permissions = array(
+        'admin.conftool',
+        'admin.settings.register.passwordrecovery',
+    );
     
-    protected $uiTitlebar = array('Password recovery settings', 'passwordrecovery');
+    protected $uiTitlebar = array(
+        'Password recovery settings', 'passwordrecovery'
+    );
     
     
     
@@ -59,10 +64,15 @@ class settings_passwordRecoveryAjaxControllerSystem extends pageController
         $result = $config -> handleInput($_POST);
         
         if (is_array($result))
-            ajax_exit(array('status' => 'failed', 'message' => $result['message'][1], 'field' => $result['field']));
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => $result['message'][1], 'field' => $result['field'],
+            ));
         
         elseif ($result === True)
-            ajax_exit(array('status' => 'success'));
+            ajax_exit(array(
+                'status' => 'success',
+            ));
             
         
         return $this -> panthera -> template -> compile('settings.passwordRecovery.tpl');

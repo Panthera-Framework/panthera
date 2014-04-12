@@ -18,11 +18,16 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
   
-class settings_customPagesAjaxControllerSystem extends pageController
+class settings_custompagesAjaxControllerSystem extends pageController
 {
-    protected $permissions = array('can_update_config_overlay', 'can_edit_session_settings');
+    protected $permissions = array(
+        'admin.conftool',
+        'admin.custompages.settings',
+    );
     
-    protected $uiTitlebar = array('Static pages configuration', 'settings');
+    protected $uiTitlebar = array(
+        'Static pages configuration', 'settings'
+    );
         
         
     
@@ -35,7 +40,7 @@ class settings_customPagesAjaxControllerSystem extends pageController
      * @return array
      */
     
-    protected function filterUiSettingsAdd($input)
+    public function filterUiSettingsAdd($input)
     {
         // input = $_a, $fKey, $setting, $label, $validator, $value
         
@@ -80,7 +85,7 @@ class settings_customPagesAjaxControllerSystem extends pageController
         $this -> panthera -> locale -> loadDomain('settings');
         $this -> panthera -> locale -> loadDomain('custompages');
         
-        $this -> panthera -> add_option('ui.settings.add', 'filterUiSettingsAdd');
+        $this -> panthera -> add_option('ui.settings.add', array($this, 'filterUiSettingsAdd'));
         
         // load uiSettings with "passwordrecovery" config section
         $config = new uiSettings('*');

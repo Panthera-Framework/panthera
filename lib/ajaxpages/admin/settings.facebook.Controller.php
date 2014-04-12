@@ -2,7 +2,7 @@
 /**
  * Facebook integration options
  *
- * @package Panthera\core\ajaxpages\settings_facebook
+ * @package Panthera\core\extras\facebook
  * @author Mateusz Warzyński
  * @author Damian Kęska
  * @license GNU Affero General Public License 3, see license.txt
@@ -12,18 +12,21 @@
 /**
  * Facebook integration options
  *
- * @package Panthera\core\ajaxpages\settings_facebook
+ * @package Panthera\core\extras\facebook
  * @author Damian Kęska
  * @author Mateusz Warzyński
  */
 
 class settings_facebookAjaxControllerSystem extends pageController
 {
-        
-    protected $permissions = array('can_update_config_overlay', 'can_edit_facebook_integration');
+    protected $permissions = array(
+        'admin.conftool',
+        'admin.settings.facebook',
+    );
     
-    protected $uiTitlebar = array('Facebook integration settings', 'facebook');
-    
+    protected $uiTitlebar = array(
+        'Facebook integration settings', 'facebook'
+    );
     
     
     /**
@@ -83,7 +86,7 @@ class settings_facebookAjaxControllerSystem extends pageController
  * @param string $action
  * @param string $key
  * @param mixed $value
- * @package Panthera\adminUI
+ * @package Panthera\core\extras\facebook
  * @return mixed 
  * @author Damian Kęska
  */

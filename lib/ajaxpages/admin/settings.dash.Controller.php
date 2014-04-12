@@ -19,10 +19,14 @@
 
 class settings_dashAjaxControllerSystem extends pageController
 {
-        
-    protected $permissions = array('can_update_config_overlay', 'can_edit_session_settings');
+    protected $permissions = array(
+        'admin.conftool', 
+        'admin.dash',
+    );
     
-    protected $uiTitlebar = array('Dash configuration', 'settings');
+    protected $uiTitlebar = array(
+        'Dash configuration', 'settings'
+    );
     
     
     

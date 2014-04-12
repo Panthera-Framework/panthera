@@ -19,9 +19,14 @@
 
 class settings_registerAjaxControllerSystem extends pageController
 {
-    protected $permissions = array('can_update_config_overlay', 'can_edit_registration');
+    protected $permissions = array(
+        'admin.conftool',
+        'admin.settigs.register',
+    );
     
-    protected $uiTitlebar = array();
+    protected $uiTitlebar = array(
+        'User registration settings', 'register'
+    );
     
     
     
@@ -46,9 +51,8 @@ class settings_registerAjaxControllerSystem extends pageController
         $this -> panthera -> config -> getKey('register.verification.message', array('english' => 'Hello {$userName}, here is a link to confirm your account '.pantheraUrl('{$this->panthera_URL}/pa-login.php?ckey=', False, 'frontend').'{$key}&login={$userName}'), 'array', 'register');
         $this -> panthera -> config -> getKey('register.verification.title', array('english' => 'Account confirmation'), 'array', 'register');
          
-        // include a title bar
-        $titlebar = new uiTitlebar(localize('User registration settings', 'register'));
-        $titlebar -> addIcon('{$this->panthera_URL}/images/admin/menu/register.png', 'left');
+        // add icon to titlebar
+        $this -> uiTitlebarObject -> addIcon('{$this->panthera_URL}/images/admin/menu/register.png', 'left');
         
         // load uiSettings with "passwordrecovery" config section
         $config = new uiSettings('register');

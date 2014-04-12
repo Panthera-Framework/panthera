@@ -6,7 +6,7 @@
         <link rel="icon" type="image/png" href="{$PANTHERA_URL}/images/admin/pantheraUI/favicon.ico" />
         <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/admin/jquery.dropdown.css">
         <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/admin/jquery-ui.css">
-        <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/admin/pantheraUI.css">
+        <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/admin/pantheraUI.css" media="screen">
         <script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery-1.10.0.min.js"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery-migrate-1.2.1.min.js"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery-ui.min.js"></script>

@@ -2,7 +2,7 @@
 /**
   * Newsletter configuration page
   *
-  * @package Panthera\core\ajaxpages\settings_newsletter
+  * @package Panthera\core\newsletter
   * @author Damian Kęska
   * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
@@ -12,17 +12,21 @@
 /**
   * Newsletter configuration page controller
   *
-  * @package Panthera\core\ajaxpages\settings_newsletter
+  * @package Panthera\core\newsletter
   * @author Damian Kęska
   * @author Mateusz Warzyński
   */
   
 class settings_newsletterAjaxControllerSystem extends pageController
 {
-    protected $permissions = array('can_update_config_overlay', 'can_edit_newsletter_settings');
+    protected $permissions = array(
+        'admin.conftool',
+        'admin.newsletter',
+    );
     
-    protected $uiTitlebar = array('Newsletter settings', 'settings');
-    
+    protected $uiTitlebar = array(
+        'Newsletter settings', 'settings'
+    );
     
     
     /**
@@ -55,15 +59,17 @@ class settings_newsletterAjaxControllerSystem extends pageController
         $result = $config -> handleInput($_POST);
         
         if (is_array($result))
-            ajax_exit(array('status' => 'failed', 'message' => $result['message'][1], 'field' => $result['field']));
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => $result['message'][1], 'field' => $result['field'],
+            ));
             
         elseif ($result === True)
-            ajax_exit(array('status' => 'success'));
+            ajax_exit(array(
+                'status' => 'success',
+            ));
         
         
         return $this -> panthera -> template -> compile('settings.genericTemplate.tpl');
     }
 }
-
-
-pa_exit();

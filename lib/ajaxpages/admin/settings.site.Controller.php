@@ -1,27 +1,32 @@
 <?php
 /**
-  * General site configuration page
-  *
-  * @package Panthera\core\ajaxpages\settings_site
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * General site configuration page
+ *
+ * @package Panthera\core\ajaxpages\settings_site
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license GNU Affero General Public License 3, see license.txt
+ */
 
   
 /**
-  * General site configuration page
-  *
-  * @package Panthera\core\ajaxpages\settings_site
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  */
+ * General site configuration page
+ *
+ * @package Panthera\core\ajaxpages\settings_site
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
 
 class settings_siteAjaxControllerSystem extends pageController
 {
-    protected $permissions = array('can_update_config_overlay', 'can_edit_session_settings');
+    protected $permissions = array(
+        'admin.conftool',
+        'admin.settings.site',
+    );
     
-    protected $uiTitlebar = array('Site configuration', 'settings');
+    protected $uiTitlebar = array(
+        'Site configuration','settings'
+    );
     
     
     
@@ -96,6 +101,13 @@ class settings_siteAjaxControllerSystem extends pageController
     }
 }
 
+/**
+ * Custom field handler
+ *
+ * @package Panthera\core\ajaxpages\settings_site
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
 
 function settingsUrlHandler($action, $key, $value)
 {

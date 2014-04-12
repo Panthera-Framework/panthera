@@ -19,9 +19,14 @@
   
 class settings_mceAjaxControllerSystem extends pageController
 {
-    protected $permissions = array('can_update_config_overlay', 'can_edit_session_settings');
+    protected $permissions = array(
+        'admin.conftool',
+        'admin.settings.mce',
+    );
     
-    protected $uiTitlebar = array('Text editor settings', 'settings');
+    protected $uiTitlebar = array(
+        'Text editor settings', 'settings'
+    );
     
     
     
@@ -70,10 +75,15 @@ class settings_mceAjaxControllerSystem extends pageController
         
         
         if (is_array($result))
-            ajax_exit(array('status' => 'failed', 'message' => $result['message'][1], 'field' => $result['field']));
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => $result['message'][1], 'field' => $result['field'],
+            ));
         
         elseif ($result === True)
-            ajax_exit(array('status' => 'success'));
+            ajax_exit(array(
+                'status' => 'success',
+            ));
         
         
         return $this -> panthera -> template -> compile('settings.genericTemplate.tpl');
