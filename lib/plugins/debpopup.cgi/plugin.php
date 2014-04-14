@@ -26,7 +26,7 @@ class debpopupPlugin extends pantheraPlugin
         'name' => 'Debpopup',
         'author' => 'Damian Kęska',
         'description' => 'Displays debugging informations in browser\'s popup window',
-        'version' => PANTHERA_VERSION
+        'version' => PANTHERA_VERSION,
     );
     
     /**
@@ -196,14 +196,14 @@ class debpopupPlugin extends pantheraPlugin
         $panthera -> template -> push('debugMessages', $debugMessages);
         $panthera -> template -> push('debugArray', $linesArray);
         
-        $output = "<script type='text/javascript' src='js/panthera.js'></script>";
+        $output = "<script type='text/javascript' src='js/admin/panthera.js'></script>";
         $output .= "<script type='text/javascript' src='js/admin/pantheraUI.js'></script>";
         $template = filterInput($panthera -> template -> display('debpopup.tpl', True, True, '', '_system'), 'wysiwyg');
         
         if (extension_loaded('zlib') and !defined('_DEBPOPUP_DISABLE_COMPRESS_') and $panthera -> config -> getKey('debpopup.zlib', 1, 'bool', 'debpopup'))
         {
             $template = base64_encode(gzcompress(str_replace('\n', "\n", $template), 9));
-            $output .= "<script type='text/javascript' src='js/jsxcompressor.min.js'></script>";
+            $output .= "<script type='text/javascript' src='js/admin/jsxcompressor.min.js'></script>";
             $output .= "<script type='text/javascript'>var compressed = '".$template."';\nvar w = window.open('','name','height=400,width=1000'); \nw.document.write(htmlspecialchars_decode(JXG.decompress(compressed))); \nw.document.close();</script>";
         } else {
             $output .= "<script type='text/javascript'>var w = window.open('','name','height=400,width=1000'); \nw.document.write(htmlspecialchars_decode('".$template."')); \nw.document.close();</script>";
@@ -320,7 +320,7 @@ class debpopupPlugin extends pantheraPlugin
     {
         global $panthera;
         $obj = new debpopupPlugin;
-        $panthera -> add_option('template.display.rendered', array($obj, 'display'));
-        $panthera -> add_option('panthera.ajax_exit', array($obj, 'displayAjaxExit'));
+        $panthera -> add_option('template.display.rendered', array($obj, 'display'), 4);
+        $panthera -> add_option('panthera.ajax_exit', array($obj, 'displayAjaxExit'), 4);
     }
 }

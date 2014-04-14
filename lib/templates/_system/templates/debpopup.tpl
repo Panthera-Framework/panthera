@@ -4,8 +4,8 @@
         <title>Debugging popup</title>
         <meta charset="utf-8">
         <link rel="icon" type="image/png" href="{$PANTHERA_URL}/images/admin/pantheraUI/favicon.ico" />
-        <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/pantheraUI.css">
-        <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="{$PANTHERA_URL}/css/admin/pantheraUI.css">
+        <script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery-1.10.0.min.js"></script>
         
         <style type="text/css">
         body * {
