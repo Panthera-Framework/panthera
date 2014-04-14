@@ -55,6 +55,9 @@ abstract class pageController extends pantheraClass {
     // are we already added permissions icon to titlebar?
     protected $permissionsIconPresent = False;
     
+    // list of all requested permissions
+    protected $__permissions = array();
+    
     /**
      * Initialize front controller
      * 
@@ -95,22 +98,6 @@ abstract class pageController extends pantheraClass {
                 $name = localize($this->uiTitlebar[0]);
             
             $this -> uiTitlebarObject = new uiTitlebar($name);
-            
-            // add permissions button
-            if ($this->permissions and checkUserPermissions(null, true))
-            {
-                $perms = $this->permissions;
-
-                if (is_array($perms))
-                    $perms = implode(',', $perms);
-                
-                // get from template config (so we don't have to define paths and classes here)
-                $config = (array)$this -> panthera -> template -> getFileConfig('uititlebar.tpl');
-                $href = str_replace('{$query}', $perms, $config['permissions_href']);
-                $onclick = str_replace('{$query}', $perms, $config['permissions_onclick']);
-                
-                $this -> uiTitlebarObject -> addIcon($this -> panthera -> template -> getStockIcon('permissions'), 'right', $href, $onclick);
-            }
         }
         
         // enable ui.NoAccess for admin panel by default
@@ -133,7 +120,10 @@ abstract class pageController extends pantheraClass {
     {
         // admin can do everything
         if (getUserRightAttribute($this->panthera->user, True))
-                return True;
+        {
+            $this -> __addPermission($permissions);
+            return True;
+        }
         
         $valid = false;
         
@@ -145,15 +135,18 @@ abstract class pageController extends pantheraClass {
         // multiple permissions
         } elseif (is_array($permissions)) {
             
-            foreach ($permissions as $permission)
+            foreach ($permissions as $permission => $title)
             {
+                if (is_int($permission))
+                    $permission = $title;
+                
                 if (getUserRightAttribute($this->panthera->user, $permission))
                     $valid = true;
             }   
         }
         
         if ($valid)
-            return $valid;
+            return true;
         
         if (!$dontCallNoAccess)
         {
@@ -243,26 +236,59 @@ abstract class pageController extends pantheraClass {
                 $this -> uiTitlebarObject = new uiTitlebar(localize($this->actionuiTitlebar[$action][0], $this->actionuiTitlebar[$action][1]));
             else
                 $this -> uiTitlebarObject = new uiTitlebar(localize($this->actionuiTitlebar[$action][0]));
-            
-            // add permissions icon
-            if (isset($this->actionPermissions[$action]))
-            {
-                if ($this->actionPermissions[$action] and checkUserPermissions(null, true))
-                {
-                    $perms = $this->actionPermissions[$action];
-    
-                    // get from template config (so we don't have to define paths and classes here)
-                    $config = (array)$this -> panthera -> template -> getFileConfig('uititlebar.tpl');
-                    $href = str_replace('{$query}', $perms, $config['permissions_href']);
-                    $onclick = str_replace('{$query}', $perms, $config['permissions_onclick']);
-                    
-                    $this -> uiTitlebarObject -> addIcon($this -> panthera -> template -> getStockIcon('permissions'), 'right', $href, $onclick);
-                }
-            }
         }
         
         if(method_exists($this, $method))
             return $this -> $method();
+    }
+
+    /**
+     * Add permissions button on uiTitlebar
+     * 
+     * @return null
+     */
+
+    public function __uiTitlebarAddPermissions()
+    {
+        $perms = 'base64:' .base64_encode(serialize($this->__permissions));
+        
+        // get from template config (so we don't have to define paths and classes here)
+        $config = (array)$this -> panthera -> template -> getFileConfig('uititlebar.tpl');
+        $href = str_replace('{$query}', $perms, $config['permissions_href']);
+        $onclick = str_replace('{$query}', $perms, $config['permissions_onclick']);
+        
+        $this -> getFeature('controller.permissions', $perms, get_class($this));
+        
+        if ($this -> uiTitlebarObject)
+            $this -> uiTitlebarObject -> addIcon($this -> panthera -> template -> getStockIcon('permissions'), 'right', $href, $onclick);
+    }
+
+    /**
+     * Add permission to permissions list
+     * 
+     * @param string|array $permissions String permission or array of permissions with titles
+     * @return bool
+     */
+
+    protected function __addPermission($permission)
+    {
+        if (is_string($permission))
+        {
+            $this -> __permissions[$permission] = $permission;
+            
+        } elseif (is_array($permission)) {
+            
+            foreach ($permission as $k => $v)
+            {
+                if (is_int($k))
+                    $k = $v;
+                
+                $this -> __permissions[$k] = $v;
+            }
+        } else
+            return false;
+        
+        return true;
     }
     
     /**
@@ -273,7 +299,23 @@ abstract class pageController extends pantheraClass {
     
     public function display()
     {
+        $this -> dispatchAction();
         return '';
+    }
+    
+    /**
+     * Use this function instead of display() to run controller
+     * 
+     * @return string
+     */
+    
+    public function run()
+    {
+        if (checkUserPermissions(null, true))
+            $this -> panthera -> add_option('template.display', array($this, '__uiTitlebarAddPermissions'), 1);
+        
+        $this -> getFeature('controller.run');
+        return $this -> display();
     }
     
     /**

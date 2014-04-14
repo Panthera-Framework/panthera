@@ -61,7 +61,7 @@ if ($path)
     
     if ($controller)
     {
-        print($controller -> display());
+        print($controller -> run());
         pa_exit();
     }
     
