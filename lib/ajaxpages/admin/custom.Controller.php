@@ -21,13 +21,28 @@ class customAjaxControllerSystem extends pageController
         'removePage' => _CONTROLLER_PERMISSION_INLINE_,
         'createPage' => 'custompages.management',
         'editPage' => _CONTROLLER_PERMISSION_INLINE_,
+        'savePage' => _CONTROLLER_PERMISSION_INLINE_,
     );
+    
+    /**
+     * Main function
+     * 
+     * @return null
+     */
     
     
     public function display()
     {
         $this -> dispatchAction();
     }
+    
+    /**
+     * Save page action
+     * 
+     * @feature custompages.savePage.nonexistent pid Executed when page does not exists
+     * @feature custompages.savePage.save $cpage Executed on page save
+     * @return null
+     */
     
     public function savePageAction()
     {
@@ -36,6 +51,7 @@ class customAjaxControllerSystem extends pageController
         // show 403/404 error if page not found
         if (!$cpage->exists())
         {
+            $this -> getFeature('custompages.savePage.nonexistent', $_GET['pid']);
             $this -> checkPermissions(false);
         }
     
@@ -128,12 +144,24 @@ class customAjaxControllerSystem extends pageController
         }
     
         $cpage -> meta_tags = serialize($tags);
+        $cpage = $this -> getFeature('custompages.savePage.save', $cpage);
         $cpage -> save();
     
         ajax_exit(array(
             'status' => 'success',
         ));
     }
+
+    /**
+     * Edit page action
+     * 
+     * @feature custompages.editPage.tags $cpage When getting list of page tags
+     * @feature custompages.editPage.display $cpage When displaying page
+     * @feature custompages.editPage.createTranslation $cpage After creating a page translation
+     * @feature custompages.editPage.getStatement $statement On database statement creation (whereClause object)
+     * 
+     * @return null
+     */
     
     public function editPageAction()
     {
@@ -145,6 +173,7 @@ class customAjaxControllerSystem extends pageController
         
         // get page by unique
         $statement = new whereClause();
+        $statement = $this -> getFeature('custompages.editPage.getStatement', $statement, $uid);
         $statement -> add ( '', 'unique', '=', $uid );
         $statement -> add ( 'AND', 'language', '=', $language );
         
@@ -227,6 +256,7 @@ class customAjaxControllerSystem extends pageController
                         $cpage -> mod_time = 'NOW()';
                     }
                     
+                    $cpage = $this -> getFeature('custompages.editPage.createTranslation', $cpage);
                     $cpage -> save();
                 } else
                     throw new Exception('Cannot create new custom page, unknown error');
@@ -249,7 +279,8 @@ class customAjaxControllerSystem extends pageController
                 $noAccess = new uiNoAccess; 
                 $noAccess -> display();
             }
-    
+            
+            $cpage = $this -> getFeature('custompages.editPage.tags', $cpage);
             $tags = @unserialize($cpage -> meta_tags);
             ajax_exit(array('tags' => $tags));
             pa_exit();
@@ -305,7 +336,8 @@ class customAjaxControllerSystem extends pageController
                     $this -> panthera -> template -> addStyle($value);
             }
         }
-        
+
+        $cpage = $this -> getFeature('custompages.editPage.display', $cpage);
         $this -> uiTitlebarObject -> setTitle($cpage->title." (".$cpage->language.")");
         $this -> uiTitlebarObject -> addIcon('{$PANTHERA_URL}/images/admin/menu/custom-pages.png', 'left');
         $this -> panthera -> template -> display('custompages_editpage.tpl');
@@ -338,6 +370,8 @@ class customAjaxControllerSystem extends pageController
     /**
      * Remove a page
      * 
+     * @feature custompages.removePage $cpage On page removal try
+     * 
      * @param int $pid Optional page id
      * @return null
      */
@@ -350,7 +384,10 @@ class customAjaxControllerSystem extends pageController
         $cpage = new customPage('id', $pid);
         
         // permissions check
-        $this -> checkPermissions('custompage.page.edit.' .$cpage -> unique, true);
+        $this -> checkPermissions('custompage.page.edit.' .$cpage -> unique);
+        
+        // plugins event
+        $cpage = $this -> getFeature('custompages.removePage', $cpage, $uid);
         
         // check if custom page exists
         if ($cpage -> exists()) 
@@ -378,6 +415,15 @@ class customAjaxControllerSystem extends pageController
             ));
         }
     }
+    
+    /**
+     * Main action
+     * 
+     * @feature custompages.main.list $tmp On pages listing
+     * @feature custompages.main.queryFilter $filter When builidng query filter (searchBar)
+     * 
+     * @return null
+     */
     
     public function mainAction()
     {
@@ -431,7 +477,8 @@ class customAjaxControllerSystem extends pageController
         {
             $filter['author_id'] = $this -> panthera -> user -> id;
         }
-        
+
+        $filter = $this -> getFeature('custompages.main.queryFilter', $filter);
         $page = intval($_GET['page']);
         /*$sid = hash('md4', 'search.custom:' .http_build_query($filter).$page);
         
@@ -520,6 +567,7 @@ class customAjaxControllerSystem extends pageController
                 $tmp[$pageUnique]['managementRights'] = true;
             }
             
+            $tmp = $this -> getFeature('custompages.main.list', $tmp);
             $this -> panthera -> template -> push('pages_list', $tmp);
         }
         
