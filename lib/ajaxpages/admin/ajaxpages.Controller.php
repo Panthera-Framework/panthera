@@ -27,6 +27,10 @@ class ajaxpagesAjaxControllerCore extends pageController
     
     );
     
+    protected $requirements = array(
+        'filesystem', 'httplib',
+    );
+    
     /**
      * List all controllers directories
      * 
@@ -72,6 +76,30 @@ class ajaxpagesAjaxControllerCore extends pageController
                         
                 $path = trim($path, '/');
                 
+                if ($this -> panthera -> varCache)
+                {
+                    $this -> panthera -> varCache -> set('pa-login.system.loginkey', array(
+                        'key' => generateRandomString(128),
+                        'userID' => $this -> panthera -> user -> id,
+                    ), 120);
+                    
+                    if (!$this -> checkControllerSyntax($controllerName, $path))
+                    {
+                        $this -> panthera -> varCache -> remove('pa-login.system.loginkey');
+                        
+                        ajax_exit(array(
+                            'status' => 'failed',
+                            'message' => slocalize('PHP syntax error detected in %s controller (%s file)', 'ajaxpages', $controllerName, $file),
+                        ));
+                    }
+                    
+                    // required to bypass database too many connections error
+                    sleep(0.2);
+                    
+                    //print("Checking ".$controllerName."\n");
+                    //$this -> panthera -> outputControl -> flush();
+                }
+                
                 $attributes = pageController::getControllerAttributes($controllerName, $path);
                 
                 if ($attributes)
@@ -81,11 +109,78 @@ class ajaxpagesAjaxControllerCore extends pageController
                 }
             }
         }
+
+        if ($this -> panthera -> varCache)
+            $this -> panthera -> varCache -> remove('pa-login.system.loginkey');
         
         if ($this -> panthera -> cache)
             $this -> panthera -> cache -> set('ajaxpages.controllersInfo', $array, 360);
         
         return $array;
+    }
+
+    /**
+     * Reset cache and validate all controllers again
+     * 
+     * @return null
+     */
+
+    protected function forceResetCacheAction()
+    {
+        $_GET['forceResetCache'] = true;
+        $this -> files = $this -> scanDirectories();
+        
+        if ($this -> getControllersInfo())
+        {
+            ajax_exit(array(
+                'status' => 'success',
+            ));
+        }
+        
+        ajax_exit(array(
+            'status' => 'failed',
+            'message' => localize('Unknown error'),
+        ));
+    }
+
+    /**
+     * Check controller syntax using http method (as many servers don't have access to shell we can test every controller by invoking a separate test via http request)
+     * 
+     * @param string $controllerName Controller name
+     * @param string $path Path
+     */
+
+    protected function checkControllerSyntax($controllerName, $path)
+    {
+        $http = new httplib;
+        $key = $this -> panthera -> varCache -> get('pa-login.system.loginkey');
+        
+        $data = $http -> get(pantheraUrl('{$PANTHERA_URL}/_ajax.php?_bypass_x_requested_with&_system_loginkey=' .$key['key']. '&display=ajaxpages&cat=admin&action=checkControllerSyntax&controllerName=' .$controllerName. '&path=' .$path));
+        $json = json_decode($data, true);
+        
+        if (!$json)
+        {
+            return false;
+        }        
+        
+        return true;
+    }
+    
+    /**
+     * Check controller syntax action
+     * 
+     * @input string $_GET['controllerName'] Controller name
+     * @input string $_GET['path'] Path
+     * 
+     * @return null
+     */
+    
+    protected function checkControllerSyntaxAction()
+    {
+        ajax_exit(array(
+            'status' => 'success',
+            'data' => pageController::getControllerAttributes($_GET['controllerName'], $_GET['path']),
+        ));
     }
     
     /**
@@ -101,6 +196,7 @@ class ajaxpagesAjaxControllerCore extends pageController
         $this -> panthera -> locale -> loadDomain('ajaxpages');
         $this -> panthera -> importModule('filesystem');
         $this -> uiTitlebarObject -> addIcon('{$PANTHERA_URL}/images/admin/menu/Actions-tab-detach-icon.png', 'left');
+        $this -> dispatchAction();
         
         // scan both lib and content
         $this -> files = $this -> scanDirectories();
