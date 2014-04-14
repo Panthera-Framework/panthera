@@ -24,13 +24,19 @@ class uiTitlebar
     
     protected $panthera;
     
+    /**
+     * Constructor
+     * 
+     * @return null
+     */
+    
     public function __construct($title='')
     {
         global $panthera;
         $this -> panthera = $panthera;
         
         $this->settings['title'] = $title;
-        $panthera -> add_option('template.display', array($this, 'applyToTemplate'));
+        $panthera -> add_option('template.display', array($this, 'applyToTemplate'), 600);
     }
     
     /**
