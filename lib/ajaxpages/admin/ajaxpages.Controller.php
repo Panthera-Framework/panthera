@@ -323,7 +323,17 @@ class ajaxpagesAjaxControllerCore extends pageController
                         {
                             if (is_array($controllersInfo[$file]['actionPermissions'][$method]))
                             {
-                                $permissions = implode(', ', $controllersInfo[$file]['actionPermissions'][$method]);
+                                $permissions = '';
+                                
+                                foreach ($controllersInfo[$file]['actionPermissions'][$method] as $k => $v)
+                                {
+                                    if (is_int($k))
+                                        $k = $v;
+                                    
+                                    $permissions .= $k. ', ';
+                                }
+                                
+                                $permissions = rtrim($permissions, ', ');
                                 $warning = false;
                             } elseif (is_string($controllersInfo[$file]['actionPermissions'][$method])) {
                                 $permissions = $controllersInfo[$file]['actionPermissions'][$method];
