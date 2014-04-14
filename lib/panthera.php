@@ -1372,6 +1372,8 @@ class pantheraCore
 
         $backup = $args;
 
+        ksort($this->hooks[$hookName]);
+        
         foreach ($this->hooks[$hookName] as $key => $hook)
         {
             if (gettype($hook) == "array")
