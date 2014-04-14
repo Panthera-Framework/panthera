@@ -45,7 +45,7 @@ class pantheraDB extends pantheraClass
             $config['db_timeout'] = 5; // 5 seconds
         
         $config['db_timeout'] = intval(@$config['db_timeout']);
-        $this->config = $config;        
+        $this->config = $config;
 
         if ($this -> cache < 1)
             $this -> cache = 3600;

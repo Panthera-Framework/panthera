@@ -128,7 +128,7 @@ class settingsAjaxControllerSystem extends pageController
         $titlebar = new uiTitlebar(localize('Panel with main settings and informations about Panthera', 'settings'));
         $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/settings.png', 'left');
         
-        $this -> panthera -> template -> display('settings_systeminfo.tpl');
+        $this -> panthera -> template -> display('settings.systeminfo.tpl');
         pa_exit();
     }
 
