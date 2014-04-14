@@ -30,10 +30,17 @@ class usersAjaxControllerCore extends pageController
     );
     
     protected $permissions = '';
-    
-    protected $isAdmin = false;
-    
     protected $tempPermissions = array();
+    
+    protected $actionPermissions = array(
+        'ban' => array('admin.users.ban' => array('Ban users', 'users')),
+        'createGroup' => 'admin',
+        'removeGroup' => 'admin',
+        'removeUser' => 'admin',
+        'editUser' => _CONTROLLER_PERMISSION_INLINE_,
+        'account' => 'admin',
+        'addUser' => 'admin',
+    );
     
     /**
      * User account details
@@ -207,13 +214,7 @@ class usersAjaxControllerCore extends pageController
             ajax_exit(array('Cannot get user by given id.', 'users'));
         
         // user cannot ban itself
-        if ($u == $this->panthera->user) {
-            $noAccess = new uiNoAccess;
-            $noAccess -> display();
-        }
-        
-        // user cannot ban superuser or other admin
-        if (!$this->tempPermissions['canBlockUser']) {
+        if ($u -> id == $this -> panthera -> user -> id) {
             $noAccess = new uiNoAccess;
             $noAccess -> display();
         }
@@ -240,20 +241,26 @@ class usersAjaxControllerCore extends pageController
     
     public function createGroupAction()
     {
-        // check user permissions
-        if (!$this->isAdmin) 
-            ajax_exit(array('status' => 'failed', 'message' => localize('No rights to execute this action', 'permissions')));
-    
         $groupName = $_POST['name'];
         $groupDescription = $_POST['description'];
     
         try {
             if (!pantheraGroup::create($groupName, $groupDescription))
-                ajax_exit(array('status' => 'failed', 'message' => localize('Group propably already exists', 'acl')));
+                ajax_exit(array(
+                    'status' => 'failed',
+                    'message' => localize('Group propably already exists', 'acl'),
+                ));
     
-            ajax_exit(array('status' => 'success', 'name' => $groupName, 'description' => $groupDescription));
+            ajax_exit(array(
+                'status' => 'success',
+                'name' => $groupName,
+                'description' => $groupDescription,
+            ));
         } catch (Exception $e) {
-            ajax_exit(array('status' => 'failed', 'message' => localize('Invalid group name, only alphanumeric characters and "_" is allowed', 'acl')));
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => localize('Invalid group name, only alphanumeric characters and "_" is allowed', 'acl'),
+            ));
         }
     }
 
@@ -269,18 +276,23 @@ class usersAjaxControllerCore extends pageController
      
     public function removeGroupAction()
     {
-        if (!$this->isAdmin) 
-            ajax_exit(array('status' => 'failed', 'message' => localize('No rights to execute this action', 'permissions')));
-    
         $groupName = $_POST['group'];
     
         try {
             if(!pantheraGroup::remove($groupName))
-                ajax_exit(array('status' => 'failed'));
+                ajax_exit(array(
+                    'status' => 'failed',
+                ));
     
-            ajax_exit(array('status' => 'success', 'name' => $groupName));
+            ajax_exit(array(
+                'status' => 'success',
+                'name' => $groupName,
+            ));
         } catch (Exception $e) {
-            ajax_exit(array('status' => 'failed', localize('Cannot remove group', 'acl')));
+            ajax_exit(array(
+                'status' => 'failed',
+                localize('Cannot remove group', 'acl'),
+            ));
         }
     }
 
@@ -346,7 +358,7 @@ class usersAjaxControllerCore extends pageController
         if (isset($languages[$_POST['language']]))
             $u->language = $_POST['language'];
         
-        if ($this->isAdmin)
+        if ($this -> checkPermissions('admin', true))
         {
             $g = new pantheraGroup('id', $_POST['primary_group']);
             
@@ -359,7 +371,9 @@ class usersAjaxControllerCore extends pageController
         
         $u -> save();
         
-        ajax_exit(array('status' => 'success', 'message' => 'Information about user has been updated'));
+        ajax_exit(array(
+            'status' => 'success',
+        ));
     }
 
 
@@ -374,10 +388,6 @@ class usersAjaxControllerCore extends pageController
         
     public function removeUserAction()
     {
-        // check user permissions
-        if (!$this->isAdmin) 
-            ajax_exit(array('status' => 'failed', 'message' => localize('No rights to execute this action', 'permissions')));
-    
         $id = $_POST['id'];
         
         $usersPage = (intval(@$_GET['usersPage']));
@@ -454,8 +464,6 @@ class usersAjaxControllerCore extends pageController
         $language = $_POST['language'];
         $primary_group = $_POST['primary_group'];
     
-        var_dump($primary_group);
-    
         $attributes = array();
     
         if (createNewUser($login, $password, $full_name, $primary_group, $attributes, $language, $mail, $jabber, $avatar))
@@ -479,14 +487,13 @@ class usersAjaxControllerCore extends pageController
     
     public function display()
     {
+        $this -> checkPermissions('admin');
+        
         $this -> panthera -> locale -> loadDomain('users');
-
         $this -> panthera -> template -> push('action', '');
         $this -> panthera -> template -> push('user_uid', '');
         $this -> panthera -> template -> push('locales', $this -> panthera -> locale -> getLocales());
         $this -> panthera -> template -> push('locale', $this -> panthera -> locale -> getActive());
-        
-        $this -> isAdmin = checkUserPermissions($this->panthera->user, True);
         
         $this->tempPermissions = array(
             'canBlockUser' => $this->checkPermissions('can_block_users', True),
