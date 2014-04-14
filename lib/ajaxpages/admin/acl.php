@@ -243,6 +243,11 @@ if ($_GET['action'] == 'delete')
 // ==== LIST OF USERS AND GROUPS
 if (isset($_GET['name']))
 {
+    if (substr($_GET['name'], 0, 7) == 'base64:')
+    {
+        $_GET['name'] = unserialize(base64_decode(substr($_GET['name'], 7, strlen($_GET['name']))));
+    }
+    
     $aclId = $aclName = $_GET['name'];
     $permissionsTable = $panthera->listPermissions();
     
