@@ -128,6 +128,12 @@ class pantheraDB extends pantheraClass
         else
             $warningMessage = 'Cannot connect to database, please check your connection and database configuration in /content/app.php file.<br>You can also check your SQL user and database priviledges, allowed hosts and if server is online. ';
 
+        
+        if (strpos($e->getMessage(), 'No such file or directory') !== false)
+        {
+            $warningMessage = 'Cannot connect to database. The driver reports that there is no such file or directory, this can mean that the server is not running or not accessible because of any networking problems.';
+        }
+
         $message = $this->hideAuthInfo($e -> getMessage());
         $debugTemplate = getErrorPageFile('db_error');
 

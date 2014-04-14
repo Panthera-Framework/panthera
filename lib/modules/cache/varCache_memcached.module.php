@@ -85,7 +85,7 @@ class varCache_memcached
             $serversConnected++;
         }
         
-        if ($serversConnected == 0)
+        if (!$serversConnected)
             throw new Exception('Cannot initialize Memcached, no servers connected');
     }
     
