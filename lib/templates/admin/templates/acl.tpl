@@ -48,24 +48,33 @@ function addGroup(acl)
             }
         });
 }
+
+function selectPermission()
+{
+    panthera.popup.navigate('?{function="getQueryString('GET', 'current=$target', '_')"}'.replace('%24target', $('#permissionSelect').val()));
+}
 </script>
 
-{if="count($multiplePermissions) > 0"}
-<div style="margin-left: 70px; color: white; margin-top: 10px; margin-bottom: 20px;">{function="localize('Switch permission', 'acl')"}: 
-{$i=0}
-{loop="$multiplePermissions"}
-    {$i=$i+1}
-    <a href="#" onclick="panthera.popup.navigate('?{function="getQueryString('GET', 'current=$target', '_')"}'.replace('%24target', '{$key}'))" style="color: white;">{$value}</a>{if="$i < count($multiplePermissions)"},{/if} 
-{/loop}
-</div>
-{/if}
-
 {if="$action == 'manage_variable'"}
-<table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
+<table class="formTable" style="margin: 0 auto; margin-bottom: 30px; margin-top: 25px;">
     <thead>
         <tr>
             <th colspan="2" style="width: 250px;">
-                <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px;"><b>{function="localize('Editing permissions', 'acl')"}:</b> &nbsp;<i>{$acl_title}</i></p>
+                <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px;"><b>{function="localize('Editing permissions', 'acl')"}:</b> &nbsp;<i>{if="count($multiplePermissions) > 0"}
+{$i=0}
+<select id="permissionSelect" onchange="selectPermission();">
+{loop="$multiplePermissions"}
+    {$i=$i+1}
+    
+    {if="!$key or !$value"}
+    {continue}
+    {/if}
+    <option value="{$key}" {if="$key == $acl_name"}selected{/if}>{$value}</option>
+{/loop}
+</select>
+{else}
+{$acl_title}
+{/if}</i></p>
             </th>
         </tr>
     </thead>
