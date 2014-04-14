@@ -2,11 +2,20 @@
 
 {include="ui.titlebar"}
 
+<script type="text/javascript">
+    function resetCache () {
+        panthera.jsonPOST({url: '?display=ajaxpages&cat=admin&action=forceResetCache', success: function (response) {
+            if (response.status == 'success')
+                navigateTo(window.location.href);
+        }});
+    }
+</script>
+
 <div id="topContent">
     {$uiSearchbarName="uiTop"}
     {include="ui.searchbar"}
     <div class="searchBarButtonArea">
-        <input type="button" value="{function="localize('Refresh')"}" onclick="navigateTo('?display=ajaxpages&cat=admin&forceResetCache=True');">
+        <input type="button" value="{function="localize('Refresh')"}" onclick="resetCache();">
     </div>
 </div>
 
