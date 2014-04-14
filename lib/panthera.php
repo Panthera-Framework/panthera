@@ -1277,7 +1277,7 @@ class pantheraCore
         return $this->hooks;
     }
 
-    public function add_option($hookName, $function)
+    public function add_option($hookName, $function, $priority=null)
     {
         // create array with hooks group
         
@@ -1303,6 +1303,19 @@ class pantheraCore
             }
         }
 
+        if ($priority)
+        {
+            $priority = intval($priority);
+            
+            while (isset($this->hooks[$hookName][$priority]))
+            {
+                $priority++;
+            }
+            
+            $this->hooks[$hookName][$priority] = $function;
+            return true;
+        }
+        
         $this->hooks[$hookName][] = $function;
         return True;
     }
