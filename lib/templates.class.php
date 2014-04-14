@@ -916,6 +916,17 @@ class outputControl extends pantheraClass
     }
     
     /**
+     * Flush output
+     *
+     * @return null
+     */
+    
+    public function flush()
+    {
+        ob_flush();
+    }
+    
+    /**
       * Flush output to browser and finish output buffering
       *
       * @param string name
