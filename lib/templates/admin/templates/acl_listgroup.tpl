@@ -9,13 +9,13 @@
   * @author Damian Kęska
   */
 
-function saveGroupAttribute(key, groupName, action)
+function saveGroupAttribute(key, groupName, action, hash)
 {
     data = 'group='+groupName+'&do='+action;
     
     if (action == 'save')
     {
-        data += '&value='+$('#'+key+'_value').val();
+        data += '&value='+$('#'+hash+'_value').val();
     } else if (action == 'create') {
         data += '&value='+$('#newMetaValue').val();
         
@@ -64,7 +64,7 @@ function saveGroupAttribute(key, groupName, action)
 
 function rebuildMetaList(metas)
 {
-    if (metas.length == 0)
+    /*if (metas.length == 0)
         return false;
 
     $('.metas').remove();
@@ -89,7 +89,9 @@ function rebuildMetaList(metas)
         $('#noMetaTags').hide();
     } else {
         $('#noMetaTags').show();
-    }
+    }*/
+    
+    navigateTo(window.location.href);
 }
 
 /**
@@ -230,7 +232,7 @@ function rebuildUserList(users)
             <tr>
                 <td colspan="2" style="padding-top: 35px;">
                     <input type="button" value="{function="localize('Cancel')"}" onclick="panthera.popup.close()" style="float: left; margin-left: 30px;">
-                    <input type="button" value="&nbsp;{function="localize('Add new attribute', 'acl')"}&nbsp;" onclick="saveGroupAttribute('', '{$groupName}', 'create');" style="float: right;">
+                    <input type="button" value="&nbsp;{function="localize('Add new attribute', 'acl')"}&nbsp;" onclick="saveGroupAttribute('', '{$groupName}', 'create', '');" style="float: right;">
                 </td>
             </tr>
         </tfoot>
@@ -277,10 +279,10 @@ function rebuildUserList(users)
     
         <tbody id="metasList">
             {loop="$metas"}
-            <tr class="metas" id="meta_{$key}">
+            <tr class="metas" id="meta_{$key|md5}">
                 <td>{$value.name}</td>
-                <td><select id="{$key}_value" style="width: 95%;"><option value="1"{if="$value.value == True"} selected{/if}>True</option><option value="0"{if="$value.value == False"} selected{/if}>False</option></select></td>
-                <td><input type="button" value="&nbsp;{function="localize('Save', 'acl')"}&nbsp;" onclick="saveGroupAttribute('{$key}', '{$groupName}', 'save');">&nbsp;<input type="button" value="&nbsp;{function="localize('Remove', 'acl')"}&nbsp;" onclick="saveGroupAttribute('{$key}', '{$groupName}', 'remove');"></td>
+                <td><select id="{$key|md5}_value" style="width: 95%;"><option value="1"{if="$value.value == True"} selected{/if}>True</option><option value="0"{if="$value.value == False"} selected{/if}>False</option></select></td>
+                <td><input type="button" value="&nbsp;{function="localize('Save', 'acl')"}&nbsp;" onclick="saveGroupAttribute('{$key}', '{$groupName}', 'save', '{$key|md5}');">&nbsp;<input type="button" value="&nbsp;{function="localize('Remove', 'acl')"}&nbsp;" onclick="saveGroupAttribute('{$key}', '{$groupName}', 'remove', '{$key|md5}');"></td>
             </tr>
             {/loop}
             

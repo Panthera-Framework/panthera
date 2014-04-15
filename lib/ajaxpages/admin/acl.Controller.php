@@ -85,7 +85,7 @@ class aclAjaxControllerSystem extends pageController
     
         $u -> acl -> set($_POST['acl'], True);
         $u -> acl -> save();
-    
+        
         if ($_POST['type'] == 'user')
             ajax_exit(array(
                 'status' => 'success',
@@ -129,7 +129,7 @@ class aclAjaxControllerSystem extends pageController
                 'message' => localize('Please enter an attribute name', 'acl'),
             ));
         
-        if(preg_match('/[^a-z_\-0-9]/i', $attribute) or strlen($attribute) < 3)
+        if(preg_match('/[^a-z_\-0-9_\-\.]/i', $attribute) or strlen($attribute) < 3)
         {
             ajax_exit(array(
                 'status' => 'failed',
@@ -155,7 +155,7 @@ class aclAjaxControllerSystem extends pageController
                 $metas = $group -> acl -> listAll();
                 $metasTpl = array();
                 
-                $permissionsTable = $panthera->listPermissions();
+                $permissionsTable = $this -> panthera -> listPermissions();
     
                 foreach ($metas as $meta => $value)
                 {
@@ -192,6 +192,49 @@ class aclAjaxControllerSystem extends pageController
                     'message' => localize('Cannot remove attribute', 'acl'),
                 ));
         }
+    }
+
+    public function listGroupAction()
+    {
+        $groupName = $_GET['group'];
+        $group = new pantheraGroup('name', $groupName);
+        
+        if (!$group->exists())
+            $this -> checkPermissions(true);
+        
+        $metas = $group -> acl -> listAll();
+        $metasTpl = array();
+        
+        $permissionsTable = $this -> panthera -> listPermissions();
+    
+        foreach ($metas as $meta => $value)
+        {
+            $metasTpl[$meta] = array('name' => $meta, 'value' => $value);
+        
+            if (array_key_exists($meta, $permissionsTable))
+                $metasTpl[$meta]['name'] = $permissionsTable[$meta]['desc'];
+        }
+        
+        $count = $group->findUsers(False);
+        
+        $uiPager = new uiPager('adminACLGroups', $count);
+        $uiPager -> setActive(intval($_GET['page']));
+        $uiPager -> setLinkTemplatesFromConfig('acl_listgroup.tpl');
+        $limit = $uiPager -> getPageLimit();
+        
+        // show some informations
+        $this -> panthera -> template -> push('metasAvaliable', $permissionsTable);
+        $this -> panthera -> template -> push('metas', $metasTpl);
+        $this -> panthera -> template -> push('groupName', $groupName);
+        $this -> panthera -> template -> push('groupDescription', $group->description);
+        $this -> panthera -> template -> push('groupUsers', $group->findUsers($limit[0], $limit[1]));
+        
+        $this -> uiTitlebarObject -> setTitle(slocalize('Editing group "%s"', 'users', $groupName));
+        $this -> uiTitlebarObject -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
+        
+        // display template
+        $this -> panthera -> template -> display('acl_listgroup.tpl');
+        pa_exit();
     }
     
     /**
@@ -238,7 +281,7 @@ class aclAjaxControllerSystem extends pageController
             }
     
             // TODO: In future we may support multiple groups for one user
-            $usr -> primary_group = $groupName;
+            $usr -> primary_group = $group->group_id;
             $usr -> save();
             
             ajax_exit(array(
@@ -325,11 +368,11 @@ class aclAjaxControllerSystem extends pageController
         // groups with required permissions we are looking for
         $groupsWhoCan = meta::getUsers($aclId, True);
         $groupList = array();
-    
+        
         foreach ($groupsWhoCan as $key => $gid)
         {
-            $group = new pantheraGroup('name', $key);
-    
+            $group = new pantheraGroup('id', $key);
+            
             if ($group -> exists())
                 $groupList[] = array(
                     'name' => $group->name,
@@ -337,10 +380,10 @@ class aclAjaxControllerSystem extends pageController
                     'id' => $group->group_id,
                 );
         }
-    
+        
         // here we will generate list of users who have required rights we are looking for
-        $usersWhoCan = meta::getUsers($_GET['name']);
-    
+        $usersWhoCan = meta::getUsers($aclId);
+        
         foreach ($usersWhoCan as $userID => $value)
         {
             $u = new pantheraUser('id', $userID);

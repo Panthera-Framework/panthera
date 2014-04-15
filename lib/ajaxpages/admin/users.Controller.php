@@ -40,6 +40,11 @@ class usersAjaxControllerCore extends pageController
         'editUser' => _CONTROLLER_PERMISSION_INLINE_,
         'account' => 'admin',
         'addUser' => 'admin',
+        'getUsersAPI' => 'admin',
+    );
+    
+    protected $actionuiTitlebar = array(
+        'account' => array('Panel with informations about user.', 'users'),
     );
     
     /**
@@ -52,7 +57,8 @@ class usersAjaxControllerCore extends pageController
     
     public function accountAction()
     {
-        if (isset($_GET['uid']) and $this->isAdmin) {
+        if (isset($_GET['uid']) and $this->checkPermissions('admin', true)) 
+        {
             $u = new pantheraUser('id', $_GET['uid']);
             $this -> panthera -> template -> push('user_uid', '&uid=' .$_GET['uid']);
         } else {
@@ -91,10 +97,13 @@ class usersAjaxControllerCore extends pageController
         {
             if (strlen($_POST['aclname']) < 3)
             {
-                ajax_exit(array('status' => 'failed', 'message' => localize('Too short ACL attribute name', 'users')));
+                ajax_exit(array(
+                    'status' => 'failed',
+                    'message' => localize('Too short ACL attribute name', 'users'),
+                ));
             }
             
-            if ($this->isAdmin) 
+            if ($this -> checkPermissions('admin', true)) 
             {
                 if ($_POST['value'] == "1")
                     $aclValue = True;
@@ -103,9 +112,18 @@ class usersAjaxControllerCore extends pageController
     
                 $u -> acl -> set($_POST['aclname'], $aclValue);
     
-                ajax_exit(array('status' => 'success', 'name' => $_POST['aclname'], 'value' => $aclValue, 'post_value' => $_POST['value'], 'result' => $u -> acl -> get($_POST['aclname'])));
+                ajax_exit(array(
+                    'status' => 'success',
+                    'name' => $_POST['aclname'],
+                    'value' => $aclValue,
+                    'post_value' => $_POST['value'],
+                    'result' => $u -> acl -> get($_POST['aclname']),
+                ));
             } else {
-                ajax_exit(array('status' => 'failed', 'message' => localize('You are not allowed to manage permissions', 'messages')));
+                ajax_exit(array(
+                    'status' => 'failed',
+                    'message' => localize('You are not allowed to manage permissions', 'messages'),
+                ));
             }
         }
     
@@ -157,18 +175,20 @@ class usersAjaxControllerCore extends pageController
             // translating name to description
             if (isset($permissionsTable[$key]))
                 $name = $permissionsTable[$name]['desc'];
+            
+            if ($key == 'admin' or $key == 'superadmin')
+                continue;
     
             if ($value == True)
                 $aclList[$key] = array('name' => $name, 'value' => localize('Yes'), 'active' => 1);
             else
                 $aclList[$key] = array('name' => $name, 'value' => localize('No'), 'active' => 0);
         }
-    
-        if ($this->panthera->config->getKey('usr_view_acl_table', false, 'bool') or $this->isAdmin) 
+
+        if ($this -> checkPermissions(array('admin' => 'admin', 'admin.acl.viewall' => array('See all permissions on a list', 'acl')))) 
         {
             foreach ($permissionsTable as $key => $value) 
             {
-    
                 if (isset($aclList[$key]))
                     continue;
     
@@ -181,16 +201,17 @@ class usersAjaxControllerCore extends pageController
                     $val = localize('No');
                 }
                 
-                $aclList[$key] = array('name' => $value['desc'], 'value' => $val, 'active' => $active);
+                $aclList[$key] = array(
+                    'name' => $value['desc'],
+                    'value' => $val,
+                    'active' => $active,
+                );
             }
     
             $this -> panthera -> template -> push('aclList', $aclList);
         }
         
         $this -> panthera -> template -> push('permissions', $this->tempPermissions);
-        
-        $titlebar = new uiTitlebar(localize('Panel with informations about user.', 'users'));
-        
         $this -> panthera -> template -> display('users_account.tpl');
         pa_exit();
     }
@@ -656,5 +677,73 @@ class usersAjaxControllerCore extends pageController
         $this -> panthera -> template -> push('usersCacheHash', $sid);
         
         return $this -> panthera -> template -> compile('users.tpl');
+    }
+
+    /**
+     * Get users JSON api
+     * 
+     * @return null
+     */
+
+    public function getUsersAPIAction()
+    {
+        if (strlen($_REQUEST['query']) < 2)
+        {
+            ajax_exit(array(
+                'status' => 'success',
+                'data' => array(),
+            ));
+        }
+        
+        $w = new whereClause();
+        
+        if (isset($_GET['group']))
+        {
+            $w -> add( 'AND', 'name', 'LIKE', '%' .$_REQUEST['query']. '%');
+            $w -> add( 'OR', 'description', 'LIKE', '%' .$_REQUEST['query']. '%');
+            
+            $fetch = pantheraGroup::fetchAll($w, 0, 25, 'name', 'ASC');
+        } else {
+            $w -> add( 'AND', 'login', 'LIKE', '%' .$_REQUEST['query']. '%');
+            $w -> add( 'OR', 'full_name', 'LIKE', '%' .$_REQUEST['query']. '%');
+            
+            $fetch = pantheraUser::fetchAll($w, 0, 25, 'login', 'ASC');
+        }
+        $results = array();
+        
+        if (isset($_GET['fulldata']))
+            $fullArray = array();
+        
+        foreach ($fetch as $user)
+        {
+            if (isset($_GET['group']))
+            {
+                $array[$user->id] = array(
+                    'label' => $user -> name,
+                    'value' => $user -> name,
+                );
+            } else {
+                $array[$user->login] = array(
+                    'label' => $user -> getName(),
+                    'value' => $user -> login,
+                );
+            }
+            
+            if (isset($_GET['fulldata']))
+            {
+                $fullArray[$user->id] = $user -> getData();
+                unset($fullArray[$user->id]['passwd']);
+            }
+        }
+        
+        $status = array(
+            'status' => 'success',
+            'result' => $array,
+        );
+        
+        if (isset($fullArray))
+            $status['data'] = $fullArray;
+        
+        ajax_exit($status);
     }
 }        

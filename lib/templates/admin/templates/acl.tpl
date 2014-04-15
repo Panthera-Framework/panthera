@@ -53,6 +53,39 @@ function selectPermission()
 {
     panthera.popup.navigate('?{function="getQueryString('GET', 'current=$target', '_')"}'.replace('%24target', $('#permissionSelect').val()));
 }
+
+$(document).ready(function () {
+    $( "#new_user_login").click(function() {
+        $( "#new_user_login" ).autocomplete({
+          source: function (request, uiResponse) {
+            //query = request.term;
+            
+            panthera.jsonPOST({url: '?display=users&cat=admin&action=getUsersAPI', data: 'query='+$('#new_user_login').val(), success: function (response) 
+            {
+                if (response.status == 'success')
+                    uiResponse(response.result);
+            }});
+          }
+        });
+    
+    });
+    
+    $( "#new_group_name").click(function() {
+        $( "#new_group_name" ).autocomplete({
+          source: function (request, uiResponse) {
+            //query = request.term;
+            
+            panthera.jsonPOST({url: '?display=users&cat=admin&group&action=getUsersAPI', data: 'query='+$('#new_group_name').val(), success: function (response) 
+            {
+                if (response.status == 'success')
+                    uiResponse(response.result);
+            }});
+          }
+        });
+    
+    });
+});
+
 </script>
 
 {if="$action == 'manage_variable'"}
@@ -109,13 +142,13 @@ function selectPermission()
     {/loop}
     <tr>
         <th><b>{function="localize('Login', 'acl')"}:</b></th>
-        <td><input type="text" id="new_user_login" style="width: 80%;"></td>
+        <td><div class="ui-widget"><input type="text" id="new_user_login" style="width: 80%;"></div></td>
         <td><input type="button" value="{function="localize('Add user', 'acl')"}" onclick="addUser('{$acl_name}');"></td>
     </tr>
 
     <tr>
         <th><b>{function="localize('Group name', 'acl')"}:</b></th>
-        <td><input type="text" id="new_group_name" style="width: 80%;"></td>
+        <td><div class="ui-widget"><input type="text" id="new_group_name" style="width: 80%;"></div></td>
         <td><input type="button" value="{function="localize('Add group', 'acl')"}" onclick="addGroup('{$acl_name}');"></td>
     </tr>
 

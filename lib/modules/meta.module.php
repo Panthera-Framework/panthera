@@ -16,7 +16,7 @@ $panthera = pantheraCore::getInstance();
 $panthera -> locale -> loadDomain('permissions');
   
 // cosmetics, so here are predefined permissions
-$panthera -> addPermission('can_see_users_table', localize('Can see other profiles (admin panel)', 'permissions'));
+/*$panthera -> addPermission('can_see_users_table', localize('Can see other profiles (admin panel)', 'permissions'));
 $panthera -> addPermission('can_see_system_info', localize('Can view system informations (admin panel)', 'permissions'));
 $panthera -> addPermission('can_update_config_overlay', localize('Can change config overlay (admin panel)', 'permissions'));
 $panthera -> addPermission('can_update_locales', localize('Can manage system locales', 'permissions'));
@@ -36,7 +36,7 @@ $panthera -> addPermission('can_access_pa', localize('Can login to admin panel',
 $panthera -> addPermission('can_see_dash', localize('Can see dash', 'permissions'));
 $panthera -> addPermission('can_access_pa', localize('Can access admin panel', 'permissions'));
 $panthera -> addPermission('admin', localize('Administrator priviledges', 'permissions'));
-$panthera -> addPermission('superuser', localize('Superuser priviledges', 'permissions'));
+$panthera -> addPermission('superuser', localize('Superuser priviledges', 'permissions'));*/
 
 // TODO: Support for loading permissions from database (for plugins etc.) with cache support
   
@@ -72,7 +72,8 @@ class meta
 
         if ($SQL -> rowCount() > 0)
         {
-            $array = $SQL -> fetchAll();
+            $array = $SQL -> fetchAll(PDO::FETCH_ASSOC);
+            
             $results = array();
             
             foreach ($array as $key => $value)

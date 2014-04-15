@@ -217,10 +217,10 @@ abstract class pageController extends pantheraClass {
                 
                 if ($this->permissionsVariables)
                 {
-                    foreach ($this -> actionPermissions[$action] as $key => $value)
+                    foreach ($this -> actionPermissions[$action] as $key => &$value)
                     {
                         foreach ($this->permissionsVariables as $variableName => $variableValue)
-                            $this -> actionPermissions[$action][$key] = str_replace('{$' .$variableName. '}', $variableValue, $value);
+                            $value = str_replace('{$' .$variableName. '}', $variableValue, $value);
                     }
                 }
                 
@@ -250,6 +250,9 @@ abstract class pageController extends pantheraClass {
 
     public function __uiTitlebarAddPermissions()
     {
+        if (!$this->__permissions)
+            return false;
+        
         $perms = 'base64:' .base64_encode(serialize($this->__permissions));
         
         // get from template config (so we don't have to define paths and classes here)
@@ -282,6 +285,9 @@ abstract class pageController extends pantheraClass {
             {
                 if (is_int($k))
                     $k = $v;
+                
+                if (is_array($v))
+                    $v = localize($v[0], $v[1]);
                 
                 $this -> __permissions[$k] = $v;
             }
