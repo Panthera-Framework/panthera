@@ -1,25 +1,30 @@
 <?php
-
 /**
-  * Get all input variables listed
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Get all input variables listed
+ *
+ * @package Panthera\core\debug
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license GNU Affero General Public License 3, see license.txt
+ */
+  
+/**
+ * Get all input variables listed
+ *
+ * @package Panthera\core\debug
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
 
 class dumpinputAjaxControllerCore extends pageController
 {
     protected $requirements = array();
     
     protected $uiTitlebar = array(
-        'Dumpinput', 'settings'
+        'Input listing', 'settings'
     );
     
-    protected $permissions = 'can_dump_input';
-    
-    
+    protected $permissions = array('admin.debug.dumpinput' => array('Input listing', 'setting'), 'admin');
     
     /** 
      * Display debhook site, 
