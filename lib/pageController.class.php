@@ -277,6 +277,10 @@ abstract class pageController extends pantheraClass {
     {
         if (is_string($permission))
         {
+            // don't allow "admin" or "superuser" special permissions to be listed
+            if ($permission == 'admin' or $permission == 'superuser')
+                return true;
+            
             $this -> __permissions[$permission] = $permission;
             
         } elseif (is_array($permission)) {

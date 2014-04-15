@@ -28,7 +28,7 @@ class routingAjaxControllerSystem extends pageController
         'SEO links management', 'routing'
     );
     
-    protected $permissions = 'admin.routing';
+    protected $permissions = array('admin.routing' => array('SEO url management', 'settings'));
     
     protected $data = array();
     

@@ -20,8 +20,8 @@
 class settings_mceAjaxControllerSystem extends pageController
 {
     protected $permissions = array(
-        'admin.conftool',
-        'admin.settings.mce',
+        'admin.settings.mce' => array('Text editor settings', 'settings'),
+        'admin.conftool' => array('Advanced system configuration editor', 'conftool'),
     );
     
     protected $uiTitlebar = array(

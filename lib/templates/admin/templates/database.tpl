@@ -21,7 +21,7 @@
         <tbody>
             {loop="$sql_attributes"}
             <tr>
-                <td>{$value.name}
+                <td>{$value.name}</td>
                 <td>{$value.value}</td>
             </tr>
             {/loop}

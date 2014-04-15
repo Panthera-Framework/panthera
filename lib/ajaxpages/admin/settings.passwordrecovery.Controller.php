@@ -20,8 +20,8 @@
 class settings_passwordrecoveryAjaxControllerSystem extends pageController
 {
     protected $permissions = array(
-        'admin.conftool',
-        'admin.settings.register.passwordrecovery',
+        'admin.settings.register.passwordrecovery' => array('Password recovery settings', 'passwordrecovery'),
+        'admin.conftool' => array('Advanced system configuration editor', 'conftool'),
     );
     
     protected $uiTitlebar = array(

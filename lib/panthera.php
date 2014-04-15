@@ -1223,30 +1223,38 @@ class pantheraCore
         return isset($this->modules[$module]);
     }
 
+    /**
+     * Getting permissions table entry
+     * 
+     * @param string $name Permissions name
+     * @return null|string|array
+     */
 
-    /* ==== PERMISSIONS TABLE ==== */
-
-    public function addPermission($name, $description, $plugin='')
+    public function getPermission($name, $dontLocalize=False)
     {
-        $this->permissionsTable[$name] = array('desc' => $description, 'plugin' => $plugin);
-
-        return True;
-    }
-
-    public function removePermission($name)
-    {
-        unset($this->permissionsTable[$name]);
-        return True;
-    }
-
-    public function getPermission($name)
-    {
+        if (!$this->permissionsTable)
+            $this -> permissionsTable = $this -> config -> getKey('panthera.permissions', array(), 'array', 'meta'); // load from meta overlay
+        
         if (isset($this->permissionsTable[$name]))
+        {
+            if (!$dontLocalize and is_array($this->permissionsTable[$name]))
+                return localize($this->permissionsTable[$name][0], $this->permissionsTable[$name][1]);
+                      
             return $this->permissionsTable[$name];
+        }
     }
+
+    /**
+     * List all cached permissions
+     * 
+     * @return array
+     */
 
     public function listPermissions()
     {
+        if (!$this->permissionsTable)
+            $this -> permissionsTable = $this -> config -> getKey('panthera.permissions', array(), 'array', 'meta'); // load from meta overlay
+        
         return $this->permissionsTable;
     }
 
@@ -1254,7 +1262,7 @@ class pantheraCore
       * Return cache type
       *
       * @param string $cacheType Cache type can be cache or varCache
-      * @return mixed
+      * @return string|null
       * @author Damian Kęska
       */
 
@@ -1270,12 +1278,24 @@ class pantheraCore
         }
     }
 
-
-    /* ==== HOOKING FUNCTIONS ==== */
+    /**
+     * Get all defined hooks
+     * 
+     * @return array
+     */
+    
     public function getAllHooks()
     {
         return $this->hooks;
     }
+    
+    /**
+     * Plug-in a function to a hook slot
+     * 
+     * @param string $hookName Hooking slot name
+     * @param string|array $function Function address eg. "var_dump" or "array($object, 'method')"
+     * @param int $priority Priority on execution (this can be used to execute function before or after other hooked function) If there is already any other hook with same priority defined it will be increased.
+     */
 
     public function add_option($hookName, $function, $priority=null)
     {

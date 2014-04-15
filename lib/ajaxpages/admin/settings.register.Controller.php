@@ -20,8 +20,8 @@
 class settings_registerAjaxControllerSystem extends pageController
 {
     protected $permissions = array(
-        'admin.conftool',
-        'admin.settigs.register',
+        'admin.settigs.register' => array('User registration settings', 'register'),
+        'admin.conftool' => array('Advanced system configuration editor', 'conftool'),
     );
     
     protected $uiTitlebar = array(

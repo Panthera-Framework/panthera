@@ -20,8 +20,8 @@
 class settings_newsletterAjaxControllerSystem extends pageController
 {
     protected $permissions = array(
-        'admin.conftool',
-        'admin.newsletter',
+        'admin.newsletter' => array('Newsletter settings', 'settings'),
+        'admin.conftool' => array('Advanced system configuration editor', 'conftool'),
     );
     
     protected $uiTitlebar = array(

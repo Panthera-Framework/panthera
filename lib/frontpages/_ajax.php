@@ -65,7 +65,7 @@ if ($cat == 'admin/')
     $panthera -> template -> setTemplate('admin');
 
     // check user permissions
-    if (!getUserRightAttribute($panthera->user, 'admin.adminpanel')) {
+    if (!getUserRightAttribute($panthera->user, 'admin.accesspanel')) {
         $panthera -> template->display('no_access.tpl');
         pa_exit();
     }

@@ -19,7 +19,7 @@
 
 class aclAjaxControllerSystem extends pageController
 {
-    protected $permissions = 'admin.acl';
+    protected $permissions = array('admin.acl' => array('Permissions management', 'acl'), 'admin');
     protected $defaultAction = 'getPermissions';
     protected $uiTitlebar = array(
         'Permissions management', 'acl'
@@ -194,6 +194,14 @@ class aclAjaxControllerSystem extends pageController
         }
     }
 
+    /**
+     * List group users and meta tags
+     * 
+     * @feature admin.acl.listGroup.permissionsTable $permissionsTable List of permissions in a permissions table
+     * 
+     * @return null
+     */
+
     public function listGroupAction()
     {
         $groupName = $_GET['group'];
@@ -206,28 +214,38 @@ class aclAjaxControllerSystem extends pageController
         $metasTpl = array();
         
         $permissionsTable = $this -> panthera -> listPermissions();
+        
+        // translate all untranslated strings
+        foreach ($permissionsTable as $k => &$v)
+            $v = $this -> panthera -> locale -> localizeFromArray($v);
     
         foreach ($metas as $meta => $value)
         {
-            $metasTpl[$meta] = array('name' => $meta, 'value' => $value);
+            $metasTpl[$meta] = array(
+                'name' => $meta,
+                'value' => $value,
+            );
         
-            if (array_key_exists($meta, $permissionsTable))
-                $metasTpl[$meta]['name'] = $permissionsTable[$meta]['desc'];
+            if (isset($permissionsTable[$meta]))
+                $metasTpl[$meta]['name'] = $permissionsTable[$meta];
         }
         
-        $count = $group->findUsers(False);
+        $count = $group-> findUsers(False);
         
         $uiPager = new uiPager('adminACLGroups', $count);
         $uiPager -> setActive(intval($_GET['page']));
         $uiPager -> setLinkTemplatesFromConfig('acl.listGroup.tpl');
         $limit = $uiPager -> getPageLimit();
         
+        // plugin support for permissions table
+        $permissionsTable = $this -> getFeature('admin.acl.listGroup.permissionsTable', $permissionsTable);
+        
         // show some informations
         $this -> panthera -> template -> push('metasAvaliable', $permissionsTable);
         $this -> panthera -> template -> push('metas', $metasTpl);
         $this -> panthera -> template -> push('groupName', $groupName);
         $this -> panthera -> template -> push('groupDescription', $group->description);
-        $this -> panthera -> template -> push('groupUsers', $group->findUsers($limit[0], $limit[1]));
+        $this -> panthera -> template -> push('groupUsers', $group -> findUsers($limit[0], $limit[1]));
         
         $this -> uiTitlebarObject -> setTitle(slocalize('Editing group "%s"', 'users', $groupName));
         $this -> uiTitlebarObject -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
@@ -349,7 +367,7 @@ class aclAjaxControllerSystem extends pageController
                 $permissions[$permission] = $permission;
             
                 if (isset($permissionsTable[$permission]))
-                    $permissions[$permission] = $permissionsTable[$permission]['desc'];
+                    $permissions[$permission] = $permissionsTable[$permission];
             }
             
             $this -> panthera -> template -> push('multiplePermissions', $permissions);

@@ -1,9 +1,15 @@
 {$site_header}
-
-{$titleBarInclude='errorpages.titlebar'}
 {include="ui.titlebar"}
 
-<div id="popupOverlay" style="text-align: center; padding-top: 20px; padding-bottom: 0px;"></div>
+
+<div id="topContent">
+    <div class="searchBarButtonArea">
+        
+        <div class="searchBarButtonAreaLeft">
+            <input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=settings&cat=admin')">
+        </div>
+    </div>
+</div>
 
 <!-- Content -->
 <div class="ajax-content" style="text-align: center;">

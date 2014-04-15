@@ -20,12 +20,12 @@
 class settings_pa_loginAjaxControllerSystem extends pageController
 {
     protected $permissions = array(
-        'admin.conftool', 
-        'admin.controllers.palogin.settings',
+        'admin.controllers.palogin.settings' => array('Users authorization settings', 'register'),
+        'admin.conftool' => array('Advanced system configuration editor', 'conftool'),
     );
     
     protected $uiTitlebar = array(
-        'User registration settings', 'register'
+        'Users authorization settings', 'register'
     );
     
     

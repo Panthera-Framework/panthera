@@ -189,6 +189,9 @@ class dashAjaxControllerSystem extends pageController
 
     protected function displayWidgets()
     {
+        // just add permission to the list
+        $this->checkPermissions(array('admin.accesspanel' => array('Can access admin panel')), true);
+        
         $manageWidgets = $this->checkPermissions(array('admin.dash.managewidgets' => array('Can manage dash widgets', 'dash')), true);
         
         $this -> panthera -> template -> push('showWidgets', $manageWidgets);

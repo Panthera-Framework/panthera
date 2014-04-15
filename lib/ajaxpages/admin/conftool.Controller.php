@@ -19,10 +19,10 @@
 
  class conftoolAjaxControllerCore extends pageController
 {
-    protected $permissions = 'admin.conftool';
+    protected $permissions = array('admin.conftool' => array('Advanced system configuration editor', 'conftool'));
     
     protected $uiTitlebar = array(
-        'Configuration editor - Administration tool for developers and administrators.', 'conftool'
+        'Advanced system configuration editor', 'conftool'
     );
     
     /**

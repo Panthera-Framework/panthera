@@ -19,7 +19,7 @@
 
 class templatesAjaxControllerSystem extends pageController
 {
-    protected $permissions = 'can_manage_templates';
+    protected $permissions = array('admin.templates' => array('Templates management', 'templates'));
     
     protected $uiTitlebar = array('Templates management', 'templates');
     

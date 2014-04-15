@@ -20,8 +20,8 @@
 class settings_facebookAjaxControllerSystem extends pageController
 {
     protected $permissions = array(
-        'admin.conftool',
-        'admin.settings.facebook',
+        'admin.settings.facebook' => array('Facebook integration settings', 'facebook'),
+        'admin.newsletter' => array('Newsletter settings', 'settings'),
     );
     
     protected $uiTitlebar = array(

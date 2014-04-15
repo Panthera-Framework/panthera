@@ -20,8 +20,8 @@
 class settings_dashAjaxControllerSystem extends pageController
 {
     protected $permissions = array(
-        'admin.conftool', 
-        'admin.dash',
+        'admin.dash' => array('Dash configuration', 'settings'),
+        'admin.conftool' => array('Advanced system configuration editor', 'conftool'),
     );
     
     protected $uiTitlebar = array(

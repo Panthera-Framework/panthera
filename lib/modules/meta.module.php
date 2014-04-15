@@ -167,4 +167,78 @@ class meta
         $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}metas` WHERE `name` = :name AND `type` = :type', array('name' => $name, 'type' => $type));
         return (bool)$SQL->rowCount();
     }
+    
+    /**
+     * Update permissions list from controllers data
+     * 
+     * @param array $array List of controllers with it's parameters (pageController::getControllerAttributes result set)
+     * @config panthera.permissions array
+     * @return array
+     */
+    
+    public static function updateListsFromControllers($array)
+    {
+        $panthera = pantheraCore::getInstance();
+        $permissions = array();
+        
+        foreach ($array as $controller => $data)
+        {
+            if ($data['permissions'])
+            {
+                if (is_string($data['permissions']))
+                {
+                    // if there is already a translated version
+                    if (isset($permissions[$data['permissions']]) and $permissions[$data['permissions']] != $data['permissions'])
+                        continue;
+                    
+                    $permissions[$data['permissions']] = $data['permissions'];
+                    
+                } elseif (is_array($data['permissions'])) {
+                    
+                    foreach ($data['permissions'] as $perm => $val)
+                    {
+                        if (is_int($perm))
+                            $perm = $val;
+                        
+                        // if there is already a translated version
+                        if ((isset($permissions[$perm]) and $permissions[$perm] != $perm) or strpos($perm, '{$') !== false)
+                            continue;
+
+                        $permissions[$perm] = $val;
+                    }
+                }
+            }
+            
+            if ($data['actionPermissions'])
+            {
+                foreach ($data['actionPermissions'] as $action)
+                {
+                    if (is_string($action))
+                    {
+                        // if there is already a translated version
+                        if (isset($permissions[$action]) and $permissions[$action] != $action)
+                            continue;
+                        
+                        $permissions[$action] = $action;
+                    } elseif(is_array($action)) {
+                        
+                        foreach ($action as $perm => $val)
+                        {
+                            if (is_int($perm))
+                                $perm = $val;
+                            
+                            // if there is already a translated version
+                            if ((isset($permissions[$perm]) and $permissions[$perm] != $perm) or strpos($perm, '{$') !== false)
+                                continue;
+                            
+                            $permissions[$perm] = $val;
+                        }
+                    }
+                }
+            }
+        }
+
+        $panthera -> config -> setKey('panthera.permissions', $permissions, 'array', 'meta');
+        return $permissions;
+    }
 }

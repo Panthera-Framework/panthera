@@ -20,7 +20,8 @@
 class settings_pagerAjaxControllerSystem extends pageController
 {
     protected $permissions = array(
-        'admin.conftool', 'admin.settings.pager',
+        'admin.settings.pager' => array('Pager settings', 'settings'),
+        'admin.conftool' => array('Advanced system configuration editor', 'conftool'),
     );
     
     protected $uiTitlebar = array(

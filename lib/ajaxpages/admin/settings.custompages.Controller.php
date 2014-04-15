@@ -21,8 +21,8 @@
 class settings_custompagesAjaxControllerSystem extends pageController
 {
     protected $permissions = array(
-        'admin.conftool',
-        'admin.custompages.settings',
+        'admin.custompages.settings' => array('Static pages configuration', 'settings'),
+        'admin.conftool' => array('Advanced system configuration editor', 'conftool'),
     );
     
     protected $uiTitlebar = array(

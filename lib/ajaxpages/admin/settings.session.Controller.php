@@ -21,8 +21,8 @@
 class settings_sessionAjaxControllerSystem extends pageController
 {
     protected $permissions = array(
-        'admin.conftool',
-        'admin.settings.session',
+        'admin.settings.session' => array('Session, cookies and browser security settings', 'session'),
+        'admin.conftool' => array('Advanced system configuration editor', 'conftool'),
     );
     
     protected $uiTitlebar = array(

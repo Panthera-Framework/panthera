@@ -20,8 +20,8 @@
 class settings_maintenanceAjaxControllerSystem extends pageController
 {
     protected $permissions = array(
-        'admin.conftool',
-        'admin.settings.maintenance',
+        'admin.settings.maintenance' => array('Service maintenance', 'settings'),
+        'admin.conftool' => array('Advanced system configuration editor', 'conftool'),
     );
     
     protected $uiTitlebar = array(

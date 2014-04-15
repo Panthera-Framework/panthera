@@ -200,7 +200,7 @@ function rebuildUserList(users)
                 <td><select id="newMetaSelect">
                         <option value=""></option>
                         {loop="$metasAvaliable"}
-                        <option value="{$key}">{$value.desc|strCut:25}</option>
+                        <option value="{$key}">{$value|strCut:60}</option>
                         {/loop}
                     </select>
                 </td>

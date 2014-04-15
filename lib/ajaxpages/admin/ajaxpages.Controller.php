@@ -17,7 +17,7 @@
 
 class ajaxpagesAjaxControllerCore extends pageController
 {
-    protected $permissions = 'admin.debug.ajaxpages';
+    protected $permissions = array('admin.debug.ajaxpages' => array('Index of ajax pages', 'ajaxpages'));
     
     protected $uiTitlebar = array(
         'Index of ajax pages', 'ajaxpages',
@@ -28,7 +28,7 @@ class ajaxpagesAjaxControllerCore extends pageController
     );
     
     protected $requirements = array(
-        'filesystem', 'httplib',
+        'filesystem', 'httplib', 'meta',
     );
     
     /**
@@ -54,12 +54,15 @@ class ajaxpagesAjaxControllerCore extends pageController
      * @return array
      */
     
-    public function getControllersInfo()
+    public function getControllersInfo($dontAjaxExit=False)
     {
-        if ($this -> panthera -> cache and !isset($_GET['forceResetCache']))
+        if ($this -> panthera -> cache and $_GET['action'] != 'forceResetCache')
         {
             if ($this -> panthera -> cache -> exists('ajaxpages.controllersInfo'))
                 return $this -> panthera -> cache -> get('ajaxpages.controllersInfo');
+                
+            if ($_GET['action'] != 'forceResetCache')
+                return array();
         }
         
         $array = array();
@@ -87,10 +90,11 @@ class ajaxpagesAjaxControllerCore extends pageController
                     {
                         $this -> panthera -> varCache -> remove('pa-login.system.loginkey');
                         
-                        ajax_exit(array(
-                            'status' => 'failed',
-                            'message' => slocalize('PHP syntax error detected in %s controller (%s file)', 'ajaxpages', $controllerName, $file),
-                        ));
+                        if ($dontAjaxExit)
+                            ajax_exit(array(
+                                'status' => 'failed',
+                                'message' => slocalize('PHP syntax error detected in %s controller (%s file)', 'ajaxpages', $controllerName, $file),
+                            ));
                     }
                     
                     // required to bypass database too many connections error
@@ -114,8 +118,9 @@ class ajaxpagesAjaxControllerCore extends pageController
             $this -> panthera -> varCache -> remove('pa-login.system.loginkey');
         
         if ($this -> panthera -> cache)
-            $this -> panthera -> cache -> set('ajaxpages.controllersInfo', $array, 360);
-        
+            $this -> panthera -> cache -> set('ajaxpages.controllersInfo', $array, -1);
+            
+        meta::updateListsFromControllers($array);
         return $array;
     }
 
@@ -200,7 +205,6 @@ class ajaxpagesAjaxControllerCore extends pageController
         
         // scan both lib and content
         $this -> files = $this -> scanDirectories();
-        
         $controllersInfo = $this -> getControllersInfo();
         
         // list of pages
@@ -258,9 +262,22 @@ class ajaxpagesAjaxControllerCore extends pageController
                 if ($controllersInfo[$file]['permissions'])
                 {
                     if (is_array($controllersInfo[$file]['permissions']))
-                        $permissions = implode(', ', $controllersInfo[$file]['permissions']);
-                    else
+                    {
+                        $permissions = '';
+                        
+                        foreach ($controllersInfo[$file]['permissions'] as $perm => $val)
+                        {
+                            if (is_int($perm))
+                                $perm = $val;
+                            
+                            $permissions .= $perm. ', ';
+                        }
+                        
+                        $permissions = trim($permissions, ', ');
+                        
+                    } else {
                         $permissions = $controllersInfo[$file]['permissions'];
+                    }
                 }
                 
                 // if controller does not implement any permissions check
@@ -308,8 +325,19 @@ class ajaxpagesAjaxControllerCore extends pageController
                     if ($controllersInfo[$file]['permissions'])
                     {
                         if (is_array($controllersInfo[$file]['permissions']))
-                            $permissions = implode(', ', $controllersInfo[$file]['permissions']);
-                        else
+                        {
+                            $permissions = '';
+                            
+                            foreach ($controllersInfo[$file]['permissions'] as $perm => $val)
+                            {
+                                if (is_int($perm))
+                                    $perm = $val;
+                                
+                                $permissions .= $perm. ', ';
+                            }
+                            
+                            $permissions = trim($permissions, ', ');
+                        } else
                             $permissions = $controllersInfo[$file]['permissions'];
                             
                         $warning = false;

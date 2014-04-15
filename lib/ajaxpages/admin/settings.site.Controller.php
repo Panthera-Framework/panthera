@@ -20,12 +20,12 @@
 class settings_siteAjaxControllerSystem extends pageController
 {
     protected $permissions = array(
-        'admin.conftool',
-        'admin.settings.site',
+        'admin.settings.site' => array('Site configuration', 'settings'),
+        'admin.conftool' => array('Advanced system configuration editor', 'conftool'),
     );
     
     protected $uiTitlebar = array(
-        'Site configuration','settings'
+        'Site configuration', 'settings'
     );
     
     
