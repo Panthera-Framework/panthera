@@ -19,9 +19,4 @@
 <a href="#" onclick="toggleWidgetsLock();" style="align: right;">
     <img src="{$PANTHERA_URL}/images/admin/pantheraUI/transparent.png" id="widgetsLockedImg" class="pantheraIcon icon-{if="$widgetsUnlocked == 0"}Unlocked{else}Locked{/if}" alt="{if="$widgetsUnlocked == 0"}{function="localize('Unlock widgets', 'dash')"}{else}{function="localize('Lock widgets', 'dash')"}{/if}">
 </a>
-
-<!-- permissions popup -->
-<a href="#" onclick="panthera.popup.toggle('?display=acl&cat=admin&popup=true&name=can_see_dash');" style="align: right;>
-    <img src="{$PANTHERA_URL}/images/admin/pantheraUI/transparent.png" class="pantheraIcon icon-Users" alt="{function="localize('Manage permissions')"}">
-</a>
 {/if}
