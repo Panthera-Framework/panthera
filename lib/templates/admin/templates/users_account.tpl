@@ -215,7 +215,7 @@ function getAvatar(link, id)
        <script type="text/javascript">
         function aclModify(id, name)
         {
-            var bool =  $('#'+id).val();
+            var bool =  $('#acl_'+id).val();
             var yes = $('#yes_text').val();
             var no = $('#no_text').val();
             
@@ -223,13 +223,13 @@ function getAvatar(link, id)
                   if (response.status == "success")
                   {
                       if (response.value == false) {
-                        $('#text_'+name).text(no);
-                        $('#text_'+name).css('color', '#941111');
-                        $('#'+id).val("1");
+                        $('#text_'+id).text(no);
+                        $('#text_'+id).css('color', '#941111');
+                        $('#acl_'+id).val("1");
                       } else {
-                        $('#text_'+name).text(yes);
-                        $('#text_'+name).css('color', "#14D614");
-                        $('#'+id).val("0");
+                        $('#text_'+id).text(yes);
+                        $('#text_'+id).css('color', "#14D614");
+                        $('#acl_'+id).val("0");
                       }
                   } else {
                       jQuery('#change_error').slideDown();
@@ -255,11 +255,11 @@ function getAvatar(link, id)
                 <tr style="border-bottom: 1px solid #404c5a;">
                     <th style="padding-top: 0px; padding-bottom: 0px; font-size: 11px;">{$value.name}</th>
                     <th style="padding-top: 0px; padding-bottom: 0px; width: 22px;">
-                           <a href="#" onClick="aclModify('acl_{$key}', '{$key}');" id="text_{$key}" {if="$value.value == localize('Yes')"} style="color: #14D614;" {else} style="color: #941111;" {/if}>{$value.value}</a>
+                           <a href="#" onClick="aclModify('{$key|md5}', '{$key}');" id="text_{$key|md5}" {if="$value.value == localize('Yes')"} style="color: #14D614;" {else} style="color: #941111;" {/if}>{$value.value}</a>
                     </th>
                 </tr>
                 
-                <input type="text" id="acl_{$key}" {if="$value.value == 'Yes'"} value="0" {else} value="1" {/if} style="display: none;">
+                <input type="text" id="acl_{$key|md5}" {if="$value.value == 'Yes'"} value="0" {else} value="1" {/if} style="display: none;">
               {/loop}
             </tbody>
          </table>

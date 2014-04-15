@@ -171,21 +171,29 @@ class usersAjaxControllerCore extends pageController
         foreach ($userTable as $key => $value) 
         {
             $name = $key;
-    
+            
             // translating name to description
             if (isset($permissionsTable[$key]))
-                $name = $permissionsTable[$name]['desc'];
+                $name = $this -> panthera -> locale -> localizeFromArray($permissionsTable[$name]);
             
             if ($key == 'admin' or $key == 'superadmin')
                 continue;
     
-            if ($value == True)
-                $aclList[$key] = array('name' => $name, 'value' => localize('Yes'), 'active' => 1);
+            if ($value)
+                $aclList[$key] = array(
+                    'name' => $name,
+                    'value' => localize('Yes'),
+                    'active' => true,
+                );
             else
-                $aclList[$key] = array('name' => $name, 'value' => localize('No'), 'active' => 0);
+                $aclList[$key] = array(
+                    'name' => $name,
+                    'value' => localize('No'),
+                    'active' => false,
+                );
         }
 
-        if ($this -> checkPermissions(array('admin' => 'admin', 'admin.acl.viewall' => array('See all permissions on a list', 'acl')))) 
+        if ($this -> checkPermissions(array('admin' => 'admin', 'admin.acl.viewall' => array('See all permissions on a list', 'acl')), true)) 
         {
             foreach ($permissionsTable as $key => $value) 
             {
@@ -202,7 +210,7 @@ class usersAjaxControllerCore extends pageController
                 }
                 
                 $aclList[$key] = array(
-                    'name' => $value['desc'],
+                    'name' => $this -> panthera -> locale -> localizeFromArray($value),
                     'value' => $val,
                     'active' => $active,
                 );

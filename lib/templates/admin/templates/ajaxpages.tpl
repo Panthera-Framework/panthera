@@ -20,6 +20,12 @@
 </div>
 
 <div class="ajax-content" style="text-align: center;">
+    <div class="tipBlock" style="width: 45%;">
+        <div class="tipBlockInside">
+            {function="localize('Listed permissions are from $permissions and $actionPermissions variables', 'ajaxpages')"}
+        </div>
+    </div>
+    
     <table style="display: inline-block;">
             <thead>
                 <tr>

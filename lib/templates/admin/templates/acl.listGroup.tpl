@@ -137,7 +137,24 @@ function rebuildUserList(users)
 
 {include="ui.titlebar"}
 
+<style>
+.tipBlockDark {
+    border: solid 1px #6e8093;
+    background-color: #404c5a;
+    color: white;
+    margin-left: 20px;
+    margin-top: 20px;
+    position: absolute;
+}
+</style>
+
 <div id="topContent">
+    <div class="tipBlock tipBlockDark" style="width: 65%;">
+        <div class="tipBlockInside">
+            {function="localize('aaaa', 'acl')"}
+        </div>
+    </div>
+    
     <div class="searchBarButtonArea">
         <input type="button" value="{function="localize('Add user to group', 'acl')"}" onclick="panthera.popup.toggle('element:#addUserPopup')">
         <input type="button" value="{function="localize('Add new attribute', 'acl')"}" onclick="panthera.popup.toggle('element:#addMetaTag')">
@@ -231,6 +248,7 @@ function rebuildUserList(users)
         </tfoot>
     </table>
 </div>
+
 
 <!-- Content -->
 <div class="ajax-content" style="text-align: center;">
