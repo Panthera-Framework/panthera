@@ -449,13 +449,13 @@ class pantheraLocale
                 if ($getOriginalString)
                     return $tmp[0];
                 
-                return localize($tmp[0], $tmp[1]);
+                return $this -> _($tmp[0], $tmp[1]);
             }
             
             if ($getOriginalString)
                 return $input;
         
-            return localize($input); // localize using default domain
+            return $this -> _($input); // localize using default domain
         }
            
         if (is_array($input))
@@ -466,7 +466,7 @@ class pantheraLocale
             if (count($input) == 1)
                 $input[1] = '';
         
-            return localize($input[0], $input[1]);
+            return $this -> _($input[0], $input[1]);
         }
     }
 }
