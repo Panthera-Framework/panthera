@@ -71,3 +71,18 @@ code {
     color:#fff;
     font-size:13px;
 }
+
+.installerColorTable {
+    margin: 0 auto;
+    width: 45%;
+    margin-top: 30px;
+    border: solid 2px #56687B;
+}
+
+.installerColorTable th, .installerColorTable td {
+    color: black;
+    background: #ffffca;
+    color: black;
+    padding: 10px;
+    border: solid 1px #56687B
+}
