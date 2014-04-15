@@ -474,7 +474,7 @@ class messagesAjaxControllerSystem extends pageController
     public function display()
     {
         // permissions variables
-        $this -> panthera -> template -> push('isAdmin', checkUserPermissions($this -> panthera -> user, True));
+        $this -> panthera -> template -> push('isAdmin', $this->checkPermissions('admin', True));
         $this -> pushPermissionVariable('category', $_GET['category']);
         $this -> pushPermissionVariable('msgid', $_GET['msgid']);
         
