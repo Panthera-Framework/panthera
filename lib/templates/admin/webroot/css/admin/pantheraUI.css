@@ -1365,3 +1365,21 @@ ul.dropdown li:hover > a.dir {
 .tableTopRow {
     border-top: solid #b8bcbf 1px;
 }
+
+.tipBlock {
+    background-color: white;
+    display: inline-block;
+    border: solid 1px #b8bcbf;
+    margin-bottom: 25px;
+    background-image: url('../../../images/admin/menu/syschecksum.png');
+    background-repeat: no-repeat;
+    background-position-x: 5px;
+    background-position-y: 5px;
+    text-align: left;
+}
+    
+.tipBlockInside {
+    padding: 15px;
+    padding-left: 50px;
+    font-size: 12.2px;
+}
