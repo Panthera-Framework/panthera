@@ -21,10 +21,12 @@
 class debugAjaxControllerCore extends pageController
 {
     protected $uiTitlebar = array(
-        'Debugging center'
+        'Debugging center', 'debug'
     );
     
-    protected $permissions = 'can_see_debug';
+    protected $permissions = array(
+        'admin.developertools' => array('Developer tools', 'debug'),
+    );
 
     
     /**
@@ -145,6 +147,8 @@ class debugAjaxControllerCore extends pageController
     /**
      * Create list with debug items, allows hooking
      *
+     * @feature ajaxpages.debug.tools $array List of items to display on page
+     * 
      * @author Mateusz Warzyński
      * @return array
      */
@@ -230,6 +234,12 @@ class debugAjaxControllerCore extends pageController
         );
         
         $tools[] = array(
+            'link' => '?display=permissionsList&cat=admin',
+            'name' => localize('Permissions list', 'acl'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png'
+        );
+        
+        $tools[] = array(
             'link' => '?display=_popup_jsonedit&cat=admin',
             'name' => localize('JSON popup'),
             'description' => localize('Array editor', 'debug'), 
@@ -264,7 +274,7 @@ class debugAjaxControllerCore extends pageController
             'icon' => '{$PANTHERA_URL}/images/admin/menu/google.png'
         );
         
-        $tools = $this -> panthera -> get_filters('ajaxpages.debug.tools', $tools);
+        $tools = $this -> getFeature('ajaxpages.debug.tools', $tools);
         
         return $tools;
     }
