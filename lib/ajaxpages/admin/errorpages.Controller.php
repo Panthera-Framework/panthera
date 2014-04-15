@@ -25,7 +25,9 @@ class errorpagesAjaxControllerCore extends pageController
         'Test system error pages in one place', 'errorpages'
     );
     
-    protected $permissions = 'can_test_error_pages';
+    protected $permissions = array(
+        'admin.errorpages.testing' => array('Test system error pages in one place', 'errorpages'),
+    );
   
   
   

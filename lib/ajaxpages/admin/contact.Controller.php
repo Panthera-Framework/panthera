@@ -18,7 +18,10 @@
   
 class contactAjaxControllerSystem extends pageController
 {
-    protected $permissions = 'admin.contact';
+    protected $permissions = array(
+        'admin.contact' => array('Contact page management', 'contactpage'),
+    );
+    
     protected $language = '';
     protected $fieldName = 'contact.lang.all';
     

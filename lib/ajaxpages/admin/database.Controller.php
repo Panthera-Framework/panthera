@@ -22,7 +22,9 @@ class databaseAjaxControllerCore extends pageController
         'TIMEOUT' => 'Connection timeout', 'SERVER_INFO' => 'Server info', 'SERVER_VERSION' => 'Server version'
     );
     
-    protected $permissions = 'can_manage_databases';
+    protected $permissions = array(
+        'admin.databases' => array('Database management', 'database'),
+    );
     
     
     /**

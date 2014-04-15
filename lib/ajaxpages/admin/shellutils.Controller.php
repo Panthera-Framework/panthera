@@ -19,7 +19,7 @@
 
 class shellutilsAjaxControllerSystem extends pageController
 {
-	protected $permissions = 'admin.shellutils';
+	protected $permissions = array('admin.shellutils' => array('Shell utils', 'debug'));
 	protected $uiTitlebar = array(
 		'Shell utils', 'debug',
 	);

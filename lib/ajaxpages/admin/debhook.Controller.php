@@ -23,7 +23,9 @@ class debhookAjaxControllerCore extends pageController
         'Plugins debugger', 'settings'
     );
     
-    protected $permissions = 'admin.debhook';
+    protected $permissions = array(
+        'admin.debhook' => array('Plugins debugger', 'settings'),
+    );
 
     
     /**

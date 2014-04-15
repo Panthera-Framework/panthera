@@ -7,11 +7,25 @@
  * @license GNU Lesser General Public License 3, see license.txt
  */
  
+/**
+ * Get list of all changed files and export to file for comparsion
+ *
+ * @package Panthera\core\ajaxpages
+ * @author Damian Kęska
+ */
+ 
 class syschecksumAjaxControllerSystem extends pageController
 {
-    protected $permissions = 'admin.syschecksum';
+    protected $permissions = array(
+        'admin.syschecksum' => array('Checksum of system files'),
+    );
+    
     protected $requirements = array(
         'filesystem',
+    );
+    
+    protected $uiTitlebar = array(
+        'Checksum of system files'
     );
     
     protected $files = array();
