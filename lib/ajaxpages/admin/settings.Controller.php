@@ -21,7 +21,7 @@
 class settingsAjaxControllerSystem extends pageController
 {
     protected $actionPermissions = array(
-        'system_info' => 'can_see_system_info',
+        'system_info' => array('admin.systeminfo' => array('Developer informations page', 'settings')),
         'main' => _CONTROLLER_PERMISSION_INLINE_,
     );
     
@@ -418,7 +418,15 @@ class settingsAjaxControllerSystem extends pageController
             'icon' => '{$PANTHERA_URL}/images/admin/menu/facebook.png',
             'linkType' => 'ajax'
         );
-
+        
+        $defaults['system']['maintenance'] = array(
+            'link' => '?display=settings.maintenance&cat=admin',
+            'name' => localize('Service maintenance', 'settings'),
+            'description' => '',
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/debhook.png',
+            'linkType' => 'ajax'
+        );
+        
         return $defaults;
     }
 
