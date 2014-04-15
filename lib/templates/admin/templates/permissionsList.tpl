@@ -19,8 +19,13 @@
 <div id="popupOverlay" style="text-align: center; padding-top: 20px; padding-bottom: 0px;"></div>
 <!-- Content -->
 <div class="ajax-content" style="text-align: center;">
-
-    <table style="width: 80%; margin: 0 auto; margin-bottom: 30px;">
+    <div class="tipBlock" style="width: 45%;">
+        <div class="tipBlockInside">
+            {function="localize('Listed permissions are taken from objective controller\'s variables - $permissions and $actionPermissions', 'acl')"}
+        </div>
+    </div>
+    
+    <table style="width: 50%; margin: 0 auto; margin-bottom: 30px;">
         <thead>
             <tr>
                 <th>{function="localize('Name')"}</th>
