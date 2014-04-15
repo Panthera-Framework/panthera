@@ -219,7 +219,7 @@ class aclAjaxControllerSystem extends pageController
         
         $uiPager = new uiPager('adminACLGroups', $count);
         $uiPager -> setActive(intval($_GET['page']));
-        $uiPager -> setLinkTemplatesFromConfig('acl_listgroup.tpl');
+        $uiPager -> setLinkTemplatesFromConfig('acl.listGroup.tpl');
         $limit = $uiPager -> getPageLimit();
         
         // show some informations
@@ -233,7 +233,7 @@ class aclAjaxControllerSystem extends pageController
         $this -> uiTitlebarObject -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
         
         // display template
-        $this -> panthera -> template -> display('acl_listgroup.tpl');
+        $this -> panthera -> template -> display('acl.listGroup.tpl');
         pa_exit();
     }
     

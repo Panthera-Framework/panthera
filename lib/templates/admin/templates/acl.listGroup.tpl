@@ -31,25 +31,9 @@ function saveGroupAttribute(key, groupName, action, hash)
     panthera.jsonPOST({ url: '?display=acl&cat=admin&action=groupMetaSave', data: data, success: function (response) {
             if (response.status == "success")
             {
-                if (action == 'remove')
-                {
-                    $('#meta_'+key).remove();
-                }
-                
-                // rebuild list of meta tags
-                if (response.metaList != undefined)
-                {
-                    rebuildMetaList(response.metaList);
-                }
-                
+                rebuildMetaList(response.metaList);
                 panthera.popup.close();
-            } else {
-                if (response.message != undefined)
-                {
-                    w2alert(response.message);
-                }
-            
-            }
+            } 
         }
     });
 }
@@ -114,20 +98,9 @@ function saveGroupUser(action, group, user)
     panthera.jsonPOST({ url: '?display=acl&cat=admin&action=groupUsers', data: 'user='+user+'&subaction='+action+'&group='+group, success: function (response) {
             if (response.status == "success")
             {
-                // rebuild list of meta tags
-                if (response.userList != undefined)
-                {
-                    rebuildUserList(response.userList);
-                }
-                
+                rebuildUserList();
                 panthera.popup.close();
-            } else {
-                if (response.message != undefined)
-                {
-                    w2alert(response.message);
-                }
-            
-            }    
+            }
         }
     });
 }
@@ -180,7 +153,7 @@ function rebuildUserList(users)
         <tbody>
             <tr>
                 <th>{function="localize('Login', 'acl')"}:</th>
-                <td><input type="text" id="newGroupUserLogin" style="width: 95%;"></td>
+                <td><div class="ui-widget"><input type="text" id="newGroupUserLogin" style="width: 95%;"></div></td>
             </tr>
         </tbody>
         
@@ -193,6 +166,26 @@ function rebuildUserList(users)
             </tr>
         </tfoot>
     </table>
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+        $( "#newGroupUserLogin").click(function() {
+            $( "#newGroupUserLogin" ).autocomplete({
+              source: function (request, uiResponse) {
+                //query = request.term;
+                
+                panthera.jsonPOST({url: '?display=users&cat=admin&action=getUsersAPI', data: 'query='+$('#newGroupUserLogin').val(), success: function (response) 
+                {
+                    if (response.status == 'success')
+                        uiResponse(response.result);
+                }});
+              }
+            });
+        
+        });
+    });
+    
+    </script>
 </div>
 
 <!-- Adding new meta tag -->
@@ -251,7 +244,7 @@ function rebuildUserList(users)
         <tbody id="groupUsersBody">
             {loop="$groupUsers"}
             <tr id="user_{$value.login}" class="groupUsers">
-                <td>{$value.login}</td>
+                <td><a href="?display=users&cat=admin&action=account&uid={$value.id}" class="ajax_link">{$value.login}</a></td>
                 <td style="width: 10%; padding-right: 10px;"><input type="button" value="{function="localize('Remove', 'acl')"}" onclick="saveGroupUser('remove', '{$groupName}', '{$value.login}');"></td>
             </tr>
             {/loop}
