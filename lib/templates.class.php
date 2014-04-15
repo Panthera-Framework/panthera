@@ -950,17 +950,32 @@ class outputControl extends pantheraClass
 }
 
 /**
-  * Used to handle output buffering in PHP
-  *
-  * @package Panthera\core\templates
-  * @param string $string
-  * @param string $phase
-  * @return bool
-  * @author Damian Kęska
-  */
+ * Used to handle output buffering in PHP
+ *
+ * @package Panthera\core\templates
+ * @param string $string
+ * @param string $phase
+ * @return bool
+ * @author Damian Kęska
+ */
 
 function obLogHandler($string, $phase)
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
     return $panthera->outputControl->handle($string, $phase);
+}
+
+/**
+ * Alias to $panthera -> template -> getStockIcon (to be used inside of templates)
+ *
+ * @package Panthera\core\templates
+ * @param string $icon Icon name from icons.ini of current template eg. "tipIcon"
+ * @return bool
+ * @author Damian Kęska
+ */
+
+function getStockIcon($icon)
+{
+    $panthera = pantheraCore::getInstance();
+    return $panthera -> template -> getStockIcon($icon);
 }
