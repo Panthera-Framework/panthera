@@ -2077,11 +2077,16 @@ function ajax_exit($array)
  * @return null
  */
 
-function ajax_dump($mixed)
+function ajax_dump($mixed, $usePrint_r=False)
 {
+    if (!$usePrint_r)
+        $message = r_dump($mixed);
+    else
+        $message = print_r($mixed, true);
+    
     ajax_exit(array(
         'status' => 'failed',
-        'message' => r_dump($mixed),
+        'message' => $message,
     ));
 }
 
