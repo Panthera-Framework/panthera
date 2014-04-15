@@ -21,8 +21,8 @@ class dashAjaxControllerSystem extends pageController
     );
     
     protected $actionPermissions = array(
-        'remove' => 'can_see_dash',
-        'add' => 'can_see_dash',
+        'remove' => array('admin.dash.managewidgets' => array('Can manage dash widgets', 'dash')),
+        'add' => array('admin.dash.managewidgets' => array('Can manage dash widgets', 'dash')),
     );
     
     /**
@@ -189,9 +189,11 @@ class dashAjaxControllerSystem extends pageController
 
     protected function displayWidgets()
     {
-        $this -> panthera -> template -> push('showWidgets', getUserRightAttribute($this -> panthera -> user, 'can_see_dash'));
+        $manageWidgets = $this->checkPermissions(array('admin.dash.managewidgets' => array('Can manage dash widgets', 'dash')), true);
         
-        if ($this -> panthera -> config -> getKey('dash.enableWidgets', 1, 'bool', 'dash') and getUserRightAttribute($this -> panthera -> user, 'can_see_dash'))
+        $this -> panthera -> template -> push('showWidgets', $manageWidgets);
+        
+        if ($this -> panthera -> config -> getKey('dash.enableWidgets', 1, 'bool', 'dash') and $manageWidgets)
         {
             $settings = $this -> panthera -> config -> getKey('dash.widgets', array('gallery' => True, 'lastLogged' => True), 'array', 'dash');
             $widgets = False;
