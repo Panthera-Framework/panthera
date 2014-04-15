@@ -558,7 +558,7 @@ class customAjaxControllerSystem extends pageController
             foreach ($tmp as $pageUnique => $page) 
             {
                 // dont show pages user dont have rights
-                if (!$this -> checkPermissions('custompage.page.edit.' .$page->unique) and $this -> checkPermissions('custompage.viewall'))
+                if (!$this -> checkPermissions('custompage.page.edit.' .$page['unique']) and $this -> checkPermissions('custompage.viewall'))
                 {
                     unset($tmp[$pageUnique]);
                     continue;
