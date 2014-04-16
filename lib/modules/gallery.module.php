@@ -1,27 +1,20 @@
 <?php
 /**
-  * Gallery - simple gallery management module
-  * 
-  * @package Panthera\modules\gallery
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Gallery - simple gallery management module
+ * 
+ * @package Panthera\modules\gallery
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license GNU Affero General Public License 3, see license.txt
+ */
   
-if (!defined('IN_PANTHERA'))
-    exit;
-  
-$panthera = pantheraCore::getInstance();
-$panthera -> addPermission('can_view_galleryItem', localize('Can view gallery items', 'messages'));
-$panthera -> addPermission('can_edit_galleryItem', localize('Can edit gallery items', 'messages'));
-
 /**
-  * Gallery item class - allows view and edit of single items
-  *
-  * @implements pantheraFetchDB
-  * @package Panthera\modules\gallery
-  * @author Damian Kęska
-  */
+ * Gallery item class - allows view and edit of single items
+ *
+ * @implements pantheraFetchDB
+ * @package Panthera\modules\gallery
+ * @author Damian Kęska
+ */
 
 class galleryItem extends pantheraFetchDB
 {
