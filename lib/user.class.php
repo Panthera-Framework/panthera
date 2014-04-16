@@ -26,7 +26,12 @@ class pantheraUser extends pantheraFetchDB
     );
     protected $_unsetColumns = array('created', 'modified', 'mod_time', 'last_result', 'group_name');
 
-    //public function __construct($id, $panthera)
+    /**
+     * Customized constructor that also loads meta attributes
+     * 
+     * @return null
+     */
+    
     public function __construct($by, $value)
     {
         parent::__construct($by, $value);
