@@ -20,7 +20,7 @@ function deleteTag (htmlid)
 
 function initEditor()
 {
-    mceSetContent('page_content', htmlspecialchars_decode("{$custompage.html}"));
+    mceSetContent('page_content', htmlspecialchars_decode("{$custompage.html|filterInput:wysiwyg}"));
 }
 
 function upload_file_callback(data, mime)
