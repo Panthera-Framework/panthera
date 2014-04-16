@@ -27,7 +27,6 @@ class groupsInstallerControllerSystem extends installerController
     
     public function display()
     {
-        
         $this -> getFeature('installer.groups');
         
         // create default groups

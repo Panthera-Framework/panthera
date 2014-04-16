@@ -22,12 +22,23 @@ if (!is_array($config))
     $config = array();
 }
 
+if (isset($config['installed']) and $config['installed'])
+{
+    header('Location: pa-login.php');
+    exit;
+}
+
 if ($config['preconfigured'] !== True)
 {
     // pre-configure installer environment
     $config['build_missing_tables'] = True;
-    $config['db_socket'] = 'sqlite';
-    $config['db_file'] = 'db.sqlite3';
+    
+    if (!isset($config['db_socket']))
+    {
+        $config['db_socket'] = 'sqlite';
+        $config['db_file'] = 'db.sqlite3';
+    }
+    
     $config['SITE_DIR'] = dirname($_SERVER['SCRIPT_FILENAME']);
     $config['disable_overlay'] = True;
     $config['debug'] = True;
