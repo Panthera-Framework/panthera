@@ -57,7 +57,7 @@ class routing {
         if ($this->cacheType == 'varcache' and $this -> panthera -> varCache)
             $data = $this -> panthera -> varCache -> get('routing.cache');
         
-        if ($this->cacheType == 'config' or !$data)
+        if (!$data)
             $data = $this -> panthera -> config -> getKey('routing.cache');
         
         if ($data)
@@ -95,9 +95,9 @@ class routing {
         );
         
         if ($this->cacheType == 'varcache' and $this -> panthera -> varCache)
-            $this -> panthera -> varCache -> set('routing.cache', $data, -1); // 7 days
-        else
-            $this -> panthera -> config -> setKey('routing.cache', $data, 'array');
+            $this -> panthera -> varCache -> set('routing.cache', $data, -1); // infinite
+        
+        $this -> panthera -> config -> setKey('routing.cache', $data, 'array');
     }
     /**
       * Create router in one call from config.
