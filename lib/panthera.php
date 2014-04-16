@@ -1351,25 +1351,74 @@ class pantheraCore
       * @author Damian Kęska
       */
 
-    public function get_options($hookName, $args='', $additionalInfo=null)
+    public function get_options($hookName, $args, $additionalInfo=null)
     {
-        $this->get_filters($hookName, $args, False, $additionalInfo);
+        if(!isset($this->hooks[$hookName]))
+            return false;
+
+        ksort($this->hooks[$hookName]);
+        
+        foreach ($this->hooks[$hookName] as $key => $hook)
+        {
+            if (gettype($hook) == "array")
+            {
+                if (!method_exists($hook[0], $hook[1]))
+                    continue;
+
+                if (is_object($hook[0]))
+                    $hook[0]->$hook[1]($args, $additionalInfo);
+                else
+                    $hook[0]::$hook[1]($args, $additionalInfo);
+
+            } else {
+                if (!function_exists($hook))
+                    continue;
+
+                $hook($args, $additionalInfo);
+            }
+        }
+        
         return False;
     }
     
     /**
-      * Execute all hooks without returning output (using referance)
+      * Execute all hooks without returning output
+      * WARNING: To avoid problems remember one important rule - always return args you get in modified or in unmodified form
       *
       * @param string $hookName
-      * @param mixed $args Args to pass to hook (REFERENCE - &)
+      * @param mixed $args Args to pass to hook
       * @param mixed $additionalInfo Additional information to pass to function as a second argument
       * @return bool 
       * @author Damian Kęska
       */
-
-    public function get_options_ref($hookName, &$args='', $additionalInfo=null)
+    
+    public function get_options_ref($hookName, &$args, $additionalInfo=null)
     {
-        $this->get_filters($hookName, $args, False, $additionalInfo);
+        if(!isset($this->hooks[$hookName]))
+            return false;
+
+        ksort($this->hooks[$hookName]);
+        
+        foreach ($this->hooks[$hookName] as $key => $hook)
+        {
+            if (gettype($hook) == "array")
+            {
+                if (!method_exists($hook[0], $hook[1]))
+                    continue;
+
+                if (is_object($hook[0]))
+                    $hook[0]->$hook[1]($args, $additionalInfo);
+                else
+                    $hook[0]::$hook[1]($args, $additionalInfo);
+
+            } else {
+                if (!function_exists($hook))
+                    continue;
+
+                $hook($args, $additionalInfo);
+            }
+        }
+        
         return False;
     }
     

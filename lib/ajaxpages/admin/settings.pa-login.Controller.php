@@ -42,6 +42,7 @@ class settings_pa_loginAjaxControllerSystem extends pageController
         $this -> panthera -> config -> getKey('login.failures.max', 5, 'int', 'pa-login');
         $this -> panthera -> config -> getKey('redirect_after_login', 'index.php', 'string', 'pa-login');
         $this -> panthera -> config -> getKey('login.failures.bantime', 300, 'int', 'pa-login');
+        $this -> panthera -> config -> getKey('login.history', 5, 'int', 'pa-login');
         
         // load uiSettings with "pa-login" config section
         $config = new uiSettings('palogin');
@@ -52,6 +53,9 @@ class settings_pa_loginAjaxControllerSystem extends pageController
         
         $config -> add('login.failures.bantime', localize('Block user when reaches maximum number of login failures', 'register'));
         $config -> setDescription('login.failures.bantime', localize('In seconds', 'palogin'));
+        
+        $config -> add('login.history', localize('Login history count', 'palogin'));
+        $config -> setDescription('login.history', localize('Count of successful logins to keep', 'palogin'));
         
         $result = $config -> handleInput($_POST);
         
