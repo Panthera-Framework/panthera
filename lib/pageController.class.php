@@ -482,8 +482,28 @@ abstract class pageController extends pantheraClass {
             $args = $this->$f($args, $additionalInfo);
         }
         
-        $args = $this -> panthera -> get_filters($featureName, $args, $fixOnFail, $additionalInfo);
+        return $this -> panthera -> get_filters($featureName, $args, $fixOnFail, $additionalInfo);
+    }
+
+    /**
+     * Same as getFeature but $arg parameter is passed as reference
+     * 
+     * @param string $featureName Hook and function name
+     * @param mixed $args Args to pass to function and/or hook
+     * @param mixed $additionalInfo Additional informations
+     * @param bool $fixOnFail Don't loose arguments data if any hook will fail (return false or null)
+     * @return $args Mixed arguments
+     */
+
+    public function getFeatureRef($featureName, &$args='', $additionalInfo=null, $fixOnFail=True)
+    {
+        $f = preg_replace('/[^\da-zA-Z0-9]/i', '_', $featureName). 'Feature';
         
-        return $args;
+        if (method_exists($this, $f))
+        {
+            $this->$f($args, $additionalInfo);
+        }
+        
+        return $this -> panthera -> get_options_ref($featureName, $args, $fixOnFail, $additionalInfo);
     }
 }

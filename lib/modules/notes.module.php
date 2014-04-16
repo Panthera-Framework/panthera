@@ -1,13 +1,12 @@
 <?php
-
 /**
-  * Notes module
-  * 
-  * @package Panthera\modules\notes
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Notes module
+ * 
+ * @package Panthera\modules\notes
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license GNU Affero General Public License 3, see license.txt
+ */
 
 if (!defined('IN_PANTHERA'))
     exit;
