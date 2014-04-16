@@ -1192,6 +1192,9 @@ abstract class pantheraFetchDB
         $obj = new $c(null, null);
         $info = $obj->_getClassInfo();
         
+        if ($order == 'id' and $info['idColumn'])
+            $order = $info['idColumn'];
+        
         return $panthera->db->getRows($info['tableName'], $by, $limit, $limitFrom, $obj, $order, $direction);
     }
 
