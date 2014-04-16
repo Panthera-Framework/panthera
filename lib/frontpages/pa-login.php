@@ -2,7 +2,7 @@
 /**
   * Admin panel login front controller
   *
-  * @package Panthera\core\frontpages
+  * @package Panthera\core\user\login
   * @config pa-login redirect_after_login
   * @config pa-login login.failures.max
   * @config pa-login login.failures.bantime
@@ -14,201 +14,227 @@
 define('SKIP_MAINTENANCE_CHECK', TRUE);
 
 require_once 'content/app.php';
+include getContentDir('pageController.class.php');
 
-$locales = $panthera -> locale -> getLocales();
-
-// logout user, TODO: CHANGE TO POST
-if (isset($_GET['logout']))
-    logoutUser();
-
-/**
- * Support for login extensions
- * 
- * @author Damian Kęska
- */
- 
-$extensions = $panthera -> config -> getKey('login.extensions', array('facebook'), 'array', 'pa-login');
-
-foreach ($extensions as $extension)
+class pa_loginControllerSystem extends pageController
 {
-    if ($panthera -> moduleExists('login/' .$extension))
-    {
-        $panthera -> importModule('login/' .$extension);
-    }
-}
+    protected $requirements = array(
+        'userregistration', 'passwordrecovery',
+    );
     
-// redirect user if already logged in
-if(checkUserPermissions($user))
-{
-    if (!getUserRightAttribute($panthera->user, 'can_access_pa'))
-    {
-        pa_redirect($panthera->config->getKey('redirect_after_login', 'index.php', 'string', 'pa-login'));
-        pa_exit(); // just in case
-    }
+    /**
+     * Support for login extensions
+     * 
+     * @return null
+     * @author Damian Kęska
+     */
     
-    pa_redirect('pa-admin.php');
-}
-
-/**
- * Get list of all locales to display flags on page
- * 
- * @author Damian Kęska
- */
-
-$locales = $panthera -> locale -> getLocales();
-$localesTpl = array();
-
-foreach ($locales as $lang => $enabled)
-{
-    if ($enabled == True)
+    public function loadExtensions()
     {
-        if (is_file(SITE_DIR. '/images/admin/flags/' .$lang. '.png'))
-            $localesTpl[] = $lang;
-    }
-}
-
-$panthera -> template -> push('flags', $localesTpl);
-
-/**
- * Check if user posted any informations
- * 
- * @author Damian Kęska
- */
-
-if (isset($_POST['log']) or isset($_GET['key']) or isset($_GET['ckey']))
-{
-    if (isset($_GET['ckey']))
-    {
-        $validation = userRegistration::checkEmailValidation($_GET['ckey'], True);
-        list($_GET['ckey'], $validation) = $panthera -> get_filters('login.registration.checkemail', array($_GET['ckey'], $validation));
+        $extensions = $this -> panthera -> config -> getKey('login.extensions', array(
+            'facebook',
+            'lastloginhistory',
+            'passwordrecovery',
+        ), 'array', 'pa-login');
         
-        if ($validation)
+        foreach ($extensions as $extension)
         {
-            $panthera -> template -> push('message', localize('Your account has been activated', 'messages'));
-            $panthera -> template -> setTemplate('admin');
-            $panthera -> template -> display('login.tpl');
-            pa_exit();
-        }
-    }
-    
-    
-    if ($_POST['recovery'] == "1" or isset($_GET['key']))
-    {
-        $panthera -> importModule('passwordrecovery');
-        
-        if (isset($_GET['key']))
-        {
-            // change user password
-            if (recoveryChangePassword($_GET['key']))
-                $template -> push('message', localize('Password changed, you can use new one', 'messages'));
-            else
-                $template -> push('message', localize('Invalid recovery key, please check if you copied link correctly', 'messages'));
-
-        } else {
-            // send an e-mail with new password
-            if (recoveryCreate($_POST['log']))
-                $template -> push('message', localize('New password was sent in a e-mail message to you', 'messages'));
-            else
-                $template -> push('message', localize('Invalid user name specified', 'messages'));
-        }
-    } else {
-        $u = new pantheraUser('login', $_POST['log']);
-        
-        if ($u -> exists())
-        {
-            $SQL = $panthera -> db -> query('SELECT * FROM `{$db_prefix}password_recovery` WHERE `user_login` = :login AND `type` = "confirmation"', array('login' => $u->login));
-            
-            if ($SQL -> rowCount() > 0)
+            if ($this -> panthera -> moduleExists('login/' .$extension))
             {
-                $panthera -> template -> push('message', localize('Please activate you\'r account first', 'messages'));
-                $panthera -> template -> setTemplate('admin');
-                $panthera -> template -> display('login.tpl');
-                pa_exit();
+                $object = $this -> panthera -> importModule('login/' .$extension, true);
+                
+                if (is_object($object) and method_exists($object, 'initialize'))
+                    $object -> initialize($this);
+            }
+        }
+    }
+    
+    /**
+     * Logout action
+     * 
+     * @return null
+     */
+    
+    public function logoutAction()
+    {
+        if (isset($_GET['logout']))
+            logoutUser();
+    }
+
+    /**
+     * Main function
+     * 
+     * @return null
+     */
+    
+    public function display()
+    {
+        // logout user, TODO: CHANGE TO POST
+        $this -> logoutAction();
+        $this -> loadExtensions();
+        
+        // redirect user if it's already logged in
+        if(checkUserPermissions($user))
+        {
+            if (!$this -> checkPermissions('admin.accesspanel', true))
+            {
+                pa_redirect($this -> panthera -> config -> getKey('redirect_after_login', 'index.php', 'string', 'pa-login'));
+                pa_exit(); // just in case
             }
             
+            pa_redirect('pa-admin.php');
+        }
+        
+        /**
+         * Get list of all locales to display flags on page
+         * 
+         * @author Damian Kęska
+         */
+        
+        $locales = $this -> panthera -> locale -> getLocales();
+        $localesTpl = array();
+        
+        foreach ($locales as $lang => $enabled)
+        {
+            if ($enabled == True)
+            {
+                if (is_file(SITE_DIR. '/images/admin/flags/' .$lang. '.png'))
+                    $localesTpl[] = $lang;
+            }
+        }
+        
+        $this -> panthera -> template -> push('flags', $localesTpl);
+        
+        // check authorization
+        if (isset($_POST['log']) or isset($_GET['key']) or isset($_GET['ckey']))
+            $this -> checkAuthData();
+        
+        // save the referer when logging in
+        if (strpos($_SERVER['HTTP_REFERER'], $this -> panthera -> config -> getKey('ajax_url')) !== False and strpos($_SERVER['HTTP_REFERER'], '&cat=admin') !== False)
+            $this -> panthera -> session -> set('login_referer', $_SERVER['HTTP_REFERER']);
+        
+        $this -> panthera -> template -> setTitle(localize('Log in'));
+        $this -> panthera -> template -> setTemplate('admin');
+        $this -> panthera -> template -> display('login.tpl');
+        pa_exit();
+    }
+
+    /**
+     * Check authorization data
+     * 
+     * @return null
+     */
+
+    public function checkAuthData()
+    {
+        $continueChecking = True;
+        
+        $u = new pantheraUser('login', $_POST['log']);
+        $this -> getFeatureRef('login.checkauth', $continueChecking, $u);
+        $this -> panthera -> template -> setTemplate('admin');
+        
+        // if module decided to break 
+        if (!$continueChecking or is_string($continueChecking))
+        {
+            if (is_string($continueChecking))
+                $this -> panthera -> template -> push('message', $continueChecking);
             
-            if ($u -> attributes -> get('loginFailures') >= intval($panthera -> config -> getKey('login.failures.max', 5, 'int', 'pa-login')) and $u -> attributes -> get('loginFailures') !== 0)
+            $this -> panthera -> template -> display('login.tpl');
+            pa_exit();
+        }
+            
+        if ($u -> exists())
+        {
+            if ($u -> attributes -> get('loginFailures') >= intval($this -> panthera -> config -> getKey('login.failures.max', 5, 'int', 'pa-login')) and $u -> attributes -> get('loginFailures') !== 0)
             {
                 if (intval($u -> attributes -> get('loginFailureExpiration')) <= time())
                 {
                     $u -> attributes -> set('loginFailures', 0);
                     $u -> attributes -> remove('loginFailureExpiration');
                     $u -> save();
-                    
+                        
                 } else {
-                    $panthera -> get_options('login.failures.exceeded', array('user' => $u, 'failures' => $u -> attributes -> get('loginFailures'), 'expiration' => $u -> attributes -> get('loginFailureExpiration')));
-                    $panthera -> template -> push('message', localize('Number of login failures exceeded, please wait a moment before next try', 'messages'));
-                    $panthera -> template -> setTemplate('admin');
-                    $panthera -> template -> display('login.tpl');
+                    $this -> panthera -> get_options('login.failures.exceeded', array('user' => $u, 'failures' => $u -> attributes -> get('loginFailures'), 'expiration' => $u -> attributes -> get('loginFailureExpiration')));
+                    $this -> panthera -> template -> push('message', localize('Number of login failures exceeded, please wait a moment before next try', 'messages'));
+                    $this -> panthera -> template -> display('login.tpl');
                     pa_exit();
-                    
                 }
             }
         }
-        
+            
         $result = userCreateSession($_POST['log'], $_POST['pwd']);
-        $result = $panthera -> get_filters('login.createsession', $result);
-        
+            
         /**
-          * Successful login
-          *
-          * @author Damian Kęska
-          */
-        
+         * Successful login
+         *
+         * @author Damian Kęska
+         */
+            
         if($result and is_bool($result))
         {
+            $this -> getFeature('login.success', $u);
+            
             $u -> attributes -> set('loginFailures', 0);
             $u -> attributes -> remove('loginFailureExpiration');
             $u -> save();
-        
+
             // if user cannot access Admin Panel, redirect to other location (specified in redirect_after_login config section)
-            if (!getUserRightAttribute($panthera->user, 'admin.accesspanel'))
+            if (!$this -> checkPermissions('admin.accesspanel', true))
+                pa_redirect($this -> panthera -> config -> getKey('redirect_after_login', 'index.php', 'string', 'pa-login'));
+            
+            if ($this -> panthera -> session -> exists('login_referer'))
             {
-                pa_redirect($panthera->config->getKey('redirect_after_login', 'index.php', 'string', 'pa-login'));
-            }
-        
-            if ($panthera->session->exists('login_referer'))
-            {
-                header('Location: ' .$panthera->session->get('login_referer'));
-                $panthera -> session -> remove ('login_referer');
+                header('Location: ' .$this -> panthera -> session -> get('login_referer'));
+                $this -> panthera -> session -> remove ('login_referer');
                 pa_exit();
             }
-        
+            
             pa_redirect('pa-admin.php');
             pa_exit();
-
-            /**
-              * Suspended/banned account
-              *
-              * @author Damian Kęska
-              */
-
+    
+        /**
+         * Suspended/banned account
+         *
+         * @author Damian Kęska
+         */
+    
         } elseif ($result === 'BANNED') {
-            $template -> push('message', localize('This account has been suspended, please contact administrator for details', 'messages'));
-            $panthera -> get_options('login.failures.suspended', array('user' => $u, 'failures' => $u -> attributes -> get('loginFailures'), 'expiration' => $u -> attributes -> get('loginFailureExpiration')));
-
-
-            /**
-              * Login failure
-              *
-              * @author Damian Kęska
-              */
-
-        } elseif ($result === False) {
-            $template -> push('message', localize('Invalid user name or password', 'messages'));
+            $this -> panthera -> template -> push('message', localize('This account has been suspended, please contact administrator for details', 'messages'));
             
+            $this -> getFeature('login.failures.suspended', array(
+                'user' => $u,
+                'failures' => $u -> attributes -> get('loginFailures'),
+                'expiration' => $u -> attributes -> get('loginFailureExpiration'),
+            ));
+    
+    
+        /**
+         * Login failure
+         *
+         * @author Damian Kęska
+         */
+    
+        } elseif ($result === False) {
+            $this -> panthera -> template -> push('message', localize('Invalid user name or password', 'messages'));
+                
             if ($u -> exists())
             {
                 $u -> attributes -> set('loginFailures', intval($u -> attributes -> get('loginFailures'))+1);
-                
-                // plugins support
-                $panthera -> get_options('login.failures.exceeded', array('user' => $u, 'failures' => $u -> attributes -> get('loginFailures'), 'expiration' => $u -> attributes -> get('loginFailureExpiration')));
-                
-                if ($u -> attributes -> get('loginFailures') >= intval($panthera -> config -> getKey('login.failures.max', 5, 'int', 'pa-login')))
+                $banned = False;
+                    
+                if ($u -> attributes -> get('loginFailures') >= intval($this -> panthera -> config -> getKey('login.failures.max', 5, 'int', 'pa-login')))
                 {
-                    $u -> attributes -> set('loginFailureExpiration', (time()+intval($panthera -> config -> getKey('login.failures.bantime', 300, 'int', 'pa-login')))); // 5 minutes by default
+                    $banned = True;
+                    $u -> attributes -> set('loginFailureExpiration', (time()+intval($this -> panthera -> config -> getKey('login.failures.bantime', 300, 'int', 'pa-login')))); // 5 minutes by default
                 }
-                
+                   
+                $this -> getFeature('login.failure', array(
+                    'user' => $u,
+                    'failures' => $u -> attributes -> get('loginFailures'),
+                    'expiration' => $u -> attributes -> get('loginFailureExpiration'),
+                    'banned' => $banned,
+                ));
+
                 $u -> attributes -> set('lastFailLoginIP', $_SERVER['REMOTE_ADDR']);
                 $u -> save();
             }
@@ -216,15 +242,8 @@ if (isset($_POST['log']) or isset($_GET['key']) or isset($_GET['ckey']))
     }
 }
 
-// save the referer when logging in
-if (strpos($_SERVER['HTTP_REFERER'], $panthera->config->getKey('ajax_url')) !== False and strpos($_SERVER['HTTP_REFERER'], '&cat=admin') !== False)
+if (strpos(__FILE__, PANTHERA_DIR) !== FALSE)
 {
-    $panthera->session->set('login_referer', $_SERVER['HTTP_REFERER']);
+    $object = new pa_loginControllerSystem();
+    $object -> display();
 }
-
-
-$panthera -> template -> setTitle(localize('Log in'));
-$template -> setTemplate('admin');
-$template -> display('login.tpl');
-$panthera -> finish();
-?>
