@@ -47,7 +47,9 @@ class lastloginhistoryModule extends pageController
 
         // remove outdated history entries
         if ($fetch['count(*)'] >= intval($this -> panthera -> config -> getKey('login.history', 5, 'int', 'pa-login')))
-            $this -> panthera -> db -> query('DELETE FROM `{$db_prefix}users_lastlogin_history` WHERE `uid` = :uid ORDER BY `date` ASC LIMIT 0,1');
+            $this -> panthera -> db -> query('DELETE FROM `{$db_prefix}users_lastlogin_history` WHERE `uid` = :uid ORDER BY `date` ASC LIMIT 0,1', array(
+                'uid' => $u -> id,
+            ));
         
         $location = '';
         
