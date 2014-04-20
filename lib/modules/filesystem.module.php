@@ -566,11 +566,12 @@ class filesystem
         // use finfo to detect mime type
         $finfo = finfo_open(FILEINFO_MIME);
         $mimetype = finfo_file($finfo, $fileName);
+        $mimetype = explode(';', $mimetype);
         
         // close finfo resource 
         finfo_close($finfo);
         
-        return $mimetype;
+        return $type[0];
     }
     
     /**
