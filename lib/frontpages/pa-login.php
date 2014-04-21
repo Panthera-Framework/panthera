@@ -242,8 +242,9 @@ class pa_loginControllerSystem extends pageController
     }
 }
 
-if (strpos(__FILE__, PANTHERA_DIR) !== FALSE)
+
+if (strlen(PANTHERA_DIR) > 0)
 {
     $object = new pa_loginControllerSystem();
-    $object -> display();
+    $object -> display();   
 }

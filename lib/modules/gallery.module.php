@@ -261,7 +261,7 @@ class galleryCategory extends pantheraFetchDB
             return False;
     
         if (!isset($this->_meta[$meta]))
-            $this->_meta[$meta] = new metaAttributes($this->panthera, 'gallery_c_' .$meta, $this->unique);
+            $this->_meta[$meta] = new metaAttributes($this->panthera, 'gallery_c_' .$meta, $this->unique, $this->panthera->cache);
 
         return $this->_meta[$meta];
     }

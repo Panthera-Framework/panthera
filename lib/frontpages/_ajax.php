@@ -94,7 +94,7 @@ $tpl = 'no_page.tpl';
 $panthera -> add_option('page_load_ends', array('navigation', 'appendCurrentPage')); 
 
 // execute plugins
-$panthera -> get_options('ajax_page');
+$panthera -> get_options('ajax_page', False);
 
 // path to objective controller
 $pageFile = getContentDir('ajaxpages/' .$display. '.Controller.php');

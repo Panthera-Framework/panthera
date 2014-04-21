@@ -220,7 +220,7 @@ class uploadAjaxControllerCore extends pageController
     
             // getting icon by mime type
             $fileType = filesystem::fileTypeByMime($value->mime);
-            $icon = $value->getThumbnail('200');
+            $icon = pantheraUrl($value->getThumbnail('200'));
             $this -> panthera -> logging -> output ('Checking for icon: ' .$icon. ' for type ' .$fileType, 'upload');
             
             // give user rights to delete file, create the button
@@ -314,9 +314,9 @@ class uploadAjaxControllerCore extends pageController
                 ajax_exit(array('status' => 'failed', 'message' => localize('Given category does not exist!', 'upload')));
 
         }
-
+        
         // get mime type of file
-        $mime = filesystem::getFileMimeType($_FILES['input_file']['name']);
+        $mime = filesystem::getFileMimeType($_FILES['input_file']['tmp_name']);
 
         $description = filterInput($_POST['input_description'], 'quotehtml');
         $protected = 0;

@@ -15,7 +15,7 @@
             <tr>
                 <td style="padding-left: 26px;; padding-right: 0;">
                   {loop="$galleryItems"}
-                    <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=editItemForm&itid={$value->id}')">
+                    <a href="#" onclick="navigateTo('?display=gallery&cat=admin&action=editItemForm&itemid={$value->id}')">
                      <img src="{$value->thumbnail|pantheraUrl}" style="height: 100px; width: 100px;">
                     </a>
                   {/loop}

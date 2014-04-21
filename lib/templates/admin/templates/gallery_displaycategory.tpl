@@ -309,7 +309,7 @@ function toggleItemVisibilitySelected()
 
 <!-- Settings popup -->
 <div id="settingsPopup" style="display: none;">
-   <form action="?display=gallery&cat=admin&action=saveCategoryDetails&id={$galleryObject->id}" method="POST" id="saveCategoryDetails">
+   <form action="?display=gallery&cat=admin&action=saveCategoryDetails&categoryid={$galleryObject->id}" method="POST" id="saveCategoryDetails">
     <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
         
         <tbody>

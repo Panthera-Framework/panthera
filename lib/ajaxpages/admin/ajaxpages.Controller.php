@@ -214,7 +214,7 @@ class ajaxpagesAjaxControllerCore extends pageController
             'location' => 'lib',
             'directory' => 'admin',
             'path' => PANTHERA_DIR. '/ajaxpages/admin/settings.php',
-            'modtime' => date($this -> panthera -> dateFormat, filemtime(PANTHERA_DIR. '/ajaxpages/admin/settings.php')),
+            'modtime' => date($this -> panthera -> dateFormat, filemtime(PANTHERA_DIR. '/ajaxpages/admin/settings.Controller.php')),
             'name' => 'system_info',
             'link' => '?display=settings&cat=admin&action=system_info'
         );
@@ -223,7 +223,7 @@ class ajaxpagesAjaxControllerCore extends pageController
             'location' => 'lib',
             'directory' => 'admin',
             'path' => PANTHERA_DIR. '/ajaxpages/admin/users.php',
-            'modtime' => date($this -> panthera -> dateFormat, filemtime(PANTHERA_DIR. '/ajaxpages/admin/users.php')),
+            'modtime' => date($this -> panthera -> dateFormat, filemtime(PANTHERA_DIR. '/ajaxpages/admin/users.Controller.php')),
             'name' => 'my_account',
             'link' => '?display=users&cat=admin&action=my_account'
         );

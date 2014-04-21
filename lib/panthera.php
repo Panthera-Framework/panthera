@@ -1764,7 +1764,7 @@ class pantheraCore
     function finish()
     {
         $this->_savedSession = True;
-        $this->get_options('session_save');
+        $this->get_options('session_save', False);
     }
 
     // in case when developer forgot to use finish() at the end of script

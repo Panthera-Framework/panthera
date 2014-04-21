@@ -238,9 +238,7 @@ class pantheraUpload
         }
 
         if ($mime == '')
-        {
-            $mime = filesystem::getFileMimeType($file['name']);
-        }
+            $mime = filesystem::getFileMimeType($file['tmp_name']);
         
         $name = $file['name'];
         $fileInfo = pathinfo($name);
@@ -398,15 +396,20 @@ class pantheraUpload
         {
             $location = pantheraUrl($location);
             $fileInfo = pathinfo($location);
-
-            @unlink($fileInfo['dirname']. '/../_thumbnails/200px_' .$fileInfo['filename']. '.' .$fileInfo['extension']);
+            
+            if (is_file($fileInfo['dirname']. '/../_thumbnails/200px_' .$fileInfo['filename']. '.' .$fileInfo['extension']))
+                @unlink($fileInfo['dirname']. '/../_thumbnails/200px_' .$fileInfo['filename']. '.' .$fileInfo['extension']);   
             
             $thumbs = glob($fileInfo['dirname']. '/../_thumbnails/*_' .$fileInfo['filename']. '.' .$fileInfo['extension']);
             
             foreach ($thumbs as $thumb)
-                @unlink($thumb);
+            {
+                if (is_file($thumb))
+                    @unlink($thumb);
+            }
             
-            @unlink($location);
+            if (is_file($location))
+                @unlink($location);
             
             if (!is_file($location))
                 return True;
@@ -548,8 +551,9 @@ class filesystem
      */
 
     public static function mb_basename($file) 
-    { 
-        return end(explode('/',$file)); 
+    {
+        $tmp = explode('/', strval($file));
+        return end($tmp); 
     } 
     
     /**
@@ -566,11 +570,12 @@ class filesystem
         // use finfo to detect mime type
         $finfo = finfo_open(FILEINFO_MIME);
         $mimetype = finfo_file($finfo, $fileName);
+        $mimetype = explode(';', $mimetype);
         
         // close finfo resource 
         finfo_close($finfo);
         
-        return $mimetype;
+        return $mimetype[0];
     }
     
     /**

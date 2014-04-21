@@ -163,7 +163,7 @@ class usersAjaxControllerCore extends pageController
         $aclList = array();
         $userTable = $u->acl->listAll();
     
-        if ($this->isAdmin)
+        if ($this->checkPermissions('admin'))
             $this -> panthera -> template -> push('allow_edit_acl', True);
     
         $permissionsTable = $this->panthera->listPermissions();
@@ -340,7 +340,7 @@ class usersAjaxControllerCore extends pageController
         {
             if (intval($_POST['uid']) == $this->panthera->user->id)
                 $u = $this->panthera->user;
-            elseif ($this->isAdmin)
+            elseif ($this->checkPermissions('admin'))
                 $u = new pantheraUser('id', $_POST['uid']);
         }
         
@@ -456,10 +456,6 @@ class usersAjaxControllerCore extends pageController
   
     public function addUserAction()
     {
-        // check permissions
-        if (!$this->isAdmin)
-            ajax_exit(array('status' => 'failed', 'message' => localize('No rights to execute this action', 'permissions')));
-    
         if (strlen($_POST['login']) > 2)
             $login = $_POST['login'];
         else
@@ -469,7 +465,7 @@ class usersAjaxControllerCore extends pageController
                 
             $password = $_POST['passwd'];
             $passwordEncoded = encodePassword($password);
-            
+
             if (!verifyPassword($_POST['retyped_passwd'], $passwordEncoded))
                 ajax_exit(array('status' => 'failed', 'message' =>  localize('Passwords does not match', 'users')));
             

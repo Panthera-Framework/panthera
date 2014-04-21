@@ -226,7 +226,7 @@ if (function_exists('userStartup'))
 // load plugins after all core elements
 $plugins = $panthera -> loadPlugins();
 
-$panthera -> get_options('page_load_starts');
+$panthera -> get_options('page_load_starts', False);
 
 if ($panthera -> config -> getKey('site.maintenance', 0, 'bool'))
     $panthera -> importModule('boot/maintenance', true);
