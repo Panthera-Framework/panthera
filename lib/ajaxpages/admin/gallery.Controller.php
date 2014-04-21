@@ -203,7 +203,7 @@ class galleryAjaxControllerCore extends pageController
                 galleryItem::createGalleryItem(basename($file -> location),
                     $file -> description,
                     pantheraUrl($file -> getLink(), True),
-                    intval($_GET['gid']),
+                    intval($_GET['categoryid']),
                     True,
                     $file,
                     $this -> panthera -> user -> id,
@@ -740,7 +740,7 @@ class galleryAjaxControllerCore extends pageController
     {
         if ($_GET['subaction'] == 'add') 
         {
-            if ($_POST['title'] and $_POST['gallery_id'] and $_POST['upload_id'])   
+            if (strlen($_POST['title']) > 0 and strlen($_POST['categoryid']) > 0 and strlen($_POST['upload_id']) > 0)   
             {
                 // validate input
                 $_POST['title'] = filterInput($_POST['title'], 'quotehtml');
