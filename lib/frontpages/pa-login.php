@@ -242,8 +242,8 @@ class pa_loginControllerSystem extends pageController
     }
 }
 
-
-if (strlen(PANTHERA_DIR) > 0)
+// if you want to copy this front controller to your site directory instead of linking please change PANTHERA_DIR to SITE_DIR inside of your copy or you can make a include
+if (strpos(__FILE__, PANTHERA_DIR) !== FALSE)
 {
     $object = new pa_loginControllerSystem();
     $object -> display();   
