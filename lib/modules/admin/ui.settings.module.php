@@ -449,13 +449,18 @@ function uiSettingsMultipleSelectBoolField($action, $key, $value)
 
 function uiSettingsCommaSeparated($action, $key, $value)
 {
-    global $panthera;
+    $panthera = pantheraCore::getInstance();
     
     if ($action == 'save')
     {
         return explode(',', str_replace(', ', ',', trim($value)));
     } else {
-        return implode(', ', $panthera->config->getKey($key));
+        $array = $panthera->config->getKey($key);
+        
+        if (is_array($array))
+            $array = implode(', ', $array);
+        
+        return $array;
     }
 }
 
