@@ -295,7 +295,8 @@ class debpopupPlugin extends pantheraPlugin
         
         foreach ($panthera->listModules() as $module => $enabled)
         {
-            $array[] = array($module, implode(', ', $classList[$module]));
+            if (is_array($classList[$module]))
+                $array[] = array($module, implode(', ', $classList[$module]));
         }
     
         $item = array(
