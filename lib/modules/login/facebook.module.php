@@ -27,8 +27,6 @@ if (isset($_GET['facebook']))
             $panthera -> template -> push('message', localize('Cannot authenticate with Facebook, please ensure all permissions are accepted and correct', 'facebook'));
         }
         
-        var_dump(serialize(intval($facebookDetails['id'])));
-        
         if ($facebookDetails)
         {
             $SQL = $panthera -> db -> query('SELECT * FROM `{$db_prefix}metas` WHERE `name` = "facebook" AND `type` = "u" AND `value` = :value', array('value' => serialize(intval($facebookDetails['id']))));
