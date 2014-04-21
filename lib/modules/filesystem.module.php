@@ -238,9 +238,7 @@ class pantheraUpload
         }
 
         if ($mime == '')
-        {
-            $mime = filesystem::getFileMimeType($file['name']);
-        }
+            $mime = filesystem::getFileMimeType($file['tmp_name']);
         
         $name = $file['name'];
         $fileInfo = pathinfo($name);
@@ -548,8 +546,9 @@ class filesystem
      */
 
     public static function mb_basename($file) 
-    { 
-        return end(explode('/',$file)); 
+    {
+        $tmp = explode('/', strval($file));
+        return end($tmp); 
     } 
     
     /**
@@ -571,7 +570,7 @@ class filesystem
         // close finfo resource 
         finfo_close($finfo);
         
-        return $type[0];
+        return $mimetype[0];
     }
     
     /**
