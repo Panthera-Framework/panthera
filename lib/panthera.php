@@ -1351,7 +1351,7 @@ class pantheraCore
       * @author Damian Kęska
       */
 
-    public function get_options($hookName, $args, $additionalInfo=null)
+    public function get_options($hookName, $args='', $additionalInfo=null)
     {
         if(!isset($this->hooks[$hookName]))
             return false;
