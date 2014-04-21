@@ -396,6 +396,8 @@ class usersAjaxControllerCore extends pageController
             
             if (strlen($_POST['facebookID']) > 5)
                 $u -> acl -> set('facebook', intval($_POST['facebookID']));
+            else
+                $u -> acl -> set('facebook', null);
         }
         
         $u -> save();
