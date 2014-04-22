@@ -26,6 +26,8 @@ class cacheAjaxControllerSystem extends pageController {
 
 	protected $cacheList = array();
 
+
+
 	/**
 	 * Saving cache and varCache settings
 	 *
@@ -79,6 +81,8 @@ class cacheAjaxControllerSystem extends pageController {
 		ajax_exit(array('status' => 'success'));
 	}
 
+
+
 	/**
 	 * Add new Redis server
 	 *
@@ -116,6 +120,8 @@ class cacheAjaxControllerSystem extends pageController {
 		ajax_exit(array('status' => 'success'));
 	}
 
+
+
 	/**
 	 * Remove a Redis server
 	 *
@@ -137,10 +143,13 @@ class cacheAjaxControllerSystem extends pageController {
 		ajax_exit(array('status' => 'failed'));
 	}
 
+
+
 	/**
 	 * Adding new Memcached server
 	 *
 	 * @author Damian Kęska
+	 * @author Mateusz Warzyński
 	 */
 
 	public function addMemcachedServerAction() {
@@ -178,10 +187,13 @@ class cacheAjaxControllerSystem extends pageController {
 		ajax_exit(array('status' => 'failed', 'message' => localize('Server IP or address is invalid', 'cache')));
 	}
 
+
+
 	/**
 	 * Remove Memcached server
 	 *
 	 * @author Damian Kęska
+	 * @author Mateusz Warzyński
 	 */
 
 	public function removeMemcachedServerAction() {
@@ -197,10 +209,13 @@ class cacheAjaxControllerSystem extends pageController {
 		ajax_exit(array('status' => 'success'));
 	}
 
+
+
 	/**
 	 * Clear cache
 	 *
 	 * @author Damian Kęska
+	 * @author Mateusz Warzyński
 	 */
 
 	public function clearAction() {
@@ -261,6 +276,8 @@ class cacheAjaxControllerSystem extends pageController {
 			ajax_exit(array('status' => 'failed', 'message' => localize('Cannot clear cache', 'cache'), 'dump' => object_dump($result)));
 	}
 
+
+
 	/**
 	 * APC statistics
 	 * Supported only by APC module. APCU still missess most of those features.
@@ -308,10 +325,13 @@ class cacheAjaxControllerSystem extends pageController {
 		$this -> panthera -> template -> push('acp_info', $apcInfo);
 	}
 
+
+
 	/**
 	 * List of Memcached servers
 	 *
 	 * @author Damian Kęska
+	 * @author Mateusz Warzyński
 	 */
 
 	protected function memcachedSupport() {
@@ -380,11 +400,15 @@ class cacheAjaxControllerSystem extends pageController {
 
 		$this -> panthera -> template -> push('memcachedServers', $servers);
 	}
-
+	
+	
+	
+	
 	/**
 	 * XCache support
 	 *
 	 * @author Damian Kęska
+	 * @author Mateusz Warzyński
 	 */
 
 	protected function xcacheSupport() {
@@ -423,6 +447,14 @@ class cacheAjaxControllerSystem extends pageController {
 		$this -> cacheList['xcache'] = True;
 	}
 
+
+	
+	/**
+	 * Redis support
+	 *
+	 * @author Damian Kęska
+	 */
+
 	protected function RedisSupport() {
 		if ($this -> panthera -> cache) {
 			if ($this -> panthera -> cache -> name == 'redis') {
@@ -445,6 +477,15 @@ class cacheAjaxControllerSystem extends pageController {
 		$this -> cacheList['redis'] = True;
 	}
 
+
+
+	/**
+	 * Display main page
+	 *
+	 * @author Damian Kęska
+	 * @author Mateusz Warzyński
+	 */
+	 
 	public function display() {
 		$this -> panthera -> locale -> loadDomain('cache');
 
