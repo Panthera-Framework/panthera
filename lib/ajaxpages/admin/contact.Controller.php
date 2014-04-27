@@ -74,13 +74,16 @@ class contactAjaxControllerSystem extends pageController
         
         $contactData = $this -> panthera -> config -> getKey($this->fieldName, $contactDefaults, 'array');
         
-        $html = str_replace("\n", '\\n', $this -> panthera->config->getKey($fields['contact_text']));
+        $html = str_replace("\n", '\\n', $this->panthera->config->getKey($fields['contact_text']));
         $html = str_replace("\r", '\\r', $html);
         $html = htmlspecialchars($html, ENT_QUOTES);
         
         if (!defined('CONTACT_SKIP_MAP'))
-        {
-            $map_data = json_decode(stripslashes($contactData['map']), true);
+        {                
+            if ($contactData['map'] == NULL)
+                $map_data = json_decode(stripslashes($contactDefaults['map']), true);
+            else 
+                $map_data = json_decode(stripslashes($contactData['map']), true);
             
             $x = $map_data['center'][key($map_data['center'])];
             $y = end($map_data['center']);
