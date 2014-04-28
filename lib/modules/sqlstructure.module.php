@@ -1,4 +1,6 @@
 <?php
+define('CURRENT_TIMESTAMP', 8);
+
 class SQLStructure
 {
     protected $raw = array();
@@ -54,6 +56,14 @@ class SQLStructure
                 
                 $line = trim($line);
                 $tableName = $line;
+
+				$results[$tableName] = array(
+					'columns' => array(),
+					'indexes' => array(),
+					'engine' => null,
+					'charset' => '',
+				);
+
                 continue;
             }
             
@@ -62,6 +72,63 @@ class SQLStructure
             
             if ($firstChar == '`' or $firstChar == '"')
                 $this -> parseColumn($line, $tableName, $results);
+
+			// MySQL like syntax: PRIMARY KEY / UNIQUE KEY
+			if (substr($line, 0, 11) == 'PRIMARY KEY' or substr($line, 0, 10) == 'UNIQUE KEY' or substr($line, 0, 11) == 'FOREIGN KEY')
+			{
+				preg_match_all('/\(([A-Za-z0-9_\.\,"\'`]+)\)/', $line, $_matches, PREG_SET_ORDER);
+
+				if ($_matches)
+				{
+				    $column = str_replace(array('`', '"', '\''), '', $_matches[0][1]); // unquote string
+				
+				    if (strpos($line, 'PRIMARY KEY') !== False)
+				    {
+				        $keyType = 'PRIMARY KEY';
+				        $results[$tableName]['columns'][$column]['primaryKey'] = true;
+				        
+				    } elseif (strpos($line, 'UNIQUE KEY') !== False) {
+				        $keyType = 'UNIQUE KEY';
+				        $results[$tableName]['columns'][$column]['uniqueKey'] = true;
+				        
+				    } elseif (strpos($line, 'FOREIGN KEY') !== False) {
+				        $keyType = 'FOREIGN KEY';
+				        $results[$tableName]['columns'][$column]['foreignKey'] = true;
+				    }
+					
+					$results[$tableName]['indexes'][$column] = array(
+                        'type' => $keyType,
+                        'length' => null,
+                    );
+				}
+			}
+			
+			// MySQL stores extra informations and final line of every CREATE TABLE statement
+			if (substr($line, 0, 1) == ')')
+			{
+			    preg_match_all('/([A-Za-z0-9_ ]+)\=([A-Za-z0-9_\-\+]+)/', $line, $_matches, PREG_SET_ORDER);
+			    
+			    $attrs = array();
+			    
+			    foreach ($_matches as $match)
+			    {
+			        $key = strtoupper(trim($match[1]));
+			        $value = trim($match[2]);
+			        
+			        if (is_numeric($value))
+			            $value = intval($value);
+			        
+			        $attrs[$key] = $value;
+			    }
+			    
+			    $results[$tableName]['__mysqlRawAttrs'] = $attrs;
+			    
+			    if (isset($attrs['ENGINE']))
+			        $results[$tableName]['engine'] = $attrs['ENGINE'];
+			        
+			    if (isset($attrs['DEFAULT CHARSET']))
+			        $results[$tableName]['charset'] = $attrs['DEFAULT CHARSET'];
+			}
         }
         
         // Indexes (CREATE INDEX syntax)
@@ -111,10 +178,14 @@ class SQLStructure
             'uniqueKey' => false,
             'foreignKey' => false,
             '__inputData' => $inputData,
+			'onUpdate' => null,
         );
         
         preg_match_all('/DEFAULT ([\'"])?(.+)?([\'"]+)([,]+)?/', $line, $_matches, PREG_SET_ORDER);
         
+		$line = preg_replace('/"(.+)"/', '', $line);
+        $line = preg_replace("/'(.+)'/", '', $line);
+
         // supported only in MySQL
         if ($_matches)
             $data['default'] = $_matches[0][2];
@@ -134,13 +205,25 @@ class SQLStructure
         
         if (strpos($line, ' FOREIGN KEY') !== False)
             $data['foreignKey'] = true;
-        
-        $line = preg_replace('/"(.+)"/', '', $line);
-        $line = preg_replace("/'(.+)'/", '', $line);
-        
+
+		if (strpos($line, ' DEFAULT CURRENT_TIMESTAMP') !== False)
+			$data['default'] = CURRENT_TIMESTAMP;
+
+		if (strpos($line, 'ON UPDATE CURRENT_TIMESTAMP') !== False)
+			$data['onUpdate'] = CURRENT_TIMESTAMP;
+
         // data is passed by reference
         $results[$tableName]['columns'][$data['name']] = $data;
     }
+    
+    /**
+     * Parse CREATE INDEX statements
+     *
+     * @param string $line Input line
+     * @param array &$results
+     *
+     * @return null
+     */
 
     protected function parseIndex($line, &$results)
     {
@@ -151,14 +234,88 @@ class SQLStructure
         // for SQLite3:
         // CREATE INDEX "{$db_prefix}config_overlay_key" ON "{$db_prefix}config_overlay" ("key");
         
-        preg_match_all('/CREATE INDEX?(\d*)([`\"])?(.+)?([`\"])?(\d*)ON?(\d*)([`\"])?(.+)?([`\"])/', $line, $_matches, PREG_SET_ORDER);
+        preg_match_all('/CREATE INDEX?(\d*)([`\"])?(.+)?([`\"])?(\d*)ON?(\d*)([`\" ])?(.+)?([`\" ])(\d*)\((.+)\)/', $line, $_matches, PREG_SET_ORDER);
         
-        var_dump($line);
-        var_dump($_matches);
-        exit;
+        // 3 => index name
+        // 8 => table name
+        // 11 => column
+        
+        if ($_matches)
+        {
+            $index = $this->stripQuotes($_matches[0][3], true);
+            $table = $this->stripQuotes($_matches[0][8]);
+            $column = $this->stripQuotes($_matches[0][11]);
+            $columnLength = null;
+            $tableFound = False;
+            
+            foreach ($results as $tableName => $attrs)
+            {
+                // check if index is created on existing table
+                if ($tableName == $table)
+                    $tableFound = True;
+                    
+                // SQLite3-like keys naming
+                if (strpos($index, $tableName) !== False)
+                {
+                    // this will remove table from key name eg. "{$db_prefix}config_overlay_id" => "id"
+                    $index = str_replace($tableName. '_', '', $index);
+                }
+            }
+            
+            if (!$tableFound)
+                throw new Exception('Tried to create index on non-existent table "' .$table. '"');
+                
+            // MySQL syntax also supports length attribute
+            if (strpos($column, '(') !== False)
+            {
+                preg_match_all('/([A-Za-z0-9_]+)\(([0-9]+)\)/', $column, $_matches, PREG_SET_ORDER);
+                
+                // 1 => column
+                // 2 => length
+                
+                if ($_matches)
+                {
+                    $column = $_matches[0][1];
+                    $columnLength = $_matches[0][2];
+                }
+            }
+            
+            if (!isset($results[$table]['columns'][$column]))
+            {
+                throw new Exception('Tried to add index to non-existent column "' .$column. '" in "' .$table. '" table');
+            }
+            
+            // update index list
+            $results[$table]['indexes'][$column] = array(
+                'type' => 'PRIMARY KEY',
+                'length' => $columnLength,
+            );
+            
+            // update columns list
+            $results[$table]['columns'][$column]['primaryKey'] = true;
+        }
+    }
+    
+    /**
+     * Strip quotes from string
+     * 
+     * @param string $input Input string
+     * @param bool $brackets Also strip brackets too
+     * @return string
+     */
+    
+    public function stripQuotes($input, $brackets=False)
+    {
+        $quotes = array(
+            '"', "'", '`',
+        );
+        
+        if ($brackets)
+        {
+            $quotes[] = '(';
+            $quotes[] = ')';
+        }
+        
+        return trim(str_replace($quotes, '', trim($input)));
     }
 }
-
-$structure = new SQLStructure(file_get_contents('../database/templates/config_overlay.sql'));
-$structure = new SQLStructure(file_get_contents('../database/templates/sqlite3/config_overlay.sql'));
-print_r($structure -> getParsedArray());
