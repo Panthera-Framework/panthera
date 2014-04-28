@@ -138,6 +138,16 @@ class uploadedFile extends pantheraFetchDB
 
 class pantheraUpload
 {
+    protected static $uploadErrors = array(
+        1 => 'The uploaded file exceeds the upload_max_filesize directive in php.ini',
+        2 => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form',
+        3 => 'The uploaded file was only partially uploaded',
+        4 => 'No file was uploaded and/or no file selected to upload',
+        6 => 'Missing a temporary folder',
+        7 => 'Failed to write file to disk',
+        8 => 'A PHP extension stopped the file upload',
+    );
+    
     /**
      * Create new upload category
      *
@@ -219,6 +229,7 @@ class pantheraUpload
      *
      * @param $_FILE['input_name'], category name = 'default'
      *
+     * @throws Exception
      * @author Damian Kęska
      * @author Mateusz Warzyński
      * @return string
@@ -227,13 +238,25 @@ class pantheraUpload
     public static function handleUpload($file, $category, $uploaderID, $uploaderLogin, $protected, $public, $mime='', $description='')
     {
         $panthera = pantheraCore::getInstance();
+        
+        if (!is_array($file))
+            throw new Exception('$file must be array type');
+        
+        if (intval($file['error']))
+        {
+            if (isset(static::$uploadErrors[$file['error']]))
+            {
+                throw new Exception(static::$uploadErrors[$file['error']]);
+            }
+        }
+        
 
         if ($file['size'] > $panthera -> config -> getKey('upload_max_size'))
             return False;
 
         if (filesize($file['tmp_name']) > $panthera -> config -> getKey('upload_max_size'))
         {
-            $panthera -> logging -> output('Upload_max_size reached, rejecting file', 'upload');
+            $panthera -> logging -> output('Upload_max_size reached, rejecting file', 'pantheraUpload');
             return False;
         }
 
@@ -253,8 +276,12 @@ class pantheraUpload
         $uploadDir = SITE_DIR. '/' .$panthera -> config -> getKey('upload_dir'). '/' .$category;
         
         if (!is_dir($uploadDir)) {
-            mkdir($uploadDir);         
+            mkdir($uploadDir);
+            chmod($uploadDir, 0700);
         }
+        
+        if (!is_writable($uploadDir))
+            throw new Exception($uploadDir. ' is not a writable directory');
 
         // if file name already exists find new unique name
         if (is_file($uploadDir. '/' .$name))
@@ -272,9 +299,9 @@ class pantheraUpload
             }
         }
 
-        $panthera -> logging -> output('Moving uploaded file from ' .$file['tmp_name']. ' to ' .$uploadDir. '/' .$name, 'upload');
+        $panthera -> logging -> output('Moving uploaded file from ' .$file['tmp_name']. ' to ' .$uploadDir. '/' .$name, 'pantheraUpload');
         rename($file['tmp_name'], $uploadDir. '/' .$name);
-        chmod($uploadDir. '/' .$name, 0655);
+        chmod($uploadDir. '/' .$name, 0700);
 
         if (is_file($uploadDir. '/' .$name))
         {
@@ -292,7 +319,7 @@ class pantheraUpload
 
             $type = filesystem::fileTypeByMime($mime);
 
-            $panthera -> logging -> output('upload.module::File type is "' .$type. '"');
+            $panthera -> logging -> output('upload.module::File type is "' .$type. '"', 'pantheraUpload');
 
             // try to create a thumbnail
             if ($type == 'image')
@@ -300,7 +327,7 @@ class pantheraUpload
                 $dir = SITE_DIR. '/' .$panthera -> config -> getKey('upload_dir'). '/_thumbnails';
                 $fileInfo = pathinfo($name);
 
-                $panthera -> logging -> output('Attempting to create a thumbnail - ' .$dir. '/200px_' .$fileInfo['filename']. '.jpg', 'upload');
+                $panthera -> logging -> output('Attempting to create a thumbnail - ' .$dir. '/200px_' .$fileInfo['filename']. '.jpg', 'pantheraUpload');
                 $simpleImage = new SimpleImage();
                 $simpleImage -> load($uploadDir. '/' .$name);
                 $simpleImage -> resizeToWidth(200); // resize to 100px width
@@ -312,8 +339,9 @@ class pantheraUpload
             
             return $panthera -> db -> sql -> lastInsertId();
             
-        } else
-            $panthera -> logging -> output('upload.module::Cannot save file "' .$name. '", directory "' .$uploadDir. '" is not writable');
+        } else {
+            $panthera -> logging -> output('Cannot save file "' .$name. '", to directory "' .$uploadDir. '", details: ' .json_encode($file), 'pantheraUpload');
+        }
 
         return False;
     }

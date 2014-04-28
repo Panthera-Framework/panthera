@@ -10,36 +10,6 @@
 if (!defined('IN_PANTHERA'))
     exit;
 
-$panthera = pantheraCore::getInstance();
-
-// load permissions domain
-$panthera -> locale -> loadDomain('permissions');
-  
-// cosmetics, so here are predefined permissions
-/*$panthera -> addPermission('can_see_users_table', localize('Can see other profiles (admin panel)', 'permissions'));
-$panthera -> addPermission('can_see_system_info', localize('Can view system informations (admin panel)', 'permissions'));
-$panthera -> addPermission('can_update_config_overlay', localize('Can change config overlay (admin panel)', 'permissions'));
-$panthera -> addPermission('can_update_locales', localize('Can manage system locales', 'permissions'));
-$panthera -> addPermission('can_update_config_overlay', localize('Can edit site configuration', 'permissions'));
-$panthera -> addPermission('can_see_system_info', localize('Can see system informations', 'permissions'));
-$panthera -> addPermission('can_see_debug', localize('Can view debugging informations', 'permissions'));
-$panthera -> addPermission('can_manage_debug', localize('Can manage debugger system', 'permissions'));
-$panthera -> addPermission('can_see_debhook', localize('Can view plugins debugger page', 'permissions'));
-$panthera -> addPermission('can_update_menus', localize('Can update menus', 'permissions'));
-$panthera -> addPermission('can_see_ajax_pages', localize('Can see index of all ajax pages', 'permissions'));
-$panthera -> addPermission('can_manage_all_uploads', localize('Can edit and delete existing uploads added by other users', 'permissions'));
-$panthera -> addPermission('can_delete_own_uploads', localize('Can delete own uploaded files', 'permissions'));
-$panthera -> addPermission('can_upload_files', localize('Can upload files', 'permissions'));
-$panthera -> addPermission('can_view_qmsg', localize('Can view quick messages', 'permissions'));
-$panthera -> addPermission('can_qmsg_manage_all', localize('Can manage all quickMessages elements', 'permissions'));
-$panthera -> addPermission('can_access_pa', localize('Can login to admin panel', 'permissions'));
-$panthera -> addPermission('can_see_dash', localize('Can see dash', 'permissions'));
-$panthera -> addPermission('can_access_pa', localize('Can access admin panel', 'permissions'));
-$panthera -> addPermission('admin', localize('Administrator priviledges', 'permissions'));
-$panthera -> addPermission('superuser', localize('Superuser priviledges', 'permissions'));*/
-
-// TODO: Support for loading permissions from database (for plugins etc.) with cache support
-  
 class meta
 {
     /**
@@ -53,26 +23,57 @@ class meta
 
     public static function getUsers($tag, $group=False, $value=False)
     {
-        $panthera = pantheraCore::getInstance();
-
         $type = 'u';
 
-        if ($group == True)
+        if ($group)
             $type = 'g';
+        
+        return static::getTags($tag, $group, $value);
+    }
+    
+    /**
+     * Fetch tags by $tag, $type, $value or $user. Leave none or false to skip filter.
+     * 
+     * @param string $tag (Optional) Tag name to search
+     * @param string $type (Optional) Type name eg. "g" for groups, "u" for users
+     * @param string $value (Optional) Value
+     * @param string $user (Optional) User ID owning selected tag
+     * @return array
+     */
+    
+    public static function getTags($tag=False, $type=False, $value=False, $user=False, $detailed=False)
+    {
+        $panthera = pantheraCore::getInstance();
 
-        if (is_bool($value))
-        {
-            $SQL = $panthera -> db -> query ('SELECT `userid`, `value` FROM `{$db_prefix}metas` WHERE `name` = :metaname AND `type` = :type', array('metaname' => $tag, 
-                                                                                                                                                    'type' => $type));
-        } else {
-            $SQL = $panthera -> db -> query ('SELECT `userid`, `value` FROM `{$db_prefix}metas` WHERE `name` = :metaname AND `type` = :type AND `value` = :value', array('metaname' => $tag, 
-                                                                                                                                                                         'type' => $type, 
-                                                                                                                                                                         'value' => serialize($value)));
-        }
+        $w = new whereClause;
+        
+        if (is_string($tag))
+            $w -> add('', 'name', '=', $tag);
+        
+        if (is_string($type))
+            $w -> add('AND', 'type', '=', $type);
+        
+        if (is_string($value))
+            $w -> add('AND', 'value', '=', serialize($value));
+        
+        if (is_string($user))
+            $w -> add('AND', 'userid', '=', $user);
+        
+        $wc = $w -> show();
+
+        $SQL = $panthera -> db -> query ('SELECT * FROM `{$db_prefix}metas` WHERE ' .$wc[0], $wc[1]);
 
         if ($SQL -> rowCount() > 0)
         {
             $array = $SQL -> fetchAll(PDO::FETCH_ASSOC);
+            
+            if ($detailed)
+            {
+                foreach ($array as $k => &$v)
+                    $v['value'] = unserialize($v['value']);
+                
+                return $array;
+            }
             
             $results = array();
             
