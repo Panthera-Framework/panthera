@@ -20,6 +20,7 @@ class pantheraDB extends pantheraClass
     protected $deepCount=0;
     protected $missing = array();
     protected $config;
+    protected $lastQuery = '';
     
     /**
       * Prepare database connection
@@ -187,6 +188,7 @@ class pantheraDB extends pantheraClass
             $query = $this->translateToSQLite($query);
         }
         
+        $this -> lastQuery = array($query, $values);
         $this->panthera->logging->startTimer();
 
         // try to import missing tables if enabled
@@ -204,6 +206,8 @@ class pantheraDB extends pantheraClass
                     return False;
 
             } catch (PDOException $e) {
+                $this -> panthera -> logging -> output('Last database query: ' .json_encode($this->lastQuery), 'pantheraDB');
+                
                 if ($this->socketType == 'sqlite')
                 {
                     if (strpos($e->getMessage(), 'General error: 17') !== False and !$retry)
@@ -1051,6 +1055,7 @@ abstract class pantheraFetchDB
     protected $cacheID = "";
     protected $treeID = '';
     protected $treeParent = '';
+    protected $_removed = false;
     protected $_joinColumns = array(
         /*array('LEFT JOIN', 'groups', array('group_id' => 'primary_group'), array('name' => 'group'))*/
     );
@@ -1183,6 +1188,36 @@ abstract class pantheraFetchDB
             
         return $this->_data;
     }
+    
+    /**
+     * Remove self from database and cache
+     * 
+     * @return bool
+     */
+    
+    public function delete()
+    {
+        if (!$this->exists())
+            return false;
+        
+        $this -> panthera -> db -> query('DELETE FROM `{$db_prefix}' .$this->_tableName. '` WHERE `' .$this->_idColumn. '` = :idColumnValue LIMIT 1;', array('idColumnValue' => $this -> __get($this->_idColumn)));
+        $this -> clearCache();
+        $this -> _removed = true;
+        
+        return true;
+    }
+    
+    /**
+     * Perform a multi-row select on table that uses this class
+     * 
+     * @param whereClause|array $by
+     * @param int $limit Offset
+     * @param int $limitFrom Limit
+     * @param string $order Order by column
+     * @param string $direction ASC or DESC direction
+     * 
+     * @return array
+     */
     
     public static function fetchAll($by, $limit=0, $limitFrom=0, $order='id', $direction='DESC')
     {
@@ -1609,8 +1644,8 @@ abstract class pantheraFetchDB
       */
 
     public function save()
-    {
-        global $panthera;
+    {        
+        $panthera = pantheraCore::getInstance();
 
         if ($panthera == NuLL)
             $panthera = $this->panthera;
