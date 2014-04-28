@@ -84,7 +84,7 @@
                 <td>{$value.client_address}</td>
                 <td><small>{$value.time}</small><br>{$value.date}</td>
                 <td>{$value.http_method}</td>
-                <td><small><a href="{$value.referer}">{function="end(explode('/', $value.url_request))"}</a></small></td>
+                <td style="word-break: break-all;"><small><a href="{$value.url_request}" target="_blank">/{function="end(explode('/', $value.url_request))"}</a></small></td>
                 <td>{$value.status}</td>
                 <td><small>{$value.browser_headers}</small></td>
             </tr>

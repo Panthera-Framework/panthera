@@ -262,8 +262,8 @@ class debugAjaxControllerCore extends pageController
         
         $tools[] = array(
             'link' => '?display=accessparser&cat=admin',
-            'name' => localize('Log parser'),
-            'description' => localize('Shows parsed server log', 'debug'),
+            'name' => localize('Site traffic browser', 'accessparser'),
+            'description' => localize('Shows parsed server logs', 'accessparser'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/blank.png'
         );
         

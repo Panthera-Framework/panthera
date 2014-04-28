@@ -20,7 +20,7 @@
 class accessparserAjaxControllerCore extends pageController
 {
     protected $uiTitlebar = array(
-        'Autoloader cache'
+        'Site traffic browser', 'accessparser'
     );
     
     protected $requirements = array(
