@@ -90,7 +90,7 @@ class newsletterManagement
             'title' => trim($title),
             'users' => $users,
             'attributes' => serialize(array()),
-            'created' => '{$NOW()}',
+            'created' => DB_TIME_NOW,
             'default_type' => $type
         );
         

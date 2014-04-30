@@ -923,6 +923,11 @@ class pantheraCore
 
         $this -> logging -> output('Loading configuration', 'pantheraCore');
         $c = _PANTHERA_CORE_CONFIG_; $this->config = new $c($this, $config);
+        
+        // Panthera random SEED
+        define('PANTHERA_SEED', hash('md4', $config['session_key'].rand(99, 999)));
+        
+        // Panthera database wrapper
         $c = _PANTHERA_CORE_DB_; $this->db = new $c($this);
         $this->config->loadOverlay();
         

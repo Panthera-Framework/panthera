@@ -122,7 +122,7 @@ class editorDraft extends pantheraFetchDB
             'directory' => 'newsletter',
             'author_id' => $user,
             'content' => $content,
-            'date' => '{$NOW()}',
+            'date' => DB_TIME_NOW,
             'textid' => $contentHash
         );
         

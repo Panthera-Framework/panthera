@@ -4,7 +4,7 @@
   * @package Panthera\core\database
   * @author Damian Kęska
   */
-
+  
 /**
   * Panthera Database class
   *
@@ -96,6 +96,19 @@ class pantheraDB extends pantheraClass
             else
                 throw new Exception($e->getMessage());
         }
+        
+        $this -> defineConstants();
+    }
+
+    /**
+     * Define system wide constants
+     * 
+     * @return null
+     */
+
+    protected function defineConstants()
+    {
+        define('DB_TIME_NOW', PANTHERA_SEED. '.DB.NOW()');
     }
     
     /**
@@ -483,7 +496,7 @@ class pantheraDB extends pantheraClass
             if(is_numeric($field))
                 continue;
 
-            if (strtolower($value) == "now()")
+            if ($value === DB_TIME_NOW)
             {
                 $set .= "`".$field."` = NOW()".$sep;        
             } else {
@@ -566,7 +579,7 @@ class pantheraDB extends pantheraClass
             {
                 $columns .= '`' .$key. '`, ';
                 
-                if ($value === '{$NOW()}')
+                if ($value === DB_TIME_NOW)
                 {
                     $dataRow .= 'NOW(), ';
                     unset($array[$key]);
@@ -603,9 +616,9 @@ class pantheraDB extends pantheraClass
                 
                 foreach ($row as $key => $value)
                 {
-                    if ($value === '{$NOW()}')
+                    if ($value === DB_TIME_NOW)
                     {
-                        $dataRow .= '{$NOW()}';
+                        $dataRow .= DB_TIME_NOW;
                     } else {
                         $dataRow .= ':' .$key. '_r' .$i. ', ';
                         $values[$key. '_r' .$i] = $value;

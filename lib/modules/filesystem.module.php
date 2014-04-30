@@ -212,6 +212,7 @@ class pantheraUpload
      * @param array $file Input file eg. $_FILES['file']
      * @param string $category (Optional) Check if uploaded file meets requirements of selected category
      * @param string|array $mimes Single mime as string or array of mimes (types also accepted @see filesystem::fileTypeByMime())
+     * @author Damian Kęska
      * @return int|bool Returns int on error with error code, true if everything is fine
      */
     
@@ -601,7 +602,6 @@ class filesystem
      * Get file basename
      *
      * @param string Path
-     * 
      * @author Damian Kęska
      * @return string
      */
@@ -616,7 +616,6 @@ class filesystem
      * Recognize mime type by file extension
      *
      * @param string $fileName, path to file
-     * 
      * @author Mateusz Warzyński
      * @return string|bool If something will went wrong the application/octet-stream will be returned. False is returned when file is not readable or does not exists
      */

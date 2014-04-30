@@ -597,7 +597,7 @@ function userCreateSession($user, $passwd, $forceWithoutPassword=False)
         {
             $panthera -> user = $usr;
             $panthera -> session -> uid = $usr->id;
-            $usr -> lastlogin = 'NOW()';
+            $usr -> lastlogin = DB_TIME_NOW;
             $usr -> lastip = $_SERVER['REMOTE_ADDR'];
             $usr -> save();
             return True;
@@ -609,7 +609,7 @@ function userCreateSession($user, $passwd, $forceWithoutPassword=False)
         if ($usr -> checkPassword($passwd)) {
             $panthera -> user = $usr;
             $panthera -> session -> uid = $usr->id;
-            $usr -> lastlogin = 'NOW()';
+            $usr -> lastlogin = DB_TIME_NOW;
             $usr -> lastip = $_SERVER['REMOTE_ADDR'];
             $usr -> save();
             return True;

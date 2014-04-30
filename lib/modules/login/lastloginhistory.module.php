@@ -70,7 +70,7 @@ class lastloginhistoryModule extends pageController
             'browser' => $this -> panthera -> session -> clientInfo -> browser,
             'retries' => $u -> attributes -> get('loginFailures'),
             'location' => $location,
-            'date' => '{$NOW()}',
+            'date' => DB_TIME_NOW,
         ));
     }
 }

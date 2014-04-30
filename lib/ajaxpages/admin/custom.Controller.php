@@ -104,7 +104,7 @@ class customAjaxControllerSystem extends pageController
         // last time modified by user...
         $cpage -> mod_author_name = $this -> panthera -> user -> getName();
         $cpage -> mod_author_id = $this -> panthera -> user -> id;
-        $cpage -> mod_time = 'NOW()';
+        $cpage -> mod_time = DB_TIME_NOW;
         $cpage -> html = $_POST['page_content_custom'];
         
         //$cpage -> url_id = seoUrl($cpage -> title);
@@ -253,7 +253,7 @@ class customAjaxControllerSystem extends pageController
                         $cpage -> meta_tags = $ppage->meta_tags;
                         $cpage -> mod_author_name = $this -> panthera -> user -> getName();
                         $cpage -> mod_author_id = $this -> panthera -> user -> id;
-                        $cpage -> mod_time = 'NOW()';
+                        $cpage -> mod_time = DB_TIME_NOW;
                     }
                     
                     $cpage = $this -> getFeature('custompages.editPage.createTranslation', $cpage);
