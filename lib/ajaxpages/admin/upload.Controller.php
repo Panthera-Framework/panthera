@@ -114,7 +114,7 @@ class uploadAjaxControllerCore extends pageController
         else
             $category = $_GET['directory'];
         
-        $countCategories = pantheraUpload::getUploadCategories('', False, False);
+        $countCategories = pantheraUpload::fetchAll('', False, False);
             
         if (!$countCategories) {
             // create important categories
@@ -127,7 +127,7 @@ class uploadAjaxControllerCore extends pageController
             }
         }
         
-        $categories = pantheraUpload::getUploadCategories('', $countCategories, 0);
+        $categories = pantheraUpload::fetchAll('', $countCategories, 0);
     
         foreach ($categories as $c)
             $categoryList[$c['name']] = True;
@@ -156,7 +156,7 @@ class uploadAjaxControllerCore extends pageController
             $by -> add( 'AND', 'uploader_login', '=', $this -> panthera -> user -> login);
         
         $page = intval(@$_GET['page']);
-        $count = pantheraUpload::getUploadedFiles($by, False);
+        $count = pantheraUpload::fetchAll($by, False);
     
         if ($page < 0)
             $page = 0;
@@ -190,7 +190,7 @@ class uploadAjaxControllerCore extends pageController
         else
             $viewChange = 'blank';
 
-        $files = pantheraUpload::getUploadedFiles($by, $limit[1], $limit[0]); // raw list
+        $files = pantheraUpload::fetchAll($by, $limit[1], $limit[0]); // raw list
         $filesTpl = array(); // list passed to template
     
         $manageAllUploads = $this->checkPermissions('can_manage_all_uploads');
@@ -297,12 +297,12 @@ class uploadAjaxControllerCore extends pageController
         else 
             $category = $_POST['input_category'];
         
-        $countCategories = pantheraUpload::getUploadCategories('', False, False);
+        $countCategories = pantheraUpload::fetchAll('', False, False);
         
         if (!$countCategories)
             ajax_exit(array('status' => 'failed', 'message' => localize('There is no created upload category!', 'upload')));
 
-        $categories = pantheraUpload::getUploadCategories('', $countCategories, 0);
+        $categories = pantheraUpload::fetchAll('', $countCategories, 0);
         
         foreach ($categories as $c)
             $categoryList[$c['name']] = True;
@@ -345,8 +345,8 @@ class uploadAjaxControllerCore extends pageController
     
     public function popupUploadFileWindowAction()
     {
-        $countCategories = pantheraUpload::getUploadCategories('', False, False);
-        $categories = pantheraUpload::getUploadCategories('', $countCategories, 0);
+        $countCategories = pantheraUpload::fetchAll('', False, False);
+        $categories = pantheraUpload::fetchAll('', $countCategories, 0);
         
         if (isset($_GET['directory']))
             $category = $_GET['directory'];
@@ -434,8 +434,8 @@ class uploadAjaxControllerCore extends pageController
         
         $this -> panthera -> template -> push('fileMaxSize', $this->panthera->config->getKey('upload_max_size'));
         
-        $countCategories = pantheraUpload::getUploadCategories('', False, False);
-        $categories = pantheraUpload::getUploadCategories('', $countCategories, 0);
+        $countCategories = pantheraUpload::fetchAll('', False, False);
+        $categories = pantheraUpload::fetchAll('', $countCategories, 0);
         $this -> panthera -> template -> push('categories', $categories);
         
         $titlebar = new uiTitlebar(localize('Upload management'));

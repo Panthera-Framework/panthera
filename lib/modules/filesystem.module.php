@@ -146,6 +146,7 @@ class pantheraUpload
         6 => 'Missing a temporary folder',
         7 => 'Failed to write file to disk',
         8 => 'A PHP extension stopped the file upload',
+        101 => 'Mime type mismatch',
     );
     
     /**
@@ -205,22 +206,63 @@ class pantheraUpload
     }
 
     /**
-      * Get upload categories from database
-      *
-      * @param mixed $by Array of values or nothing '' to just match all records
-      * @param int $limit Query limit
-      * @param int $limitFrom Offset to start from
-      * @param string $orderBy Column to sort by
-      * @param string $direction Sort ascending or descending
-      *
-      * @author Mateusz Warzyński
-      * @return array 
-      */
-
-    public static function getUploadCategories($by='', $limit=0, $limitFrom=0, $orderBy='id', $direction='ASC')
+     * Pre-validate uploaded file to temporary directory before moving
+     * Warning: returns int on fail and bool on success. Remember to compare the type eg. if (pantheraUpload::validate(...) !== True) { failed; }
+     * 
+     * @param array $file Input file eg. $_FILES['file']
+     * @param string $category (Optional) Check if uploaded file meets requirements of selected category
+     * @param string|array $mimes Single mime as string or array of mimes (types also accepted @see filesystem::fileTypeByMime())
+     * @return int|bool Returns int on error with error code, true if everything is fine
+     */
+    
+    public static function validate($file, $category=null, $mimes=null)
     {
-          $panthera = pantheraCore::getInstance();
-          return $panthera->db->getRows('upload_categories', $by, $limit, $limitFrom, '', $orderBy, $direction);
+        if ($file['error'])
+            return $file['error'];
+        
+        if (is_string($mimes))
+            $mimes = array($mimes);
+        elseif ($mimes === null)
+            $mimes = array();
+        
+        // get mime types from category
+        if ($category)
+        {
+            $obj = new uploadCategory('name', $category);
+            $obj -> mime_type = 'image/png, image/jpeg';
+            
+            if ($obj -> exists())
+            {
+                if ($obj -> mime_type and $obj -> mime_type != 'all')
+                    $mimes = array_merge($mimes, explode(',', str_replace(' ', '', $obj -> mime_type)));
+            }
+        }
+        
+        if ($mimes)
+        {
+            $fileMime = filesystem::getFileMimeType($file['tmp_name']);
+            $typeMime = filesystem::fileTypeByMime($fileMime); // allow expressions like "document", "audio", "video", "binary"
+           
+            if (!in_array($fileMime, $mimes) and !in_array($typeMime, $mimes))
+            {
+                return 101; // mime mismatch code
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Get upload error message (English)
+     * 
+     * @param int $code Numeric code received from any validating function
+     * @return string|null Returns english message
+     */
+
+    public static function getErrorMessage($code)
+    {
+        if (isset(self::$uploadErrors[$code]))
+            return self::$uploadErrors[$code];
     }
 
 
@@ -235,21 +277,26 @@ class pantheraUpload
      * @return string
      */
 
-    public static function handleUpload($file, $category, $uploaderID, $uploaderLogin, $protected, $public, $mime='', $description='')
+    public static function handleUpload($file, $category, $uploaderID, $uploaderLogin, $protected, $public, $mime=null, $description='')
     {
         $panthera = pantheraCore::getInstance();
         
         if (!is_array($file))
             throw new Exception('$file must be array type');
         
+        $validation = self::validate($file, $category, $mime);
+        
+        if ($validation !== true)
+            throw new Exception(self::getErrorMessage($validation), $validation);
+        
+        /*
         if (intval($file['error']))
         {
             if (isset(static::$uploadErrors[$file['error']]))
             {
                 throw new Exception(static::$uploadErrors[$file['error']]);
             }
-        }
-        
+        }*/
 
         if ($file['size'] > $panthera -> config -> getKey('upload_max_size'))
             return False;
@@ -260,7 +307,7 @@ class pantheraUpload
             return False;
         }
 
-        if ($mime == '')
+        if (!$mime)
             $mime = filesystem::getFileMimeType($file['tmp_name']);
         
         $name = $file['name'];
@@ -388,25 +435,6 @@ class pantheraUpload
         return array('mime' => str_ireplace('data:', '', $tmp[0]), 'content' => $data);
     }
 
-    /**
-      * Search for uploaded files in database
-      *
-      * @param mixed $by Array of values or nothing '' to just match all records
-      * @param int $limit Query limit
-      * @param int $limitFrom Offset to start from
-      * @param string $orderBy Column to sort by
-      * @param string $inc Sort ascending or descending
-      *
-      * @author Damian Kęska
-      * @return array 
-      */
-
-    public static function getUploadedFiles($by='', $limit=0, $limitFrom=0, $orderBy='id', $inc='DESC')
-    {
-          $panthera = pantheraCore::getInstance();
-          return $panthera -> db -> getRows('uploads', $by, $limit, $limitFrom, 'uploadedFile', $orderBy, $inc);
-    }
-    
      /**
       * Delete a file
       *
@@ -590,11 +618,14 @@ class filesystem
      * @param string $fileName, path to file
      * 
      * @author Mateusz Warzyński
-     * @return string
+     * @return string|bool If something will went wrong the application/octet-stream will be returned. False is returned when file is not readable or does not exists
      */
 
     public static function getFileMimeType($fileName)
     {
+        if (!is_file($fileName) or !is_readable($fileName))
+            return false;
+        
         // use finfo to detect mime type
         $finfo = finfo_open(FILEINFO_MIME);
         $mimetype = finfo_file($finfo, $fileName);
@@ -602,6 +633,9 @@ class filesystem
         
         // close finfo resource 
         finfo_close($finfo);
+        
+        if (!$mimetype or !$mimetype[0])
+            return 'application/octet-stream';
         
         return $mimetype[0];
     }
@@ -653,33 +687,38 @@ class filesystem
      * @param string $mime Input mime type
      * 
      * @author Damian Kęska
-     * @return string
+     * @return string binary, archive, document, script, audio, image, video. If not identified returns binary.
      */
 
     public static function fileTypeByMime($mime)
     {
-        $mimes = array();
-        $mimes['application/pdf'] = 'pdf';
-        $mimes['application/octet-stream'] = 'binary';
-        $mimes['application/x-gzip'] = 'archive';
-        $mimes['application/x-gtar'] = 'archive';
-        $mimes['application/x-tar'] = 'archive';
-        $mimes['application/zip'] = 'archive';
-        $mimes['application/x-compress'] = 'archive';
-        $mimes['application/x-compressed'] = 'archive';
-        $mimes['application/x-javascript'] = 'script';
-        $mimes['application/x-msaccess'] = 'document';
-        $mimes['application/msword'] = 'word';
-        $mimes['application/vnd.ms-powerpoint'] = 'powerpoint';
-        $mimes['application/x-latex'] = 'document';
-        $mimes['application/x-sh'] = 'script';
-        $mimes['text/html'] = 'script';
-        $mimes['text/css'] = 'document';
+        $mimes = array(
+            'application/pdf' => 'document',
+            'application/octet-stream' => 'binary',
+            'application/x-gzip' => 'archive',
+            'application/x-gtar' => 'archive',
+            'application/x-tar' => 'archive',
+            'application/zip' => 'archive',
+            'application/x-compress' => 'archive',
+            'application/x-compressed' => 'archive',
+            'application/x-javascript' => 'script',
+            'application/x-msaccess' => 'document',
+            'application/msword' => 'document',
+            'application/vnd.ms-powerpoint' => 'document',
+            'application/x-latex' => 'document',
+            'application/x-sh' => 'script',
+            'text/html' => 'script',
+            'text/css' => 'document',
+        );
 
-        if (array_key_exists($mime, $mimes))
+        if (isset($mimes[$mime]))
             return $mimes[$mime];
 
-        $knownExp = array('audio', 'image', 'video');
+        $knownExp = array(
+            'audio',
+            'image',
+            'video',
+        );
 
         $exp = explode('/', $mime);
 

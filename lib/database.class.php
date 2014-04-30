@@ -633,14 +633,15 @@ class pantheraDB extends pantheraClass
      * @param string $table Table name
      * @param array $array Input array containing keys and values eg. array('id' => 1, 'title' => 'Test'), and for multiple rows: array(array('id' => 1, 'title' => 'First'), array('id' => 2, 'title' => 'Second'))
      * @param bool $multipleRows If $array contains multiple rows please set it to true
-     * @return PDOStatement
+     * @return int
      * @author Damian Kęska
      */
 
     public function insert($table, $array, $multipleRows=False)
     {
         $str = $this -> buildInsertString($array, $multipleRows, $table);
-        return $this -> query ($str['query'], $str['values']);
+        $this -> query ($str['query'], $str['values']);
+        return $this -> sql -> lastInsertId();
     }
     
     /**
