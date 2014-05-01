@@ -1077,6 +1077,8 @@ abstract class pantheraFetchDB
         'joinColumns' => '',
         'joinQuery' => '',
     );
+    protected $_viewPermission = null; // used by userFetchAll() eg. "upload.view.{$var}" where {$var} => object's value of $__viewPermissionColumn attribute ($this->__get($this->__viewPermissionColumn))
+    protected $__viewPermissionColumn = null; // used by userFetchAll() eg. "id"
     
     /**
      * Get class inforamtions (used db table, columns)
@@ -1095,6 +1097,19 @@ abstract class pantheraFetchDB
             'treeID' => $this->treeID,
             'treeParent' => $this->treeParent,
         );
+    }
+    
+    /**
+     * Static version of _getClassInfo() function
+     * 
+     * @return array
+     */
+    
+    public static function _getClassInfoStatic()
+    {
+        $c = get_called_class();
+        $obj = new $c(null, null);
+        return $obj->_getClassInfo();
     }
     
     /**
@@ -1237,14 +1252,59 @@ abstract class pantheraFetchDB
     {
         global $panthera;
         
-        $c = get_called_class();
-        $obj = new $c(null, null);
-        $info = $obj->_getClassInfo();
+        $info = static::_getClassInfoStatic();
         
         if ($order == 'id' and $info['idColumn'])
             $order = $info['idColumn'];
         
-        return $panthera->db->getRows($info['tableName'], $by, $limit, $limitFrom, $obj, $order, $direction);
+        return $panthera->db->getRows($info['tableName'], $by, $limit, $limitFrom, get_called_class(), $order, $direction);
+    }
+    
+    /*
+     * Similar to fetchAll() but is also filtering for user permissions
+     * 
+     * @param whereClause|array $by
+     * @param int $limit Offset
+     * @param int $limitFrom Limit
+     * @param string $order Order by column
+     * @param string $direction ASC or DESC direction
+     * @param string|int|pantheraUser $user User to check permissions for
+     * @return array
+     */
+    
+    public static function userFetchAll($by, $limit=0, $limitFrom=0, $order='id', $direction='DESC', $user=null)
+    {
+        $items = static::fetchAll($by, $limit, $limitFrom, $order, $direction);
+        $reordered = array();
+        
+        if (!$user)
+            $user = pantheraCore::getInstance() -> user;
+        
+        if (!is_object($user))
+            $user = pantheraUser::autoConstruct($user);
+        
+        // get class informations from object
+        $info = static::_getClassInfoStatic();
+        
+        if (!$info['_viewPermissionColumn'] or !$info['_viewPermission'])
+            throw new Exception('In order to use pantheraFetchDB::userFetchAll() function you have to set _viewPermission and _viewPermissionColumn variables', 331);
+            
+        // remove items user don't have access to
+        foreach ($items as &$item)
+        {
+            // generate permission name with inserted variable
+            $permissionName = str_replace('{$var}', $item -> __get($info['_viewPermissionColumn']), $info['_viewPermission']);
+            
+            if (!getUserRightAttribute($user, $permissionName))
+            {
+                unset($item);
+                continue;
+            }
+            
+            $reordered[$item->name] = $item;
+        }
+        
+        return $reordered;
     }
 
     /**
@@ -1310,9 +1370,7 @@ abstract class pantheraFetchDB
 
     public static function fetchTree()
     {
-        $c = get_called_class();
-        $obj = new $c(null, null);
-        $info = $obj->_getClassInfo();
+        $info = static::_getClassInfoStatic();
         
         if (!$info['treeID'] or !$info['treeParent'])
             return FALSE;
