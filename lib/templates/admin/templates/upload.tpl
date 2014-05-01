@@ -65,13 +65,21 @@ function saveSettings()
         
         <tbody>
           <tr>
-            <th>{function="localize('Name', 'upload')"}:</th>
-            <th><input type="text" name="name" style="width: 95%;"></th>
+            <th>{function="localize('Title', 'upload')"}:</th>
+            <th><input type="text" name="title" style="width: 95%;"></th>
           </tr>
           
           <tr>
-            <th>{function="localize('Mime', 'upload')"}:</th>
+            <th>
+            	{function="localize('Mime', 'upload')"}:<br>
+            	<small>({function="localize('Comma separated eg. document, audio, video, archive, application/pdf, binary, image/jpeg, image/png', 'upload')"})</small>
+            </th>
             <th><input type="text" name="mime" value="all" style="width: 95%;"></th>
+          </tr>
+          
+          <tr>
+            <th>{function="localize('Upload maximum size', 'upload')"}:<br><small>{function="localize('Set maximum size of uploaded files (eg. 2 mb, 1 gb, 100 kilobytes)', 'upload')"}.</small></th>
+            <th><input type="text" name="maxfilesize" value="2 mb" style="width: 95%;"></th>
           </tr>
         </tbody>
         
@@ -111,6 +119,7 @@ function saveSettings()
                 <th>{function="localize('Name', 'upload')"}</th>
                 <th>{function="localize('Created', 'upload')"}</th>
                 <th>{function="localize('Mime', 'upload')"}</th>
+                <th>{function="localize('Max file size', 'upload')"}</th>
                 <th>{function="localize('Options', 'upload')"}</th>
             </tr>
         </thead>
@@ -119,11 +128,12 @@ function saveSettings()
            {if="count($categories) > 1"}
             {loop="$categories"}
             <tr> 
-                <td><a href="#" onclick="panthera.popup.toggle('_ajax.php?display=upload&cat=admin&directory={$value.name}&popup=true');">{$value.name}</a></td>
-                <td>{$value.created}</td>
-                <td>{$value.mime_type}</td>
+                <td><a href="#" onclick="panthera.popup.toggle('_ajax.php?display=upload&cat=admin&directory={$value->name}&popup=true');">{$value->getName()}</a></td>
+                <td>{$value->created}</td>
+                <td>{$value->mime_type}</td>
+                <td>{if="$value->getMaxFilesize()"}{$value->getMaxFilesize(true)}{else}{function="localize('Unlimited', 'upload')"}{/if}</td>
                 <td>
-                    <a href="#" onclick="removeUploadCategory('{$value.id}');">
+                    <a href="#" onclick="removeUploadCategory('{$value->id}');">
                         <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" title="Remove">
                     </a>
                 </td>
@@ -149,10 +159,10 @@ function saveSettings()
                 <td valign="top">
                     <p>{function="localize('Upload maximum size', 'upload')"}:
                   <br>
-                    <small><span style="color: grey;">{function="localize('Set maximum size of uploaded files (in bytes)', 'upload')"}.</span></small>
+                    <small><span style="color: grey;">{function="localize('Set maximum size of uploaded files (eg. 2 mb, 1 gb, 100 kilobytes)', 'upload')"}.</span></small>
                     </p>
                 </td>
-                <td><input type="number" id="maxFileSize" value="{$fileMaxSize}" style="width: 95%;" onchange="$('#saveButton').slideDown();"></td>
+                <td><input type="text" id="maxFileSize" value="{$fileMaxSize}" style="width: 95%;" onchange="$('#saveButton').slideDown();"></td>
             </tr>
             <tr id="saveButton" style="display: none;"><td colspan="2"><input type="button" value="Save" onclick="saveSettings();" style="float: right;"></td></tr>
         </tbody>

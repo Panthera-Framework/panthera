@@ -267,7 +267,7 @@ class pantheraUpload
      * @return string
      */
      
-    public static function createUploadCategory($name, $author_id, $mimeType)
+    public static function createUploadCategory($name=null, $author_id='', $mimeType='', $title='', $maxFileSize=0)
     {
         $panthera = pantheraCore::getInstance();
         
@@ -282,15 +282,19 @@ class pantheraUpload
             return False;
         }
         
-        if (strlen($name) < 2) {
+        if (!is_numeric($maxFileSize))
             return False;
-        }
         
-        $values = array('name' => $name, 'author_id' => $author_id, 'mime_type' => $mimeType);
+        if (!$name)
+            $name = seoUrl($title). '-' .substr(md5(time().rand(999,9999)), 0, 4);
         
-        $panthera -> db -> query('INSERT INTO `{$db_prefix}upload_categories` (`id`, `name`, `author_id`, `created`, `modified`, `mime_type`) VALUES (NULL, :name, :author_id, NOW(), NOW(), :mime_type);', $values);
-        
-        return $panthera -> db -> sql -> lastInsertId();   
+        return $panthera -> db -> insert('upload_categories', array(
+            'name' => $name,
+            'title' => $title,
+            'author_id' => $author_id,
+            'mime_type' => $mimeType,
+            'maxfilesize' => $maxFileSize,
+        ));
     }
 
     /**
@@ -664,7 +668,7 @@ class filesystem
     }
     
     /**
-     * Convert size like "2M" to bytes
+     * Convert size like "2M", "5 mb", "100 kilobytes" to bytes
      * 
      * @param string $val Input string
      * @return int
@@ -672,20 +676,28 @@ class filesystem
     
     public static function sizeToBytes($val)
     {
-        $val = trim($val);
-        $last = strtolower($val[strlen($val)-1]);
+        $val = str_replace(',', '.', $val); // replace all commas to dots
+        preg_match_all('/([0-9\.]+)/', $val, $_matches, PREG_SET_ORDER);
         
-        switch($last) {
-            // The 'G' modifier is available since PHP 5.1.0
-            case 'g':
-                $val *= 1024;
-            case 'm':
-                $val *= 1024;
-            case 'k':
-                $val *= 1024;
+        if ($_matches)
+        {
+            $size = floatval($_matches[0][1]);
+            $unit = str_replace($_matches[0][1], '', $val); // replace 0-9
+            $unit = strtolower(trim($unit)); // remove whitespaces and make characters lowercase
+            
+            if ($unit == 'g' or $unit == 'gb' or $unit == 'gbytes' or $unit == 'gigabytes')
+                $size *= 1024 * 1024 * 1024;
+            elseif ($unit == 'm' or $unit == 'mb' or $unit == 'mbytes' or $unit == 'megabytes')
+                $size *= 1024 * 1024;
+            elseif ($unit == 'k' or $unit == 'kb' or $unit == 'kbytes' or $unit == 'kilobytes')
+                $size *= 1024;
+            else
+                return false;
+            
+            return $size; // size in bytes
         }
-    
-        return $val;
+        
+        return false;
     }
     
     /**

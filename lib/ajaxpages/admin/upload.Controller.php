@@ -17,7 +17,9 @@ class uploadAjaxControllerCore extends pageController
         'admin/ui.pager',
     );
     
-    protected $uiTitlebar = array();
+    protected $uiTitlebar = array(
+        'Upload management', 'upload',
+    );
     
     protected $permissions = '';
         
@@ -40,7 +42,7 @@ class uploadAjaxControllerCore extends pageController
     
     public function saveSettingsAction()
     {       
-        $max = $_GET['maxFileSize'];
+        $max = filesystem::sizeToBytes($_GET['maxFileSize']);
         
         if (!intval($max))
             ajax_exit(array(
@@ -90,20 +92,25 @@ class uploadAjaxControllerCore extends pageController
     
     public function addCategoryAction()
     {
-        if (!strlen($_POST['name']))
+        if (!strlen($_POST['title']))
             ajax_exit(array(
                 'status' => 'failed',
-                'message' => localize('Name cannot be empty', 'upload'),
+                'message' => localize('Category title cannot be empty', 'upload'),
+            ));
+            
+        if (intval($_POST['maxfilesize']) !== 0 and !filesystem::sizeToBytes($_POST['maxfilesize']))
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => localize('Invalid max filesize', 'upload'),
             ));
         
         if (!strlen($_POST['mime']))
-            ajax_exit(array(
-                'status' => 'failed',
-                'message' => localize('Mime cannot be empty', 'upload'),
-            ));
+            $_POST['mime'] = 'all';
+        
+        $name = seoUrl($_POST['title']). '-' .substr(md5(time().rand(999,9999)), 0, 4);
         
         // create upload directory and send success if created
-        if (pantheraUpload::createUploadCategory($_POST['name'], $this->panthera->user->id, $_POST['mime']))
+        if (pantheraUpload::createUploadCategory($name, $this->panthera->user->id, $_POST['mime'], $_POST['title'], filesystem::sizeToBytes($_POST['maxfilesize'])))
             ajax_exit(array(
                 'status' => 'success',
             ));
@@ -484,6 +491,18 @@ class uploadAjaxControllerCore extends pageController
         // send permissions data to template
         // $this -> panthera -> template -> push ('permissions', $this->userPermissions);
         
+        // upload management can be only done by site administrator
+        $this -> checkPermissions(array(
+            'admin.upload' => array('Upload administrator', 'upload'),
+            'admin.upload.addcategory' => array('Upload - adding categories', 'upload'),
+            'admin.upload.deletecategory' => array('Upload - deleting categories', 'upload'),
+        ));
+        
+        // just add to list
+        $this -> checkPermissions(array(
+            'admin.upload.insertfile' => array('Upload - uploading files to all categories', 'upload'),
+        ), true);
+        
         // initialize searchBar
         $searchBar = new uiSearchbar('uiTop');
         $searchBar -> setQuery($_GET['query']);
@@ -491,14 +510,21 @@ class uploadAjaxControllerCore extends pageController
         $searchBar -> navigate(True);
         $searchBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_upload,can_add_files', localize('Manage permissions'));
         
-        $this -> panthera -> template -> push('fileMaxSize', $this -> panthera -> config -> getKey('upload.maxsize', 3145728, 'int', 'upload'));
+        $categories = uploadCategory::fetchAll();
         
-        $countCategories = pantheraUpload::fetchAll('', False, False);
-        $categories = pantheraUpload::fetchAll('', $countCategories, 0);
-        $this -> panthera -> template -> push('categories', $categories);
+        foreach ($categories as &$category)
+        {
+            $this -> checkPermissions(array(
+                'upload.view.' .$category->name => slocalize('%s - view', 'upload', $category -> getName()),
+                'upload.manage.' .$category->name => slocalize('%s - manage', 'upload', $category -> getName()),
+                'upload.upload.' .$category->name => slocalize('%s - upload', 'upload', $category -> getName()),
+            ));
+        }
         
-        $titlebar = new uiTitlebar(localize('Upload management'));
-        
+        $this -> panthera -> template -> push(array(
+            'fileMaxSize' => filesystem::bytesToSize($this -> panthera -> config -> getKey('upload.maxsize', 3145728, 'int', 'upload')),
+            'categories' => $categories
+        ));
         $this -> panthera -> template -> display('upload.tpl');
         pa_exit();
     }
