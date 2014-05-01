@@ -5,7 +5,7 @@ if (!defined('IN_PANTHERA'))
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Error - developer informations</title>
+        <title>Error (500)</title>
         <meta charset="utf-8">
         <META NAME="ROBOTS" CONTENT="NOINDEX">
         <script type="text/javascript" src="{$PANTHERA_URL}/js/panthera.js"></script>

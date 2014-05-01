@@ -1034,6 +1034,24 @@ class pantheraCore
     }
     
     /**
+     * Raise an error eg. notfound
+     * 
+     * @param string $name Error template name eg. notfound, forbidden
+     * @return null
+     */
+    
+    public static function raiseError($name)
+    {
+        $file = getContentDir('templates/' .$name. '.php');
+        
+        if (is_file($file))
+        {
+            include $file;
+            exit;
+        }
+    }
+    
+    /**
       * Get cache time for selected object type
       *
       * @param string $cacheObjectType

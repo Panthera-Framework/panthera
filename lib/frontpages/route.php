@@ -89,4 +89,4 @@ if ($match)
 }
 
 //throw new Exception('aaa');
-pa_redirect($panthera -> config -> getKey('err404.url', '?404', 'string', 'errors'));
+pantheraCore::raiseError('notfound');

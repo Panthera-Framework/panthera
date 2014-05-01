@@ -5,7 +5,7 @@ if (!defined('IN_PANTHERA'))
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Error (500)</title>
+        <title>Error (404)</title>
         <meta charset="utf-8">
         <META NAME="ROBOTS" CONTENT="NOINDEX">
         <script type="text/javascript" src="{$PANTHERA_URL}/js/panthera.js"></script>
@@ -14,10 +14,11 @@ if (!defined('IN_PANTHERA'))
 
     <body>
         <div id="summary">
-            <h1>Service unavaliable, we are sorry (500)</h1>
+            <h1>Not found</h1>
             
             <ol id="summaryDetails">
-                <li>Our service is currently unavaliable, please try again later.<br/>This error has been automatically reported to site administrators.</li>
+                <li>Requested document cannot be found on our servers.</li>
+                <li>If you found a broken link on this page please report it to site administrator.</li>
             </ol>
         </div>
     </body>

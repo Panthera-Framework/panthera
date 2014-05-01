@@ -37,6 +37,10 @@ $display = str_replace('/', '', addslashes($_GET[$displayVar]));
 $template -> setTemplate($panthera->config->getKey('template'));
 $path = False;
 
+// default page if empty
+if (!$display)
+    $display = 'index';
+
 if (!defined('PAGES_DISABLE_LIB') and !$panthera -> config -> getKey('front.index.disablelib', 0, 'bool', 'frontindex'))
 {
     $path = getContentDir('/pages/' .$display. '.Controller.php'); if (!$path) { $path = getContentDir('/pages/' .$display. '.php'); }
@@ -67,10 +71,7 @@ if ($path)
     
     pa_exit();
 } else {
-    define('SITE_ERROR', 404);
-    
-    if (is_file(SITE_DIR. '/content/pages/index.php'))
-        include(SITE_DIR. '/content/pages/index.php');
+    pantheraCore::raiseError('notfound');
 }
 
 $template -> display();

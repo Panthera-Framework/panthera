@@ -66,6 +66,14 @@ class errorpagesAjaxControllerCore extends pageController
                 $e = new Exception("SQLSTATE[42000] [1044] Access denied for user '****'@'****' to database '****'");
                 $this -> panthera -> db -> _triggerErrorPage($e);
             break;
+            
+            case 'notfound':
+                pantheraCore::raiseError('notfound');
+            break;
+            
+            case 'forbidden':
+                pantheraCore::raiseError('forbidden');
+            break;
         }
     }
 
@@ -122,7 +130,7 @@ class errorpagesAjaxControllerCore extends pageController
         // TODO: Implement 404 error pages
         $pages['notfound'] = array(
             'name' => 'Not found (404)',
-            'file' => '/content/templates/notfound.php',
+            'file' => getContentDir('/templates/notfound.php'),
             'testname' => 'notfound',
             'notice' => !(bool)getErrorPageFile('notfound'),
             'visibility' => localize("Public")
@@ -131,7 +139,7 @@ class errorpagesAjaxControllerCore extends pageController
         // TODO: Implement 403 forbidden pages
         $pages['access'] = array(
             'name' => 'Forbidden (403)',
-            'file' => '/content/templates/forbidden.php',
+            'file' => getContentDir('/templates/forbidden.php'),
             'testname' => 'forbidden',
             'notice' => !(bool)getErrorPageFile('forbidden'),
             'visibility' => localize("Public")
