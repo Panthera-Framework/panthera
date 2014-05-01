@@ -1107,6 +1107,8 @@ abstract class pantheraFetchDB
             'tableName' => $this->_tableName,
             'treeID' => $this->treeID,
             'treeParent' => $this->treeParent,
+            '_viewPermission' => $this -> _viewPermission,
+            '_viewPermissionColumn' => $this -> _viewPermissionColumn,
         );
     }
     
