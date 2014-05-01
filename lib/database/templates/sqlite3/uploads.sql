@@ -10,5 +10,7 @@ CREATE TABLE "{$db_prefix}uploads" (
   "uploader_id" INTEGER NOT NULL,
   "uploader_login" TEXT NOT NULL,
   "protected" INTEGER NOT NULL DEFAULT '0',
-  "public" INTEGER NOT NULL DEFAULT '1'
+  "public" INTEGER NOT NULL DEFAULT '1',
+  "title" TEXT NOT NULL,
+  "maxfilesize" INTEGER NOT NULL,
 );

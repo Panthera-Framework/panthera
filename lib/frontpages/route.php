@@ -88,5 +88,4 @@ if ($match)
     pa_exit();
 }
 
-//throw new Exception('aaa');
 pantheraCore::raiseError('notfound');

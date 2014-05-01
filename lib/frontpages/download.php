@@ -60,7 +60,7 @@ class downloadControllerSystem extends pageController
     
     public function noAccess()
     {
-        $this -> panthera -> raiseError('notfound');
+        pantheraCore::raiseError('notfound');
         exit;
     }
 }
