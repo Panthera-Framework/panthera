@@ -1315,7 +1315,7 @@ abstract class pantheraFetchDB
                 continue;
             }
             
-            $reordered[$item->name] = $item;
+            $reordered[$item->__get($info['_viewPermissionColumn'])] = $item;
         }
         
         return $reordered;

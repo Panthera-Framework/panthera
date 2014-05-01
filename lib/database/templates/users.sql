@@ -16,5 +16,5 @@ CREATE TABLE `{$db_prefix}users` (
   `lastip` varchar(16) NOT NULL COMMENT 'Last IP address used by user when logging in',
   PRIMARY KEY (`id`),
   UNIQUE KEY `login` (`login`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 

@@ -22,12 +22,12 @@ class uploadAjaxControllerCore extends pageController
     protected $permissions = '';
         
     protected $actionPermissions = array(
-        'addCategory' => array('admin.upload', 'admin.upload.addcategory'),
-        'deleteCategory' => array('admin.upload', 'admin.upload.deletecategory'),
-        'popupHandleFile' => array('admin.upload', 'admin.upload.insertfile'),
+        'addCategory' => array('admin.upload' => array('Upload administrator', 'upload'), 'admin.upload.addcategory'),
+        'deleteCategory' => array('admin.upload' => array('Upload administrator', 'upload'), 'admin.upload.deletecategory', 'upload.delete.{$directory}'),
+        'popupHandleFile' => array('admin.upload' => array('Upload administrator', 'upload'), 'admin.upload.insertfile', 'upload.manage.{$directory}', 'upload.upload.{$directory}'),
         'popupDelete' => _CONTROLLER_PERMISSION_INLINE_,
-        'popupUploadFileWindow' => array('admin.upload', 'admin.upload.insertfile'),
-        'saveSettings' => array('can_manage_upload'),
+        'popupUploadFileWindow' => array('admin.upload' => array('Upload administrator', 'upload'), 'admin.upload.insertfile', 'upload.manage.{$directory}'),
+        'saveSettings' => array('admin.upload' => array('Upload administrator', 'upload')),
     );
     
     
@@ -43,10 +43,16 @@ class uploadAjaxControllerCore extends pageController
         $max = $_GET['maxFileSize'];
         
         if (!intval($max))
-            ajax_exit(array('status' => 'failed', 'message' => localize("Failed. Please, increase your maximum file size.", 'upload')));
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => localize("Invalid maximum file size", 'upload'),
+            ));
     
-        $this -> panthera -> config -> setKey('upload_max_size', $max);
-        ajax_exit(array('status' => 'success', 'message' => localize("Settings have been successfully saved!")));   
+        $this -> panthera -> config -> setKey('upload.maxsize', $max, 'int', 'upload');
+        
+        ajax_exit(array(
+            'status' => 'success',
+        ));
     }
     
     
@@ -85,15 +91,27 @@ class uploadAjaxControllerCore extends pageController
     public function addCategoryAction()
     {
         if (!strlen($_POST['name']))
-            ajax_exit(array('status' => 'failed', 'message' => localize('Name is empty.', 'upload')));
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => localize('Name cannot be empty', 'upload'),
+            ));
         
         if (!strlen($_POST['mime']))
-            ajax_exit(array('status' => 'failed', 'message' => localize('Mime is empty.', 'upload')));
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => localize('Mime cannot be empty', 'upload'),
+            ));
         
+        // create upload directory and send success if created
         if (pantheraUpload::createUploadCategory($_POST['name'], $this->panthera->user->id, $_POST['mime']))
-            ajax_exit(array('status' => 'success'));
+            ajax_exit(array(
+                'status' => 'success',
+            ));
 
-        ajax_exit(array('status' => 'failed'));
+        ajax_exit(array(
+            'status' => 'failed',
+            'message' => localize('Ops! Something went badly wrong, site administrator have to check upload permissions and configuration', 'upload'),
+        ));
     }
     
     
@@ -108,52 +126,50 @@ class uploadAjaxControllerCore extends pageController
     
     public function popupDisplay()
     {
-        $category = 'default';
+        $category = $this -> panthera -> config -> getKey('upload.default.category', 'default', 'string', 'upload');
         
         if (isset($_GET['directory']))
             $category = $_GET['directory'];
         
+        $category = new uploadCategory('name', $category);
+        
+        if (!$category -> exists())
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => localize('Cannot find selected category', 'upload'),
+            ));
+        
         // @permissions: check if user has permissions to view this category
-        $this -> checkPermissions('upload.view.' .$category);
+        $this -> checkPermissions('upload.view.' .$category -> name);
         
         $categoriesCount = uploadCategory::fetchAll('', false);
         $categories = uploadCategory::userFetchAll();
         
-        if (!$categoriesCount) {
+        // @defaults: check if there is any category, if not then create default categories
+        if (!$categoriesCount and $this->checkPermissions('admin.upload', true)) 
+        {
             // create important categories
-            if ($this->checkPermissions('admin.upload')) {
-                pantheraUpload::createUploadCategory('default', $this->panthera->user->id, 'all');
-                pantheraUpload::createUploadCategory('gallery', $this->panthera->user->id, 'all');
-                pantheraUpload::createUploadCategory('avatars', $this->panthera->user->id, 'all');
-            }  else {
-                ajax_exit(array('status' => 'failed', 'message' => localize('Cannot create default category. Check your permissions!')));
-            }
+            pantheraUpload::createUploadCategory($this -> panthera -> config -> getKey('upload.default.category', 'default', 'string', 'upload'), $this->panthera->user->id, 'all');
+            pantheraUpload::createUploadCategory('gallery', $this->panthera->user->id, 'all');
+            pantheraUpload::createUploadCategory('avatars', $this->panthera->user->id, 'all');
         }
-        
-        foreach ($categories as $c => $d)
-            $categoryList[$d -> name] = True;
-        
-        if (!isset($categoryList[$category]))
-            ajax_exit(array('status' => 'failed', 'message' => localize('Given category is invalid!')));
         
         // create query statement
         $by = new whereClause();
-        $by -> add( 'AND', 'category', '=', $category);
+        $by -> add( 'AND', 'category', '=', $category -> name);
         
         $this -> panthera -> template -> push('seeOtherUsersUploads', False);
         
         // if you are admin, you can see files which belong to other users
-        if (checkUserPermissions($this->panthera->user, True) and isset($_GET['otherUsers']))
+        if ($this -> panthera -> user -> isAdmin() and isset($_GET['otherUsers']))
         {
-            if ($_GET['otherUsers'] == 'true')
-                $this -> panthera -> session -> set('pa.upload.otherusers', true);
-            else
-                $this -> panthera -> session -> set('pa.upload.otherusers', false);
+            $this -> panthera -> session -> set('pa.upload.otherusers', (bool)$_GET['otherUsers']);
         }
         
+        // if user can see uploads posted by other users
         if ($this -> panthera -> session -> get('pa.upload.otherusers'))
             $this -> panthera -> template -> push('seeOtherUsersUploads', True);
-        else
+        else // if not add filter
             $by -> add( 'AND', 'uploader_login', '=', $this -> panthera -> user -> login);
         
         $page = intval(@$_GET['page']);
@@ -168,6 +184,10 @@ class uploadAjaxControllerCore extends pageController
         $uiPager -> setLinkTemplatesFromConfig('upload.tpl');
         $limit = $uiPager -> getPageLimit();
         
+        /**
+         * View switching
+         */
+        
         $viewType = $this -> panthera -> session -> get('upload.view.type.'.$directory);
     
         if (!$viewType) {
@@ -177,25 +197,29 @@ class uploadAjaxControllerCore extends pageController
         
         if (isset($_GET['changeView'])) {
             // check view
+            $viewType = 'images';
+            
             if ($_GET['changeView'] == 'blank')
                 $viewType = 'blank';
-            else
-                $viewType = 'images';
             
             $this -> panthera -> session -> set('upload.view.type.'.$directory, $viewType);
         }
         
         // create variable responsible for change view of upload list
+        $viewChange = 'blank';
+        
         if ($viewType == 'blank')
             $viewChange = 'images';
-        else
-            $viewChange = 'blank';
+        
+        /** 
+         * Files listing
+         */
 
         $files = uploadedFile::fetchAll($by, $limit[1], $limit[0]); // raw list
         $filesTpl = array(); // list passed to template
     
-        $manageAllUploads = $this->checkPermissions('can_manage_all_uploads');
-        $canDeleteOwn = $this->checkPermissions('can_delete_own_uploads');
+        $manageAllUploads = $this->checkPermissions('admin.upload', true);
+        $canDeleteOwn = $this->checkPermissions('upload.deleteown', true);
     
         foreach ($files as $key => $value)
         {
@@ -227,7 +251,7 @@ class uploadAjaxControllerCore extends pageController
             // give user rights to delete file, create the button
             if (($this->panthera->user->id == $value->uploader_id and $canDeleteOwn) or $manageAllUploads)
                 $ableToDelete = True;
-    
+            
             $filesTpl[] = array(
                 'name' => $name,
                 'mime' => $value->mime,
@@ -240,31 +264,37 @@ class uploadAjaxControllerCore extends pageController
                 'author' => $value->uploader_login,
                 'directory' => $value->category,
                 'type' => $fileType,
-                'id' => $value->id
+                'id' => $value->id,
+                'object' => $value,
             );
         }
     
-        if ($this -> checkPermissions('can_upload_files'))
+        if ($this -> checkPermissions('admin.upload.insertfile', true))
             $this -> panthera -> template -> push('upload_files', True);
+    
+        $callback = False;
     
         if (isset($_GET['callback']))
             $callback = True;
-        else
-            $callback = False;
     
         // max_string_length = 27
     
-        $this -> panthera -> template -> push('callback', $callback);
-        $this -> panthera -> template -> push('categories', $categories);
-        $this -> panthera -> template -> push('setCategory', $category);
-        $this -> panthera -> template -> push('max_file_size', $this -> panthera -> config -> getKey('upload_max_size', 3145728, 'int')); // default 3 mbytes
-        $this -> panthera -> template -> push('files', $filesTpl);
-        $this -> panthera -> template -> push('view_type', $viewType);
-        $this -> panthera -> template -> push('view_change', $viewChange);
-        $this -> panthera -> template -> push('directory', $directory);
-        $this -> panthera -> template -> push('callback_name', $_GET['callback']);
-        $this -> panthera -> template -> push('user_login', $this -> panthera -> user -> login);
-        $this -> panthera -> template -> display('upload_popup.tpl');
+        $this -> panthera -> template -> push(array(
+            'callback' => $callback,
+            'categories' => $categories,
+            'setCategory' => $category -> name,
+            'category' => $category,
+            'max_file_size' => $this -> panthera -> config -> getKey('upload.maxsize', 3145728, 'int', 'upload'),
+            'files' => $filesTpl,
+            'view_type' => $viewType,
+            'view_change' => $viewChange,
+            'directory' => $directory,
+            'callback_name' => $_GET['callback'],
+            'user_login' => $this -> panthera -> user -> login,
+            'isAdmin' => $this -> panthera -> user -> isAdmin(),
+        ));
+        
+        $this -> panthera -> template -> display('upload.popup.tpl');
         pa_exit();
     }
 
@@ -278,60 +308,85 @@ class uploadAjaxControllerCore extends pageController
      */
     
     public function popupHandleFileAction()
-    {   
-        // handle base64 encoded upload in post field "image"
+    {
+        // @handle: base64 encoded upload in post field "image" (HTML5 upload format)
         if (isset($_POST['image']))
         {
             $upload = pantheraUpload::parseEncodedUpload($_POST['image']);
-            
             pantheraUpload::makeFakeUpload('input_file', $upload['content'], $_POST['fileName'], $upload['mime']);
-
             unset($_POST['image']);
             unset($upload);
         }
 
-        if ($_FILES['input_file']['size'] > $this->panthera->config->getKey('upload_max_size') or filesize($_FILES['input_file']['tmp_name']) > $this->panthera->config->getKey('upload_max_size'))
-            ajax_exit(array('status' => 'failed', 'message' => localize('File is too big, allowed maximum size is:'). ' ' .filesystem::bytesToSize($this->panthera->config->getKey('upload_max_size'))));
+        // @validation: Upload file size
+        if ($_FILES['input_file']['size'] > $this -> panthera -> config -> getKey('upload.maxsize', 3145728, 'int', 'upload') or filesize($_FILES['input_file']['tmp_name']) > $this->panthera->config->getKey('upload_max_size'))
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => localize('File is too big, allowed maximum size is: %s', 'upload', filesystem::bytesToSize($this -> panthera -> config -> getKey('upload.maxsize', 3145728, 'int', 'upload'))),
+            ));
 
-        if (isset($_GET['directory']))
-            $category = $_GET['directory'];
-        else 
-            $category = $_POST['input_category'];
-        
-        $countCategories = pantheraUpload::fetchAll('', False, False);
-        
-        if (!$countCategories)
-            ajax_exit(array('status' => 'failed', 'message' => localize('There is no created upload category!', 'upload')));
+        /**
+         * Check category
+         */
 
-        $categories = pantheraUpload::fetchAll('', $countCategories, 0);
-        
-        foreach ($categories as $c)
-            $categoryList[$c['name']] = True;
-        
-        if (!array_key_exists($category, $categoryList)) {
-            
-            // create upload category, specially for this upload
-            if (!pantheraUpload::createUploadCategory($category, $this->panthera->user->id, 'all'))
-                ajax_exit(array('status' => 'failed', 'message' => localize('Given category does not exist!', 'upload')));
+        $category = $this -> panthera -> config -> getKey('upload.default.category', 'default', 'string', 'upload');
 
+        // get category
+        if (isset($_REQUEST['directory']))
+            $category = $_REQUEST['directory'];
+        
+        $category = new uploadCategory('name', $category);
+        
+        if (!$category -> exists())
+        {
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => localize('Category not found, or dont have permissions to upload files', 'upload'),
+            ));
         }
         
-        // get mime type of file
-        $mime = filesystem::getFileMimeType($_FILES['input_file']['tmp_name']);
+        $countCategories = uploadCategory::fetchAll('', False, False);
+        
+        $categories = uploadCategory::fetchAll();
 
+        if (!$countCategories)
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => localize('There are no any upload categories', 'upload'),
+            ));
+        
         $description = filterInput($_POST['input_description'], 'quotehtml');
         $protected = 0;
         $public = 0;
+        
+        if ($_POST['protected'] == '1')
+            $protected = 1;
 
         if (strlen($description) > 511)
             ajax_exit(array('status' => 'failed', 'message' => localize('Description is too long, out of 512 characters range')));
         
-        $uploadID = pantheraUpload::handleUpload($_FILES['input_file'], $category, $this->panthera->user->id, $this->panthera->user->login, $protected, $public, $mime, $description);
-
-        if ($uploadID)
-            ajax_exit(array('status' => 'success', 'upload_id' => $uploadID));
+        try {
+            $uploadID = pantheraUpload::handleUpload($_FILES['input_file'], $category -> name, $this->panthera->user->id, $this->panthera->user->login, $protected, $public, null, $description, false);
+        } catch (Exception $e) {
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => $e -> getMessage(),
+                'code' => $e -> getCode(),   
+            ));
+            
+        }
         
-        ajax_exit(array('status' => 'failed', 'message' => localize('Unknown error')));
+        
+        if ($uploadID)
+            ajax_exit(array(
+                'status' => 'success',
+                'upload_id' => $uploadID,
+            ));
+        
+        ajax_exit(array(
+            'status' => 'failed',
+            'message' => localize('Unknown error'),
+        ));
     }
 
 
@@ -346,17 +401,21 @@ class uploadAjaxControllerCore extends pageController
     
     public function popupUploadFileWindowAction()
     {
-        $categories = pantheraUpload::fetchAll();
+        $categories = uploadCategory::fetchAll();
+        $category = $this -> panthera -> config -> getKey('upload.default.category', 'default', 'string', 'upload');
         
         if (isset($_GET['directory']))
             $category = $_GET['directory'];
-        else
-            $category = 'default';
+            
+        // this object will provide extra informations such as max file size or mime type
+        $uploadDirectory = new uploadCategory('name', $category);
         
-        $this -> panthera -> template -> push('setCategory', $category);
-        $this -> panthera -> template -> push('categories', $categories);
-        
-        $this -> panthera -> template -> display('upload_popup_newfile.tpl');
+        $this -> panthera -> template -> push(array(
+            'setCategory' => $category,
+            'categories' => $categories,
+            'category' => $uploadDirectory,
+        ));
+        $this -> panthera -> template -> display('upload.popup.newfile.tpl');
         pa_exit();
     }
     
@@ -389,11 +448,11 @@ class uploadAjaxControllerCore extends pageController
             
     
             // check if user is author or just can manage all uploads
-            if ($file->author_id != $this->panthera->user->id and !$this->checkPermissions('can_manage_all_uploads', True))
+            if ($file->author_id != $this->panthera->user->id and !$this->checkPermissions('admin.upload', True))
                 $canDelete = false;
     
             // check if user can delete own uploads
-            if (!$this->checkPermissions('can_delete_own_uploads', True))
+            if (!$this->checkPermissions('upload.deleteown', True))
                 $canDelete = false;
                 
             if ($canDelete) {
@@ -432,7 +491,7 @@ class uploadAjaxControllerCore extends pageController
         $searchBar -> navigate(True);
         $searchBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_upload,can_add_files', localize('Manage permissions'));
         
-        $this -> panthera -> template -> push('fileMaxSize', $this->panthera->config->getKey('upload_max_size'));
+        $this -> panthera -> template -> push('fileMaxSize', $this -> panthera -> config -> getKey('upload.maxsize', 3145728, 'int', 'upload'));
         
         $countCategories = pantheraUpload::fetchAll('', False, False);
         $categories = pantheraUpload::fetchAll('', $countCategories, 0);

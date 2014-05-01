@@ -43,6 +43,30 @@ class uploadCategory extends pantheraFetchDB
         
         return $this -> name;
     }
+    
+    /**
+     * Finds real max file size limit (includes PHP's upload_max_filesize, post_max_size and Panthera config key upload.maxsize)
+     * 
+     * @param bool $humanReadable Return in human readable format
+     * @return string|int
+     */
+    
+    public function getMaxfilesize($humanReadable=False)
+    {
+        $sizes = array(
+            $this -> panthera -> config -> getKey('upload.maxsize', 3145728, 'int', 'upload'),
+            $this -> maxfilesize,
+            intval(filesystem::sizeToBytes(ini_get('upload_max_filesize'))),
+            intval(filesystem::sizeToBytes(ini_get('post_max_size'))),
+        );
+        
+        $maxSize = min($sizes);
+        
+        if ($humanReadable)
+            return filesystem::bytesToSize($maxSize);
+        
+        return intval($maxSize);
+    }
 }
 
   
@@ -58,6 +82,7 @@ class uploadedFile extends pantheraFetchDB
     protected $_tableName = 'uploads';
     protected $_idColumn = 'id';
     protected $_constructBy = array('id', 'array', 'location');
+    protected $__author = null;
 
     public function __set($key, $value)
     {
@@ -76,6 +101,23 @@ class uploadedFile extends pantheraFetchDB
 
     public function getLink()
     {
+        if (intval($this -> protected))
+        {
+            // install seo url if there is no any for downloads
+            if (!$this -> panthera -> routing -> exists('download'))
+            {
+                $this -> panthera -> routing -> map('GET', 'file/[i:fileid]/[*:filename]', array(
+                    'front' => 'download.php',
+                ), 'download');
+            }
+            
+            // generate seo url
+            return $this -> panthera -> routing -> generate('download', array(
+                'fileid' => $this -> id,
+                'filename' => $this -> filename,
+            ));
+        }
+        
         $url = $this -> panthera -> config -> getKey('url'); // this site url
         $location = pantheraUrl($this->__get('location'));
 
@@ -90,6 +132,9 @@ class uploadedFile extends pantheraFetchDB
 
     public function getName()
     {
+        if (intval($this -> protected))
+            return $this -> filename;
+        
         return basename($this->getLink());
     }
     
@@ -112,7 +157,7 @@ class uploadedFile extends pantheraFetchDB
         $fileType = filesystem::fileTypeByMime($this->__get('mime'));
         $fileInfo = pathinfo($this->__get('location'));
 
-        if ($size != '')
+        if ($size)
         {
             $thumb = pantheraUrl('{$upload_dir}/_thumbnails/' .$size. 'px_' .$fileInfo['filename']. '.jpg');
             
@@ -157,6 +202,35 @@ class uploadedFile extends pantheraFetchDB
 
         return $mimesURL. 'unknown.png';
     }
+
+    /**
+     * Get file save path
+     * 
+     * @return string
+     */
+
+    public function getLocation()
+    {
+        return pantheraUrl($this->__get('location'));
+    }
+    
+    /**
+     * Get author object or name
+     * 
+     * @param bool $name Return user name instead of object
+     * @return string|pantheraUser
+     */
+    
+    public function getAuthor($name=True)
+    {
+        if (!$this -> __author)
+            $this -> __author = new pantheraUser('id', $this -> uploader_id);
+        
+        if ($name)
+            return $this -> __author -> getName();
+        
+        return $this -> __author;
+    }
 }
 
 /**
@@ -178,7 +252,8 @@ class pantheraUpload
         6 => 'Missing a temporary folder',
         7 => 'Failed to write file to disk',
         8 => 'A PHP extension stopped the file upload',
-        101 => 'Mime type mismatch',
+        101 => 'Invalid file type',
+        102 => 'File reached accepted file size limit',
     );
     
     /**
@@ -244,11 +319,12 @@ class pantheraUpload
      * @param array $file Input file eg. $_FILES['file']
      * @param string $category (Optional) Check if uploaded file meets requirements of selected category
      * @param string|array $mimes Single mime as string or array of mimes (types also accepted @see filesystem::fileTypeByMime())
+     * @param int $size (Optional) Max file size limit (if not set will be taken from category)
      * @author Damian Kęska
      * @return int|bool Returns int on error with error code, true if everything is fine
      */
     
-    public static function validate($file, $category=null, $mimes=null)
+    public static function validate($file, $category=null, $mimes=null, $size=null)
     {
         $panthera = pantheraCore::getInstance();
         
@@ -264,12 +340,14 @@ class pantheraUpload
         if ($category)
         {
             $obj = new uploadCategory('name', $category);
-            $obj -> mime_type = 'image/png, image/jpeg';
             
             if ($obj -> exists())
             {
                 if ($obj -> mime_type and $obj -> mime_type != 'all')
                     $mimes = array_merge($mimes, explode(',', str_replace(' ', '', $obj -> mime_type)));
+                
+                if (intval($obj -> maxfilesize) !== 0 and filesize($file['tmp_name']) > intval($obj -> maxfilesize))
+                    return 102; // file size limit reached
             }
         }
         
@@ -321,7 +399,7 @@ class pantheraUpload
         if (!is_array($file))
             throw new Exception('$file must be array type');
         
-        if ($validated)
+        if (!$validated)
         {
             $validation = self::validate($file, $category, $mime);
             
@@ -337,10 +415,10 @@ class pantheraUpload
             }
         }*/
 
-        if ($file['size'] > $panthera -> config -> getKey('upload_max_size'))
+        if ($file['size'] > $panthera -> config -> getKey('upload.maxsize', 3145728, 'int', 'upload'))
             return False;
 
-        if (filesize($file['tmp_name']) > $panthera -> config -> getKey('upload_max_size'))
+        if (filesize($file['tmp_name']) > $panthera -> config -> getKey('upload.maxsize', 3145728, 'int', 'upload'))
         {
             $panthera -> logging -> output('Upload_max_size reached, rejecting file', 'pantheraUpload');
             return False;
@@ -356,14 +434,29 @@ class pantheraUpload
         if (strlen($fileInfo['filename']) > 30)
             $name = substr($fileInfo['filename'], 0, 30). '.' .$fileInfo['extension'];
 
-        if ($protected == True)
-            $category = '_private';
-
         $uploadDir = SITE_DIR. '/' .$panthera -> config -> getKey('upload_dir'). '/' .$category;
         
-        if (!is_dir($uploadDir)) {
+        if (!is_dir($uploadDir)) 
+        {
             mkdir($uploadDir);
             chmod($uploadDir, 0700);
+        }
+        
+        // create directory for hidden files
+        if (!is_dir($uploadDir. '/_private'))
+        {
+            mkdir($uploadDir. '/_private');
+            chmod($uploadDir. '/_private', 0700);
+        }
+        
+        $originalName = basename($name);
+        
+        // put file to hidden directory protected by .htaccess and router
+        if ($protected == True)
+        {
+            $uploadDir .= '/_private';
+            $name = md5(PANTHERA_SEED.rand(999, 9999).time());
+            $panthera -> logging -> output('File marked as protected, setting destination as "' .$uploadDir. '" for "' .$originalName. '"', 'pantheraUpload');
         }
         
         if (!is_writable($uploadDir))
@@ -391,21 +484,22 @@ class pantheraUpload
 
         if (is_file($uploadDir. '/' .$name))
         {
-            $values = array();
-            $values['category'] = $category;
-            $values['location'] = pantheraUrl($uploadDir. '/' .$name, True);
-            $values['description'] = $description;
-            $values['mime'] = $mime;
-            $values['uploader_id'] = $uploaderID;
-            $values['uploader_login'] = $uploaderLogin;
-            $values['protected'] = $protected;
-            $values['public'] = $public;
-            $values['icon'] = '';
-            //$values['icon'] = filesystem::fileTypeByMime($mime);
-
+            $values = array(
+                'category' => $category,
+                'location' => pantheraUrl($uploadDir. '/' .$name, True),
+                'description' => $description,
+                'mime' => $mime,
+                'uploader_id' => $uploaderID,
+                'uploader_login' => $uploaderLogin,
+                'protected' => $protected,
+                'public' => $public,
+                'icon' => '',
+                'filename' => $originalName,
+            );
+            
             $type = filesystem::fileTypeByMime($mime);
 
-            $panthera -> logging -> output('upload.module::File type is "' .$type. '"', 'pantheraUpload');
+            $panthera -> logging -> output('File type is "' .$type. '"', 'pantheraUpload');
 
             // try to create a thumbnail
             if ($type == 'image')
@@ -413,17 +507,15 @@ class pantheraUpload
                 $dir = SITE_DIR. '/' .$panthera -> config -> getKey('upload_dir'). '/_thumbnails';
                 $fileInfo = pathinfo($name);
 
-                $panthera -> logging -> output('Attempting to create a thumbnail - ' .$dir. '/200px_' .$fileInfo['filename']. '.jpg', 'pantheraUpload');
+                $panthera -> logging -> output('Attempting to create a thumbnail - ' .$dir. '/200px_' .$fileInfo['filename']. '.png', 'pantheraUpload');
                 $simpleImage = new SimpleImage();
                 $simpleImage -> load($uploadDir. '/' .$name);
                 $simpleImage -> resizeToWidth(200); // resize to 100px width
-                $simpleImage -> save($dir. '/200px_' .$fileInfo['filename']. '.jpg', IMAGETYPE_JPEG, 85);        
-                chmod($dir. '/200px_' .$fileInfo['filename']. '.jpg', 0655);
+                $simpleImage -> save($dir. '/200px_' .$fileInfo['filename']. '.png', IMAGETYPE_PNG, 85);        
+                chmod($dir. '/200px_' .$fileInfo['filename']. '.png', 0655);
             }
 
-            $panthera -> db -> query('INSERT INTO `{$db_prefix}uploads` (`id`, `category`, `location`, `description`, `icon`, `mime`, `uploader_id`, `uploader_login`, `protected`, `public`) VALUES (NULL, :category, :location, :description, :icon, :mime, :uploader_id, :uploader_login, :protected, :public);', $values);
-            
-            return $panthera -> db -> sql -> lastInsertId();
+            return $panthera -> db -> insert('uploads', $values);
             
         } else {
             $panthera -> logging -> output('Cannot save file "' .$name. '", to directory "' .$uploadDir. '", details: ' .json_encode($file), 'pantheraUpload');
@@ -526,7 +618,8 @@ class filesystem
     /**
      * Recursive directories scanning
      *
-     * @param string (directory), bool (show only files?)
+     * @param string $dir Directory
+     * @param bool $filesOnly Show only files?
      * 
      * @author Damian Kęska
      * @return string
@@ -568,6 +661,31 @@ class filesystem
         }
 
         return $list;
+    }
+    
+    /**
+     * Convert size like "2M" to bytes
+     * 
+     * @param string $val Input string
+     * @return int
+     */
+    
+    public static function sizeToBytes($val)
+    {
+        $val = trim($val);
+        $last = strtolower($val[strlen($val)-1]);
+        
+        switch($last) {
+            // The 'G' modifier is available since PHP 5.1.0
+            case 'g':
+                $val *= 1024;
+            case 'm':
+                $val *= 1024;
+            case 'k':
+                $val *= 1024;
+        }
+    
+        return $val;
     }
     
     /**

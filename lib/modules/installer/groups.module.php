@@ -68,6 +68,7 @@ class groupsInstallerControllerSystem extends installerController
         $g -> acl -> set('admin.databases', true);
         $g -> acl -> set('admin.newsletter.management', true);
         $g -> acl -> set('admin.accesspanel', true);
+        $g -> acl -> set('admin.upload', true);
         $g -> acl -> save();
         
         $this -> installer -> enableNextStep();
