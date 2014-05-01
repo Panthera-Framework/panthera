@@ -1073,12 +1073,23 @@ abstract class pantheraFetchDB
     protected $_joinColumns = array(
         /*array('LEFT JOIN', 'groups', array('group_id' => 'primary_group'), array('name' => 'group'))*/
     );
+    
     protected $_queryCache = array(
         'joinColumns' => '',
         'joinQuery' => '',
     );
-    protected $_viewPermission = null; // used by userFetchAll() eg. "upload.view.{$var}" where {$var} => object's value of $__viewPermissionColumn attribute ($this->__get($this->__viewPermissionColumn))
-    protected $__viewPermissionColumn = null; // used by userFetchAll() eg. "id"
+    
+    /**
+     * used by userFetchAll() eg. "upload.view.{$var}" where {$var} => object's value of $__viewPermissionColumn attribute ($this->__get($this->__viewPermissionColumn))
+     */
+    
+    protected $_viewPermission = null;
+    
+    /**
+     * used by userFetchAll() eg. "id"
+     */
+    
+    protected $_viewPermissionColumn = null;
     
     /**
      * Get class inforamtions (used db table, columns)
@@ -1262,6 +1273,7 @@ abstract class pantheraFetchDB
     
     /*
      * Similar to fetchAll() but is also filtering for user permissions
+     * Note: This function requires configured $_viewPermission and $_viewPermissionColumn class variables to work
      * 
      * @param whereClause|array $by
      * @param int $limit Offset
