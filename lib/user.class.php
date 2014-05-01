@@ -63,6 +63,17 @@ class pantheraUser extends pantheraFetchDB
     {
         return $this->attributes->__get($var);
     }
+    
+    /**
+     * Check if user is admin
+     * 
+     * @return bool
+     */
+    
+    public function isAdmin()
+    {
+        return getUserRightAttribute($this, 'admin');
+    }
 
     /**
 	 * Change user password to specified in first argument
@@ -222,6 +233,20 @@ class pantheraUser extends pantheraFetchDB
         }
         
         return False;
+    }
+    
+    /**
+     * Construct by id or login
+     * 
+     * @param int|string $input
+     */
+    
+    public static function autoConstruct($input)
+    {
+        if (is_int($input))
+            return new pantheraUser('id', $input);
+        elseif (is_string($input))
+            return new pantheraUser('login', $input);
     }
 }
 

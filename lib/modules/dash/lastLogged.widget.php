@@ -30,7 +30,7 @@ class lastLogged_dashWidget extends pantheraClass
     {
         $u = pantheraUser::fetchAll('', 10, 0, 'lastlogin', 'DESC');
         $users = array();
-
+        
         foreach ($u as $key => $value)
         {
             if ($value->attributes->superuser)

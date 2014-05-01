@@ -21,7 +21,28 @@ class uploadCategory extends pantheraFetchDB
 {
     protected $_tableName = 'upload_categories';
     protected $_idColumn = 'id';
-    protected $_constructBy = array('id', 'name');
+    protected $_constructBy = array('id', 'name', 'array');
+    protected $_viewPermission = 'upload.view.{$var}';
+    protected $_viewPermissionColumn = 'name';
+    
+    /**
+     * Returns category name
+     * 
+     * @return string
+     */
+    
+    public function getName()
+    {
+        if ($this -> title)
+        {
+            if (@unserialize($this->title) !== False)
+                return localize($this->title[0], $this->title[1]);
+            
+            return $this -> title;
+        }
+        
+        return $this -> name;
+    }
 }
 
   
@@ -59,6 +80,17 @@ class uploadedFile extends pantheraFetchDB
         $location = pantheraUrl($this->__get('location'));
 
         return pantheraUrl($url.str_replace(SITE_DIR, '', $location));
+    }
+
+    /**
+     * Get file name
+     * 
+     * @return string
+     */
+
+    public function getName()
+    {
+        return basename($this->getLink());
     }
     
     /**
@@ -218,6 +250,8 @@ class pantheraUpload
     
     public static function validate($file, $category=null, $mimes=null)
     {
+        $panthera = pantheraCore::getInstance();
+        
         if ($file['error'])
             return $file['error'];
         
@@ -243,6 +277,8 @@ class pantheraUpload
         {
             $fileMime = filesystem::getFileMimeType($file['tmp_name']);
             $typeMime = filesystem::fileTypeByMime($fileMime); // allow expressions like "document", "audio", "video", "binary"
+           
+            $panthera -> logging -> output('Validating ' .$fileMime. '/' .$typeMime. ' mime, allowed: ' .json_encode($mimes), 'pantheraUpload');
            
             if (!in_array($fileMime, $mimes) and !in_array($typeMime, $mimes))
             {
@@ -278,18 +314,20 @@ class pantheraUpload
      * @return string
      */
 
-    public static function handleUpload($file, $category, $uploaderID, $uploaderLogin, $protected, $public, $mime=null, $description='')
+    public static function handleUpload($file, $category, $uploaderID, $uploaderLogin, $protected, $public, $mime=null, $description='', $validated=true)
     {
         $panthera = pantheraCore::getInstance();
         
         if (!is_array($file))
             throw new Exception('$file must be array type');
         
-        $validation = self::validate($file, $category, $mime);
-        
-        if ($validation !== true)
-            throw new Exception(self::getErrorMessage($validation), $validation);
-        
+        if ($validated)
+        {
+            $validation = self::validate($file, $category, $mime);
+            
+            if ($validation !== true)
+                throw new Exception(self::getErrorMessage($validation), $validation);
+        }
         /*
         if (intval($file['error']))
         {

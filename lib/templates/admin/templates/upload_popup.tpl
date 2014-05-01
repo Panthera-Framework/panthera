@@ -16,8 +16,6 @@ function callBack()
     }
 }
 
-var uploadProgress = new panthera.ajaxLoader($('#upload_list_window'));
-
 $(document).ready(function(){
     
     $('#upload_list_window').bind('dragenter', function() {
@@ -27,15 +25,13 @@ $(document).ready(function(){
     $('#upload_list_window').bind('drop', function(e) {
         var files = e.dataTransfer.files;
         
-        uploadProgress = new panthera.ajaxLoader($('#upload_list_window'));
-        
         $.each(files, function(index, file) {
             var fileReader = new FileReader();
             var fileName = file;
             
             fileReader.onload = (function(file) {
                 // upload a single file
-                panthera.jsonPOST({ url: '?display=upload&cat=admin&action=popupHandleFile', spinner: uploadProgress, data: { 'image': this.result, 'fileName': fileName.name}});
+                panthera.jsonPOST({ url: '?display=upload&cat=admin&action=popupHandleFile', data: { 'image': this.result, 'fileName': fileName.name}});
                 
             });
             
@@ -60,7 +56,7 @@ $(document).ready(function(){
       */
     
     panthera.multiuploadArea({ id: '#upload_list_window', callback: function (content, fileName, fileNum, fileCount) {
-            panthera.jsonPOST({ url: '?display=upload&cat=admin&action=popupHandleFile', isUploading: true, spinner: uploadProgress, data: { 'image': content, 'fileName': fileName}});
+            panthera.jsonPOST({ url: '?display=upload&cat=admin&action=popupHandleFile', isUploading: true, data: { 'image': content, 'fileName': fileName}});
             
             // finished
             if (fileNum == fileCount)
@@ -77,7 +73,7 @@ function changeCategory()
 
 function getUploadsPage(data)
 {
-    panthera.htmlPOST({ url: '?display=upload&cat=admin&popup=true&action=displayList', data: data, spinner: uploadProgress, 'success': '#upload_list'});
+    panthera.htmlPOST({ url: '?display=upload&cat=admin&popup=true&action=displayList', data: data, 'success': '#upload_list'});
 }
 
 /**
@@ -249,7 +245,7 @@ function transformArrayToString(array) {
         <div class="select" style="margin-top: 14px; margin-left: 3px;">
          <select onChange="changeCategory();" id="upload_category">
            {loop="$categories"}
-            <option {if="$setCategory == $value.name"} selected {/if}>{$value.name}</option>
+            <option {if="$setCategory == $value->name"} selected {/if}>{$value->getName()}</option>
            {/loop}
          </select>
         </div>

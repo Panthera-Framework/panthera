@@ -22,11 +22,11 @@ class uploadAjaxControllerCore extends pageController
     protected $permissions = '';
         
     protected $actionPermissions = array(
-        'addCategory' => array('can_manage_upload'),
-        'deleteCategory' => array('can_manage_upload'),
-        'popupHandleFile' => array('can_manage_upload', 'can_upload_files'),
+        'addCategory' => array('admin.upload', 'admin.upload.addcategory'),
+        'deleteCategory' => array('admin.upload', 'admin.upload.deletecategory'),
+        'popupHandleFile' => array('admin.upload', 'admin.upload.insertfile'),
         'popupDelete' => _CONTROLLER_PERMISSION_INLINE_,
-        'popupUploadFileWindow' => array('can_manage_upload', 'can_upload_files'),
+        'popupUploadFileWindow' => array('admin.upload', 'admin.upload.insertfile'),
         'saveSettings' => array('can_manage_upload'),
     );
     
@@ -108,17 +108,20 @@ class uploadAjaxControllerCore extends pageController
     
     public function popupDisplay()
     {
-    
-        if (!isset($_GET['directory']))
-            $category = 'default';
-        else
+        $category = 'default';
+        
+        if (isset($_GET['directory']))
             $category = $_GET['directory'];
         
-        $countCategories = pantheraUpload::fetchAll('', False, False);
-            
-        if (!$countCategories) {
+        // @permissions: check if user has permissions to view this category
+        $this -> checkPermissions('upload.view.' .$category);
+        
+        $categoriesCount = uploadCategory::fetchAll('', false);
+        $categories = uploadCategory::userFetchAll();
+        
+        if (!$categoriesCount) {
             // create important categories
-            if ($this->checkPermissions('can_manage_upload')) {
+            if ($this->checkPermissions('admin.upload')) {
                 pantheraUpload::createUploadCategory('default', $this->panthera->user->id, 'all');
                 pantheraUpload::createUploadCategory('gallery', $this->panthera->user->id, 'all');
                 pantheraUpload::createUploadCategory('avatars', $this->panthera->user->id, 'all');
@@ -127,12 +130,10 @@ class uploadAjaxControllerCore extends pageController
             }
         }
         
-        $categories = pantheraUpload::fetchAll('', $countCategories, 0);
-    
-        foreach ($categories as $c)
-            $categoryList[$c['name']] = True;
-            
-        if (!array_key_exists($category, $categoryList))
+        foreach ($categories as $c => $d)
+            $categoryList[$d -> name] = True;
+        
+        if (!isset($categoryList[$category]))
             ajax_exit(array('status' => 'failed', 'message' => localize('Given category is invalid!')));
         
         // create query statement
@@ -156,7 +157,7 @@ class uploadAjaxControllerCore extends pageController
             $by -> add( 'AND', 'uploader_login', '=', $this -> panthera -> user -> login);
         
         $page = intval(@$_GET['page']);
-        $count = pantheraUpload::fetchAll($by, False);
+        $count = uploadedFile::fetchAll($by, False);
     
         if ($page < 0)
             $page = 0;
@@ -190,7 +191,7 @@ class uploadAjaxControllerCore extends pageController
         else
             $viewChange = 'blank';
 
-        $files = pantheraUpload::fetchAll($by, $limit[1], $limit[0]); // raw list
+        $files = uploadedFile::fetchAll($by, $limit[1], $limit[0]); // raw list
         $filesTpl = array(); // list passed to template
     
         $manageAllUploads = $this->checkPermissions('can_manage_all_uploads');
@@ -345,8 +346,7 @@ class uploadAjaxControllerCore extends pageController
     
     public function popupUploadFileWindowAction()
     {
-        $countCategories = pantheraUpload::fetchAll('', False, False);
-        $categories = pantheraUpload::fetchAll('', $countCategories, 0);
+        $categories = pantheraUpload::fetchAll();
         
         if (isset($_GET['directory']))
             $category = $_GET['directory'];
