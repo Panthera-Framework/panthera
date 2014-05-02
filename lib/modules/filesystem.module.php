@@ -267,15 +267,18 @@ class pantheraUpload
      * @return string
      */
      
-    public static function createUploadCategory($name=null, $author_id='', $mimeType='', $title='', $maxFileSize=0)
+    public static function createUploadCategory($name=null, $author_id='', $mimeType='', $title='', $maxFileSize=0, $skipUserCheck=False)
     {
         $panthera = pantheraCore::getInstance();
         
-        $user = new pantheraUser('id', $author_id);
-        
-        if (!$user->exists()) {
-            $panthera -> logging -> output('Author ID is invalid, there is no user with this ID.', 'upload');
-            return False;
+        if (!$skipUserCheck)
+        {
+            $user = new pantheraUser('id', $author_id);
+            
+            if (!$user->exists()) {
+                $panthera -> logging -> output('Author ID is invalid, there is no user with this ID.', 'upload');
+                return False;
+            }
         }
         
         if (!$mimeType) {
@@ -294,6 +297,9 @@ class pantheraUpload
             'author_id' => $author_id,
             'mime_type' => $mimeType,
             'maxfilesize' => $maxFileSize,
+            'created' => DB_TIME_NOW,
+            'modified' => DB_TIME_NOW,
+            'protected' => 0,
         ));
     }
 

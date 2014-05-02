@@ -61,18 +61,20 @@ class uploadInstallerControllerSystem extends installerController
             if ($test -> exists())
                 continue;
             
-            $categories = array(
+            $log[] = array(
                 localize($category['title'][0], $category['title'][1]),
                 $category['mimes'],
                 filesystem::bytesToSize($category['maxfilesize']),
             );
+            
+            pantheraUpload::createUploadCategory($name, 1, $category['mimes'], serialize($category['title']), $category['maxfilesize'], true);
         }
         
         $this -> getFeature('installer.upload');
         
-        $this -> installer -> enableNextStep();
+        //$this -> installer -> enableNextStep();
         $this -> panthera -> template -> push('spinnerStepMessage', localize('Preconfiguring upload and gallery modules...', 'installer'));
-        $this -> panthera -> template -> push('spinnerStepTable', $routes);
+        $this -> panthera -> template -> push('spinnerStepTable', $log);
         $this -> installer -> template = 'spinnerStep';
     }
 }

@@ -6,15 +6,26 @@
   * @author Damian Kęska
   * @license GNU Lesser General Public License 3, see license.txt
   */
-  
+
 session_start();
 error_reporting(E_ERROR);
 
+$newAppFile = True;
+
 // load app.php and extract $config variable
-$app = @file_get_contents('content/app.php');
-$configExported = substr($app, strpos($app, '$config'), strpos($app, ');')-4);
-@eval($configExported);
-$newAppFile = False;
+if (is_file('content/app'))
+{
+    $app = @file_get_contents('content/app.php');
+    $configExported = substr($app, strpos($app, '$config'), strpos($app, ');')-4);
+    @eval($configExported);
+    $newAppFile = False;
+}
+
+if (strpos($app, '## PANTHERA BOOTSTRAP ##') !== False)
+{
+    include 'content/app.php';
+    $newAppFile = True;
+}
 
 if (!is_array($config))
 {
@@ -28,7 +39,7 @@ if (isset($config['installed']) and $config['installed'])
     exit;
 }
 
-if ($config['preconfigured'] !== True)
+if (!isset($config['preconfigured']) or $config['preconfigured'] !== True)
 {
     // pre-configure installer environment
     $config['build_missing_tables'] = True;
