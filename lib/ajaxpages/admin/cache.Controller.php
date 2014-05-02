@@ -395,7 +395,11 @@ class cacheAjaxControllerSystem extends pageController {
 			// memory usage
 			$servers[$server]['memory_used'] = filesystem::bytesToSize($attributes['bytes']);
 			$servers[$server]['memory_max'] = filesystem::bytesToSize($attributes['limit_maxbytes']);
-			$servers[$server]['load_percent'] = (($attributes['cmd_get'] + $attributes['cmd_set']) / $maxLoad) * 100;
+            
+            if ($maxLoad != 0 )
+			    $servers[$server]['load_percent'] = (($attributes['cmd_get'] + $attributes['cmd_set']) / $maxLoad) * 100;
+            else
+                $servers[$server]['load_percent'] = localize('Unknown');
 		}
 
 		$this -> panthera -> template -> push('memcachedServers', $servers);
