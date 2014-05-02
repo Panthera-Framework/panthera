@@ -36,6 +36,7 @@ class routingInstallerControllerSystem extends installerController
         $this -> panthera -> routing -> map('GET|POST', 'register', array('front' => 'index.php', 'GET' => array('display' => 'register')), 'register');
         $this -> panthera -> routing -> map('GET|POST', 'login', array('front' => 'pa-login.php'), 'login');
         $this -> panthera -> routing -> map('GET|POST', 'index.[html|py|pyc|rb]', array('redirect' => '', 'code' => 301), 'index-html');
+        $this -> panthera -> routing -> map('GET', 'file/[i:fileid]/[*:filename]', array('front' => 'download.php'), 'download');
         
         $this -> getFeature('installer.routing');
         
