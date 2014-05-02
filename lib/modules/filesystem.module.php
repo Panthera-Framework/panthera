@@ -35,8 +35,12 @@ class uploadCategory extends pantheraFetchDB
     {
         if ($this -> title)
         {
-            if (@unserialize($this->title) !== False)
-                return localize($this->title[0], $this->title[1]);
+            $t = @unserialize($this->title);
+        
+            if ($t !== False)
+            {
+                return localize($t[0], $t[1]);
+            }
             
             return $this -> title;
         }

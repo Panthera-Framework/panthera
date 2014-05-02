@@ -15,7 +15,7 @@
         <div class="select" style="margin-top: 14px; margin-left: 3px;">
          <select onChange="changeCategory();" id="upload_category">
            {loop="$categories"}
-            <option {if="$setCategory == $value->name"} selected {/if}>{$value->getName()}</option>
+            <option value="{$value->name}" {if="$setCategory == $value->name"} selected {/if}>{$value->getName()}</option>
            {/loop}
          </select>
         </div>
