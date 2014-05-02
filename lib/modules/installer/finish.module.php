@@ -48,7 +48,7 @@ class finishInstallerControllerSystem extends installerController
         // move url variable from app.php to database
         $url = $config['url'];
         unset($config['url']);
-        $this -> panthera -> updateConfigCache($config);
+        $this -> panthera -> config -> updateConfigCache($config);
         $this -> panthera -> config -> setKey('url', $url, 'string');
         
         
