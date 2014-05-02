@@ -35,6 +35,8 @@ mv vendor/mobiledetect/mobiledetectlib lib/share/mobiledetectlib --force
 echo "Moving mpdf"
 mv vendor/mpdf/mpdf lib/share/mpdf --force
 
+echo `pwd`
+
 # This is temporary while waiting for RainTPLv3 author to merge pull requests with fixes required Panthera to work
 echo "Cloning Panthera-Framework/raintpl3 fork of RainTPLv3"
 rm -rf lib/share/raintpl3
