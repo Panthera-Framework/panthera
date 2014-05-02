@@ -72,7 +72,7 @@ class uploadInstallerControllerSystem extends installerController
         
         $this -> getFeature('installer.upload');
         
-        //$this -> installer -> enableNextStep();
+        $this -> installer -> enableNextStep();
         $this -> panthera -> template -> push('spinnerStepMessage', localize('Preconfiguring upload and gallery modules...', 'installer'));
         $this -> panthera -> template -> push('spinnerStepTable', $log);
         $this -> installer -> template = 'spinnerStep';
