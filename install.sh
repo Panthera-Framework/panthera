@@ -1,4 +1,5 @@
 #!/bin/sh
+export COMPOSER_HOME="/tmp" # Fix for execution from PHP
 curl -sS https://getcomposer.org/installer | php
 php composer.phar install
 
