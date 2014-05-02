@@ -124,7 +124,7 @@ function settingsUrlHandler($action, $key, $value)
     
         if (!file_get_contents($value. '/_ajax.php', 0, $ctx))
             throw new Exception('Cannot connect to selected URL (' .$key. ' key)');
-        
+            
         return $value;
     }
     

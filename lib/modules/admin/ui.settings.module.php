@@ -266,12 +266,8 @@ class uiSettings
                     }
                 }
                 
-                if ($this->settingsList[$key]['customSaveHandler'])
-                {
-                    $this->settingsList[$key]['value'] = $this->settingsList[$key]['customSaveHandler']('get', $key, '');
-                } else {
-                    $this->settingsList[$key]['value'] = $value; // update cache
-                }
+                $this->settingsList[$key]['value'] = $value; // update cache
+
                 
                 if (substr($rKey, 0, 4) == '__p_')
                 {

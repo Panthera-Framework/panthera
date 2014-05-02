@@ -44,6 +44,14 @@ class finishInstallerControllerSystem extends installerController
         
         $config['installed'] = true;
         $config['disable_overlay'] = False;
+        
+        // move url variable from app.php to database
+        $url = $config['url'];
+        unset($config['url']);
+        $this -> panthera -> updateConfigCache($config);
+        $this -> panthera -> config -> setKey('url', $url, 'string');
+        
+        
         $app -> config = (object)$config;
         $app -> save();
         
