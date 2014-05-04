@@ -13,7 +13,7 @@ error_reporting(E_ERROR);
 $newAppFile = True;
 
 // load app.php and extract $config variable
-if (is_file('content/app'))
+if (is_file('content/app.php'))
 {
     $app = @file_get_contents('content/app.php');
     $configExported = substr($app, strpos($app, '$config'), strpos($app, ');')-4);
