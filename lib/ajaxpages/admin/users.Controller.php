@@ -612,6 +612,22 @@ class usersAjaxControllerCore extends pageController
         $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\');');
         $limit = $uiPager -> getPageLimit();
 
+
+        // get groups to display groupName in users list (only id of group is set in pa_users table)
+        $groups = pantheraGroup::listGroups();
+        $groupsTpl = array();
+
+        foreach ($groups as $group)
+        {
+              
+            $groupsTpl[$group->group_id] = array(
+                'name' => $group->name, 
+                'description' => $group->description, 
+                'id' => $group->group_id
+            );
+        }
+
+
         // this we will pass to template
         if (!isset($users))
         {
@@ -627,7 +643,7 @@ class usersAjaxControllerCore extends pageController
                 $users[] = array(
                     'login' => $w->login, 
                     'name' => $w->getName(), 
-                    'primary_group' => $w->group_name, 
+                    'primary_group' => $groupsTpl[strval($w->primary_group)]['name'], 
                     'joined' => $w->joined, 
                     'language' => $w->language, 
                     'id' => $w->id, 
@@ -649,19 +665,6 @@ class usersAjaxControllerCore extends pageController
         if (@$_GET['subaction'] != 'showTable')
         {
             $this -> panthera -> locale -> loadDomain('acl');
-            $groups = pantheraGroup::listGroups();
-            $groupsTpl = array();
-
-            foreach ($groups as $group)
-            {
-                
-                $groupsTpl[] = array(
-                    'name' => $group->name, 
-                    'description' => $group->description, 
-                    'id' => $group->group_id
-                );
-            }
-
             $this -> panthera -> template -> push('groups', $groupsTpl);
         }
 
