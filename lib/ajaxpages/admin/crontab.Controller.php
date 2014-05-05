@@ -372,6 +372,14 @@ class crontabAjaxControllerSystem extends pageController
 		        'enabled' => $job -> enabled,
 		    );
 		}
+        
+        // generate new key
+        if (!$this->panthera->config->getKey('crontab_key') or $_GET['action'] == 'save')
+            $this -> panthera -> config -> setKey('crontab_key', generateRandomString(64), 'string');
+        
+        // show generated key and url
+        $this -> panthera -> template -> push ('crontabKey', $this -> panthera -> config -> getKey('crontab_key'));
+        $this -> panthera -> template -> push ('crontabUrl', str_replace('http:/', 'http://', str_replace('//', '/', $this -> panthera -> config -> getKey('url'). '/_crontab.php?_appkey=' .$this -> panthera -> config -> getKey('crontab_key'))));
 		
 		$this -> panthera -> template -> push('autoloadClasses', $this -> panthera -> config -> getKey('autoloader'));
 		$this -> panthera -> template -> push('cronjobs', $jobs);
