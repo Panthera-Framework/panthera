@@ -54,7 +54,10 @@ class pantheraInstaller
         
         // merge webroot if not merged
         if (!is_dir(SITE_DIR. '/images') or (time()-filemtime(SITE_DIR. '/images') < 3600))
-            libtemplate::webrootMerge(array('installer' => 1, 'admin' => 1));
+            libtemplate::webrootMerge(array(
+                'installer' => 1,
+                'admin' => 1,
+            ));
 		
         // temporary database for installer
         $this -> config = (object)json_decode(file_get_contents($index));
@@ -65,10 +68,11 @@ class pantheraInstaller
         $this -> db = new writableJSON(SITE_DIR. '/content/installer/db.json');
         
         // set first step as current if no current step already set
-        if (!$this->db->currentStep)
-        {
-            $this->db->currentStep = $this->config->steps[0];
-        }
+        if (!$this -> db -> currentStep)
+            $this -> db -> currentStep = $this->config->steps[0];
+            
+        if ($this -> db -> holdThisStep)
+            $this -> db -> currentStep = $this -> db -> holdThisStep;
         
         // enable or disable back button
         $currentStepKey = array_search($this->db->currentStep, $this->config->steps);
@@ -78,7 +82,16 @@ class pantheraInstaller
             $this->setButton('back', True);
         }
         
+        // default title
         $panthera -> template -> setTitle(localize('Panthera Framework installer', 'installer'));
+        
+        // title from installer config.json
+        if ($this -> config -> installerTitle)
+            $panthera -> template -> setTitle($this -> config -> installerTitle);
+        
+        // title from installer database db.json
+        if ($this -> db -> installerTitle)
+            $panthera -> template -> setTitle($this -> db -> installerTitle);
     }
     
     /**
@@ -125,6 +138,7 @@ class pantheraInstaller
     /**
      * Load a step, detect backward and forward moving parameters
      *
+     * @config lockStep (Debugging) Lock step, so we can't move to next step
      * @return void 
      * @author Damian Kęska
      */
@@ -133,7 +147,7 @@ class pantheraInstaller
     {
         $step = $this->db->currentStep;
         
-        if (isset($_GET['_stepbackward']))
+        if (isset($_GET['_stepbackward']) and !$this -> db -> lockStep)
         {
             $currentStepKey = array_search($this->db->currentStep, $this->config->steps);
             
@@ -146,7 +160,7 @@ class pantheraInstaller
             }
         }
         
-        if (isset($_GET['_nextstep']))
+        if (isset($_GET['_nextstep']) and !$this -> db -> lockStep)
         {
             if ($this -> db -> nextStepEnabled)
             {
@@ -223,6 +237,13 @@ class pantheraInstaller
             $this -> panthera -> template -> display('layout.tpl');
     }
 }
+
+/**
+ * Default front controller for pantheraInstaller
+ *
+ * @package Panthera\installer
+ * @author Damian Kęska
+ */
 
 class installerController extends pageController 
 {

@@ -58,6 +58,12 @@ class downloadControllerSystem extends pageController
         exit;
     }
     
+    /**
+     * Display no access error
+     *
+     * @return null
+     */
+    
     public function noAccess()
     {
         pantheraCore::raiseError('notfound');

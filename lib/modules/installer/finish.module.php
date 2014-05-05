@@ -1,6 +1,6 @@
 <?php
 /**
- * Final step in Panthera Installer
+ * Final step in pantheraInstaller
  * 
  * @package Panthera\installer
  * @author Damian Kęska

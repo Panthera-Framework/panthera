@@ -86,3 +86,11 @@ code {
     padding: 10px;
     border: solid 1px #56687B
 }
+
+.popupQuestion {
+    background-color: #404c5a;
+    height: 30px;
+    padding: 10px;
+    padding-bottom: 2px;
+    color: white;
+}

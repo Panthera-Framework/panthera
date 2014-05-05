@@ -1,11 +1,11 @@
 <?php
 /**
-  * Installer front controller
-  *
-  * @package Panthera\installer
-  * @author Damian Kęska
-  * @license GNU Lesser General Public License 3, see license.txt
-  */
+ * Installer front controller
+ *
+ * @package Panthera\installer
+ * @author Damian Kęska
+ * @license GNU Lesser General Public License 3, see license.txt
+ */
 
 session_start();
 error_reporting(E_ERROR);

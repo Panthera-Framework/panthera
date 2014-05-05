@@ -42,10 +42,12 @@ class introductionInstallerControllerSystem extends installerController
                     $this -> installer -> enableNextStep();
                     $this -> installer -> goToNextStep();
                 }
-            }   
+            } else {
+                $this -> panthera -> template -> push('licenceNotAccepted', True);
+            }
         }
         
         //$this -> installer -> setButton('back', False);
-        $this -> installer -> template = 'index';
+        $this -> installer -> template = 'introduction';
     }
 }
