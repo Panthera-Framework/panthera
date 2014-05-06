@@ -1079,6 +1079,7 @@ abstract class pantheraFetchDB
         'joinColumns' => '',
         'joinQuery' => '',
     );
+    protected $__meta = null;
     
     /**
      * used by userFetchAll() eg. "upload.view.{$var}" where {$var} => object's value of $__viewPermissionColumn attribute ($this->__get($this->__viewPermissionColumn))
