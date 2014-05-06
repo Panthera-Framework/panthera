@@ -471,6 +471,7 @@ class pantheraConfig
     protected $overlay_modified = array();
     protected $sections = array();
     protected $overlays = 0; // count of loaded overlays
+    protected $modifiedSections = array(); // list of modified overlays
 
     public function __construct($panthera, $config)
     {
@@ -569,7 +570,7 @@ class pantheraConfig
         if (isset($this->overlay[$key]))
         {
             // if section changed tell the framework that overlay changed
-            if (@$this->overlay[(string)$key][2] !== $section and $section !== null)
+            if (isset($this->overlay[$key][2]) and $this->overlay[$key][2] !== $section and $section !== null)
             {
                 if ($section === null)
                     $section = '';
@@ -621,12 +622,18 @@ class pantheraConfig
         return False;
     }
 
+    /**
+     * Mark a key for removal
+     * 
+     * @param string $key Key name
+     * @author Damian Kęska
+     * @return bool
+     */
+
     public function removeKey($key)
     {
-        if (!array_key_exists($key, $this->overlay))
-        {
+        if (!isset($this->overlay[$key]))
             return False;
-        }
 
         // mark for deletion
         $this->overlay_modified[(string)$key] = 'delete';
@@ -634,95 +641,85 @@ class pantheraConfig
     }
 
     /**
-      * Get key type
-      *
-      * @param string $type
-      * @return string
-      * @author Damian Kęska
-      */
+     * Get key type
+     *
+     * @param string $type
+     * @author Damian Kęska
+     * @return string
+     */
 
     public function getKeyType($key)
     {
-        if (array_key_exists($key, $this->overlay))
-        {
+        if (isset($this->overlay[$key]))
             return $this->overlay[$key][0];
-        } else
-            return 'string';
+        
+        return 'string';
     }
 
     /**
-      * Load configuration overlay from database
-      *
-      * @return int
-      * @author Damian Kęska
-      */
+     * Load configuration overlay from database
+     *
+     * @return int
+     * @author Damian Kęska
+     */
 
     public function loadOverlay($section='')
     {
         $array = null;
-        $cacheLoaded = False;
         $this->overlays++;
-
-        if ($this->panthera->cache and !$section)
+        
+        if ($this -> panthera -> cache and $section != '*')
         {
-            if ($this->panthera->cache->exists('config_overlay'))
+            if ($this->panthera->cache->exists('configOverlay.' .$section))
             {
-                $cacheLoaded = True;
-                $this->overlay = array_merge($this->overlay, $this->panthera->cache->get('config_overlay'));
-                $this->panthera->logging->output('Loaded config_overlay from cache', 'pantheraConfig');
+                $array = $this->panthera->cache->get('configOverlay.' .$section);
+                $this->panthera->logging->output('Loaded config_overlay from cache "configOverlay.' .$section. '"', 'pantheraConfig');
             }
         }
-
-        if ($array == null and $cacheLoaded == False)
+        
+        if ($array === null)
         {
             if ($section == '*')
-                $SQL = $this->panthera->db->query('SELECT `key`, `value`, `type`, `section` FROM `{$db_prefix}config_overlay`');
+                $SQL = 'SELECT `key`, `value`, `type`, `section` FROM `{$db_prefix}config_overlay`';
             else
-                $SQL = $this->panthera->db->query('SELECT `key`, `value`, `type`, `section` FROM `{$db_prefix}config_overlay` WHERE `section` = :section', array('section' => trim($section)));
-
+                $SQL = 'SELECT `key`, `value`, `type`, `section` FROM `{$db_prefix}config_overlay` WHERE `section` = "' .trim($section). '"';
+    
+            $SQL = $this->panthera->db->query($SQL);
             $array = $SQL -> fetchAll(PDO::FETCH_ASSOC);
-            
-            if (count($array) > 0)
+        }
+        
+        if (count($array) > 0)
+        {
+            foreach ($array as $key => $value)
             {
-                foreach ($array as $key => $value)
-                {
-                    if ($value['type'] == 'array')
-                        $value['value'] = @unserialize($value['value']);
+                if ($value['type'] == 'array')
+                    $value['value'] = @unserialize($value['value']);
 
-                    if ($value['type'] == 'json')
-                        $value['value'] = @json_decode($value['value']);
+                if ($value['type'] == 'json')
+                    $value['value'] = @json_decode($value['value']);
                         
-                    // remove null values
-                    if (!$value['section'])
-                    {
-                        $value['section'] = '';
-                    }
-
-                    $this->overlay[$value['key']] = array($value['type'], $value['value'], $value['section']);
-                }
-
-                if ($this->panthera->cache and $section == '')
+                // remove null values
+                if (!$value['section'])
                 {
-                    $this->panthera->cache->set('config_overlay', $this->overlay, 3600);
+                    $value['section'] = '';
                 }
+                
+                $this->overlay[$value['key']] = array($value['type'], $value['value'], $value['section']);
             }
         }
+            
+        if ($this->panthera->cache and $section != '*' and $section) {
+            $this -> panthera -> cache -> set('configOverlay.' .$section, $array, 'configOverlay');
+        } elseif (!$section and $this->panthera->cache and $section != '*')
+            $this -> panthera -> cache -> set('configOverlay', $this -> overlay, 'configOverlay');
 
-        /*if (!isset($this->overlay['debug']))
-        {
-            $this->overlay['debug'] = array('bool', False);
-            $this->overlay_modified['debug'] = 'created';
-        }*/
-        
         // mark section as loaded
         if ($section)
-        {
             $this->sections[$section] = True;
-        }
 
-        $this->panthera->logging->output('Overlay loaded, total ' .count($this->overlay). ' keys', 'pantheraCore');
+        $this -> panthera -> logging -> output('Overlay "' .$section. '" loaded, total ' .count($array). ' keys', 'pantheraCore');
         
-        return count($this->overlay);
+        return count($array);
     }
 
 
@@ -742,10 +739,24 @@ class pantheraConfig
             $this->panthera->logging->output('Saving config overlay to SQL', 'pantheraConfig');
 
             $values = array();
+            $sections = array();
             
             foreach ($this->overlay as $key => $value)
             {
-                if (!array_key_exists($key, $this->overlay_modified))
+                if ($this -> panthera -> cache and $value[2])
+                {
+                    $sections[$value[2]][] = array(
+                        'value' => $value[1],
+                        'key' => $key,
+                        'type' => $value[0],
+                        'section' => @$value[2]
+                    );
+                    
+                    if (isset($this->overlay_modified[$key]))
+                        $this -> modifiedSections[$value[2]] = true;
+                }
+                
+                if (!isset($this->overlay_modified[$key]))
                     continue;
 
                 if ($value[0] == 'json' and is_array($value[1]))
@@ -810,15 +821,23 @@ class pantheraConfig
                     ));
                 }
             }
-            
+
             // reset list of modified items
             $this->overlay_modified = array();
 
             // update cache
             if ($this->panthera->cache)
             {
-                $this->panthera->logging->output('Updating config_overlay cache', 'pantheraConfig');
-                $this->panthera->cache->set('config_overlay', $this->overlay, 3600);
+                $this -> panthera -> logging -> output('Updating config_overlay cache', 'pantheraConfig');
+                $this -> panthera -> cache -> set('configOverlay', $this->overlay, 'configOverlay');
+
+                // save all modified sections
+                foreach ($this -> modifiedSections as $section => $val)
+                {
+                    $keys = $sections[$section];
+                    $this -> panthera -> logging -> output('Saving config section "' .$section. '" to cache, couting "' .count($keys). '" elements', 'pantheraConfig');
+                    $this -> panthera -> cache -> set('configOverlay.' .$section, $keys, 'configOverlay');
+                }
             }
             
             return true;

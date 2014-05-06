@@ -171,10 +171,10 @@ class varCache_memcached
         $var = $this->filterVar($var);
         $value = $this->m->get($var);
 
-        if ($value == null)
+        if ($value === null)
             return null;
             
-        if ($value == '_$bool_$False')
+        if ($value === '_$bool_$False')
             $value = False;
             
         return $value;
