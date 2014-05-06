@@ -29,10 +29,11 @@ function selectLanguage() {
               <td><p><b>{function="localize('Language', 'installer')"}:</p></b></td>
               <td style="padding-left: 10px;">
                   <select id="language" onchange="selectLanguage();">
+                  	<option value=""></option>
                             {loop="$languages"}
                                 <option {if="$currentLocale == $key"} selected {/if}>{$key|ucfirst}</option>
                             {/loop}
-                    </select>
+                   </select>
               </td>
           </tr>
           {/if}
