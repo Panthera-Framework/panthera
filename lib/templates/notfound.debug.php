@@ -11,6 +11,18 @@ if (!defined('IN_PANTHERA'))
         <script type="text/javascript" src="{$PANTHERA_URL}/js/panthera.js"></script>
         <?php include getContentDir('templates/error.css.php'); ?>
     </head>
+    
+    <?php
+    $routes = explode("\n", htmlspecialchars($panthera->logging->getOutput()));
+                
+    foreach ($routes as $route)
+    {
+        if (strpos($route, '[routing]') !== False or strpos($route, '[PHP]') !== False)
+            $route = '<b>' .$route. '</b>';
+                    
+        $printRoutes .= $route. "<br>";
+    }
+    ?>
 
     <body>
         <div id="summary">
@@ -22,6 +34,10 @@ if (!defined('IN_PANTHERA'))
                 <li><b>Server:</b> <?php print($_SERVER['SERVER_SOFTWARE']);?></li>
                 <li><b>Panthera:</b> <?php print(PANTHERA_VERSION); ?> from <?php print(PANTHERA_DIR);?></li>
                 <li><b>Application directory:</b> <?php print(SITE_DIR); ?></li>
+                <?php
+                if (strpos($printRoutes, 'Something wrong with route') !== False)
+                    print("<li><b>Possible reason:</b> Something wrong with route syntax, please check log</li>");
+                ?>
             </ol>
         </div>
         
@@ -42,7 +58,7 @@ if (!defined('IN_PANTHERA'))
         <div>
             <h1>Log</h1>
             <div class="inner">
-                <?php echo str_replace("\n", "\n<br>", htmlspecialchars($panthera->logging->getOutput())); ?>
+                <?php print($printRoutes); ?>
             </div>
         </div>
         
