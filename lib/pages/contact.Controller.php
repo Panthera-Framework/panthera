@@ -17,7 +17,11 @@
 class contactControllerCore extends pageController
 {
     protected $contact;
-    protected $requirements = array('contact'); // list of required modules
+    
+    // list of required modules
+    protected $requirements = array(
+        'contact',
+    );
     
     /**
      * Constructor
@@ -27,6 +31,8 @@ class contactControllerCore extends pageController
     
     public function __construct()
     {
+        parent::__construct();
+        
         // just in case
         $this -> contact = new contactFrontpage;
         $this -> configure();
