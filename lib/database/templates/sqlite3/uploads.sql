@@ -12,5 +12,6 @@ CREATE TABLE "{$db_prefix}uploads" (
   "protected" INTEGER NOT NULL,
   "public" INTEGER NOT NULL,
   "title" TEXT NOT NULL,
-  "maxfilesize" INTEGER NOT NULL
+  "maxfilesize" INTEGER NOT NULL,
+  "created" datetime NOT NULL
 );

@@ -12,6 +12,7 @@ CREATE TABLE `{$db_prefix}uploads` (
   `protected` tinyint(1) NOT NULL DEFAULT '0',
   `public` tinyint(1) NOT NULL DEFAULT '1',
   `filename` varchar(256) NOT NULL,
+  `created` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 

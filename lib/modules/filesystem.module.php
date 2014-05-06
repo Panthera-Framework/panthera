@@ -517,6 +517,7 @@ class pantheraUpload
                 'public' => $public,
                 'icon' => '',
                 'filename' => $originalName,
+                'created' => DB_TIME_NOW,
             );
             
             $type = filesystem::fileTypeByMime($mime);
