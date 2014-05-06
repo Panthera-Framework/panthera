@@ -12,24 +12,25 @@ if (!defined('IN_PANTHERA'))
     exit;
 
 /**
-  * Exception handler
-  *
-  * @param object $exception
-  * @return void
-  * @Package Panthera\core
-  * @author Damian Kęska
-  */
+ * Exception handler
+ *
+ * @param object $exception
+ * @return void
+ * @Package Panthera\core
+ * @author Damian Kęska
+ */
 
 function pantheraExceptionHandler($exception)
 {
     $panthera = pantheraCore::getInstance();
-    $panthera->logging->output('pantheraExceptionHandler::Unhandled exception, starts;');
-    $panthera->logging->output($exception->getMessage());
-    $panthera->logging->output($exception->getFile(). ' on line ' .$exception->getLine());
+    $panthera->logging->output('Unhandled exception, starts;', 'pantheraExceptionHandler');
+    $panthera->logging->output($exception->getMessage(), 'pantheraExceptionHandler');
+    $panthera->logging->output($exception->getFile(). ' on line ' .$exception->getLine(), 'pantheraExceptionHandler');
 
     $trace = $exception->getTrace();
 
-    foreach ($trace as $key => $stackPoint) {
+    foreach ($trace as $key => $stackPoint)
+    {
         // I'm converting arguments to their type
         // (prevents passwords from ever getting logged as anything other than 'string')
         $trace[$key]['args_content'] = null;
@@ -1042,9 +1043,17 @@ class pantheraCore
     
     public static function raiseError($name)
     {
-        $file = getContentDir('templates/' .$name. '.php');
+        $panthera = pantheraCore::getInstance();
+        $file = False;
         
-        if (is_file($file))
+        // in debugging mode we can have special versions of error pages
+        if ($panthera -> logging -> debug)
+            $file = getContentDir('templates/' .$name. '.debug.php');
+        
+        if (!$file)
+            $file = getContentDir('templates/' .$name. '.php');
+        
+        if ($file)
         {
             include $file;
             exit;

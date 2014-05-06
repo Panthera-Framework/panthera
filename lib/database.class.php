@@ -762,6 +762,8 @@ class pantheraDB extends pantheraClass
 
     public function getRows($db, $by, $limit, $offset, $returnAs='', $orderColumn='id', $order='DESC')
     {
+        $sqlLimit = '';
+        
         if (is_numeric($limit))
         {
             if (intval($limit) > 0)
