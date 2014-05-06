@@ -463,6 +463,14 @@ class pantheraUpload
             chmod($uploadDir. '/_private', 0700);
         }
         
+        // support for Apache's .htaccess
+        if (!is_file($uploadDir. '/_private/.htaccess'))
+        {
+            $fp = fopen($uploadDir. '/_private/.htaccess', 'w');
+            fwrite($fp, "deny from all\n");
+            fclose($fp);
+        }
+        
         $originalName = basename($name);
         
         // put file to hidden directory protected by .htaccess and router

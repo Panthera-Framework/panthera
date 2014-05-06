@@ -1071,11 +1071,10 @@ abstract class pantheraFetchDB
     protected $cacheID = "";
     protected $treeID = '';
     protected $treeParent = '';
-    protected $_removed = false;
+    protected $_removed = False;
     protected $_joinColumns = array(
         /*array('LEFT JOIN', 'groups', array('group_id' => 'primary_group'), array('name' => 'group'))*/
     );
-    
     protected $_queryCache = array(
         'joinColumns' => '',
         'joinQuery' => '',
@@ -1083,12 +1082,14 @@ abstract class pantheraFetchDB
     
     /**
      * used by userFetchAll() eg. "upload.view.{$var}" where {$var} => object's value of $__viewPermissionColumn attribute ($this->__get($this->__viewPermissionColumn))
+     * @author Damian Kęska
      */
     
     protected $_viewPermission = null;
     
     /**
      * used by userFetchAll() eg. "id"
+     * @author Damian Kęska
      */
     
     protected $_viewPermissionColumn = null;
@@ -1096,6 +1097,7 @@ abstract class pantheraFetchDB
     /**
      * Get class inforamtions (used db table, columns)
      * 
+     * @author Damian Kęska
      * return array
      */ 
     
@@ -1115,8 +1117,162 @@ abstract class pantheraFetchDB
     }
     
     /**
+      * Constructor, here are logics that parses and loads all data, cache management etc.
+      *
+      * @param mixed $by
+      * @param mixed $value
+      * @return void 
+      * @author Damian Kęska
+      */
+
+    public function __construct($by, $value)
+    {
+        global $panthera;
+        $this->panthera = $panthera;
+        $this->cacheGroup = get_class($this);
+        
+        // if it's just empty object
+        if ($by === null)
+        {
+            return false;
+        }
+        
+        // in case when we have other column identificator but want to use `id` to construct object
+        if ($by == 'id' and $this->_idColumn != 'id')
+        {
+            $by = $this->_idColumn;
+        }
+        
+        /**
+          * Cache
+          *
+          */
+        
+        // get cache life time from database class
+        if ($panthera->cacheType('cache') == 'memory' and $panthera->db->cache > 0 and $this->cache !== -1 and $this->cache !== False)
+        {
+            $this->cache = $panthera->db->cache;
+        }
+        
+        // create a content cacheID, but at first check if caching is possible (we cant cache complicated objects like those constructed by array or object)
+        if ($this->cache > 0 and is_string($by) and $by != 'array' and $this->panthera->cache)
+        {    
+            $this->cacheID = $panthera->db->prefix.$this->_tableName. '.' .serialize($by). '.' .$value;
+        } else {
+            $panthera -> logging -> output('Cache disabled for this ' .get_class($this). ' object', $this->cacheGroup);
+        }   
+         
+        if ($this->cacheID)
+        {
+            if ($panthera->cache->exists($this->cacheID))
+            {
+                $panthera->logging->output('Found record in cache by id=' .$this->cacheID, $this->cacheGroup);
+                $this->_data = $panthera->cache->get($this->cacheID);
+                return True;
+            }
+        }
+        
+        // check if child class has met requirements - if the table name is provided
+        if (!$this->_tableName)
+            throw new Exception('$this->_tableName was not specified, cannot construct object of ' .get_class($this). ' extended by pantheraFetchDB');
+            
+        /**
+          * Constructing object by array
+          *
+          */
+
+        // construct object using existing data, so we dont have to make a SQL query again
+        if ($by == 'array' and in_array('array', $this->_constructBy))
+        {
+            if ($panthera -> logging -> debug == True)
+                $panthera -> logging -> output(get_class($this). '::Creating object from array ' .json_encode($value), $this->cacheGroup);
+            
+            // hooking
+            $panthera -> get_options('pantheraFetchDB.' .get_class($this). '__construct', $this, $by);
+            
+            $this->_data = $value;
+            $panthera -> add_option('session_save', array($this, 'save'));
+            return False;
+        } else {
+            $SQL = NuLL;
+
+            // get last result from DB
+            if ($by == 'last_result')
+            {
+                $w = new whereClause();
+
+                if (is_array($value))
+                {
+                    foreach ($value as $k => $v)
+                    {
+                        $w -> add( 'AND', $k, '=', $v);
+                    }
+
+                    $q = $w -> show();
+                    $SQL = $panthera->db->query($this->getQuery(). ' WHERE '.$q[0]. ' ORDER BY `id` DESC LIMIT 0,1', $q[1]);
+                } else
+                    $SQL = $panthera->db->query($this->getQuery(). ' ORDER BY `id`');
+            }
+            
+            /**
+              * Constructing by multiple columns
+              *
+              */
+            
+            if (!$SQL and is_object($by))
+            {
+                if (get_class($by) != "whereClause")
+                    throw new Exception('Input $by must be a whereClause object or a string with column name');
+            
+                $clause = $by->show();
+                $SQL = $panthera->db->query($this->getQuery(). ' WHERE ' .$clause[0]. ' LIMIT 0,1', $clause[1]);
+                //$by = $clause[0]; // caching object cannot be realized, its almost impossible
+                //$value = $clause[1];
+                
+                if($panthera->logging->debug == True)
+                    $panthera->logging->output(get_class($this). ':: Skipped cache in construction by object ' .$clause[0]. ' ' .json_encode($clause[1]), $this->cacheGroup);
+            }
+            
+            /**
+              * Constructing by column
+              *
+              */
+
+            // if we dont have array to take fetched data we must fetch it by our own
+            if (in_array($by, $this->_constructBy) and $SQL == NULL)
+            {
+                $SQL = $panthera->db->query($this->getQuery(). ' WHERE `' .$by. '` = :' .$by. ' LIMIT 0,1', array($by => $value));
+            }
+
+            // getting results and building a object
+            if ($SQL != NULL)
+            {
+                if ($SQL -> rowCount() > 0)
+                {
+                    $this->_data = $SQL -> fetch(PDO::FETCH_ASSOC);
+                    
+                    // write to cache
+                    $this -> updateCache();
+                    
+                    if($panthera->logging->debug == True)
+                        $panthera->logging->output(get_class($this). '::Found a record by "' .json_encode($by). '" (value=' .json_encode($value). ')', $this->cacheGroup);
+
+                    $panthera -> add_option('session_save', array($this, 'save'));
+
+                } else {
+                    if($panthera->logging->debug == True)
+                        $panthera->logging->output(get_class($this). '::Cannot find record by "' .json_encode($by). '" (value=' .json_encode($value). ')', $this->cacheGroup);
+                }
+            }
+
+            $panthera -> get_options('pantheraFetchDB.' .get_class($this). '__construct', $this, $by);
+        }
+    }
+    
+    /**
      * Static version of _getClassInfo() function
      * 
+     * @author Damian Kęska
      * @return array
      */
     
@@ -1128,10 +1284,24 @@ abstract class pantheraFetchDB
     }
     
     /**
+     * Set object read only
+     * 
+     * @param bool $ro (Optional) Set as read-write or read-only, set as True to set object read-only
+     * @author Damian Kęska
+     * @return null
+     */
+    
+    public function readOnly($ro=True)
+    {
+        $this -> _removed = (bool)$ro;
+    }
+    
+    /**
      * Build a joined tables query
      * 
      * @param bool $selectString Build a list of columns for SELECT statement?
      * @param bool $force Skip in-class query cache (set to True if you modified $_joinColumns variable on the fly)
+     * @author Damian Kęska
      * @return string
      */
     
@@ -1395,167 +1565,14 @@ abstract class pantheraFetchDB
 
         return static::resultsToTree($results, null, $info['treeID'], $info['treeParent']);
     }
-    
-    /**
-      * Constructor, here are logics that parses and loads all data, cache management etc.
-      *
-      * @param mixed $by
-      * @param mixed $value
-      * @return void 
-      * @author Damian Kęska
-      */
 
-    public function __construct($by, $value)
-    {
-        global $panthera;
-        $this->panthera = $panthera;
-        $this->cacheGroup = get_class($this);
-        
-        // if it's just empty object
-        if ($by === null)
-        {
-            return false;
-        }
-        
-        // in case when we have other column identificator but want to use `id` to construct object
-        if ($by == 'id' and $this->_idColumn != 'id')
-        {
-            $by = $this->_idColumn;
-        }
-        
-        /**
-          * Cache
-          *
-          */
-        
-        // get cache life time from database class
-        if ($panthera->cacheType('cache') == 'memory' and $panthera->db->cache > 0 and $this->cache !== -1 and $this->cache !== False)
-        {
-            $this->cache = $panthera->db->cache;
-        }
-        
-        // create a content cacheID, but at first check if caching is possible (we cant cache complicated objects like those constructed by array or object)
-        if ($this->cache > 0 and is_string($by) and $by != 'array' and $this->panthera->cache)
-        {    
-            $this->cacheID = $panthera->db->prefix.$this->_tableName. '.' .serialize($by). '.' .$value;
-        } else {
-            $panthera -> logging -> output('Cache disabled for this ' .get_class($this). ' object', $this->cacheGroup);
-        }   
-         
-        if ($this->cacheID)
-        {
-            if ($panthera->cache->exists($this->cacheID))
-            {
-                $panthera->logging->output('Found record in cache by id=' .$this->cacheID, $this->cacheGroup);
-                $this->_data = $panthera->cache->get($this->cacheID);
-                return True;
-            }
-        }
-        
-        // check if child class has met requirements - if the table name is provided
-        if (!$this->_tableName)
-            throw new Exception('$this->_tableName was not specified, cannot construct object of ' .get_class($this). ' extended by pantheraFetchDB');
-            
-        /**
-          * Constructing object by array
-          *
-          */
-
-        // construct object using existing data, so we dont have to make a SQL query again
-        if ($by == 'array' and in_array('array', $this->_constructBy))
-        {
-            if ($panthera -> logging -> debug == True)
-                $panthera -> logging -> output(get_class($this). '::Creating object from array ' .json_encode($value), $this->cacheGroup);
-            
-            // hooking
-            $panthera -> get_options('pantheraFetchDB.' .get_class($this). '__construct', $this, $by);
-            
-            $this->_data = $value;
-            $panthera -> add_option('session_save', array($this, 'save'));
-            return False;
-        } else {
-            $SQL = NuLL;
-
-            // get last result from DB
-            if ($by == 'last_result')
-            {
-                $w = new whereClause();
-
-                if (is_array($value))
-                {
-                    foreach ($value as $k => $v)
-                    {
-                        $w -> add( 'AND', $k, '=', $v);
-                    }
-
-                    $q = $w -> show();
-                    $SQL = $panthera->db->query($this->getQuery(). ' WHERE '.$q[0]. ' ORDER BY `id` DESC LIMIT 0,1', $q[1]);
-                } else
-                    $SQL = $panthera->db->query($this->getQuery(). ' ORDER BY `id`');
-            }
-            
-            /**
-              * Constructing by multiple columns
-              *
-              */
-            
-            if (!$SQL and is_object($by))
-            {
-                if (get_class($by) != "whereClause")
-                    throw new Exception('Input $by must be a whereClause object or a string with column name');
-            
-                $clause = $by->show();
-                $SQL = $panthera->db->query($this->getQuery(). ' WHERE ' .$clause[0]. ' LIMIT 0,1', $clause[1]);
-                //$by = $clause[0]; // caching object cannot be realized, its almost impossible
-                //$value = $clause[1];
-                
-                if($panthera->logging->debug == True)
-                    $panthera->logging->output(get_class($this). ':: Skipped cache in construction by object ' .$clause[0]. ' ' .json_encode($clause[1]), $this->cacheGroup);
-            }
-            
-            /**
-              * Constructing by column
-              *
-              */
-
-            // if we dont have array to take fetched data we must fetch it by our own
-            if (in_array($by, $this->_constructBy) and $SQL == NULL)
-            {
-                $SQL = $panthera->db->query($this->getQuery(). ' WHERE `' .$by. '` = :' .$by. ' LIMIT 0,1', array($by => $value));
-            }
-
-            // getting results and building a object
-            if ($SQL != NULL)
-            {
-                if ($SQL -> rowCount() > 0)
-                {
-                    $this->_data = $SQL -> fetch(PDO::FETCH_ASSOC);
-                    
-                    // write to cache
-                    $this -> updateCache();
-                    
-                    if($panthera->logging->debug == True)
-                        $panthera->logging->output(get_class($this). '::Found a record by "' .json_encode($by). '" (value=' .json_encode($value). ')', $this->cacheGroup);
-
-                    $panthera -> add_option('session_save', array($this, 'save'));
-
-                } else {
-                    if($panthera->logging->debug == True)
-                        $panthera->logging->output(get_class($this). '::Cannot find record by "' .json_encode($by). '" (value=' .json_encode($value). ')', $this->cacheGroup);
-                }
-            }
-
-            $panthera -> get_options('pantheraFetchDB.' .get_class($this). '__construct', $this, $by);
-        }
-    }
-    
     /**
       * Clear this element cache
       *
       * @return bool 
       * @author Damian Kęska
       */
-    
+
     public function clearCache($index=False)
     {
         if (!$this->exists())
@@ -1732,17 +1749,19 @@ abstract class pantheraFetchDB
       */
 
     public function save()
-    {        
+    {
+        // check if object was removed
+        if ($this -> _removed)
+            return False;
+        
         $panthera = pantheraCore::getInstance();
-
-        if ($panthera == NuLL)
-            $panthera = $this->panthera;
             
-        if ($panthera->logging->debug == True)
+        if ($panthera->logging->debug)
             $panthera -> logging -> output ('Panthera Fetch DB class=' .get_class($this). ', changed data=' .print_r($this->_dataModified, True), $this->cacheGroup);
         
         $panthera -> get_options('pantheraFetchDB.' .get_class($this). '.save', $this);
 
+        // check if any data was modified
         if($this->_dataModified and $this->_tableName)
         {
             $id = (integer)$this->_data[$this->_idColumn];

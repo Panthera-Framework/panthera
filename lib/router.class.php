@@ -416,7 +416,7 @@ class routing {
             }
         }
 
-        $this -> panthera -> logging -> output('Routing resolved, found ' .intval($matches). ' matches', 'routing');
+        $this -> panthera -> logging -> output('Routing resolved, found ' .intval($match). ' matches', 'routing');
 
         return false;
     }
