@@ -1127,7 +1127,7 @@ abstract class pantheraFetchDB
 
     public function __construct($by, $value)
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $this->panthera = $panthera;
         $this->cacheGroup = get_class($this);
         
@@ -1787,7 +1787,21 @@ abstract class pantheraFetchDB
                  
             $this->_dataModified = False;
         }
-    }    
+    }
+
+    /**
+     * Get metaAttributes object for this entry
+     * 
+     * @return metaAttributes
+     */
+
+    public function getMeta()
+    {
+        if (!$this -> __meta)
+            $this -> __meta = new metaAttributes($this -> panthera, get_called_class(), $this -> __get($this -> _idColumn), $this -> cache);
+        
+        return $this -> __meta;
+    }
 }
 
 /**

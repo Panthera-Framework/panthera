@@ -1,7 +1,7 @@
 <?php
 /**
   * Panthera user management
-  * @package Panthera\core\user
+  * @package Panthera\user
   * @author Damian Kęska
   */
 
@@ -11,7 +11,7 @@ if (!defined('IN_PANTHERA'))
 /**
  * Panthera User Management Class
  *
- * @package Panthera\core\user
+ * @package Panthera\user
  * @author Damian Kęska
  */
 
@@ -253,7 +253,7 @@ class pantheraUser extends pantheraFetchDB
 /**
   * Panthera groups management
   *
-  * @package Panthera\core\user\groups
+  * @package Panthera\user\groups
   * @author Damian Kęska
   */
 
@@ -277,9 +277,9 @@ class pantheraGroup extends pantheraFetchDB
     public function __construct($by, $value)
     {
         parent::__construct($by, $value);
-
+        
         if ($this -> exists())
-            $this -> acl = new metaAttributes($this->panthera, 'g', $this->group_id, $this->cache);
+            $this -> acl = new metaAttributes($this->panthera, 'g', $this->group_id, (bool)$this->cache);
     }
 
     /**
@@ -423,7 +423,7 @@ class pantheraGroup extends pantheraFetchDB
  * Get current logged in user (if logged in)
  *
  * @return pantheraUser
- * @package Panthera\core\user
+ * @package Panthera\user
  * @author Damian Kęska
  */
 
@@ -443,7 +443,7 @@ function getCurrentUser()
  * Create new user in {$db_prefix}users
  *
  * @return bool
- * @package Panthera\core\user
+ * @package Panthera\user
  * @author Mateusz Warzyński
  * @author Damian Kęska
  */
@@ -581,7 +581,7 @@ function createNewUser($login, $passwd, $full_name, $primary_group='', $attribut
  * Simply remove user by `name`. Returns True if any row was affected
  *
  * @return bool
- * @package Panthera\core\user
+ * @package Panthera\user
  * @author Mateusz Warzyński
  */
 
@@ -606,7 +606,7 @@ function removeUser($login, $id='')
  * @param string $passwd Password
  * @param bool $forceWithoutPassword Login without password
  * @return bool|string True if success, false on failure and string with error id on error (eg. "BANNED")
- * @package Panthera\core\user
+ * @package Panthera\user
  * @author Damian Kęska
  */
 
@@ -649,7 +649,7 @@ function userCreateSession($user, $passwd, $forceWithoutPassword=False)
   *
   * @param int $id User id
   * @return bool
-  * @package Panthera\core\user
+  * @package Panthera\user
   * @author Damian Kęska
   */
 
@@ -672,7 +672,7 @@ function userCreateSessionById($id)
  * Simply logout user
  *
  * @return bool
- * @package Panthera\core\user
+ * @package Panthera\user
  * @author Damian Kęska
  */
 
@@ -688,7 +688,7 @@ function logoutUser()
  * Check if user is logged in and if is admin (the second, optional argument)
  *
  * @return bool
- * @package Panthera\core\user
+ * @package Panthera\user
  * @author Damian Kęska
  */
 
@@ -722,7 +722,7 @@ function checkUserPermissions($user=null, $admin=False)
  * Check if user have rights to do action, based on ACL attributes and user attributes
  *
  * @return bool
- * @package Panthera\core\user
+ * @package Panthera\user
  * @author Damian Kęska
  */
 
@@ -750,7 +750,7 @@ function getUserRightAttribute($user, $attribute)
   * Check if user is logged in
   *
   * @return bool
-  * @package Panthera\core\user
+  * @package Panthera\user
   * @author Damian Kęska
   */
 
@@ -765,11 +765,11 @@ function userLoggedIn()
 }
 
 /**
-  * Meta tags management class
-  *
-  * @package Panthera\core\user
-  * @author Damian Kęska
-  */
+ * Meta tags management class
+ *
+ * @package Panthera\metaAttributes
+ * @author Damian Kęska
+ */
 
 class metaAttributes
 {
@@ -778,33 +778,32 @@ class metaAttributes
     protected $_objectID;
     protected $_panthera;
     protected $_type;
-    protected $_cache;
     protected $_cacheID = '';
     protected $panthera;
     protected $overlays = array();
 
     /**
-      * Constructor
-      *
-      * @param string $type Meta type eg. gallery
-      * @param string $objectID Object ID eg. 1 (first image in gallery)
-      * @author Damian Kęska
-      */
+     * Constructor
+     *
+     * @param pantheraCore $panthera
+     * @param string $type Meta type eg. gallery
+     * @param string $objectID Object ID eg. 1 (first image in gallery)
+     * @author Damian Kęska
+     */
 
-    public function __construct($panthera, $type, $objectID, $cache)
+    public function __construct(pantheraCore $panthera, $type, $objectID, $cache=True)
     {
         $this->panthera = $panthera;
         $this->_type = $type;
         $this->_objectID = $objectID;
-        $this->_cache = $cache;
-
+        
         // check if cache is avaliable
-        if ($this->_cache > 0 and $panthera->cache)
+        if ($cache and $panthera -> cache)
         {
             $this -> _cacheID = 'meta.' .$type. '.' .$objectID;
             
             if ($panthera -> cache -> exists($this->_cacheID))
-                $this->_metas = $panthera->cache->get($this->_cacheID);
+                $this->_metas = $panthera -> cache -> get($this->_cacheID);
         }
         
         if ($this->_metas === null)
@@ -820,7 +819,8 @@ class metaAttributes
             }
             
             // update cache
-            if ($this -> _cache > 0 and $panthera -> cache) {
+            if ($this -> _cacheID)
+            {
                 $panthera -> cache -> set ($this->_cacheID, $this->_metas, 'metaAttributes');
                 $panthera -> logging -> output ('Wrote meta to cache id=' .$this->_cacheID, 'metaAttributes');
             }
@@ -1001,7 +1001,7 @@ class metaAttributes
 
         $Array = null;
 
-        if ($this -> _cache > 0 and $this -> panthera -> cache)
+        if ($this -> _cacheID)
         {
             $cacheID = 'meta.overlay.' .$type. '.' .$objectID;
 
@@ -1009,19 +1009,19 @@ class metaAttributes
             {
                 $Array = $this -> panthera -> cache -> get($cacheID);
 
-                if ($Array == null)
+                if ($Array === null)
                     $Array = array();
 
                 $this -> panthera -> logging -> output ('Read from cache id=' .$cacheID, 'metaAttributes');
             }
         }
 
-        if ($Array == null)
+        if ($Array === null)
         {
             $SQL = $this -> panthera -> db -> query ('SELECT * FROM `{$db_prefix}metas` WHERE `type` = :type AND `userid` = :objectID', array('type' => $type, 'objectID' => $objectID));
             $Array = $SQL -> fetchAll (PDO::FETCH_ASSOC);
 
-            if ($this -> _cache > 0 and $this -> panthera -> cache)
+            if ($this -> _cacheID)
             {
                 $this -> panthera -> cache -> set ($cacheID, $Array, 'metaAttributes');
                 $this -> panthera -> logging -> output ('Wrote to cache id=' .$cacheID, 'metaAttributes');
@@ -1127,7 +1127,8 @@ class metaAttributes
             $this -> _changed = array();
 
             // write changes to cache too
-            if ($this -> _cache > 0 and $panthera -> cache) {
+            if ($this -> _cacheID) 
+            {
                 $panthera -> cache -> set ($this->_cacheID, $this->_metas, 'metaAttributes');
                 $panthera -> logging -> output ('Saved meta to cache id=' .$this->_cacheID, 'metaAttributes');
             }
