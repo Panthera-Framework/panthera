@@ -35,9 +35,7 @@ class pantheraInstaller
         $this -> panthera = $panthera;
         
         if (!($index = getContentDir('installer/config.json')))
-        {
             throw new Exception('Cannot find /lib/installer/config.json (check Panthera installation integrity), and /lib/installer/config.json');
-        }
         
         $panthera -> importModule('rwjson');
         $panthera -> importModule('libtemplate');
@@ -65,32 +63,38 @@ class pantheraInstaller
         if (!isset($this->config->steps))
             throw new Exception('Installer configuration must contain list of steps');
         
-        $this -> db = new writableJSON(SITE_DIR. '/content/installer/db.json');
+        $this -> db = new writableJSON(SITE_DIR. '/content/installer/db.json', $this -> config);
         
         // set first step as current if no current step already set
         if (!$this -> db -> currentStep)
-            $this -> db -> currentStep = $this->config->steps[0];
+            $this -> db -> set('currentStep', $this->db->steps[0]);
             
         if ($this -> db -> holdThisStep)
-            $this -> db -> currentStep = $this -> db -> holdThisStep;
+            $this -> db -> set('currentStep', $this -> db -> holdThisStep);
         
+        /* Localization */
+        // save locale to configuration file
+        if (isset($_GET['_locale']))
+            $this -> db -> set('locale', $_GET['_locale']);
+        
+        // restore locale from configuration file
+        if ($this -> db -> exists('locale') and !isset($_GET['_locale']))
+            $this -> panthera -> locale -> setLocale($this -> db -> locale);
+        
+        /* Installation steps */
         // enable or disable back button
-        $currentStepKey = array_search($this->db->currentStep, $this->config->steps);
+        $currentStepKey = array_search($this->db->currentStep, $this->db->steps);
         
         if ($currentStepKey > 0)
-        {
             $this->setButton('back', True);
-        }
         
         // default title
         $panthera -> template -> setTitle(localize('Panthera Framework installer', 'installer'));
         
-        // title from installer config.json
-        if ($this -> config -> installerTitle)
-            $panthera -> template -> setTitle($this -> config -> installerTitle);
         
+        /* Title */
         // title from installer database db.json
-        if ($this -> db -> installerTitle)
+        if ($this -> db -> exists('installerTitle'))
             $panthera -> template -> setTitle($this -> db -> installerTitle);
     }
     

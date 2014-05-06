@@ -70,19 +70,21 @@ class indexInstallerControllerSystem extends installerController
         
         /** List of locales, current language **/
         
-        $currentLocale = $this->config['language.default']['value'];
+        //$currentLocale = $this->config['language.default']['value'];
+        $currentLocale = $this -> panthera -> locale -> getActive();
         
-        if (localesManagement::getDomainDir($this -> panthera -> locale -> getActive(), 'installer'))
-            $currentLocale = $this -> panthera -> locale -> getActive();
+        //if (localesManagement::getDomainDir($this -> panthera -> locale -> getActive(), 'installer'))
+        //    $currentLocale = $this -> panthera -> locale -> getActive();
             
         if (is_file(SITE_DIR. '/images/admin/flags/' .$currentLocale. '.png'))
             $this -> panthera -> template -> push ('currentLocaleFlag', True);
 
         if ($this->config['language.enableselect']['value'])
         {
-            $this -> panthera -> template -> push ('currentLocale', $currentLocale);
             $this -> panthera -> template -> push ('languages', $locales);
         }
+        
+        $this -> panthera -> template -> push ('currentLocale', $currentLocale);
     }
 
     /**

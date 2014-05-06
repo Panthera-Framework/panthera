@@ -2,7 +2,7 @@
 /**
   * Writable JSON file editor
   * 
-  * @package Panthera\installer
+  * @package Panthera\modules\rwjson
   * @author Damian Kęska
   * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
@@ -11,7 +11,7 @@
 /**
   * Writable JSON editor
   *
-  * @package Panthera\installer
+  * @package Panthera\modules\rwjson
   * @author Damian Kęska
   */
 
@@ -20,26 +20,46 @@ class writableJSON
     protected $db = array();
     protected $file = '';
     protected $modified = False;
+    protected $readOnly = False;
 
     /**
       * Constructor
       *
       * @param string $file path
+      * @param array|object|string $callback File or array of keys to include
       * @return void 
       * @author Damian Kęska
       */
 
-    public function __construct ($file)
+    public function __construct ($file, $fallback=null)
     {
         $panthera = pantheraCore::getInstance();
     
-        if (!is_file($file))
+        if (!is_file($file) or !is_readable($file))
         {
             throw new Exception('Cannot open file "' .$file. '", check read permissions');
         }
         
         $this -> file = $file;
-        $this -> db = (array)json_decode(file_get_contents($file));
+        $this -> db = array();
+        
+        // merge fallback json into database
+        if ($fallback)
+        {
+            if (is_object($fallback))
+                $fallback = (array)$fallback;
+            elseif (is_string($fallback) and is_file($fallback) and is_readable($fallback))
+                $fallback = json_decode(file_get_contents($fallback), true);
+            
+            if (is_array($fallback))
+            {
+                $this -> db = array_merge($this -> db, $fallback);
+                $panthera -> logging -> output('Merged ' .count($fallback). ' entries from fallback', 'rwjson');
+            }
+        }
+        
+        $this -> db = array_merge($this -> db, (array)json_decode(file_get_contents($file)));
+        
         $panthera -> add_option('session_save', array($this, 'save'));
     }
     
@@ -89,6 +109,54 @@ class writableJSON
     }
     
     /**
+     * List all keys
+     * 
+     * @author Damian Kęska
+     * @return array
+     */
+    
+    public function listAll()
+    {
+        return $this -> db;
+    }
+    
+    /**
+     * Check if key exists
+     * 
+     * @return bool
+     */
+    
+    public function exists($key)
+    {
+        return isset($this -> db[$key]);
+    }
+    
+    /**
+     * Check if current object was modified
+     * 
+     * @author Damian Kęska
+     * @return bool
+     */
+    
+    public function isModified()
+    {
+        return $this -> modified;
+    }
+    
+    /**
+     * Set current object to read-only or read-write
+     * 
+     * @param bool $ro Set to true to set read-only, set to false to set to read-write
+     * @author Damian Kęska
+     * @return null
+     */
+    
+    public function readOnly($ro=True)
+    {
+        $this -> readOnly = (bool)$ro;
+    }
+    
+    /**
       * Remove a key from database
       *
       * @param string $key
@@ -116,7 +184,7 @@ class writableJSON
     
     public function save()
     {
-        if ($this->modified == True)
+        if ($this->modified == True and !$this -> readOnly)
         {
             $fp = fopen($this->file, 'w');
             if (version_compare(phpversion(), '5.4.0', '>'))
