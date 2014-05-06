@@ -389,6 +389,9 @@ class routing {
                 $regex = $this->compileRoute($route);
                 $regex = $regex['regex'];
                 $match = @preg_match($regex, $requestUrl, $params);
+                
+                if ($match === False)
+                    $this -> panthera -> logging -> output('Something wrong with route "' .$route. '", regex: ' .$regex. '. preg_match returned error, please check route syntax', 'routing');
             }
 
             if(($match == true || $match > 0)) 
