@@ -2685,7 +2685,7 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
     
     
     
-    if ($display_output == False)
+    if (!$display_output)
     {
         return $array;
         
@@ -2705,6 +2705,11 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
             
             $output .= $diff->format($timeFormats[$timeRange]). ' ' .localize($timeRange). ' ';
         }
+        
+        $output = trim($output);
+        
+        if (!$output)
+            $output = localize('a moment');
     
         return $output;
     }
@@ -2934,9 +2939,7 @@ function forRange($range=0)
     $arr = array();
     
     for ($i=0; $i<$range; $i++)
-    {
         $arr[] = null;
-    }
     
     return $arr;
 }
