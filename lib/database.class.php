@@ -1416,8 +1416,10 @@ abstract class pantheraFetchDB
             return false;
         
         $this -> panthera -> db -> query('DELETE FROM `{$db_prefix}' .$this->_tableName. '` WHERE `' .$this->_idColumn. '` = :idColumnValue LIMIT 1;', array('idColumnValue' => $this -> __get($this->_idColumn)));
+        $this -> panthera -> logging -> output('Removed object "' .$this -> __get($this->_idColumn). '"', get_called_class());
         $this -> clearCache();
         $this -> _removed = true;
+        $this -> _data = null;
         
         return true;
     }
