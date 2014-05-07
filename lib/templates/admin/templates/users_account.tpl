@@ -181,7 +181,7 @@ function getAvatar(link, id)
                     <div class="select" style="margin-top: 14px; margin-left: 3px; width: 208px;">
                      <select onChange="changeCategory();" name="language" style="width: 210px;">
                        {loop="$locales_added"}
-                        <option>{$key}</option>
+                        <option{if="$key == $user_language"} selected {/if}>{$key}</option>
                        {/loop}
                      </select>
                     </div>
