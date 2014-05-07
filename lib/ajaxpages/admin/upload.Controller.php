@@ -30,6 +30,7 @@ class uploadAjaxControllerCore extends pageController
         'popupDelete' => _CONTROLLER_PERMISSION_INLINE_,
         'popupUploadFileWindow' => array('admin.upload' => array('Upload administrator', 'upload'), 'admin.upload.insertfile', 'upload.manage.{$directory}'),
         'saveSettings' => array('admin.upload' => array('Upload administrator', 'upload')),
+        'editCategory' => array('admin.upload' => array('Upload administrator', 'upload'), 'upload.manage.{$directory}'),
     );
     
     
@@ -56,8 +57,62 @@ class uploadAjaxControllerCore extends pageController
             'status' => 'success',
         ));
     }
-    
-    
+
+    /**
+     * Edit category or display it's details
+     * 
+     * @template upload.editCategory.tpl
+     * @return null
+     */
+
+    public function editCategoryAction()
+    {
+        $category = new uploadCategory('name', $_GET['directory']);
+        
+        if (!$category -> exists())
+        {
+            /*ajax_exit(array(
+                'status' => 'failed',
+                'message' => localize('Cannot find selected category', 'upload'),
+            ));*/
+            
+            $this -> panthera -> template -> push('notfound', true);
+        } else {
+            $this -> panthera -> template -> push('category', $category);
+            
+            /**
+             * Saving category details
+             */
+            
+            if (isset($_POST['formSubmit']))
+            {
+                if (isset($_POST['mime']))
+                    $category -> mime_type = $_POST['mime'];
+                
+                if (isset($_POST['name']) and $_POST['name'])
+                    $category -> title = $_POST['name'];
+                
+                if (isset($_POST['maxfilesize']))
+                    $category -> maxfilesize = $_POST['maxfilesize'];
+                
+                if ($category -> modified())
+                {
+                    $category -> save();
+                    
+                    ajax_exit(array(
+                        'status' => 'success',
+                    ));
+                } else {
+                    ajax_exit(array(
+                        'status' => 'failed',
+                    ));
+                }
+            }
+        }
+        
+        $this -> panthera -> template -> display('upload.editCategory.tpl');
+        pa_exit();
+    }
     
     /**
      * Delete upload category function

@@ -1269,6 +1269,17 @@ abstract class pantheraFetchDB
             $panthera -> get_options('pantheraFetchDB.' .get_class($this). '__construct', $this, $by);
         }
     }
+
+    /**
+     * Check if data was modified
+     * 
+     * @return bool
+     */
+
+    public function modified()
+    {
+        return $this -> _dataModified;
+    }
     
     /**
      * Static version of _getClassInfo() function
@@ -1721,6 +1732,11 @@ abstract class pantheraFetchDB
             $this->panthera->logging->output(get_class($this). '::Trying to set non-existing property "' .$var. '"', $this->cacheGroup);
             return False;
         }
+        
+        // support for on-save filters
+        $f = $var."Filter";
+        if (method_exists($this, $f))
+            $this -> $f($value);
         
         // if the variable already have save value as we are trying to set
         if ($this->_data[$var] == $value)

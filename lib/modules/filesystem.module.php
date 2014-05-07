@@ -49,6 +49,34 @@ class uploadCategory extends pantheraFetchDB
     }
     
     /**
+     * Filter for "maxfilesize" column
+     * Will be executed on __set()
+     * 
+     * @param mixed &$value Input to filter
+     * @author Damian Kęska
+     * @return null
+     */
+    
+    public function maxfilesizeFilter(&$value)
+    {
+        if (!is_numeric($value))
+            $value = filesystem::sizeToBytes($value);
+    }
+    
+    /**
+     * Filter for "mime_type" column
+     * 
+     * @param mixed &$value Input to filter
+     * @author Damian Kęska
+     * @return null
+     */
+    
+    public function mime_typeFilter(&$value)
+    {
+        $value = filesystem::validateMimes($value);
+    }
+    
+    /**
      * Finds real max file size limit (includes PHP's upload_max_filesize, post_max_size and Panthera config key upload.maxsize)
      * 
      * @param bool $humanReadable Return in human readable format
@@ -950,6 +978,33 @@ class filesystem
         
         else
             return $bytes . ' B';
+    }
+    
+    /**
+     * Validates mime or group of comma separated mimes
+     * 
+     * @param string|array $mimes Single mime or multiple mimes
+     * @return string Comma separated mime types 
+     */
+    
+    public static function validateMimes($mimes)
+    {
+        if (!is_array($mimes))
+            $mimes = explode(',', $mimes);
+        
+        $newArray = array();
+        
+        foreach ($mimes as $mime)
+        {
+            $mime = trim($mime);
+            
+            if (!preg_match('/^([A-Za-z0-9]+)\/?([A-Za-z0-9\_\-]+)?$/', $mime))
+                continue;
+            
+            $newArray[] = $mime;
+        }
+        
+        return implode(', ', $newArray);
     }
 }
 

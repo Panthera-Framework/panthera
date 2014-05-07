@@ -128,10 +128,10 @@ function saveSettings()
            {if="count($categories) > 1"}
             {loop="$categories"}
             <tr> 
-                <td><a href="#" onclick="panthera.popup.toggle('_ajax.php?display=upload&cat=admin&directory={$value->name}&popup=true');">{$value->getName()}</a></td>
+                <td><a href="#" onclick="panthera.popup.toggle('{$AJAX_URL}?display=upload&cat=admin&directory={$value->name}&action=editCategory');">{$value->getName()}</a></td>
                 <td>{$value->created}</td>
                 <td>{$value->mime_type}</td>
-                <td>{if="$value->getMaxFilesize()"}{$value->getMaxFilesize(true)}{else}{function="localize('Unlimited', 'upload')"}{/if}</td>
+                <td title="{function="localize('Please note: Max file size depends also on your PHP configuration, all sizes are real including server configuration', 'upload')"}">{if="$value->getMaxFilesize()"}{$value->getMaxFilesize(true)}{else}{function="localize('Unlimited', 'upload')"}{/if}</td>
                 <td>
                     <a href="#" onclick="removeUploadCategory('{$value->id}');">
                         <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" title="Remove">

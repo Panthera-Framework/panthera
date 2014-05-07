@@ -1675,7 +1675,11 @@ class pantheraCore
                         $enabled = True;
                 }
                 
-                $files[$file] = array('include_path' => $dir. '/' .$file, 'enabled' => $enabled, 'info' => $this->plugins[$file]);
+                $files[$file] = array(
+                    'include_path' => $dir. '/' .$file, 
+                    'enabled' => $enabled, 
+                    'info' => $this->plugins[$file],
+                );
             }
         }
 

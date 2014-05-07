@@ -55,6 +55,8 @@ $(document).ready(function(){
              <tr>
              	<th>{function="localize('Secure access only for me', 'upload')"}:</th>
              	<td><input type="checkbox" name="protected" value="1" checked></td>
+             </tr>
+             
              <tr>
                  <th>{function="localize('Description', 'upload')"}:</th>
                  <td><input type="text" name="input_description" style="width: 95%;"></td>
