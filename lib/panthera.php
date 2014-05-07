@@ -1412,22 +1412,10 @@ class pantheraCore
         
         foreach ($this->hooks[$hookName] as $key => $hook)
         {
-            if (gettype($hook) == "array")
-            {
-                if (!method_exists($hook[0], $hook[1]))
-                    continue;
-
-                if (is_object($hook[0]))
-                    $hook[0]->$hook[1]($args, $additionalInfo);
-                else
-                    $hook[0]::$hook[1]($args, $additionalInfo);
-
-            } else {
-                if (!function_exists($hook))
-                    continue;
-
-                $hook($args, $additionalInfo);
-            }
+            call_user_func_array($hook, array(
+                $args,
+                $additionalInfo
+            ));
         }
         
         return False;
@@ -1497,22 +1485,10 @@ class pantheraCore
         
         foreach ($this->hooks[$hookName] as $key => $hook)
         {
-            if (gettype($hook) == "array")
-            {
-                if (!method_exists($hook[0], $hook[1]))
-                    continue;
-
-                if (is_object($hook[0]))
-                    $args = $hook[0]->$hook[1]($args, $additionalInfo);
-                else
-                    $args = $hook[0]::$hook[1]($args, $additionalInfo);
-
-            } else {
-                if (!function_exists($hook))
-                    continue;
-
-                $args = $hook($args, $additionalInfo);
-            }
+            $args = call_user_func_array($hook, array(
+                $args,
+                $additionalInfo
+            ));
             
             if ($args)
                 $backup = $args;

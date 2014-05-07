@@ -58,6 +58,9 @@ abstract class pageController extends pantheraClass {
     // list of all requested permissions
     protected $__permissions = array();
     
+    // controller name    
+    protected $controllerName = null;
+    
     /**
      * Initialize front controller
      * 
@@ -66,6 +69,8 @@ abstract class pageController extends pantheraClass {
     
     public function __construct ()
     {
+        $this -> controllerName = substr(get_called_class(), 0, strpos(get_called_class(), 'Controller'));
+        
         // run pantheraClass constructor to get Panthera Framework object
         parent::__construct();
         
@@ -105,6 +110,53 @@ abstract class pageController extends pantheraClass {
         {
             if($_GET['cat'] == 'admin')
                 $this -> useuiNoAccess = true;
+        }
+        
+        $this -> runModules();
+    }
+
+    /**
+     * Run modules from modules/frontside/controllername/ directories
+     * 
+     * @return null
+     */
+
+    protected function runModules()
+    {
+        if ($this -> panthera -> cache)
+            $cache = $this -> panthera -> cache;
+        elseif ($this -> panthera -> varCache)
+            $cache = $this -> panthera -> varCache;
+        
+        $cacheID = 'front.modules.' .$this->controllerName;
+        $files = null;
+        
+        $this -> panthera -> logging -> output('Looking for modules in /modules/frontside/' .$this -> controllerName. 'controller/ directory', get_called_class());
+        
+        if ($cache -> exists($cacheID))
+        {
+            $files = $cache -> get($cacheID);
+            $this -> panthera -> logging -> output('Loaded "' .count($files). '" items from cache "' .$cacheID. '"', get_called_class());
+        } else {
+            $files = array();
+            
+            if (is_dir(PANTHERA_DIR. '/modules/frontside/' .$this -> controllerName. 'controller/'))
+                $files = array_merge($files, scandir(PANTHERA_DIR. '/lib/modules/frontside/' .$this -> controllerName. 'controller/'));
+            
+            if (is_dir(SITE_DIR. '/content/modules/frontside/' .$this -> controllerName. 'controller/'))
+                $files = array_merge($files, scandir(SITE_DIR. '/content/modules/frontside/' .$this -> controllerName. 'controller/'));
+                
+            $cache -> set($cacheID, $files, 86400);
+            $this -> panthera -> logging -> output('Saved "' .count($files). '" items to cache "' .$cacheID. '"', get_called_class());
+        }
+
+        if ($files)
+        {
+            foreach ($files as $file)
+            {
+                if (pathinfo($file, PATHINFO_EXTENSION) == 'php')
+                    $this -> panthera -> importModule('frontside/' .$this -> controllerName. 'controller/' .str_replace('.module.php', '', $file));
+            }
         }
     }
 
@@ -506,6 +558,6 @@ abstract class pageController extends pantheraClass {
             $this->$f($args, $additionalInfo);
         }
         
-        return $this -> panthera -> get_options_ref($featureName, $args, $fixOnFail, $additionalInfo);
+        return $this -> panthera -> get_options_ref($featureName, $args, $additionalInfo);
     }
 }

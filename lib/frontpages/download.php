@@ -28,27 +28,28 @@ class downloadControllerSystem extends pageController
     
     public function display()
     {
+        $error = null;
+        
         if (!$this -> panthera -> user or !$this -> panthera -> user -> exists())
-        {
-            $this -> panthera -> logging -> output('User not logged in', 'pantheraUpload');
-            $this -> noAccess();
-        }
+            $error = 'User not logged in';
         
         $file = new uploadedFile('id', $_GET['fileid']);
         
         if ($file -> filename != $_GET['filename'])
-        {
-            $this -> panthera -> logging -> output('URL filename and upload filename do not match', 'pantheraUpload');
-            $this -> noAccess();
-        }
+            $error = 'URL filename and upload filename do not match';
         
         if (!$file -> exists() or !$this -> checkPermissions('upload.file.dl.' .$_GET['fileid'], true))
-            $this -> noAccess();
+            $error = 'File does not exists in upload or no upload permissions';
 
         // check if file exists
         if (!is_file($file -> getLocation()) or !is_readable($file -> getLocation()))
+            $error = 'File does not exists or is not readable - "' .$file -> getLocation(). '"';
+        
+        $this -> getFeatureRef('front.download.status', $error, $file);
+        
+        if ($error)
         {
-            $this -> panthera -> logging -> output('File does not exists or is not readable - "' .$file -> getLocation(). '"', 'pantheraUpload');
+            $this -> panthera -> logging -> output($error, 'pantheraUpload');
             $this -> noAccess();
         }
         
