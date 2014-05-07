@@ -131,7 +131,7 @@ function saveSettings()
                 <td><a href="#" onclick="panthera.popup.toggle('{$AJAX_URL}?display=upload&cat=admin&directory={$value->name}&action=editCategory');">{$value->getName()}</a></td>
                 <td>{$value->created}</td>
                 <td>{$value->mime_type}</td>
-                <td title="{function="localize('Please note: Max file size depends also on your PHP configuration, all sizes are real including server configuration', 'upload')"}">{if="$value->getMaxFilesize()"}{$value->getMaxFilesize(true)}{else}{function="localize('Unlimited', 'upload')"}{/if}</td>
+                <td title="{function="localize('Please note: Max file size depends also on your PHP configuration, all sizes are real including server configuration. Set to 0 B to set unlimited size.', 'upload')"}">{if="$value->getMaxFilesize()"}{$value->getMaxFilesize(true)}{else}{function="localize('Unlimited', 'upload')"}{/if}</td>
                 <td>
                     <a href="#" onclick="removeUploadCategory('{$value->id}');">
                         <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" title="Remove">

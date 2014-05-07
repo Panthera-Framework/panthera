@@ -1057,10 +1057,11 @@ class pantheraCore
      * Raise an error eg. notfound
      * 
      * @param string $name Error template name eg. notfound, forbidden
+     * @param mixed $info Additional informations passed to template
      * @return null
      */
     
-    public static function raiseError($name)
+    public static function raiseError($name, $info=null)
     {
         $panthera = pantheraCore::getInstance();
         $file = False;

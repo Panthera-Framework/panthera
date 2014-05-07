@@ -37,7 +37,7 @@ $(document).ready(function(){
              	<td style="color: white;"><input type="text" name="mime" value="{$category->mime_type}"></td>
              </tr>
              
-             <tr title="{function="localize('Please note: Max file size depends also on your PHP configuration, all sizes are real including server configuration', 'upload')"}">
+             <tr title="{function="localize('Please note: Max file size depends also on your PHP configuration, all sizes are real including server configuration. Set to 0 B to set unlimited size.', 'upload')"}">
              	<th>{function="localize('Max file size', 'upload')"}:</th>
              	<td style="color: white;"><input type="text" name="maxfilesize" value="{$category->getMaxFilesize(true)}"></td>
              </tr>

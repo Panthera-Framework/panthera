@@ -900,6 +900,26 @@ class metaAttributes
 
         return $array;
     }
+    
+    /**
+     * Delete all meta tags connected to this object
+     * 
+     * @author Damian Kęska
+     * @return bool
+     */
+    
+    public function deleteAll()
+    {
+        $metas = $this -> listAll();
+        $this -> panthera -> logging -> output('Removing "' .count($metas). '" keys for ' .$this->_type. ':' .$this->_objectID, 'metaAttributes');
+        
+        foreach ($metas as $meta)
+            $this -> remove($meta);
+        
+        $this -> save();
+        
+        return (!count($this -> listAll()));
+    }
 
     /**
      * Get meta value

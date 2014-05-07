@@ -738,7 +738,9 @@ class filesystem
                 $size *= 1024 * 1024;
             elseif ($unit == 'k' or $unit == 'kb' or $unit == 'kbytes' or $unit == 'kilobytes')
                 $size *= 1024;
-            else
+            elseif ($unit == 'b' or $unit == 'bytes' or $unit == 'byte') {
+                // do nothing
+            } else
                 return false;
             
             return $size; // size in bytes
