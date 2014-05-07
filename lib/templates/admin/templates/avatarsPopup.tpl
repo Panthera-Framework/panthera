@@ -13,7 +13,7 @@ var uploadProgress = new panthera.ajaxLoader($('#addNewAvatar'));
                 panthera.jsonPOST({ url: '?display=avatars&cat=admin&action=uploadAvatar', isUploading: true, async: false, data: { 'image': content, 'fileName': fileName}, success: function (response) {
                         if (response.status == "success")
                         {
-                            panthera.popup.reload(2)
+                            panthera.popup.reload('avatarPopup');
                         } else {
                             w2alert(response.message);
                         }
