@@ -76,10 +76,13 @@ class pantheraInstaller
         // save locale to configuration file
         if (isset($_GET['_locale']))
             $this -> db -> set('locale', $_GET['_locale']);
-        
+            
         // restore locale from configuration file
         if ($this -> db -> exists('locale') and !isset($_GET['_locale']))
-            $this -> panthera -> locale -> setLocale($this -> db -> locale);
+        {
+            $this -> panthera -> locale -> addLocale(strtolower($this -> db -> locale));
+            $this -> panthera -> locale -> setLocale(strtolower($this -> db -> locale));
+        }
         
         /* Installation steps */
         // enable or disable back button

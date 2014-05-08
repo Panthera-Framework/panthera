@@ -114,7 +114,7 @@ class pantheraLocale
 
     public function addLocale($locale)
     {
-        if(is_dir(SITE_DIR. '/content/locales/' .$locale. '/') or $locale == 'english' and $locale) // english should be hardcoded
+        if(getContentDir('locales/' .$locale. '/') or $locale == 'english' and $locale) // english should be hardcoded
         {
             $locales = $this->panthera->config->getKey('languages');
             $locales[$locale] = False;
@@ -174,15 +174,18 @@ class pantheraLocale
 
     public function setLocale($locale)
     {
+        $this->locale = $this->defaultLocale;
+        
         if(array_key_exists($locale, $this->panthera->config->getKey('languages')) or $locale == 'english')
             $this->locale = $locale;
-        else
-            $this->locale = $this->defaultLocale;
 
         $this->panthera->logging->output('setLocale(' .$locale. ')', 'pantheraLocale');
 
         // default domain should be always loaded
         $this->loadDomain('messages');
+        
+        if ($this -> panthera -> session)
+            $this -> panthera -> session -> set('language', $locale);
 
         return $this->locale;
     }
@@ -344,8 +347,6 @@ class pantheraLocale
     {
         if (defined('SKIP_SESSION'))
             return False;
-
-        $sessionKey = $this->panthera->config->getKey('session_key');
 
         if (isset($_GET['_locale']))
         {
