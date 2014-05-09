@@ -56,14 +56,14 @@ class dashAjaxControllerSystem extends pageController
     protected function addAction()
     {
         $widget = addslashes(str_replace('/', '', $_GET['widget']));
-
-        if (is_file(PANTHERA_DIR. '/modules/dash/' .$widget. '.widget.php') or is_file(SITE_DIR. '/content/modules/dash/' .$widget. '.widget.php'))
+        
+        if (getContentDir('modules/dash/' .$widget. '.widget.php'))
         {
             $widgets = $this -> panthera -> config -> getKey('dash.widgets');
             $widgets[$widget] = True;
             $this -> panthera -> config -> setKey('dash.widgets', $widgets, 'array', 'dash');
         }
-
+        
         $this -> panthera -> template -> push('widgetsUnlocked', 1);
     }
 
@@ -199,6 +199,7 @@ class dashAjaxControllerSystem extends pageController
         if ($this -> panthera -> config -> getKey('dash.enableWidgets', 1, 'bool', 'dash') and $manageWidgets)
         {
             $settings = $this -> panthera -> config -> getKey('dash.widgets', array('gallery' => True, 'lastLogged' => True), 'array', 'dash');
+            
             $widgets = False;
             $enabledWidgets = array(); // array of widget instances
             $dashCustomWidgets = array(); // list of templates

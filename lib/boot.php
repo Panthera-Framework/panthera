@@ -7,6 +7,8 @@
   * @license GNU Affero General Public License 3, see license.txt
   */
   
+ini_set('memory_limit', '128M');
+  
 // in CLI we have specific environment eg. ctrl+c catching
 if (php_sapi_name() == 'cli') {
     define('MODE', 'CLI'); // deprecated

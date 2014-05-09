@@ -673,7 +673,14 @@ class pantheraConfig
             if ($this->panthera->cache->exists('configOverlay.' .$section))
             {
                 $array = $this->panthera->cache->get('configOverlay.' .$section);
+                
+                if (!$array)
+                    $array = array();
+                
+                $this->sections[$section] = true;
+                $this -> overlay = array_merge($this -> overlay, $array);
                 $this->panthera->logging->output('Loaded config_overlay from cache "configOverlay.' .$section. '"', 'pantheraConfig');
+                return count($array);
             }
         }
         
@@ -687,6 +694,9 @@ class pantheraConfig
             $SQL = $this->panthera->db->query($SQL);
             $array = $SQL -> fetchAll(PDO::FETCH_ASSOC);
         }
+        
+        if ($section)
+            $sectionArray = array();
         
         if (count($array) > 0)
         {
@@ -705,11 +715,14 @@ class pantheraConfig
                 }
                 
                 $this->overlay[$value['key']] = array($value['type'], $value['value'], $value['section']);
+                
+                if ($section)
+                    $sectionArray[$value['key']] = $this->overlay[$value['key']];
             }
         }
             
         if ($this->panthera->cache and $section != '*' and $section) {
-            $this -> panthera -> cache -> set('configOverlay.' .$section, $array, 'configOverlay');
+            $this -> panthera -> cache -> set('configOverlay.' .$section, $sectionArray, 'configOverlay');
         } elseif (!$section and $this->panthera->cache and $section != '*')
             $this -> panthera -> cache -> set('configOverlay', $this -> overlay, 'configOverlay');
 
@@ -745,12 +758,7 @@ class pantheraConfig
             {
                 if ($this -> panthera -> cache and $value[2])
                 {
-                    $sections[$value[2]][] = array(
-                        'value' => $value[1],
-                        'key' => $key,
-                        'type' => $value[0],
-                        'section' => @$value[2]
-                    );
+                    $sections[$value[2]][$key] = $value;
                     
                     if (isset($this->overlay_modified[$key]))
                         $this -> modifiedSections[$value[2]] = true;
@@ -835,6 +843,7 @@ class pantheraConfig
                 foreach ($this -> modifiedSections as $section => $val)
                 {
                     $keys = $sections[$section];
+                    
                     $this -> panthera -> logging -> output('Saving config section "' .$section. '" to cache, couting "' .count($keys). '" elements', 'pantheraConfig');
                     $this -> panthera -> cache -> set('configOverlay.' .$section, $keys, 'configOverlay');
                 }
