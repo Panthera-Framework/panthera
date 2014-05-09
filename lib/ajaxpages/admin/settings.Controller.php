@@ -311,6 +311,14 @@ class settingsAjaxControllerSystem extends pageController
             'linkType' => 'ajax'
         );
         
+        $defaults['system']['crontab'] = array(
+            'link' => '?display=crontab&cat=admin',
+            'name' => localize('Crontab', 'settings'),
+            'description' => localize('Scheduled jobs management - crontab', 'settings'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/crontab.png',
+            'linkType' => 'ajax'
+        );
+        
         $defaults['system']['leopard'] = array(
             'link' => '?display=leopard&cat=admin', 
             'name' => localize('Package management', 'settings'),
@@ -323,6 +331,14 @@ class settingsAjaxControllerSystem extends pageController
             'link' => '?display=conftool&cat=admin', 
             'name' => localize('Configuration editor', 'dash'), 
             'icon' => '{$PANTHERA_URL}/images/admin/menu/config.png', 
+            'linkType' => 'ajax'
+        );
+        
+        $defaults['system']['mailing'] = array(
+            'link' => '?display=mailing&cat=admin',
+            'name' => localize('Mailing', 'dash'),
+            'description' => localize('Send e-mails, manage it\'s configuration', 'settings'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/mail-replied.png',
             'linkType' => 'ajax'
         );
         
@@ -379,52 +395,19 @@ class settingsAjaxControllerSystem extends pageController
             'linkType' => 'ajax'
         );
         
-        $defaults['system']['crontab'] = array(
-            'link' => '?display=crontab&cat=admin',
-            'name' => localize('Crontab', 'settings'),
-            'description' => localize('Scheduled jobs management - crontab', 'settings'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/crontab.png',
-            'linkType' => 'ajax'
-        );
-        
-        $defaults['system']['upload'] = array(
-            'link' => '?display=upload&cat=admin',
-            'name' => localize('Upload management', 'settings'),
-            'description' => localize('Manage upload categories, files', 'settings'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/uploads.png',
-            'linkType' => 'ajax'
-        );
-        
-        $defaults['system']['register'] = array(
-            'link' => '?display=settings.register&cat=admin',
-            'name' => localize('User registration', 'settings'),
-            'description' => localize('New users registration management', 'settings'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/register.png',
-            'linkType' => 'ajax'
-        );
-        
-        $defaults['system']['login'] = array(
-            'link' => '?display=settings.pa-login&cat=admin',
-            'name' => localize('Login screen settings', 'settings'),
-            'description' => '',
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/login-settings.png',
-            'linkType' => 'ajax'
-        );
-        
-        $defaults['system']['facebook'] = array(
-            'link' => '?display=settings.facebook&cat=admin',
-            'name' => localize('Facebook integration', 'settings'),
-            'description' => '',
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/facebook.png',
-            'linkType' => 'ajax'
-        );
-        
         $defaults['system']['maintenance'] = array(
             'link' => '?display=settings.maintenance&cat=admin',
             'name' => localize('Service maintenance', 'settings'),
             'description' => '',
             'icon' => '{$PANTHERA_URL}/images/admin/menu/debhook.png',
-            'linkType' => 'ajax'
+            'linkType' => 'ajax',
+        );
+        
+        $defaults['system']['newsletter'] = array(
+            'link' => '?display=settings.newsletter&cat=admin',
+            'name' => localize('Newsletter settings', 'settings'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/newsletter.png',
+            'linkType' => 'ajax',
         );
         
         return $defaults;
@@ -439,7 +422,7 @@ class settingsAjaxControllerSystem extends pageController
 
     protected function populateContentDefaults($defaults)
     {
-        $defaults['content']['users'] = array(
+        $defaults['users']['users'] = array(
             'link' => '?display=users&cat=admin',
             'name' => ucfirst(localize('users', 'settings')),
             'description' => localize('Manage users', 'settings'),
@@ -447,18 +430,35 @@ class settingsAjaxControllerSystem extends pageController
             'linkType' => 'ajax'
         );
         
-        $defaults['content']['mailing'] = array(
-            'link' => '?display=mailing&cat=admin',
-            'name' => localize('Mailing', 'dash'),
-            'description' => localize('Send e-mails, manage it\'s configuration', 'settings'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/mail-replied.png',
+        $defaults['users']['passwordrecovery'] = array(
+            'link' => '?display=settings.passwordrecovery&cat=admin',
+            'name' => ucfirst(localize('password recovery', 'settings')),
+            'description' => localize('Default mail title, content, password length', 'settings'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/password-recovery.png',
             'linkType' => 'ajax'
         );
         
-        $defaults['content']['newsletter'] = array(
-            'link' => '?display=settings_newsletter&cat=admin',
-            'name' => localize('Newsletter settings', 'settings'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/newsletter.png',
+        $defaults['users']['register'] = array(
+            'link' => '?display=settings.register&cat=admin',
+            'name' => localize('User registration', 'settings'),
+            'description' => localize('New users registration management', 'settings'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/register.png',
+            'linkType' => 'ajax'
+        );
+        
+        $defaults['users']['login'] = array(
+            'link' => '?display=settings.pa-login&cat=admin',
+            'name' => localize('Login screen settings', 'settings'),
+            'description' => '',
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/login-settings.png',
+            'linkType' => 'ajax'
+        );
+        
+        $defaults['users']['facebook'] = array(
+            'link' => '?display=settings.facebook&cat=admin',
+            'name' => localize('Facebook integration', 'settings'),
+            'description' => '',
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/facebook.png',
             'linkType' => 'ajax'
         );
         
@@ -477,11 +477,11 @@ class settingsAjaxControllerSystem extends pageController
             'linkType' => 'ajax'
         );
         
-        $defaults['content']['passwordrecovery'] = array(
-            'link' => '?display=settings.passwordRecovery&cat=admin',
-            'name' => ucfirst(localize('password recovery', 'settings')),
-            'description' => localize('Default mail title, content, password length', 'settings'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/password-recovery.png',
+        $defaults['content']['upload'] = array(
+            'link' => '?display=upload&cat=admin',
+            'name' => localize('Upload management', 'settings'),
+            'description' => localize('Manage upload categories, files', 'settings'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/uploads.png',
             'linkType' => 'ajax'
         );
         
@@ -494,7 +494,7 @@ class settingsAjaxControllerSystem extends pageController
         );
         
         $defaults['content']['custompages'] = array(
-            'link' => '?display=settings.customPages&cat=admin',
+            'link' => '?display=settings.custompages&cat=admin',
             'name' => localize('Static pages configuration', 'settings'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/custom-pages.png',
             'linkType' => 'ajax'
