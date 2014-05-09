@@ -146,21 +146,19 @@ class settingsAjaxControllerSystem extends pageController
     /**
      * void Main()
      * 
-     * @hook array $defaults List of all default settings
+     * @feature array $defaults List of all default settings
      * @return string
      */
 
     public function mainAction()
     {
         $defaults = array();
-        $defaults['system'] = array();
-        $defaults = $this -> populateSystemDefaults($defaults);
         
         $defaults['content'] = array();
         $defaults = $this -> populateContentDefaults($defaults);
         
-        // plugins
-        $defaults = $this -> panthera -> get_filters('ajaxpages.settings.icons', $defaults);
+        $defaults['system'] = array();
+        $defaults = $this -> populateSystemDefaults($defaults);
         
         // searchbar
         $sBar = new uiSearchbar('uiTop');
@@ -170,31 +168,12 @@ class settingsAjaxControllerSystem extends pageController
         $sBar = $this -> panthera -> get_filters('ajaxpages.settings.searchbar', $sBar);
         
         $this -> panthera -> logging -> startTimer();
-        $defaultsSum = hash('md4', serialize($defaults));
         
-        // settings main menu
-        $listDB = $this -> getItemsList($defaults);
+        // overwrited entries
+        $defaults = array_merge($defaults, $this -> panthera -> config -> getKey('settings.items', array(), 'array', 'settings'));
+        $this -> getFeatureRef('ajaxpages.settings.items', $defaults);
         
-        if ($this -> panthera -> config -> getKey('settings.items.checksum') != $defaultsSum)
-        {
-            // @feature: not overwriting entries that was marked as "edited"    
-            foreach ($defaults as $sectionName => $section)
-            {
-                foreach ($section as $key => $item)
-                {
-                    if ($listDB[$sectionName][$key]['edited'])
-                        continue;
-                
-                    $listDB[$sectionName][$key] = $item;
-                }
-            }
-            
-            $this -> panthera -> config -> setKey('settings.items', $defaults, 'array', 'settings');
-            $this -> panthera -> config -> setKey('settings.items.checksum', $defaultsSum, 'string', 'settings');
-            $this -> panthera -> logging -> output ('Updated default settings items', 'settings');
-        }
-        
-        foreach ($listDB as $sectionName => $section)
+        foreach ($defaults as $sectionName => $section)
         {
             foreach ($section as $key => $value)
             {
@@ -206,8 +185,7 @@ class settingsAjaxControllerSystem extends pageController
             }
         }
         
-        $listDB = $this -> panthera -> get_filters('ajaxpages.settings.items', $listDB);
-        $list = $listDB;
+        $list = &$defaults;
         
         if ($sBar->getQuery())
         {

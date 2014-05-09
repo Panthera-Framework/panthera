@@ -41,13 +41,11 @@ class settings_siteAjaxControllerSystem extends pageController
     {
         $this -> panthera -> config -> getKey('cookie_encrypt', 1, 'bool');
         $this -> panthera -> locale -> loadDomain('settings');
-        $this -> panthera -> config -> loadOverlay('site.maintenance');
         
         // defaults
         $this -> panthera -> config -> getKey('site_title', array('english' => 'Panthera Framework'), 'array');
         $this -> panthera -> config -> getKey('site_description', array('english' => 'Another site based on Panthera Framework'), 'array');
         $this -> panthera -> config -> getKey('site_metas', array('english' => 'another, panthera, framework, based, site'), 'array');
-        $this -> panthera -> config -> getKey('site.maintenance', 0, 'bool');
         
         // load uiSettings with "passwordrecovery" config section
         $config = new uiSettings('*');
@@ -62,11 +60,6 @@ class settings_siteAjaxControllerSystem extends pageController
         $config -> add('crontab_key', localize('Crontab key', 'settings'));
         $config -> add('gmaps_key', localize('Google Maps API key', 'settings'));
         $config -> add('debug', localize('Debugger', 'settings'), new integerRange(0, 1));
-        $config -> add('site.maintenance', localize('Site maintenance', 'settings'), new integerRange(0, 1));
-        $config -> setFieldType('site.maintenance', 'bool');
-        $config -> add('site.maintenance.title', localize('Maintenance title', 'settings'));
-        $config -> add('site.maintenance.message', localize('Maintenance message', 'settings'));
-        $config -> setFieldType('site.maintenance.message', 'wysiwyg');
         
         // descriptions
         $config -> setDescription('site_title', localize('Default site title displayed on every page', 'settings'));
@@ -85,8 +78,6 @@ class settings_siteAjaxControllerSystem extends pageController
         $config -> setFieldSaveHandler('site_title', 'uiSettingsMultilanguageField');
         $config -> setFieldSaveHandler('site_description', 'uiSettingsMultilanguageField');
         $config -> setFieldSaveHandler('site_metas', 'uiSettingsMultilanguageField');
-        $config -> setFieldSaveHandler('site.maintenance.title', 'uiSettingsMultilanguageField');
-        $config -> setFieldSaveHandler('site.maintenance.message', 'uiSettingsMultilanguageField');
         
         $result = $config -> handleInput($_POST);
         

@@ -34,6 +34,10 @@
 
 <div id="topContent">
     <div class="searchBarButtonArea">
+    	<div class="searchBarButtonAreaLeft">
+    		<input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=settings&cat=admin')">
+    	</div>
+    
         <input type="submit" value="{function="localize('Save')"}">
     </div>
 </div>
