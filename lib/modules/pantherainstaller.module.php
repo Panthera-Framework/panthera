@@ -65,9 +65,11 @@ class pantheraInstaller
         
         $this -> db = new writableJSON(SITE_DIR. '/content/installer/db.json', $this -> config);
         
+        $steps = $this->db->steps;
+        
         // set first step as current if no current step already set
         if (!$this -> db -> currentStep)
-            $this -> db -> set('currentStep', $this->db->steps[0]);
+            $this -> db -> set('currentStep', $this -> db -> steps[0]);
             
         if ($this -> db -> holdThisStep)
             $this -> db -> set('currentStep', $this -> db -> holdThisStep);

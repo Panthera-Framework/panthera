@@ -133,7 +133,7 @@ abstract class pageController extends pantheraClass {
         
         $this -> panthera -> logging -> output('Looking for modules in /modules/frontside/' .$this -> controllerName. 'controller/ directory', get_called_class());
         
-        if ($cache -> exists($cacheID))
+        if ($cache and $cache -> exists($cacheID))
         {
             $files = $cache -> get($cacheID);
             $this -> panthera -> logging -> output('Loaded "' .count($files). '" items from cache "' .$cacheID. '"', get_called_class());
@@ -146,8 +146,11 @@ abstract class pageController extends pantheraClass {
             if (is_dir(SITE_DIR. '/content/modules/frontside/' .$this -> controllerName. 'controller/'))
                 $files = array_merge($files, scandir(SITE_DIR. '/content/modules/frontside/' .$this -> controllerName. 'controller/'));
                 
-            $cache -> set($cacheID, $files, 86400);
-            $this -> panthera -> logging -> output('Saved "' .count($files). '" items to cache "' .$cacheID. '"', get_called_class());
+            if ($cache)
+            {
+                $cache -> set($cacheID, $files, 86400);
+                $this -> panthera -> logging -> output('Saved "' .count($files). '" items to cache "' .$cacheID. '"', get_called_class());
+            }
         }
 
         if ($files)

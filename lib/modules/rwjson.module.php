@@ -58,8 +58,7 @@ class writableJSON
             }
         }
         
-        $this -> db = array_merge($this -> db, (array)json_decode(file_get_contents($file)));
-        
+        $this -> db = array_merge($this -> db, (array)json_decode(file_get_contents($file), true));
         $panthera -> add_option('session_save', array($this, 'save'));
     }
     
@@ -75,10 +74,7 @@ class writableJSON
     {
         if (array_key_exists($key, $this->db))
         {
-            if (is_array($this->db[$key]))
-                return (object)$this->db[$key]; // return as stdclass object
-            else
-                return $this->db[$key]; // return object that is already a stdclass object
+            return $this->db[$key]; // return object that is already a stdclass object
         }
         
         return null;
@@ -97,10 +93,7 @@ class writableJSON
     {
         $oldValue = $this->db[$key];
     
-        if (is_array($value))
-            $this->db[$key] = (object)$value;
-        else
-            $this->db[$key] = $value;
+        $this->db[$key] = $value;
             
         if ($oldValue != $value)
             $this->modified = True;
