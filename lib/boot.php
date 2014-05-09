@@ -199,20 +199,26 @@ if (!defined('SKIP_USER') and !defined('SKIP_SESSION'))
     //$user = new pantheraUser('id', 1);
 
     // if user is logged in, then customize page
-    if ($user != False)
+    if ($user)
     {
-        if ($user -> exists() and !$panthera->session->exists('language'))
+        if ($user -> exists())
         {
-            // localisations
+            // debugging is always turned on for root
+            if ($user -> acl -> get('root'))
+                $panthera -> logging -> debug = true;
             
-            if (!defined('SKIP_TEMPLATE'))
-                $template -> push('language', $user->language);
-                
-            if (!defined('SKIP_LOCALE'))
-                $locale -> setLocale($user->language);
-                
-            if (!defined('SKIP_SESSION'))
-                $panthera->session->set('language', $user->language);
+            if (!$panthera->session->exists('language'))
+            {
+                // localisations
+                if (!defined('SKIP_TEMPLATE'))
+                    $template -> push('language', $user->language);
+                    
+                if (!defined('SKIP_LOCALE'))
+                    $locale -> setLocale($user->language);
+                    
+                if (!defined('SKIP_SESSION'))
+                    $panthera->session->set('language', $user->language);
+            }
         }
     }
 }

@@ -43,7 +43,7 @@ class groupsInstallerControllerSystem extends installerController
         $adminGroup -> acl -> save();
         
         // add root permissions to root group
-        $g = new pantheraGroup('name', 'admin');
+        $g = new pantheraGroup('name', 'root');
         $g -> acl -> set('admin', true);
         $g -> acl -> set('superuser', true);
         $g -> acl -> save();
