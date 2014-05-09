@@ -8,7 +8,7 @@
   */
 
 if (!defined('IN_PANTHERA'))
-      exit;
+    exit;
 
 /**
   * Scheduled jobs management page controller
@@ -20,11 +20,11 @@ if (!defined('IN_PANTHERA'))
 
 class crontabAjaxControllerSystem extends pageController
 {
-	protected $permissions = 'can_manage_cronjobs';
-	
-	protected $uiTitlebar = array('Scheduled jobs management - crontab', 'crontab');
-	
-	
+	protected $permissions = array('admin.crontab' => array('Scheduled jobs management - crontab', 'crontab'));
+    
+	protected $uiTitlebar = array(
+	   'Scheduled jobs management - crontab', 'crontab'
+    );
 	
 	/**
 	  * Create a new cron job
@@ -330,6 +330,9 @@ class crontabAjaxControllerSystem extends pageController
 	  
 	public function display()
 	{
+	    // execute action if any
+	    $this -> dispatchAction();
+        
 		$sBar = new uiSearchbar('uiTop');
 		$sBar -> setQuery($_GET['query']);
 		$sBar -> setAddress('?display=crontab&cat=admin');

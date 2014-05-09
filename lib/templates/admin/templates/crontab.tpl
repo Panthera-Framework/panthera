@@ -293,7 +293,7 @@ function manageJob(jobid, action)
                 {/loop}
                 {else}
                 <tr>
-                    <td colspan="7" style="text-align: center;">{function="localize('No any jobs found', 'crontab')"}</td>
+                    <td colspan="9" style="text-align: center;">{function="localize('No any jobs found', 'crontab')"}</td>
                 </tr>
                 {/if}
             </tbody>
