@@ -229,7 +229,7 @@ function manageJob(jobid, action)
         <p><span class="description">{function="localize('To protect access to crontab module there is a requirement to generate and provide a secret key, it can be called a crontab password. So, your key is', 'installer')"}:</span></p>
         
         <p style="color: #C2C2C2; margin-top: 5px;"><code>
-        <i>{$crontabKey}</i><span style="float: right;"><a href="#" onclick="navigateTo('?display=crontab&cat=admin&action=save')">{function="localize('Generate new', 'installer')"}</a></span>
+        <i>{$crontabKey}</i><span style="float: right;"><a href="#" onclick="navigateTo('?display=crontab&cat=admin&action=save')" style="color: white;"><b>{function="localize('Generate new', 'installer')"}</b></a></span>
         </code></p>
         
         <p style="margin-top: 20px;"><b>{function="localize('Commands to manually invoke a new thread of crontab from shell', 'installer')"}</b></p>
