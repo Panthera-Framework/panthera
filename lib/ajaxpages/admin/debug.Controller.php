@@ -39,12 +39,23 @@ class debugAjaxControllerCore extends pageController
     
     public function toggleDebugValueAction()
     {
-        $this -> checkPermissions('can_manage_debug');
+        $this -> checkPermissions('admin.debug');
         
         $value = intval(!(bool)$this->panthera->config->getKey('debug', 0, 'bool'));
         
+        if (array_key_exists('debug', $this -> panthera -> config -> getConfig()))
+        {
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => slocalize('Cannot modify configuration, please remove key "%s" from app.php to contiune', 'debug', 'debug'),
+            ));
+        }
+        
         if ($this -> panthera -> config -> setKey('debug', $value, 'bool'))
-            ajax_exit(array('status' => 'success', 'state' => $value));
+            ajax_exit(array(
+                'status' => 'success',
+                'state' => $value,
+            ));
         
         ajax_exit(array('status' => 'failed'));
     }
@@ -83,7 +94,7 @@ class debugAjaxControllerCore extends pageController
       
     public function setMessagesFilterAction()
     {
-        $this -> checkPermissions('can_manage_debug');
+        $this -> checkPermissions('admin.debug');
         
         switch ($_POST['value'])
         {
@@ -100,7 +111,9 @@ class debugAjaxControllerCore extends pageController
                 break;
         }
         
-        ajax_exit(array('status' => 'success'));
+        ajax_exit(array(
+            'status' => 'success',
+        ));
     }
 
     
@@ -115,7 +128,7 @@ class debugAjaxControllerCore extends pageController
   
     public function manageFilterListAction()
     {
-        $this -> checkPermissions('can_manage_debug');
+        $this -> checkPermissions('admin.debug');
     
         $filters = $this -> panthera -> session -> get('debug.filter');
         $filterName = $_POST['filter'];
@@ -139,7 +152,10 @@ class debugAjaxControllerCore extends pageController
         foreach ($filters as $filter => $enabled)
             $filtersTpl[] = $filter;
     
-        ajax_exit(array('status' => 'success', 'filter' => implode(', ', $filtersTpl)));
+        ajax_exit(array(
+            'status' => 'success',
+            'filter' => implode(', ', $filtersTpl),
+        ));
     }
     
     

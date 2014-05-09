@@ -560,7 +560,7 @@ class pantheraConfig
 
     public function setKey($key, $value=null, $type=null, $section=null)
     {
-        if(!$key or $value === null)
+        if(!$key or $value === null or isset($this->config[$key]))
             return False;
 		
 		// load configuration section first
