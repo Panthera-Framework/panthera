@@ -175,8 +175,6 @@ abstract class pageController extends pantheraClass {
         {
             $this -> __addPermission($permissions);
             return True;
-        } elseif ($permissions == 'admin') {
-            return False;  
         } 
         
         $valid = false;
