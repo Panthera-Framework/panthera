@@ -183,7 +183,7 @@ function saveVariable(id, value)
     
     <div class="searchBarButtonArea">
     	{if="$debuggingButtons"}
-        <input type="button" value="{if="$debug == true"}{function="localize('Turn off debugger')"}{else}{function="localize('Turn on debugger')"}{/if}" onclick="toggleDebugValue()" id="buttonToggleDebuggerState">
+        <input type="button" value="{if="$debug == true"}{function="localize('Turn off debugger')"}{else}{function="localize('Turn on debugger')"}{/if}" onclick="toggleDebugValue()" title="{function="localize('For root account debug is always turned on', 'debug')"}" id="buttonToggleDebuggerState">
         <input type="button" value="{function="localize('Options')"}" onclick="panthera.popup.toggle('element:#options')">
     	{/if}
     </div>

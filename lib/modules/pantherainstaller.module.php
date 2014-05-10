@@ -275,8 +275,6 @@ class installerController extends pageController
         $controllerNames = array(
             $custom,
             $name. 'InstallerController',
-            $name. 'InstallerControllerCore',
-            $name. 'InstallerControllerSystem',
         );
         
         foreach ($controllerNames as $className)

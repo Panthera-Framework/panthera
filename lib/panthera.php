@@ -935,7 +935,7 @@ class pantheraCore
 
         if (!is_file(SITE_DIR. '/content/app.php'))
             throw new Exception('Cannot find /content/app.php, looking in SITE_DIR=' .SITE_DIR);
-
+        
         $c = _PANTHERA_CORE_TYPES_; $this->types = new $c($this); // data types
         $c = _PANTHERA_CORE_LOGGING_; $this->logging = new $c($this);
         $c = _PANTHERA_CORE_OUTPUT_CONTROL_; $this->outputControl = new $c($this);
@@ -952,6 +952,16 @@ class pantheraCore
 
         $this -> logging -> output('Loading configuration', 'pantheraCore');
         $c = _PANTHERA_CORE_CONFIG_; $this->config = new $c($this, $config);
+        
+        // update autoloader cache if not generated yet
+        if (!is_file(SITE_DIR. '/content/tmp/autoloader.php'))
+        {
+            $this -> importModule('autoloader.tools');
+            pantheraAutoloader::updateCache($panthera);
+        }
+        
+        include SITE_DIR. '/content/tmp/autoloader.php';
+        $this -> autoloader = $autoloader;
         
         // Panthera random SEED
         define('PANTHERA_SEED', hash('md4', $config['session_key'].rand(99, 999)));
@@ -1852,19 +1862,34 @@ function __pantheraAutoloader($class)
         $panthera -> logging -> output ('Requested ' .$class. ' class', 'pantheraCore');
     
         // defaults
-        $cachedClasses = $panthera -> config -> getKey('autoloader');
+        $cachedClasses = $panthera -> autoloader;
         
-        // update autoloader cache if not generated yet
-        if (!$cachedClasses)
-        {
-            $panthera -> importModule('autoloader.tools');
-            pantheraAutoloader::updateCache();
-            $cachedClasses = $panthera -> config -> getKey('autoloader');
-        }
-        
+        $panthera -> logging -> startTimer();
         if (isset($cachedClasses[$class]))
         {
-            $panthera -> importModule($cachedClasses[$class]);
+            // check if this is an alias
+            if (substr($cachedClasses[$class], 0, 1) == ':')
+            {
+                $exp = explode(':alias:', $cachedClasses[$class]);
+                $f = False;
+                
+                if (substr($exp[1], 0, 5) == 'file:')
+                {
+                    $f = pantheraUrl(substr($exp[1], 5, strlen($exp[1])), false, 'system'); 
+                    
+                } elseif (substr($exp[2], 0, 5) == 'file:') {
+                    $f = pantheraUrl(substr($exp[2], 5, strlen($exp[2])), false, 'system');
+                }
+                
+                if ($f and is_file($f))
+                    include_once $f;
+                
+                class_alias($exp[1], $class);
+                $panthera -> logging -> output('Created alias "' .$exp[1]. '" for "' .$class. '"', 'pantheraCore');
+                return $class;
+            }
+            
+            return $panthera -> importModule($cachedClasses[$class]);
         }
     }
 }

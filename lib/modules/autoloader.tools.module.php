@@ -26,7 +26,11 @@ class pantheraAutoloader
 
     public static function updateCache($data='')
     {
-        $panthera = pantheraCore::getInstance();
+        if (is_object($data))
+            $panthera = $data;
+        else
+            $panthera = pantheraCore::getInstance();
+        
 		$panthera -> importModule('filesystem');
         
         $panthera -> logging -> startTimer();
@@ -43,18 +47,29 @@ class pantheraAutoloader
             }
         }
         
+        $modules = array_merge($modules, filesystem::scandirDeeply(PANTHERA_DIR. '/pages', True));
+        $modules = array_merge($modules, filesystem::scandirDeeply(PANTHERA_DIR. '/ajaxpages', True));
+        $modules = array_merge($modules, filesystem::scandirDeeply(SITE_DIR. '/content/pages', True));
+        $modules = array_merge($modules, filesystem::scandirDeeply(SITE_DIR. '/content/ajaxpages', True));
+        
         // list of classes and files to autoload
         $autoload = array();
         
         foreach ($modules as $moduleFile)
         {
-            if(stripos($moduleFile, '.module.php') === False)
-                continue;
-        
-            $moduleName = str_ireplace(PANTHERA_DIR. '/modules/', '', 
-                          str_ireplace(SITE_DIR. '/content/modules/', '', 
-                          str_ireplace('.module.php', '', $moduleFile)));
-                          
+            if(strpos($moduleFile, '.module.php') !== False)
+            {
+                $moduleName = str_ireplace(PANTHERA_DIR. '/modules/', '', 
+                              str_ireplace(SITE_DIR. '/content/modules/', '', 
+                              str_ireplace('.module.php', '', $moduleFile)));
+            
+            } else {
+                if (strpos($moduleFile, '.Controller.php') === False)
+                    continue;
+                
+                $moduleName = 'file:' .str_replace(PANTHERA_DIR, '{$PANTHERA_DIR}', str_replace(SITE_DIR, '{$SITE_DIR}', $moduleFile));
+            }
+                  
             $classes = self::fileGetClasses($moduleFile);
             
             foreach ($classes as $className)
@@ -66,7 +81,63 @@ class pantheraAutoloader
             }
         }
         
-        $panthera -> config -> setKey('autoloader', $autoload, 'array');
+        $autoloadTmpLevels = array();
+
+        // create aliases for classes (*Core, *System, *Override)
+        foreach ($autoload as $className => $moduleName)
+        {
+            $found = False;
+            
+            // CORE
+            if (!$found and substr($className, strlen($className)-4, 4) == 'Core')
+            {
+                $realClassName = substr($className, 0, strlen($className)-4); // without "Core"
+                
+                if (!isset($autoloadTmpLevels[$realClassName]) or $autoloadTmpLevels[$realClassName] < 1)
+                {
+                    unset($autoload[$className]);
+                    $autoloadTmpLevels[$realClassName] = 1;
+                    $found = True;
+                }
+            }
+            
+            // SYSTEM
+            if (!$found and substr($className, strlen($className)-6, 6) == 'System')
+            {
+                $realClassName = substr($className, 0, strlen($className)-6);
+                
+                if (!isset($autoloadTmpLevels[$realClassName]) or $autoloadTmpLevels[$realClassName] < 2)
+                {
+                    unset($autoload[$className]);
+                    $autoloadTmpLevels[$realClassName] = 2;
+                    $found = True;
+                }
+            }
+            
+            // OVERRIDE
+            if (!$found and substr($className, strlen($className)-8, 8) == 'Override')
+            {
+                $realClassName = substr($className, 0, strlen($className)-8);
+                
+                if (!isset($autoloadTmpLevels[$realClassName]) or $autoloadTmpLevels[$realClassName] < 8)
+                {
+                    unset($autoload[$className]);
+                    $autoloadTmpLevels[$realClassName] = 3;
+                    $found = True;
+                }
+            }
+            
+            if ($found)
+                $autoload[$realClassName] = ':alias:' .$className. ':alias:' .$moduleName;
+        }
+
+        //$panthera -> config -> setKey('autoloader', $autoload, 'array');
+        $fp = fopen(SITE_DIR. '/content/tmp/autoloader.php', 'w');
+        fwrite($fp, "<?php\n\$autoloader = " .var_export($autoload, true). ";\n");
+        fclose($fp);
+        
+        $panthera -> autoloader = $autoload;
+        
         $panthera -> logging -> output ('Updated autoloader cache, counting ' .count($autoload). ' elements', 'pantheraAutoLoader');
         
         return $autoload;

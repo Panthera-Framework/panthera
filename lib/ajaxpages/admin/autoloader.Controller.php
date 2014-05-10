@@ -44,8 +44,32 @@ class autoloaderAjaxControllerCore extends pageController
                 'message' => slocalize('Updated autoloader cache, counting %s items', 'system', count($items)),
             ));
         }
+        
+        $cachedClasses = $this -> panthera -> config -> getKey('autoloader');
+        
+        foreach ($cachedClasses as $class => &$value)
+        {
+            if (substr($cachedClasses[$class], 0, 1) == ':')
+            {
+                $exp = explode(':alias:', $cachedClasses[$class]);
+                $f = False;
+                
+                if (substr($exp[1], 0, 5) == 'file:')
+                {
+                    $f = pantheraUrl(substr($exp[1], 5, strlen($exp[1])), false, 'system'); 
+                    
+                } elseif (substr($exp[2], 0, 5) == 'file:') {
+                    $f = pantheraUrl(substr($exp[2], 5, strlen($exp[2])), false, 'system');
+                }
 
-        $this -> panthera -> template -> push('autoloader', $this->panthera->config->getKey('autoloader'));
+                if ($f and is_file($f))
+                    $value = localize('Alias to class', 'debug'). ' ' .$exp[1]. ' ' .localize('from', 'debug'). ' ' .$f;
+                else
+                    $value = localize('Alias to class'). ' ' .$exp[1];
+            }
+        }
+
+        $this -> panthera -> template -> push('autoloader', $cachedClasses);
         return $this -> panthera -> template -> compile('autoloader.tpl');
         
     }    

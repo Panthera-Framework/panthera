@@ -682,6 +682,8 @@ ul.dropdown li:hover > a.dir {
     outline: solid 1px #6e8093;
     border-top: solid 1px #404c5a;
     background-color: rgba(86, 104, 123, 0.94);
+    background: url('../../../images/admin/pantheraUI/searchbar-bg.png');
+	opacity: 0.98;
     border-bottom: solid 1px #000;
 }
 

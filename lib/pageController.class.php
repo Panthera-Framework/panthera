@@ -488,11 +488,7 @@ abstract class pageController extends pantheraClass {
         $controllerNames = array(
             $custom,
             $name. 'Controller',
-            $name. 'ControllerCore',
-            $name. 'ControllerSystem',
             $name. 'AjaxController',
-            $name. 'AjaxControllerCore',
-            $name. 'AjaxControllerSystem',
         );
         
         foreach ($controllerNames as $className)
