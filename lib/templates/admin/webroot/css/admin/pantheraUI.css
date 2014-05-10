@@ -681,8 +681,16 @@ ul.dropdown li:hover > a.dir {
     vertical-align: center;
     outline: solid 1px #6e8093;
     border-top: solid 1px #404c5a;
-    background-color: #56687b;
+    background-color: rgba(86, 104, 123, 0.94);
     border-bottom: solid 1px #000;
+}
+
+.formTable thead {
+	background: transparent;
+}
+
+.formTable tfoot {
+	background: transparent;
 }
 
 .popupHeader {
