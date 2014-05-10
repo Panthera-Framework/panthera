@@ -31,6 +31,8 @@ class settingsAjaxControllerSystem extends pageController
         'Settings', 'settings'
     );
     
+    protected $configOverlay = 'settings';
+    
     /**
      * Dummy function to be forked
      * 
@@ -39,6 +41,11 @@ class settingsAjaxControllerSystem extends pageController
     
     public function getSystemInfoOptions()
     {
+        $yn = array(
+            0 => localize('No'),
+            1 => localize('Yes'),
+        );
+        
         $options = array (
             'template' => $this -> panthera -> config -> getKey('template'),
             'timezone' => $this -> panthera -> config -> getKey('timezone'),
@@ -133,17 +140,6 @@ class settingsAjaxControllerSystem extends pageController
     }
 
     /**
-     * Get items list
-     * 
-     * @return array List of settings icons
-     */
-
-    public function getItemsList($defaults)
-    {
-        return $this -> panthera -> config -> getKey('ajaxpages.settings.items', $defaults, 'array', 'settings');
-    }
-
-    /**
      * void Main()
      * 
      * @feature array $defaults List of all default settings
@@ -153,25 +149,19 @@ class settingsAjaxControllerSystem extends pageController
     public function mainAction()
     {
         $defaults = array();
-        
-        $defaults['content'] = array();
-        $defaults = $this -> populateContentDefaults($defaults);
-        
-        $defaults['system'] = array();
-        $defaults = $this -> populateSystemDefaults($defaults);
+        $this -> populateContentDefaults($defaults);
+        $this -> populateSystemDefaults($defaults);
         
         // searchbar
         $sBar = new uiSearchbar('uiTop');
-        //$sBar -> setMethod('POST');
-        $sBar -> setAddress('?display=settings&cat=admin');
         $sBar -> navigate(True);
-        $sBar = $this -> panthera -> get_filters('ajaxpages.settings.searchbar', $sBar);
+        $sBar = $this -> panthera -> get_filters('ajaxpages.' .$this -> controllerName. '.searchbar', $sBar);
         
         $this -> panthera -> logging -> startTimer();
         
         // overwrited entries
-        $defaults = array_merge($defaults, $this -> panthera -> config -> getKey('settings.items', array(), 'array', 'settings'));
-        $this -> getFeatureRef('ajaxpages.settings.items', $defaults);
+        $defaults = array_merge($defaults, $this -> panthera -> config -> getKey($this -> controllerName. '.items', array(), 'array', $this->configOverlay));
+        $this -> getFeatureRef('ajaxpages.' .$this -> controllerName. '.items', $defaults);
         
         foreach ($defaults as $sectionName => $section)
         {
@@ -180,7 +170,7 @@ class settingsAjaxControllerSystem extends pageController
                 if (isset($value['hidden']))
                 {
                     if ($value['hidden'])
-                        unset($listDB[$sectionName][$key]);
+                        unset($defaults[$sectionName][$key]);
                 }
             }
         }
@@ -212,9 +202,9 @@ class settingsAjaxControllerSystem extends pageController
     {
         if ($this -> panthera -> varCache)
         {
-            if ($this -> panthera -> varCache -> exists('ajaxpages.settings.meta'))
+            if ($this -> panthera -> varCache -> exists('ajaxpages.' .$this -> controllerName. '.meta'))
             {
-                $permissions = $this -> panthera -> varCache -> get('ajaxpages.settings.meta');
+                $permissions = $this -> panthera -> varCache -> get('ajaxpages.' .$this -> controllerName. '.meta');
             } else {
                 foreach ($list as $sectionName => $values)
                 {
@@ -237,7 +227,7 @@ class settingsAjaxControllerSystem extends pageController
                     }
                 }
                 
-                $this -> panthera -> varCache -> set('ajaxpages.settings.meta', $permissions, 3600);
+                $this -> panthera -> varCache -> set('ajaxpages.' .$this -> controllerName. '.meta', $permissions, 3600);
             }
 
             foreach ($permissions as $controller => $permission)
@@ -271,8 +261,10 @@ class settingsAjaxControllerSystem extends pageController
      * @return array Output array
      */
 
-    protected function populateSystemDefaults($defaults)
+    protected function populateSystemDefaults(&$defaults)
     {
+        $defaults['system'] = array();
+        
         $defaults['system']['database'] = array(
             'link' => '?display=database&cat=admin', 
             'name' => localize('Database management', 'settings'), 
@@ -302,13 +294,6 @@ class settingsAjaxControllerSystem extends pageController
             'name' => localize('Package management', 'settings'),
             'description' => localize('Install or remove Panthera packages', 'settings'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/package.png' , 
-            'linkType' => 'ajax'
-        );
-        
-        $defaults['system']['conftool'] = array(
-            'link' => '?display=conftool&cat=admin', 
-            'name' => localize('Configuration editor', 'dash'), 
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/config.png', 
             'linkType' => 'ajax'
         );
         
@@ -387,8 +372,6 @@ class settingsAjaxControllerSystem extends pageController
             'icon' => '{$PANTHERA_URL}/images/admin/menu/newsletter.png',
             'linkType' => 'ajax',
         );
-        
-        return $defaults;
     }
 
     /**
@@ -398,8 +381,10 @@ class settingsAjaxControllerSystem extends pageController
      * @return array Output array
      */
 
-    protected function populateContentDefaults($defaults)
+    protected function populateContentDefaults(&$defaults)
     {
+        $defaults['content'] = array();
+        
         $defaults['users']['users'] = array(
             'link' => '?display=users&cat=admin',
             'name' => ucfirst(localize('users', 'settings')),
@@ -485,8 +470,6 @@ class settingsAjaxControllerSystem extends pageController
             'icon' => '{$PANTHERA_URL}/images/admin/menu/routing.png',
             'linkType' => 'ajax'
         );
-        
-        return $defaults;
     }
 }
 

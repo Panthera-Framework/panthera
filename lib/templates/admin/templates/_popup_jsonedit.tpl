@@ -44,6 +44,7 @@ function jsonEditSave(responseType)
             <input type="button" value=" {function="localize('var_dump')"} " onclick="jsonEditSave('var_dump');" style="float: right; margin-right: 15px;"> 
             <input type="button" value=" {function="localize('var_export')"} " onclick="jsonEditSave('var_export');" style="float: right; margin-right: 15px;"> 
             <input type="button" value=" {function="localize('json')"} " onclick="jsonEditSave('json');" style="float: right; margin-right: 15px;"> 
+            <input type="button" value=" {function="localize('csv')"} " onclick="jsonEditSave('csv');" style="float: right; margin-right: 15px;"> 
         </div>
     </div>
     {/if}
@@ -53,7 +54,7 @@ function jsonEditSave(responseType)
                 <table>
                     <thead>
                         <tr>
-                            <th scope="col" colspan="5" style="width: 250px;"><b>{function="localize('Enter JSON code or serialized array to convert to PHP array', 'debug')"}</i></th>
+                            <th scope="col" colspan="5" style="width: 250px;"><b>{function="localize('Enter JSON code, comma separated values or serialized array to convert to PHP array', 'debug')"}</i></th>
                         </tr>
                     </thead>
 

@@ -1,24 +1,25 @@
 <?php
 /**
-  * Debug tools and debug.log
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @hook ajaxpages.debug.tools
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Debug tools and debug.log
+ *
+ * @package Panthera\admin\ajaxpages
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @hook ajaxpages.debug.tools
+ * @license GNU Affero General Public License 3, see license.txt
+ */
 
+include getContentDir('ajaxpages/admin/settings.Controller.php');
 
 /**
-  * Debug tools and debug.log
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  */
-
-class debugAjaxControllerCore extends pageController
+ * Debug tools and debug.log
+ *
+ * @package Panthera\admin\ajaxpages
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
+ 
+class debugAjaxControllerSystem extends settingsAjaxControllerSystem
 {
     protected $uiTitlebar = array(
         'Debugging center', 'debug'
@@ -27,7 +28,6 @@ class debugAjaxControllerCore extends pageController
     protected $permissions = array(
         'admin.developertools' => array('Developer tools', 'debug'),
     );
-
     
     /**
      * Change debug value
@@ -158,167 +158,32 @@ class debugAjaxControllerCore extends pageController
         ));
     }
     
-    
-    
     /**
-     * Create list with debug items, allows hooking
-     *
-     * @feature ajaxpages.debug.tools $array List of items to display on page
+     * Overwriting system_info action from settings controller
      * 
-     * @author Mateusz Warzyński
-     * @return array
+     * @return null
      */
      
-    protected function getDebugItems()
-    {
-        // list of links (editable via @hook ajaxpages.debug.tools)
-        $tools = array();
-        
-        $tools[] = array(
-            'link' => '?display=settings&cat=admin&action=system_info',
-            'name' => localize('System'), 'description' => localize('Informations about system and session'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/system_info.png'
-        );
-        
-        $tools[] = array(
-            'link' => '?display=debhook&cat=admin',
-            'name' => localize('Debhook'),
-            'description' => localize('Plugins debugger'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/debhook.png'
-        );
-        
-        $tools[] = array(
-            'link' => '?display=includes&cat=admin',
-            'name' => localize('Includes'),
-            'description' => localize('List of all included files in current code execution'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/includes.png'
-        );
-        
-        $tools[] = array(
-            'link' => '?display=errorpages&cat=admin',
-            'name' => localize('Errorpages'),
-            'description' => localize('Test system error pages in one place'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/errorpages.png'
-        );
-        
-        $tools[] = array(
-            'link' => '?display=syschecksum&cat=admin',
-            'name' => localize('Checksum'),
-            'description' => localize('Checksum of system files'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/syschecksum.png'
-        );
-        
-        $tools[] = array(
-            'link' => '?display=shellutils&cat=admin',
-            'name' => localize('Shell'),
-            'description' => localize('Shell utils'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/shell.png'
-        );
-        
-        $tools[] = array(
-            'link' => '?display=phpinfo&cat=admin',
-            'name' => localize('PHP'),
-            'description' => localize('phpinfo'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/blank.png'
-        );
-        
-        $tools[] = array(
-            'link' => '?display=database&cat=admin',
-            'name' => localize('Database'),
-            'description' => localize('Database management'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/db.png'
-        );
-        
-        $tools[] = array(
-            'link' => '?display=dumpinput&cat=admin',
-            'name' => localize('Input'),
-            'description' => localize('DumpInput'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/input.png'
-        );
-        
-        $tools[] = array(
-            'link' => '?display=mergephps&cat=admin',
-            'name' => localize('Merge phps'),
-            'description' => ucfirst(localize('merge phps and json arrays', 'dash')),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/mergephps.png'
-        );
-        
-        $tools[] = array(
-            'link' => '?display=ajaxpages&cat=admin',
-            'name' => localize('Ajaxpages'),
-            'description' => localize('Complete list of all ajax avaliable subpages', 'ajaxpages'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/ajaxpages.png'
-        );
-        
-        $tools[] = array(
-            'link' => '?display=permissionsList&cat=admin',
-            'name' => localize('Permissions list', 'acl'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png'
-        );
-        
-        $tools[] = array(
-            'link' => '?display=_popup_jsonedit&cat=admin',
-            'name' => localize('JSON popup'),
-            'description' => localize('Array editor', 'debug'), 
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/array_editor.png'
-        );
-        
-        $tools[] = array(
-            'link' => '?display=autoloader&cat=admin',
-            'name' => localize('Autoloader'),
-            'description' => localize('Autoloader cache', 'debug'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/autoloader.png'
-        );
-        
-        $tools[] = array(
-            'link' => '?display=generate_password&cat=admin',
-            'name' => localize('Password'),
-            'description' => localize('Generate password', 'debug'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/generate_password.png'
-        );
-        
-        $tools[] = array(
-            'link' => '?display=accessparser&cat=admin',
-            'name' => localize('Site traffic browser', 'accessparser'),
-            'description' => localize('Shows parsed server logs', 'accessparser'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/blank.png'
-        );
-        
-        $tools[] = array(
-            'link' => '?display=googlepr&cat=admin',
-            'name' => localize('Ranking of pages'),
-            'description' => localize('Shows page rank of given url', 'debug'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/google.png'
-        );
-        
-        $tools = $this -> getFeature('ajaxpages.debug.tools', $tools);
-        
-        return $tools;
-    }
-  
-  
+    public function system_infoAction() { exit; }
     
     /**
-     * Main, display function
-     *
-     * @author Mateusz Warzyński
-     * @author Damian Kęska
-     * @return string
+     * Overwriting popupateSystemDefaults from settings controller
+     * 
+     * @return null
      */
     
-    public function display()
+    public function populateSystemDefaults(&$defaults) {}
+    
+    /**
+     * Main action
+     * 
+     * @return null
+     */
+    
+    public function mainAction()
     {
-        // get translates
-        $this -> panthera -> locale -> loadDomain('debug');
-        $this -> panthera -> locale -> loadDomain('dash');
-        $this -> panthera -> locale -> loadDomain('ajaxpages');
-        
         $toFile = $this -> panthera -> logging -> tofile;
         $this -> panthera -> logging -> tofile = False;
-        
-        $this -> dispatchAction();
-        
-        // get debug items
-        $tools = $this -> getDebugItems();
         
         // Displaying main debug site
         if (is_file(SITE_DIR. '/content/tmp/debug.log'))
@@ -362,14 +227,178 @@ class debugAjaxControllerCore extends pageController
         if ($toFile)
             $logHandlers[] = 'file';
         
-        $this -> panthera -> template -> push ('filterList', implode(', ', $filtersTpl));
-        $this -> panthera -> template -> push ('logHandlers', implode(', ', $logHandlers));
-        $this -> panthera -> template -> push ('current_log', explode("\n", $this -> panthera -> logging -> getOutput()));
-        $this -> panthera -> template -> push ('debug', $this -> panthera -> config -> getKey('debug'));
-        $this -> panthera -> template -> push ('strictDebugging', $this -> panthera -> config -> getKey('debug.strict'));
-        $this -> panthera -> template -> push ('tools', $tools);
         
-        return $this -> panthera -> template -> compile('debug.tpl');
+        $this -> panthera -> template -> push(array(
+            'debuggingButtons' => true,
+            'filterList' => implode(', ', $filtersTpl),
+            'logHandlers' => implode(', ', $logHandlers),
+            'current_log' => explode("\n", $this -> panthera -> logging -> getOutput()),
+            'debug' => $this -> panthera -> config -> getKey('debug'),
+            'strictDebugging' => $this -> panthera -> config -> getKey('debug.strict'),
+        ));
+        
+        parent::mainAction();
     }
-   
+    
+    /**
+     * Add all debugging links
+     * 
+     * @param int &$defaults Array with links
+     * @return null
+     */
+    
+    public function populateContentDefaults(&$defaults)
+    {
+        /** Application developing **/
+        
+        $defaults['Application Developing'] = array();
+        
+        $defaults['Application Developing']['system_info'] = array(
+            'link' => '?display=settings&cat=admin&action=system_info',
+            'name' => localize('Panthera system informations'),
+            'description' => localize('Informations about system and session', 'debug'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/system_info.png'
+        );
+        
+        $defaults['Application Developing']['permissionsList'] = array(
+            'link' => '?display=permissionsList&cat=admin',
+            'name' => localize('Permissions list', 'acl'),
+            'description' => localize('List of all indexed controllers permissions', 'acl'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/users.png',
+            'linkType' => 'ajax',
+        );
+        
+        $defaults['Application Developing']['ajaxpages'] = array(
+            'link' => '?display=ajaxpages&cat=admin',
+            'name' => localize('Controllers list', 'acl'),
+            'description' => localize('Complete list of all ajax avaliable subpages', 'ajaxpages'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/ajaxpages.png',
+            'linkType' => 'ajax',
+        );
+        
+        $defaults['Application Developing']['database'] = array(
+            'link' => '?display=database&cat=admin',
+            'name' => localize('Database'),
+            'description' => localize('Database management'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/db.png',
+            'linkType' => 'ajax',
+        );
+        
+        $defaults['Application Developing']['langtool'] = array(
+            'link' => '?display=langtool&cat=admin',
+            'name' => ucfirst(localize('translates', 'dash')),
+            'description' => localize('Manage system translations', 'settings'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/langtool.png',
+            'linkType' => 'ajax'
+        );
+        
+        $defaults['Application Developing']['conftool'] = array(
+            'link' => '?display=conftool&cat=admin', 
+            'name' => localize('Configuration editor', 'dash'), 
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/config.png', 
+            'linkType' => 'ajax'
+        );
+        
+        $defaults['Application Developing']['routing'] = array(
+            'link' => '?display=routing&cat=admin',
+            'name' => localize('SEO links management', 'routing'),
+            'description' => localize('Front-end urls rewriting', 'settings'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/routing.png',
+            'linkType' => 'ajax'
+        );
+        
+        $defaults['Application Developing']['syschecksum'] = array(
+            'link' => '?display=syschecksum&cat=admin',
+            'name' => localize('Application checksum', 'debug'),
+            'description' => localize('Useful for comparing eg. production with test environment', 'debug'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/syschecksum.png'
+        );
+        
+        $defaults['Application Developing']['autoloader'] = array(
+            'link' => '?display=autoloader&cat=admin',
+            'name' => localize('Autoloader'),
+            'description' => localize('List of all indexed classes', 'debug'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/autoloader.png'
+        );
+        
+        $defaults['Application Developing']['errorpages'] = array(
+            'link' => '?display=errorpages&cat=admin',
+            'name' => localize('Errorpages'),
+            'description' => localize('Test system error pages in one place'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/errorpages.png'
+        );
+        
+        $defaults['Application Developing']['debhook'] = array(
+            'link' => '?display=debhook&cat=admin',
+            'name' => localize('Debhook'),
+            'description' => localize('Plugins debugger'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/debhook.png'
+        );
+        
+        $defaults['Application Developing']['includes'] = array(
+            'link' => '?display=includes&cat=admin',
+            'name' => localize('Includes'),
+            'description' => localize('List of all included files in current code execution'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/includes.png'
+        );
+        
+        /** Tools **/
+        
+        $defaults['Tools'] = array();
+        
+        $defaults['Tools']['_popup_jsonedit'] = array(
+            'link' => '?display=_popup_jsonedit&cat=admin',
+            'name' => localize('Array editor', 'debug'),
+            'description' => localize('JSON, serialize, var_dump, print_r', 'debug'), 
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/array_editor.png'
+        );
+        
+        $defaults['Tools']['mergephps'] = array(
+            'link' => '?display=mergephps&cat=admin',
+            'name' => localize('Merge phps'),
+            'description' => ucfirst(localize('merge phps and json arrays', 'dash')),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/mergephps.png'
+        );
+        
+        $defaults['Tools']['generate_password'] = array(
+            'link' => '?display=generate_password&cat=admin',
+            'name' => localize('Password'),
+            'description' => localize('Generate password', 'debug'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/generate_password.png',
+        );
+        
+        $defaults['Tools']['shellutils'] = array(
+            'link' => '?display=shellutils&cat=admin',
+            'name' => localize('Shell'),
+            'description' => localize('Shell utils'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/shell.png'
+        );
+        
+        $defaults['Tools']['phpinfo'] = array(
+            'link' => '?display=phpinfo&cat=admin',
+            'name' => localize('PHP informations', 'debug'),
+            'description' => 'phpinfo()',
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/blank.png'
+        );
+        
+        $defaults['Tools']['dumpinput'] = array(
+            'link' => '?display=dumpinput&cat=admin',
+            'name' => localize('Input', 'debug'),
+            'description' => localize('Input dumping', 'debug'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/input.png'
+        );
+        
+        $defaults['Tools']['accessparser'] = array(
+            'link' => '?display=accessparser&cat=admin',
+            'name' => localize('Site traffic browser', 'accessparser'),
+            'description' => localize('Shows parsed server logs', 'accessparser'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/blank.png'
+        );
+        
+        $defaults['Tools']['googlepr'] = array(
+            'link' => '?display=googlepr&cat=admin',
+            'name' => localize('Page rank checker', 'debug'),
+            'description' => localize('Shows page rank of given url', 'debug'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/google.png'
+        );
+    }
 }
