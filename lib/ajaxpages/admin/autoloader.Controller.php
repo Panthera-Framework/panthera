@@ -45,7 +45,7 @@ class autoloaderAjaxControllerCore extends pageController
             ));
         }
         
-        $cachedClasses = $this -> panthera -> config -> getKey('autoloader');
+        $cachedClasses = $this -> panthera -> autoloader;
         
         foreach ($cachedClasses as $class => &$value)
         {
