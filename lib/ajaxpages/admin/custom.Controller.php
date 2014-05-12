@@ -8,6 +8,8 @@
  * @license GNU Affero General Public License 3, see license.txt
  */
  
+pageController::$searchFrontControllerName = 'customAjaxControllerSystem';
+ 
 class customAjaxControllerSystem extends pageController
 {
     protected $defaultAction = 'main';
