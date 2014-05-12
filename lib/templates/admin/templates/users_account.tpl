@@ -41,10 +41,10 @@ function getAvatar(link, id)
     
     function toggleBan()
     {
-        panthera.jsonPOST({ url: '?display=users&cat=admin&action=ban&uid={$id}', data: '', success: function (response) {
+        panthera.jsonPOST({ url: '?display=users&cat=admin&action=ban&uid={$user->id}', data: '', success: function (response) {
               if (response.status == "success")
               {
-                  navigateTo("?display=users&cat=admin&action=account&uid={$id}");
+                  navigateTo("?display=users&cat=admin&action=account&uid={$user->id}");
               }
             }
         });
@@ -56,7 +56,7 @@ function getAvatar(link, id)
                 <tr>
                     <td colspan="2" class="formTableHeader" style="padding-top: 0px; padding-bottom: 30px;">
                         <p style="color: #e5ebef; padding: 0px; margin: 0px;">
-                           {if="$isBanned == True"}
+                           {if="$user->isBanned()"}
                              {function="localize('Do you really want to unban this user?', 'users')"}
                            {else}
                              {function="localize('Do you really want to ban this user?', 'users')"}
@@ -94,7 +94,7 @@ function getAvatar(link, id)
                 panthera.jsonPOST( { data: '#editUserForm', spinner: editUser, success: function (response) {
         
                         if (response.status == "success") {
-                            navigateTo("?display=users&cat=admin&action=account&uid={$id}");
+                            navigateTo("?display=users&cat=admin&action=account&uid={$user->id}");
         
                         }
                     }
@@ -125,9 +125,9 @@ function getAvatar(link, id)
 
              <tbody>
                 <tr>
-                    <input type="text" name="uid" value="{$id}" style="display: none;">
+                    <input type="text" name="uid" value="{$user->id}" style="display: none;">
                     <th>{function="localize('Login', 'users')"}</th>
-                    <th><input type="text" name="login" value="{$user_login}" disabled></th>
+                    <th><input type="text" name="login" value="{$user->login}" disabled></th>
                 </tr>
 
                 <tr>
@@ -157,7 +157,7 @@ function getAvatar(link, id)
 
                 <tr>
                   <th>{function="localize('Full name', 'users')"}</th>
-                  <th><input type="text" name="full_name" value="{$full_name}"></th>
+                  <th><input type="text" name="full_name" value="{$user->full_name}"></th>
                 </tr>
                 
                 {if="$permissions.canEditOthers"}
@@ -167,7 +167,7 @@ function getAvatar(link, id)
                     <div class="select" style="margin-top: 14px; margin-left: 3px; width: 208px;">
                      <select onChange="changeCategory();" name="primary_group" style="width: 210px;">
                        {loop="$groups"}
-                        <option value="{$value.group_id}" {if="$value.group_id == $primary_group"} selected {/if}>{$value.name}</option>
+                        <option value="{$value.group_id}" {if="$value.group_id == $user->primary_group"} selected {/if}>{$value.name}</option>
                        {/loop}
                      </select>
                     </div>
@@ -181,7 +181,7 @@ function getAvatar(link, id)
                     <div class="select" style="margin-top: 14px; margin-left: 3px; width: 208px;">
                      <select onChange="changeCategory();" name="language" style="width: 210px;">
                        {loop="$locales_added"}
-                        <option{if="$key == $user_language"} selected {/if}>{$key}</option>
+                        <option{if="$key == $user->language"} selected {/if}>{$key}</option>
                        {/loop}
                      </select>
                     </div>
@@ -190,12 +190,12 @@ function getAvatar(link, id)
 
                 <tr>
                   <th>{function="localize('E-mail', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
-                  <th><input type="text" name="email" placeholder="user@gmail.com" value="{$email}"></th>
+                  <th><input type="text" name="email" placeholder="user@gmail.com" value="{$user->email}"></th>
                 </tr>
 
                 <tr>
                   <th>{function="localize('Jabber', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
-                  <th><input type="text" name="jabber" placeholder="user@jabber.org" value="{$jabber}"></th>
+                  <th><input type="text" name="jabber" placeholder="user@jabber.org" value="{$user->jabber}"></th>
                 </tr>
                 
                 {if="$permissions.canEditOthers"}
@@ -271,19 +271,17 @@ function getAvatar(link, id)
 
 <!-- Ajax content -->
 <div class="ajax-content" style="text-align: center;">
-      <table style="display: inline-block; position: relative;" id="userTable">
-
+      <table style="display: inline-block; position: relative; margin-bottom: 60px;" id="userTable">
              <thead>
                 <tr>
-                    <th scope="col" style="min-width: 150px;"></th>
-                    <th scope="col" style="min-width: 300px;"></th>
+                    <th colspan="2" style="min-width: 150px;">{$user->getName()}</th>
                 </tr>
              </thead>
 
-             <tbody>
+             <tbody class="hovered">
                 <tr>
                     <td>{function="localize('Login', 'users')"}</td>
-                    <td><p>{$user_login}</p></td>
+                    <td><p>{$user->login}</p></td>
                 </tr>
                 
                 <tr>
@@ -299,40 +297,40 @@ function getAvatar(link, id)
 
                 <tr>
                   <td>{function="localize('Full name', 'users')"}</td>
-                  <td><p>{$full_name}</p></td>
+                  <td><p>{$user->full_name}</p></td>
                 </tr>
 
                 <tr>
                   <td>{function="localize('Primary group', 'users')"}</td>
-                  <td><p>{$group_name}</p></td>
+                  <td><p>{$user->group_name}</p></td>
                 </tr>
 
                 <tr>
                   <td>{function="localize('Language', 'users')"}</td>
-                  <td><p>{$user_language}</p></td>
+                  <td><p>{$user->language|ucfirst}</p></td>
                 </tr>
                 
                 <tr>
                   <td>{function="localize('Joined', 'users')"}</td>
-                  <td><p>{$joined}</p></td>
+                  <td><p>{$user->joined}</p></td>
                 </tr>
                 
                 <tr>
                   <td>{function="localize('Status', 'users')"}</td>
-                  <td><p>{if="$isBanned == 0"}<span style="color: green;"> {function="localize('Normal', 'users')"} </span> {else} <span style="color: red;"> {function="localize('Blocked  ', 'users')"} </span> {/if} </p></td>
+                  <td><p>{if="!$user->isBanned()"}<span style="color: green;"> {function="localize('Normal', 'users')"} </span> {else} <span style="color: red;"> {function="localize('Blocked  ', 'users')"} </span> {/if} </p></td>
                 </tr>
 
-              {if="$email"}
+              {if="$user->email"}
                 <tr>
                   <td>{function="localize('E-mail', 'users')"} <small>({function="localize('optionally', 'users')"})</small></td>
-                  <td><p>{$email}</p></td>
+                  <td><p>{$user->email}</p></td>
                 </tr>
               {/if}
 
-              {if="$jabber"}
+              {if="$user->jabber"}
                 <tr>
                   <td>{function="localize('Jabber', 'users')"} <small>({function="localize('optionally', 'users')"})</small></td>
-                  <td><p>{$jabber}</p></td>
+                  <td><p>{$user->jabber}</p></td>
                 </tr>
               {/if}
               
@@ -354,4 +352,23 @@ function getAvatar(link, id)
 
              </tbody>
             </table>
+            
+            {if="$lastloginHistory"}
+            	<table style="display: inline-block; position: relative;">
+            		<thead>
+            			<tr>
+            				<th colspan="2">{function="localize('Last login history', 'users')"}</th>
+            			</tr>
+            		</thead>
+            		
+            		<tbody class="hovered">
+            			{loop="$lastloginHistory"}
+            			<tr>
+            				<td>{$value.date}{if="$value.retries"} ({function="slocalize('%s times', 'users', $value.retries)"}){/if}</td>
+            				<td title="{$value.useragent}">{$value.browser}{if="$value.system"} ({$value.system}){/if}{if="$value.location"}, {$value.location}{/if}</td>
+            			</tr>
+            			{/loop}
+            		</tbody>
+            	</table>
+            {/if}
 </div>

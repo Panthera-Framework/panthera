@@ -141,24 +141,20 @@ class usersAjaxControllerCore extends pageController
         $groupsTpl = array();
     
         foreach ($groups as $group)
-            $groupsTpl[] = array('name' => $group->name, 'group_id' => $group->group_id);
-    
-        $this -> panthera -> template -> push('locales_added', $localesActive);
-        // $this -> panthera -> template -> push('action', 'my_account');
-        $this -> panthera -> template -> push('id', $u->id);
-        $this -> panthera -> template -> push('user_login', $u->login);
-        $this -> panthera -> template -> push('avatar_dimensions', explode('x', $this->panthera->config->getKey('avatar_dimensions', '80x80', 'string')));
-        $this -> panthera -> template -> push('profile_picture', pantheraUrl($u->profile_picture));
-        $this -> panthera -> template -> push('full_name', $u->full_name);
-        $this -> panthera -> template -> push('primary_group', $u->primary_group);
-        $this -> panthera -> template -> push('group_name', $u->group_name);
-        $this -> panthera -> template -> push('joined', $u->joined);
-        $this -> panthera -> template -> push('user_language', $u->language);
-        $this -> panthera -> template -> push('isBanned', $u->isBanned());
-        $this -> panthera -> template -> push('jabber', $u->jabber);
-        $this -> panthera -> template -> push('email', $u->mail);
-        $this -> panthera -> template -> push('groups', $groupsTpl);
-        $this -> panthera -> template -> push('facebookID', $u->acl->get('facebook'));
+            $groupsTpl[] = array(
+                'name' => $group->name, 
+                'group_id' => $group->group_id,
+            );
+        
+        $this -> panthera -> template -> push(array(
+            'locales_added' => $localesActive,
+            'avatar_dimensions' => explode('x', $this->panthera->config->getKey('avatar_dimensions', '80x80', 'string')),
+            'profile_picture' => pantheraUrl($u->profile_picture),
+            'groups' => $groupsTpl,
+            'facebookID' => $u->acl->get('facebook'),
+            'lastloginHistory' => $u -> getLastLoginHistory(),
+            'user' => $u,
+        ));
     
         $aclList = array();
         $userTable = $u->acl->listAll();

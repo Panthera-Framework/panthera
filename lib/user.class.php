@@ -194,6 +194,58 @@ class pantheraUser extends pantheraFetchDB
     }
     
     /**
+     * Get user's last login history
+     * 
+     * @param string|int $beforeDate (Optional) Get last logins before this date
+     * @param string|int $afterDate (Optional) Get last logins after this date
+     * @param int $offset (Optional) SQL offset
+     * @param int $limit (Optional) SQL limit 
+     */
+    
+    public function getLastLoginHistory($beforeDate='', $afterDate='', $offset=0, $limit=100)
+    {
+        $where = new whereClause;
+        $where -> add('', 'uid', '=', $this -> id);
+        
+        if ($beforeDate)
+        {
+            if (is_string($beforeDate))
+                $beforeDate = strtotime($beforeDate);
+            
+            $beforeDate = date('Y-m-d G:i:s', $beforeDate);
+            
+            $where -> add('AND', 'date', '<', $beforeDate);
+        }
+        
+        if ($afterDate)
+        {
+            if (is_string($afterDate))
+                $afterDate = strtotime($afterDate);
+            
+            $afterDate = date('Y-m-d G:i:s', $afterDate);
+            
+            $where -> add('AND', 'date', '>', $afterDate);
+        }
+        
+        $show = $where -> show();
+        $SQL = $this -> panthera -> db -> query('SELECT * FROM `{$db_prefix}users_lastlogin_history` WHERE ' .$show[0]. ' ORDER BY `date` DESC LIMIT ' .intval($offset). ', ' .intval($limit), $show[1]);
+        $fetch = $SQL -> fetchAll(PDO::FETCH_ASSOC);
+        
+        if ($fetch)
+        {
+            foreach ($fetch as &$row)
+            {
+                $row['uid'] = intval($row['uid']);
+                $row['retries'] = intval($row['retries']);
+                $row['date'] = date($this -> panthera -> dateFormat, strtotime($row['date']));
+            }
+        }
+        
+        
+        return $fetch;
+    }
+    
+    /**
       * Get user attribute by id, pantheraUser object, login or current logged in user
       *
       * @param string $attribute Attribute name to get eg. id, login
