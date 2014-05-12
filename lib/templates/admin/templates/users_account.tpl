@@ -364,7 +364,7 @@ function getAvatar(link, id)
             		<tbody class="hovered">
             			{loop="$lastloginHistory"}
             			<tr>
-            				<td>{$value.date}{if="$value.retries"} ({function="slocalize('%s times', 'users', $value.retries)"}){/if}</td>
+            				<td>{$value.date}{if="$value.retries"} ({function="slocalize('%s retries', 'users', $value.retries)"}){/if}</td>
             				<td title="{$value.useragent}">{$value.browser}{if="$value.system"} ({$value.system}){/if}{if="$value.location"}, {$value.location}{/if}{if="$value.ip"}, {$value.ip}{/if}</td>
             			</tr>
             			{/loop}
