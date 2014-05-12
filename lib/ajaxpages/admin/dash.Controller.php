@@ -75,31 +75,20 @@ class dashAjaxControllerSystem extends pageController
 
     protected function main()
     {
-        $defaults = array();
-        
-        $defaults = $this -> getDefaultIcons($defaults);
-        
-        // check checksum of all elements (to check if any default was updated)
         $this -> panthera -> logging -> startTimer();
-        $defaultsSum = hash('md4', serialize($defaults));
-        $menuDB = $this -> panthera -> config -> getKey('dash.items', $defaults, 'array', 'dash');
         
-        if ($this -> panthera -> config -> getKey('dash.items.checksum') != $defaultsSum)
+        $menuDB = array();
+        $this -> getDefaultIcons($menuDB);
+        $this -> getFeatureRef('ajaxpages.dash.menu.before', $menuDB);
+        
+        // hide items makred as hidden
+        foreach ($menuDB as $key => &$item)
         {
-            // @feature: not overwriting entries that was marked as "edited"    
-            foreach ($defaults as $key => $item)
+            if ($item['hidden'])
             {
-                if ($menuDB[$key]['edited'])
-                {
-                    continue;
-                }
-                
-                $menuDB[$key] = $item;
+                unset($menuDB[$key]);
+                unset($item);
             }
-            
-            $this -> panthera -> config -> setKey('dash.items', $menuDB, 'array', 'dash');
-            $this -> panthera -> config -> setKey('dash.items.checksum', $defaultsSum, 'string', 'dash');
-            $this -> panthera -> logging -> output ('Updated default dash items', 'dash');
         }
         
         $maxItems = $this -> panthera -> config -> getKey('dash.maxItems', 16, 'int', 'dash');
@@ -128,28 +117,17 @@ class dashAjaxControllerSystem extends pageController
                 $_GET['menu'] = 'main';
                 $num=0;
                 
-                foreach ($menuDB as $key => $item)
+                foreach ($menuDB as $key => &$item)
                 {
-                    // @feature: hiding items
-                    if (isset($item['hidden']))
-                    {
-                        if ($item['hidden'])
-                        {
-                            continue;
-                        }
-                    }
-                    
                     $num++;
                     
                     if ($num == $maxItems)
-                    {
                         break;
-                    }
                     
                     if (is_array($item['name']))
                         $item['name'] = $this -> panthera -> locale -> localizeFromArray($item['name']);
                     
-                    $menu[$key] = $item;
+                    $menu[$key] = $menuDB[$key];
                 }
                 
                 if ($num == $maxItems)
@@ -168,8 +146,7 @@ class dashAjaxControllerSystem extends pageController
         }
 
         // plugins and modifications support
-        list($menu, $category) = $this->filterDashMenu($menu, $category);
-        list($menu, $category) = $this -> panthera -> get_filters('dash_menu', array($menu, $_GET['menu']));
+        list($menu, $category) = $this -> getFeature('ajaxpages.dash.menu', array($menu, $_GET['menu']));
         
         // menu
         $this -> panthera -> template -> push ('dash_menu', $menu);
@@ -177,8 +154,7 @@ class dashAjaxControllerSystem extends pageController
         
         $this -> displayWidgets();
         
-        $this -> panthera -> template -> display('dash.tpl');
-        pa_exit();
+        return $this -> panthera -> template -> compile('dash.tpl');
     }
 
     /**
@@ -192,14 +168,15 @@ class dashAjaxControllerSystem extends pageController
         // just add permission to the list
         $this->checkPermissions(array('admin.accesspanel' => array('Can access admin panel')), true);
         
-        $manageWidgets = $this->checkPermissions(array('admin.dash.managewidgets' => array('Can manage dash widgets', 'dash')), true);
+        $manageWidgets = $this->checkPermissions(array(
+            'admin.dash.managewidgets' => array('Can manage dash widgets', 'dash')
+        ), true);
         
         $this -> panthera -> template -> push('showWidgets', $manageWidgets);
         
         if ($this -> panthera -> config -> getKey('dash.enableWidgets', 1, 'bool', 'dash') and $manageWidgets)
         {
             $settings = $this -> panthera -> config -> getKey('dash.widgets', array('gallery' => True, 'lastLogged' => True), 'array', 'dash');
-            
             $widgets = False;
             $enabledWidgets = array(); // array of widget instances
             $dashCustomWidgets = array(); // list of templates
@@ -220,6 +197,7 @@ class dashAjaxControllerSystem extends pageController
             {
                 // list of widgets in lib and content
                 $widgetsDir = array();
+                
                 if (is_dir(PANTHERA_DIR. '/modules/dash/'))
                     $widgetsDir = @scandir(PANTHERA_DIR. '/modules/dash/');
         
@@ -248,8 +226,7 @@ class dashAjaxControllerSystem extends pageController
                     $settings[$widget] = False;
             }
             
-            $settings = $this->filterAvaliableWidgets($settings);
-            $settings = $this -> panthera -> get_filters('ajaxpages.admin.avaliable.widgets', $settings);
+            $this -> getFeatureRef('ajaxpages.admin.avaliable.widgets', $settings);
             $this -> panthera -> template -> push ('dashAvaliableWidgets', $settings);
             
             // execute all widgets code
@@ -282,48 +259,16 @@ class dashAjaxControllerSystem extends pageController
                 }
             }
 
-            $dashCustomWidgets = $this->filterWidgets($dashCustomWidgets);
-            $dashCustomWidgets = $this -> panthera -> get_filters('ajaxpages.admin.dashwidgets', $dashCustomWidgets);
+            $this -> getFeatureRef('ajaxpages.admin.dashwidgets', $dashCustomWidgets);
             $this -> panthera -> template -> push ('dashCustomWidgets', $dashCustomWidgets);
         }
     }
 
     /**
-     * Dummy function to be forked
+     * Main function
      * 
-     * @param array $menu List of icons
-     * @param string $category Menu name
-     * @return array Array with modified $menu and $category
+     * @return null
      */
-
-    protected function filterDashMenu($menu, $category)
-    {
-        return array($menu, $category);
-    }
-    
-    /**
-     * Dummy function to be forked
-     * 
-     * @param array $widgets Widgets list
-     * @return array Modified widgets list
-     */
-    
-    protected function filterAvaliableWidgets($widgets)
-    {
-        return $widgets;
-    }
-    
-    /**
-     * Dummy function to be forked
-     * 
-     * @param array $widgets Widgets HTML output code
-     * @return array Modified widgets code
-     */
-    
-    protected function filterWidgets($widgets)
-    {
-        return $widgets;
-    }
     
     public function display()
     {
@@ -331,16 +276,23 @@ class dashAjaxControllerSystem extends pageController
         $this -> panthera -> locale -> loadDomain('dash');
         $this -> panthera -> template -> push('widgetsUnlocked', 0);
         
-        $this->dispatchAction();
-        $this->main();
+        $this -> dispatchAction();
+        return $this -> main();
     }
     
-    protected function getDefaultIcons($defaults)
+    /**
+     * Get list of default icons
+     * 
+     * @param array &$defaults Input array
+     * @return array
+     */
+    
+    protected function getDefaultIcons(&$defaults)
     {
         $defaults['frontpage'] = array('link' => '{$PANTHERA_URL}', 'name' => array('Front page', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/home.png');
         $defaults['settings'] = array('link' => '?display=settings&cat=admin', 'name' => array('Settings', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/settings.png' , 'linkType' => 'ajax');
-        $defaults['debug'] = array('link' => '?display=debug&cat=admin', 'name' => array('Debugging center'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/developement.png', 'linkType' => 'ajax');
-        $defaults['mailing'] = array('link' => '?display=mailing&cat=admin', 'name' => array('Mailing', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/mail-replied.png', 'linkType' => 'ajax');
+        //$defaults['debug'] = array('link' => '?display=debug&cat=admin', 'name' => array('Debugging center'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/developement.png', 'linkType' => 'ajax');
+        //$defaults['mailing'] = array('link' => '?display=mailing&cat=admin', 'name' => array('Mailing', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/mail-replied.png', 'linkType' => 'ajax');
         $defaults['newsletter'] = array('link' => '?display=newsletter&cat=admin', 'name' => array('Newsletter'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/newsletter.png', 'linkType' => 'ajax');
         $defaults['gallery'] = array('link' => '?display=gallery&cat=admin', 'name' => array('Gallery'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/gallery.png', 'linkType' => 'ajax');
         $defaults['upload'] = array('link' => 'panthera.popup.toggle(\'_ajax.php?display=upload&cat=admin&popup=true\');', 'name' => localize('Uploads', 'dash'), 'icon' => '{$PANTHERA_URL}/images/admin/menu/uploads.png', 'linkType' => 'onclick');
