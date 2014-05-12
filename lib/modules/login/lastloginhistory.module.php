@@ -65,12 +65,13 @@ class lastloginhistoryModule extends pageController
         $this -> panthera -> db -> insert('users_lastlogin_history', array(
             'hashid' => hash('md4', $u->id.time()),
             'uid' => $u -> id,
-            'useragent' => $_SERVER['HTTP_USER_AGENT'],
+            'useragent' => strip_tags($_SERVER['HTTP_USER_AGENT']),
             'system' => $this -> panthera -> session -> clientInfo -> os,
             'browser' => $this -> panthera -> session -> clientInfo -> browser,
             'retries' => $u -> attributes -> get('loginFailures'),
             'location' => $location,
             'date' => DB_TIME_NOW,
+            'ip' => $_SERVER['REMOTE_ADDR'],
         ));
     }
 }

@@ -357,7 +357,7 @@ function getAvatar(link, id)
             	<table style="display: inline-block; position: relative;">
             		<thead>
             			<tr>
-            				<th colspan="2">{function="localize('Last login history', 'users')"}</th>
+            				<th colspan="3">{function="localize('Last login history', 'users')"}</th>
             			</tr>
             		</thead>
             		
@@ -365,7 +365,7 @@ function getAvatar(link, id)
             			{loop="$lastloginHistory"}
             			<tr>
             				<td>{$value.date}{if="$value.retries"} ({function="slocalize('%s times', 'users', $value.retries)"}){/if}</td>
-            				<td title="{$value.useragent}">{$value.browser}{if="$value.system"} ({$value.system}){/if}{if="$value.location"}, {$value.location}{/if}</td>
+            				<td title="{$value.useragent}">{$value.browser}{if="$value.system"} ({$value.system}){/if}{if="$value.location"}, {$value.location}{/if}{if="$value.ip"}, {$value.ip}{/if}</td>
             			</tr>
             			{/loop}
             		</tbody>

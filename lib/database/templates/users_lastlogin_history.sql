@@ -9,5 +9,6 @@ CREATE TABLE `{$db_prefix}users_lastlogin_history` (
   `location` varchar(64) NOT NULL COMMENT 'Optional location info (if avaliable)',
   `system` varchar(16) NOT NULL COMMENT 'Operating system',
   `browser` varchar(16) NOT NULL COMMENT 'Browser',
+  `ip` varchar(32) NOT NULL,
   PRIMARY KEY (`hashid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8

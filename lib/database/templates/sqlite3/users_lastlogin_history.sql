@@ -8,5 +8,6 @@ CREATE TABLE "{$db_prefix}users_lastlogin_history" (
   "retries" INTEGER NOT NULL,
   "location" VARCHAR NOT NULL,
   "system" VARCHAR NOT NULL,
-  "browser" VARCHAR NOT NULL
+  "browser" VARCHAR NOT NULL,
+  "ip" VARCHAR NOT NULL
 );
