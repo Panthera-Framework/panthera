@@ -148,14 +148,14 @@ function rebuildUserList(users)
 }
 </style>
 
-<div id="topContent">
+<div id="topContent">{*}
     <div class="tipBlock tipBlockDark" style="width: 65%;">
         <div class="tipBlockInside">
-            {function="localize('aaaa', 'acl')"}
+            {function="localize('Did you know?', 'acl')"}
         </div>
     </div>
     
-    <div class="searchBarButtonArea">
+    {/*}<div class="searchBarButtonArea">
         <input type="button" value="{function="localize('Add user to group', 'acl')"}" onclick="panthera.popup.toggle('element:#addUserPopup')">
         <input type="button" value="{function="localize('Add new attribute', 'acl')"}" onclick="panthera.popup.toggle('element:#addMetaTag')">
     </div>
@@ -259,7 +259,7 @@ function rebuildUserList(users)
             </tr>
         </thead>
         
-        <tbody id="groupUsersBody">
+        <tbody id="groupUsersBody" class="hovered">
             {loop="$groupUsers"}
             <tr id="user_{$value.login}" class="groupUsers">
                 <td><a href="?display=users&cat=admin&action=account&uid={$value.id}" class="ajax_link">{$value.login}</a></td>
@@ -288,7 +288,7 @@ function rebuildUserList(users)
             </tr>
         </thead>
     
-        <tbody id="metasList">
+        <tbody id="metasList" class="hovered">
             {loop="$metas"}
             <tr class="metas" id="meta_{$key|md5}">
                 <td>{$value.name}</td>

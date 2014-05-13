@@ -103,6 +103,7 @@ $pageFile = getContentDir('ajaxpages/' .$display. '.Controller.php');
 if (!$pageFile)
     $pageFile = getContentDir('ajaxpages/' .$display. '.php');
 
+
 // find page and load it
 if ($pageFile)
 {
