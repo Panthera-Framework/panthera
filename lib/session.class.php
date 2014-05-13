@@ -78,9 +78,7 @@ class pantheraSession
         
         // Browser detection check
         if (!$this->get('clientInfo'))
-        {
             $this -> set('clientInfo', $this->detectBrowser());
-        }
     }
     
     /**
@@ -97,7 +95,7 @@ class pantheraSession
             require PANTHERA_DIR. '/share/mobiledetectlib/Mobile_Detect.php';
         
         $info = array('deviceType' => 'desktop', 'browser' => 'Unknown', 'os' => 'Unknown', 'browserVersion' => '', 'engineVersion' => '');
-        
+
         $detect = new Mobile_Detect;
         // device type detection
         if ($detect->isMobile()) { $info['deviceType'] = 'mobile'; }
@@ -105,10 +103,10 @@ class pantheraSession
         else {  
             // desktop os and browser type & version
             $ua = strtolower($detect->getUserAgent());
-        
+            
             if (strpos($ua, 'linux') !== False) { $info['os'] = 'Linux'; }
             elseif (strpos($ua, 'macintosh') !== False) { $info['os'] = 'OS X'; }
-            elseif (strpos($ua, 'windows') !== False) { $info['os'] == 'Windows'; }
+            elseif (strpos($ua, 'windows') !== False) { $info['os'] = 'Windows';}
             
             if (strpos($ua, 'chrome') !== False) { $info['browser'] = 'Chrome'; $info['engineVersion'] = $detect->version('Webkit'); $info['browserVersion'] = $detect->version('Chrome'); }
             elseif (strpos($ua, 'msie') !== False) { $info['browser'] = 'IE'; $info['engineVersion'] = $detect->version('MSIE'); $info['browserVersion'] = $detect->version('Trident'); }
@@ -117,7 +115,7 @@ class pantheraSession
             elseif (strpos($ua, 'safari') !== False) { $info['browser'] = 'Safari'; $info['engineVersion'] = $info['browserVersion'] = $detect->version('Webkit'); }
                
         } 
-        
+
         // detect browser
         if ($detect->isChrome()) { $info['browser'] = 'Chrome'; $info['browserVersion'] = $detect->version('Chrome'); $info['engineVersion'] = $detect->version('Webkit'); }
         elseif ($detect->isOpera()) { $info['browser'] = 'Opera'; $info['engineVersion'] = $detect->version('Webkit'); $info['browserVersion'] = $detect->version('Opera'); }
