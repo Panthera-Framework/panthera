@@ -162,6 +162,7 @@ class ajaxpagesAjaxControllerCore extends pageController
         
         $data = $http -> get(pantheraUrl('{$PANTHERA_URL}/_ajax.php?_bypass_x_requested_with&_system_loginkey=' .$key['key']. '&display=ajaxpages&cat=admin&action=checkControllerSyntax&controllerName=' .$controllerName. '&path=' .$path));
         $json = json_decode($data, true);
+        $http -> close();
         
         if (!$json)
         {

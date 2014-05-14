@@ -2758,6 +2758,9 @@ function filterInput($input, $filtersList)
     
     if (in_array('wysiwyg', $filters))
         $input = str_replace("\n", '\n', str_replace("\r", '\r', htmlspecialchars($input, ENT_QUOTES)));
+    
+    if (in_array('wysiwyg_newline', $filters))
+        $input = htmlspecialchars($input, ENT_QUOTES);
 
     if(in_array('quotehtml', $filters))
         $input = htmlspecialchars($input);

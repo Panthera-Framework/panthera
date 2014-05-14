@@ -6,8 +6,6 @@ $(document).ready(function(){
       * @author Mateusz Warzyński
       */
 
-/*    $('#value_mailing_server_port').w2field('int'); */
-    
     $('#value_mailing_use_php').change(function () {
         if (!parseInt($('#value_mailing_use_php').val()))
         {
@@ -41,7 +39,7 @@ $(document).ready(function(){
 
 $(document).ready(function () {
     $('#mailingSettingsForm').submit(function () {
-        panthera.jsonPOST({ data: '#mailingSettingsForm', messageBox: 'w2ui', spinner: new panthera.ajaxLoader($('#mailingSettingsTable')) });
+        panthera.jsonPOST({ data: '#mailingSettingsForm' });
         return false;
     });
 });
@@ -81,6 +79,7 @@ function callback_getContactData(data)
   <div id="topContent" style="min-height: 50px;">
     <div class="searchBarButtonArea">
         <input type="button" value="{function="localize('Send an e-mail', 'mailing')"}" onclick="panthera.popup.toggle('element:#newMail')">
+        <input type="button" value="{function="localize('Save', 'messages')"}" onclick="$('#mailingSettingsForm').submit();">
     </div>
   </div>
 
@@ -216,23 +215,55 @@ function callback_getContactData(data)
                 {/if}
                 {/loop}
             </tbody>
-            
-            <tfoot style="background-color: transparent;">
-               <tr>
-                 <td colspan="5">
-                    <span style="float: right;">
-                            <!-- <a href="#" onclick="createPopup('_ajax.php?display=acl&cat=admin&popup=true&name=can_edit_mailing', 1024, 600);" title="{function="localize('Manage permissions')"}">
-                                <img src="{$PANTHERA_URL}/images/admin/ui/permissions.png" style="max-height: 23px; margin-left: 3px; vertical-align: middle; padding-bottom: 5px;">
-                            </a> -->
-                            
-                       <input type="submit" value="{function="localize('Save', 'messages')"}">
-                    </span>
-                 </td>
-               </tr>
-            </tfoot>
-            
          </table>
       </form><br><br>
     {/if}
     
+    <table style="position: relative; display: inline-block;">
+        <thead>
+            <tr class="tableTitleHeader">
+                <th colspan="5">{function="localize('Mailing templates', 'mailing')"}</th>
+            </tr>
+            
+            <tr>
+                <th>{function="localize('Name')"}</th>
+                <th>{function="localize('Formats', 'mailing')"}</th>
+                <th>{function="localize('Languages', 'mailing')"}</th>
+                <th colspan="2">{function="localize('Files', 'mailing')"}</th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            {loop="$mailTemplates"}
+                {$kkey=$key}
+                <tr>
+                    <td>{$key}</td>
+                    <td>{if="$value.html"}HTML{/if}{if="$value.plain"}{if="$value.html"}, {/if}{function="localize('Text')"}{/if}</td>
+                    <td>
+                        {loop="$value.languages"}
+                        <a href="?display=mailing&amp;cat=admin&amp;&amp;cat=admin&action=editTemplate&tpl={$kkey}&language={$value}" class="ajax_link">{$value}</a>{if="$key < count($value.languages)"},{/if}
+                        {/loop}
+                    </td>
+                    <td>{function="implode('<br>', $value.files)"}</td>
+                    <td>
+                        <span data-searchbardropdown="#editDropDown_{$key}" id="editDropDown_{$key}Span" style="font-size: 11px; cursor: pointer;">
+                            <img src="{$PANTHERA_URL}/images/admin/ui/edit.png" style="max-height: 22px;" title="{function="localize('Edit')"}">
+                        </span>
+                        
+                        <div id="editDropDown_{$key}" class="searchBarDropdown searchBarDropdown-tip searchBarDropdown-relative">
+                            <ul class="searchBarDropdown-menu">
+                                {loop="$languages"}
+                                <li>
+                                    <a href="?display=mailing&amp;cat=admin&amp;&amp;cat=admin&action=editTemplate&tpl={$kkey}&language={$key}" class="ajax_link">
+                                        <img src="{$PANTHERA_URL}/images/admin/flags/{$key}.png" style="height: 12px; margin: 1px; vertical-align: middle;"> {$key|ucfirst}
+                                    </a>
+                                </li>
+                                {/loop}
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            {/loop}
+        </tbody>
+    </table>
 </div>

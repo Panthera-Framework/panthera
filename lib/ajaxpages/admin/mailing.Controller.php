@@ -23,13 +23,30 @@ class mailingAjaxControllerCore extends pageController
         'Mail server settings, mass mailing, single mail sending', 'mailing'
     );
     
-    protected $permissions = 'can_see_debug';
-    
-    protected $actionPermissions = array(
-        'sendAction' => array('canSendMails')
+    protected $permissions = array(
+        'admin.mailing' => array('Mailing configuration', 'mailing'),
     );
     
+    protected $actionuiTitlebar = array(
+        'editTemplate' => array('Mailing templates editor', 'mailing'),
+    );
     
+    /**
+     * Send's a mail from data stored in GET
+     * 
+     * @return null
+     */
+    
+    public function sendMailFromTemplateAction()
+    {
+        $data = unserialize(base64_decode($_GET['data']));
+        mailMessage::sendMail($data['template'], true, $data['from'], $data['recipients'], array(), null, null, $data['language']);
+        
+        ajax_exit(array(
+            'status' => 'success',
+            'message' => localize('Sent', 'mailing'),
+        ));
+    }
     
     /**
      * Send one or more e-mails
@@ -41,6 +58,34 @@ class mailingAjaxControllerCore extends pageController
     
     public function sendAction()
     {
+        if (isset($_GET['template']))
+        {
+            if (!$this -> panthera -> varCache)
+                ajax_exit(array(
+                    'status' => 'failed',
+                    'message' => localize('varCache not configured, but required'),
+                ));
+            
+            $this -> panthera -> varCache -> set('pa-login.system.loginkey', array(
+                'key' => generateRandomString(128),
+                'userID' => $this -> panthera -> user -> id,
+            ), 120);
+            
+            // send through self-proxy to catch PHP fatal errors
+            $http = new httplib;
+            $key = $this -> panthera -> varCache -> get('pa-login.system.loginkey');
+            $data = base64_encode(serialize($_REQUEST));
+            $response = $http -> get(pantheraUrl('{$PANTHERA_URL}/_ajax.php?_bypass_x_requested_with&_system_loginkey=' .$key['key']. '&display=mailing&cat=admin&action=sendMailFromTemplate&data=' .$data));
+            $http -> close();
+            
+            $r = json_decode($response, true);
+            
+            if ($r)
+                ajax_exit($r);
+            else
+                ajax_dump($response, true);
+        }
+
         if (strlen($_POST['body']) < 3)
             ajax_exit(array('status' => 'failed', 'message' => localize('Message is too short')));
     
@@ -121,6 +166,7 @@ class mailingAjaxControllerCore extends pageController
     /**
      * Select users and groups as recipients in sending window
      *
+     * @feature admin.mailing.groups $groups List of groups to display
      * @author Damian Kęska
      * @author Mateusz Warzyński
      * @return string
@@ -130,6 +176,8 @@ class mailingAjaxControllerCore extends pageController
     {
         $groups = pantheraGroup::listGroups();
         $groupsTpl = array();
+        
+        $this -> getFeatureRef('admin.mailing.groups', $groups);
     
         foreach ($groups as $group) {
             if (isset($_GET['query']))
@@ -189,7 +237,66 @@ class mailingAjaxControllerCore extends pageController
         pa_exit();
     }
 
-    
+    /**
+     * Editing mail template
+     * 
+     * @return null
+     */
+
+    public function editTemplateAction()
+    {
+        $tpl = new mailTemplate('template', $_GET['tpl']);
+        $language = $_GET['language'];
+        
+        if (!$this -> panthera -> locale -> exists($language))
+            $tpl = False;
+        
+        if (!$tpl or !$tpl -> exists())
+        {
+            $this -> panthera -> template -> push('notfound', true);
+            $this -> panthera -> template -> display('mailing.editTemplate.tpl');
+            
+            pa_exit();
+        } else {
+            if ($_POST)
+            {
+                if (isset($_POST['content']['text']))
+                    $tpl -> setContent(str_replace('-&gt;', '->', $_POST['content']['text']), $language, 'plain');
+                
+                if (isset($_POST['topic']))
+                    $tpl -> setTopic($language, $_POST['topic']);
+                
+                if (isset($_POST['content']['html']))
+                    $tpl -> setContent(str_replace('-&gt;', '->', $_POST['content']['html']), $language, 'html');
+
+                ajax_exit(array(
+                    'status' => 'success',
+                ));
+            }
+            
+            $plain = $tpl -> getContent($language, 'plain');
+            $html = $tpl -> getContent($language, 'html');
+            
+            // convert to string in case getContent would return false
+            if (!$plain) $plain = '';
+            if (!$html) $html = '';
+            
+            $this -> panthera -> template -> push(array(
+                'versions' => array(
+                    'text' => $plain,
+                    'html' => $html,
+                ),
+                'mailTemplate' => $tpl,
+                'lang' => $language,
+                'templateName' => $_GET['tpl'],
+                'topic' => $tpl -> getTopic($language),
+            ));
+        }    
+        
+        $this -> uiTitlebarObject -> setTitle(slocalize('Mailing templates editor - editing "%s" template', 'mailing', $_GET['tpl']));
+        $this -> panthera -> template -> display('mailing.editTemplate.tpl');
+        pa_exit();
+    }
     
     /**
      * Save mailing settings
@@ -225,7 +332,9 @@ class mailingAjaxControllerCore extends pageController
         
         $this -> panthera -> config -> save();
     
-        ajax_exit(array('status' => 'success'));
+        ajax_exit(array(
+            'status' => 'success',
+        ));
     }
     
     
@@ -254,31 +363,42 @@ class mailingAjaxControllerCore extends pageController
         
         $yn = array(0 => localize('No'), 1 => localize('Yes'));
 
-        $mailAttributes = array();
-        $mailAttributes['mailing_use_php'] = array('value' => (bool)$this -> panthera -> config -> getKey('mailing_use_php', 1, 'bool', 'mailing'));
-        
-        // mailing server
-        $mailAttributes['mailing_server'] = array('name' => 'Server',  'value' => $this -> panthera -> config -> getKey('mailing_server', '', 'string', 'mailing'));
-        $mailAttributes['mailing_server_port'] = array('name' => 'Port', 'value' => $this -> panthera -> config -> getKey('mailing_server_port', 465, 'int', 'mailing'));
-        
-        // auth data
-        $mailAttributes['mailing_user'] = array('name' => 'Login', 'value' => $this -> panthera -> config -> getKey('mailing_user', 'user@example.com', 'string', 'mailing'));
-        $mailAttributes['mailing_password'] = array('name' => 'Password', 'value' => $this -> panthera -> config -> getKey('mailing_password', '', 'string', 'mailing'));
-        
-        // ssl
-        $mailAttributes['mailing_smtp_ssl'] = array('name' => 'SSL', 'value' => (bool)$this -> panthera -> config -> getKey('mailing_smtp_ssl', True, 'bool', 'mailing'));
-        
-        // From header
-        $mailAttributes['mailing_from'] = array('value' => $this -> panthera -> config -> getKey('mailing_from', 'example@example.com', 'string', 'mailing'));
+        $mailAttributes = array(
+            'mailing_use_php' => array('value' => (bool)$this -> panthera -> config -> getKey('mailing_use_php', 1, 'bool', 'mailing')),
+            'mailing_server' => array('name' => 'Server',  'value' => $this -> panthera -> config -> getKey('mailing_server', '', 'string', 'mailing')),
+            'mailing_server_port' => array('name' => 'Port', 'value' => $this -> panthera -> config -> getKey('mailing_server_port', 465, 'int', 'mailing')),
+            'mailing_user' => array('name' => 'Login', 'value' => $this -> panthera -> config -> getKey('mailing_user', 'user@example.com', 'string', 'mailing')),
+            'mailing_password' => array('name' => 'Password', 'value' => $this -> panthera -> config -> getKey('mailing_password', '', 'string', 'mailing')),
+            'mailing_smtp_ssl' => array('name' => 'SSL', 'value' => (bool)$this -> panthera -> config -> getKey('mailing_smtp_ssl', True, 'bool', 'mailing')),
+            'mailing_from' => array('value' => $this -> panthera -> config -> getKey('mailing_from', 'example@example.com', 'string', 'mailing')),
+        );
         
         if (!$this -> panthera -> session -> exists('mailing_last_from'))
             $this -> panthera -> session -> set('mailing_last_from', $this -> panthera -> config -> getKey('mailing_from', 'example@example.com', 'string', 'mailing'));
         
-        $this -> panthera -> template -> push ('last_subject', $this->panthera->session->get('mailing_last_subject'));
-        $this -> panthera -> template -> push ('last_recipients', $this->panthera->session->get('mailing_last_recipients'));
-        $this -> panthera -> template -> push ('last_body', $this->panthera->session->get('mailing_last_body'));
-        $this -> panthera -> template -> push ('last_from', $this->panthera->session->get('mailing_last_from'));
-        $this -> panthera -> template -> push ('mail_attributes', $mailAttributes);
+        $mailTemplates = mailTemplate::getTemplates();
+        
+        if ($mailTemplates)
+        {
+            foreach ($mailTemplates as &$template)
+            {
+                foreach ($template['files'] as &$file)
+                {
+                    $file = str_replace(PANTHERA_DIR, '', $file);
+                    $file = str_replace(SITE_DIR, '', $file);
+                }
+            }
+        }
+        
+        $this -> panthera -> template -> push(array(
+            'last_subject' => $this->panthera->session->get('mailing_last_subject'),
+            'last_recipients' => $this->panthera->session->get('mailing_last_recipients'),
+            'last_body' => $this->panthera->session->get('mailing_last_body'),
+            'last_from' => $this->panthera->session->get('mailing_last_from'),
+            'mail_attributes' => $mailAttributes,
+            'mailTemplates' => $mailTemplates,
+            'languages' => $this -> panthera -> locale -> getLocales(),
+        ));
         
         return $this -> panthera -> template -> compile('mailing.tpl');
     }

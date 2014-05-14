@@ -1393,3 +1393,7 @@ ul.dropdown li:hover > a.dir {
     padding-left: 50px;
     font-size: 12.2px;
 }
+
+.tableTitleHeader {
+    background-color: #404c5a;
+}

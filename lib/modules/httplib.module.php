@@ -33,9 +33,26 @@ class httplib
         $panthera -> add_option('page_load_ends', array($this, 'cleanup'));
     }
     
+    /**
+     * Destruct object
+     * 
+     * @return null
+     */
+    
     public function __destruct()
     {
-        $this->cleanup();
+        $this -> close();
+    }
+    
+    /**
+     * Close connection and clean up
+     * 
+     * @return null
+     */
+    
+    public function close()
+    {
+        $this -> cleanup();
     }
     
     /**

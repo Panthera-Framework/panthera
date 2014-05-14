@@ -1,0 +1,1 @@
+Witaj {$user->getName()}! To jest testowy mail!

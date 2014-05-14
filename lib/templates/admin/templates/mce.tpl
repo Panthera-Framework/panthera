@@ -63,6 +63,7 @@
     
     function mceInit(id)
     {
+        //tinyMCE.init(mceSettings);
         tinyMCE.settings = mceSettings;
         tinymce.execCommand('mceRemoveControl',true, id);
         tinyMCE.execCommand('mceAddControl', true, id);
@@ -70,6 +71,9 @@
 
     function mceSetContent(id, html)
     {
+        //mceFocus(id);
+        //tinyMCE.activeEditor.setContent(html)
+    
         tinyMCE.get(id).setContent(html);
     }
     

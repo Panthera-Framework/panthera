@@ -586,7 +586,7 @@ class pantheraTemplate extends pantheraClass
     public function display($template=NuLL, $renderOnly=False, $skipHooking=False, $vars='', $altTemplateDir='')
     {
         $this->timer = microtime_float();
-        
+
         // execute hooks
         if (!$skipHooking)
         {
@@ -712,19 +712,18 @@ class pantheraTemplate extends pantheraClass
 
 
         if (!$template)
-        {
             $template = $this->template['index'];
-        }
         
         if ($altTemplateDir)
-        {
-            $file = getContentDir('/templates/' .$altTemplateDir. '/templates/' .$template);
-        } else {
-            $file = getContentDir('/templates/' .$this->name. '/templates/' .$template);
-        }
+            $templateDir = '/templates/' .$altTemplateDir. '/templates/' .$template;
+        else
+            $templateDir = '/templates/' .$this->name. '/templates/' .$template;
+        
+        
+        $file = getContentDir($templateDir);
         
         if (!$file)
-            throw new Exception('Cannot find template "' .$template. '" in both /content/templates/' .$this->name. '/templates and /lib/templates/' .$this->name. '/templates directories');
+            throw new Exception('Cannot find template "' .$template. '" (' .$templateDir. ') directories');
             
         $this->panthera->logging->output('Displaying ' .$file, 'pantheraTemplate');
         
