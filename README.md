@@ -3,6 +3,8 @@ Panthera Framework
 
 Our project bet on simplicity, kiss rules and performance. We are targeting to application developers wanting create their apps 10 times faster than with any other tools. Why Panthera? Our project contains READY TO USE, fully customizable administration panel built on top of Panthera Framework. There is no need to create a new administration panel every project if there is already a good one. Ready to use simple objective interfaces and modules are making Panthera easiest framework ever.
 
+We support SQLite3 and MySQL, all caching systems avaliable in PHP including XCache, APC, Memached, Redis and files cache, translations, templates using lightweight RainTPLv3 engine.
+
 ## Panthera API examples
 
 #### Editing user account
@@ -16,6 +18,8 @@ $user -> save(); // optional (it will be saved automaticaly when script executio
 ```
 
 #### Creating own database table and managing it in objetive model
+
+Every table record can be turned into a object which attributes are database columns, with full cache integration (supported APC, XCache, Memcached, Redis, files cache). Imagine your app sending no any SELECT database queries... with objective data models its possible.
 
 Create table of our example table
 
