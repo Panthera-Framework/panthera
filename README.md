@@ -5,7 +5,7 @@ Our project bet on simplicity, kiss rules and performance. We are targeting to a
 
 ## Panthera API examples
 
-##### Editing user account
+#### Editing user account
 
 ```php
 $user = new pantheraUser('login', 'webnull');
@@ -15,7 +15,7 @@ $user -> mail = 'example@example.org';
 $user -> save(); // optional (it will be saved automaticaly when script execution ends)
 ```
 
-##### Creating own database table and managing it in objetive model
+#### Creating own database table and managing it in objetive model
 
 Create table of our example table
 
