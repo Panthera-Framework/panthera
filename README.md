@@ -81,6 +81,7 @@ foreach (car::fetchAll() as $car)
 - Mateusz Warzyński - co-founder, programmer, translator, website maintainer
 - Zoran Karavla - main graphics designer, giving us helpful tips about project design
 - Dawid Niedźwiedzki - tester
+- WE NEED YOU
 
 ## Notice
 Panthera is still in beta development, we already made an installer, composer integration and many things to make it easier to install.
