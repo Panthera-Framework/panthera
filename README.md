@@ -88,8 +88,6 @@ Panthera is still in beta development, we already made an installer, composer in
 ## Installation
 Installation of Panthera Framework is very simple, but at this moment requires shell access to the server. In near future we plan making zipped packages with all dependencies to allow just place Panthera on shared hosting using FTP.
 
-So, lets download fresh contents.
-
 ```bash
 git clone https://github.com/webnull/panthera
 cd panthera
