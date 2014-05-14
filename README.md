@@ -74,6 +74,9 @@ $ferrari -> save(); // updates cache and database now, not at the end of script
 // list all cars again
 foreach (car::fetchAll() as $car)
     print($car -> name. " is " .$car -> color. " color<br>\n");
+    
+// delete row, associated meta tags, execute all triggers on this object removal and clear the cache
+$ferrari -> delete();
 ```
 
 ## Our Team
