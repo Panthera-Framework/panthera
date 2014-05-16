@@ -398,7 +398,7 @@ class debugAjaxControllerSystem extends settingsAjaxControllerSystem
             'link' => '?display=googlepr&cat=admin',
             'name' => localize('Page rank checker', 'debug'),
             'description' => localize('Shows page rank of given url', 'debug'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/google.png'
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/google.jpg'
         );
     }
 }
