@@ -49,8 +49,10 @@ class pantheraSession
                 $this->removeSession();
             }
         }
-        
+         
         ini_set('session.gc_maxlifetime', (int)$panthera->config->getKey('session_lifetime', '3600', 'int'));
+        ini_set('session.cookie_lifetime', (int)$panthera->config->getKey('session_lifetime', '3600', 'int'));
+        @session_start();
 
         // Security: Check session life-time (default is 1 hour = 3600 seconds)
         if ((int)$panthera->config->getKey('session_lifetime', '3600', 'int') > 0 and $this->exists('time'))

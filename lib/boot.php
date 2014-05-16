@@ -28,10 +28,6 @@ if (PANTHERA_MODE == 'CLI') {
         
 } else {
     // CGI mode
-
-    // we will use sessions and cookies
-    @session_start();
-
     ini_set("display_errors", 1);
     error_reporting(E_ERROR | E_PARSE | E_WARNING);
 }
