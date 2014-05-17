@@ -307,9 +307,12 @@ class crontabAjaxControllerSystem extends pageController
 	    }
 	    
 	    new uiTitlebar(slocalize('Editing crontab job id #%s', 'crontab', $job->jobid));
-	    $this -> panthera -> template -> push('runtimes', $runtimes);
-	    $this -> panthera -> template -> push('timing', $timing);
-	    $this -> panthera -> template -> push('cronjob', $jobDetails);
+        $this -> panthera -> template -> push(array(
+            'debugging' => $this -> panthera -> logging -> debug,
+            'runtimes' => $runtimes,
+            'timing' => $timing,
+            'cronjob' => $jobDetails,
+        ));
 	    
 	    if (isset($_GET['popup']))
 	        $this -> panthera -> template -> display('crontab.popup.tpl');
@@ -318,6 +321,52 @@ class crontabAjaxControllerSystem extends pageController
 	    
 	    pa_exit();
 	}
+
+    /**
+     * Execute a crontab and return output as ajax response
+     * 
+     * @return null
+     */
+
+    public function crontabWebRunAction()
+    {
+        $url = str_replace('http:/', 'http://', str_replace('//', '/', $this -> panthera -> config -> getKey('url'). '/_crontab.php?_debugsession&_appkey=' .$this -> panthera -> config -> getKey('crontab_key')));
+        
+        // reset job time to run now, not later
+        if (isset($_POST['resetJob']))
+        {
+            $job = new crontab('jobname', $_POST['resetJob']);
+            
+            if ($job -> exists())
+            {
+                $job -> next_interation = 0;
+                $job -> start_time = 0;
+                $job -> save();
+                $url .= '&jobname='.$_POST['resetJob'];
+            }
+        }
+        
+        $http = new httplib;
+        $data = $http -> get($url);
+        $http -> close();
+        
+        if (isset($_POST['printStatus']))
+        {
+            $this -> panthera -> template -> push('msg', $data);
+            
+            if (isset($_POST['printStatus']) and $_POST['printStatus'] == 'display')
+            {
+                $this -> panthera -> template -> display('crontab.crontabWebRun.tpl');
+                pa_exit();    
+            } elseif (isset($_POST['printStatus']) and $_POST['printStatus'] == 'compile')
+                $data = $this -> panthera -> template -> compile('crontab.crontabWebRun.tpl');
+        }
+        
+        ajax_exit(array(
+            'status' => 'success',
+            'message' => $data,
+        ));
+    }
 
 
 	
@@ -381,11 +430,14 @@ class crontabAjaxControllerSystem extends pageController
             $this -> panthera -> config -> setKey('crontab_key', generateRandomString(64), 'string');
         
         // show generated key and url
-        $this -> panthera -> template -> push ('crontabKey', $this -> panthera -> config -> getKey('crontab_key'));
-        $this -> panthera -> template -> push ('crontabUrl', str_replace('http:/', 'http://', str_replace('//', '/', $this -> panthera -> config -> getKey('url'). '/_crontab.php?_appkey=' .$this -> panthera -> config -> getKey('crontab_key'))));
-		
-		$this -> panthera -> template -> push('autoloadClasses', $this -> panthera -> config -> getKey('autoloader'));
-		$this -> panthera -> template -> push('cronjobs', $jobs);
+        $this -> panthera -> template -> push(array(
+            'crontabKey' => $this -> panthera -> config -> getKey('crontab_key'),
+            'crontabUrl' => str_replace('http:/', 'http://', str_replace('//', '/', $this -> panthera -> config -> getKey('url'). '/_crontab.php?_appkey=' .$this -> panthera -> config -> getKey('crontab_key'))),
+            'autoloadClasses' => $this -> panthera -> config -> getKey('autoloader'),
+            'cronjobs' => $jobs,
+            'debugging' => $this -> panthera -> logging -> debug,
+        ));
+        
 		return $this -> panthera -> template -> compile('crontab.tpl');
 	}
 }  

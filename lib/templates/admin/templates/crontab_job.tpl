@@ -29,6 +29,12 @@ $(document).ready(function() {
         return false;
     });
 });
+
+function debugSession()
+{
+	panthera.jsonPOST({url: '?display=crontab&cat=admin&action=crontabWebRun', 'data': 'resetJob={$cronjob.name}&printStatus=compile' });
+}
+
 </script>
 
 <form action="?display=crontab&cat=admin&action=saveJobDetails&jobid={$cronjob.id}" method="POST" id="saveJobDetailsFrom">
@@ -38,6 +44,7 @@ $(document).ready(function() {
             <input type="button" value="{function="localize('Back to jobs list', 'messages')"}" onclick="navigateTo('?display=crontab&cat=admin')">
         </div>
     
+    	{if="$debugging"}<input type="button" value="{function="localize('Run debug session', 'crontab')"}" onclick="debugSession()">{/if}
         <input type="submit" value="{function="localize('Save', 'crontab')"}">
     </div>
 </div>

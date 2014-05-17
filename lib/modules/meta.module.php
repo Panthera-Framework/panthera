@@ -154,18 +154,32 @@ class meta
     }
     
     /**
-      * Remove record from meta table
-      *
-      * @param string $type
-      * @param string $name
-      * @return bool 
-      * @author Damian Kęska
-      */
+     * Remove record from meta table
+     *
+     * @param string $type
+     * @param string $name
+     * @param int|string $user
+     * @return bool 
+     * @author Damian Kęska
+     */
     
-    public static function remove($type, $name)
+    public static function remove($type=null, $name=null, $user=null)
     {
         $panthera = pantheraCore::getInstance();
-        $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}metas` WHERE `name` = :name AND `type` = :type', array('name' => $name, 'type' => $type));
+        $where = new whereClause;
+        
+        if ($name)
+            $where -> add('AND', 'name', '=', $name);
+        
+        if ($type)
+            $where -> add('AND', 'type', '=', $type);
+        
+        if ($user)
+            $where -> add('AND', 'userid', '=', $user);
+        
+        $s = $where -> show();
+        
+        $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}metas` WHERE ' .$s[0], $s[1]);
         return (bool)$SQL->rowCount();
     }
     

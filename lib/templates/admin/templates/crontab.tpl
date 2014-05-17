@@ -13,6 +13,11 @@ function manageJob(jobid, action)
         }
     });
 }
+
+function debugSession()
+{
+	panthera.jsonPOST({url: '?display=crontab&cat=admin&action=crontabWebRun', 'data': 'printStatus=compile' });
+}
 </script>
 
 <div id="topContent">
@@ -22,6 +27,7 @@ function manageJob(jobid, action)
     <div class="separatorHorizontal"></div>
     
     <div class="searchBarButtonArea">
+    	{if="$debugging"}<input type="button" value="{function="localize('Run debug session', 'crontab')"}" onclick="debugSession()">{/if}
         <input type="button" value="{function="localize('Configure crontab', 'crontab')"}" onclick="panthera.popup.toggle('element:#configureCrontab')">
         <input type="button" value="{function="localize('Add new job', 'crontab')"}" onclick="panthera.popup.toggle('element:#addNewJobPopup')">
     </div>

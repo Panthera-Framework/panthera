@@ -21,9 +21,9 @@ $panthera -> importModule('crontab');
 // dont mess debug.log file
 $panthera -> logging -> debug = True;
 $panthera -> logging -> tofile = false;
-$panthera -> logging -> filterMode = 'blacklist';
+/*$panthera -> logging -> filterMode = 'blacklist';
 $panthera -> logging -> filter['crontab'] = True;
-$panthera -> logging -> filter['pantheraFetchDB'] = True;
+$panthera -> logging -> filter['pantheraFetchDB'] = True;*/
 
 // Cleaning up the crashed jobs
 //try {crontab::createJob('fix_cron_crash', array('cronjobs', 'unlockCrashedJobs'), '', '*/1'); } catch (Exception $e) {}
@@ -110,13 +110,25 @@ if ($key == $panthera -> config -> getKey('crontab_key', generateRandomString(64
     
     // cont the jobs
     $jobsCount = 0;
-
-    foreach ($jobs as $key => $job)
+    
+    if (isset($_GET['jobname']))
     {
-        $jobsCount++;
-        print("Starting job: ".$job->jobname."\n");
-        startJob($job);
-        $job->save();
+        $j = new crontab('jobname', $_GET['jobname']);
+        
+        if ($j -> exists())
+        {
+            print("Starting job: ".$j->jobname."\n");
+            startJob($j);
+            $jobsCount++;
+        }
+    } else {
+        foreach ($jobs as $key => $job)
+        {
+            $jobsCount++;
+            print("Starting job: ".$job->jobname."\n");
+            startJob($job);
+            $job->save();
+        }
     }
 
     if ($jobsCount == 0)
@@ -133,6 +145,9 @@ if ($key == $panthera -> config -> getKey('crontab_key', generateRandomString(64
             } else
                 print("ERROR: CANNOT SAVE LOG! NO WRITE PERMISSIONS IN " .SITE_DIR. "/content/tmp/crontab.log\n");
         }
+        
+        if (isset($_GET['_debugsession']))
+            print_r("\n\n\n".$panthera -> logging -> getOutput());
     }
     
     // unlock all crashed jobs
