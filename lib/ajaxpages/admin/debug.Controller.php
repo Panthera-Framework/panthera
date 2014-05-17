@@ -307,6 +307,14 @@ class debugAjaxControllerSystem extends settingsAjaxControllerSystem
             'linkType' => 'ajax'
         );
         
+        $defaults['Application Developing']['crontab'] = array(
+            'link' => '?display=crontab&cat=admin',
+            'name' => localize('Crontab', 'settings'),
+            'description' => localize('Scheduled jobs management - crontab', 'settings'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/crontab.png',
+            'linkType' => 'ajax'
+        );
+        
         $defaults['Application Developing']['syschecksum'] = array(
             'link' => '?display=syschecksum&cat=admin',
             'name' => localize('Application checksum', 'debug'),
