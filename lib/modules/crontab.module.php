@@ -421,6 +421,16 @@ class crontab extends pantheraFetchDB
     {
         $panthera = pantheraCore::getInstance();
         
+        // check if job exists
+        $job = new crontab('jobname', $jobname);
+        
+        if ($job -> exists())
+        {
+            throw new Exception('Job "' .$jobname. '" already exists', 812);
+        }
+        
+        unset($job);
+        
         if (is_array($function))
         {
             // autoload specified class from autoloader
