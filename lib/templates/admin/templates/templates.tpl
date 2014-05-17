@@ -25,7 +25,7 @@ function webrootMerge()
             
                 if (response.result[i].status == true)
                 {
-                    $('#webrootMergeBody').append('<tr id="webroot_'+i+'"><td style="text-align: center; border-right: 0px;"><a href="#" onclick="navigateTo(\'?display=browsefile&cat=admin&path='+response.result[i].path+'&back_btn=P2Rpc3BsYXk9dGVtcGxhdGVz\')">'+response.result[i].chrootname+'<span class="tooltip">'+response.result[i].source+'</span></a></td></tr>');  
+                    $('#webrootMergeBody').append('<tr id="webroot_'+i+'"><td style="text-align: center; border-right: 0px;"><a href="#" onclick="navigateTo(\'?display=browsefile&cat=admin&path='+response.result[i].path+'&back_btn=P2Rpc3BsYXk9dGVtcGxhdGVz\')">'+response.result[i].chrootname+'<br><span class="tooltip">'+response.result[i].source+'</span></a></td></tr>');  
                     changed++;
                 }
                     
@@ -105,7 +105,7 @@ function selectTemplate(template)
                         
                     } else {
                         aAttributes = ' onclick="navigateTo(\'?display=browsefile&cat=admin&path='+response.result[k].item+'&back_btn=P2Rpc3BsYXk9dGVtcGxhdGVz\')"';
-                        validateIcon = '<a href="#" style="float: right;" onclick="templateTool(\'validate\', \''+k+'\');"><img src="images/admin/validate-icon.gif" style="width: 20px;"></a>';
+                        validateIcon = '<a href="#" style="float: right;" onclick="templateTool(\'validate\', \''+k+'\', \''+template+'\');"><img src="images/admin/validate-icon.gif" style="width: 20px;"></a>';
                     }
                 
                     // append new templates to list
@@ -116,7 +116,7 @@ function selectTemplate(template)
                 }
                 
                 if (template != '')
-                    $('#templateListBody').append('<tr id="templatesList_back"><td style="width: 60px; padding: 10px; border-right: 0px; text-align: center;" colspan="2"><a href="#" onclick="selectTemplate();">'+localizeBack+'</a></td></tr>');  
+                    $('#templateListBody').append('<tr id="templatesList_back"><td style="width: 60px; padding: 10px; border-right: 0px; text-align: center;" colspan="2"><a href="#" onclick="navigateTo(\'?display=templates&cat=admin\')">'+localizeBack+'</a></td></tr>');  
                     
                 loader.update();
             }
@@ -146,12 +146,12 @@ function template_cache_lifetime_select(value)
   * @author Damian Kęska
   */
 
-function templateTool(toolName, value)
+function templateTool(toolName, value, template)
 {
     if (typeof value === "object")
         value = value.val()
         
-    panthera.jsonPOST({ url: '?display=templates&cat=admin&action=exec&name='+toolName+'&value='+value, messageBox: 'w2ui', async: true});
+    panthera.jsonPOST({ url: '?display=templates&cat=admin&action=exec&name='+toolName+'&value='+value+'&template='+template, messageBox: 'w2ui', async: true});
 }
 </script>
 
@@ -168,24 +168,24 @@ function templateTool(toolName, value)
 <!-- Configuration -->
 <div id="configurationPopup" style="display: none;">
     <div style="text-align: center;">
-    <table style="display: inline-block; margin: 0 auto;">
+    <table style="display: inline-block; margin: 0 auto;" class="formTable">
         <thead>
             <th colspan="3">{function="ucfirst(localize('configuration', 'templates'))"}</th>
         </thead>
         
         <tbody id="templatesConfigBody">
             <tr>
-                <td style="width: 100px;">{function="ucfirst(localize('cache', 'templates'))"}:</td>
+                <th style="width: 100px;">{function="ucfirst(localize('cache', 'templates'))"}:</th>
                 <td><input type="checkbox" id="template_caching" {if="$config.template_caching == True"}checked{/if}></td>
             </tr>
             
             <tr id="template_cache_lifetime_tr" {if="$config.template_caching == False"}style="display: none;"{/if}>
-                <td>{function="ucfirst(localize('cache lifetime', 'templates'))"}:</td>
+                <th>{function="ucfirst(localize('cache lifetime', 'templates'))"}:</th>
                 <td><input type="text" value="{$config.template_cache_lifetime}" id="template_cache_lifetime"> <input type="button" value="{function="localize('Select', 'templates')"}" onclick="panthera.popup.toggle('?display=_popup_time&cat=admin&type=countSeconds&popup=true&callback=template_cache_lifetime_select', 'secondpopup');"></td>
             </tr>
             
             <tr>
-                <td>{function="ucfirst(localize('debugging', 'templates'))"}: </td>
+                <th>{function="ucfirst(localize('debugging', 'templates'))"}: </th>
                 <td><input type="checkbox"{if="$config.template_debugging == True"} checked {/if}id="template_debugging"></td>
             </tr>
         </tbody>

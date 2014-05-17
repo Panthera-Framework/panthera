@@ -130,13 +130,38 @@ class templatesAjaxControllerSystem extends pageController
     
             case 'validate':
                 try {
-                    $result = $this -> panthera -> template -> compile($_GET['value']);
+                    if ($this -> panthera -> varCache)
+                    {
+                        $this -> panthera -> varCache -> set('pa-login.system.loginkey', array(
+                            'key' => generateRandomString(128),
+                            'userID' => $this -> panthera -> user -> id,
+                        ), 120);
+                    }
                     
-                    if ($result != '')
-                        ajax_exit(array('status' => 'success', 'message' => localize('Template syntax is valid', 'templates')));
+                    $http = new httplib;
+                    $key = $this -> panthera -> varCache -> get('pa-login.system.loginkey');
+                    
+                    $result = $http -> get(pantheraUrl('{$PANTHERA_URL}/_ajax.php?_bypass_x_requested_with&_system_loginkey=' .$key['key']. '&display=templates&cat=admin&action=exec&name=validateProxy&template=' .$_GET['template']. '&value=' .$_GET['value']));
+                    $http -> close();
+                    
+                    $result = '';
+                    
+                    if (strpos($result, 'PHP') === False)
+                        ajax_exit(array(
+                            'status' => 'success',
+                            'message' => localize('Template syntax is valid', 'templates'),
+                        ));
+                    else
+                        ajax_exit(array(
+                            'status' => 'failed', 
+                            'message' => $result,
+                        ));
                         
                 } catch (Exception $e) {
-                    ajax_exit(array('status' => 'failed', 'message' => $e -> getMessage()));
+                    ajax_exit(array(
+                        'status' => 'failed', 
+                        'message' => $e -> getMessage(),
+                    ));
                 }
                 
                 ajax_exit(array('status' => 'failed', 'message' => localize('Error, check if template file name is correct', 'templates')));
@@ -145,6 +170,14 @@ class templatesAjaxControllerSystem extends pageController
             case 'clear_cache':
                 $panthera -> template -> clearCache();
                 ajax_exit(array('status' => 'success', 'message' => localize('Done')));
+            break;
+            
+            case 'validateProxy':
+                try {
+                    print($this -> panthera -> template -> compile($_GET['value'], False, '', $_GET['template']));
+                } catch (Exception $e) {
+                    print($e -> getMessage());
+                }
             break;
         }
     }
@@ -174,6 +207,9 @@ class templatesAjaxControllerSystem extends pageController
         unset($templates['admin_mobile']);
         unset($templates['installer']);
         unset($templates['_libs_webroot']);
+        unset($templates['_system']);
+        unset($templates['_mails']);
+        unset($templates['_docs']);
         
         $this -> panthera -> template -> push ('config', $config);
         $this -> panthera -> template -> push ('current_template', $this -> panthera -> config -> getKey('template'));

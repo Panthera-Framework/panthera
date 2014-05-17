@@ -165,9 +165,7 @@ class ajaxpagesAjaxControllerCore extends pageController
         $http -> close();
         
         if (!$json)
-        {
             return false;
-        }        
         
         return true;
     }
