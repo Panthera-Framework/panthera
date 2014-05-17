@@ -421,7 +421,7 @@ class settingsAjaxControllerSystem extends pageController
             'link' => '?display=settings.facebook&cat=admin',
             'name' => localize('Facebook integration', 'settings'),
             'description' => '',
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/facebook.png',
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/face.png',
             'linkType' => 'ajax'
         );
         
