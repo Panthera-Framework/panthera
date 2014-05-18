@@ -26,6 +26,74 @@ class databaseAjaxControllerCore extends pageController
         'admin.databases' => array('Database management', 'database'),
     );
     
+    /**
+     * List all tables and check if it has own templates
+     * 
+     * @return null
+     */
+    
+    public function debugTablesAction()
+    {
+        $tables = array();
+        $t = $this -> panthera -> db -> listTables();
+        $prefix = $this -> panthera -> config -> getKey('db_prefix');
+        
+        // search for database templates
+        if ($t)
+        {
+            foreach ($t as $table)
+            {
+                $table = str_replace($prefix, '', $table);
+                
+                $tables[$table] = array(
+                    'hasTemplate_mysql' => getContentDir('database/templates/' .$table. '.sql'),
+                    'hasTemplate_sqlite3' => getContentDir('database/templates/sqlite3/' .$table. '.sql'),
+                    'isInDB' => True,
+                );
+            }
+        }
+
+        // search for template files (alternative to find missing database tables)
+        $search = array_merge(
+            scandir(PANTHERA_DIR. '/database/templates'), // lib, mysql
+            scandir(PANTHERA_DIR. '/database/templates/sqlite3') // lib, sqlite3
+        );
+        
+        if (is_dir(SITE_DIR. '/content/database/templates'))
+            $search = array_merge($search, scandir(SITE_DIR. '/content/database/templates'));
+        
+        if (is_dir(SITE_DIR. '/content/database/templates/sqlite3'))
+            $search = array_merge($search, scandir(SITE_DIR. '/content/database/templates/sqlite3'));
+        
+        // remove all duplicates
+        $search = array_unique($search);
+        
+        if ($search)
+        {
+            foreach ($search as $table)
+            {
+                if (pathinfo($table, PATHINFO_EXTENSION) !== 'sql')
+                    continue;
+                
+                $table = str_replace('.sql', '', $table);
+                
+                if (!isset($tables[$table]))
+                {
+                    $tables[$table] = array(
+                        'hasTemplate_mysql' => getContentDir('database/templates/' .$table. '.sql'),
+                        'hasTemplate_sqlite3' => getContentDir('database/templates/sqlite3/' .$table. '.sql'),
+                        'isInDB' => False,
+                    );
+                }
+            }
+        }
+
+        $this -> getFeatureRef('admin.database.debugTables.tables', $tables);
+        $this -> panthera -> template -> push('tables', $tables);        
+        $this -> panthera -> template -> display('database.debugTables.tpl');
+        pa_exit();
+    }
+    
     
     /**
      * Get PDO attributes about database
@@ -113,7 +181,7 @@ class databaseAjaxControllerCore extends pageController
     public function display()
     {
         $this -> panthera -> locale -> loadDomain('database');
-        
+        $this -> dispatchAction();
         $this -> panthera -> template -> push('sql_attributes', $this->getAttributes());
         $this -> panthera -> template -> push('panthera_attributes', $this->getInternalAttributes());
         

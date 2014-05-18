@@ -525,7 +525,7 @@ class pantheraDB extends pantheraClass
             
             if ($SQL -> rowCount())
             {
-                $fetch = $SQL -> fetch(PDO::FETCH_ALL);
+                $fetch = $SQL -> fetch(PDO::FETCH_ASSOC);
                 $string = $fetch['Create Table'];
             }
         }
