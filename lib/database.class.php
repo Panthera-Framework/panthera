@@ -477,6 +477,61 @@ class pantheraDB extends pantheraClass
         
         return $tables;
     }
+
+    /**
+     * Shows a create table for each database driver
+     * 
+     * @param string $table Table name
+     * @author Damian Kęska
+     * @return string
+     */
+
+    public function showCreateTable($table)
+    {
+        $rawTable = $table;
+        $table = str_replace('{$db_prefix}', $this -> panthera -> config -> getKey('db_prefix'), $table);
+        $string = '';
+        
+        if ($this->socketType == 'sqlite')
+        {
+            $SQL = $this -> query ('SELECT sql FROM sqlite_master WHERE `tbl_name` = :table AND `type` = "table";', array('table' => $table));
+            $string = "";
+            
+            if ($SQL -> rowCount())
+            {
+                $data = $SQL -> fetch(PDO::FETCH_ASSOC);
+                $string .= $data['sql'];
+                
+                // indexes
+                $SQL = $this -> query ('SELECT sql FROM sqlite_master WHERE `tbl_name` = :table AND `type` = "index";', array('table' => $table));
+                
+                $data = $SQL -> fetchAll(PDO::FETCH_ASSOC);
+                
+                if ($data)
+                {
+                    $string .= "\n\n";
+                    
+                    foreach ($data as $index)
+                    {
+                        if ($index['sql'])
+                            $string .= $index['sql']."\n";
+                    }
+                }
+            }
+            
+            return $string;
+        } elseif ($this -> socketType == 'mysql') {
+            $SQL = $this -> query('SHOW CREATE TABLE ' .$table);
+            
+            if ($SQL -> rowCount())
+            {
+                $fetch = $SQL -> fetch(PDO::FETCH_ALL);
+                $string = $fetch['Create Table'];
+            }
+        }
+        
+        return $string;
+    }
     
     /**
       * Generate list of fields for SQL "UPDATE" query
