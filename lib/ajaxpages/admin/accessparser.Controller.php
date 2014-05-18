@@ -1,21 +1,21 @@
 <?php
 /**
-  * Read server log
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Read server log
+ *
+ * @package Panthera\core\ajaxpages
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license GNU Affero General Public License 3, see license.txt
+ */
 
   
 /**
-  * Server log parser pageController 
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  */
+ * Server log parser pageController 
+ *
+ * @package Panthera\core\ajaxpages
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
 
 class accessparserAjaxControllerCore extends pageController
 {

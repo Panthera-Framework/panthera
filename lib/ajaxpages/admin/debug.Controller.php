@@ -402,6 +402,13 @@ class debugAjaxControllerSystem extends settingsAjaxControllerSystem
             'icon' => '{$PANTHERA_URL}/images/admin/menu/blank.png'
         );
         
+        $defaults['Tools']['createTableParser'] = array(
+            'link' => '?display=debug.createTableParser&cat=admin',
+            'name' => localize('CREATE TABLE parser', 'debug'),
+            'description' => localize('Database CREATE TABLE statement parser', 'debug'), 
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/array_editor.png'
+        );
+        
         $defaults['Tools']['googlepr'] = array(
             'link' => '?display=googlepr&cat=admin',
             'name' => localize('Page rank checker', 'debug'),

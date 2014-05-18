@@ -64,7 +64,7 @@ function jsonEditSave(responseType)
                         </tr>
                         
                         <tr id="jsonedit_result_tr" style='{if="$popup"}display: none;{/if}'>
-                            <td style="padding: 0px;"><div id="spinnerOverlay" style="position: relative;"><textarea id="jsonedit_result" readonly style="width: 98%; height: 250px;"></textarea></div></td>
+                            <td style="padding: 0px;"><textarea id="jsonedit_result" readonly style="width: 98%; height: 250px;"></textarea></td>
                         </tr>
                     </tbody>
                 </table>
