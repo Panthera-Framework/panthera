@@ -284,6 +284,14 @@ class debugAjaxControllerSystem extends settingsAjaxControllerSystem
             'linkType' => 'ajax',
         );
         
+        $defaults['Application Developing']['database'] = array(
+            'link' => '?display=database&cat=admin&action=debugTables',
+            'name' => localize('Database structure', 'database'),
+            'description' => localize('Integrity check, merging, diff calculation', 'database'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/database-warning-icon.png',
+            'linkType' => 'ajax',
+        );
+        
         $defaults['Application Developing']['langtool'] = array(
             'link' => '?display=langtool&cat=admin',
             'name' => ucfirst(localize('translates', 'dash')),

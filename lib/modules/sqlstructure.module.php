@@ -1,5 +1,20 @@
 <?php
+/**
+ * SQL CREATE TABLE statements parser (supports SQLite3 and MySQL)
+ *
+ * @package Panthera\modules\sqlstructure
+ * @author Damian Kęska
+ * @license GNU LGPLv3
+ */
+
 define('CURRENT_TIMESTAMP', 8);
+
+/**
+ * SQL CREATE TABLE statements parser (supports SQLite3 and MySQL)
+ *
+ * @package Panthera\modules\sqlstructure
+ * @author Damian Kęska
+ */
 
 class SQLStructure
 {
@@ -107,9 +122,12 @@ class SQLStructure
 			if (substr($line, 0, 1) == ')')
 			{
 			    preg_match_all('/([A-Za-z0-9_ ]+)\=([A-Za-z0-9_\-\+]+)/', $line, $_matches, PREG_SET_ORDER);
-			    
+
 			    $attrs = array();
-			    
+
+                if (!$_matches)
+                    continue;
+                
 			    foreach ($_matches as $match)
 			    {
 			        $key = strtoupper(trim($match[1]));
@@ -128,6 +146,8 @@ class SQLStructure
 			        
 			    if (isset($attrs['DEFAULT CHARSET']))
 			        $results[$tableName]['charset'] = $attrs['DEFAULT CHARSET'];
+
+                $results[$tableName]['__dbType'] = 'mysql';
 			}
         }
         
@@ -139,7 +159,7 @@ class SQLStructure
             if (substr($line, 0, 12) == "CREATE INDEX")
                 $this -> parseIndex($line, $results);
         }
-        
+
         return $results;
     }
     
@@ -193,7 +213,6 @@ class SQLStructure
         if (strpos($line, ' NOT NULL') !== False)
             $data['null'] = false;
 
-        /* SQLite specific syntax */        
         if (strpos($line, ' AUTO_INCREMENT') !== False or strpos($line, 'AUTOINCREMENT') !== False)
             $data['autoIncrement'] = true;
         
@@ -201,17 +220,29 @@ class SQLStructure
             $data['primaryKey'] = true;
         
         if (strpos($line, ' UNIQUE') !== False)
+        {
+            $results[$tableName]['__dbType'] = 'mysql';
             $data['uniqueKey'] = true;
+        }
         
         if (strpos($line, ' FOREIGN KEY') !== False)
+        {
             $data['foreignKey'] = true;
-
+            $results[$tableName]['__dbType'] = 'mysql';
+        }
+        
 		if (strpos($line, ' DEFAULT CURRENT_TIMESTAMP') !== False)
+        {
 			$data['default'] = CURRENT_TIMESTAMP;
-
+            $results[$tableName]['__dbType'] = 'mysql';
+        }
+        
 		if (strpos($line, 'ON UPDATE CURRENT_TIMESTAMP') !== False)
+        {
 			$data['onUpdate'] = CURRENT_TIMESTAMP;
-
+            $results[$tableName]['__dbType'] = 'mysql';
+        }
+        
         // data is passed by reference
         $results[$tableName]['columns'][$data['name']] = $data;
     }
@@ -317,5 +348,105 @@ class SQLStructure
         }
         
         return trim(str_replace($quotes, '', trim($input)));
+    }
+    
+    /**
+     * Strip out MySQL functions into SQLite3 features
+     * 
+     * @param array $input
+     * @return array
+     */
+    
+    public function sqliteCompat($input)
+    {
+        $mysqlToSQLite3Types = array(
+            'INTEGER' => array('INT', 'TINYINT', 'INTEGER', 'SMALLINT', 'MEDIUMINT', 'BIGINT', 'UNSIGNED BIG INT', 'INT2', 'INT8'),
+            'TEXT' => array('CHARACTER', 'VARCHAR', 'VARYING CHARACTER', 'NCHAR', 'NATIVE CHARACTER', 'NVARCHAR', 'CLOB', 'TEXT'),
+            'BLOB' => array('BLOB'),
+            'REAL' => array('DOUBLE', 'DOUBLE PRECISION', 'FLOAT', 'REAL'),
+            'NUMERIC' => array('DECIMAL', 'BOOLEAN', 'DATE', 'DATETIME', 'NUMERIC'),
+        );
+        
+        foreach ($input['columns'] as &$column)
+        {
+            // SQLite does not support UNIQUE and FOREIGN KEYS
+            $column['uniqueKey'] = False;
+            $column['foreignKey'] = False;
+            
+            // there are no fixed lengths
+            $column['length'] = 0;
+            
+            // no ON UPDATE triggers
+            $column['onUpdate'] = null;
+            
+            $type = strtoupper($column['type']);
+            $found = False;
+            
+            if (!in_array($type, $mysqlToSQLite3Types))
+            {
+                foreach ($mysqlToSQLite3Types as $typeName => $t)
+                {
+                    if (in_array($type, $t))
+                    {
+                        $found = True;
+                        $type = $column['type'] = $typeName;
+                        break;
+                    }
+                }
+            }
+            
+            // debugging informations
+            unset($column['__inputData']);
+        }
+        
+        // MySQL attributes
+        $input['engine'] = null;
+        $input['charset'] = '';
+        unset($input['__mysqlRawAttrs']);
+        unset($input['__dbType']);
+        
+        return $input;
+    }
+    
+    /**
+     * Create a diff between $a and $b
+     * 
+     * @param SQLStructure $a Object A
+     * @param SQLStructure $b Object B
+     * @author Damian Kęska
+     * @return array
+     */
+    
+    public function compareWith($b, $tableName)
+    {
+        $a = $this -> getParsedArray();
+        $b = $b -> getParsedArray();
+        
+        $a = $a[$tableName];
+        $b = $b[$tableName];
+        
+        // if we are comparing SQLite3 and MySQL
+        if ($a['__dbType'] != $b['__dbType'])
+        {
+            $a = $this -> sqliteCompat($a);
+            $b = $this -> sqliteCompat($b);
+        }
+        
+        $i = 1;
+        $diff = arrayRecursiveDiff($a, $b, $i);
+        $i--;
+        
+        if (isset($diff['__mysqlRawAttrs']['AUTO_INCREMENT']))
+            unset($diff['__mysqlRawAttrs']['AUTO_INCREMENT']);
+        
+        if (isset($diff['__mysqlRawAttrs']) and !$diff['__mysqlRawAttrs'])
+            unset($diff['__mysqlRawAttrs']);
+        
+        return array(
+            'a' => $a,
+            'b' => $b,
+            'diff' => $diff,
+            'countDiffs' => $i,
+        );
     }
 }

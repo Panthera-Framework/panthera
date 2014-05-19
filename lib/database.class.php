@@ -504,7 +504,6 @@ class pantheraDB extends pantheraClass
                 
                 // indexes
                 $SQL = $this -> query ('SELECT sql FROM sqlite_master WHERE `tbl_name` = :table AND `type` = "index";', array('table' => $table));
-                
                 $data = $SQL -> fetchAll(PDO::FETCH_ASSOC);
                 
                 if ($data)
@@ -514,7 +513,7 @@ class pantheraDB extends pantheraClass
                     foreach ($data as $index)
                     {
                         if ($index['sql'])
-                            $string .= $index['sql']."\n";
+                            $string .= str_replace($table, $rawTable, $index['sql'])."\n";
                     }
                 }
             }
@@ -526,7 +525,7 @@ class pantheraDB extends pantheraClass
             if ($SQL -> rowCount())
             {
                 $fetch = $SQL -> fetch(PDO::FETCH_ASSOC);
-                $string = $fetch['Create Table'];
+                $string = str_replace($table, $rawTable, $fetch['Create Table']);
             }
         }
         

@@ -2554,13 +2554,14 @@ function r_dump()
 }
 
 /**
-  * List all class/object methods
-  *
-  * @param object|string $obj
-  * @param bool $return Return as string
-  * @return string|bool 
-  * @author Damian Kęska
-  */
+ * List all class/object methods
+ *
+ * @param object|string $obj
+ * @param bool $return Return as string
+ * @package Panthera\pantheraCore\debugging
+ * @return string|bool 
+ * @author Damian Kęska
+ */
 
 function object_info($obj, $return=False)
 {
@@ -2581,12 +2582,13 @@ function object_info($obj, $return=False)
 }
 
 /**
-  * Splits seconds with microseconds from microtime() output
-  *
-  * @param string $time Optional input time, if not specified it will be generated with microtime()
-  * @return float
-  * @author http://php.net
-  */
+ * Splits seconds with microseconds from microtime() output
+ *
+ * @param string $time Optional input time, if not specified it will be generated with microtime()
+ * @package Panthera\pantheraCore
+ * @return float
+ * @author http://php.net
+ */
 
 function microtime_float($time='')
 {
@@ -2598,20 +2600,21 @@ function microtime_float($time='')
 }
 
 /**
-  * Calculate diffirences between dates and show in user friendly format
-  *
-  * @param int $timestamp_past
-  * @param int $timestamp_future
-  * @param bool $years
-  * @param bool $months
-  * @param bool $days
-  * @param bool $hours
-  * @param bool $mins
-  * @param bool $secs
-  * @param bool $display_output
-  * @return string|array
-  * @author Damian Kęska
-  */
+ * Calculate diffirences between dates and show in user friendly format
+ *
+ * @param int $timestamp_past
+ * @param int $timestamp_future
+ * @param bool $years
+ * @param bool $months
+ * @param bool $days
+ * @param bool $hours
+ * @param bool $mins
+ * @param bool $secs
+ * @param bool $display_output
+ * @package Panthera\pantheraCore
+ * @return string|array
+ * @author Damian Kęska
+ */
 
 function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $months = true, $days = true, $hours = true, $mins = true, $secs = true, $display_output = true)
 {
@@ -2748,6 +2751,7 @@ function elapsedTime($time)
  *
  * @param string $input Input string
  * @param string $filtersList Separated by comma eg. quotehtml,quotes,wysiwyg
+ * @package Panthera\pantheraCore
  * @return bool
  * @author Damian Kęska
  */
@@ -2778,14 +2782,15 @@ function filterInput($input, $filtersList)
 }
 
 /**
-  * Description of a function
-  *
-  * @config hashing_algorithm
-  * @config salt
-  * @param string $password to encode
-  * @return string with hash
-  * @author Damian Kęska
-  */
+ * Description of a function
+ *
+ * @config hashing_algorithm
+ * @config salt
+ * @param string $password to encode
+ * @package Panthera\pantheraCore
+ * @return string with hash
+ * @author Damian Kęska
+ */
 
 function encodePassword($password)
 {
@@ -2802,15 +2807,16 @@ function encodePassword($password)
 }
 
 /**
-  * Verify if password matches selected hash
-  *
-  * @config hashing_algorithm
-  * @config salt
-  * @param string $password to verify
-  * @param string $hash previously encoded password to verify with $password
-  * @return bool
-  * @author Damian Kęska
-  */
+ * Verify if password matches selected hash
+ *
+ * @config hashing_algorithm
+ * @config salt
+ * @param string $password to verify
+ * @param string $hash previously encoded password to verify with $password
+ * @package Panthera\pantheraCore
+ * @return bool
+ * @author Damian Kęska
+ */
 
 function verifyPassword($password, $hash)
 {
@@ -2827,14 +2833,15 @@ function verifyPassword($password, $hash)
 }
 
 /**
-  * Get query string form GET/POST or other array, supports exceptions (some arguments can be skipped)
-  *
-  * @param array|string $array Array of elements, or a string value "GET" or "POST"
-  * @param array|string $mix Elements to add (useful if using "GET" or "POST" in first but want to add something) eg. "aaa=test&bbb=ccc" or array('aaa' => 'test', 'bbb' => 'ccc')
-  * @param array|string $except List of parameters to skip eg. "display,cat" or array('display', 'cat')
-  * @return string 
-  * @author Damian Kęska
-  */
+ * Get query string form GET/POST or other array, supports exceptions (some arguments can be skipped)
+ *
+ * @param array|string $array Array of elements, or a string value "GET" or "POST"
+ * @param array|string $mix Elements to add (useful if using "GET" or "POST" in first but want to add something) eg. "aaa=test&bbb=ccc" or array('aaa' => 'test', 'bbb' => 'ccc')
+ * @param array|string $except List of parameters to skip eg. "display,cat" or array('display', 'cat')
+ * @package Panthera\pantheraCore
+ * @return string 
+ * @author Damian Kęska
+ */
 
 function getQueryString($array=null, $mix=null, $except=null)
 {
@@ -2875,12 +2882,13 @@ function getQueryString($array=null, $mix=null, $except=null)
 }
 
 /**
-  * Strip new lines
-  *
-  * @param string $string
-  * @return string 
-  * @author Damian Kęska
-  */
+ * Strip new lines
+ *
+ * @param string $string
+ * @package Panthera\pantheraCore
+ * @return string 
+ * @author Damian Kęska
+ */
 
 function stripNewLines($str)
 {
@@ -2888,12 +2896,12 @@ function stripNewLines($str)
 }
 
 /**
-  * Capture function stdout
-  *
-  * @param string|function $function
-  * @package Panthera\pantheraCore
-  * @author Damian Kęska
-  */
+ * Capture function stdout
+ *
+ * @param string|function $function
+ * @package Panthera\pantheraCore
+ * @author Damian Kęska
+ */
 
 function captureStdout($function, $a=null, $b=null, $c=null, $d=null, $e=null, $f=null)
 {
@@ -2961,3 +2969,50 @@ function forRange($range=0)
     
     return $arr;
 }
+
+/**
+ * Recursive array diff
+ *
+ * @package Panthera\pantheraCore
+ * @param array $aArray1
+ * @param array $aArray2
+ * @see http://stackoverflow.com/questions/3876435/recursive-array-diff 
+ * @author mhitza
+ */
+
+function arrayRecursiveDiff($aArray1, $aArray2, &$i=null) 
+{
+  $aReturn = array();
+  
+  foreach ($aArray1 as $mKey => $mValue) 
+  {
+    if (array_key_exists($mKey, $aArray2)) 
+    {
+      if (is_array($mValue)) 
+      {
+        $aRecursiveDiff = arrayRecursiveDiff($mValue, $aArray2[$mKey], $i);
+          
+        if (count($aRecursiveDiff)) 
+        {
+             $aReturn[$mKey] = $aRecursiveDiff;
+             
+             if ($i !== null)
+                $i++;
+        }
+         
+      } else {
+          
+        if ($mValue != $aArray2[$mKey]) 
+        {
+            $aReturn[$mKey] = $mValue;
+            
+            if ($i !== null)
+                $i++;
+        }
+      }
+    } else {
+      $aReturn[$mKey] = $mValue;
+    }
+  }
+  return $aReturn;
+} 

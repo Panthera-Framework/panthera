@@ -88,6 +88,52 @@ class databaseAjaxControllerCore extends pageController
             }
         }
 
+        if ($this -> panthera -> varCache)
+        {
+            if (!$this -> panthera -> varCache -> exists('database.schemas') or isset($_GET['forceUpdateCache']))
+            {
+                foreach ($tables as $tableName => &$table)
+                {
+                    if ($table['isInDB'])
+                    {
+                        try {
+                            $a = new SQLStructure($this -> panthera -> db -> showCreateTable('{$db_prefix}' .$tableName));
+                        } catch (Exception $e) { $table['parserError'][] = array('a', $e -> getMessage()); }
+                        
+                        // compare live database schema with MySQL template
+                        if ($table['hasTemplate_mysql'])
+                        {
+                            try {
+                                $mysqlDiff = new SQLStructure(file_get_contents($table['hasTemplate_mysql']));
+                                $table['db_vs_mysql'] = $a -> compareWith($mysqlDiff, '{$db_prefix}' .$tableName);
+                            } catch (Exception $e) { $table['parserError'][] = array('db_vs_mysql', $e -> getMessage()); }
+                        }
+                            
+                            
+                        // compare live database schema with SQLite3
+                        if ($table['hasTemplate_sqlite3'])
+                        {
+                            try {
+                                $sqlite3Diff = new SQLStructure(file_get_contents($table['hasTemplate_sqlite3']));
+                                $table['db_vs_sqlite3'] = $a -> compareWith($sqlite3Diff, '{$db_prefix}' .$tableName);
+                            } catch (Exception $e) { $table['parserError'][] = array('db_vs_sqlite3', $e -> getMessage()); }
+                        }
+    
+                        try {
+                            // compare two templates
+                            if ($table['hasTemplate_mysql'] and $table['hasTemplate_sqlite3'])
+                                $table['sqlite3_vs_mysql'] = $sqlite3Diff -> compareWith($mysqlDiff, '{$db_prefix}' .$tableName);
+
+                        } catch (Exception $e) { $table['parserError'][] = array('sqlite3_vs_mysql', $e -> getMessage()); }
+                    }
+                }
+                
+                $this -> panthera -> varCache -> set('database.schemas', $tables);
+            } else {
+                $tables = $this -> panthera -> varCache -> get('database.schemas');
+            }
+        }
+
         $this -> getFeatureRef('admin.database.debugTables.tables', $tables);
         $this -> panthera -> template -> push('tables', $tables);        
         $this -> panthera -> template -> display('database.debugTables.tpl');
