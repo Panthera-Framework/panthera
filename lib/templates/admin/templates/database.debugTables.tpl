@@ -22,7 +22,7 @@
         <tbody>
             {loop="$tables"}
             <tr>
-                <td>{$key}</td>
+                <td><a href="?display=database&cat=admin&action=debugViewTable&table={$key}" class="ajax_link">{$key}</a></td>
                 <td>{if="$value.hasTemplate_mysql"}<span title="{$value.hasTemplate_mysql}">{function="localize('Yes')"}</span>{else}<span style="color: red;" title="{function="localize('Warning! Missing MySQL template file for this table!', 'database')"}"><b>{function="localize('No')"}</b></span>{/if}</td>
                 <td>{if="$value.hasTemplate_sqlite3"}<span title="{$value.hasTemplate_sqlite3}">{function="localize('Yes')"}</span>{else}<span style="color: red;" title="{function="localize('Warning! Missing SQLite3 template file for this table!', 'database')"}"><b>{function="localize('No')"}</b></span>{/if}</td>
                 <td>{if="$value.isInDB"}{function="localize('Yes')"}{else}<span style="color: red;" title="{function="localize('Warning! Table is not imported to database, but template is avaliable.', 'database')"}"><b>{function="localize('No')"}</b></span>{/if}</td>

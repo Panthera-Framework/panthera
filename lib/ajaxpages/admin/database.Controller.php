@@ -26,6 +26,24 @@ class databaseAjaxControllerCore extends pageController
         'admin.databases' => array('Database management', 'database'),
     );
     
+    public function debugViewTableAction()
+    {
+        if ($this -> panthera -> db -> getSocketType() == 'sqlite')
+            $compareTest = 'db_vs_sqlite3';
+        elseif ($this -> panthera -> db -> getSocketType() == 'mysql')
+            $compareTest = 'db_vs_mysql';
+        
+        $tables = $this -> panthera -> varCache -> get('database.schemas');
+        $table = $_GET['table'];
+        
+        if (isset($tables[$table][$compareTest]))
+        {
+            $this -> panthera -> template -> push('diff', $tables[$table][$compareTest]);
+            $this -> panthera -> template -> display('database.debugViewTable.tpl');
+            pa_exit();
+        }
+    }
+    
     /**
      * List all tables and check if it has own templates
      * 
@@ -128,7 +146,7 @@ class databaseAjaxControllerCore extends pageController
                     }
                 }
                 
-                $this -> panthera -> varCache -> set('database.schemas', $tables);
+                $this -> panthera -> varCache -> set('database.schemas', $tables, 86400);
             } else {
                 $tables = $this -> panthera -> varCache -> get('database.schemas');
             }
@@ -233,4 +251,18 @@ class databaseAjaxControllerCore extends pageController
         
         return $this -> panthera -> template -> compile('database.tpl');
     }
+}
+
+/**
+ * Helping function for RainTPLv3 to get meta value from array
+ * 
+ * @param string $key
+ * @param array $value
+ * @return mixed
+ */
+
+function getMetaValue($key, $value)
+{
+    if (isset($value['__meta_' .$key]))
+        return $value['__meta_' .$key];
 }

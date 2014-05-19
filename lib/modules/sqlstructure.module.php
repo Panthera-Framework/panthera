@@ -437,7 +437,11 @@ class SQLStructure
         $i--;
         
         if (isset($diff['__mysqlRawAttrs']['AUTO_INCREMENT']))
+        {
             unset($diff['__mysqlRawAttrs']['AUTO_INCREMENT']);
+            unset($diff['__mysqlRawAttrs']['__meta_AUTO_INCREMENT']);
+            $i--;
+        }
         
         if (isset($diff['__mysqlRawAttrs']) and !$diff['__mysqlRawAttrs'])
             unset($diff['__mysqlRawAttrs']);

@@ -2978,9 +2978,10 @@ function forRange($range=0)
  * @param array $aArray2
  * @see http://stackoverflow.com/questions/3876435/recursive-array-diff 
  * @author mhitza
+ * @author Damian Kęska
  */
 
-function arrayRecursiveDiff($aArray1, $aArray2, &$i=null) 
+function ___arrayRecursiveDiff($aArray1, $aArray2, &$i=null, $reverse=False) 
 {
   $aReturn = array();
   
@@ -2990,29 +2991,115 @@ function arrayRecursiveDiff($aArray1, $aArray2, &$i=null)
     {
       if (is_array($mValue)) 
       {
-        $aRecursiveDiff = arrayRecursiveDiff($mValue, $aArray2[$mKey], $i);
+        $aRecursiveDiff = ___arrayRecursiveDiff($mValue, $aArray2[$mKey], $i, $reverse);
           
-        if (count($aRecursiveDiff)) 
+        if (count($aRecursiveDiff))
         {
-             $aReturn[$mKey] = $aRecursiveDiff;
-             
-             if ($i !== null)
-                $i++;
+            $aReturn[$mKey] = $aRecursiveDiff;
+        } else {
+            $aReturn['__meta_'.$mKey] = 'removed';
+            $aReturn[$mKey] = null;
         }
-         
+        
       } else {
           
         if ($mValue != $aArray2[$mKey]) 
         {
             $aReturn[$mKey] = $mValue;
+            $aReturn['__meta_'.$mKey] = 'modified';
             
-            if ($i !== null)
+            if ($i !== null and !$reverse)
                 $i++;
         }
       }
     } else {
-      $aReturn[$mKey] = $mValue;
+        if ($reverse)
+            $aReturn['__meta_'.$mKey] = 'created';
+        else
+            $aReturn['__meta_'.$mKey] = 'removed';
+        
+        $aReturn[$mKey] = $mValue;
+        
+        if ($i !== null)
+            $i++;
     }
   }
+  
+  // search for removed keys
+  foreach ($aArray2 as $mKey => $mValue)
+  {
+      if (!isset($aArray1[$mKey]))
+      {
+          $aReturn['__meta_'.$mKey] = 'removed';
+      }
+  }
+  
   return $aReturn;
-} 
+}
+
+/**
+ * Recursive array diff
+ *
+ * @package Panthera\pantheraCore
+ * @param array $aArray1
+ * @param array $aArray2
+ * @author Damian Kęska
+ */
+
+function arrayRecursiveDiff ($aArray1, $aArray2, &$i=null)
+{
+    return array_merge(___arrayRecursiveDiff($aArray1, $aArray2, $i), ___arrayRecursiveDiff($aArray2, $aArray1, $i, true));
+}
+
+/*$a = array(
+    'test' => 'dupa',
+);
+
+$b = array(
+    'drugi' => 2,
+);
+
+var_dump(arrayRecursiveDiff($a, $b));
+exit;*/
+
+/**
+ * Convert bool, false, null to string
+ * 
+ * @package Panthera\pantheraCore
+ * @param mixed $input Input
+ * @author Damian Kęska
+ * @return string
+ */
+
+function toString($input)
+{
+    if ($input === null)
+        $input = 'null';
+    elseif ($input === false)
+        $input = 'false';
+    elseif ($input === true)
+        $input = 'true';
+    
+    return (string)$input;
+}
+
+/**
+ * Get first non-null value
+ * 
+ * @param mixed $1
+ * @param mixed $2
+ * @param mixed $3
+ * @param mixed $n
+ * @return mixed
+ */
+
+function fallbackValue()
+{
+    $args = func_get_args();
+    
+    foreach ($args as $arg)
+    {
+        if ($arg)
+            return $arg;
+    }
+}
