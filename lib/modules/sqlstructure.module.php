@@ -451,6 +451,91 @@ class SQLStructure
             'b' => $b,
             'diff' => $diff,
             'countDiffs' => $i,
+            'tableName' => $tableName,
         );
+    }
+    
+    /**
+     * Generate a MySQL patch that can be applied on a live database to update structure
+     * 
+     * @param array $diff Result of compareWith() method
+     * @return string
+     */
+    
+    public static function __generateSQLPatchMySQL($diff)
+    {
+        if (!is_array($diff) or !isset($diff['diff']) or !is_array($diff['diff']))
+            throw new Exception('First argument of generateSQLPatch() does not look like a compareWith() method result', 162);
+        
+        $patch = '';
+        
+        // ADDING, MODIFING and DROPING columns
+        if ($diff['diff']['columns'])
+        {
+            foreach ($diff['diff']['columns'] as $column => $attr)
+            {
+                $attr = array_merge($attr, $diff['a']['columns'][$column], $diff['b']['columns'][$column]);
+                
+                if (substr($column, 0, 7) == '__meta_')
+                    continue;
+                
+                $operation = "MODIFY";
+                
+                // if column was created
+                if (isset($diff['diff']['columns']['__meta_'.$column]) and $diff['diff']['columns']['__meta_'.$column] == 'created')
+                    $operation = "ADD";
+                elseif (isset($diff['diff']['columns']['__meta_'.$column]) and $diff['diff']['columns']['__meta_'.$column] == 'removed')
+                    $operation = "DROP";
+                
+                $patch .= "ALTER TABLE `" .$diff['tableName']. "` ".$operation." ".$column;
+                
+                // DROP operation
+                if ($operation == "DROP")
+                {
+                    $patch .= ";\n";
+                    continue;
+                }
+                   
+                // MODIFY and ADD operations
+                $patch .= " ".$attr['type']."(".$attr['length'].")";
+                if ($attr['null'] === true) {$patch .= " NOT NULL"; } else { $patch .= " NULL";}
+                if ($attr['default']) $patch .= " DEFAULT ".$attr['default'];
+                if ($attr['autoIncrement']) $patch .= " AUTO_INCREMENT";
+                if ($attr['primaryKey']) $patch .= " PRIMARY KEY";
+                if ($attr['uniqueKey']) $patch .= " UNIQUE KEY";
+                if ($attr['foreignKey']) $patch .= " FOREIGN KEY";
+                if ($attr['onUpdate']) { if($attr['onUpdate'] === 8) { $attr['onUpdate'] = 'CURRENT_TIMESTAMP'; }  $patch .= " ON UPDATE ".$attr['onUpdate']; }
+                $patch .= ";\n";
+            }
+        }
+        
+        return $patch;
+    }
+
+    /**
+     * Generate a SQLite3 patch that can be applied on a live database to update structure
+     * 
+     * @param array $diff Result of compareWith() method
+     * @return string
+     */
+
+    public function __generateSQLPatchSQLite3($diff)
+    {
+        return '';
+    }
+    
+    /**
+     * Generate a SQLite3 or MySQL patch that can be applied on a live database to update structure
+     * 
+     * @param array $diff Result of compareWith() method
+     * @return string
+     */
+    
+    public static function generateSQLPatch($diff, $dbType='sqlite3')
+    {
+        if ($dbType == 'mysql')
+            return static::__generateSQLPatchMySQL($diff);
+        else
+            return static::__generateSQLPatchSQLite3($diff);
     }
 }

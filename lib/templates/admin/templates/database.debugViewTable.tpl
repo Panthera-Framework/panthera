@@ -17,13 +17,38 @@
 
 <div id="topContent">
     <div class="searchBarButtonArea">
-        <input type="button" value="{function="localize('Update')"}" onclick="navigateTo('?display=database&cat=admin&action=debugTables&forceUpdateCache')">
+    	<div class="searchBarButtonAreaLeft">
+    		<input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=database&cat=admin&action=debugTables')">
+    	</div>
+    
+        <input type="button" value="{function="localize('Refresh')"}" onclick="navigateTo('?display=database&cat=admin&action=debugViewTable&table={$tableName}&forceUpdateCache')">
     </div>
 </div>
 
 <div class="ajax-content" style="text-align: center;">
+	{if="$MySQLPatch"}
+    <table style="margin: 0 auto; width: 80%; margin-bottom: 30px;">
+    	<thead>
+    		<tr>
+    			<th class="tableTitleHeader">{function="localize('MySQL database patch', 'database')"}</th>
+    		</tr>
+    	</thead>
+    	
+    	<tbody>
+    		<tr>
+    			<td>{function="print_r_html($MySQLPatch, true)"}</td>
+    		</tr>
+    	</tbody>
+    </table>
+    {/if}
+
+	{if="$columns"}
     <table style="margin: 0 auto; width: 80%;">
         <thead>
+        	<tr>
+    			<th class="tableTitleHeader" colspan="9">{function="localize('Table columns', 'database')"} - {$tableName}</th>
+    		</tr>
+        
             <tr>
                 <th>{function="localize('Column', 'database')"}</th>
                 <th>{function="localize('Type', 'database')"}</th>
@@ -38,7 +63,7 @@
         </thead>
         
         <tbody>
-            {loop="array_merge($diff.a.columns, $diff.b.columns, $diff.diff.columns)"}
+            {loop="$columns"}
 	            {if="substr($key, 0, 7) == '__meta_'"}
 	            	{continue}
 	            {/if}
@@ -57,4 +82,45 @@
             {/loop}
         </tbody>
     </table>
+    {/if}
+    
+    {if="$MySQLAttributes"}
+    <table style="margin: 0 auto; width: 80%; margin-top: 30px;">
+    	<thead>
+    		<tr>
+    			<th class="tableTitleHeader" colspan="2">{function="localize('MySQL attributes', 'database')"}</th>
+    		</tr>
+    		
+    		<tr>
+    			<th>{function="localize('Name')"}</th>
+    			<th>{function="localize('Value')"}</th>
+    		</tr>
+    	</thead>
+    	
+    	<tbody>
+    		{loop="$MySQLAttributes"}
+    			<tr class="diff diff_{function="getMetaValue($key, $MySQLAttributes)"}">
+    				<td>{$key}</td>
+    				<td>{$value}</td>
+    			</tr>
+    		{/loop}
+    	</tbody>
+    </table>
+    {/if}
+    
+    {if="$diff.diff"}
+    <table style="margin: 0 auto; width: 80%; margin-top: 30px;">
+    	<thead>
+    		<tr>
+    			<th class="tableTitleHeader">{function="localize('Raw diff', 'database')"}</th>
+    		</tr>
+    	</thead>
+    	
+    	<tbody>
+    		<tr>
+    			<td>{function="print_r_html($diff.diff, true)"}</td>
+    		</tr>
+    	</tbody>
+    </table>
+    {/if}
 </div>

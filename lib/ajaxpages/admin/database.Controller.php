@@ -36,41 +36,38 @@ class databaseAjaxControllerCore extends pageController
         $tables = $this -> panthera -> varCache -> get('database.schemas');
         $table = $_GET['table'];
         
-        /*$a = array(
-            'columns' => array(
-                'id' => array('type' => 'integer', 'length' => 5),
-                'name' => array('type' => 'varchar', 'length' => 32),
-            ),
-            
-            'engine' => 'InnoDB',
-        );
-        
-        $b = array(
-            'columns' => array(
-                'id' => array('type' => 'integer', 'length' => 64),
-                'ttt123' => array('type' => 'text', 'length' => 0),
-            ),
-            
-            'engine' => 'MyISAM',
-        );*/
-        
-        //print_r_html(arrayRecursiveDiff($a, $b));
-        
         if (isset($tables[$table][$compareTest]))
         {
-            $this -> panthera -> template -> push('diff', $tables[$table][$compareTest]);
+            $diff = $tables[$table][$compareTest];
+            
+            if (!$diff['diff']['columns'])
+                $diff['diff']['columns'] = array();
+                
+            if (!$diff['diff']['__mysqlRawAttrs'])
+                $diff['diff']['__mysqlRawAttrs'] = array();
+                
+            $this -> panthera -> template -> push(array(
+                'diff' => $tables[$table][$compareTest],
+                'columns' => array_merge($diff['a']['columns'], $diff['b']['columns'], $diff['diff']['columns']),
+                'countDiffs' => $diff['countDiffs'],
+                'MySQLAttributes' => array_merge($diff['a']['__mysqlRawAttrs'], $diff['b']['__mysqlRawAttrs'], $diff['diff']['__mysqlRawAttrs']),
+                'tableName' => $table,
+                'MySQLPatch' => SQLStructure::__generateSQLPatchMySQL($diff),
+            ));
+            
             $this -> panthera -> template -> display('database.debugViewTable.tpl');
             pa_exit();
         }
     }
-    
+
     /**
-     * List all tables and check if it has own templates
+     * Regenerate database schema cache
      * 
-     * @return null
+     * @author Damian Kęska
+     * @return array
      */
-    
-    public function debugTablesAction()
+
+    public function getTables()
     {
         $tables = array();
         $t = $this -> panthera -> db -> listTables();
@@ -172,6 +169,19 @@ class databaseAjaxControllerCore extends pageController
             }
         }
 
+        return $tables;
+    }
+    
+    /**
+     * List all tables and check if it has own templates
+     * 
+     * @return null
+     */
+    
+    public function debugTablesAction()
+    {
+        $tables = $this -> getTables();
+
         $this -> getFeatureRef('admin.database.debugTables.tables', $tables);
         $this -> panthera -> template -> push('tables', $tables);        
         $this -> panthera -> template -> display('database.debugTables.tpl');
@@ -264,6 +274,9 @@ class databaseAjaxControllerCore extends pageController
     
     public function display()
     {
+        if (isset($_GET['forceUpdateCache']))
+            $this -> getTables();
+        
         $this -> panthera -> locale -> loadDomain('database');
         $this -> dispatchAction();
         $this -> panthera -> template -> push('sql_attributes', $this->getAttributes());
