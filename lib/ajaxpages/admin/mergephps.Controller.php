@@ -16,6 +16,14 @@
 
 class mergephpsAjaxControllerSystem extends pageController
 {
+    protected $uiTitlebar = array(
+        'Merge serialized arrays and json files', 'debug'
+    );
+    
+    protected $permissions = array(
+        'admin.mergephps' => array('Merge serialized arrays and json files', 'debug'),
+    );
+    
     /**
      * Main function
      * 
@@ -26,11 +34,22 @@ class mergephpsAjaxControllerSystem extends pageController
     {
         $a = $b = array();
         
-        if (isset($_POST['aArray']) and $_POST['bArray'])
+        if (isset($_POST['a']) and $_POST['b'])
         {
-            $a = $this -> getArray($_POST['aArray']);
-            $b = $this -> getArray($_POST['bArray']);
+            $a = $this -> getArray($_POST['a']);
+            $b = $this -> getArray($_POST['b']);
+            
+            ajax_exit(array(
+                'status' => 'success',
+                'a' => json_encode($a, JSON_PRETTY_PRINT),
+                'b' => json_encode(array_merge($a, $b), JSON_PRETTY_PRINT),
+            ));
         }
+        
+        $this -> panthera -> template -> push(array(
+            'a' => json_encode($a, JSON_PRETTY_PRINT),
+            'b' => json_encode(array_merge($a, $b), JSON_PRETTY_PRINT),
+        ));
         
         return $this -> panthera -> template -> compile('mergephps.tpl');
     }
