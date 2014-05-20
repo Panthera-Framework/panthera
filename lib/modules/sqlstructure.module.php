@@ -498,7 +498,7 @@ class SQLStructure
                    
                 // MODIFY and ADD operations
                 $patch .= " ".$attr['type']."(".$attr['length'].")";
-                if ($attr['null'] === true) {$patch .= " NOT NULL"; } else { $patch .= " NULL";}
+                if (!$attr['null']) {$patch .= " NOT NULL"; } else { $patch .= " NULL";}
                 if ($attr['default']) $patch .= " DEFAULT ".$attr['default'];
                 if ($attr['autoIncrement']) $patch .= " AUTO_INCREMENT";
                 if ($attr['primaryKey']) $patch .= " PRIMARY KEY";

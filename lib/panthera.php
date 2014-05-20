@@ -3018,7 +3018,7 @@ function arrayRecursiveDiff($aArray1, $aArray2, &$i=null)
           
                 if ($mValue !== $aArray2[$mKey]) 
                 {
-                    $aReturn[$mKey] = $mValue;
+                    $aReturn[$mKey] = $aArray2[$mKey];
                     $aReturn['__meta_'.$mKey] = 'modified';
             
                     if ($i !== null)
