@@ -487,7 +487,7 @@ class SQLStructure
                 elseif (isset($diff['diff']['columns']['__meta_'.$column]) and $diff['diff']['columns']['__meta_'.$column] == 'removed')
                     $operation = "DROP";
                 
-                $patch .= "ALTER TABLE `" .$diff['tableName']. "` ".$operation." ".$column;
+                $patch .= "ALTER TABLE `" .$diff['tableName']. "` ".$operation." `".$column."`";
                 
                 // DROP operation
                 if ($operation == "DROP")
@@ -497,15 +497,37 @@ class SQLStructure
                 }
                    
                 // MODIFY and ADD operations
-                $patch .= " ".$attr['type']."(".$attr['length'].")";
+                $patch .= " ".$attr['type'];
+                
+                if (intval($attr['length']))
+                    $patch .= "(".$attr['length'].")";
+                
                 if (!$attr['null']) {$patch .= " NOT NULL"; } else { $patch .= " NULL";}
-                if ($attr['default']) $patch .= " DEFAULT ".$attr['default'];
+                if ($attr['default']) $patch .= " DEFAULT \"".$attr['default']."\"";
                 if ($attr['autoIncrement']) $patch .= " AUTO_INCREMENT";
                 if ($attr['primaryKey']) $patch .= " PRIMARY KEY";
                 if ($attr['uniqueKey']) $patch .= " UNIQUE KEY";
                 if ($attr['foreignKey']) $patch .= " FOREIGN KEY";
                 if ($attr['onUpdate']) { if($attr['onUpdate'] === 8) { $attr['onUpdate'] = 'CURRENT_TIMESTAMP'; }  $patch .= " ON UPDATE ".$attr['onUpdate']; }
                 $patch .= ";\n";
+            }
+        }
+
+        // MySQL attributes
+        if ($diff['diff']['__mysqlRawAttrs'])
+        {
+            foreach ($diff['diff']['__mysqlRawAttrs'] as $key => $value)
+            {
+                if (substr($key, 0, 7) == '__meta_')
+                    continue;
+                
+                if ($key == 'DEFAULT CHARSET' or $key == 'CHARACTER SET')
+                    $key = 'CHARACTER SET ';
+                else {
+                    $key .= ' = ';
+                }
+                
+                $patch .= "ALTER TABLE `" .$diff['tableName']. "` ".$key.$value.";\n";
             }
         }
         
@@ -531,7 +553,7 @@ class SQLStructure
      * @return string
      */
     
-    public static function generateSQLPatch($diff, $dbType='sqlite3')
+    public static function generateSQLPatch($diff, $dbType='sqlite')
     {
         if ($dbType == 'mysql')
             return static::__generateSQLPatchMySQL($diff);

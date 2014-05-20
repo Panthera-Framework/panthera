@@ -15,12 +15,24 @@
 }
 </style>
 
+<script type="text/javascript">
+function mergeChanges()
+{
+	panthera.jsonPOST({url: '?display=database&cat=admin&action=debugViewTable&table={$tableName}', 'data': 'mergeTable={$tableName}', success: function (response) {
+			if (response.status == 'success')
+				navigateTo('?display=database&cat=admin&action=debugViewTable&table={$tableName}&forceUpdateCache');
+		}
+	});
+}
+</script>
+
 <div id="topContent">
     <div class="searchBarButtonArea">
     	<div class="searchBarButtonAreaLeft">
     		<input type="button" value="{function="localize('Back')"}" onclick="navigateTo('?display=database&cat=admin&action=debugTables')">
     	</div>
     
+    	{if="$diff.diff"}<input type="button" value="{function="localize('Merge changes to database')"}" onclick="mergeChanges();">{/if}
         <input type="button" value="{function="localize('Refresh')"}" onclick="navigateTo('?display=database&cat=admin&action=debugViewTable&table={$tableName}&forceUpdateCache')">
     </div>
 </div>

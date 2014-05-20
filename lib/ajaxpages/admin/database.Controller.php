@@ -8,6 +8,15 @@
  * @license GNU LGPLv3, see license.txt
  */
  
+/**
+ * Manage database
+ *
+ * @package Panthera\core\database\admin
+ * @author Mateusz Warzyński
+ * @author Damian Kęska
+ * @license GNU LGPLv3, see license.txt
+ */
+ 
 class databaseAjaxControllerCore extends pageController
 {
     protected $uiTitlebar = array(
@@ -26,6 +35,18 @@ class databaseAjaxControllerCore extends pageController
         'admin.databases' => array('Database management', 'database'),
     );
     
+    protected $actionuiTitlebar = array(
+        'debugViewTable' => array('Table upgrade tool (diff & merge)', 'database'),
+        'debugTables' => array('Database upgrade tool', 'database'),
+    );
+    
+    /**
+     * Show table diff
+     * 
+     * @author Damian Kęska
+     * @return null
+     */
+    
     public function debugViewTableAction()
     {
         if ($this -> panthera -> db -> getSocketType() == 'sqlite')
@@ -39,6 +60,26 @@ class databaseAjaxControllerCore extends pageController
         if (isset($tables[$table][$compareTest]))
         {
             $diff = $tables[$table][$compareTest];
+            $patch = SQLStructure::generateSQLPatch($diff, $this -> panthera -> db -> getSocketType());
+            
+            // apply patch on database
+            if (isset($_POST['mergeTable']) and $_POST['mergeTable'] == $table)
+            {
+                try {
+                    $this -> panthera -> db -> query($patch);
+                } catch (Exception $e) {
+                    ajax_exit(array(
+                        'status' => 'failed',
+                        'message' => $e -> getMessage(),
+                        'code' => $e -> getCode(),
+                    ));
+                }
+                
+                ajax_exit(array(
+                    'status' => 'success',
+                ));
+            }
+            
             
             if (!$diff['diff']['columns'])
                 $diff['diff']['columns'] = array();
@@ -52,7 +93,7 @@ class databaseAjaxControllerCore extends pageController
                 'countDiffs' => $diff['countDiffs'],
                 'MySQLAttributes' => array_merge($diff['a']['__mysqlRawAttrs'], $diff['b']['__mysqlRawAttrs'], $diff['diff']['__mysqlRawAttrs']),
                 'tableName' => $table,
-                'MySQLPatch' => SQLStructure::__generateSQLPatchMySQL($diff),
+                'MySQLPatch' => $patch,
             ));
             
             $this -> panthera -> template -> display('database.debugViewTable.tpl');
