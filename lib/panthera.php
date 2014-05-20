@@ -2554,6 +2554,24 @@ function r_dump()
 }
 
 /**
+ * Prints print_r inside of HTML code replacing \n to <br> and spaces to &nbsp; HTML codes
+ * 
+ * @param mixed $input Input data of any type
+ * @param bool $return Return output
+ * @return string
+ */
+
+function print_r_html($input, $return=false)
+{
+    $result = nl2br(str_replace(' ', '&nbsp;', print_r($input, true)));
+    
+    if (!$return)
+        print($result);
+    
+    return $result;
+}
+
+/**
  * List all class/object methods
  *
  * @param object|string $obj
@@ -2981,86 +2999,54 @@ function forRange($range=0)
  * @author Damian Kęska
  */
 
-function ___arrayRecursiveDiff($aArray1, $aArray2, &$i=null, $reverse=False) 
+function arrayRecursiveDiff($aArray1, $aArray2, &$i=null) 
 {
-  $aReturn = array();
+    $aReturn = array();
   
-  foreach ($aArray1 as $mKey => $mValue) 
-  {
-    if (array_key_exists($mKey, $aArray2)) 
+    foreach ($aArray1 as $mKey => $mValue) 
     {
-      if (is_array($mValue)) 
-      {
-        $aRecursiveDiff = ___arrayRecursiveDiff($mValue, $aArray2[$mKey], $i, $reverse);
-          
-        if (count($aRecursiveDiff))
+        if (array_key_exists($mKey, $aArray2)) 
         {
-            $aReturn[$mKey] = $aRecursiveDiff;
-        } else {
-            $aReturn['__meta_'.$mKey] = 'removed';
-            $aReturn[$mKey] = null;
-        }
+            if (is_array($mValue)) 
+            {
+                $aRecursiveDiff = arrayRecursiveDiff($mValue, $aArray2[$mKey], $i, $reverse);
+          
+                if (count($aRecursiveDiff))
+                    $aReturn[$mKey] = $aRecursiveDiff;
         
-      } else {
+            } else {
           
-        if ($mValue != $aArray2[$mKey]) 
-        {
-            $aReturn[$mKey] = $mValue;
-            $aReturn['__meta_'.$mKey] = 'modified';
+                if ($mValue !== $aArray2[$mKey]) 
+                {
+                    $aReturn[$mKey] = $mValue;
+                    $aReturn['__meta_'.$mKey] = 'modified';
             
-            if ($i !== null and !$reverse)
+                    if ($i !== null)
+                        $i++;
+                }
+            }
+        } else {
+            if (array_key_exists($mKey, $aArray1))
+                $aReturn['__meta_'.$mKey] = 'removed';
+        
+            $aReturn[$mKey] = $mValue;
+        
+            if ($i !== null)
                 $i++;
         }
-      }
-    } else {
-        if ($reverse)
-            $aReturn['__meta_'.$mKey] = 'created';
-        else
-            $aReturn['__meta_'.$mKey] = 'removed';
-        
-        $aReturn[$mKey] = $mValue;
-        
-        if ($i !== null)
-            $i++;
     }
-  }
-  
-  // search for removed keys
-  foreach ($aArray2 as $mKey => $mValue)
-  {
-      if (!isset($aArray1[$mKey]))
-      {
-          $aReturn['__meta_'.$mKey] = 'removed';
-      }
-  }
-  
-  return $aReturn;
+
+    foreach ($aArray2 as $mKey => $mValue)
+    {
+        if (!array_key_exists($mKey, $aArray1))
+        {
+            $aReturn['__meta_'.$mKey] = 'created';
+            $aReturn[$mKey] = $mValue;
+        }
+    }
+
+    return $aReturn;
 }
-
-/**
- * Recursive array diff
- *
- * @package Panthera\pantheraCore
- * @param array $aArray1
- * @param array $aArray2
- * @author Damian Kęska
- */
-
-function arrayRecursiveDiff ($aArray1, $aArray2, &$i=null)
-{
-    return array_merge(___arrayRecursiveDiff($aArray1, $aArray2, $i), ___arrayRecursiveDiff($aArray2, $aArray1, $i, true));
-}
-
-/*$a = array(
-    'test' => 'dupa',
-);
-
-$b = array(
-    'drugi' => 2,
-);
-
-var_dump(arrayRecursiveDiff($a, $b));
-exit;*/
 
 /**
  * Convert bool, false, null to string

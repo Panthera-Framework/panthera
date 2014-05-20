@@ -36,6 +36,26 @@ class databaseAjaxControllerCore extends pageController
         $tables = $this -> panthera -> varCache -> get('database.schemas');
         $table = $_GET['table'];
         
+        /*$a = array(
+            'columns' => array(
+                'id' => array('type' => 'integer', 'length' => 5),
+                'name' => array('type' => 'varchar', 'length' => 32),
+            ),
+            
+            'engine' => 'InnoDB',
+        );
+        
+        $b = array(
+            'columns' => array(
+                'id' => array('type' => 'integer', 'length' => 64),
+                'ttt123' => array('type' => 'text', 'length' => 0),
+            ),
+            
+            'engine' => 'MyISAM',
+        );*/
+        
+        //print_r_html(arrayRecursiveDiff($a, $b));
+        
         if (isset($tables[$table][$compareTest]))
         {
             $this -> panthera -> template -> push('diff', $tables[$table][$compareTest]);
