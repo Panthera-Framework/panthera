@@ -177,6 +177,51 @@ function saveVariable(id, value)
 </div>
 {/if}
 
+<script type="text/javascript">
+$(document).ready(function() {
+	var enterShift = true;
+
+	//$('#settingsContainer').focus();
+	$('#settingsContainer').click(function() { $('#settingsContainer').focus();} );
+	
+	$('#settingsContainer').keyup(function(event) {
+		if (event.which == 16)
+		{
+			enterShift = !enterShift;
+		}
+	});
+
+	$('#settingsContainer').keydown(function(event) {
+	
+		// [ENTER]
+		if (event.which == 13)
+		{
+			$('#uiTop_form').submit();
+			return false;
+		}
+		
+		if (event.which == 16)
+		{
+			enterShift = !enterShift;
+		}
+		
+		// [BACKSPACE]
+		if (event.which == 8)
+		{
+			$('#searchField').val($('#searchField').val().substr(0, $('#searchField').val().length-1));
+			return false;
+		}
+		
+		if (enterShift)
+			code = String.fromCharCode(event.which).toLowerCase();
+		else
+			code = String.fromCharCode(event.which);
+		
+		$('#searchField').val($('#searchField').val()+code);
+	});
+});
+</script>
+
 <div id="topContent">
     {$uiSearchbarName="uiTop"}
     {include="ui.searchbar"}
@@ -189,7 +234,7 @@ function saveVariable(id, value)
     </div>
 </div>
 
-<div class="settingsBackground">
+<div class="settingsBackground" id="settingsContainer" tabindex="1">
     {loop="$items"}
     <div id="section_{$j}">
         <div class="titledSeparator">{function="localize(ucfirst($key), 'settings')"}</div>
