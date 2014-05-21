@@ -134,6 +134,9 @@ class uiSearchbar
                         continue;
                 }
                 
+                if (!is_string($value))
+                    $value = print_r_html($value, true);
+                
                 if (strpos($value, $queryString) !== False)
                 {
                     $found = True;

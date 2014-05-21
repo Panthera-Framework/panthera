@@ -357,6 +357,13 @@ class debugAjaxControllerSystem extends settingsAjaxControllerSystem
             'icon' => '{$PANTHERA_URL}/images/admin/menu/includes.png'
         );
         
+        $defaults['Application Developing']['debug_acl'] = array(
+            'link' => '?display=debug.acl&cat=admin',
+            'name' => localize('Access Control Lists debugging', 'debug'),
+            'description' => localize('Lookup for all object\'s meta tags', 'debug'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/acl.search.png'
+        );
+        
         /** Tools **/
         
         $defaults['Tools'] = array();

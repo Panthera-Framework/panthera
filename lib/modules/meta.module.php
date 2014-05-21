@@ -60,8 +60,12 @@ class meta
             $w -> add('AND', 'userid', '=', $user);
         
         $wc = $w -> show();
+        $where = '';
+        
+        if ($wc[0])
+            $where = 'WHERE ' .$wc[0];
 
-        $SQL = $panthera -> db -> query ('SELECT * FROM `{$db_prefix}metas` WHERE ' .$wc[0], $wc[1]);
+        $SQL = $panthera -> db -> query ('SELECT * FROM `{$db_prefix}metas` ' .$where. ' ORDER BY `name` ASC LIMIT 0, 1000;', $wc[1]);
 
         if ($SQL -> rowCount() > 0)
         {

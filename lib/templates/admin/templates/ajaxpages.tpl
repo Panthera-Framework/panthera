@@ -1,7 +1,7 @@
 {$site_header}
 
 {include="ui.titlebar"}
-
+ 
 <script type="text/javascript">
     function resetCache () {
         panthera.jsonPOST({url: '?display=ajaxpages&cat=admin&action=forceResetCache', success: function (response) {

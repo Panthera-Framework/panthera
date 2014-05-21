@@ -1,20 +1,20 @@
 <?php
 /**
- * Access control list
+ * Access control list management
  *
- * @package Panthera\core\acl
+ * @package Panthera\core\adminpanel
  * @author Damian Kęska
  * @author Mateusz Warzyński
- * @license GNU Lesser General Public License 3, see license.txt
+ * @license LGPLv3
  */
  
 /**
- * Access control list
+ * Access control list management
  *
- * @package Panthera\core\acl
+ * @package Panthera\core\adminpanel
  * @author Damian Kęska
  * @author Mateusz Warzyński
- * @license GNU Lesser General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
 class aclAjaxControllerSystem extends pageController
