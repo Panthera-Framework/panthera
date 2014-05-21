@@ -41,10 +41,10 @@ class ajaxpagesAjaxControllerCore extends pageController
     protected function scanDirectories()
     {
         return $this -> panthera -> get_filters('ajaxpages.admin', array_merge(
-            filesystem::scandirDeeply(PANTHERA_DIR. '/ajaxpages/admin'), 
+            filesystem::scandirDeeply(SITE_DIR. '/content/pages'),
             filesystem::scandirDeeply(SITE_DIR. '/content/ajaxpages/admin'),
             filesystem::scandirDeeply(PANTHERA_DIR. '/pages'),
-            filesystem::scandirDeeply(SITE_DIR. '/content/pages')
+            filesystem::scandirDeeply(PANTHERA_DIR. '/ajaxpages/admin')
         ), True);
     }
     
@@ -208,24 +208,6 @@ class ajaxpagesAjaxControllerCore extends pageController
         
         // list of pages
         $this -> pages = array();
-        
-        $this -> pages[] = array(
-            'location' => 'lib',
-            'directory' => 'admin',
-            'path' => PANTHERA_DIR. '/ajaxpages/admin/settings.php',
-            'modtime' => date($this -> panthera -> dateFormat, filemtime(PANTHERA_DIR. '/ajaxpages/admin/settings.Controller.php')),
-            'name' => 'system_info',
-            'link' => '?display=settings&cat=admin&action=system_info'
-        );
-        
-        $this -> pages[] = array(
-            'location' => 'lib',
-            'directory' => 'admin',
-            'path' => PANTHERA_DIR. '/ajaxpages/admin/users.php',
-            'modtime' => date($this -> panthera -> dateFormat, filemtime(PANTHERA_DIR. '/ajaxpages/admin/users.Controller.php')),
-            'name' => 'my_account',
-            'link' => '?display=users&cat=admin&action=my_account'
-        );
         
         foreach ($this -> files as $file)
         {
