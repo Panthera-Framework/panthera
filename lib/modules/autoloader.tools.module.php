@@ -89,7 +89,7 @@ class pantheraAutoloader
             $found = False;
             
             // CORE
-            if (!$found and substr($className, strlen($className)-4, 4) == 'Core')
+            if (substr($className, strlen($className)-4, 4) == 'Core')
             {
                 $realClassName = substr($className, 0, strlen($className)-4); // without "Core"
                 
@@ -102,7 +102,7 @@ class pantheraAutoloader
             }
             
             // SYSTEM
-            if (!$found and substr($className, strlen($className)-6, 6) == 'System')
+            if (substr($className, strlen($className)-6, 6) == 'System')
             {
                 $realClassName = substr($className, 0, strlen($className)-6);
                 
@@ -115,7 +115,7 @@ class pantheraAutoloader
             }
             
             // OVERRIDE
-            if (!$found and substr($className, strlen($className)-8, 8) == 'Override')
+            if (substr($className, strlen($className)-8, 8) == 'Override')
             {
                 $realClassName = substr($className, 0, strlen($className)-8);
                 
