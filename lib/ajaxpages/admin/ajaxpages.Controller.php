@@ -86,7 +86,9 @@ class ajaxpagesAjaxControllerCore extends pageController
                         'userID' => $this -> panthera -> user -> id,
                     ), 120);
                     
-                    if (!$this -> checkControllerSyntax($controllerName, $path))
+                    $attributes = $this -> checkControllerSyntax($controllerName, $path);
+                    
+                    if (!$attributes)
                     {
                         $this -> panthera -> varCache -> remove('pa-login.system.loginkey');
                         
@@ -103,8 +105,6 @@ class ajaxpagesAjaxControllerCore extends pageController
                     //print("Checking ".$controllerName."\n");
                     //$this -> panthera -> outputControl -> flush();
                 }
-                
-                $attributes = pageController::getControllerAttributes($controllerName, $path);
                 
                 if ($attributes)
                 {
@@ -167,7 +167,7 @@ class ajaxpagesAjaxControllerCore extends pageController
         if (!$json)
             return false;
         
-        return true;
+        return $json['data'];
     }
     
     /**
