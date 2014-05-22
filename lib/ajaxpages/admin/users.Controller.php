@@ -433,10 +433,15 @@ class usersAjaxControllerCore extends pageController
             $u = new pantheraUser('login', $id);
             
             if ($u -> acl -> get('superuser') and !$this->panthera->user->acl->get('superuser'))
-                ajax_exit(array('status' => 'success', 'message' => localize('Cannot remove superuser', 'users')));
+                ajax_exit(array(
+                    'status' => 'success',
+                    'message' => localize('Cannot remove superuser', 'users'),
+                ));
     
             if (removeUser($id, $u->id))
-                ajax_exit(array('status' => 'success', 'message' => localize('User has been removed', 'users')));
+                ajax_exit(array(
+                    'status' => 'success',
+                ));
     
         } catch (Exception $e) {
             ajax_exit(array('status' => 'failed', localize('Cannot remove user', 'users')));
@@ -457,7 +462,10 @@ class usersAjaxControllerCore extends pageController
         if (strlen($_POST['login']) > 2)
             $login = $_POST['login'];
         else
-            ajax_exit(array('status' => 'failed', 'message' => localize('Login is too short!', 'users')));
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => localize('Login is too short!', 'users'),
+            ));
     
         if (strlen($_POST['passwd']) > 6) {
                 
@@ -465,16 +473,25 @@ class usersAjaxControllerCore extends pageController
             $passwordEncoded = encodePassword($password);
 
             if (!verifyPassword($_POST['retyped_passwd'], $passwordEncoded))
-                ajax_exit(array('status' => 'failed', 'message' =>  localize('Passwords does not match', 'users')));
+                ajax_exit(array(
+                    'status' => 'failed',
+                    'message' =>  localize('Passwords does not match', 'users'),
+                ));
             
         } else {
-            ajax_exit(array('status' => 'failed', 'message' => localize('Password is too short!', 'users')));
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => localize('Password is too short!', 'users'),
+            ));
         }
         
         if (strlen($_POST['full_name']) > 4)
             $full_name = $_POST['full_name'];
         else
-            ajax_exit(array('status' => 'failed', 'message' => localize('Full name is too short', 'users')));
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => localize('Full name is too short', 'users'),
+            ));
     
         if (strlen($_POST['avatar']) > 6)
             $avatar = $_POST['avatar'];
@@ -491,11 +508,15 @@ class usersAjaxControllerCore extends pageController
     
         if (createNewUser($login, $password, $full_name, $primary_group, $attributes, $language, $mail, $jabber, $avatar))
         {
-            $sid = 'search:' .hash('md4', $_POST['hash']);
-            $this -> panthera -> cache -> set($sid, NULL);
-            ajax_exit(array('status' => 'success', 'message' => localize('User has been successfully added!', 'users')));
+            ajax_exit(array(
+                'status' => 'success',
+                'message' => localize('User has been successfully added!', 'users'),
+            ));
         } else {
-            ajax_exit(array('status' => 'failed', 'message' => localize('Error while adding user!', 'users')));
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => localize('Error while adding user!', 'users'),
+            ));
         }
     }
     
@@ -519,9 +540,9 @@ class usersAjaxControllerCore extends pageController
         $this -> panthera -> template -> push('locale', $this -> panthera -> locale -> getActive());
         
         $this->tempPermissions = array(
-            'canBlockUser' => $this->checkPermissions('can_block_users', True),
-            'canSeePermissions' => $this->checkPermissions('can_see_permissions', True),
-            'canEditOthers' => $this->checkPermissions('can_edit_others', True)
+            'canBlockUser' => $this->checkPermissions('admin.users.ban', True),
+            'canSeePermissions' => $this->checkPermissions('admin.users.permissions', True),
+            'canEditOthers' => $this->checkPermissions('admin.users.seeothers', True)
         );
         
         $this -> panthera -> template -> push('permissions', $this->tempPermissions);
@@ -585,22 +606,7 @@ class usersAjaxControllerCore extends pageController
         if ($_GET['direction'] == 'DESC' or $_GET['direction'] == 'ASC')
             $direction = $_GET['direction'];
         
-        // search identificatior (used to cache results)
-        $sid = 'search:' .hash('md4', $_GET['query'].$_GET['order'].$_GET['direction'].$usersPage);
-        
-        // try to get results from cache
-        if ($this -> panthera -> cache)
-        {
-            if ($this -> panthera -> cache -> exists($sid))
-            {
-                list($usersTotal, $users) = $this->panthera->cache-> get($sid);
-                $this -> panthera -> logging -> output('Getting search results ' .$sid. ' from cache', 'pantheraUser');
-            }
-        }
-
-        // if does not exists in cache
-        if (!isset($usersTotal))
-            $usersTotal = pantheraUser::fetchAll($w, False, False, $order);
+        $usersTotal = pantheraUser::fetchAll($w, False, False, $order);
         
         // uiPager
         $uiPager = new uiPager('users', $usersTotal, 'adminUsersList');
@@ -648,12 +654,6 @@ class usersAjaxControllerCore extends pageController
                     'lastlogin' => $w->lastlogin,
                     'banned' => $w->isBanned()
                 );
-            }
-            
-            if ($this -> panthera -> cache)
-            {
-                $this -> panthera -> cache -> set($sid, array($usersTotal, $users), 'usersTable');
-                $this -> panthera -> logging -> output('Saving users search results to cache ' .$sid, 'pantheraUser');
             }
         }
 
