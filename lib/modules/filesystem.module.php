@@ -188,7 +188,7 @@ class uploadedFile extends pantheraFetchDB
 
         $fileType = filesystem::fileTypeByMime($this->__get('mime'));
         $fileInfo = pathinfo($this->__get('location'));
-
+        
         if ($size)
         {
             $thumb = pantheraUrl('{$upload_dir}/_thumbnails/' .$size. 'px_' .$fileInfo['filename']. '.jpg');
@@ -225,8 +225,8 @@ class uploadedFile extends pantheraFetchDB
         }
 
         if ($fileType == 'image')
-            return $this->__get('location');
-            
+            return str_replace('{$SITE_DIR}', '{$PANTHERA_URL}', $this->__get('location'));
+           
         $mimesURL = pantheraUrl('{$PANTHERA_URL}/images/admin/mimes/');
 
         if (is_file(SITE_DIR. '/images/admin/mimes/' .$fileType. '.png'))

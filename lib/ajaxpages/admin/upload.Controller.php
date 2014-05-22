@@ -307,7 +307,7 @@ class uploadAjaxControllerCore extends pageController
     
             // getting icon by mime type
             $fileType = filesystem::fileTypeByMime($value->mime);
-            $icon = pantheraUrl($value->getThumbnail('200'));
+            $icon = pantheraUrl($value->getThumbnail('200', True));
             $this -> panthera -> logging -> output ('Checking for icon: ' .$icon. ' for type ' .$fileType, 'upload');
             
             // give user rights to delete file, create the button
@@ -381,11 +381,11 @@ class uploadAjaxControllerCore extends pageController
         }
 
         // @validation: Upload file size
-        if ($_FILES['input_file']['size'] > $this -> panthera -> config -> getKey('upload.maxsize', 3145728, 'int', 'upload') or filesize($_FILES['input_file']['tmp_name']) > $this->panthera->config->getKey('upload_max_size'))
+        /*if ($_FILES['input_file']['size'] > $this -> panthera -> config -> getKey('upload.maxsize', 3145728, 'int', 'upload') or filesize($_FILES['input_file']['tmp_name']) > $this->panthera->config->getKey('upload_max_size'))
             ajax_exit(array(
                 'status' => 'failed',
                 'message' => localize('File is too big, allowed maximum size is: %s', 'upload', filesystem::bytesToSize($this -> panthera -> config -> getKey('upload.maxsize', 3145728, 'int', 'upload'))),
-            ));
+            ));*/
 
         /**
          * Check category

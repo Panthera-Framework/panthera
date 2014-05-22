@@ -66,7 +66,7 @@ $(document).ready(function(){
                  <td>
                      <select name="directory" style="width: 95%;" id="category">
                          {loop="$categories"}
-                            <option {if="$value->name == $setCategory"} selected {/if}>{$value->getName()}</option>
+                            <option value="{$value->name}" {if="$value->name == $setCategory"} selected {/if}>{$value->getName()}</option>
                          {/loop}
                      </select>
                  </td>
