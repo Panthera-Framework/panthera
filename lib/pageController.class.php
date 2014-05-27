@@ -61,6 +61,12 @@ abstract class pageController extends pantheraClass {
     // controller name    
     protected $controllerName = null;
     
+    // core classes linked from pantheraCore
+    protected $template;
+    protected $db;
+    protected $user;
+    protected $locale;
+    
     /**
      * Initialize front controller
      * 
@@ -73,6 +79,12 @@ abstract class pageController extends pantheraClass {
         
         // run pantheraClass constructor to get Panthera Framework object
         parent::__construct();
+        
+        // create core classes alias
+        $this -> template = &$this -> panthera -> template;
+        $this -> db = &$this -> panthera -> db;
+        $this -> user = &$this -> panthera -> user;
+        $this -> locale = &$this -> panthera -> locale;
         
         if ($this -> permissions)
             $this -> checkPermissions($this -> permissions);
