@@ -77,14 +77,12 @@ class indexInstallerControllerSystem extends installerController
         //    $currentLocale = $this -> panthera -> locale -> getActive();
             
         if (is_file(SITE_DIR. '/images/admin/flags/' .$currentLocale. '.png'))
-            $this -> panthera -> template -> push ('currentLocaleFlag', True);
+            $this -> template -> push ('currentLocaleFlag', True);
 
         if ($this->config['language.enableselect']['value'])
-        {
-            $this -> panthera -> template -> push ('languages', $locales);
-        }
+            $this -> template -> push ('languages', $locales);
         
-        $this -> panthera -> template -> push ('currentLocale', $currentLocale);
+        $this -> template -> push ('currentLocale', $currentLocale);
     }
 
     /**
@@ -113,22 +111,19 @@ class indexInstallerControllerSystem extends installerController
         if ($this->config['timezone.default']['value'])
             $defaultTimezone = $this->config['timezone.default']['value'];
         
-        $this -> panthera -> template -> push ('timezone', $defaultTimezone);
+        $this -> template -> push ('timezone', $defaultTimezone);
         
         if (isset($_GET['_timezone']))
         {
             if (in_array($_GET['_timezone'], DateTimeZone::listIdentifiers()))
             {
-                $this -> panthera -> importModule('appconfig');
-        
                 try {
-                    $appConfig = new appConfigEditor();
-                    $appConfig -> config ['timezone'] = $_GET['_timezone'];
-                    $appConfig -> save();
+                    $this -> installer -> appConfig -> config ['timezone'] = $_GET['_timezone'];
+                    $this -> installer -> appConfig -> save();
                     $this -> panthera -> config -> updateConfigCache($appConfig->config);
-                    $this -> panthera -> template -> push ('timezone', $this -> panthera -> config->getKey('timezone'));
+                    $this -> template -> push ('timezone', $this -> panthera -> config->getKey('timezone'));
                 } catch (Exception $e) {
-                    $this -> panthera -> template -> push ('popupError', localize('Cannot save app.php', 'installer'). ', ' .localize('exception', 'installer'). ': ' .$e->getMessage());
+                    $this -> template -> push ('popupError', localize('Cannot save app.php', 'installer'). ', ' .localize('exception', 'installer'). ': ' .$e->getMessage());
                 }
             }
         }
@@ -140,8 +135,8 @@ class indexInstallerControllerSystem extends installerController
         {
             $time = new DateTime('NOW');
             $time -> setTimezone(new DateTimeZone($this->panthera->config->getKey('timezone')));
-            $this -> panthera -> template -> push ('currentTime', $time->format('G:i:s d.m.Y'));
-            $this -> panthera -> template -> push ('timezones', $timezones);
+            $this -> template -> push ('currentTime', $time->format('G:i:s d.m.Y'));
+            $this -> template -> push ('timezones', $timezones);
         }
     }
 

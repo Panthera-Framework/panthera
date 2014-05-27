@@ -4,7 +4,7 @@
  * 
  * @package Panthera\installer
  * @author Damian Kęska
- * @license GNU Lesser General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
 /**
