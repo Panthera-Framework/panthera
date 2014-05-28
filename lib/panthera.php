@@ -2,10 +2,10 @@
 /**
   * Panthera Framework main file
   *
-  * @package Panthera\core
+  * @package Panthera\core\kernel
   * @author Damian Kęska
   * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
+  * @license LGPLv3
   */
 
 if (!defined('IN_PANTHERA'))
@@ -16,7 +16,7 @@ if (!defined('IN_PANTHERA'))
  *
  * @param object $exception
  * @return void
- * @Package Panthera\core
+ * @Package Panthera\core\kernel
  * @author Damian Kęska
  */
 
@@ -138,7 +138,7 @@ function pantheraExceptionHandler($exception)
   * @param string $errfile
   * @param string $errline
   * @return mixed
-  * @Package Panthera\core
+  * @Package Panthera\core\kernel
   * @author Damian Kęska
   */
 
@@ -253,7 +253,7 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
   * This class is handling all messages, saving them to file, displaying
   * its used to debug whole application based on Panthera Framework
   *
-  * @Package Panthera\core
+  * @Package Panthera\core\kernel\logging
   * @author Damian Kęska
   */
 
@@ -459,7 +459,7 @@ class pantheraLogging
 /**
   * Configuration management with database storage support
   *
-  * @Package Panthera\core
+  * @Package Panthera\core\kernel\config
   * @author Damian Kęska
   */
 
@@ -1827,6 +1827,13 @@ class pantheraCore
 
 }
 
+/**
+ * Abstract Panthera class with Panthera object stored in $this->panthera
+ * 
+ * @package Panthera\core\kernel
+ * @author Damian Kęska
+ */
+
 abstract class pantheraClass
 {
     protected $panthera = null;
@@ -1847,7 +1854,7 @@ abstract class pantheraClass
 /**
   * Class autoloader for Panthera Framework
   *
-  * @package Panthera\core
+  * @package Panthera\core\kernel
   * @param string $class name
   * @return mixed 
   * @author Damian Kęska
@@ -1909,7 +1916,7 @@ spl_autoload_register('__pantheraAutoloader');
 /**
  * Panthera data validation class. Strings, numbers, urls, ip adresses and other data can be validated here.
  *
- * @package Panthera\core
+ * @package Panthera\core\kernel
  * @author Damian Kęska
  */
 
@@ -2217,7 +2224,7 @@ function ajax_exit($array)
 /**
  * Ajax equivalent of var_dump
  * 
- * @package Panthera\core
+ * @package Panthera\core\kernel
  * @param mixed $mixed
  * @return null
  */
@@ -2238,6 +2245,7 @@ function ajax_dump($mixed, $usePrint_r=False)
 /**
  * Finish all processes and exit application
  *
+ * @package Panthera\core\kernel
  * @param string $string Optional message
  * @return string
  * @author Damian Kęska
@@ -2262,6 +2270,7 @@ function pa_exit($string='', $ajaxExit=False)
 /**
  * Make simple redirection using "Location" header and exit application
  *
+ * @package Panthera\core\kernel
  * @param string $url Application internal url, eg. index.php
  * @return string
  * @author Damian Kęska
@@ -2282,6 +2291,7 @@ function pa_redirect($url, $code=null)
 /**
  * This function will safely parse meta tags from array
  *
+ * @package Panthera\core\kernel
  * @param array $tags Meta tags in an associative array
  * @return string
  * @author Damian Kęska
@@ -2302,6 +2312,15 @@ function parseMetaTags($tags)
     return rtrim($code, ',');
 }
 
+/**
+ * Filter meta tag, strip quotes
+ * 
+ * @param string $tag Input tag string
+ * @package Panthera\core\kernel
+ * @return string
+ * @author Damian Kęska
+ */
+
 function filterMetaTag($tag)
 {
     $a = array('"', "'");
@@ -2311,6 +2330,7 @@ function filterMetaTag($tag)
 /**
  * Create SEO friendly name
  *
+ * @package Panthera\core\kernel
  * @param string $string Article title, or file name, just a string to be converted
  * @return string
  * @author Alexander <http://forum.codecall.net/topic/59486-php-create-seo-friendly-url-titles-slugs/#axzz2JCfcCHFX>
@@ -2331,6 +2351,7 @@ function seoUrl($string) {
 /**
  * Convert Panthera special variables in urls with reverse function
  *
+ * @package Panthera\core\kernel
  * @param string $url URL to be parsed
  * @param bool $reverse Set to true if you want to convert complete URL back to Panthera internal url eg. input: http://example.com/index output: {$PANTHERA_URL}/index
  * @param string $type Convert only "frontend" or "system" variables
@@ -2379,6 +2400,7 @@ if (!function_exists('json_last_error'))
 /**
  * Checks if string is a valid json type
  *
+ * @package Panthera\core\kernel
  * @return bool
  * @author Damian Kęska
  */
@@ -2391,6 +2413,7 @@ function isJson($string) {
 /**
  * Is Panthera running in debugging mode?
  *
+ * @package Panthera\core\kernel
  * @return bool
  * @author Damian Kęska
  */
@@ -2404,6 +2427,7 @@ function isDebugging()
 /**
  * Get full path of error page template. Returns empty string if template does not exists either in content as in lib
  *
+ * @package Panthera\core\kernel
  * @param string $string Page name eg. db_error
  * @return string
  * @author Damian Kęska
@@ -2422,6 +2446,7 @@ function getErrorPageFile($name)
 /**
  * Unify quotes in string eg. replace " to '
  *
+ * @package Panthera\core\kernel
  * @param string $string String to be parsed
  * @return string
  * @author Damian Kęska
@@ -2435,6 +2460,7 @@ function unifyQuotes($string)
 /**
  * Convert MySQL-like timestamp to formatted date and time
  *
+ * @package Panthera\core\kernel
  * @param string $timestamp MySQL-like timestamp
  * @param string $format new format eg. d.m.Y which means day.month.year - eg. 01.01.2096
  * @return string
@@ -2449,6 +2475,7 @@ function timestampToDate($timestamp, $format)
 /**
  * Cut off string to fit in maximum length, adds "..." at the end of string
  *
+ * @package Panthera\core\kernel
  * @param string $string Input string
  * @param string $maxLen Maximum length
  * @return string
@@ -2465,12 +2492,13 @@ function strCut($string, $maxLen)
 }
 
 /**
-  * Get numbers from a string and return as an array
-  *
-  * @param string $str Input string
-  * @return array
-  * @author Damian Kęska
-  */
+ * Get numbers from a string and return as an array
+ *
+ * @package Panthera\core\kernel
+ * @param string $str Input string
+ * @return array
+ * @author Damian Kęska
+ */
 
 function strGetNumbers($str)
 {
@@ -2479,14 +2507,15 @@ function strGetNumbers($str)
 }
 
 /**
-  * Generate random string
-  *
-  * @param int $length Default length is 10
-  * @param string $characters Optional characters range
-  * @return array
-  * @author Stephen Watkins <http://stackoverflow.com/users/151382/stephen-watkins>
-  * @author Damian Kęska
-  */
+ * Generate random string
+ *
+ * @package Panthera\core\kernel
+ * @param int $length Default length is 10
+ * @param string $characters Optional characters range
+ * @return array
+ * @author Stephen Watkins <http://stackoverflow.com/users/151382/stephen-watkins>
+ * @author Damian Kęska
+ */
 
 function generateRandomString($length = 10, $characters='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') {
     $randomString = '';
@@ -2497,12 +2526,13 @@ function generateRandomString($length = 10, $characters='0123456789abcdefghijklm
 }
 
 /**
-  * Search for file name in /content and /lib and return first match
-  *
-  * @param string $dir File or directory name
-  * @return string
-  * @author Damian Kęska
-  */
+ * Search for file name in /content and /lib and return first match
+ *
+ * @package Panthera\core\kernel
+ * @param string $dir File or directory name
+ * @return string
+ * @author Damian Kęska
+ */
 
 function getContentDir($dir)
 {
@@ -2517,14 +2547,15 @@ function getContentDir($dir)
 }
 
 /**
-  * Print object informations
-  *
-  * @param object $obj Input object
-  * @param bool $returnAsString
-  * @debug
-  * @return void
-  * @author Damian Kęska
-  */
+ * Print object informations
+ *
+ * @package Panthera\core\kernel
+ * @param object $obj Input object
+ * @param bool $returnAsString
+ * @debug
+ * @return void
+ * @author Damian Kęska
+ */
 
 function object_dump($obj, $returnAsString=False)
 {
@@ -2549,11 +2580,13 @@ function object_dump($obj, $returnAsString=False)
 }
 
 /**
-  * Make a var_dump and return result
-  *
-  * @return array
-  * @author Damian Kęska
-  */
+ * Make a var_dump and return result
+ *
+ * @debug
+ * @package Panthera\core\kernel
+ * @return array
+ * @author Damian Kęska
+ */
 
 function r_dump()
 {
@@ -2566,6 +2599,8 @@ function r_dump()
 /**
  * Prints print_r inside of HTML code replacing \n to <br> and spaces to &nbsp; HTML codes
  * 
+ * @debug
+ * @package Panthera\core\kernel
  * @param mixed $input Input data of any type
  * @param bool $return Return output
  * @return string
@@ -2584,9 +2619,11 @@ function print_r_html($input, $return=false)
 /**
  * List all class/object methods
  *
+ * @debug
+ * @package Panthera\core\kernel
  * @param object|string $obj
  * @param bool $return Return as string
- * @package Panthera\pantheraCore\debugging
+ * @package Panthera\core\kernel\debugging
  * @return string|bool 
  * @author Damian Kęska
  */
@@ -2612,8 +2649,9 @@ function object_info($obj, $return=False)
 /**
  * Splits seconds with microseconds from microtime() output
  *
+ * @debug
  * @param string $time Optional input time, if not specified it will be generated with microtime()
- * @package Panthera\pantheraCore
+ * @package Panthera\core\kernel
  * @return float
  * @author http://php.net
  */
@@ -2639,7 +2677,7 @@ function microtime_float($time='')
  * @param bool $mins
  * @param bool $secs
  * @param bool $display_output
- * @package Panthera\pantheraCore
+ * @package Panthera\core\kernel
  * @return string|array
  * @author Damian Kęska
  */
@@ -2762,12 +2800,13 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
 }
 
 /**
-  * Show elapsed time in human-friendly format
-  *
-  * @param string|int $time
-  * @return string 
-  * @author Damian Kęska
-  */
+ * Show elapsed time in human-friendly format
+ *
+ * @package Panthera\core\kernel
+ * @param string|int $time
+ * @return string 
+ * @author Damian Kęska
+ */
 
 function elapsedTime($time)
 {
@@ -2779,7 +2818,7 @@ function elapsedTime($time)
  *
  * @param string $input Input string
  * @param string $filtersList Separated by comma eg. quotehtml,quotes,wysiwyg
- * @package Panthera\pantheraCore
+ * @package Panthera\core\kernel
  * @return bool
  * @author Damian Kęska
  */
@@ -2815,7 +2854,7 @@ function filterInput($input, $filtersList)
  * @config hashing_algorithm
  * @config salt
  * @param string $password to encode
- * @package Panthera\pantheraCore
+ * @package Panthera\core\kernel
  * @return string with hash
  * @author Damian Kęska
  */
@@ -2841,7 +2880,7 @@ function encodePassword($password)
  * @config salt
  * @param string $password to verify
  * @param string $hash previously encoded password to verify with $password
- * @package Panthera\pantheraCore
+ * @package Panthera\core\kernel
  * @return bool
  * @author Damian Kęska
  */
@@ -2866,7 +2905,7 @@ function verifyPassword($password, $hash)
  * @param array|string $array Array of elements, or a string value "GET" or "POST"
  * @param array|string $mix Elements to add (useful if using "GET" or "POST" in first but want to add something) eg. "aaa=test&bbb=ccc" or array('aaa' => 'test', 'bbb' => 'ccc')
  * @param array|string $except List of parameters to skip eg. "display,cat" or array('display', 'cat')
- * @package Panthera\pantheraCore
+ * @package Panthera\core\kernel
  * @return string 
  * @author Damian Kęska
  */
@@ -2913,7 +2952,7 @@ function getQueryString($array=null, $mix=null, $except=null)
  * Strip new lines
  *
  * @param string $string
- * @package Panthera\pantheraCore
+ * @package Panthera\core\kernel
  * @return string 
  * @author Damian Kęska
  */
@@ -2927,7 +2966,7 @@ function stripNewLines($str)
  * Capture function stdout
  *
  * @param string|function $function
- * @package Panthera\pantheraCore
+ * @package Panthera\core\kernel
  * @author Damian Kęska
  */
 
@@ -2964,7 +3003,7 @@ function captureStdout($function, $a=null, $b=null, $c=null, $d=null, $e=null, $
 /**
   * A base plugins class
   *
-  * @package Panthera\pantheraCore
+  * @package Panthera\core\kernel
   * @author Damian Kęska
   */
 
@@ -2984,7 +3023,7 @@ class pantheraPlugin
   * Create array of defined size, filled with null values (useful for creating for loop in RainTPL)
   *
   * @param int $range Count of iterations
-  * @package Panthera\pantheraCore
+  * @package Panthera\core\kernel
   * @author Damian Kęska
   */
 
@@ -3001,7 +3040,7 @@ function forRange($range=0)
 /**
  * Recursive array diff
  *
- * @package Panthera\pantheraCore
+ * @package Panthera\core\kernel
  * @param array $aArray1
  * @param array $aArray2
  * @see http://stackoverflow.com/questions/3876435/recursive-array-diff 
@@ -3061,7 +3100,7 @@ function arrayRecursiveDiff($aArray1, $aArray2, &$i=null)
 /**
  * Convert bool, false, null to string
  * 
- * @package Panthera\pantheraCore
+ * @package Panthera\core\kernel
  * @param mixed $input Input
  * @author Damian Kęska
  * @return string
@@ -3082,6 +3121,7 @@ function toString($input)
 /**
  * Get first non-null value
  * 
+ * @package Panthera\core\kernel
  * @param mixed $1
  * @param mixed $2
  * @param mixed $3
