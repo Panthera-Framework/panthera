@@ -2,16 +2,18 @@
 /**
  * Dash ajax page
  *
- * @package Panthera\core\ajaxpages
+ * @package Panthera\core\adminUI\dash
  * @author Mateusz Warzyński
  * @author Damian Kęska
- * @license GNU Lesser General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
 /**
  * Dash ajax page controller
  *
- * @package Panthera\core\ajaxpages
+ * @package Panthera\core\adminUI\dash
+ * @author Mateusz Warzyński
+ * @author Damian Kęska
  */ 
 
 class dashAjaxControllerSystem extends pageController

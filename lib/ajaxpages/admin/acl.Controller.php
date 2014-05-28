@@ -2,7 +2,7 @@
 /**
  * Access control list management
  *
- * @package Panthera\core\adminpanel
+ * @package Panthera\core\system\acl
  * @author Damian Kęska
  * @author Mateusz Warzyński
  * @license LGPLv3
@@ -11,7 +11,7 @@
 /**
  * Access control list management
  *
- * @package Panthera\core\adminpanel
+ * @package Panthera\core\system\acl
  * @author Damian Kęska
  * @author Mateusz Warzyński
  * @license LGPLv3

@@ -2,10 +2,18 @@
 /**
  * Simple JSON array editor
  *
- * @package Panthera\admin\ajaxpages
+ * @package Panthera\core\adminUI\jsonedit
  * @author Damian Kęska
  * @author Mateusz Warzyński
- * @license GNU Lesser General Public License 3, see license.txt
+ * @license LGPLv3
+ */
+ 
+/**
+ * Simple JSON array editor
+ *
+ * @package Panthera\core\adminUI\jsonedit
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
  */
 
 class _popup_jsoneditAjaxControllerCore extends pageController

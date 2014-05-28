@@ -2,13 +2,21 @@
 /**
  * Custom pages manager
  *
- * @package Panthera\core\custompages
+ * @package Panthera\core\components\custompages
  * @author Damian Kęska
  * @author Mateusz Warzyński
- * @license GNU Affero General Public License 3, see license.txt
+ * @license LGPLv3
  */
  
 pageController::$searchFrontControllerName = 'customAjaxControllerSystem';
+
+/**
+ * Custom pages manager
+ *
+ * @package Panthera\core\components\custompages
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
  
 class customAjaxControllerSystem extends pageController
 {

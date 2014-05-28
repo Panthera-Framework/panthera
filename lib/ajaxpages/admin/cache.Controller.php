@@ -2,10 +2,10 @@
 /**
  * Cache management
  *
- * @package Panthera\modules\cache
+ * @package Panthera\core\system\cache
  * @author Mateusz Warzyński
  * @author Damian Kęska
- * @license GNU Affero General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
 if (!defined('IN_PANTHERA'))

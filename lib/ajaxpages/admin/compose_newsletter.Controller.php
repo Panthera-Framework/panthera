@@ -2,7 +2,7 @@
 /**
   * Compose newsletter
   *
-  * @package Panthera\core\ajaxpages
+  * @package Panthera\core\components\newsletter
   * @author Damian Kęska
   * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
@@ -11,7 +11,7 @@
 /**
  * Compose newsletter
  *
- * @package Panthera\core\compose_newsletter\admin
+ * @package Panthera\core\components\newsletter
  * @author Damian Kęska
  * @author Mateusz Warzyński
  */

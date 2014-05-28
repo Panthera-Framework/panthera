@@ -2,7 +2,7 @@
 /**
  * Access Control Lists debugging
  *
- * @package Panthera\core\adminpanel
+ * @package Panthera\core\adminUI\debug\debug.acl
  * @author Damian Kęska
  * @license LGPLv3
  */
@@ -10,7 +10,7 @@
 /**
  * Access Control Lists debugging
  *
- * @package Panthera\core\adminpanel
+ * @package Panthera\core\adminUI\debug\debug.acl
  * @author Damian Kęska
  */
 

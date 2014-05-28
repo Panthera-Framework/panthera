@@ -1,18 +1,18 @@
 <?php
 /**
- * Read server log
+ * Read server access logs
  *
- * @package Panthera\core\ajaxpages
+ * @package Panthera\core\adminUI\accessparser
  * @author Damian Kęska
  * @author Mateusz Warzyński
- * @license GNU Affero General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
   
 /**
- * Server log parser pageController 
+ * Server log parser pageController
  *
- * @package Panthera\core\ajaxpages
+ * @package Panthera\core\adminUI\accessparser
  * @author Damian Kęska
  * @author Mateusz Warzyński
  */
