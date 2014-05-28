@@ -14,6 +14,7 @@
  * @implements pantheraFetchDB
  * @package Panthera\modules\gallery
  * @author Damian Kęska
+ * @author Mateusz Warzyński
  */
 
 class galleryItem extends pantheraFetchDB
@@ -146,6 +147,7 @@ class galleryItem extends pantheraFetchDB
       * @param bool $create new thumbnail if it does not exists
       * @return string with url 
       * @author Damian Kęska
+      * @author Mateusz Warzyński 
       */
     
     public function getThumbnail($size='', $create=False)
@@ -326,6 +328,7 @@ class gallery
       * @param int $id
       * @return bool 
       * @author Damian Kęska
+      * @author Mateusz Warzyński 
       */
     
     public static function removeImage($id)
@@ -347,6 +350,7 @@ class gallery
       * @param string $unique
       * @return mixed 
       * @author Damian Kęska
+      * @author Mateusz Warzyński 
       */
     
     public static function createCategory($title, $login, $user_id, $language, $visibility, $user_full_name, $unique='')
@@ -402,6 +406,7 @@ class gallery
       * @param string name
       * @return mixed 
       * @author Damian Kęska
+      * @author Mateusz Warzyński 
       */
     
     public static function getCategory($unique, $language)
@@ -438,6 +443,7 @@ class gallery
       * @param $orderDirection
       * @return mixed
       * @author Damian Kęska
+      * @author Mateusz Warzyński 
       */
     
     public static function fetch($by, $limit=0, $limitFrom=0, $orderBy='id', $orderDirection='DESC')
