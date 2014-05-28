@@ -188,7 +188,7 @@ if (!defined('SKIP_TEMPLATE'))
 if (!defined('SKIP_USER') and !defined('SKIP_SESSION'))
 {
     // get current user
-    $panthera -> user = getCurrentUser();
+    $panthera -> user = userTools::getCurrentUser();
     $user = $panthera -> user; // will return false if not logged in
 
     // test

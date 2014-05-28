@@ -1480,7 +1480,7 @@ abstract class pantheraFetchDB
         if (!$this->exists())
             return false;
         
-        $this -> panthera -> db -> query('DELETE FROM `{$db_prefix}' .$this->_tableName. '` WHERE `' .$this->_idColumn. '` = :idColumnValue LIMIT 1;', array('idColumnValue' => $this -> __get($this->_idColumn)));
+        $this -> panthera -> db -> query('DELETE FROM `{$db_prefix}' .$this->_tableName. '` WHERE `' .$this->_idColumn. '` = :idColumnValue;', array('idColumnValue' => $this -> __get($this->_idColumn)));
         $this -> panthera -> logging -> output('Removed object "' .$this -> __get($this->_idColumn). '"', get_called_class());
         $this -> getMeta();
         $this -> __meta -> deleteAll();

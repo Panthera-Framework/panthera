@@ -98,9 +98,9 @@ class accountInstallerControllerSystem extends installerController
                 $u -> changePassword($_POST['password']);
                 $u -> mail = $_POST['email'];
             } else {
-                createNewUser($_POST['login'], $_POST['password'], $_POST['login'], 'root', serialize(array('admin' => True)), $this -> locale -> getActive(), $_POST['email'], '');
+                userTools::createNewUser($_POST['login'], $_POST['password'], $_POST['login'], 'root', serialize(array('admin' => True)), $this -> locale -> getActive(), $_POST['email'], '');
                 $u = new pantheraUser('login', $_POST['login']);
-                userCreateSessionById($u->id); // login user, so we can skip the login step after installation
+                userTools::userCreateSessionById($u->id); // login user, so we can skip the login step after installation
             }
             
             // automaticaly add Jabber address if e-mail address is in known jabber+e-mail service

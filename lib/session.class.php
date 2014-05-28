@@ -1,21 +1,21 @@
 <?php
 /**
-  * Session management, navigation, "run" table
-  * 
-  * @package Panthera\core\session
-  * @author Damian Kęska
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Session management, navigation, "run" table
+ * 
+ * @package Panthera\core\session
+ * @author Damian Kęska
+ * @license LGPLv3
+ */
 
 if (!defined('IN_PANTHERA'))
 	exit;
     
 /**
-  * User session management class
-  *
-  * @package Panthera\core\session
-  * @author Damian Kęska
-  */
+ * User session management class
+ *
+ * @package Panthera\core\session
+ * @author Damian Kęska
+ */
     
 class pantheraSession
 {

@@ -1,20 +1,31 @@
 <?php
 /**
-  * Admin panel login front controller
-  *
-  * @package Panthera\core\user\login
-  * @config pa-login redirect_after_login
-  * @config pa-login login.failures.max
-  * @config pa-login login.failures.bantime
-  * @config ajax_url
-  * @author Damian Kęska
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Admin panel login front controller
+ *
+ * @package Panthera\core\user\login
+ * @config pa-login redirect_after_login
+ * @config pa-login login.failures.max
+ * @config pa-login login.failures.bantime
+ * @config ajax_url
+ * @author Damian Kęska
+ * @license LGPLv3
+ */
   
 define('SKIP_MAINTENANCE_CHECK', TRUE);
 
 require_once 'content/app.php';
 include getContentDir('pageController.class.php');
+
+/**
+ * Admin panel login front controller
+ *
+ * @package Panthera\core\user\login
+ * @config pa-login redirect_after_login
+ * @config pa-login login.failures.max
+ * @config pa-login login.failures.bantime
+ * @config ajax_url
+ * @author Damian Kęska
+ */
 
 class pa_loginControllerSystem extends pageController
 {
@@ -58,7 +69,7 @@ class pa_loginControllerSystem extends pageController
     public function logoutAction()
     {
         if (isset($_GET['logout']))
-            logoutUser();
+            userTools::logoutUser();
     }
 
     /**
@@ -162,7 +173,7 @@ class pa_loginControllerSystem extends pageController
             }
         }
             
-        $result = userCreateSession($_POST['log'], $_POST['pwd']);
+        $result = userTools::userCreateSession($_POST['log'], $_POST['pwd']);
             
         /**
          * Successful login

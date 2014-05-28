@@ -438,7 +438,7 @@ class usersAjaxControllerCore extends pageController
                     'message' => localize('Cannot remove superuser', 'users'),
                 ));
     
-            if (removeUser($id, $u->id))
+            if (userTools::removeUser($id, $u->id))
                 ajax_exit(array(
                     'status' => 'success',
                 ));

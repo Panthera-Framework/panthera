@@ -1890,6 +1890,16 @@ function __pantheraAutoloader($class)
             }
             
             return $panthera -> importModule($cachedClasses[$class]);
+        } else {
+            // in case there is no class in cache and cache last refresh was later than 3600 seconds ago
+            if ((time()-filemtime(SITE_DIR. '/content/tmp/autoloader.php')) > 3600)
+            {
+                $panthera -> logging -> output('Reloading outdated cache', 'pantheraCore');
+                $panthera -> importModule('autoloader.tools');
+                pantheraAutoloader::updateCache();
+                __pantheraAutoloader($class);
+            }
+            
         }
     }
 }

@@ -37,7 +37,7 @@ if (isset($_GET['facebook']))
                 
                 $u = new pantheraUser('id', $fetch['userid']);
                 
-                $session = userCreateSession($u->login, '', True);
+                $session = userTools::userCreateSession($u->login, '', True);
                 
                 if (!$session)
                 {

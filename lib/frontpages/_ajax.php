@@ -13,15 +13,6 @@ require_once 'content/app.php';
 // front controllers utils
 include PANTHERA_DIR. '/pageController.class.php';
 
-// only for registered users
-/*if (!checkUserPermissions($user))
-{
-    $template -> setTemplate('admin');
-    $template->display('no_access.tpl');
-    $panthera->finish();
-    pa_exit();
-}*/
-
 $cat = '';
 
 // if we are using ajaxpage from selected category
@@ -53,7 +44,7 @@ if (isset($_GET['_system_loginkey']) and $panthera -> varCache)
     {
         $panthera -> user = new pantheraUser('id', $loginKey['userID']);
         $panthera -> varCache -> remove('pa-login.system.loginkey');
-        userCreateSessionById($loginKey['userID']);
+        userTools::userCreateSessionById($loginKey['userID']);
     }
 }
 

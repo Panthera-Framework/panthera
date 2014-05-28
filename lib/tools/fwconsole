@@ -411,7 +411,7 @@ class fwconsole extends cliApp
             $decision = $this->screen->readline(9999);
             if ($decision == 'Y' or $decision == 'y')
             {
-               if (removeUser($username))
+               if (userTools::removeUser($username))
                      print($username . " has been deleted!\n");
                else
                      print("Error with deleting existing user!\n");
