@@ -29,7 +29,7 @@ class userTools
      * @author Damian Kęska
      */
     
-    public static function userCreateSession($user, $passwd, $forceWithoutPassword=False)
+    public static function userCreateSession($user, $passwd, $forceWithoutPassword=False, $onlyCheck=False)
     {
         $panthera = pantheraCore::getInstance();
         $usr = new pantheraUser('login', $user);
@@ -53,6 +53,9 @@ class userTools
             // force login user without password
             if ($forceWithoutPassword)
             {
+                if ($onlyCheck)
+                    return $usr;
+                
                 $panthera -> user = $usr;
                 $panthera -> session -> uid = $usr->id;
                 $usr -> lastlogin = DB_TIME_NOW;
@@ -66,12 +69,16 @@ class userTools
         
             // check if password is correct
             if ($usr -> checkPassword($passwd)) {
+                
+                if ($onlyCheck)
+                    return $usr;
+                
                 $panthera -> user = $usr;
                 $panthera -> session -> uid = $usr->id;
                 $usr -> lastlogin = DB_TIME_NOW;
                 $usr -> lastip = $_SERVER['REMOTE_ADDR'];
                 $usr -> save();
-                return True;
+                return $usr;
             }
         }
     

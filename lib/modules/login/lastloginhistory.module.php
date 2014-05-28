@@ -47,9 +47,17 @@ class lastloginhistoryModule extends pageController
 
         // remove outdated history entries
         if ($fetch['count(*)'] >= intval($this -> panthera -> config -> getKey('login.history', 5, 'int', 'pa-login')))
-            $this -> panthera -> db -> query('DELETE FROM `{$db_prefix}users_lastlogin_history` WHERE `uid` = :uid ORDER BY `date` ASC LIMIT 1;', array(
+        {
+            try {
+                $this -> panthera -> db -> query('DELETE FROM `{$db_prefix}users_lastlogin_history` WHERE `uid` = :uid ORDER BY `date` ASC LIMIT 1;', array(
                 'uid' => $u -> id,
-            ));
+                ));
+            } catch (Exception $e) {
+                $this -> panthera -> logging -> output('Got exception while deleting outdated login history: ' .$e -> getMessage(), 'pa-login');
+                $this -> panthera -> logging -> output('SQLite3 propably not compiled with "SQLITE_ENABLE_UPDATE_DELETE_LIMIT" option, please take a look at: http://www.sqlite.org/lang_delete.html', 'pa-login');
+                return False;
+            }
+        }
         
         $location = '';
         

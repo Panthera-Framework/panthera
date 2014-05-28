@@ -43,6 +43,8 @@ class settings_pa_loginAjaxControllerSystem extends pageController
         $this -> panthera -> config -> getKey('redirect_after_login', 'index.php', 'string', 'pa-login');
         $this -> panthera -> config -> getKey('login.failures.bantime', 300, 'int', 'pa-login');
         $this -> panthera -> config -> getKey('login.history', 5, 'int', 'pa-login');
+        $this -> panthera -> config -> getKey('login.maillogin', 1, 'bool', 'pa-login');
+        $this -> panthera -> config -> getKey('login.jabberlogin', 0, 'bool', 'pa-login');
         
         // load uiSettings with "pa-login" config section
         $config = new uiSettings('palogin');
@@ -56,6 +58,14 @@ class settings_pa_loginAjaxControllerSystem extends pageController
         
         $config -> add('login.history', localize('Login history count', 'palogin'));
         $config -> setDescription('login.history', localize('Count of successful logins to keep', 'palogin'));
+        
+        // Mail login
+        $config -> add('login.maillogin', localize('Allow using mail address to log in', 'palogin'));
+        $config -> setFieldType('login.maillogin', 'bool');
+        
+        // Jabber login
+        $config -> add('login.jabberlogin', localize('Allow type Jabber address to log in', 'palogin'));
+        $config -> setFieldType('login.jabberlogin', 'bool');
         
         $result = $config -> handleInput($_POST);
         
