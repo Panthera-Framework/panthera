@@ -20,10 +20,10 @@
 class frontcontrollersAjaxControllerCore extends pageController
 {
     protected $uiTitlebar = array(
-        'Index of front controllers', 'ajaxpages'
+        'List of front controllers', 'ajaxpages'
     );
     
-    protected $permissions = 'can_see_front_controllers';
+    protected $permissions = 'admin.debug.frontcontrollers';
     
     
     public function display()
