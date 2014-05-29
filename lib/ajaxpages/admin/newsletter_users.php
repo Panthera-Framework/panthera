@@ -1,12 +1,12 @@
 <?php
 /**
-  * Show and manage newsletter users
-  *
-  * @package Panthera
-  * @subpackage core
-  * @copyright (C) Damian Kęska, Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Show and manage newsletter users
+ *
+ * @package Panthera\core\components\newsletter
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license LGPLv3
+ */
 
 if (!defined('IN_PANTHERA'))
     exit;
