@@ -2,7 +2,7 @@
 /**
  * Parse create table statement and output in json/serialized format
  *
- * @package Panthera\database
+ * @package Panthera\core\system\db
  * @author Damian Kęska
  * @license GNU LGPLv3
  */
@@ -10,7 +10,7 @@
 /**
  * Parse create table statement and output in json/serialized format
  *
- * @package Panthera\database
+ * package Panthera\core\system\db
  * @author Damian Kęska
  */
 
