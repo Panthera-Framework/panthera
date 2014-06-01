@@ -43,28 +43,16 @@ class userComment extends pantheraFetchDB
         if ($total)
             return $comments;
         
-        $c = array();
-        $i = 0;
-        
         // get information about user
         foreach ($comments as $comment)
         {
-            $c[$i]['id'] = $comment->id;
-            $c[$i]['content'] = htmlspecialchars_decode($comment->content);
-            $c[$i]['author_id'] = $comment->author_id;
-            $c[$i]['group'] = $comment->group;
-            $c[$i]['object_id'] = $comment->object_id;
-            $c[$i]['posted'] = $comment->posted;
-            $c[$i]['modified'] = $comment->modified;
-            $c[$i]['allowed'] = $comment->allowed;
+            $comment->content = htmlspecialchars_decode($comment->content);
             
             $user = new pantheraUser('id', $comment->author_id);
-            $c[$i]['author_login'] = $user->login;
-            
-            $i = $i+1;
+            $comment->author_login = $user->login;
         }
         
-        return $c;
+        return $comments;
     }
     
     

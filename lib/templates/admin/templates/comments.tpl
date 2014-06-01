@@ -263,17 +263,17 @@ function editComment(id)
             <tbody>
                 {if="count($commentsList) > 0"}
                 {loop="$commentsList"}
-                <tr id="comment_row_{$value['id']}">
-                    <td><input id="checkbox_{$value['id']}" value="" type="checkbox" onclick="selectComment('{$value['id']}');"></td>
-                    <td><small>{$value['content']|strCut}</small></td>
-                    <td>{$value['group']}, {$value['object_id']}</td>
-                    <td>{$value['posted']} {function="localize('by', 'comments')"} {$value['author_login']}</td>
-                    <td>{if="$value['posted'] == $value['modified']"}{function="localize('without changes', 'comments')"}{else}{$value['modified']}{/if}</td>
-                    <td>{if="$value['allowed'] == 1"}<p style="color: green;">{function="localize('Allowed', 'comments')"}</p> {else} <p style="color: red;">{function="localize('Blocked', 'comments')"}</p> {/if}</td>
+                <tr id="comment_row_{$value->id}">
+                    <td><input id="checkbox_{$value->id}" value="" type="checkbox" onclick="selectComment('{$value->id}');"></td>
+                    <td><small>{$value->content|strCut}</small></td>
+                    <td>{$value->group}, {$value->object_id}</td>
+                    <td>{$value->posted} {function="localize('by', 'comments')"} {$value->author_login}</td>
+                    <td>{if="$value->posted == $value->modified"}{function="localize('without changes', 'comments')"}{else}{$value->modified}{/if}</td>
+                    <td>{if="$value->allowed == 1"}<p style="color: green;">{function="localize('Allowed', 'comments')"}</p> {else} <p style="color: red;">{function="localize('Blocked', 'comments')"}</p> {/if}</td>
                     <td style="padding: 10px; min-width: 75px;">
-                        <a href="#" onclick="holdComment('{$value['id']}')"><img src="{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png" style="max-height: 22px;" title="{function="localize('Hold', 'comments')"}"></a>
-                        <a href="#" onclick="editComment('{$value['id']}');"><img src="{$PANTHERA_URL}/images/admin/menu/mce.png" style="max-height: 22px;" title="{function="localize('Edit', 'messages')"}"></a>
-                        <a href="#" onclick="deleteComment('{$value['id']}')"><img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" title="{function="localize('Remove', 'messages')"}"></a>
+                        <a href="#" onclick="holdComment('{$value->id}')"><img src="{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png" style="max-height: 22px;" title="{function="localize('Hold', 'comments')"}"></a>
+                        <a href="#" onclick="editComment('{$value->id}');"><img src="{$PANTHERA_URL}/images/admin/menu/mce.png" style="max-height: 22px;" title="{function="localize('Edit', 'messages')"}"></a>
+                        <a href="#" onclick="deleteComment('{$value->id}')"><img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" title="{function="localize('Remove', 'messages')"}"></a>
                     </td>
                 </tr>
                 {/loop}
