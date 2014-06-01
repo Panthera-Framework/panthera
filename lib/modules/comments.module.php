@@ -21,6 +21,8 @@ class userComment extends pantheraFetchDB
     protected $_idColumn = 'id';
     protected $_constructBy = array('id', 'array');
     
+    public $author_login;
+    
     
     /**
       * Get comments from database
