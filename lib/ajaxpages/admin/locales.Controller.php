@@ -1,13 +1,19 @@
 <?php
-
 /**
- * Locales management
- * Manager of languages for Panthera Admin Panel
+ * Locales management for Panthera Framework
  *
- * @package Panthera\core\googlepr\admin
+ * @package Panthera\core\system\locale
  * @author Mateusz Warzyński
  * @author Damian Kęska
- * @license GNU LGPLv3, see license.txt
+ * @license LGPLv3
+ */
+ 
+/**
+ * Locales management for Panthera Framework
+ *
+ * @package Panthera\core\system\locale
+ * @author Mateusz Warzyński
+ * @author Damian Kęska
  */
 
 class localesAjaxControllerCore extends pageController

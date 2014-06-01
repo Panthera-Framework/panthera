@@ -1,13 +1,15 @@
 <?php
 /**
-  * Displays static templates
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Displays static templates
+ *
+ * @package Panthera\core\adminUI\static-tpl
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license LGPLv3
+ */
 
+// TODO: Rewrite to objective model, create list of templates, add to menu etc.
+ 
 if (!defined('IN_PANTHERA'))
     exit;
 

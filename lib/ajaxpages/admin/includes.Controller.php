@@ -1,21 +1,21 @@
 <?php
 /**
-  * List of all included files in current code execution
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * List of all included files in current code execution
+ *
+ * @package Panthera\core\adminUI\debug\includes
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license LGPLv3
+ */
 
   
 /**
-  * List of all included files in current code execution
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  */
+ * List of all included files in current code execution
+ *
+ * @package Panthera\core\adminUI\debug\includes
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
 
 class includesAjaxControllerCore extends pageController
 {

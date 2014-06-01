@@ -1,21 +1,21 @@
 <?php
 /**
-  * pa-login front controller settings
-  *
-  * @package Panthera\core\controllers\palogin
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * pa-login front controller settings
+ *
+ * @package Panthera\core\frontcontrollers\palogin
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license LGPLv3
+ */
 
 
 /**
-  * pa-login front controller settings
-  *
-  * @package Panthera\core\controllers\palogin
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  */
+ * pa-login front controller settings
+ *
+ * @package Panthera\core\frontcontrollers\palogin
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
   
 class settings_pa_loginAjaxControllerSystem extends pageController
 {
