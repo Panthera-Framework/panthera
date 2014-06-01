@@ -1,30 +1,29 @@
 <?php
+/**
+ * Show list of ajax pages
+ *
+ * @package Panthera\core\adminUI\debug\frontcontrollers
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license GNU Affero General Public License 3, see license.txt
+ */
+
 
 /**
-  * Show list of ajax pages
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
-
-
-/**
-  * Ajaxpages list pageController
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  */
+ * Ajaxpages list pageController
+ *
+ * @package Panthera\core\ajaxpages
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
   
 class frontcontrollersAjaxControllerCore extends pageController
 {
     protected $uiTitlebar = array(
-        'Index of front controllers', 'ajaxpages'
+        'List of front controllers', 'ajaxpages'
     );
     
-    protected $permissions = 'can_see_front_controllers';
+    protected $permissions = 'admin.debug.frontcontrollers';
     
     
     public function display()

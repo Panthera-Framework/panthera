@@ -1,15 +1,15 @@
 <?php
 /**
-  * Compose newsletter
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Compose newsletter
+ *
+ * @package Panthera\core\components\newsletter
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license LGPLv3
+ */
 
 if (!defined('IN_PANTHERA'))
-      exit;
+    exit;
 
 if (!getUserRightAttribute($user, 'can_compose_newsletters')) {
     $noAccess = new uiNoAccess;

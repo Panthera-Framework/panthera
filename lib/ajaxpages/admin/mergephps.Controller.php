@@ -2,7 +2,7 @@
 /**
  * Merge serialized arrays and json files
  *
- * @package Panthera\core\ajaxpages
+ * @package Panthera\core\adminUI\debug\mergephps
  * @author Damian Kęska
  * @license GNU LGPLv3
  */
@@ -10,7 +10,7 @@
 /**
  * Merge serialized arrays and json files
  *
- * @package Panthera\core\ajaxpages
+ * @package Panthera\core\adminUI\debug\mergephps
  * @author Damian Kęska
  */
 

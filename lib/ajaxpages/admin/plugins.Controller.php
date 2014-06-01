@@ -1,20 +1,20 @@
 <?php
 /**
-  * Manage plugins
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Manage plugins
+ *
+ * @package Panthera\core\adminUI\plugins
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license LGPLv3
+ */
 
 /**
-  * Plugins pageController class
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  */
+ * Plugins pageController class
+ *
+ * @package Panthera\core\adminUI\plugins
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
   
 class pluginsAjaxControllerCore extends pageController
 {

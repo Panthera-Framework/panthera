@@ -1,20 +1,18 @@
 <?php
-
-  
- /**
-  * System error pages
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+/**
+ * System error pages
+ *
+ * @package Panthera\core\adminUI\debug\errorpages
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license GNU Affero General Public License 3, see license.txt
+ */
 
 
 /**
   * Error pages pageController class
   *
-  * @package Panthera\core\ajaxpages
+  * @package Panthera\core\adminUI\debug\errorpages
   * @author Damian Kęska
   * @author Mateusz Warzyński
   */
