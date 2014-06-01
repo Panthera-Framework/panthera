@@ -1,20 +1,21 @@
 <?php
 /**
- * Manage mailing system
- *
- * @package Panthera\core\components\mailing
- * @author Damian Kęska
- * @author Mateusz Warzyński
- * @license LGPLv3
- */
+  * Manage mailing system
+  *
+  * @package Panthera\core\ajaxpages
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  * @license GNU Affero General Public License 3, see license.txt
+  */
+
   
 /**
- * Mailing system pageController
- *
- * @package Panthera\core\components\mailing
- * @author Damian Kęska
- * @author Mateusz Warzyński
- */
+  * Mailing system pageController
+  *
+  * @package Panthera\core\ajaxpages
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  */
 
 class mailingAjaxControllerCore extends pageController
 {

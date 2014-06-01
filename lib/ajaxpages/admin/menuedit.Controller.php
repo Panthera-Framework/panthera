@@ -2,16 +2,16 @@
 /**
  * Menu editor for Panthera Framework Admin Panel
  *
- * @package Panthera\core\components\simplemenu
+ * @package Panthera\core\ajaxpages
  * @author Damian Kęska
  * @author Mateusz Warzyński
- * @license LGPLv3
+ * @license GNU LGPLv3, see license.txt
  */
  
 /**
  * Menu editor for Panthera Framework Admin Panel
  *
- * @package Panthera\core\components\simplemenu
+ * @package Panthera\core\ajaxpages
  * @author Damian Kęska
  * @author Mateusz Warzyński
  */

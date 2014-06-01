@@ -3,10 +3,10 @@
  * Google PageRank
  * Get GooglePR by given URL and show statistics
  *
- * @package Panthera\core\adminUI\googlepr
+ * @package Panthera\core\googlepr\admin
  * @author Mateusz Warzyński
  * @author Damian Kęska
- * @license LGPLv3
+ * @license GNU LGPLv3, see license.txt
  */
 
 /**

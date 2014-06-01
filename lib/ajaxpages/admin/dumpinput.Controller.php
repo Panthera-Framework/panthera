@@ -2,7 +2,7 @@
 /** 
  * Get all input variables listed
  *
- * @package Panthera\core\adminUI\debug\dumpinput
+ * @package Panthera\core\adminpanel
  * @author Damian Kęska
  * @author Mateusz Warzyński
  * @license LGPLv3
@@ -11,7 +11,7 @@
 /**
  * Get all input variables listed
  *
- * @package Panthera\core\adminUI\debug\dumpinput
+ * @package Panthera\core\adminpanel
  * @author Damian Kęska
  * @author Mateusz Warzyński
  */

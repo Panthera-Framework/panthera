@@ -1,22 +1,24 @@
 <?php
 /**
- * Make backup of database
- *
- * @package Panthera\core\system\db
- * @author Damian Kęska
- * @license LGPLv3
- */
+  * Make backup of database
+  *
+  * @package Panthera
+  * @subpackage core
+  * @copyright (C) Damian Kęska, Mateusz Warzyński
+  * @license GNU Affero General Public License 3, see license.txt
+  */
 
 // TODO: SQLite3 support
 
 ini_set('memory_limit', '256M');
 
 /**
- * Make backup of database page controller
- *
- * @package Panthera\core\system\db
- * @author Damian Kęska
- */
+  * Make backup of database page controller
+  *
+  * @package Panthera
+  * @subpackage core
+  * @copyright (C) Damian Kęska, Mateusz Warzyński
+  */
 
 class sqldumpAjaxControllerSystem extends pageController
 {    

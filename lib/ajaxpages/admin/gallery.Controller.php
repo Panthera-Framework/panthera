@@ -1,21 +1,13 @@
 <?php
+
 /**
  * Gallery management
- * Images and albums management via admin panel
+ * Manager of images for Panthera Admin Panel
  *
- * @package Panthera\core\components\gallery
+ * @package Panthera\core\gallery\admin
  * @author Mateusz Warzyński
  * @author Damian Kęska
- * @license LGPLv3
- */
- 
-/**
- * Gallery management
- * Images and albums management via admin panel
- *
- * @package Panthera\core\components\gallery
- * @author Mateusz Warzyński
- * @author Damian Kęska
+ * @license GNU LGPLv3, see license.txt
  */
 
 class galleryAjaxControllerCore extends pageController

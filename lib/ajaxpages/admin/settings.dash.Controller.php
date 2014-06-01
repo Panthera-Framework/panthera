@@ -1,21 +1,21 @@
 <?php
 /**
- * Dashboard configuration page
- *
- * @package Panthera\core\adminUI\settings
- * @author Damian Kęska
- * @author Mateusz Warzyński
- * @license GNU Affero General Public License 3, see license.txt
- */
+  * Dashboard configuration page
+  *
+  * @package Panthera\core\ajaxpages\settings.session
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  * @license GNU Affero General Public License 3, see license.txt
+  */
 
   
 /**
- * Dashboard configuration page controller
- *
- * @package Panthera\core\adminUI\settings
- * @author Damian Kęska
- * @author Mateusz Warzyński
- */
+  * Dashboard configuration page controller
+  *
+  * @package Panthera\core\ajaxpages\settings.session
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  */
 
 class settings_dashAjaxControllerSystem extends pageController
 {

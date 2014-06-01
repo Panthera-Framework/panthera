@@ -1,14 +1,10 @@
 {$site_header}
+
 {include="ui.titlebar"}
-
-<div id="topContent" style="min-height: 50px;">
-    <div class="searchBarButtonArea">
-    	<input type="button" value="{function="localize('List of page controllers', 'debug')"}" onclick="navigateTo('?display=ajaxpages&cat=admin');">
-        <input type="button" value="{function="localize('Refresh')"}" onclick="navigateTo(window.location.href);">
-    </div>
-</div>
-
 <div class="ajax-content" style="text-align: center;">
+    <div style="margin: 0 auto; display: inline-block; width: 80%;">
+        <h1>{function="localize('Front controllers', 'ajaxpages')"}</h1>
+    </div><br>
     <table style="display: inline-block;">
             <thead>
                 <tr>

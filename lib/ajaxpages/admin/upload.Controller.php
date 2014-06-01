@@ -1,12 +1,13 @@
 <?php
+
 /**
  * Upload management
  * Manager of uploaded files for Panthera Admin Panel
  *
- * @package Panthera\core\components\upload
+ * @package Panthera\core\upload\admin
  * @author Mateusz Warzyński
  * @author Damian Kęska
- * @license LGPLv3
+ * @license GNU LGPLv3, see license.txt
  */
 
 class uploadAjaxControllerCore extends pageController

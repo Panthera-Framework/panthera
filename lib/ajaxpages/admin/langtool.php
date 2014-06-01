@@ -1,22 +1,22 @@
 <?php
 /**
- * Configuration tool to manage translations
- *
- * @package Panthera\core\system\locale
- * @author Mateusz Warzyński
- * @license GNU Affero General Public License 3, see license.txt
- */
+  * Configuration tool to manage translations
+  *
+  * @package Panthera\core\ajaxpages
+  * @author Mateusz Warzyński
+  * @license GNU Affero General Public License 3, see license.txt
+  */
 
 if (!defined('IN_PANTHERA')) 
     exit;
     
 /**
- * Update missing strings cache
- *
- * @package Panthera\core\system\locale
- * @return array
- * @author Damian Kęska
- */
+  * Update missing strings cache
+  *
+  * @package Panthera\core\ajaxpages
+  * @return array
+  * @author Damian Kęska
+  */
     
 function updateMissingStringsCache($locale)
 {

@@ -2,15 +2,15 @@
 /**
  * Get list of all changed files and export to file for comparsion
  *
- * @package Panthera\core\adminUI\debug\syschecksum
+ * @package Panthera\core\ajaxpages
  * @author Damian Kęska
- * @license LGPLv3
+ * @license GNU Lesser General Public License 3, see license.txt
  */
  
 /**
  * Get list of all changed files and export to file for comparsion
  *
- * @package Panthera\core\adminUI\debug\syschecksum
+ * @package Panthera\core\ajaxpages
  * @author Damian Kęska
  */
  

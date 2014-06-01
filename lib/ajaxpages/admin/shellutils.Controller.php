@@ -2,18 +2,19 @@
 /**
  * Executing shell commands from site
  *
- * @package Panthera\core\adminUI\debug\shellutils
+ * @package Panthera\core\ajaxpages
  * @author Damian Kęska
  * @author Mateusz Warzyński
- * @license LGPLv3
+ * @license GNU Lesser General Public License 3, see license.txt
  */
 
 /**
  * Executing shell commands from site
  *
- * @package Panthera\core\adminUI\debug\shellutils
+ * @package Panthera\core\ajaxpages
  * @author Damian Kęska
  * @author Mateusz Warzyński
+ * @license GNU Lesser General Public License 3, see license.txt
  */
 
 class shellutilsAjaxControllerSystem extends pageController

@@ -1,21 +1,21 @@
 <?php
 /**
- * Pager configuration page
- *
- * @package Panthera\core\adminUI\pager
- * @author Damian Kęska
- * @author Mateusz Warzyński
- * @license LGPLv3
- */
+  * Pager configuration page
+  *
+  * @package Panthera\core\ui\pager
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  * @license GNU Affero General Public License 3, see license.txt
+  */
 
   
 /**
- * Pager configuration page controller
- *
- * @package Panthera\core\adminUI\pager
- * @author Damian Kęska
- * @author Mateusz Warzyński
- */
+  * Pager configuration page controller
+  *
+  * @package Panthera\core\ui\pager
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  */
 
 class settings_pagerAjaxControllerSystem extends pageController
 {

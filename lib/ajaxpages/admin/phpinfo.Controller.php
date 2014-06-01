@@ -2,15 +2,15 @@
 /**
  * Show information about PHP
  *
- * @package Panthera\core\adminUI\debug\phpinfo
+ * @package Panthera\core\ajaxpages
  * @author Damian Kęska
- * @license LGPLv3
+ * @license GNU Lesser General Public License 3, see license.txt
  */
  
 /**
  * Show information about PHP
  *
- * @package Panthera\core\adminUI\debug\phpinfo
+ * @package Panthera\core\ajaxpages
  */
 
 class phpinfoAjaxControllerSystem extends pageController

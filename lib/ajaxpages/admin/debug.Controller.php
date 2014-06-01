@@ -2,7 +2,7 @@
 /**
  * Debug tools and debug.log
  *
- * @package Panthera\core\adminUI\debug\index
+ * @package Panthera\core\adminUI\debug\debug
  * @author Damian Kęska
  * @author Mateusz Warzyński
  * @hook ajaxpages.debug.tools
@@ -14,7 +14,7 @@ include getContentDir('ajaxpages/admin/settings.Controller.php');
 /**
  * Debug tools and debug.log
  *
- * @package Panthera\core\adminUI\debug\index
+ * @package Panthera\core\adminUI\debug\debug
  * @author Damian Kęska
  * @author Mateusz Warzyński
  */

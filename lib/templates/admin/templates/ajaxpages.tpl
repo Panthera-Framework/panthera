@@ -15,7 +15,6 @@
     {$uiSearchbarName="uiTop"}
     {include="ui.searchbar"}
     <div class="searchBarButtonArea">
-    	<input type="button" value="{function="localize('List of front controllers', 'debug')"}" onclick="navigateTo('?display=frontcontrollers&cat=admin');">
         <input type="button" value="{function="localize('Refresh')"}" onclick="resetCache();">
     </div>
 </div>

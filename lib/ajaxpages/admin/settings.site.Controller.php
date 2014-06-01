@@ -2,17 +2,17 @@
 /**
  * General site configuration page
  *
- * @package Panthera\core\adminUI\settings
+ * @package Panthera\core\ajaxpages\settings_site
  * @author Damian Kęska
  * @author Mateusz Warzyński
- * @license LGPLv3
+ * @license GNU Affero General Public License 3, see license.txt
  */
 
   
 /**
  * General site configuration page
  *
- * @package Panthera\core\adminUI\settings
+ * @package Panthera\core\ajaxpages\settings_site
  * @author Damian Kęska
  * @author Mateusz Warzyński
  */

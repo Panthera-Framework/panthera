@@ -2,18 +2,15 @@
 /**
  * Generate hash from string (password)
  *
- * @package Panthera\core\adminUI\generate_password
+ * @package Panthera\core\ajaxpages
  * @author Mateusz Warzyński
- * @author Damian Kęska
- * @license LGPLv3
+ * @license GNU Lesser General Public License 3, see license.txt
  */
   
 /**
  * Show information about PHP
  *
- * @author Mateusz Warzyński
- * @author Damian Kęska
- * @package Panthera\core\adminUI\generate_password
+ * @package Panthera\core\ajaxpages
  */
 
 class generate_passwordAjaxControllerSystem extends pageController

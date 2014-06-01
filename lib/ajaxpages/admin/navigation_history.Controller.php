@@ -2,7 +2,7 @@
 /**
   * Navigation history page
   *
-  * @package Panthera\core\adminUI\navigation_history
+  * @package Panthera\core\adminpanel
   * @author Damian Kęska
   * @license LGPLv3
   */

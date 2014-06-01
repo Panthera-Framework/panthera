@@ -1,21 +1,21 @@
 <?php
 /**
- * User registration options
- *
- * @package Panthera\core\system\users
- * @author Damian Kęska
- * @author Mateusz Warzyński
- * @license LGPLv3
- */
+  * User registration options
+  *
+  * @package Panthera\core\ajaxpages\settings_register
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  * @license GNU Affero General Public License 3, see license.txt
+  */
 
   
 /**
- * User registration options page controller
- *
- * @package Panthera\core\system\users
- * @author Damian Kęska
- * @author Mateusz Warzyński
- */  
+  * User registration options page controller
+  *
+  * @package Panthera\core\ajaxpages\settings_register
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  */  
 
 class settings_registerAjaxControllerSystem extends pageController
 {

@@ -1,21 +1,21 @@
 <?php
 /**
- * Template system info and management
- *
- * @package Panthera\core\system\templates
- * @author Damian Kęska
- * @author Mateusz Warzyński
- * @license LGPLv3
- */
+  * Template system info and management
+  *
+  * @package Panthera\core\ajaxpages
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  * @license GNU Affero General Public License 3, see license.txt
+  */
 
   
 /**
- * Template system info and management page controller
- *
- * @package Panthera\core\system\templates
- * @author Damian Kęska
- * @author Mateusz Warzyński
- */
+  * Template system info and management page controller
+  *
+  * @package Panthera\core\ajaxpages
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  */
 
 class templatesAjaxControllerSystem extends pageController
 {

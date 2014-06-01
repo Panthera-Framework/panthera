@@ -1,21 +1,21 @@
 <?php
 /**
- * Password recovery settings
- *
- * @package Panthera\core\system\users
- * @author Damian Kęska
- * @author Mateusz Warzyński
- * @license LGPLv3
- */
+  * Password recovery settings
+  *
+  * @package Panthera\core\users\passwordrecovery
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  * @license GNU Affero General Public License 3, see license.txt
+  */
   
   
 /**
- * Password recovery settings page controller
- *
- * @package Panthera\core\system\users
- * @author Damian Kęska
- * @author Mateusz Warzyński
- */
+  * Password recovery settings page controller
+  *
+  * @package Panthera\core\users\passwordrecovery
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  */
 
 class settings_passwordrecoveryAjaxControllerSystem extends pageController
 {

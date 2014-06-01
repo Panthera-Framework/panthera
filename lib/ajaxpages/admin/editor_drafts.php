@@ -1,12 +1,12 @@
 <?php
 /**
- * Compose newsletter
- *
- * @package Panthera\core\adminUI\editor_drafts
- * @author Damian Kęska
- * @author Mateusz Warzyński
- * @license LGPLv3
- */
+  * Compose newsletter
+  *
+  * @package Panthera\core\ajaxpages
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  * @license GNU Affero General Public License 3, see license.txt
+  */
 
 if (!defined('IN_PANTHERA'))
       exit;

@@ -1,20 +1,12 @@
 <?php
 /**
- * Quick messages management
- *
- * @package Panthera\core\components\quickMessages
- * @author Damian Kęska
- * @author Mateusz Warzyński
- * @license LGPLv3
- */
- 
-/**
- * Quick messages management
- *
- * @package Panthera\core\components\quickMessages
- * @author Damian Kęska
- * @author Mateusz Warzyński
- */
+  * Configuration tool to change values in config overlay
+  *
+  * @package Panthera\core\messages
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  * @license GNU Affero General Public License 3, see license.txt
+  */
   
 class messagesAjaxControllerSystem extends pageController
 {

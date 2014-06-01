@@ -1,11 +1,11 @@
 <?php
 /**
- * Leopard - package management
- *
- * @package Panthera\core\system\leopard
- * @author Damian Kęska
- * @license LGPLv3
- */
+  * Leopard - package management
+  *
+  * @package Panthera\core\ajaxpages
+  * @author Damian Kęska
+  * @license GNU Affero General Public License 3, see license.txt
+  */
 
 if (!defined('IN_PANTHERA'))
       exit;

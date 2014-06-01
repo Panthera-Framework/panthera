@@ -2,19 +2,20 @@
 /**
  * Settings ajax page
  *
- * @package Panthera\core\adminUI\settings
+ * @package Panthera\core\ajaxpages
  * @author Mateusz Warzyński
  * @author Damian Kęska
- * @license LGPLv3
+ * @license GNU Lesser General Public License 3, see license.txt
  */
 
  
 /**
  * Settings ajax page controller
  *
- * @package Panthera\core\adminUI\settings
+ * @package Panthera\core\ajaxpages
  * @author Mateusz Warzyński
  * @author Damian Kęska
+ * @license GNU Lesser General Public License 3, see license.txt
  */
 
 class settingsAjaxControllerSystem extends pageController

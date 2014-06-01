@@ -1,20 +1,22 @@
 <?php
 /**
- * Users
- *
- * @package Panthera\core\system\users
- * @author Mateusz Warzyński
- * @author Damian Kęska
- * @license LGPLv3
- */
+  * Users
+  *
+  * @package Panthera
+  * @subpackage core
+  * @copyright (C) Damian Kęska, Mateusz Warzyński
+  * @license GNU Affero General Public License 3, see license.txt
+  */
+
 
 /**
- * Users management pageController
- *
- * @package Panthera\core\system\users
- * @author Mateusz Warzyński
- * @author Damian Kęska
- */
+  * Users management pageController
+  *
+  * @package Panthera
+  * @subpackage core
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  */
   
 class usersAjaxControllerCore extends pageController
 {

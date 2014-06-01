@@ -5,7 +5,7 @@
  * @package Panthera\core\extras\facebook
  * @author Mateusz Warzyński
  * @author Damian Kęska
- * @license LGPLv3
+ * @license GNU Affero General Public License 3, see license.txt
  */
 
  

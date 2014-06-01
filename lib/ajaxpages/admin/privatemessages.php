@@ -1,16 +1,12 @@
 <?php
 /**
- * Private messaging functions and interfaces for Panthera
- *
- * @package Panthera\plugins\privateMessages
- * @author Damian Kęska
- * @author Mateusz Warzyński
- * @license LGPLv3
- */
- 
- 
-print("THIS MODULE NEEDS TO BE REWRITED");
-exit;
+  * Private messaging functions and interfaces for Panthera
+  *
+  * @package Panthera\plugins\privateMessages
+  * @author Damian Kęska
+  * @author Mateusz Warzyński
+  * @license GNU Affero General Public License 3, see license.txt
+  */
 
 if (!defined('IN_PANTHERA'))
     exit;
