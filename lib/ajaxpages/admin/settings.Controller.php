@@ -463,6 +463,14 @@ class settingsAjaxControllerSystem extends pageController
             'linkType' => 'ajax'
         );
         
+        $defaults['content']['comments'] = array(
+            'link' => '?display=comments&cat=admin',
+            'name' => localize('Comments management', 'settings'),
+            'description' => localize('Delete, edit, hold', 'settings'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/Newsletter.png',
+            'linkType' => 'ajax'
+        );
+        
         $defaults['content']['routing'] = array(
             'link' => '?display=routing&cat=admin',
             'name' => localize('SEO links management', 'routing'),
