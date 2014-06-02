@@ -75,10 +75,19 @@ class userComment extends pantheraFetchDB
     {
         $panthera = pantheraCore::getInstance();
         
-        $author = new pantheraUser('id', $userId);
-            
-        if (!$author->exists())
-            return False;
+        if (strlen($content) > 5500)
+        return False;
+        
+        if ($userId == false or $userId == null) {
+            $user = -1;   
+        } else {
+            $author = new pantheraUser('id', $userId);
+
+            if ($author->exists())
+                $user = $author->id;
+            else
+                return False;   
+        }
         
         if (strlen($content) < 5)
             return False;
@@ -91,7 +100,7 @@ class userComment extends pantheraFetchDB
             
         $array = array(
             'content' => filterInput($content, "quotehtml,quotes,wysiwyg"),
-            'userid' => $author->id,
+            'userid' => $user,
             'group' => $group,
             'objectID' => $objectID,
             'allowed' => (bool)$allowed
