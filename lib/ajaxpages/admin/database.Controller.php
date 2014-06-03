@@ -2,19 +2,19 @@
 /**
  * Manage database
  *
- * @package Panthera\core\database\admin
+ * @package Panthera\core\system\db
  * @author Mateusz Warzyński
  * @author Damian Kęska
- * @license GNU LGPLv3, see license.txt
+ * @license LGPLv3
  */
  
 /**
  * Manage database
  *
- * @package Panthera\core\database\admin
+ * @package Panthera\core\system\db
  * @author Mateusz Warzyński
  * @author Damian Kęska
- * @license GNU LGPLv3, see license.txt
+ * @license LGPLv3
  */
  
 class databaseAjaxControllerCore extends pageController

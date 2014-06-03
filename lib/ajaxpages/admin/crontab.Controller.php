@@ -1,22 +1,23 @@
 <?php
 /**
-  * Scheduled jobs management - crontab
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Scheduled jobs management - crontab
+ *
+ * @package Panthera\core\system\crontab
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license LGPLv3
+ */
 
 if (!defined('IN_PANTHERA'))
     exit;
 
 /**
-  * Scheduled jobs management page controller
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  */
+ * Scheduled jobs management page controller
+ *
+ * @package Panthera\core\system\crontab
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
 
 class crontabAjaxControllerSystem extends pageController
 {

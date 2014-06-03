@@ -1,23 +1,22 @@
 <?php
-
 /**
  * Avatars management
  * Manager of avatars, uploaded images to `avatars` upload category
  *
- * @package Panthera\core\avatars\admin
+ * @package Panthera\core\adminUI\avatars
  * @author Mateusz Warzyński
  * @author Damian Kęska
- * @license GNU LGPLv3, see license.txt
+ * @license LGPLv3
  */
 
 /**
  * Avatars management
  * Manager of avatars, uploaded images to `avatars` upload category
  *
- * @package Panthera\core\avatars\admin
+ * @package Panthera\core\adminUI\avatars
  * @author Mateusz Warzyński
  * @author Damian Kęska
- * @license GNU LGPLv3, see license.txt
+ * @license LGPLv3
  */
  
 class avatarsAjaxControllerCore extends pageController

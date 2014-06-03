@@ -2,21 +2,20 @@
 /**
   * Custom pages configuration
   *
-  * @package Panthera\core\ajaxpages\settings_customPages
+  * @package Panthera\core\adminUI\settings
   * @author Damian Kęska
   * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
+  * @license LGPLv3
   */
 
 
 /**
-  * Custom pages configuration page controller
-  *
-  * @package Panthera\core\ajaxpages\settings_customPages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Custom pages configuration page controller
+ *
+ * @package Panthera\core\components\custompages
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
   
 class settings_custompagesAjaxControllerSystem extends pageController
 {

@@ -1,22 +1,21 @@
 <?php
 /**
-  * Cache life time configuration page
-  *
-  * @package Panthera\core\ajaxpages\settings.session
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Cache life time configuration page
+ *
+ * @package Panthera\core\adminUI\settings
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license LGPLv3
+ */
 
 
 /**
-  * Cache life time configuration controller
-  *
-  * @package Panthera\core\ajaxpages\settings.session
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Cache life time configuration controller
+ *
+ * @package Panthera\core\adminUI\settings
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
 
 class settings_cachetimeAjaxControllerSystem extends pageController
 {

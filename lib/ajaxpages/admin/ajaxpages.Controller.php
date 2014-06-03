@@ -1,26 +1,26 @@
 <?php
 /**
-  * Show list of ajax pages
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Show list of ajax pages
+ *
+ * @package Panthera\core\adminUI\ajaxpages
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license LGPLv3
+ */
   
 /**
-  * Show list of ajax pages
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  */
+ * Show list of ajax pages
+ *
+ * @package Panthera\core\adminUI\ajaxpages
+ * @author Damian Kęska
+ */
 
 class ajaxpagesAjaxControllerCore extends pageController
 {
     protected $permissions = array('admin.debug.ajaxpages' => array('Index of ajax pages', 'ajaxpages'));
     
     protected $uiTitlebar = array(
-        'Index of ajax pages', 'ajaxpages',
+        'List of page controllers', 'debug',
     );
     
     protected $files = array(

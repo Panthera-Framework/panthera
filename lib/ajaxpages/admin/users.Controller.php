@@ -1,22 +1,20 @@
 <?php
 /**
-  * Users
-  *
-  * @package Panthera
-  * @subpackage core
-  * @copyright (C) Damian Kęska, Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
-
+ * Users
+ *
+ * @package Panthera\core\system\users
+ * @author Mateusz Warzyński
+ * @author Damian Kęska
+ * @license LGPLv3
+ */
 
 /**
-  * Users management pageController
-  *
-  * @package Panthera
-  * @subpackage core
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  */
+ * Users management pageController
+ *
+ * @package Panthera\core\system\users
+ * @author Mateusz Warzyński
+ * @author Damian Kęska
+ */
   
 class usersAjaxControllerCore extends pageController
 {
@@ -438,7 +436,7 @@ class usersAjaxControllerCore extends pageController
                     'message' => localize('Cannot remove superuser', 'users'),
                 ));
     
-            if (removeUser($id, $u->id))
+            if (userTools::removeUser($id, $u->id))
                 ajax_exit(array(
                     'status' => 'success',
                 ));

@@ -1,21 +1,21 @@
 <?php
 /**
-  * Show hooked functions
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Show hooked functions
+ *
+ * @package Panthera\core\adminUI\debug\debhook
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license LGPLv3
+ */
 
   
 /**
-  * Show hooked functions
-  *
-  * @package Panthera\core\ajaxpages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  */
+ * Show hooked functions
+ *
+ * @package Panthera\core\adminUI\debug\debhook
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
 
 class debhookAjaxControllerCore extends pageController
 {

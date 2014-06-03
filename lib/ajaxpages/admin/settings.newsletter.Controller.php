@@ -1,21 +1,21 @@
 <?php
 /**
-  * Newsletter configuration page
-  *
-  * @package Panthera\core\newsletter
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Newsletter configuration page
+ *
+ * @package Panthera\core\components\newsletter
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license LGPLv3
+ */
 
   
 /**
-  * Newsletter configuration page controller
-  *
-  * @package Panthera\core\newsletter
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  */
+ * Newsletter configuration page controller
+ *
+ * @package Panthera\core\components\newsletter
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
   
 class settings_newsletterAjaxControllerSystem extends pageController
 {

@@ -4,7 +4,7 @@
  * 
  * @package Panthera\installer
  * @author Damian Kęska
- * @license GNU Lesser General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
  /**
@@ -48,6 +48,11 @@ class introductionInstallerControllerSystem extends installerController
         }
         
         //$this -> installer -> setButton('back', False);
+        
+        // look for installer/licence.txt file to get licence text from
+        if (getContentDir('installer/licence.txt'))
+            $this -> panthera -> template -> push('licenceText', file_get_contents(getContentDir('installer/licence.txt')));
+            
         $this -> installer -> template = 'introduction';
     }
 }

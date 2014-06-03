@@ -2,16 +2,16 @@
 /**
   * Autoloader list with option to clear cache
   *
-  * @package Panthera\core\autoloader
+  * @package Panthera\core\system\autoloader
   * @author Damian Kęska
   * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
+  * @license GPLv3
   */
 
 /**
   * Autoloader pageController class
   *
-  * @package Panthera\core\autoloader
+  * @package Panthera\core\system\autoloader
   * @author Damian Kęska
   * @author Mateusz Warzyński
   */

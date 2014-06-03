@@ -2,16 +2,16 @@
 /**
   * Contact page configuration
   *
-  * @package Panthera\core\ajaxpages
+  * @package Panthera\core\components\contact
   * @author Damian Kęska
   * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
+  * @license LGPLv3
   */
   
 /**
   * Contact page configuration
   *
-  * @package Panthera\core\ajaxpages
+  * @package Panthera\core\components\contact
   * @author Damian Kęska
   * @author Mateusz Warzyński
   */

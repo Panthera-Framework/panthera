@@ -2,19 +2,16 @@
 /**
  * ACL listing
  *
- * @package Panthera\core\acl
+ * @package Panthera\core\adminUI\debug\permissionsList
  * @author Damian Kęska
- * @author Mateusz Warzyński
- * @license GNU Lesser General Public License 3, see license.txt
+ * @license LGPLv3
  */
  
 /**
  * ACL listing
  *
- * @package Panthera\core\acl
+ * @package Panthera\core\adminUI\debug\permissionsList
  * @author Damian Kęska
- * @author Mateusz Warzyński
- * @license GNU Lesser General Public License 3, see license.txt
  */
 
 class permissionsListAjaxControllerSystem extends pageController

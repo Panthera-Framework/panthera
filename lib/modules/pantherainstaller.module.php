@@ -5,7 +5,7 @@
  * @package Panthera\installer
  * @author Damian Kęska
  * @author Mateusz Warzyński
- * @license GNU Affero General Public License 3, see license.txt
+ * @license LGPLv3
  */
  
 require_once PANTHERA_DIR. '/pageController.class.php';
@@ -21,6 +21,7 @@ require_once PANTHERA_DIR. '/pageController.class.php';
 class pantheraInstaller
 {
     public $template = null;
+    public $appConfig = null;
 
     /**
      * Constructor
@@ -39,6 +40,7 @@ class pantheraInstaller
         
         $panthera -> importModule('rwjson');
         $panthera -> importModule('libtemplate');
+        $panthera -> importModule('appconfig');
         
         if (!is_dir(SITE_DIR. '/content/installer'))
             mkdir(SITE_DIR. '/content/installer');
@@ -101,6 +103,9 @@ class pantheraInstaller
         // title from installer database db.json
         if ($this -> db -> exists('installerTitle'))
             $panthera -> template -> setTitle($this -> db -> installerTitle);
+            
+        if (is_file(SITE_DIR. '/content/app.php'))
+            $this -> appConfig = new appConfigEditor();
     }
     
     /**

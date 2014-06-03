@@ -2,17 +2,17 @@
 /**
  * Configuration tool to change values in config overlay
  *
- * @package Panthera\core\ajaxpages
+ * @package Panthera\core\system\config
  * @author Damian Kęska
  * @author Mateusz Warzyński
- * @license GNU Affero General Public License 3, see license.txt
+ * @license GPLv3
  */
  
  
 /**
  * Configuration tool to change values in config overlay
  *
- * @package Panthera\core\ajaxpages
+ * @package Panthera\core\system\config
  * @author Damian Kęska
  * @author Mateusz Warzyński
  */

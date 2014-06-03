@@ -2,20 +2,19 @@
 /**
  * Settings ajax page
  *
- * @package Panthera\core\ajaxpages
+ * @package Panthera\core\adminUI\settings
  * @author Mateusz Warzyński
  * @author Damian Kęska
- * @license GNU Lesser General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
  
 /**
  * Settings ajax page controller
  *
- * @package Panthera\core\ajaxpages
+ * @package Panthera\core\adminUI\settings
  * @author Mateusz Warzyński
  * @author Damian Kęska
- * @license GNU Lesser General Public License 3, see license.txt
  */
 
 class settingsAjaxControllerSystem extends pageController
@@ -460,6 +459,14 @@ class settingsAjaxControllerSystem extends pageController
             'link' => '?display=settings.custompages&cat=admin',
             'name' => localize('Static pages configuration', 'settings'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/custom-pages.png',
+            'linkType' => 'ajax'
+        );
+        
+        $defaults['content']['comments'] = array(
+            'link' => '?display=comments&cat=admin',
+            'name' => localize('Comments management', 'settings'),
+            'description' => localize('Delete, edit, hold', 'settings'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/Newsletter.png',
             'linkType' => 'ajax'
         );
         

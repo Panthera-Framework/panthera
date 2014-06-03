@@ -1,24 +1,23 @@
 <?php
 /**
-  * Panthera user management
-  * @package Panthera\user
-  * @author Damian Kęska
-  */
-
-if (!defined('IN_PANTHERA'))
-    exit;
+ * Panthera user management
+ * 
+ * @package Panthera\core\user
+ * @author Damian Kęska
+ * @license LGPLv3
+ */
 
 /**
  * Panthera User Management Class
  *
- * @package Panthera\user
+ * @package Panthera\core\user
  * @author Damian Kęska
  */
 
 class pantheraUser extends pantheraFetchDB
 {
     protected $_tableName = 'users';
-    protected $_constructBy = array('id', 'login', 'full_name', 'last_result', 'array');
+    protected $_constructBy = array('id', 'login', 'full_name', 'last_result', 'array', 'mail', 'jabber');
     protected $attributes; // on this data we will operate
     public $acl;
     protected $_joinColumns = array(
@@ -291,6 +290,7 @@ class pantheraUser extends pantheraFetchDB
      * Construct by id or login
      * 
      * @param int|string $input
+     * @return pantheraUser
      */
     
     public static function autoConstruct($input)
@@ -300,12 +300,26 @@ class pantheraUser extends pantheraFetchDB
         elseif (is_string($input))
             return new pantheraUser('login', $input);
     }
+    
+    /**
+     * Remove user from system
+     * 
+     * @return bool
+     */
+    
+    public function delete()
+    {
+        $this -> acl -> deleteAll();
+        parent::delete();
+        
+        return True;
+    }
 }
 
 /**
   * Panthera groups management
   *
-  * @package Panthera\user\groups
+  * @package Panthera\core\user\groups
   * @author Damian Kęska
   */
 
@@ -470,32 +484,11 @@ class pantheraGroup extends pantheraFetchDB
     }
 }
 
-
-/**
- * Get current logged in user (if logged in)
- *
- * @return pantheraUser
- * @package Panthera\user
- * @author Damian Kęska
- */
-
-function getCurrentUser()
-{
-    $panthera = pantheraCore::getInstance();
-
-    $sessionKey = $panthera->config->getKey('session_key');
-
-    if($panthera -> session -> get('uid'))
-        return new pantheraUser('id', $panthera -> session -> get('uid'));
-
-    return false;
-}
-
 /**
  * Create new user in {$db_prefix}users
  *
  * @return bool
- * @package Panthera\user
+ * @package Panthera\core\user
  * @author Mateusz Warzyński
  * @author Damian Kęska
  */
@@ -630,117 +623,10 @@ function createNewUser($login, $passwd, $full_name, $primary_group='', $attribut
 }
 
 /**
- * Simply remove user by `name`. Returns True if any row was affected
- *
- * @return bool
- * @package Panthera\user
- * @author Mateusz Warzyński
- */
-
-function removeUser($login, $id='')
-{
-    $panthera = pantheraCore::getInstance();
-    $SQLUser = $panthera->db->query('DELETE FROM `{$db_prefix}users` WHERE `login` = :login', array('login' => $login));
-    
-    if ($SQLUser and $id != '')
-        $SQLMetas = $panthera->db->query('DELETE FROM `{$db_prefix}metas` WHERE `userid` = :id', array('id' => $id));
-
-    if ($SQLUser)
-        return True;
-
-    return False;
-}
-
-/**
- * A simple login method
- *
- * @param string $user Login
- * @param string $passwd Password
- * @param bool $forceWithoutPassword Login without password
- * @return bool|string True if success, false on failure and string with error id on error (eg. "BANNED")
- * @package Panthera\user
- * @author Damian Kęska
- */
-
-function userCreateSession($user, $passwd, $forceWithoutPassword=False)
-{
-    $panthera = pantheraCore::getInstance();
-
-    $usr = new pantheraUser('login', $user);
-
-    if ($usr->exists())
-    {
-        if ($forceWithoutPassword)
-        {
-            $panthera -> user = $usr;
-            $panthera -> session -> uid = $usr->id;
-            $usr -> lastlogin = DB_TIME_NOW;
-            $usr -> lastip = $_SERVER['REMOTE_ADDR'];
-            $usr -> save();
-            return True;
-        }
-        
-        if ($usr->isBanned())
-            return 'BANNED';
-    
-        if ($usr -> checkPassword($passwd)) {
-            $panthera -> user = $usr;
-            $panthera -> session -> uid = $usr->id;
-            $usr -> lastlogin = DB_TIME_NOW;
-            $usr -> lastip = $_SERVER['REMOTE_ADDR'];
-            $usr -> save();
-            return True;
-        }
-    }
-
-    return False;
-}
-
-/**
-  * Create user session by user id
-  *
-  * @param int $id User id
-  * @return bool
-  * @package Panthera\user
-  * @author Damian Kęska
-  */
-
-function userCreateSessionById($id)
-{
-    $panthera = pantheraCore::getInstance();
-
-    $user = new pantheraUser('id', $id);
-
-    if ($user -> exists()) {
-        $panthera -> session -> uid = $id;
-        $panthera -> user = $user;
-        return True;
-    }
-
-    return False;
-}
-
-/**
- * Simply logout user
- *
- * @return bool
- * @package Panthera\user
- * @author Damian Kęska
- */
-
-function logoutUser()
-{
-    $panthera = pantheraCore::getInstance();
-    $panthera -> session -> remove ('uid');
-
-    return True;
-}
-
-/**
  * Check if user is logged in and if is admin (the second, optional argument)
  *
  * @return bool
- * @package Panthera\user
+ * @package Panthera\core\user
  * @author Damian Kęska
  */
 
@@ -774,7 +660,7 @@ function checkUserPermissions($user=null, $admin=False)
  * Check if user have rights to do action, based on ACL attributes and user attributes
  *
  * @return bool
- * @package Panthera\user
+ * @package Panthera\core\user
  * @author Damian Kęska
  */
 
@@ -799,27 +685,9 @@ function getUserRightAttribute($user, $attribute)
 }
 
 /**
-  * Check if user is logged in
-  *
-  * @return bool
-  * @package Panthera\user
-  * @author Damian Kęska
-  */
-
-function userLoggedIn()
-{
-    global $panthera;
-
-    if (!is_object($pantera->user))
-        return False;
-
-    return $panthera -> user -> exists();
-}
-
-/**
  * Meta tags management class
  *
- * @package Panthera\metaAttributes
+ * @package Panthera\core\metaAttributes
  * @author Damian Kęska
  */
 

@@ -2,16 +2,19 @@
 /**
  * Dash ajax page
  *
- * @package Panthera\core\ajaxpages
+ * @package Panthera\core\adminUI\dash
  * @author Mateusz Warzyński
  * @author Damian Kęska
- * @license GNU Lesser General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
 /**
  * Dash ajax page controller
+ * Dash is a simple screen that contains menus and widgets after successful user login
  *
- * @package Panthera\core\ajaxpages
+ * @package Panthera\core\adminUI\dash
+ * @author Mateusz Warzyński
+ * @author Damian Kęska
  */ 
 
 class dashAjaxControllerSystem extends pageController
@@ -70,6 +73,8 @@ class dashAjaxControllerSystem extends pageController
     /**
      * Main action
      * 
+     * @feature ajaxpages.dash.menu.before (&array)$menuDB Modify menu database
+     * @fetaure ajaxpages.dash.menu (array)$menuDB (string)$menuName Modify menu database after pagination etc.
      * @return null
      */
 

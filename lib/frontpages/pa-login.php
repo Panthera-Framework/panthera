@@ -1,20 +1,31 @@
 <?php
 /**
-  * Admin panel login front controller
-  *
-  * @package Panthera\core\user\login
-  * @config pa-login redirect_after_login
-  * @config pa-login login.failures.max
-  * @config pa-login login.failures.bantime
-  * @config ajax_url
-  * @author Damian Kęska
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Admin panel login front controller
+ *
+ * @package Panthera\core\user\login
+ * @config pa-login redirect_after_login
+ * @config pa-login login.failures.max
+ * @config pa-login login.failures.bantime
+ * @config ajax_url
+ * @author Damian Kęska
+ * @license LGPLv3
+ */
   
 define('SKIP_MAINTENANCE_CHECK', TRUE);
 
 require_once 'content/app.php';
 include getContentDir('pageController.class.php');
+
+/**
+ * Admin panel login front controller
+ *
+ * @package Panthera\core\user\login
+ * @config pa-login redirect_after_login
+ * @config pa-login login.failures.max
+ * @config pa-login login.failures.bantime
+ * @config ajax_url
+ * @author Damian Kęska
+ */
 
 class pa_loginControllerSystem extends pageController
 {
@@ -58,7 +69,7 @@ class pa_loginControllerSystem extends pageController
     public function logoutAction()
     {
         if (isset($_GET['logout']))
-            logoutUser();
+            userTools::logoutUser();
     }
 
     /**
@@ -129,7 +140,7 @@ class pa_loginControllerSystem extends pageController
     {
         $continueChecking = True;
         
-        $u = new pantheraUser('login', $_POST['log']);
+        $u = userTools::userCreateSession($_POST['log'], null, true, true);
         $this -> getFeatureRef('login.checkauth', $continueChecking, $u);
         $this -> panthera -> template -> setTemplate('admin');
         
@@ -143,7 +154,7 @@ class pa_loginControllerSystem extends pageController
             pa_exit();
         }
             
-        if ($u -> exists())
+        if ($u and $u -> exists())
         {
             if ($u -> attributes -> get('loginFailures') >= intval($this -> panthera -> config -> getKey('login.failures.max', 5, 'int', 'pa-login')) and $u -> attributes -> get('loginFailures') !== 0)
             {
@@ -162,7 +173,7 @@ class pa_loginControllerSystem extends pageController
             }
         }
             
-        $result = userCreateSession($_POST['log'], $_POST['pwd']);
+        $result = userTools::userCreateSession($_POST['log'], $_POST['pwd']);
             
         /**
          * Successful login
@@ -170,7 +181,7 @@ class pa_loginControllerSystem extends pageController
          * @author Damian Kęska
          */
             
-        if($result and is_bool($result))
+        if($result and is_object($result))
         {
             $this -> getFeature('login.success', $u);
             
@@ -217,7 +228,7 @@ class pa_loginControllerSystem extends pageController
         } elseif ($result === False) {
             $this -> panthera -> template -> push('message', localize('Invalid user name or password', 'messages'));
                 
-            if ($u -> exists())
+            if ($u and $u -> exists())
             {
                 $u -> attributes -> set('loginFailures', intval($u -> attributes -> get('loginFailures'))+1);
                 $banned = False;
