@@ -1839,20 +1839,18 @@ abstract class pantheraFetchDB
         // check if any data was modified
         if($this->_dataModified and $this->_tableName)
         {
-            $id = (integer)$this->_data[$this->_idColumn];
+            $id = $this->_data[$this->_idColumn];
 
             $panthera->logging->output(get_class($this). '::Saving modified data ' .$this->_idColumn. '=' .$id, $this->cacheGroup);
             $copied = $this->_data;
             unset($copied[$this->_idColumn]);
 
             foreach ($this->_unsetColumns as $Key => $Value)
-            {
                 unset($copied[$Value]);
-            }            
 
             $set = $panthera->db->dbSet($copied);
             $set[1][$this->_idColumn] = $id;
-                  
+            
             $SQL = $panthera->db->query('UPDATE `{$db_prefix}' .$this->_tableName. '` SET ' .$set[0]. ' WHERE `' .$this->_idColumn. '` = :' .$this->_idColumn. ';', $set[1]);
             
             // update cache

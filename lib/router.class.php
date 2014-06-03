@@ -43,6 +43,7 @@ class routing {
         ''   => '[^/\.]++'
     );
     protected $cacheType = 'varcache'; // varcache or config
+    public $lastMatched = null;
     
     /**
      * Get routing cache
@@ -406,6 +407,11 @@ class routing {
                 }
 
                 $this -> panthera -> logging -> output('Routing resolved, found match', 'routing');
+                $this -> lastMatched = array(
+                    'target' => $target,
+                    'params' => $params,
+                    'name' => $name,
+                );
                 
                 return array(
                     'target' => $target,
@@ -489,5 +495,5 @@ class routing {
 function getRoute($routeName, $params, $get)
 {
     $panthera = pantheraCore::getInstance();
-    return $panthera -> routing -> getRoute($routeName, $params, $get);
+    return $panthera -> routing -> generate($routeName, $params, $get);
 }
