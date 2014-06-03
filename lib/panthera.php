@@ -694,7 +694,7 @@ class pantheraConfig
             $SQL = $this->panthera->db->query($SQL);
             $array = $SQL -> fetchAll(PDO::FETCH_ASSOC);
         }
-        
+
         if ($section)
             $sectionArray = array();
         
@@ -707,7 +707,7 @@ class pantheraConfig
 
                 if ($value['type'] == 'json')
                     $value['value'] = @json_decode($value['value']);
-                        
+                    
                 // remove null values
                 if (!$value['section'])
                 {
@@ -2280,10 +2280,22 @@ function pa_redirect($url, $code=null)
 {
     $panthera = pantheraCore::getInstance();
     
+    $base = $panthera->config->getKey('url');
+    
+    if (substr($base, strlen($base)-1, 1) == '/')
+        $base = substr($base, 0, strlen($base)-1);
+    
+    $url = pantheraUrl($url, False, 'frontend');
+    
+    if (substr($url, 0, 1) == '/')
+        $url = substr($url, 1, strlen($url));
+    
+    $url = $base. '/' .$url;
+    
     if (is_int($code))
-        header('Location: '.$panthera->config->getKey('url'). '/' .pantheraUrl($url, False, 'frontend'), TRUE, $code);
+        header('Location: ' .$url, TRUE, $code);
     else
-        header('Location: '.$panthera->config->getKey('url'). '/' .pantheraUrl($url, False, 'frontend'));
+        header('Location: ' .$url);
     
     pa_exit();
 }

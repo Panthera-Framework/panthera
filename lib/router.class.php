@@ -42,7 +42,7 @@ class routing {
         '**' => '.++',
         ''   => '[^/\.]++'
     );
-    protected $cacheType = 'varcache'; // varcache or config
+    protected $cacheType = 'varcache'; // varcache or files
     public $lastMatched = null;
     
     /**
@@ -54,17 +54,32 @@ class routing {
     public function getCache()
     {
         $data = null;
-        
         if ($this->cacheType == 'varcache' and $this -> panthera -> varCache)
+        {
+            $this -> panthera -> logging -> output('Trying varCache:routing.cache', 'routing');
             $data = $this -> panthera -> varCache -> get('routing.cache');
+        }
+        
+        if (!$data and is_file(SITE_DIR. '/content/tmp/routing.cache.php'))
+        {
+            $this -> panthera -> logging -> output('Trying /content/tmp/routing.cache.php', 'routing');
+            include SITE_DIR. '/content/tmp/routing.cache.php';
+        }
         
         if (!$data)
-            $data = $this -> panthera -> config -> getKey('routing.cache');
+        {
+            $data = $this -> panthera -> config -> getKey('routing.cache', array(), 'array', 'routing');
+            $this -> panthera -> logging -> output('Trying config:routing.cache from routing overlay', 'routing');
+        }
         
         if ($data)
         {
+            $this -> panthera -> logging -> output('Found routes cache', 'routing');
             $this -> routes = $data['routes'];
             $this -> compiledRegexes = $data['compiledRegexes'];
+            
+            if (!is_file(SITE_DIR. '/content/tmp/routing.cache.php') or ($this->cacheType == 'varcache' and $this -> panthera -> varCache))
+                $this -> saveCache();
         }
         
         return $data;
@@ -96,9 +111,18 @@ class routing {
         );
         
         if ($this->cacheType == 'varcache' and $this -> panthera -> varCache)
-            $this -> panthera -> varCache -> set('routing.cache', $data, -1); // infinite
+        {
+            $this -> panthera -> varCache -> set('routing.cache', $data, 864000); // infinite
+            $this -> panthera -> logging -> output('Saving cache to varcache:routing.cache', 'routing');
+        }
         
-        $this -> panthera -> config -> setKey('routing.cache', $data, 'array');
+        $fp = fopen(SITE_DIR. '/content/tmp/routing.cache.php', 'w');
+        fwrite($fp, "<?php\n\$data = ".var_export($data, true).";");
+        fclose($fp);
+        
+        $this -> panthera -> logging -> output('Saving cache to file', 'routing');
+        
+        //$this -> panthera -> config -> setKey('routing.cache', $data, 'array');
     }
     /**
       * Create router in one call from config.
