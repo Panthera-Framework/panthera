@@ -2482,7 +2482,7 @@ function timestampToDate($timestamp, $format)
  * @author Damian Kęska
  */
 
-function strCut($string, $maxLen)
+function strCut($string, $maxLen=50)
 {
     if (strlen($string) >= $maxLen)
     {
