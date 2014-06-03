@@ -9,7 +9,7 @@
  */
 
 if (!defined('IN_PANTHERA'))
-      exit;
+    exit;
 
 $panthera -> locale -> loadDomain('editordrafts');
 $panthera -> importModule('editordrafts');

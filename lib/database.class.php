@@ -706,8 +706,21 @@ class pantheraDB extends pantheraClass
 
     public function insert($table, $array, $multipleRows=False)
     {
-        $str = $this -> buildInsertString($array, $multipleRows, $table);
-        $this -> query ($str['query'], $str['values']);
+        // handle big inserts (eg. 50, or 1000 rows)
+        if ($multipleRows and count($array) > 50)
+        {
+            $tmp = array_chunk($array, ceil(count($array)/50));
+            
+            foreach ($tmp as $array)
+            {
+                $str = $this -> buildInsertString($array, $multipleRows, $table);
+                $this -> query ($str['query'], $str['values']);
+            }
+            
+        } else {
+            $str = $this -> buildInsertString($array, $multipleRows, $table);
+            $this -> query ($str['query'], $str['values']);
+        }
         return $this -> sql -> lastInsertId();
     }
     
@@ -1428,7 +1441,7 @@ abstract class pantheraFetchDB
         return $sql;
     }
 
-    /*
+    /**
      * Get generated types of queries, so you don't have to write it over and over again
      * 
      * @param string $type Type of query, can be: data, count, checkExists
@@ -1472,6 +1485,7 @@ abstract class pantheraFetchDB
     /**
      * Remove self from database and cache
      * 
+     * @author Damian Kęska
      * @return bool
      */
     
@@ -1515,7 +1529,7 @@ abstract class pantheraFetchDB
         return $panthera->db->getRows($info['tableName'], $by, $limit, $limitFrom, get_called_class(), $order, $direction);
     }
     
-    /*
+    /**
      * Similar to fetchAll() but is also filtering for user permissions
      * Note: This function requires configured $_viewPermission and $_viewPermissionColumn class variables to work
      * 

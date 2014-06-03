@@ -489,5 +489,5 @@ class routing {
 function getRoute($routeName, $params, $get)
 {
     $panthera = pantheraCore::getInstance();
-    return $panthera -> routing -> getRoute($routeName, $params, $get);
+    return $panthera -> routing -> generate($routeName, $params, $get);
 }
