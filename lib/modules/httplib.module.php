@@ -16,7 +16,12 @@ class httplib
     protected $proxyAuth = null;
     protected $proxy = null;
     protected $proxyType = 'http';
-
+    
+    /**
+     * Put here a interface name eg. eth0, eth1 or IPv6 address to be used (if multiple available)
+     */
+    
+    public $outgoingAddress = null;
     public $timeout = 16;
 
     /**
@@ -227,6 +232,10 @@ class httplib
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, True); 
         curl_setopt($curl, CURLOPT_MAXREDIRS, 5 );
         curl_setopt($curl, CURLOPT_TIMEOUT, intval($this->timeout));
+
+        // set outgoing address or interface
+        if ($this -> outgoingAddress)
+            curl_setopt($curl, CURLOPT_INTERFACE, $this -> outgoingAddress);
         
         // proxy suppport
         if ($this->proxy === False) // unconfigured proxy

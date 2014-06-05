@@ -710,9 +710,7 @@ class pantheraConfig
                     
                 // remove null values
                 if (!$value['section'])
-                {
                     $value['section'] = '';
-                }
                 
                 $this->overlay[$value['key']] = array($value['type'], $value['value'], $value['section']);
                 
