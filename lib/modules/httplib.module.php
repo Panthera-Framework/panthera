@@ -9,7 +9,7 @@
   
 class httplib
 {
-    public static $userAgent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36';
+    public static $userAgent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1667.0 Safari/537.36';
     protected $cookiesTempFile = '';
     
     // proxy settings
@@ -23,6 +23,7 @@ class httplib
     
     public $outgoingAddress = null;
     public $timeout = 16;
+	public $instanceID = null;
 
     /**
       * Constructor
@@ -34,8 +35,8 @@ class httplib
     public function __construct()
     {
         $panthera = pantheraCore::getInstance();
-        
-        $panthera -> add_option('page_load_ends', array($this, 'cleanup'));
+		$this -> instanceID = generateRandomString(64);
+        $panthera -> add_option('page_load_ends', array($this, 'close'));
     }
     
     /**
@@ -118,10 +119,12 @@ class httplib
         if ($this->cookiesTempFile)
         {
 			if ($panthera)
-				$panthera -> logging -> output('Cleaning up file "' .$this->cookiesTempFile. '"', 'httplib');
+				$panthera -> logging -> output('Cleaning up file "' .$this->cookiesTempFile. '" for instance id=' .$this -> instanceID, 'httplib');
 				
 			if (is_file($this->cookiesTempFile))
 				@unlink($this->cookiesTempFile);
+        } else {
+        	$panthera -> logging -> output('Nothing to clean for instance id=' .$this -> instanceID, 'httplib');
         }
         
         return $input;

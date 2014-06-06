@@ -3037,13 +3037,20 @@ class pantheraPlugin
   * @author Damian Kęska
   */
 
-function forRange($range=0)
+function forRange($range=0, $add=0, $zeroLength=0)
 {
     $arr = array();
     
     for ($i=0; $i<$range; $i++)
-        $arr[] = null;
-    
+	{
+		$t = $i+$add;
+		
+	    if ($zeroLength and strlen($t) == $zeroLength and substr($t, 0, 1) !== '0')
+			$t = '0'.$t;
+		
+        $arr[$t] = null;
+	}
+	
     return $arr;
 }
 

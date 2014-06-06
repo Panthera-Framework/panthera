@@ -4,7 +4,7 @@
  *
  * @package Panthera\core\upload
  * @author Damian Kęska
- * @license GNU Affero General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
 require_once 'content/app.php';
@@ -15,7 +15,7 @@ include getContentDir('pageController.class.php');
  *
  * @package Panthera\core\upload
  * @author Damian Kęska
- * @license GNU Affero General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
 class downloadControllerSystem extends pageController
@@ -28,6 +28,7 @@ class downloadControllerSystem extends pageController
     
     public function display()
     {
+        $_GET['filename'] = urldecode($_GET['filename']);
         $error = null;
         
         if (!$this -> panthera -> user or !$this -> panthera -> user -> exists())
