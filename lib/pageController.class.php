@@ -2,9 +2,9 @@
 /**
   * Front controllers related functions
   *
-  * @package Panthera\core
+  * @package Panthera\core\system\controllers
   * @author Damian Kęska
-  * @license GNU Lesser General Public License 3, see license.txt
+  * @license LGPLv3
   */
 
 define('_CONTROLLER_PERMISSION_INLINE_', 2);
@@ -12,7 +12,7 @@ define('_CONTROLLER_PERMISSION_INLINE_', 2);
 /**
  * Abstract interface for front controllers
  * 
- * @package Panthera\core
+ * @package Panthera\core\system\controllers
  * @author Damian Kęska
  */
 
@@ -568,5 +568,32 @@ abstract class pageController extends pantheraClass {
         }
         
         return $this -> panthera -> get_options_ref($featureName, $args, $additionalInfo);
+    }
+}
+
+/**
+ * Abstract interface for admin front controllers
+ * 
+ * @package Panthera\core\system\controllers
+ * @author Damian Kęska
+ */
+
+abstract class adminController extends pageController
+{
+    /**
+     * Standard constructor + admin permissions check
+     * 
+     * @author Damian Kęska
+     * @return null
+     */
+    
+    public function __construct()
+    {
+        $panthera = pantheraCore::getInstance();
+        
+        if (!$panthera -> user or !$panthera -> user -> isAdmin())
+            pantheraCore::raiseError('forbidden');
+        
+        parent::__construct();
     }
 }
