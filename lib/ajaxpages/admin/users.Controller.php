@@ -39,6 +39,7 @@ class usersAjaxControllerCore extends pageController
         'account' => 'admin',
         'addUser' => 'admin',
         'getUsersAPI' => 'admin',
+        'switchUser' => 'admin',
     );
     
     protected $actionuiTitlebar = array(
@@ -88,6 +89,14 @@ class usersAjaxControllerCore extends pageController
         if (($u->acl->get('superuser') or $u->acl->get('admin')) and !$this->panthera->user->acl->get('superuser'))
         {
             $this -> tempPermissions['canBlockUser'] = False;
+            $this -> tempPermissions['canSeePermissions'] = False;
+            
+        } else {
+            $this -> panthera -> template -> push(array(
+                'userSwitchable' => True,
+            ));
+            
+            $this -> tempPermissions['canSeePermissions'] = True;
         }
     
         // TODO: users ajaxpage: move acl to action function
@@ -107,6 +116,12 @@ class usersAjaxControllerCore extends pageController
                     $aclValue = True;
                 else
                     $aclValue = False;
+                
+                if ($_POST['aclname'] == 'superuser' and !$this -> panthera -> user -> acl -> get('superuser'))
+                    ajax_exit(array(
+                        'status' => 'failed',
+                        'message' => localize('You are not allowed to manage permissions', 'messages'),
+                    ));
     
                 $u -> acl -> set($_POST['aclname'], $aclValue);
     
@@ -156,9 +171,6 @@ class usersAjaxControllerCore extends pageController
     
         $aclList = array();
         $userTable = $u->acl->listAll();
-    
-        if ($this->checkPermissions('admin'))
-            $this -> panthera -> template -> push('allow_edit_acl', True);
     
         $permissionsTable = $this->panthera->listPermissions();
     
@@ -218,7 +230,24 @@ class usersAjaxControllerCore extends pageController
         pa_exit();
     }
 
+    /**
+     * Logout and switch user
+     * 
+     * @return null
+     */
 
+    public function switchUserAction()
+    {
+        $u = new pantheraUser('id', intval($_POST['uid']));
+        
+        if ($u -> exists() and !$u -> isAdmin())
+        {
+            $_GET['uid'] = $_POST['uid'];
+            userTools::userCreateSession($u -> login, null, true);
+        }
+        
+        pa_redirect('_ajax.php?display=users&cat=admin&action=account');
+    }
 
     /**
      * Ban user
