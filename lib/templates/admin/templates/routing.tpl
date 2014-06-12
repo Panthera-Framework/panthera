@@ -59,6 +59,11 @@
                 </tr>
                 
                 <tr>
+                    <th><a title="{function="localize('Higher value = better', 'routing')"}">{function="localize('Priority', 'routing')"}</a></th>
+                    <th><input type="text" name="priority" value="0" title="{function="localize('Higher value = better', 'routing')"}"></th>
+                </tr>
+                
+                <tr>
                     <th>{function="localize('Input URL', 'routing')"}</th>
                     <th><input type="text" name="path"></th>
                 </tr>
@@ -148,7 +153,6 @@
 </div>
 
 <div class="ajax-content" style="text-align: center;">
-        <!-- templates viewer -->
     <div style="display: inline-block;">
        {$table}
     </div>

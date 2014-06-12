@@ -81,7 +81,7 @@ class routing {
             if (!is_file(SITE_DIR. '/content/tmp/routing.cache.php') or ($this->cacheType == 'varcache' and $this -> panthera -> varCache))
                 $this -> saveCache();
         }
-        
+
         return $data;
     }
     
@@ -105,6 +105,21 @@ class routing {
     
     public function saveCache()
     {
+        $this -> panthera -> logging -> output('Re-sorting routes cache', 'routing');
+        
+        // sort by 4th argument (priority)
+        usort($this->routes, function ($item1, $item2) {
+            return $item1[4] - $item2[4];
+        });
+        
+        $this -> routes = array_reverse($this -> routes);
+        $tmp = array();
+        
+        foreach ($this -> routes as $route)
+            $tmp[$route[3]] = $route;
+        
+        $this -> routes = $tmp;
+        
         $data = array(
             'routes' => $this->routes,
             'compiledRegexes' => $this->compiledRegexes,
@@ -177,9 +192,9 @@ class routing {
      * @param string $name Name of this route
      *
      */
-    public function map($method='GET|POST', $route, $target, $name)
+    public function map($method='GET|POST', $route, $target, $name, $priority=999)
     {
-        $this->routes[$name] = array($method, $route, $target, $name);
+        $this->routes[$name] = array($method, $route, $target, $name, $priority);
         $this->compileRoute($route);
         $this -> saveCache();
         return;

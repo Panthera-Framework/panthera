@@ -78,6 +78,7 @@ class routingAjaxControllerSystem extends pageController
                     'staticpost' => $post,
                     'redirect' => $route[2]['redirect'],
                     'code' => $route[2]['code'],
+                    'priority' => intval($route[4]),
                 );
             }
         }
@@ -144,6 +145,7 @@ class routingAjaxControllerSystem extends pageController
         $route = $_POST['path'];
         $method = $_POST['method'];
         $redirect = $_POST['redirect'];
+        $priority = intval($_POST['priority']);
         $redirectCode = intval($_POST['code']);
         
         $codes = array(
@@ -214,7 +216,7 @@ class routingAjaxControllerSystem extends pageController
         }
         
         // map($method='GET|POST', $route, $target, $name)
-        $this -> panthera -> routing -> map($method, $route, $target, $name);
+        $this -> panthera -> routing -> map($method, $route, $target, $name, $priority);
         ajax_exit(array('status' => 'success'));
     }
 
@@ -256,6 +258,7 @@ class routingAjaxControllerSystem extends pageController
     {
         // create a table and put columns
         $this -> table = new uiDatasheet('routing');
+        $this -> table -> headerAddColumn('priority', localize('Priority', 'routing'), '', False, False, False, True);
         $this -> table -> headerAddColumn('name', localize('Route name', 'routing'));
         $this -> table -> headerAddColumn('path', localize('Input URL', 'routing'), '', False, False, False, True);
         $this -> table -> headerAddColumn('controller', localize('Controller', 'routing'));

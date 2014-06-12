@@ -39,6 +39,11 @@ $(document).ready(function() {
                 </tr>
                 
                 <tr>
+                    <th><a title="{function="localize('Higher value = better', 'routing')"}">{function="localize('Priority', 'routing')"}</a></th>
+                    <th><input type="text" name="priority" value="{$itemRow.priority|intval}" title="{function="localize('Higher value = better', 'routing')"}"></th>
+                </tr>
+                
+                <tr>
                     <th>{function="localize('Input URL', 'routing')"}</th>
                     <th><input type="text" name="path" value="{$itemRow.path}"></th>
                 </tr>
