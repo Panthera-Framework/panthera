@@ -166,6 +166,12 @@
     </div>
 </div>
 
+<style>
+.datasheet td {
+	font-size: 11px;
+}
+</style>
+
 <div class="ajax-content" style="text-align: center;">
     <div style="display: inline-block;">
        {$table}

@@ -32,7 +32,7 @@
     }
 </script>
 
-<table>
+<table class="datasheet">
     <thead>
         {loop="$header"}
             <th{if="$value.colspan"} colspan="{$value.colspan}"{/if}>
