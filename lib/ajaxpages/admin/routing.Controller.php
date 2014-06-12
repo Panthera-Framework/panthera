@@ -132,6 +132,25 @@ class routingAjaxControllerSystem extends pageController
     }
     
     /**
+     * Resolve a custom address and return a result
+     * 
+     * @return null
+     */
+    
+    public function resolveTestAction()
+    {
+        $matches = print_r($this -> panthera -> routing -> resolve('/' .$_POST['uri'], $_POST['method']), true);
+        
+        if (!$matches)
+            $matches = slocalize('There is no any rule that matches %s %s URL', 'routing', $_POST['method'], $_POST['uri']);
+        
+        ajax_exit(array(
+            'status' => 'failed',
+            'message' => '<pre style="text-align: left;">' .$matches. '</pre>',
+        ));
+    } 
+    
+    /**
      * Edit/New action
      * 
      * @param mixed $data
@@ -276,6 +295,9 @@ class routingAjaxControllerSystem extends pageController
         $this -> table -> addActionCallback('remove', array($this, 'deleteAction'));
         $this -> table -> addActionCallback('editForm', array($this, 'editFormAction'));
         $this -> table -> dispatchAction();
+        
+        if (isset($_GET['action']) and $_GET['action'] == 'resolveTest')
+            $this -> resolveTestAction();
         
         $sBar = new uiSearchbar('uiTop');
         $this -> table -> adduiSearchbar($sBar);

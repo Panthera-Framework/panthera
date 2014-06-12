@@ -157,11 +157,73 @@
          </form>
 </div>
 
+<div id="addressResolve" style="display: none;">
+      <script type="text/javascript">
+        $(document).ready(function () {
+
+            /**
+              * Add a new route
+              *
+              * @author Damian Kęska
+              */
+            
+            $('#resolveRouteForm').submit(function () {
+                panthera.jsonPOST( { data: '#resolveRouteForm' });
+                return false;
+            });
+        });
+      </script>
+      
+      <form action="?{function="getQueryString('GET', 'action=resolveTest', 'action')"}&action=resolveTest" method="POST" id="resolveRouteForm">
+         <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
+             <thead>
+                 <tr>
+                     <td colspan="2" class="formTableHeader" style="padding-top: 0px; padding-bottom: 30px;">
+                         <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px;" class="actionNew">{function="localize('New SEO url', 'routing')"}</p>
+                         <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px; display: none;" class="actionEdit">{function="localize('Editing URL', 'routing')"}</p>
+                     </td>
+                 </tr>
+             </thead>
+             
+             
+             <tbody>
+                <tr>
+                    <th>{function="localize('Input URL', 'routing')"}</th>
+                    <th><input type="text" name="uri" placeholder="index.html"></th>
+                </tr>
+                
+                
+                <tr>
+                    <th>{function="localize('HTTP methods', 'routing')"}</th>
+                    <th>
+                        <select name="method">
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                        </select>
+                    </th>
+                </tr>
+             </tbody>
+             
+             <tfoot>
+                <tr>
+                    <td colspan="2" style="padding-top: 35px;">
+                        <input type="button" value="{function="localize('Cancel')"}" onclick="panthera.popup.close()" style="float: left; margin-left: 30px;">
+                        
+                        <input type="submit" value="{function="localize('Submit', 'routing')"}" style="float: right; margin-right: 30px;">
+                    </td>
+                </tr>
+            </tfoot>
+
+            </table>
+         </form>
+</div>
+
 <div id="topContent">
     {$uiSearchbarName="uiTop"}
     {include="ui.searchbar"}
 
     <div class="searchBarButtonArea">
+    	<input type="button" value="{function="localize('Resolve an address', 'routing')"}" onclick="panthera.popup.toggle('element:#addressResolve')">
         <input type="button" value="{function="localize('Add new route', 'routing')"}" onclick="panthera.popup.toggle('element:#newRoutePopup')">
     </div>
 </div>
