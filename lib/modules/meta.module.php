@@ -41,22 +41,22 @@ class meta
      * @return array
      */
     
-    public static function getTags($tag=False, $type=False, $value=False, $user=False, $detailed=False)
+    public static function getTags($tag=Null, $type=Null, $value=Null, $user=Null, $detailed=False)
     {
         $panthera = pantheraCore::getInstance();
 
         $w = new whereClause;
         
-        if (is_string($tag))
+        if ($tag !== Null)
             $w -> add('', 'name', '=', $tag);
         
-        if (is_string($type))
+        if ($tag !== Null)
             $w -> add('AND', 'type', '=', $type);
         
-        if (is_string($value))
+        if ($value !== Null)
             $w -> add('AND', 'value', '=', serialize($value));
         
-        if (is_string($user))
+        if ($user !== Null)
             $w -> add('AND', 'userid', '=', $user);
         
         $wc = $w -> show();
