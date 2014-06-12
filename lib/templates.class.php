@@ -10,7 +10,7 @@
 if (!defined('IN_PANTHERA'))
     exit;
   
-require PANTHERA_DIR. '/share/raintpl3/library/Rain/autoload.php';
+require getContentDir('share/raintpl3/library/Rain/autoload.php');
 
 /**
  * Panthera template wrapper

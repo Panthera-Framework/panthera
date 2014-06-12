@@ -2546,6 +2546,9 @@ function generateRandomString($length = 10, $characters='0123456789abcdefghijklm
 
 function getContentDir($dir)
 {
+    if (defined('IN_PHAR') and file_exists(IN_PHAR. '/.pharoverlay/' .$dir))
+        return IN_PHAR. '/.pharoverlay/' .$dir;
+    
     if (file_exists(SITE_DIR.'/'.$dir))
         return SITE_DIR.'/'.$dir;
 

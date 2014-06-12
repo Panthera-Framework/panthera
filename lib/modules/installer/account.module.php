@@ -98,7 +98,7 @@ class accountInstallerControllerSystem extends installerController
                 $u -> changePassword($_POST['password']);
                 $u -> mail = $_POST['email'];
             } else {
-                userTools::createNewUser($_POST['login'], $_POST['password'], $_POST['login'], 'root', serialize(array('admin' => True)), $this -> locale -> getActive(), $_POST['email'], '');
+                createNewUser($_POST['login'], $_POST['password'], $_POST['login'], 'root', serialize(array('admin' => True)), $this -> locale -> getActive(), $_POST['email'], '');
                 $u = new pantheraUser('login', $_POST['login']);
                 userTools::userCreateSessionById($u->id); // login user, so we can skip the login step after installation
             }

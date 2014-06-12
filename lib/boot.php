@@ -50,7 +50,14 @@ if (get_magic_quotes_gpc()) {
 }
 
 // panthera main directory
-define('PANTHERA_DIR', realpath($config['lib']));
+if (substr($config['lib'], 0, 7) == 'phar://')
+{
+    $r = realpath(str_replace('phar://', '', $config['lib']));
+    define('IN_PHAR', str_replace(basename($r), '', $r));
+    define('PANTHERA_DIR', $config['lib']);
+} else
+    define('PANTHERA_DIR', realpath($config['lib']));
+
 define('PANTHERA_VERSION', '1.4-DEV');
 define('IN_PANTHERA', True);
 
