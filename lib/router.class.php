@@ -186,13 +186,13 @@ class routing {
     /**
      * Map a route to a target
      *
-     * @param string $method One of 4 HTTP Methods, or a pipe-separated list of multiple HTTP Methods (GET|POST|PUT|DELETE)
+     * @param string $method One of 5 HTTP Methods, or a pipe-separated list of multiple HTTP Methods (GET|POST|PUT|DELETE|HEAD)
      * @param string $route The route regex, custom regex must start with an @. You can use multiple pre-set regex filters, like [i:id]
      * @param mixed $target The target where this route should point to. Can be anything.
      * @param string $name Name of this route
      *
      */
-    public function map($method='GET|POST', $route, $target, $name, $priority=999)
+    public function map($method='GET|POST|PUT|DELETE|HEAD', $route, $target, $name, $priority=999)
     {
         $this->routes[$name] = array($method, $route, $target, $name, $priority);
         $this->compileRoute($route);

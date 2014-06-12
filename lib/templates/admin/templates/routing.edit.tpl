@@ -82,9 +82,15 @@ $(document).ready(function() {
                     <th>{function="localize('HTTP methods', 'routing')"}</th>
                     <th>
                         <select name="methods">
-                            <option value="GET|POST"{if="$itemRow.methods == 'GET, POST'"} selected{/if}>GET & POST</option>
                             <option value="GET"{if="$itemRow.methods == 'GET'"} selected{/if}>GET</option>
                             <option value="POST"{if="$itemRow.methods == 'POST'"} selected{/if}>POST</option>
+                            <option value="HEAD"{if="$itemRow.methods == 'HEAD'"} selected{/if}>HEAD</option>
+                            <option value="DELETE"{if="$itemRow.methods == 'DELETE'"} selected{/if}>DELETE</option>
+                            <option value="PUT"{if="$itemRow.methods == 'PUT'"} selected{/if}>PUT</option>
+                            <option value="GET|POST"{if="$itemRow.methods == 'GET, POST'"} selected{/if}>GET & POST</option>
+                            <option value="GET|POST|HEAD"{if="$itemRow.methods == 'GET, POST, HEAD'"} selected{/if}>GET & POST & HEAD</option>
+                            <option value="GET|POST|HEAD|DELETE"{if="$itemRow.methods == 'GET, POST, HEAD, DELETE'"} selected{/if}>GET & POST & HEAD & DELETE</option>
+                            <option value="GET|POST|HEAD|DELETE|PUT"{if="$itemRow.methods == 'GET, POST, HEAD, DELETE, PUT'"} selected{/if}>GET & POST & HEAD & DELETE & PUT</option>
                         </select>
                     </th>
                 </tr>

@@ -102,9 +102,15 @@
                     <th>{function="localize('HTTP methods', 'routing')"}</th>
                     <th>
                         <select name="methods">
-                            <option value="GET|POST">GET & POST</option>
                             <option value="GET">GET</option>
                             <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="DELETE">DELETE</option>
+                            <option value="HEAD">HEAD</option>
+                            <option value="GET|POST">GET & POST</option>
+                            <option value="GET|POST|HEAD">GET & POST & HEAD</option>
+                            <option value="GET|POST|HEAD|DELETE">GET & POST & HEAD & DELETE</option>
+                            <option value="GET|POST|HEAD|DELETE|PUT">GET & POST & HEAD & DELETE & PUT</option>
                         </select>
                     </th>
                 </tr>
@@ -199,6 +205,13 @@
                         <select name="method">
                             <option value="GET">GET</option>
                             <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="DELETE">DELETE</option>
+                            <option value="HEAD">HEAD</option>
+                            <option value="GET|POST">GET & POST</option>
+                            <option value="GET|POST|HEAD">GET & POST & HEAD</option>
+                            <option value="GET|POST|HEAD|DELETE">GET & POST & HEAD & DELETE</option>
+                            <option value="GET|POST|HEAD|DELETE|PUT">GET & POST & HEAD & DELETE & PUT</option>
                         </select>
                     </th>
                 </tr>
