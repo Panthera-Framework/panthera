@@ -11,6 +11,8 @@ class httplib
 {
     public static $userAgent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1667.0 Safari/537.36';
     protected $cookiesTempFile = '';
+    public $timeout = 16;
+    public $instanceID = null;
     
     // proxy settings
     protected $proxyAuth = null;
@@ -21,22 +23,89 @@ class httplib
      * Put here a interface name eg. eth0, eth1 or IPv6 address to be used (if multiple available)
      */
     
-    public $outgoingAddress = null;
-    public $timeout = 16;
-	public $instanceID = null;
+    public $outgoingAddress = null; // eg. eth0 or eth0:1. For big IP count use eg. eth1
+    public $outgoingIPCount = null; // eg. 10000 IP addresses to use, or range 100-150
+    public $outgoingIPSelection = 'in_sequence'; // in_sequence or random
+    public $outgoingIPCursor = null;
 
     /**
-      * Constructor
-      *
-      * @return void
-      * @author Damian Kęska
-      */
+     * Constructor
+     *
+     * @return void
+     * @author Damian Kęska
+     */
  
     public function __construct()
     {
         $panthera = pantheraCore::getInstance();
 		$this -> instanceID = generateRandomString(64);
         $panthera -> add_option('page_load_ends', array($this, 'close'));
+    }
+
+    /**
+     * Select address from available range
+     * 
+     * Let's say that we have 5000 IPv6 addresses that we want to use. We are creating a httplib session, setting interface ($outgoingAddress)
+     * setting IP count ($outgoingIPCount) to 5000 and random choosing ($outgoingIPSelection = 'random'). Every single request httplib will change IP address.
+     * 
+     * Example:
+     * <code>
+     * $http = new httplib;
+     * $http -> outgoingAddress = 'eth0';
+     * $http -> outgoingIPCount = 1000;
+     * $http -> outgoingIPSelection = 'random';
+     * $http -> get('ipv6.google.com'); // make a request from random ip eg. eth0:5
+     * $http -> get('ipv6.google.com'); // make a request from random ip eg. eth0:400
+     * 
+     * // change strategy
+     * $http -> outgoingIPSelection = 'in_sequence';
+     * $http -> outgoingIPCursor = 0; // reset the cursor
+     * $http -> get('ipv6.google.com'); // eth0:1
+     * $http -> get('ipv6.google.com'); // eth0:2
+     * $http -> get('ipv6.google.com'); // eth0:3
+     * $http -> close();
+     * </code>
+     * 
+     * @return null
+     */
+    
+    public function selectAddress()
+    {
+        if ($this -> outgoingIPCount)
+        {
+            if (is_string($this -> outgoingIPCount))
+            {
+                // range eg. 100-150
+                if (strpos($this -> outgoingIPCount, '-') !== False)
+                    $range = explode('-', $this -> outgoingIPCount);
+                /*elseif (strpos($this -> outgoingIPCount, ',') !== False) {
+                    $range = explode(',', str_replace(' ', '', $this -> outgoingIPCount));
+                }*/
+            } else {
+                $range = array(0, $this -> outgoingIPCount);
+            }
+            
+            if (count($range) == 2)
+            {
+                // random address choosing
+                if ($this -> outgoingIPSelection == 'random')
+                    $selected = rand($range[0], $range[1]);
+                else {
+                    
+                    // in_sequence address choosing (next, next, next, end, begin, next, next, ...)
+                    if (!is_int($this -> outgoingIPCursor) or $this -> outgoingIPCursor >= $range[1])
+                        $this -> outgoingIPCursor = $range[0];
+                    
+                    $selected = $this -> outgoingIPCursor++;
+                }
+                
+                $exp = explode(':', $this -> outgoingAddress);
+                $this -> outgoingAddress = $exp[0]. ':' .$selected;
+                
+                $panthera = pantheraCore::getInstance();
+                $panthera -> logging -> output('Selected "' .$this -> outgoingAddress. '" interface', 'httplib');
+            }
+        }
     }
     
     /**
@@ -210,6 +279,7 @@ class httplib
     public function get($url, $method=null, $options=null, $postFields=null, $uploadingFile=False)
     {
         $panthera = pantheraCore::getInstance();
+        $this -> selectAddress();
     
         // compatibility
         if (!is_array($options))
