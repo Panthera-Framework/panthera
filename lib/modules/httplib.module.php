@@ -89,11 +89,11 @@ class httplib
             {
                 // random address choosing
                 if ($this -> outgoingIPSelection == 'random')
-                    $selected = rand($range[0], $range[1]);
+                    $selected = rand($range[0], ($range[1]-1));
                 else {
                     
                     // in_sequence address choosing (next, next, next, end, begin, next, next, ...)
-                    if (!is_int($this -> outgoingIPCursor) or $this -> outgoingIPCursor >= $range[1])
+                    if (!is_int($this -> outgoingIPCursor) or $this -> outgoingIPCursor >= ($range[1]-1))
                         $this -> outgoingIPCursor = $range[0];
                     
                     $selected = $this -> outgoingIPCursor++;
