@@ -27,6 +27,20 @@ $(document).ready(function() {
                  <tr>
                      <td colspan="2" class="formTableHeader" style="padding-top: 0px; padding-bottom: 30px;">
                          <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px;" class="actionEdit">{function="localize('Editing URL', 'routing')"}</p>
+
+<p style="margin-top: 30px;">
+<pre style="color: white;">*                    // {function="localize('Match all request URIs', 'routing')"}
+[i]                  // {function="localize('Match an integer', 'routing')"}
+[i:id]               // {function="localize('Match an integer as \'id\'', 'routing')"}
+[a:action]           // {function="localize('Match alphanumeric characters as \'action\'', 'routing')"}
+[h:key]              // {function="localize('Match hexadecimal characters as \'key\'', 'routing')"}
+[:action]            // {function="localize('Match anything up to the next / or end of the URI as \'action\'', 'routing')"}
+[create|edit:action] // {function="localize('Match either \'create\' or \'edit\' as \'action\'', 'routing')"}
+[*]                  // {function="localize('Catch all (lazy, stops at the next trailing slash)', 'routing')"}
+[*:trailing]         // {function="localize('Catch all as \'trailing\' (lazy)', 'routing')"}
+[**:trailing]        // {function="localize('Catch all (possessive - will match the rest of the URI)', 'routing')"}
+.[:format]?          // {function="localize('Match an optional parameter \'format\' - a / or . before the block is also optional', 'routing')"}</pre>
+</p>
                      </td>
                  </tr>
              </thead>
