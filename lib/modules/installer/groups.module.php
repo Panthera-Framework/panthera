@@ -1,7 +1,7 @@
 <?php
 /**
  * Users and groups configuration
- * 
+ *
  * @package Panthera\installer
  * @author Damian Kęska
  * @license LGPLv3
@@ -9,7 +9,7 @@
 
 /**
  * Users and groups configuration
- * 
+ *
  * @package Panthera\installer
  * @author Damian Kęska
  */
@@ -18,36 +18,36 @@ class groupsInstallerControllerSystem extends installerController
 {
     /**
      * Main function to display everything
-     * 
+     *
      * @feature installer.groups null Install additional routes
-     * 
+     *
      * @author Damian Keska
      * @return null
      */
-    
+
     public function display()
     {
         $this -> getFeature('installer.groups');
-        
+
         // create default groups
         pantheraGroup::create('admin', 'Administration');
         pantheraGroup::create('root', 'Root Administrator');
         pantheraGroup::create('users', 'Users');
         pantheraGroup::create('contentadmin', 'Content Administrator');
-        
+
         $groups = array('admin', 'root', 'users', 'contentadmin');
-        
+
         // add administration permissions to admin group
         $adminGroup = new pantheraGroup('name', 'admin');
         $adminGroup -> acl -> set('admin', true);
         $adminGroup -> acl -> save();
-        
+
         // add root permissions to root group
         $g = new pantheraGroup('name', 'root');
         $g -> acl -> set('admin', true);
         $g -> acl -> set('superuser', true);
         $g -> acl -> save();
-        
+
         // content administrator
         $g = new pantheraGroup('name', 'contentadmin');
         $g -> acl -> set('admin.settings.site', true);
@@ -70,7 +70,7 @@ class groupsInstallerControllerSystem extends installerController
         $g -> acl -> set('admin.accesspanel', true);
         $g -> acl -> set('admin.upload', true);
         $g -> acl -> save();
-        
+
         $this -> installer -> enableNextStep();
         $this -> panthera -> template -> push('spinnerStepMessage', localize('Creating default groups...', 'installer'));
         $this -> panthera -> template -> push('spinnerStepTable', $groups);

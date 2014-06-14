@@ -17,44 +17,44 @@
  * @author Mateusz Warzyński
  * @author Damian Kęska
  */
- 
+
 class googleprAjaxControllerCore extends pageController
 {
     protected $uiTitlebar = array(
         'Google PageRank', 'googlepr',
     );
-    
+
     protected $permissions = 'admin.googlepr';
-	
+
 	/**
 	  * Get Google PageRank
 	  *
 	  * @author Mateusz Warzyński
-	  * @return null 
+	  * @return null
 	  */
-	
+
 	public function getPageRankAction()
 	{
 		$domain = $_POST['domain'];
-    
+
 	    $results = $this -> panthera -> session -> get('googlepr.history');
-	    
+
 	    if (isset($results[$domain]))
 	        ajax_exit(array(
 	           'status' => 'failed',
 	           'message' => localize('Result of your request is on the chart.', 'googlepr'),
             ));
-	
+
 	    // check legth of domain
 	    if (strlen($domain) < 5)
 	        ajax_exit(array(
 	           'status' => 'failed',
 	           'message' => localize('Given domain is too short', 'googlepr'),
             ));
-	    
+
 	    // get PageRank
 	    $rank = GooglePR::getRank($domain);
-	    
+
 		// limit results to display
 	    if (count($results) > 14)
 	    {
@@ -62,7 +62,7 @@ class googleprAjaxControllerCore extends pageController
 	        $firstKey = key($results);
 	        unset($results[$firstKey]);
 	    }
-	    
+
 	    $results[$domain] = $rank;
 	    $this -> panthera -> session -> set ('googlepr.history', $results);
 
@@ -70,16 +70,16 @@ class googleprAjaxControllerCore extends pageController
 	       'status' => 'success',
         ));
 	}
-    
-	
-	
+
+
+
 	/**
 	  * Display GooglePR site, used simple and beautiful charts
 	  *
 	  * @author Mateusz Warzyński
-	  * @return string 
+	  * @return string
 	  */
-	
+
     public function display()
     {
         $this -> dispatchAction();

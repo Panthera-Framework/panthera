@@ -32,23 +32,23 @@ class Pager
     {
         $this->max = $max;
         $this->perPage = intval($perPage);
-        
+
         if (is_string($perPage))
         {
             $pager = self::getPagerFromTable($perPage, intval($defaultOnPage));
             $this->perPage = $pager['perPage'];
             $this->maxLinks = $pager['maxLinks'];
         }
-        
+
         if (gettype($this->max) == "array")
             $this->max = 24;
 
         if (gettype($this->perPage) == "array")
             $this->perPage = 24;
-            
+
         $this->pages = (int)ceil(($this->max / $this->perPage));
     }
-    
+
     /**
       * Get pager informations from database
       *
@@ -56,25 +56,25 @@ class Pager
       * @return array
       * @author Damian Kęska
       */
-    
+
     public static function getPagerFromTable($name, $defaultOnPage=24)
     {
         $panthera = pantheraCore::getInstance();
         $panthera -> logging -> output ('Getting pager name "' .$name. '" from pager table', 'Pager');
         $pagerData = $panthera -> config -> getKey('pager', array(), 'array', 'ui');
-        
+
         if (!isset($pagerData[$name]))
         {
             if (intval($defaultOnPage) < 1)
             {
                 $defaultOnPage = 24;
             }
-        
+
             $pagerData[$name] = array('perPage' => $defaultOnPage, 'maxLinks' => 8);
             $panthera -> config -> setKey('pager', $pagerData, 'array', 'ui');
             $panthera -> config -> save(); // just in case...
         }
-        
+
         return $pagerData[$name];
     }
 
@@ -106,15 +106,15 @@ class Pager
 
     public function getPages($currentPage)
     {
-        // don't allow currentpage to be higher than pages max count  
+        // don't allow currentpage to be higher than pages max count
         if ($currentPage > $this->pages)
         {
             $currentPage = $this->pages;
         }
-        
+
         $m = (($this->maxLinks/2)-1); // max links in left direction
         $left = ($currentPage-$m);
-        
+
         if ($left < 0)
             $left = 1;
 
@@ -126,7 +126,7 @@ class Pager
             {
                 continue;
             }
-        
+
             $pages[(string)$i] = False;
         }
 
@@ -137,7 +137,7 @@ class Pager
 
         // set current page as active
         $pages[(string)$currentPage] = True;
-        
+
         if ($right > $this->pages)
             $right = $this->pages;
 
@@ -147,7 +147,7 @@ class Pager
             {
                 continue;
             }
-        
+
             $pages[(string)$i] = False;
         }
 

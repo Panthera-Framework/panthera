@@ -3,7 +3,7 @@
     <head>
         <title>Debugging popup</title>
         <meta charset="utf-8">
-        
+
         <style type="text/css">
             html * { padding:0; margin:0; }
             body * { padding:10px 20px; }
@@ -22,7 +22,7 @@
             #explanation { background:#eee; border-bottom: 0px none; }
         </style>
     </head>
-    
+
     <body>
         <div id="summary">
             <h1>Debugging messages</h1>
@@ -30,7 +30,7 @@
         <div id="info">
             <p>
                 <?php print($debugMessages); ?>
-            </p>  
+            </p>
         </div>
     </body>
 </html>

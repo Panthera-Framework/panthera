@@ -22,9 +22,9 @@ if (!defined('IN_PANTHERA'))
             #summary { background: #ffffcc; padding-top: 25px; padding-left: 50px; padding-bottom: 25px; }
             #summary h1 { font-size: 24px; font-weight: 700;}
             #summaryDetails { list-style-type: none; padding-left: 25px; font-size: 16px; }
-            
+
             .inner { padding-left: 25px; padding-bottom: 0px; }
-            
+
             #explanation { background:#eee; border-bottom: 0px none; }
             div { padding-left: 50px; padding-bottom: 25px; }
             .lighter { background: #f6f6f6; }

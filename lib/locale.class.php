@@ -156,7 +156,7 @@ class pantheraLocale
     public function toggleLocale($locale, $value)
     {
         $locales = $this->panthera->config->getKey('languages');
-        
+
         if (isset($locales[$locale]) or $locale == 'english')
         {
             $locales[$locale] = (bool)$value;
@@ -175,7 +175,7 @@ class pantheraLocale
     public function setLocale($locale)
     {
         $this->locale = $this->defaultLocale;
-        
+
         if(array_key_exists($locale, $this->panthera->config->getKey('languages')) or $locale == 'english')
             $this->locale = $locale;
 
@@ -183,7 +183,7 @@ class pantheraLocale
 
         // default domain should be always loaded
         $this->loadDomain('messages');
-        
+
         if ($this -> panthera -> session)
             $this -> panthera -> session -> set('language', $locale);
 
@@ -207,12 +207,12 @@ class pantheraLocale
         if (!isset($this->memory[$domain]))
         {
             $this -> panthera -> logging -> output ('Autoloading domain "' .$domain. '" on-demand', 'pantheraLocale');
-        
+
             if (isset($this->invalidDomains[$domain]))
             {
                 return $string;
             }
-            
+
             $this->loadDomain($domain);
         }
 
@@ -265,10 +265,10 @@ class pantheraLocale
     public function loadDomain($domain, $force=False)
     {
         // dont load same domains multiple times
-        
+
         if (isset($this->domains[$domain]) and !$force)
             return False;
-            
+
         $dirs = array(SITE_DIR. '/content/locales/' .$this->locale, PANTHERA_DIR. '/locales/' .$this->locale);
 
         foreach ($dirs as $dir)
@@ -279,7 +279,7 @@ class pantheraLocale
                     $this->domains[$domain] = 'lib';
                 else
                     $this->domains[$domain] = 'content';
-                    
+
                 $this->panthera->logging->output('Adding domain "' .$domain. '" from ' .$dir, 'pantheraLocale');
 
                 // read file from cache (to avoid IO read)
@@ -307,7 +307,7 @@ class pantheraLocale
                 return True;
             }
         }
-        
+
         $this->invalidDomains[$domain] = True;
         $this->panthera->logging->output('Cannot find domain "' .$domain. '"', 'pantheraLocale');
         return False;
@@ -389,31 +389,31 @@ class pantheraLocale
 
         return $language;
     }
-    
+
     /**
       * Select a translated string from array with a translation priority
       *
       * @param string name
-      * @return mixed 
+      * @return mixed
       * @author Damian Kęska
       */
-    
+
     public static function selectStringFromArray($input)
     {
         $panthera = pantheraCore::getInstance();
-        
+
         if (!is_array($input))
         {
             return $input;
         }
-        
+
         $language = $panthera -> locale -> getActive();
-        
+
         if (isset($input[$language]))
         {
             return $input[$language];
         }
-        
+
         if ($panthera->user)
         {
             if (isset($input[$panthera->user->language]))
@@ -421,24 +421,24 @@ class pantheraLocale
                 return $input[$panthera->user->lantguage];
             }
         }
-        
+
         if (isset($input['english']))
         {
             return $input['english'];
         }
-        
+
         return end($input);
     }
-    
+
     /**
       * Localize by array, string or serialized array example input: array('this is a string', 'domain_name') or serialize(array('this is a string', 'domain_name')) or jst "this is a string"
       *
       * @param string|array $input Serialized array, normal array or string
       * @param bool $getOriginalString Don't localize extracted string, just return it
-      * @return string 
+      * @return string
       * @author Damian Kęska
       */
-    
+
     public function localizeFromArray($input, $getOriginalString=False)
     {
         if (is_string($input))
@@ -446,27 +446,27 @@ class pantheraLocale
             if (substr($input, 0, 2) == 'a:')
             {
                 $tmp = unserialize($input);
-                
+
                 if ($getOriginalString)
                     return $tmp[0];
-                
+
                 return $this -> _($tmp[0], $tmp[1]);
             }
-            
+
             if ($getOriginalString)
                 return $input;
-        
+
             return $this -> _($input); // localize using default domain
         }
-           
+
         if (is_array($input))
         {
             if ($getOriginalString)
                 return $input[0];
-            
+
             if (count($input) == 1)
                 $input[1] = '';
-        
+
             return $this -> _($input[0], $input[1]);
         }
     }

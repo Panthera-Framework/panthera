@@ -9,42 +9,42 @@
 
 /**
  * Contact front controller
- * 
+ *
  * @package Panthera\core\pages
  * @author Damian Kęska
  */
-  
+
 class contactControllerCore extends pageController
 {
     protected $contact;
-    
+
     // list of required modules
     protected $requirements = array(
         'contact',
     );
-    
+
     /**
      * Constructor
-     * 
+     *
      * @return object :)
      */
-    
+
     public function __construct()
     {
         parent::__construct();
-        
+
         // just in case
         $this -> contact = new contactFrontpage;
         $this -> configure();
         $this -> handleData();
     }
-    
+
     /**
      * Configure contact module
-     * 
+     *
      * @return null
      */
-    
+
     public function configure()
     {
         // see documentation or module source code to get list of all variables that can be modified
@@ -52,13 +52,13 @@ class contactControllerCore extends pageController
         $this -> contact -> mailBody = localize('From', 'contactpage').": {\$p_contactName} < {\$p_contactMail} >\n\n".localize('Content', 'contactpage').":\n{\$p_contactContent}";
         $this -> contact -> fields['p_contactJabber']['enabled'] = True;
     }
-    
+
     /**
      * Handle input data
-     * 
+     *
      * @return null
      */
-    
+
     public function handleData()
     {
         // test array with example input
@@ -70,11 +70,11 @@ class contactControllerCore extends pageController
             'p_contactTopic' => 'This is a topic',
             'p_contactJabber' => 'jabber@example.org'
         );*/
-        
+
         if (isset($_GET['send']))
         {
             $result = $contact->handleData($_POST); // any array can be used to test the form
-            
+
             if (is_array($result))
             {
                 $panthera -> template -> push('p_contactErrorMsg', $result['error']);
@@ -83,13 +83,13 @@ class contactControllerCore extends pageController
             }
         }
     }
-    
+
     /**
      * Display page
-     * 
+     *
      * @return null
      */
-    
+
     public function display()
     {
         $panthera = pantheraCore::getInstance();

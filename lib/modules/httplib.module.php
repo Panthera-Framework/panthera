@@ -6,10 +6,10 @@
  * @author Damian Kęska
  * @license LGPLv3
  */
- 
+
 /**
  * Simple HTTP library for Panthera Framework
- * 
+ *
  * Example:
  * <code>
  * $http = new httplib;
@@ -25,23 +25,23 @@
  * @package Panthera\core\modules\httplib
  * @author Damian Kęska
  */
-  
+
 class httplib
 {
     public static $userAgent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1667.0 Safari/537.36';
     protected $cookiesTempFile = '';
     public $timeout = 16;
     public $instanceID = null;
-    
+
     // proxy settings
     protected $proxyAuth = null;
     protected $proxy = null;
     protected $proxyType = 'http';
-    
+
     /**
      * Put here a interface name eg. eth0, eth1 or IPv6 address to be used (if multiple available)
      */
-    
+
     protected $addressesTmp = array();
     public $outgoingAddress = null; // eg. eth0 or eth0:1. For big IP count use eg. eth1, array(0 => '1.1.1.1', 1 => '2.2.2.2')
     public $outgoingIPCount = null; // eg. 10000 IP addresses to use, or range 100-150
@@ -54,7 +54,7 @@ class httplib
      * @return void
      * @author Damian Kęska
      */
- 
+
     public function __construct()
     {
         $panthera = pantheraCore::getInstance();
@@ -64,10 +64,10 @@ class httplib
 
     /**
      * Select address from available range
-     * 
+     *
      * Let's say that we have 5000 IPv6 addresses that we want to use. We are creating a httplib session, setting interface ($outgoingAddress)
      * setting IP count ($outgoingIPCount) to 5000 and random choosing ($outgoingIPSelection = 'random'). Every single request httplib will change IP address.
-     * 
+     *
      * Example:
      * <code>
      * $http = new httplib;
@@ -76,7 +76,7 @@ class httplib
      * $http -> outgoingIPSelection = 'random';
      * $http -> get('ipv6.google.com'); // make a request from random ip eg. eth0:5
      * $http -> get('ipv6.google.com'); // make a request from random ip eg. eth0:400
-     * 
+     *
      * // change strategy
      * $http -> outgoingIPSelection = 'in_sequence';
      * $http -> outgoingIPCursor = 0; // reset the cursor
@@ -85,10 +85,10 @@ class httplib
      * $http -> get('ipv6.google.com'); // eth0:3
      * $http -> close();
      * </code>
-     * 
+     *
      * @return null
      */
-    
+
     public function selectAddress()
     {
         if (is_array($this -> outgoingAddress))
@@ -96,7 +96,7 @@ class httplib
             $this -> addressesTmp = $this -> outgoingAddress;
             $this -> outgoingIPCount = count($this -> addressesTmp);
         }
-        
+
         if ($this -> outgoingIPCount)
         {
             if (is_string($this -> outgoingIPCount))
@@ -110,63 +110,63 @@ class httplib
             } else {
                 $range = array(0, $this -> outgoingIPCount);
             }
-            
+
             if (count($range) == 2)
             {
                 // random address choosing
                 if ($this -> outgoingIPSelection == 'random')
                     $selected = rand($range[0], ($range[1]-1));
                 else {
-                    
+
                     // in_sequence address choosing (next, next, next, end, begin, next, next, ...)
                     if (!is_int($this -> outgoingIPCursor) or $this -> outgoingIPCursor >= ($range[1]-1))
                         $this -> outgoingIPCursor = $range[0];
-                    
+
                     $selected = $this -> outgoingIPCursor++;
                 }
-                
+
                 if ($this -> addressesTmp)
                 {
                     if (!isset($this -> addressesTmp[$selected]))
                         $selected = key($this -> addressesTmp);
-                    
+
                     $this -> outgoingAddress = $this -> addressesTmp[$selected];
                 } else {
                     $exp = explode(':', $this -> outgoingAddress);
                     $this -> outgoingAddress = $exp[0]. ':' .$selected;
                 }
-                
+
                 $panthera = pantheraCore::getInstance();
                 $panthera -> logging -> output('Selected "' .$this -> outgoingAddress. '" interface', 'httplib');
             }
         }
     }
-    
+
     /**
      * Destruct object
-     * 
+     *
      * @return null
      */
-    
+
     public function __destruct()
     {
         $this -> close();
     }
-    
+
     /**
      * Close connection and clean up
-     * 
+     *
      * @return null
      */
-    
+
     public function close()
     {
         $this -> cleanup();
-        
+
         $panthera = pantheraCore::getInstance();
         $panthera -> get_options_ref('httplib.close', $this, $this -> instanceID);
     }
-    
+
     /**
       * Set proxy connection
       *
@@ -177,7 +177,7 @@ class httplib
       * @return bool
       * @author Damian Kęska
       */
-    
+
     public function setProxy($host=false, $port=8080, $type='http', $auth=null)
     {
         if ($host === False)
@@ -185,20 +185,20 @@ class httplib
             $this->proxy = null;
             return True;
         }
-    
+
         if (!filter_var($host, FILTER_VALIDATE_IP) or !is_numeric($port))
         {
             $this->proxy = False;
             return False;
         }
-        
+
         $this->proxy = $host. ':' .$port;
-        
+
         if ($type == 'http' or $type == 'socks4' or $type == 'socks5')
         {
             $this->proxyType = $type;
         }
-        
+
         if ($auth)
         {
             if (strpos($auth, ':') !== False)
@@ -206,10 +206,10 @@ class httplib
                 $this->proxyAuth = $auth;
             }
         }
-        
+
         return True;
     }
-    
+
     /**
       * Clean up
       *
@@ -217,25 +217,25 @@ class httplib
       * @return mixed
       * @author Damian Kęska
       */
-    
+
     public function cleanup($input='')
     {
         $panthera = pantheraCore::getInstance();
-    
+
         if ($this->cookiesTempFile)
         {
 			if ($panthera)
 				$panthera -> logging -> output('Cleaning up file "' .$this->cookiesTempFile. '" for instance id=' .$this -> instanceID, 'httplib');
-				
+
 			if (is_file($this->cookiesTempFile))
 				@unlink($this->cookiesTempFile);
         } else {
         	$panthera -> logging -> output('Nothing to clean for instance id=' .$this -> instanceID, 'httplib');
         }
-        
+
         return $input;
     }
-    
+
     /**
       * Static method for creating GET and POST requests
       *
@@ -246,47 +246,47 @@ class httplib
       * @return string
       * @author Damian Kęska
       */
-    
+
     public static function request($url, $method=null, $options=null, $postFields=null)
     {
         if ($options === null)
         {
             $options = array();
         }
-        
+
         $options['disablecookies'] = True;
-    
+
         $obj = new httplib;
         $result = $obj -> get($url, $method, $options, $postFields);
         unset($obj);
         return $result;
     }
-    
+
     /**
       * Get temporary file for cookies storage
       *
       * @return string
       * @author Damian Kęska
       */
-    
+
     public function getTempFile()
     {
         $panthera = pantheraCore::getInstance();
-    
+
         if (!$this->cookiesTempFile)
         {
             $name = substr(md5(rand(999999,99999999)), 0, 3). '.curl.txt';
             $this->cookiesTempFile = SITE_DIR. '/content/tmp/' .$name;
             $panthera -> logging -> output ('Creating temporary file "' .$this->cookiesTempFile. '"', 'httplib');
-            
+
             $fp = fopen($this->cookiesTempFile, 'w');
             fwrite($fp, '');
             fclose($fp);
         }
-        
+
         return $this->cookiesTempFile;
     }
-    
+
     /**
       * Make a POST request
       *
@@ -295,12 +295,12 @@ class httplib
       * @param array $options
       * @author Damian Kęska
       */
-    
+
     public function post($url, $postFields, $options=null)
     {
         return $this->get($url, 'POST', $options, $postFields);
     }
-    
+
     /**
       * Perform request
       *
@@ -318,43 +318,43 @@ class httplib
         $panthera = pantheraCore::getInstance();
         $this -> selectAddress();
         $panthera -> get_options_ref('httplib.get.prepare', $this, $this -> instanceID);
-    
+
         // compatibility
         if (!is_array($options))
             $options = array();
-        
+
         if (!$method)
             $method = 'GET';
-        
+
         $panthera -> logging -> output('Preparing to ' .$method. ' web url "' .$url. '"', 'httplib');
-        
-        // restoring session from previous connection on this object        
+
+        // restoring session from previous connection on this object
         $curl = curl_init();
-        
+
         // initialize curl resource
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_FAILONERROR, False);
         curl_setopt($curl, CURLOPT_HEADER, 0);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, True); 
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, True);
         curl_setopt($curl, CURLOPT_MAXREDIRS, 5 );
         curl_setopt($curl, CURLOPT_TIMEOUT, intval($this->timeout));
 
         // set outgoing address or interface
         if ($this -> outgoingAddress)
             curl_setopt($curl, CURLOPT_INTERFACE, $this -> outgoingAddress);
-        
+
         // proxy suppport
         if ($this->proxy === False) // unconfigured proxy
         {
             throw new Exception('Failed to configure proxy, please check proxy settings');
             return False; // just in case
         }
-        
+
         if ($this->proxy)
         {
             curl_setopt($curl, CURLOPT_PROXY, $this->proxy);
-            
+
             if ($this->proxyType == 'socks5')
             {
                 curl_setopt($curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
@@ -363,15 +363,15 @@ class httplib
             } else {
                 curl_setopt($curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
             }
-            
+
             if ($this->proxyAuth)
             {
                 curl_setopt($curl, CURLOPT_PROXYAUTH, $this->proxyAuth);
             }
-            
+
             $panthera -> logging -> output('Using proxy server address=' .$this->proxy. ', type=' .$this->proxyType. ', auth=len(' .strlen($this->proxyAuth). ')', 'httplib');
         }
-        
+
         // default headers
         $headers = array(
             'Accept-Language:en-US,en;q=0.8,pl;q=0.6',
@@ -389,28 +389,28 @@ class httplib
         {
             $options['referer'] = parse_url($url, PHP_URL_SCHEME). '//' .parse_url($url, PHP_URL_HOST);
         }
-        
+
         curl_setopt($curl, CURLOPT_REFERER, $options['referer']);
-        
+
         // useragent
         $userAgent = self::$userAgent;
-        
+
         if (isset($options['userAgent']))
         {
             $userAgent = $options['userAgent'];
         }
-        
+
         curl_setopt($curl, CURLOPT_USERAGENT, $userAgent);
-        
+
         if ($method == 'POST')
         {
             if (is_array($postFields) and !$uploadingFile)
                 $postFields = http_build_query($postFields);
-        
+
             curl_setopt ($curl, CURLOPT_POST, 1);
             curl_setopt ($curl, CURLOPT_POSTFIELDS, $postFields);
         }
-        
+
         if (!@$options['disablecookies'])
         {
             // cookies
@@ -418,18 +418,18 @@ class httplib
             curl_setopt($curl, CURLOPT_COOKIEFILE, $this->getTempFile());
             curl_setopt($curl, CURLOPT_COOKIEJAR, $this->getTempFile());
         }
-        
+
         $data = curl_exec($curl);
-        
+
         // plugins support
         $panthera -> get_options_ref('httplib.get', $this, $this -> instanceID);
-        
+
         if ($data === False)
             throw new Exception('Failed to make HTTP request, details: ' .curl_error($curl));
-        
+
         $panthera -> logging -> output('Request finished', 'httplib');
         curl_close($curl);
-        
+
         return $data;
     }
 }

@@ -2,7 +2,7 @@
 /**
  * User registration form and processing page
  * For modifications this file should be copied to /content/pages directory and edited
- * Please don't modify framework files in /lib directory unless you  
+ * Please don't modify framework files in /lib directory unless you
  *
  * @package Panthera\core\pages
  * @author Damian Kęska
@@ -39,7 +39,7 @@ if ($registration -> isPostingAForm())
             $registration -> displayForm();
             pa_exit();
         }
-        
+
         $panthera -> template -> push('registrationFields', $registration -> getInput());
         $panthera -> template -> display ('registrationForm.complete.tpl');
         pa_exit();

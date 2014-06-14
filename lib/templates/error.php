@@ -15,7 +15,7 @@ if (!defined('IN_PANTHERA'))
     <body>
         <div id="summary">
             <h1>Service unavaliable, we are sorry (500)</h1>
-            
+
             <ol id="summaryDetails">
                 <li>Our service is currently unavaliable, please try again later.<br/>This error has been automatically reported to site administrators.</li>
             </ol>

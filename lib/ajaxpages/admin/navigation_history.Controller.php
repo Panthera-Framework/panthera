@@ -11,10 +11,10 @@ class navigation_historyAjaxControllerSystem extends pageController
 {
     /**
      * Main function
-     * 
+     *
      * @return string
      */
-    
+
     public function display()
     {
         $history = array();

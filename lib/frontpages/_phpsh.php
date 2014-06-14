@@ -8,7 +8,7 @@
  * @see http://www.phpsh.org/
  * @license GNU Affero General Public License 3, see license.txt
  */
-  
+
 # include app config and libs
 require_once 'content/app.php';
 include getContentDir('pageController.class.php');
@@ -29,10 +29,10 @@ class _phpshControllerSystem extends pageController
 {
     /**
      * Set error reporting and printing to console
-     * 
+     *
      * @return null
      */
-    
+
     protected function setReporting()
     {
         error_reporting(E_ALL);
@@ -40,13 +40,13 @@ class _phpshControllerSystem extends pageController
         // print logging output directly to console
         $this -> panthera -> logging -> printOutput = True;
     }
-    
+
     /**
      * Prints welcome text
-     * 
+     *
      * @return null
      */
-    
+
     protected function printWelcomeText()
     {
         $out = "\n* Panthera Framework components:\n";
@@ -60,34 +60,34 @@ class _phpshControllerSystem extends pageController
         $out .= "=> \$panthera -> outputControl\n";
         $out .= "=> \$panthera -> routing\n";
         $out .= "=> \$panthera -> types\n";
-        
+
         $out .= "\n\n* Useful functions:\n=> object_info(), r_dump(), object_dump(), var_dump(), print_r(), getContentDir(), pantheraUrl(), libtemplate::webrootMerge()";
-        
+
         // make some space before prompt
         $out .= "\n\n";
-        
+
         $this -> panthera -> logging -> output($out, 'phpsh');
     }
-    
+
     /**
      * Default action
-     * 
+     *
      * @return null
      */
-    
+
     public function display()
     {
         $this -> setReporting();
-        
+
         // print generated output before setting printOutput to True
         print($this -> panthera->logging->getOutput());
-        
+
         if (is_file('content/phpsh.rc.php'))
         {
             $this -> panthera -> logging -> output('Including content/phpsh.rc.php', 'phpsh');
             include 'content/phpsh.rc.php';
         }
-        
+
         $this -> printWelcomeText();
     }
 }

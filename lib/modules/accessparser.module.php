@@ -25,7 +25,7 @@ class accessParser
     protected $lineArray = array();
     protected $matches = array();
     protected $cacheResults;
-    
+
      /**
       * Read log from file and return it as array (by lines)
       *
@@ -34,18 +34,18 @@ class accessParser
       * @author Mateusz Warzyński
       * @author Damian Kęska
       */
-    
+
     public function readLog($linesCount=500)
     {
         $panthera = pantheraCore::getInstance();
-        
+
         $path = $panthera -> config -> getKey('path_to_server_log', '', 'string');
 
         if ($path == '')
             throw new Exception('Please set path to access log.', 3);
 
         if (!is_readable($path))
-            throw new Exception('File does not exist or you have not permission to read.', 2); 
+            throw new Exception('File does not exist or you have not permission to read.', 2);
 
         $fp = fopen($path, "r");
 
@@ -56,12 +56,12 @@ class accessParser
 
         $n = 0;
         while ($n < $linesCount/4) // in 1024 bytes are more lines than only one (1/4 -> 114) | (1 -> 440) with $linesCount = 100
-        {                          // checked using lighttpd log - estimate number may be different in case of other servers 
+        {                          // checked using lighttpd log - estimate number may be different in case of other servers
         	$position = $position - $bufferSize;
             fseek($fp, $position);
             $buffer = fread($fp, $bufferSize);
             $data = $buffer.$data;
-               
+
             // check if there is a line
             if (strpos($buffer, "\n") !== False) {
             	$n++;
@@ -69,17 +69,17 @@ class accessParser
                 $linesCount = $n;
             }
         }
-        
+
         $lines = explode("\n", $data);
 
         for ($i = 1; $i <= count($lines)-2; $i++)
             $this->lineArray[] = $lines[$i];
 
         $this -> lineArray = array_reverse($this->lineArray); // because of line 49 we must reverse array
-        
+
         // execute function to parse log
         $this -> parseLog();
-        
+
         // return results
         if (count($this -> cacheResults))
             return $this -> cacheResults;
@@ -90,7 +90,7 @@ class accessParser
     /**
       * Parse log (line by line)
       *     notice that lineArray must be defined
-      * 
+      *
       * @return void
       * @author Mateusz Warzyński
       */
@@ -98,10 +98,10 @@ class accessParser
     protected function parseLog()
     {
         $panthera = pantheraCore::getInstance();
-        
+
         if (!count($this->lineArray))
             return false;
-            
+
         if ($panthera->cache and $panthera->cache->exists('parsedAccessLog'))
         {
             $results = $panthera -> cache -> get('parsedAccessLog');
@@ -109,20 +109,20 @@ class accessParser
         } else {
             $lastCachedLine = array();
         }
-        
+
         $regex = '/^(\S+) (\S+) (\S+) \[([^:]+):(\d+:\d+:\d+) ([^\]]+)\] \"(\S+) (.*?) (\S+)\" (\S+) (\S+) "([^"]*)" "([^"]*)"$/';
-        
+
         foreach ($this->lineArray as $number => $line) {
             preg_match($regex , $line, $matches);
-            
+
             if (!isset($matches[10]))
                 throw new Exception('File is invalid!', 1);
-            
+
             if (strlen($matches[1]) < 6)
                 $newLine['client_address'] = $matches[2];
             else
                 $newLine['client_address'] = $matches[1];
-            
+
             $newLine['date'] = $matches[4];
             $newLine['time'] = $matches[5];
             $newLine['processing_request_time'] = $matches[6];
@@ -133,13 +133,13 @@ class accessParser
             $newLine['response_size'] = $matches[11]; // in bytes
             $newLine['referer'] = $matches[12];
             $newLine['browser_headers'] = $matches[13];
-            
+
             if ($newLine != $lastCachedLine) // just to be precise
                 $this->matches[] = $newLine;
             else
                 break;
         }
-        
+
         // clear memory
         unset($matches);
         unset($regex);
@@ -150,9 +150,9 @@ class accessParser
                 $this->cacheResults = array_merge($this->matches, $results);
             else
                 $this->cacheResults = $this->matches;
-            
+
             $panthera -> cache -> set('parsedAccessLog', $this->cacheResults, 86400);
-            
+
         } else {
             $panthera -> logging -> output('Error. Cannot get access to cache.', 'accessparser');
         }

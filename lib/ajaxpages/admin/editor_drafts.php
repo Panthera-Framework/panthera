@@ -24,19 +24,19 @@ $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/newsletter.png', 'left')
 if (isset($_GET['id']))
 {
     $draft = new editorDraft('id', $_GET['id']);
-    
+
     if (!$draft->exists())
     {
         $panthera -> template -> display('no_page.tpl');
         pa_exit();
     }
-    
+
     /**
       * Save a draft
       *
       * @author Damian Kęska
       */
-    
+
     if ($_GET['action'] == 'saveDraft')
     {
         if (($draft -> author_id != $panthera -> user -> id) and !$management)
@@ -45,19 +45,19 @@ if (isset($_GET['id']))
             $noAccess -> addMetas(array('can_manage_drafts'));
             $noAccess -> display();
         }
-    
+
         // update existing draft when id is provided
         editorDraft::createDraft($_POST['content'], $panthera->user->id, $draft->id);
         ajax_exit(array('status' => 'success'));
-        
+
     /**
       * Remove a draft
       *
       * @author Damian Kęska
       */
-        
+
     } elseif ($_POST['action'] == 'removeDraft') {
-    
+
         // remove draft only if current user is its author or can manage drafts of all users
         if (($draft -> author_id == $panthera -> user -> id) or $management)
         {
@@ -68,9 +68,9 @@ if (isset($_GET['id']))
             $noAccess -> addMetas(array('can_manage_drafts'));
             $noAccess -> display();
         }
-        
+
     } else {
-    
+
         if ($panthera -> user -> id == $draft -> author_id)
         {
             $author = $panthera -> user -> getName();
@@ -78,7 +78,7 @@ if (isset($_GET['id']))
             $u = new pantheraUser('id', $draft->author_id);
             $author = $u->id;
         }
-        
+
         $panthera -> template -> push ('callback', $_GET['callback']);
         $panthera -> template -> push('content', filterInput($draft->content, 'wysiwyg'));
         $panthera -> template -> push('date', $draft->date);

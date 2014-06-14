@@ -16,39 +16,39 @@ class userRegistration extends validableForm
         'passwd' => array('lengthFrom' => 5, 'lengthTo' => 64),
         'fullname' => array('lengthFrom' => 2, 'lengthTo' => 64, 'optional' => True)
     );
-    
+
     // templates
     public $formTemplateEnabled = 'registrationForm.tpl';
     public $formTemplateDisabled = 'registrationForm.closed.tpl';
     public $formName = '';
-    
+
     /**
      * Check if user verified an e-mail address
-     * 
+     *
      * @param string $key Confirmation key
      * @param bool $validateUser Validate user or just check
      * @author Damian Kęska
      */
-    
+
     public static function checkEmailValidation($key, $validateUser=False)
     {
         $panthera = pantheraCore::getInstance();
-        
+
         $query = $panthera -> db -> query('SELECT * FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key AND `type` = "confirmation"', array('key' => $key));
-        
+
         if ($query -> rowCount() > 0)
         {
             if ($validateUser)
             {
                 $panthera -> db -> query('DELETE FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key', array('key' => $key));
             }
-            
+
             return (True && $validateUser);
         }
 
         return (False && $validateUser);
     }
-    
+
     protected function _processFormValidation()
     {
         // if not posting a form
@@ -56,22 +56,22 @@ class userRegistration extends validableForm
         {
             return False;
         }
-        
+
         // ===== support for "login" field
         if (!$this->disabledFields['login'])
         {
             // strip html tags
             $this -> source['login'] = strip_tags(trim($this->source['login']));
-            
+
             if (!$this->source['login'])
             {
                 return array(
-                    'message' => localize('Please fill login field', 'register'), 
+                    'message' => localize('Please fill login field', 'register'),
                     'code' => 'LOGIN_FILL',
                     'field' => 'login'
                 );
             }
-            
+
             if (strlen($this->source['login']) > $this->fieldsSettings['login']['lengthTo'] or strlen($this->source['login']) <= $this->fieldsSettings['login']['lengthFrom'])
             {
                 return array(
@@ -81,9 +81,9 @@ class userRegistration extends validableForm
                     'field' => 'login'
                 );
             }
-            
+
             $regexp = $this -> panthera -> get_filters('createNewUser.loginRegexp', '/^[a-zA-Z0-9\-\.\,\+\!]+_?[a-zA-Z0-9\-\.\,\+\!]+$/D');
-            
+
             if (!preg_match($regexp, $this->source['login']))
             {
                 return array(
@@ -94,23 +94,23 @@ class userRegistration extends validableForm
                 );
             }
         }
-        
-        
+
+
         // ===== User full name field
         if (!$this->disabledFields['fullname'])
         {
             // strip html tags
             $this -> source['fullname'] = strip_tags(trim($this->source['fullname']));
-            
+
             if (!$this->source['fullname'] and !$this->fieldsSettings['fullname']['optional'])
             {
                 return array(
-                    'message' => localize('Please enter your full name', 'register'), 
+                    'message' => localize('Please enter your full name', 'register'),
                     'code' => 'FULLNAME_FILL',
                     'field' => 'fullname'
                 );
             }
-            
+
             if ($this->source['fullname'])
             {
                 if (strlen($this->source['fullname']) > $this->fieldsSettings['fullname']['lengthTo'] or strlen($this->source['fullname']) <= $this->fieldsSettings['fullname']['lengthFrom'])
@@ -124,24 +124,24 @@ class userRegistration extends validableForm
                 }
             }
         }
-        
-        
+
+
         // ===== support for "mail" fields
         if (!$this->disabledFields['mail'])
         {
             // trim whitespaces
             $this->source['mail'] = trim($this->source['mail']);
             $this->source['mail_repeat'] = trim($this->source['mail_repeat']);
-            
+
             if (!$this->source['mail'])
             {
                 return array(
-                    'message' => localize('Please fill mail field correctly', 'register'), 
+                    'message' => localize('Please fill mail field correctly', 'register'),
                     'code' => 'MAIL_FILL',
                     'field' => 'mail'
                 );
             }
-            
+
             if (strlen($this->source['mail']) > $this->fieldsSettings['mail']['lengthTo'] or strlen($this->source['mail']) <= $this->fieldsSettings['mail']['lengthFrom'])
             {
                 return array(
@@ -151,7 +151,7 @@ class userRegistration extends validableForm
                     'field' => 'mail'
                 );
             }
-            
+
             if ($this->source['mail'] != $this->source['mail_repeat'])
             {
                 return array(
@@ -161,7 +161,7 @@ class userRegistration extends validableForm
                     'field' => 'mail_repeat'
                 );
             }
-            
+
             if (!filter_var($this->source['mail'], FILTER_VALIDATE_EMAIL))
             {
                 return array(
@@ -174,12 +174,12 @@ class userRegistration extends validableForm
         }
 
 
-        
+
         // ===== passwords
         if (!$this->disabledFields['passwd'])
         {
             $this->source['passwd'] = trim($this->source['passwd']);
-            
+
             if (!$this->source['passwd'])
             {
                 return array(
@@ -188,7 +188,7 @@ class userRegistration extends validableForm
                     'field' => 'passwd'
                 );
             }
-            
+
             if (strlen($this->source['passwd']) > $this->fieldsSettings['passwd']['lengthTo'] or strlen($this->source['passwd']) <= $this->fieldsSettings['passwd']['lengthFrom'])
             {
                 return array(
@@ -198,7 +198,7 @@ class userRegistration extends validableForm
                     'field' => 'passwd'
                 );
             }
-            
+
             if ($this->source['passwd'] != $this->source['passwd_repeat'])
             {
                 return array(
@@ -213,17 +213,17 @@ class userRegistration extends validableForm
 
 
         // check if login or password is already taken
-        $uCheck = $this -> panthera -> db -> query('SELECT `login`, `mail` FROM `{$db_prefix}users` WHERE `login` = :login OR `mail` = :mail', 
+        $uCheck = $this -> panthera -> db -> query('SELECT `login`, `mail` FROM `{$db_prefix}users` WHERE `login` = :login OR `mail` = :mail',
             array(
-                'login' => $this->source['login'], 
+                'login' => $this->source['login'],
                 'mail' => $this->source['mail']
             )
         );
-        
+
         if ($uCheck -> rowCount())
         {
             $fetch = $uCheck->fetch(PDO::FETCH_ASSOC);
-            
+
             if ($fetch['mail'] == $this->source['mail'])
             {
                 return array(
@@ -232,7 +232,7 @@ class userRegistration extends validableForm
                     'field' => 'mail'
                 );
             }
-            
+
             if ($fetch['login'] == $this->source['login'])
             {
                 return array(
@@ -243,29 +243,29 @@ class userRegistration extends validableForm
             }
         }
 
-        
+
 
         // additional fields
         $additionalFields = $this->validateAdditionalFields();
-        
+
         if (!$additionalFields or is_array($additionalFields))
         {
             return $additionalFields;
         }
-        
+
         return True;
     }
 
     /*
      * Create new user
-     * 
+     *
      * @return bool
      */
 
     public function execute()
     {
         $this -> panthera -> logging -> output('Creating new user', 'register');
-        
+
         createNewUser(
             $this->source['login'],
             $this->source['passwd'],
@@ -279,56 +279,56 @@ class userRegistration extends validableForm
             $_SERVER['REMOTE_ADDR'],
             (bool)$this -> panthera -> config -> getKey('register.confirmation.required', 1, 'bool', 'register')
         );
-        
+
         $u = new pantheraUser('login', $this->source['login']);
-        
+
         // facebook integration
         if ($this -> panthera -> session -> exists('registerFacebook'))
         {
             $u -> acl -> set('facebook', $this -> panthera -> session -> get('registerFacebook'));
             $u -> acl -> save();
         }
-        
+
         return $u->exists();
     }
 
     /*
      * Check if form is enabled, here can be a simple configuration check placed
-     * 
+     *
      * @return bool
      */
-    
+
     public function formEnabled()
     {
         return (bool)$this -> panthera -> config -> getKey('register.open', 0, 'bool', 'register');
     }
-    
+
     public function displayForm()
     {
         if ($this -> panthera -> config -> getKey('register.facebook', 1, 'bool', 'register'))
         {
             $facebookDetails = '';
-            
+
             $this -> panthera -> importModule('facebook');
-            
+
             try {
                 // a little bit cache
                 if (!$this -> panthera -> session -> exists('facebookUserInfo'))
                 {
                     $facebook = new facebookWrapper;
                     $facebookDetails = $facebook->api('/me');
-                   
+
                     if ($facebookDetails)
                         $this -> panthera -> session -> set('facebookUserInfo', $facebookDetails);
-                        
+
                 } else {
                     $facebookDetails = $this -> panthera -> session -> get('facebookUserInfo');
                 }
-                
+
             } catch (Exception $e) {
                 $this -> panthera -> logging -> output('Cannot connect to Facebook, exception: ' .$e->getMessage(), 'register');
             }
-            
+
             if (isset($_GET['facebook']))
             {
                 if ($facebookDetails and $_GET['facebook'] != 'remove')
@@ -337,24 +337,24 @@ class userRegistration extends validableForm
                     $this->source['fullname'] = $facebookDetails['name'];
                     $this -> panthera -> session -> set('registerFacebook', $facebookDetails['id']);
                 }
-                
+
                 if ($_GET['facebook'] == 'remove')
                 {
                     $this -> panthera -> session -> remove('registerFacebook');
                 }
             }
-            
+
             $this -> panthera -> template -> push('facebookConnected', False);
-            
+
             if ($this -> panthera -> session -> exists('registerFacebook'))
             {
                 $this -> panthera -> template -> push('facebookConnected', True);
             }
-            
+
             $this -> panthera -> template -> push('facebookEnabled', True);
             $this -> panthera -> template -> push('facebookDetails', $facebookDetails);
         }
-        
+
         return parent::displayForm();
     }
 }

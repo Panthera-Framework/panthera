@@ -7,7 +7,7 @@
  * @author Damian Kęska
  * @license LGPLv3
  */
- 
+
 /**
  * Routing management
  * SEO links editor for Panthera Admin Panel
@@ -22,53 +22,53 @@ class routingAjaxControllerSystem extends pageController
         'admin/ui.datasheet',
         'admin/ui.pager',
     );
-    
+
     protected $table = '';
     protected $uiTitlebar = array(
         'SEO links management', 'routing'
     );
-    
+
     protected $permissions = array('admin.routing' => array('SEO url management', 'settings'));
-    
+
     protected $data = array();
-    
+
     /**
      * Get routing cache (dummy method to be forked)
-     * 
+     *
      * @hook admin.routing.cache array
      * @return array
      */
-    
+
     public function getRoutingCache()
     {
         return $this -> panthera -> get_filters('admin.routing.cache', $this -> panthera -> routing -> getCache(), True);
     }
-    
+
     /**
      * Prepare data to be inserted into a table
-     * 
+     *
      * @param array $data Raw data from routing cache
      * @hook admin.routing.data array
      * @return array Prepared data to display in table
      */
-    
+
     public function prepareData($data)
     {
         $dataTpl = array();
-        
+
         if ($data['routes'])
         {
             foreach ($data['routes'] as $route)
             {
                 $get = '';
                 $post = '';
-                
+
                 if (isset($route[2]['GET']))
                     $get = getQueryString($route[2]['GET']);
-                
+
                 if (isset($route[2]['POST']))
                     $post = getQueryString($route[2]['POST']);
-                
+
                 $dataTpl[] = array(
                     'name' => $route[3],
                     'path' => $route[1],
@@ -82,33 +82,33 @@ class routingAjaxControllerSystem extends pageController
                 );
             }
         }
-        
+
         return $this -> panthera -> get_filters('admin.routing.data', $dataTpl, True);
     }
-    
+
     /**
      * Add pager
-     * 
+     *
      * @param array $data
      * @return array
      */
-    
+
     public function page($data)
     {
         $uiPager = new uiPager('routingPager', count($data), 'adminRouting', 50);
         $uiPager -> setLinkTemplatesFromConfig('generic.tpl');
-        
+
         $data = $uiPager -> limitArray($data);
         $this -> table -> adduiPager($uiPager);
-        
+
         uiPager::applyToTemplate();
-        
+
         return $data;
     }
-    
+
     /**
      * Route deletion action
-     * 
+     *
      * @param mixed $data
      * @return null
      */
@@ -116,47 +116,47 @@ class routingAjaxControllerSystem extends pageController
     public function deleteAction($data='')
     {
         $id = $_POST['id'];
-        
+
         $cache = $this->getRoutingCache();
-        
+
         if (isset($cache['routes'][$id]))
         {
             $this -> panthera -> routing -> unmap($id);
             ajax_exit(array('status' => 'success'));
         }
-                
+
         ajax_exit(array(
-            'status' => 'failed', 
+            'status' => 'failed',
             'message' => localize('Cannot find specified route', 'routing')
         ));
     }
-    
+
     /**
      * Resolve a custom address and return a result
-     * 
+     *
      * @return null
      */
-    
+
     public function resolveTestAction()
     {
         $matches = print_r($this -> panthera -> routing -> resolve('/' .$_POST['uri'], $_POST['method']), true);
-        
+
         if (!$matches)
             $matches = slocalize('There is no any rule that matches %s %s URL', 'routing', $_POST['method'], $_POST['uri']);
-        
+
         ajax_exit(array(
             'status' => 'failed',
             'message' => '<pre style="text-align: left;">' .$matches. '</pre>',
         ));
-    } 
-    
+    }
+
     /**
      * Edit/New action
-     * 
+     *
      * @param mixed $data
      * @return null
      */
-    
+
     public function editAction($data='')
     {
         $name = $_POST['name'];
@@ -166,74 +166,74 @@ class routingAjaxControllerSystem extends pageController
         $redirect = $_POST['redirect'];
         $priority = intval($_POST['priority']);
         $redirectCode = intval($_POST['code']);
-        
+
         $codes = array(
             '300', '301', '302', '303', '307',
         );
-        
+
         parse_str($_POST['staticget'], $argsGET);
         parse_str($_POST['staticpost'], $argsPOST);
-        
+
         $target = array(
             'GET' => $argsGET,
             'POST' => $argsPOST,
         );
-        
+
         if (isset($_POST['oldid']))
         {
             $this -> panthera -> routing -> unmap(base64_decode($_POST['oldid']));
         }
-        
+
         if (!$name)
         {
             ajax_exit(array(
-                'status' => 'failed', 
+                'status' => 'failed',
                 'message' => localize('Please input a name', 'routing'),
                 'field' => 'name',
             ));
         }
-        
+
         if (!$route)
         {
             ajax_exit(array(
-                'status' => 'failed', 
+                'status' => 'failed',
                 'message' => localize('Please input a route path', 'routing'),
                 'field' => 'path',
             ));
         }
-        
+
         if (!$redirectCode)
         {
             if (!is_file(SITE_DIR. '/' .$controller))
             {
                 ajax_exit(array(
-                    'status' => 'failed', 
+                    'status' => 'failed',
                     'message' => localize('Front controller not found', 'routing'),
                     'field' => 'controller',
                 ));
             }
-            
+
             $target['front'] = $controller;
         } else {
-            
+
             if (!in_array($redirectCode, $codes))
             {
                 ajax_exit(array(
-                    'status' => 'failed', 
+                    'status' => 'failed',
                     'message' => localize('Invalid redirect code', 'routing'),
                     'field' => 'code',
                 ));
             }
-            
+
             $target['redirect'] = $redirect;
             $target['code'] = $redirectCode;
         }
-        
+
         if ($method != 'GET' and $method != 'POST' and $method != 'GET|POST')
         {
             $method = 'GET|POST';
         }
-        
+
         // map($method='GET|POST', $route, $target, $name)
         $this -> panthera -> routing -> map($method, $route, $target, $name, $priority);
         ajax_exit(array('status' => 'success'));
@@ -241,14 +241,14 @@ class routingAjaxControllerSystem extends pageController
 
     /**
      * Edit form action
-     * 
+     *
      * @return null
      */
 
     public function editFormAction()
     {
         $id = base64_decode($_GET['id']);
-        
+
         foreach ($this->data as $row)
         {
             if ($row[$this->table->idColumn] == $id)
@@ -262,17 +262,17 @@ class routingAjaxControllerSystem extends pageController
                 break;
             }
         }
-        
+
         pa_exit();
     }
 
     /**
      * Displays results (everything is here)
-     * 
+     *
      * @hook admin.routing.table object uiDatasheet
      * @return string
      */
-    
+
     public function display()
     {
         // create a table and put columns
@@ -295,34 +295,34 @@ class routingAjaxControllerSystem extends pageController
         $this -> table -> addActionCallback('remove', array($this, 'deleteAction'));
         $this -> table -> addActionCallback('editForm', array($this, 'editFormAction'));
         $this -> table -> dispatchAction();
-        
+
         if (isset($_GET['action']) and $_GET['action'] == 'resolveTest')
             $this -> resolveTestAction();
-        
+
         $sBar = new uiSearchbar('uiTop');
         $this -> table -> adduiSearchbar($sBar);
         $sBar -> navigate(True);
-        
+
         if ($sBar -> getQuery())
             $this -> data = $sBar -> filterData($this -> data, $sBar -> getQuery());
-        
+
         $filters = $sBar -> getFilters();
-        
+
         if (isset($filters['order']) and isset($filters['direction']))
             $this -> data = $sBar -> orderBy($this -> data, $filters['order'], $filters['direction']);
-        
+
         // hooking
         $this -> table = $this -> panthera -> get_filters('admin.routing.table', $this -> table, True);
-        
+
         // append data to pager
         $this -> data = $this -> page($this -> data);
-        
+
         // append data and draw
         $this -> table -> appendData($this -> data);
-        
+
         $this -> panthera -> template -> push ('controllers', pageController::getFrontControllersList());
         $this -> panthera -> template -> push ('table', $this -> table -> draw());
-        
+
         return $this -> panthera -> template -> compile('routing.tpl');
     }
 }

@@ -8,7 +8,7 @@
  * @license LGPLv3
  */
 
-  
+
 /**
  * Pager configuration page controller
  *
@@ -23,37 +23,37 @@ class settings_pagerAjaxControllerSystem extends pageController
         'admin.settings.pager' => array('Pager settings', 'settings'),
         'admin.conftool' => array('Advanced system configuration editor', 'conftool'),
     );
-    
+
     protected $uiTitlebar = array(
         'Pager settings', 'settings'
     );
-    
-    
-    
+
+
+
     /**
      * Display page based on generic template
      *
-     * @author Mateusz Warzyński 
+     * @author Mateusz Warzyński
      * @return string
      */
-     
+
     public function display()
     {
         $this -> panthera -> locale -> loadDomain('settings');
-        
+
         // defaults
         $this -> panthera -> config -> getKey('pager', array(), 'array', 'ui');
-        
+
         // load uiSettings with "passwordrecovery" config section
         $config = new uiSettings('ui');
         $config -> add('pager', localize('Pager settings per element', 'settings'));
         $config -> setFieldType('pager', 'packaged');
-        
+
         // handlers
         $config -> setFieldSaveHandler('pager', 'uiSettingsMultipleSelectBoolField');
-        
+
         $result = $config -> handleInput($_POST);
-        
+
         if (is_array($result))
         {
             ajax_exit(array(
@@ -66,7 +66,7 @@ class settings_pagerAjaxControllerSystem extends pageController
                 'status' => 'success',
             ));
         }
-        
+
         return $this -> panthera -> template -> display('settings.genericTemplate.tpl');
     }
 }

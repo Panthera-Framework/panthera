@@ -8,24 +8,24 @@
  * @author Damian Kęska
  */
 
-  
+
 if (!defined('IN_PANTHERA'))
     exit;
 
 /**
  * Gallery dash widget class
- * 
+ *
  * @package Panthera\core\modules\gallery
  */
-  
+
 class gallery_dashWidget extends pantheraClass
 {
     /**
      * Main function that display widget
-     * 
+     *
      * @return string
      */
-    
+
     public function display()
     {
         $this -> panthera -> importModule('gallery');

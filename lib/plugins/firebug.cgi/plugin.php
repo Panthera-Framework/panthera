@@ -10,7 +10,7 @@
 
 if (!defined('IN_PANTHERA'))
     exit;
-  
+
 include(PANTHERA_DIR. '/share/firephp-core/lib/FirePHPCore/FirePHP.class.php');
 
 $pluginClassName = 'pantheraFirePHP';
@@ -51,7 +51,7 @@ class pantheraFirePHP extends pantheraPlugin
         $firephp -> fb($panthera->session->cookies->getAll(), 'Panthera cookies');
         $panthera -> outputControl -> flushAndFinish();
     }
-    
+
     /**
       * Execute on every $panthera->logging->output
       *
@@ -63,14 +63,14 @@ class pantheraFirePHP extends pantheraPlugin
     public function log($msg)
     {
         $firephp = FirePHP::getInstance(true);
-        
+
         try {
             $firephp->fb($msg);
         } catch (Exception $e) {
             // pass
         }
     }
-    
+
     /**
       * Add warning to dash
       *
@@ -87,7 +87,7 @@ class pantheraFirePHP extends pantheraPlugin
         );
         return $list;
     }
-    
+
     /**
       * Display information about ip whitelist
       *
@@ -104,10 +104,10 @@ class pantheraFirePHP extends pantheraPlugin
             'type' => 'info',
             'message' => slocalize('Firebug is currently working only for those IP addresses: %s', 'firebug', $panthera -> config -> getKey('firebug.whitelist', '', 'string', 'firebug'))
         );
-        
+
         return $list;
     }
-    
+
     /**
       * Add Firebug settings to debugging center
       *
@@ -126,10 +126,10 @@ class pantheraFirePHP extends pantheraPlugin
             'description' => localize('Firebug settings'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/firebug.png'
         );
-        
+
         return $list;
     }
-    
+
     /**
       * Firebug settings page
       *
@@ -145,31 +145,31 @@ class pantheraFirePHP extends pantheraPlugin
             include($dir.'/settings.php');
         }
     }
-    
+
     /**
       * Run extension
       *
       * @return void
       * @author Damian Kęska
       */
-    
+
     public static function run()
     {
         global $panthera;
-        
+
         // requirements: we are using session core module and we are not in CLI mode
         if (!defined('SKIP_SESSION') and PANTHERA_MODE != 'CLI')
         {
             // start output buffering
             $panthera -> outputControl -> startBuffering();
-            
+
             $obj = new pantheraFirePHP;
-            
+
             // ip whitelists
             $whitelist = str_replace(' ', '', $panthera -> config -> getKey('firebug.whitelist', '', 'string', 'firebug'));
             $list = explode(',', $whitelist);
             $enabled = True;
-            
+
             // if the whitelist is enabled
             if (count($list) > 0 and $list[0] != '')
             {

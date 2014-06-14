@@ -1,7 +1,7 @@
 <?php
 /**
   * Crontab configuration
-  * 
+  *
   * @package Panthera\installer
   * @author Damian Kęska
   * @author Mateusz Warzyński
@@ -10,7 +10,7 @@
 
 if (!defined('PANTHERA_INSTALLER'))
     return False;
-    
+
 // we will use this ofcourse
 global $panthera;
 global $installer;

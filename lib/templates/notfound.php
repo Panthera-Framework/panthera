@@ -15,7 +15,7 @@ if (!defined('IN_PANTHERA'))
     <body>
         <div id="summary">
             <h1>Not found</h1>
-            
+
             <ol id="summaryDetails">
                 <li>Requested document cannot be found on our servers.</li>
                 <li>If you found a broken link on this page please report it to site administrator.</li>

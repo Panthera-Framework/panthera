@@ -1,7 +1,7 @@
 <?php
 /**
   * Database configuration
-  * 
+  *
   * @package Panthera\installer
   * @author Damian Kęska
   * @author Mateusz Warzyński
@@ -10,7 +10,7 @@
 
 if (!defined('PANTHERA_INSTALLER'))
     return False;
-    
+
 // we will use this ofcourse
 global $panthera;
 global $installer;
@@ -26,13 +26,13 @@ if (isset($_GET['setDefaultLanguage']))
     {
         $panthera -> locale -> setSystemDefault($_GET['setDefaultLanguage']);
     }
-    
+
 } elseif (isset($_GET['switchLanguage'])) {
 
     if (isset($allLocales[$_GET['switchLanguage']]))
     {
         $installedLocales = $panthera -> locale -> getLocales();
-    
+
         if (isset($installedLocales[$_GET['switchLanguage']]))
         {
             $panthera -> locale -> toggleLocale($_GET['switchLanguage'], !$installedLocales[$_GET['switchLanguage']]);
@@ -53,13 +53,13 @@ foreach ($allLocales as $locale => $path)
     {
         $locales[$locale]['icon'] = True;
     }
-    
+
     // check if this language is enabled
     if ($installedLocales[$locale] == True)
     {
         $locales[$locale]['enabled'] = True;
     }
-    
+
     // check if this language is currently set as default
     if ($panthera->locale->getSystemDefault() == $locale)
     {

@@ -1,7 +1,7 @@
 <?php
 /**
   * Integration with Facebook API, just another easy to use wrapper but integrated with Panthera Framework
-  * 
+  *
   * @package Panthera\modules\social
   * @author Damian Kęska
   * @author Mateusz Warzyński
@@ -10,7 +10,7 @@
 
 if (!defined('IN_PANTHERA'))
     exit;
-  
+
 /**
  * Facebook cached group object
  *
@@ -53,7 +53,7 @@ class FBGroup extends pantheraFetchDB
 function getFBGroups($by, $limit=0, $limitFrom=0)
 {
       $panthera = pantheraCore::getInstance();
-      return $panthera->db->getRows('fb_groups', $by, $limit, $limitFrom, 'FBGroup', 'members_count', 'DESC');  
+      return $panthera->db->getRows('fb_groups', $by, $limit, $limitFrom, 'FBGroup', 'members_count', 'DESC');
 }
 
 /**
@@ -84,11 +84,11 @@ function removeFBGroup($groupId)
  * @return bool
  * @author Damian Kęska
  */
- 
+
 function createFBGroup($id, $name, $membersCount, $ownerID)
 {
     $panthera = pantheraCore::getInstance();
-    $array = array('groupid' => $id, 'name' => $name, 'members_count' => $membersCount, 'ownerid' => $ownerID); 
+    $array = array('groupid' => $id, 'name' => $name, 'members_count' => $membersCount, 'ownerid' => $ownerID);
 
     $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}fb_groups` (`groupid`, `name`, `members_count`, `ownerid`, `added`) VALUES (:groupid, :name, :members_count, :ownerid, NOW());', $array);
     return (bool)$SQL->rowCount();

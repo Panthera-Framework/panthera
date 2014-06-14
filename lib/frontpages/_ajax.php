@@ -19,12 +19,12 @@ $cat = '';
 if (isset($_GET['cat']))
 {
     $cat = str_replace('/', '', str_replace('.', '', $_GET['cat']));
-    
+
     if (!getContentDir('ajaxpages/' .$cat))
     {
         $cat = '';
     }
-    
+
     $cat .= '/';
 }
 
@@ -33,14 +33,14 @@ if (isset($_GET['_system_loginkey']) and $panthera -> varCache)
 {
     if (!$panthera -> varCache -> exists('pa-login.system.loginkey'))
         die('No loginkey present.');
-        
+
     $loginKey = $panthera -> varCache -> get('pa-login.system.loginkey');
 
-    // login keys are only 128 char length    
+    // login keys are only 128 char length
     if (strlen($_GET['_system_loginkey']) != 128)
         die('Invalid length.');
-        
-    if ($_GET['_system_loginkey'] == $loginKey['key'])      
+
+    if ($_GET['_system_loginkey'] == $loginKey['key'])
     {
         $panthera -> user = new pantheraUser('id', $loginKey['userID']);
         $panthera -> varCache -> remove('pa-login.system.loginkey');
@@ -66,10 +66,10 @@ if ($cat == 'admin/')
 
     // set main template
     $panthera -> template -> push ('username', $user->login);
-    
+
     if (is_file(SITE_DIR. '/css/admin/custom/' .$display. '.css'))
         $panthera -> template -> addStyle('{$PANTHERA_URL}/css/admin/custom/' .$display. '.css');
-    
+
     if (is_file(SITE_DIR. '/js/admin/custom/' .$display. '.js'))
         $panthera -> template -> addStyle('{$PANTHERA_URL}/js/admin/custom/' .$display. '.js');
 }
@@ -81,8 +81,8 @@ $panthera -> template -> generateMeta = False;
 $panthera -> template -> generateKeywords = False;
 $tpl = 'no_page.tpl';
 
-// navigation    
-$panthera -> add_option('page_load_ends', array('navigation', 'appendCurrentPage')); 
+// navigation
+$panthera -> add_option('page_load_ends', array('navigation', 'appendCurrentPage'));
 
 // execute plugins
 $panthera -> get_options('ajax_page', False);
@@ -100,10 +100,10 @@ if ($pageFile)
 {
     include $pageFile;
     $name = str_replace($cat, '', $display);
-    
+
     // try to run objective controller
     $controller = pageController::getController($name);
-    
+
     if ($controller)
     {
         print($controller -> run());

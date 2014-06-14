@@ -9,7 +9,7 @@
  */
 
 // TODO: Rewrite to objective model, create list of templates, add to menu etc.
- 
+
 if (!defined('IN_PANTHERA'))
     exit;
 

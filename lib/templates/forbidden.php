@@ -15,7 +15,7 @@ if (!defined('IN_PANTHERA'))
     <body>
         <div id="summary">
             <h1>Forbidden</h1>
-            
+
             <ol id="summaryDetails">
                 <li>You don't have access to this resource.</li>
             </ol>

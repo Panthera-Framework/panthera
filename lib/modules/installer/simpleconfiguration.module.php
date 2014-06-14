@@ -1,7 +1,7 @@
 <?php
 /**
   * Database configuration
-  * 
+  *
   * @package Panthera\installer
   * @author Damian Kęska
   * @author Mateusz Warzyński
@@ -10,7 +10,7 @@
 
 if (!defined('PANTHERA_INSTALLER'))
     return False;
-    
+
 // we will use this ofcourse
 global $panthera;
 global $installer;
@@ -19,7 +19,7 @@ if (isset($_GET['save']))
 {
     $keys = array(
             'debug' => 'bool',
-            'hashing_algorithm' => 'string', 
+            'hashing_algorithm' => 'string',
             'header_maskphp' => 'bool',
             'header_framing' => 'string',
             'header_xssprot' => 'bool',
@@ -35,17 +35,17 @@ if (isset($_GET['save']))
             'session_lifetime' => 'int',
             'cookie_encrypt' => 'bool'
             );
-            
+
     $panthera -> importModule('appconfig');
     $app = new appConfigEditor();
     $config = (array)$app->config;
-    
+
     foreach ($keys as $key => $type)
     {
         if (isset($_POST[$key]))
         {
             $value = $_POST[$key];
-            
+
             if ($type == 'bool')
             {
                 if ($value == '')
@@ -53,19 +53,19 @@ if (isset($_GET['save']))
                 else
                     $value = True;
             }
-            
+
             if ($type == 'int')
             {
                 $value = intval($type);
             }
-            
+
             if (isset($config[$key]))
                 unset($config[$key]);
-            
+
             $panthera -> config -> setKey($key, $value, $type);
         }
     }
-    
+
     $app -> config = (object)$config;
     $app -> save();
 
@@ -74,7 +74,7 @@ if (isset($_GET['save']))
     $panthera -> config -> setKey('salt', md5(rand(99999, 999999)), 'string');
     $panthera -> config -> setKey('ajax_url', $panthera -> config -> getKey('url'). '/_ajax.php', 'string');
     $panthera -> config -> save();
-    
+
     $installer -> enableNextStep();
     ajax_exit(array('status' => 'success'));
 }

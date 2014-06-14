@@ -1,7 +1,7 @@
 <?php
 /**
  * Panthera user management
- * 
+ *
  * @package Panthera\core\user
  * @author Damian Kęska
  * @license LGPLv3
@@ -27,10 +27,10 @@ class pantheraUser extends pantheraFetchDB
 
     /**
      * Customized constructor that also loads meta attributes
-     * 
+     *
      * @return null
      */
-    
+
     public function __construct($by, $value)
     {
         parent::__construct($by, $value);
@@ -62,13 +62,13 @@ class pantheraUser extends pantheraFetchDB
     {
         return $this->attributes->__get($var);
     }
-    
+
     /**
      * Check if user is admin
-     * 
+     *
      * @return bool
      */
-    
+
     public function isAdmin()
     {
         return getUserRightAttribute($this, 'admin');
@@ -105,36 +105,36 @@ class pantheraUser extends pantheraFetchDB
 
         return False;
     }
-    
+
     /**
       * Ban, unban or check ban status
       *
       * @param bool $value Set this value to True or False to ban or unban user
-      * @return bool 
+      * @return bool
       * @author Damian Kęska
       */
-    
+
     public function isBanned($value='')
     {
         if ($value !== '')
             $this -> attributes -> banned = intval((bool)$value);
-        
+
         return $this -> attributes -> banned;
     }
-    
+
     /**
       * Return user's login or full name depends on if full name is provided in user profile
       *
       * @param string $getLogin Get user login instead of full name
-      * @return string 
+      * @return string
       * @author Damian Kęska
       */
-    
+
     public function getName($getLogin=False)
     {
         if ($this->__get('full_name') and !$getLogin)
             return $this->__get('full_name');
-        
+
         return $this->__get('login');
     }
 
@@ -161,29 +161,29 @@ class pantheraUser extends pantheraFetchDB
 
         return parent::__set($var, $value);
     }
-    
+
     /**
       * Save all data back to database, including user attributes
       *
-      * @return void 
+      * @return void
       * @author Damian Kęska
       */
-    
+
     public function save()
     {
         if ($this -> attributes -> changed())
             $this -> __set('attributes', serialize($this->attributes->listAll()));
-        
+
         parent::save();
     }
-    
+
     /**
       * Get user's avatar link
       *
-      * @return string 
+      * @return string
       * @author Damian Kęska
       */
-    
+
     public function getAvatar()
     {
         if (!$this->__get('profile_picture'))
@@ -191,45 +191,45 @@ class pantheraUser extends pantheraFetchDB
         else
             return pantheraUrl($this->__get('profile_picture'), False, 'frontend');
     }
-    
+
     /**
      * Get user's last login history
-     * 
+     *
      * @param string|int $beforeDate (Optional) Get last logins before this date
      * @param string|int $afterDate (Optional) Get last logins after this date
      * @param int $offset (Optional) SQL offset
-     * @param int $limit (Optional) SQL limit 
+     * @param int $limit (Optional) SQL limit
      */
-    
+
     public function getLastLoginHistory($beforeDate='', $afterDate='', $offset=0, $limit=100)
     {
         $where = new whereClause;
         $where -> add('', 'uid', '=', $this -> id);
-        
+
         if ($beforeDate)
         {
             if (is_string($beforeDate))
                 $beforeDate = strtotime($beforeDate);
-            
+
             $beforeDate = date('Y-m-d G:i:s', $beforeDate);
-            
+
             $where -> add('AND', 'date', '<', $beforeDate);
         }
-        
+
         if ($afterDate)
         {
             if (is_string($afterDate))
                 $afterDate = strtotime($afterDate);
-            
+
             $afterDate = date('Y-m-d G:i:s', $afterDate);
-            
+
             $where -> add('AND', 'date', '>', $afterDate);
         }
-        
+
         $show = $where -> show();
         $SQL = $this -> panthera -> db -> query('SELECT * FROM `{$db_prefix}users_lastlogin_history` WHERE ' .$show[0]. ' ORDER BY `date` DESC LIMIT ' .intval($offset). ', ' .intval($limit), $show[1]);
         $fetch = $SQL -> fetchAll(PDO::FETCH_ASSOC);
-        
+
         if ($fetch)
         {
             foreach ($fetch as &$row)
@@ -239,60 +239,60 @@ class pantheraUser extends pantheraFetchDB
                 $row['date'] = date($this -> panthera -> dateFormat, strtotime($row['date']));
             }
         }
-        
-        
+
+
         return $fetch;
     }
-    
+
     /**
       * Get user attribute by id, pantheraUser object, login or current logged in user
       *
       * @param string $attribute Attribute name to get eg. id, login
       * @param string|int|pantheraUser $input Input data to find user by (integer input means id, string means login and pantheraUser object means user itself)
-      * @return  
+      * @return
       * @author Damian Kęska
       */
-    
+
     public static function getAttribute($attribute, $input='')
     {
         global $panthera;
-        
+
         if (!$input)
         {
             if ($panthera -> user -> exists())
                 return $panthera -> user -> __get($attribute);
         }
-        
+
         $user = null;
-        
+
         // get by pantheraUser object
         if ($input instanceof pantheraUser)
             $user = $input;
-        
+
         // get by login
         if (is_string($input))
             $user = new pantheraUser('login', $input);
-        
+
         // get by id
         if (is_int($input))
             $user = new pantheraUser('id', $input);
-        
+
         if ($user)
         {
             if ($user -> exists())
                 return $user->__get($attribute);
         }
-        
+
         return False;
     }
-    
+
     /**
      * Construct by id or login
-     * 
+     *
      * @param int|string $input
      * @return pantheraUser
      */
-    
+
     public static function autoConstruct($input)
     {
         if (is_int($input))
@@ -300,18 +300,18 @@ class pantheraUser extends pantheraFetchDB
         elseif (is_string($input))
             return new pantheraUser('login', $input);
     }
-    
+
     /**
      * Remove user from system
-     * 
+     *
      * @return bool
      */
-    
+
     public function delete()
     {
         $this -> acl -> deleteAll();
         parent::delete();
-        
+
         return True;
     }
 }
@@ -343,7 +343,7 @@ class pantheraGroup extends pantheraFetchDB
     public function __construct($by, $value)
     {
         parent::__construct($by, $value);
-        
+
         if ($this -> exists())
             $this -> acl = new metaAttributes($this->panthera, 'g', $this->group_id, (bool)$this->cache);
     }
@@ -467,19 +467,19 @@ class pantheraGroup extends pantheraFetchDB
     {
         $limitQuery = '';
         $what = '`login`, `id`';
-    
+
         if ($limit and $offset)
             $limitQuery = ' LIMIT ' .intval($offset). ', ' .intval($limit);
         elseif ($limit === False)
             $what = 'count(*)';
-        
+
         $SQL = $this -> panthera -> db -> query('SELECT ' .$what. ' FROM `{$db_prefix}users` WHERE `primary_group` = :gid ' .$limitQuery, array('gid' => $this->group_id));
-        
+
         if ($limit === False) {
             $array = $SQL -> fetch(PDO::FETCH_ASSOC);
             return intval($array['count(*)']);
         }
-        
+
         return $SQL -> fetchAll(PDO::FETCH_ASSOC);
     }
 }
@@ -499,30 +499,30 @@ function createNewUser($login, $passwd, $full_name, $primary_group='', $attribut
 
     if ($ip == '')
         $ip = $_SERVER['REMOTE_ADDR'];
-    
+
     // groups check
     if (!$primary_group)
         $primary_group = 'users';
-    
+
     if (!$panthera -> locale -> exists($language)) {
         throw new Exception('Selected locale does not exists', 864);
         return False;
     }
-    
+
     $test = new pantheraGroup('name', $primary_group);
-    
+
     if (!$test -> exists()) {
         throw new Exception('Selected group does not exists', 865);
         return False;
     }
-    
+
     $primary_group = $test->group_id;
-    
+
     if ($mail) {
         if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
             throw new Exception('Incorrect e-mail address', 866);
     }
-    
+
     if ($jabber) {
         if (!filver_var($jabber, FILTER_VALIDATE_EMAIL))
             throw new Exception('Incorrect jabber address', 867);
@@ -530,15 +530,15 @@ function createNewUser($login, $passwd, $full_name, $primary_group='', $attribut
 
     // validate login
     $test = new pantheraUser('login', $login);
-    
+
     if ($test -> exists()) {
         throw new Exception('User already exists', 863);
         return False;
     }
-    
+
     $login = trim($login);
     $regexp = $panthera -> get_filters('createNewUser.loginRegexp', '/^[a-zA-Z0-9\-\.\,\+\!]+_?[a-zA-Z0-9\-\.\,\+\!]+$/D');
-    
+
     if (!preg_match($regexp, $login))
         throw new Exception('Login contains invalid characters', 868);
 
@@ -548,7 +548,7 @@ function createNewUser($login, $passwd, $full_name, $primary_group='', $attribut
         if (!filter_var($ip, FILTER_VALIDATE_IP))
             throw new Exception('Invalid IP address, leave empty if not required', 878);
     }
-    
+
     $array = array(
         'login' => strip_tags($login),
         'passwd' => encodePassword($passwd),
@@ -562,9 +562,9 @@ function createNewUser($login, $passwd, $full_name, $primary_group='', $attribut
         'ip' => $ip
     );
 
-    
+
     $SQL = true;
-    
+
     if ($requiresConfirmation)
     {
         $confirmationKey = generateRandomString(16);
@@ -573,14 +573,14 @@ function createNewUser($login, $passwd, $full_name, $primary_group='', $attribut
             'confirmationKey' => $confirmationKey,
             'login' => $array['login']
         );
-        
+
         $SQL = $panthera -> db -> query ('INSERT INTO `{$db_prefix}password_recovery` (`id`, `recovery_key`, `user_login`, `date`, `new_passwd`, `type`) VALUES (NULL, :confirmationKey, :login, NOW(), " ", "confirmation");', $details);
-    
+
         if (!$SQL) {
             $panthera -> logging -> output('Cannot insert confirmation key to database, details: ' .$SQL->errorInfo(), 'users');
             return False;
         }
-        
+
         $panthera -> config -> loadSection('register');
         $messages = $panthera->config->getKey('register.verification.message', array('english' => 'Hello {$userName}, here is a link to confirm your account '.pantheraUrl('{$PANTHERA_URL}/pa-login.php?ckey=', False, 'frontend').'{$key}&login={$userName}'), 'array', 'register');
         $titles = $panthera->config->getKey('register.verification.title', array('english' => 'Account confirmation'), 'array', 'register');
@@ -596,12 +596,12 @@ function createNewUser($login, $passwd, $full_name, $primary_group='', $attribut
             $message = end($messages);
             $title = end($titles);
         }
-        
+
         $message = str_replace('{$key}', $confirmationKey,
                    str_replace('{$userName}', $array['login'],
                    str_replace('{$userID}', $user->id, pantheraUrl($message))));
 
-        $title =   str_replace('{$key}', $confirmationKey, 
+        $title =   str_replace('{$key}', $confirmationKey,
                    str_replace('{$userName}', $array['login'],
                    str_replace('{$userID}', $user->id, pantheraUrl($title))));
 
@@ -611,14 +611,14 @@ function createNewUser($login, $passwd, $full_name, $primary_group='', $attribut
         $mailRecovery -> addRecipient($array['mail']);
         $mailRecovery -> send($message, 'html');
     }
-    
+
     $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}users` (`id`, `login`, `passwd`, `full_name`, `primary_group`, `joined`, `attributes`, `language`, `mail`, `jabber`, `profile_picture`, `lastlogin`, `lastip`) VALUES (NULL, :login, :passwd, :full_name, :primary_group, NOW(), :attributes, :language, :mail, :jabber, :profile_picture, NOW(), :ip);', $array);
-        
+
     if (!$SQL) {
         $panthera -> logging -> output('Cannot insert new user to users table, details: ' .$SQL->errorInfo(), 'users');
         return False;
     }
-    
+
     return True;
 }
 
@@ -633,7 +633,7 @@ function createNewUser($login, $passwd, $full_name, $primary_group='', $attribut
 function checkUserPermissions($user=null, $admin=False)
 {
     $panthera = pantheraCore::getInstance();
-    
+
     if (!$user)
         $user = $panthera -> user;
 
@@ -672,11 +672,11 @@ function getUserRightAttribute($user, $attribute)
     // if user has blocked attribute and not a superuser
     if ((string)$user->acl->get($attribute) == '__blocked__' and !$user->attributes->superuser and !$user->acl->get('superuser'))
         return False;
-        
+
     // if user is admin or superuser
     if($user->attributes->admin or $user->attributes->superuser or $user->acl->get('admin') or $user->acl->get('superuser'))
         return True;
-        
+
     // if not a super user, not an admin and not allowed in current context (attribute == false)
     if (!(bool)$user->acl->get($attribute) and !$user->attributes->admin and !$user->attributes->superuser and !$user->acl->get('superuser') and !$user->acl->get('admin'))
         return False;
@@ -716,28 +716,28 @@ class metaAttributes
         $this->panthera = $panthera;
         $this->_type = $type;
         $this->_objectID = $objectID;
-        
+
         // check if cache is avaliable
         if ($cache and $panthera -> cache)
         {
             $this -> _cacheID = 'meta.' .$type. '.' .$objectID;
-            
+
             if ($panthera -> cache -> exists($this->_cacheID))
                 $this->_metas = $panthera -> cache -> get($this->_cacheID);
         }
-        
+
         if ($this->_metas === null)
         {
             $SQL = $panthera -> db -> query ('SELECT * FROM `{$db_prefix}metas` WHERE `userid` = :objectID AND `type` = :type', array('objectID' => $objectID, 'type' => $type));
             $Array = $SQL -> fetchAll(PDO::FETCH_ASSOC);
-            
+
             if (count($Array) > 0) {
                 $this->addFromArray($Array);
             } else {
                 $this -> _metas = array();
                 $panthera -> logging -> output('No any meta tags found for objectid=' .$objectID. ', type=' .$type, 'metaAttributes');
             }
-            
+
             // update cache
             if ($this -> _cacheID)
             {
@@ -745,7 +745,7 @@ class metaAttributes
                 $panthera -> logging -> output ('Wrote meta to cache id=' .$this->_cacheID, 'metaAttributes');
             }
         }
-        
+
         if ($this->_metas == null)
             $this->_metas = array();
 
@@ -820,24 +820,24 @@ class metaAttributes
 
         return $array;
     }
-    
+
     /**
      * Delete all meta tags connected to this object
-     * 
+     *
      * @author Damian Kęska
      * @return bool
      */
-    
+
     public function deleteAll()
     {
         $metas = $this -> listAll();
         $this -> panthera -> logging -> output('Removing "' .count($metas). '" keys for ' .$this->_type. ':' .$this->_objectID, 'metaAttributes');
-        
+
         foreach ($metas as $meta)
             $this -> remove($meta);
-        
+
         $this -> save();
-        
+
         return (!count($this -> listAll()));
     }
 
@@ -1021,7 +1021,7 @@ class metaAttributes
                     // can't remove variable from overlay
                     if ($meta['overlay'] != '')
                         continue;
-                        
+
                     $metaValues = array(
                         'userid' => $this->_objectID,
                         'type' => $this->_type,
@@ -1054,7 +1054,7 @@ class metaAttributes
                         'type' => $this->_type,
                         'name' => $key
                     );
-                    
+
                     try {
                         $panthera -> db -> query('UPDATE `{$db_prefix}metas` SET `value` = :value WHERE `userid` = :userid AND `type` = :type AND `name` = :name', $metaValues);
                     } catch (Exception $e) {
@@ -1067,7 +1067,7 @@ class metaAttributes
             $this -> _changed = array();
 
             // write changes to cache too
-            if ($this -> _cacheID) 
+            if ($this -> _cacheID)
             {
                 $panthera -> cache -> set ($this->_cacheID, $this->_metas, 'metaAttributes');
                 $panthera -> logging -> output ('Saved meta to cache id=' .$this->_cacheID, 'metaAttributes');

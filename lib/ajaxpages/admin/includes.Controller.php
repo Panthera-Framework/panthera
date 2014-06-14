@@ -8,7 +8,7 @@
  * @license LGPLv3
  */
 
-  
+
 /**
  * List of all included files in current code execution
  *
@@ -22,9 +22,9 @@ class includesAjaxControllerCore extends pageController
     protected $uiTitlebar = array(
         'Included files - List of all included files in current code execution', 'includes'
     );
-    
+
     protected $permissions = 'admin.debug.includes';
-    
+
     /**
      * Main, display template function
      *
@@ -36,10 +36,10 @@ class includesAjaxControllerCore extends pageController
     public function display()
     {
         $this -> panthera -> locale -> loadDomain('includes');
-        
+
         $files = get_included_files();
         $this -> panthera -> template -> push('files', $files);
-        
+
         return $this -> panthera -> template -> compile('includes.tpl');
     }
 }

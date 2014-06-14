@@ -1,6 +1,6 @@
 <?php
 /**
-  * Menu panel 
+  * Menu panel
   *
   * @package Panthera\modules\frontside\panels
   * @author Damian Kęska
@@ -23,7 +23,7 @@ class frontsidePanel_menu
 
         $menu = new simpleMenu();
         $menu -> loadFromDB($data['storage']['name']);
-        
+
         if (!$data['template'])
         {
             $data['template'] = 'menu.tpl';

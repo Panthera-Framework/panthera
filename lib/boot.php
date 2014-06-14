@@ -1,14 +1,14 @@
 <?php
 /**
-  * Panthera bootstrap 
+  * Panthera bootstrap
   *
   * @package Panthera\core
   * @author Damian Kęska
   * @license GNU Affero General Public License 3, see license.txt
   */
-  
+
 ini_set('memory_limit', '128M');
-  
+
 // in CLI we have specific environment eg. ctrl+c catching
 if (php_sapi_name() == 'cli') {
     define('MODE', 'CLI'); // deprecated
@@ -25,7 +25,7 @@ if (PANTHERA_MODE == 'CLI') {
         error_reporting(E_ALL);
     else
         error_reporting(E_ERROR | E_WARNING | E_PARSE);
-        
+
 } else {
     // CGI mode
     ini_set("display_errors", 1);
@@ -75,10 +75,10 @@ if (!defined('SKIP_TEMPLATE'))
 
 if (!defined('SKIP_USER'))
     include_once PANTHERA_DIR. '/user.class.php';
-    
+
 if (!defined('SKIP_LOCALE'))
     include_once PANTHERA_DIR. '/locale.class.php';
-    
+
 if (!defined('SKIP_SESSION'))
     include_once PANTHERA_DIR. '/session.class.php';
 
@@ -90,25 +90,25 @@ if (!defined('_PANTHERA_CORE_CLI'))
 
 if (!defined('_PANTHERA_CORE_SESSION_'))
     define('_PANTHERA_CORE_SESSION_', 'pantheraSession');
-        
+
 if (!defined('_PANTHERA_CORE_DB_'))
     define('_PANTHERA_CORE_DB_', 'pantheraDB');
-        
+
 if (!defined('_PANTHERA_CORE_CONFIG_'))
     define('_PANTHERA_CORE_CONFIG_', 'pantheraConfig');
-        
+
 if (!defined('_PANTHERA_CORE_LOCALE_'))
     define('_PANTHERA_CORE_LOCALE_', 'pantheraLocale');
-        
+
 if (!defined('_PANTHERA_CORE_LOGGING_'))
     define('_PANTHERA_CORE_LOGGING_', 'pantheraLogging');
-        
+
 if (!defined('_PANTHERA_CORE_OUTPUT_CONTROL_'))
     define('_PANTHERA_CORE_OUTPUT_CONTROL_', 'outputControl');
-        
+
 if (!defined('_PANTHERA_CORE_TYPES_'))
     define('_PANTHERA_CORE_TYPES_', 'pantheraTypes');
-    
+
 if (!defined('_PANTHERA_CORE_TEMPLATE_'))
     define('_PANTHERA_CORE_TEMPLATE_', 'pantheraTemplate');
 
@@ -209,16 +209,16 @@ if (!defined('SKIP_USER') and !defined('SKIP_SESSION'))
             // debugging is always turned on for root
             if ($user -> acl -> get('root'))
                 $panthera -> logging -> debug = true;
-            
+
             if (!$panthera->session->exists('language'))
             {
                 // localisations
                 if (!defined('SKIP_TEMPLATE'))
                     $template -> push('language', $user->language);
-                    
+
                 if (!defined('SKIP_LOCALE'))
                     $locale -> setLocale($user->language);
-                    
+
                 if (!defined('SKIP_SESSION'))
                     $panthera->session->set('language', $user->language);
             }

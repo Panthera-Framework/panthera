@@ -73,60 +73,60 @@ class localesManagement
 
         return False;
     }
-    
+
     /**
       * Create a new locale
       *
       * @param string $locale
-      * @return bool 
+      * @return bool
       * @author Damian Kęska
       */
-    
+
     public static function create($locale, $copy='')
     {
         $panthera = pantheraCore::getInstance();
-        
+
         if ($locale == '')
             return False;
-    
+
         mkdir(SITE_DIR. '/content/locales/' .$locale);
-        
+
         if (is_dir(SITE_DIR. '/content/locales/' .$locale))
         {
             if ($copy != '')
             {
                 $panthera -> importModule('filesystem');
-                
-                if (is_dir(SITE_DIR. '/content/locales/' .$copy))   
+
+                if (is_dir(SITE_DIR. '/content/locales/' .$copy))
                     filesystem::recurseCopy(SITE_DIR. '/content/locales/' .$copy, SITE_DIR. '/content/locales/' .$locale);
-                    
+
             }
-            
+
             return True;
         }
-           
+
         return False;
     }
-    
+
     /**
       * Get domain directory
       *
       * @param string $language Language name
       * @param string $domain Domain name
-      * @return string|bool 
+      * @return string|bool
       * @author Damian Kęska
       */
-    
+
     public static function getDomainDir($language, $domain)
     {
         $dirs = array(SITE_DIR. '/content/locales/' .$language. '/' .$domain. '.phps', PANTHERA_DIR. '/locales/' .$language. '/' .$domain. '.phps');
-        
+
         foreach ($dirs as $dir)
         {
             if (is_file($dir))
                 return $dir;
         }
-        
+
         return False;
     }
 
@@ -212,13 +212,13 @@ class localesManagement
     public static function removeDomain($locale, $domain)
     {
         $panthera = pantheraCore::getInstance();
-    
+
         if (is_file(SITE_DIR. '/content/locales/' .$locale. '/' .$domain. '.phps'))
         {
             // clean up the cache if avaliable
             if ($panthera->cache)
                 $panthera->cache->remove('locale.' .$locale. '.' .$domain);
-        
+
             unlink(SITE_DIR. '/content/locales/' .$locale. '/' .$domain. '.phps');
             return True;
         }
@@ -239,7 +239,7 @@ class localesManagement
     public static function renameDomain($locale, $domain, $newName)
     {
         $panthera = pantheraCore::getInstance();
-    
+
         // check if destination already exists
         if (is_file(SITE_DIR. '/content/locales/' .$locale. '/' .$newName. '.phps'))
             return False;
@@ -249,7 +249,7 @@ class localesManagement
             // clean up the cache if avaliable
             if ($panthera->cache)
                 $panthera->cache->remove('locale.' .$locale. '.' .$domain);
-        
+
             rename(SITE_DIR. '/content/locales/' .$locale. '/' .$domain. '.phps', SITE_DIR. '/content/locales/' .$locale. '/' .$newName. '.phps');
             return True;
         }
@@ -281,13 +281,13 @@ class localesManagement
 
         return false;
     }
-    
+
     /**
       * Rename a locale
       *
       * @param string $locale
       * @param string $newName
-      * @return mixed 
+      * @return mixed
       * @author Damian Kęska
       */
 
@@ -300,7 +300,7 @@ class localesManagement
         {
             return rename(SITE_DIR. '/content/locales/' .$locale, SITE_DIR. '/content/locales/' .$newName);
         }
-        
+
         return false;
     }
 
@@ -320,7 +320,7 @@ class localesManagement
 
         return new localeDomain($localeName, $domain);
     }*/
-    
+
     /**
       * Search for missing translations in PHP and tpl files
       *
@@ -328,87 +328,87 @@ class localesManagement
       * @return array
       * @author Damian Kęska
       */
-    
+
     public static function scanForMissingStrings($tree, $locale='')
     {
         $panthera = pantheraCore::getInstance();
         $panthera -> importModule('filesystem');
-        
+
         if (!$locale)
         {
             $locale = $panthera -> locale -> getActive();
         }
-        
+
         if (!is_dir($tree))
         {
             return array();
         }
-        
+
         $missing = array();
         $files = filesystem::scandirDeeply($tree, false);
         $domainObjects = array();
-        
+
         foreach ($files as $file)
         {
             $pathinfo = pathinfo($file);
-            
+
             if (strpos($file, '/tmp/') !== False)
             {
                 continue;
             }
 
-            // in Python style            
+            // in Python style
             if (!in_array(strtolower(@$pathinfo['extension']), array('php', 'tpl', 'html')))
             {
                 continue;
             }
-            
+
             $contents = file($file);
             $i = 0;
-            
+
             foreach ($contents as $line)
             {
                 $i++;
-            
+
                 if (strpos($line, 'localize(') !== False)
                 {
-                    preg_match_all("/(localize|slocalize)\((.*)\)/U", $line, $out, PREG_SET_ORDER); 
-                    
+                    preg_match_all("/(localize|slocalize)\((.*)\)/U", $line, $out, PREG_SET_ORDER);
+
                     foreach ($out as $match)
                     {
                         $type = $match[1];
                         $args = explode("', ", $match[2]);
                         $rArgs = array();
-                        
+
                         foreach ($args as $arg)
                         {
                             $rArgs[] = trim($arg, "'\" ");
                         }
-                        
+
                         if ($rArgs[0][0] == '$') // first character
                         {
                             continue;
                         }
-                        
+
                         if (!isset($rArgs[1]))
                         {
                             $rArgs[1] = 'messages'; // default domain
                         }
 
                         $check = false;
-                        
+
                         try {
                             // create new domain object and push to array
                             if (!isset($domainObjects[$rArgs[1]]))
                             {
                                 $domainObjects[$rArgs[1]] = new localeDomain($locale, $rArgs[1]);
                             }
-                            
+
                             $check = $domainObjects[$rArgs[1]] -> stringExists($rArgs[0]);
                         } catch (Exception $e) {
                             // nothing here
                         }
-                        
+
                         if (!$check)
                         {
                             // create new domain in array
@@ -416,16 +416,16 @@ class localesManagement
                             {
                                 $missing[$rArgs[1]] = array();
                             }
-                            
+
                             $missing[$rArgs[1]][$rArgs[0]] = array('file' => $file, 'line' => $i, 'type' => $type, 'domain' => $rArgs[1]);
                         }
                     }
                 }
             }
-            
+
             unset($contents);
         }
-        
+
         return $missing;
     }
 }
@@ -583,13 +583,13 @@ class localeDomain
             $saveDir = $this->dir;
 
         @mkdir(dirname($saveDir));
-        
+
         // clean up the cache if avaliable
         if ($this->panthera->cache)
         {
             if ($this->panthera->varCache)
                 $this -> panthera -> varCache -> remove('langtool.scan.missing.' .$this->locale);
-        
+
             $this->panthera->cache->remove('locale.' .$this->locale. '.' .$this->domain);
         }
         try {

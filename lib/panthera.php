@@ -36,15 +36,15 @@ function pantheraExceptionHandler($exception)
         $trace[$key]['args_content'] = null;
         $trace[$key]['args'] = null;
         $trace[$key]['class'] = null;
-        
+
         if (isset($trace[$key]['args']))
         {
             $trace[$key]['args_content'] = json_encode($trace[$key]['args']);
-        
+
             if (is_array($trace[$key]['args']))
                 $trace[$key]['args'] = array_map('gettype', $trace[$key]['args']);
         }
-        
+
         if (isset($stackPoint['class']))
             $trace[$key]['class'] = $stackPoint['class'];
     }
@@ -52,12 +52,12 @@ function pantheraExceptionHandler($exception)
     $stackTrace = array();
     foreach ($trace as $key => $stackPoint) {
         $args = '';
-        
+
         if (is_array($stackPoint['args']))
         {
             $args = implode(', ', $stackPoint['args']);
         }
-        
+
         $stackTrace[] = array('key' => $key, 'file' => $stackPoint['file'], 'line' => $stackPoint['line'], 'function' => $stackPoint['function'], 'args' => $args, 'args_json' => $stackPoint['args_content'], 'class' => $stackPoint['class']);
 
         $function = $stackPoint['function'];
@@ -66,20 +66,20 @@ function pantheraExceptionHandler($exception)
         {
             $function = $stackPoint['class']. ' -> ' .$stackPoint['function']. '(' .$args. ')';
         }
-        
+
         $panthera->logging->output($key. ' => ' .$function. ' in ' .$stackPoint['file']. ' on line ' .$stackPoint['line'], 'pantheraExceptionHandler');
     }
-    
+
     if ($panthera -> config)
     {
         if ($panthera -> config -> getKey('dumpErrorsToFiles'))
         {
             if (!is_dir(SITE_DIR. '/content/tmp/dumps'))
                 mkdir(SITE_DIR. '/content/tmp/dumps');
-            
+
             $dumpName = 'exception-' .hash('md4', $exception->getFile().$exception->getLine()). '.phps';
             $fp = fopen(SITE_DIR. '/content/tmp/dumps/' .$dumpName, 'w');
-                
+
             $array = array(
                 'included_files' => get_included_files(),
                 'phpversion' => phpversion(),
@@ -99,9 +99,9 @@ function pantheraExceptionHandler($exception)
                     'code' => $exception->getCode()
                 ),
             );
-            
+
             fwrite($fp, serialize($array));
-            
+
             fclose($fp);
         }
     }
@@ -109,7 +109,7 @@ function pantheraExceptionHandler($exception)
     if ($panthera -> logging -> debug)
     {
         $exceptionPage = getContentDir('templates/exception_debug.php');
-        
+
         if ($exceptionPage)
         {
             include_once $exceptionPage;
@@ -120,7 +120,7 @@ function pantheraExceptionHandler($exception)
 
     } else {
         $exceptionPage = getContentDir('templates/exception.php');
-        
+
         if ($exceptionPage)
         {
             include_once $exceptionPage;
@@ -145,11 +145,11 @@ function pantheraExceptionHandler($exception)
 function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $errline='unknown')
 {
     $panthera = pantheraCore::getInstance();
-    
+
     if (error_get_last() or $errno)
     {
         $details = error_get_last();
-        
+
         // skip those error codes
         $skipErrorCodes = array(
             E_DEPRECATED,
@@ -163,7 +163,7 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
             E_CORE_WARNING,
             E_WARNING,
         );
-        
+
         // we will show warning messages in debugging mode
         if ($panthera->logging->debug and $panthera->logging->strict)
         {
@@ -174,27 +174,27 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
                 E_USER_NOTICE,
             );
         }
-        
+
         if ($panthera->logging)
         {
             $panthera -> logging -> output($errstr. ' in ' .$errfile. ' on line ' .$errline, 'PHP');
         }
-        
+
         if (in_array($errno, $skipErrorCodes))
         {
             return True;
         }
-        
+
         if ($panthera -> config)
         {
             if ($panthera -> config -> getKey('dumpErrorsToFiles'))
             {
                 if (!is_dir(SITE_DIR. '/content/tmp/dumps'))
                     mkdir(SITE_DIR. '/content/tmp/dumps');
-                
+
                 $dumpName = 'error-' .hash('md4', $errfile.$errline). '.phps';
                 $fp = fopen(SITE_DIR. '/content/tmp/dumps/' .$dumpName, 'w');
-                    
+
                 fwrite($fp, serialize(array(
                     'included_files' => get_included_files(),
                     'phpversion' => phpversion(),
@@ -214,11 +214,11 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
                         'code' => $errno,
                     )
                 )));
-                    
+
                 fclose($fp);
             }
         }
-        
+
         if(strpos('PHP Startup', $errstr) !== False)
             return True;
 
@@ -228,7 +228,7 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
             $panthera->logging->saveLog();
 
             $stack = debug_backtrace( false );
-            
+
             $errorPage = getContentDir('templates/error_debug.php');
 
             if ($errorPage)
@@ -239,12 +239,12 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
             exit;
         } else {
             $errorPage = getContentDir('templates/error.php');
-            
+
             if ($errorPage)
             {
                 include_once $errorPage;
             }
-            
+
             exit;
         }
     }
@@ -259,9 +259,9 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
 
 class pantheraLogging
 {
-    public $debug = False; 
+    public $debug = False;
     public $tofile = True;
-    public $toVarCache=True; 
+    public $toVarCache=True;
     public $printOutput = False;
     public $filterMode = '';
     public $filter = array();
@@ -324,7 +324,7 @@ class pantheraLogging
         $this->panthera -> get_options('logging.output', $msg);
 
         $this->_output[] = array($msg, $type, $time, $this->timer, memory_get_usage($this->isRealMemUsage));
-        
+
         if ($dontResetTimer == False)
             $this->timer = 0;
 
@@ -342,14 +342,14 @@ class pantheraLogging
     {
         $this->_output = array();
     }
-    
+
     /**
       * Start timer to count execution time of fragment of code
       *
-      * @return void 
+      * @return void
       * @author Damian Kęska
       */
-    
+
     public function startTimer()
     {
         $this->timer = microtime_float();
@@ -365,7 +365,7 @@ class pantheraLogging
     public function getOutput($array=False)
     {
         $this -> panthera -> importModule('filesystem');
-        
+
         if ($array === True)
             return $this->_output;
 
@@ -385,7 +385,7 @@ class pantheraLogging
         {
             $time = microtime_float($line[2])-$_SERVER['REQUEST_TIME_FLOAT'];
             $real = '';
-            
+
             if ($line[3] > 0)
             {
                 $executionTime = (microtime_float($line[2])-$line[3])*1000;
@@ -393,7 +393,7 @@ class pantheraLogging
             } else {
                 $executionTime = ($time-$lastTime)*1000;
             }
-            
+
             $msg .= "[".substr($time, 0, 9).", ".substr($executionTime, 0, 9)."ms".$real."] [".filesystem::bytesToSize($line[4])."] [".$line[1]."] ".$line[0]. "\n";
             $lastTime = $time;
         }
@@ -413,14 +413,14 @@ class pantheraLogging
     public function saveLog()
     {
         $output = $this->getOutput();
-    
+
         if ($this->tofile)
         {
             $fp = @fopen(SITE_DIR. '/content/tmp/debug.log', 'w');
             @fwrite($fp, $output);
             @fclose($fp);
         }
-        
+
         if ($this->toVarCache)
         {
             if ($this->panthera->varCache)
@@ -429,14 +429,14 @@ class pantheraLogging
             }
         }
     }
-    
+
     /**
       * Read log from cache or from file
       *
       * @return string|bool
       * @author Damian Kęska
       */
-    
+
     public function readSavedLog()
     {
         if ($this->toVarCache and $this->panthera->varCache)
@@ -446,12 +446,12 @@ class pantheraLogging
                 return base64_decode($this->panthera->varCache->get('debug.log'));
             }
         }
-        
+
         if ($this->tofile and is_file(SITE_DIR. '/content/tmp/debug.log'))
         {
             return @file_get_contents(SITE_DIR. '/content/tmp/debug.log');
         }
-        
+
         return False;
     }
 }
@@ -499,10 +499,10 @@ class pantheraConfig
         // load configuration section first
         if ($section !== null)
             $this->loadSection($section);
-            
+
         if(array_key_exists($key, $this->config))
             return $this->config[$key];
-            
+
         if(array_key_exists($key, $this->overlay))
             return $this->panthera->types->parse($this->overlay[$key][1], $this->overlay[$key][0]);
 
@@ -562,11 +562,11 @@ class pantheraConfig
     {
         if(!$key or $value === null or isset($this->config[$key]))
             return False;
-		
+
 		// load configuration section first
         if ($section !== null)
             $this->loadSection($section);
-            
+
         if (isset($this->overlay[$key]))
         {
             // if section changed tell the framework that overlay changed
@@ -574,36 +574,36 @@ class pantheraConfig
             {
                 if ($section === null)
                     $section = '';
-            
+
                 if ($this->overlay_modified[(string)$key] != 'created')
                 {
                     $this->overlay_modified[(string)$key] = True;
                 }
-                
+
                 $this->overlay[(string)$key][2] = $section;
             }
-            
+
             // mark overlay as modified on value modification
             if ($this -> getKey($key) === $value)
             {
                 return True;
             }
-                
+
             if ($this->overlay_modified[(string)$key] != 'created')
             {
                 $this->overlay_modified[(string)$key] = True;
             }
-            
+
         } else {
             if ($section === null)
                 $section = '';
-        
+
             // new entry in overlay
             $this->overlay[(string)$key] = array(0 => 'string'); // default type
             $this->overlay[(string)$key][2] = $section;
             $this->overlay_modified[(string)$key] = 'created';
         }
-        
+
         if($type !== '__none')
         {
             if ($this->panthera->types->exists($type))
@@ -624,7 +624,7 @@ class pantheraConfig
 
     /**
      * Mark a key for removal
-     * 
+     *
      * @param string $key Key name
      * @author Damian Kęska
      * @return bool
@@ -652,7 +652,7 @@ class pantheraConfig
     {
         if (isset($this->overlay[$key]))
             return $this->overlay[$key][0];
-        
+
         return 'string';
     }
 
@@ -667,37 +667,37 @@ class pantheraConfig
     {
         $array = null;
         $this->overlays++;
-        
+
         if ($this -> panthera -> cache and $section != '*')
         {
             if ($this->panthera->cache->exists('configOverlay.' .$section))
             {
                 $array = $this->panthera->cache->get('configOverlay.' .$section);
-                
+
                 if (!$array)
                     $array = array();
-                
+
                 $this->sections[$section] = true;
                 $this -> overlay = array_merge($this -> overlay, $array);
                 $this->panthera->logging->output('Loaded config_overlay from cache "configOverlay.' .$section. '"', 'pantheraConfig');
                 return count($array);
             }
         }
-        
+
         if ($array === null)
         {
             if ($section == '*')
                 $SQL = 'SELECT `key`, `value`, `type`, `section` FROM `{$db_prefix}config_overlay`';
             else
                 $SQL = 'SELECT `key`, `value`, `type`, `section` FROM `{$db_prefix}config_overlay` WHERE `section` = "' .trim($section). '"';
-    
+
             $SQL = $this->panthera->db->query($SQL);
             $array = $SQL -> fetchAll(PDO::FETCH_ASSOC);
         }
 
         if ($section)
             $sectionArray = array();
-        
+
         if (count($array) > 0)
         {
             foreach ($array as $key => $value)
@@ -707,18 +707,18 @@ class pantheraConfig
 
                 if ($value['type'] == 'json')
                     $value['value'] = @json_decode($value['value']);
-                    
+
                 // remove null values
                 if (!$value['section'])
                     $value['section'] = '';
-                
+
                 $this->overlay[$value['key']] = array($value['type'], $value['value'], $value['section']);
-                
+
                 if ($section)
                     $sectionArray[$value['key']] = $this->overlay[$value['key']];
             }
         }
-            
+
         if ($this->panthera->cache and $section != '*' and $section) {
             $this -> panthera -> cache -> set('configOverlay.' .$section, $sectionArray, 'configOverlay');
         } elseif (!$section and $this->panthera->cache and $section != '*')
@@ -729,7 +729,7 @@ class pantheraConfig
             $this->sections[$section] = True;
 
         $this -> panthera -> logging -> output('Overlay "' .$section. '" loaded, total ' .count($array). ' keys', 'pantheraCore');
-        
+
         return count($array);
     }
 
@@ -744,24 +744,24 @@ class pantheraConfig
     public function save()
     {
         $this -> panthera -> logging -> output('Preparing to save config overlay', 'pantheraConfig');
-        
+
         if (count($this->overlay_modified) > 0)
         {
             $this->panthera->logging->output('Saving config overlay to SQL', 'pantheraConfig');
 
             $values = array();
             $sections = array();
-            
+
             foreach ($this->overlay as $key => $value)
             {
                 if ($this -> panthera -> cache and $value[2])
                 {
                     $sections[$value[2]][$key] = $value;
-                    
+
                     if (isset($this->overlay_modified[$key]))
                         $this -> modifiedSections[$value[2]] = true;
                 }
-                
+
                 if (!isset($this->overlay_modified[$key]))
                     continue;
 
@@ -782,15 +782,15 @@ class pantheraConfig
                 if ($this->overlay_modified[$key] === 'created')
                 {
                     $this->panthera->logging->output('Inserting ' .$key. ' variable (' .$value[0]. ')', 'pantheraConfig');
-                    
+
                     try {
                         $q = $this->panthera->db->query('INSERT INTO `{$db_prefix}config_overlay` (`id`, `key`, `value`, `type`, `section`) VALUES (NULL, :key, :value, :type, :section);', array(
-                            'key' => $key, 
-                            'value' => $value[1], 
-                            'type' => $value[0], 
+                            'key' => $key,
+                            'value' => $value[1],
+                            'type' => $value[0],
                             'section' => @$value[2]
                         ));
-                        
+
                     } catch (Exception $e) {
                         $this->panthera->logging->output('Cannot insert new key, SQL error: ' .print_r($e->getMessage(), True), 'pantheraConfig');
                     }
@@ -841,12 +841,12 @@ class pantheraConfig
                 foreach ($this -> modifiedSections as $section => $val)
                 {
                     $keys = $sections[$section];
-                    
+
                     $this -> panthera -> logging -> output('Saving config section "' .$section. '" to cache, couting "' .count($keys). '" elements', 'pantheraConfig');
                     $this -> panthera -> cache -> set('configOverlay.' .$section, $keys, 'configOverlay');
                 }
             }
-            
+
             return true;
         }
     }
@@ -917,7 +917,7 @@ class pantheraCore
 
     // exit right after all plugins are loaded
     public $quitAfterPlugins = False;
-    
+
     /**
 	 * Panthera core class constructor
 	 *
@@ -925,7 +925,7 @@ class pantheraCore
 	 * @author Damian Kęska
 	 */
 
-    public function __construct($config) 
+    public function __construct($config)
     {
         self::$instance = $this;
         $config['SITE_DIR'] = realpath($config['SITE_DIR']);
@@ -933,7 +933,7 @@ class pantheraCore
 
         if (!is_file(SITE_DIR. '/content/app.php'))
             throw new Exception('Cannot find /content/app.php, looking in SITE_DIR=' .SITE_DIR);
-        
+
         $c = _PANTHERA_CORE_TYPES_; $this->types = new $c($this); // data types
         $c = _PANTHERA_CORE_LOGGING_; $this->logging = new $c($this);
         $c = _PANTHERA_CORE_OUTPUT_CONTROL_; $this->outputControl = new $c($this);
@@ -943,39 +943,39 @@ class pantheraCore
             $this->logging -> output('Initializing cache configured in app.php', 'pantheraCore');
             $this->loadCache($config['varCache'], $config['cache'], $config['session_key']);
         }
-        
+
         /** Debugging **/
         $this -> logging -> toVarCache = (bool)$config['debug_to_varcache'];
         $this -> logging -> tofile = (bool)$config['debug_to_file'];
 
         $this -> logging -> output('Loading configuration', 'pantheraCore');
         $c = _PANTHERA_CORE_CONFIG_; $this->config = new $c($this, $config);
-        
+
         // update autoloader cache if not generated yet
         if (!is_file(SITE_DIR. '/content/tmp/autoloader.php'))
         {
             $this -> importModule('autoloader.tools');
             pantheraAutoloader::updateCache($panthera);
         }
-        
+
         include SITE_DIR. '/content/tmp/autoloader.php';
         $this -> autoloader = $autoloader;
-        
+
         // Panthera random SEED
         define('PANTHERA_SEED', hash('md4', $config['session_key'].rand(99, 999)));
-        
+
         // Panthera database wrapper
         $c = _PANTHERA_CORE_DB_; $this->db = new $c($this);
         $this->config->loadOverlay();
-        
+
         // debugging part two
         $this -> logging -> debug = (bool)$this->config->getKey('debug');
-        
+
         if ($this -> logging -> debug)
         {
             $this -> logging -> strict = (bool)$this->config->getKey('debug.strict', 0, 'bool');
         }
-        
+
         /** Cryptography support **/
         if (!function_exists('password_hash'))
         {
@@ -1002,12 +1002,12 @@ class pantheraCore
             $this->loadCache($varCacheType, $cacheType);
         }
         /** END OF CACHE SYSTEM **/
-        
+
         $c = _PANTHERA_CORE_ROUTER_;
         include_once PANTHERA_DIR. '/router.class.php';
         $this -> routing = new $c;
         $this -> routing -> setBasePath(rtrim(parse_url($this -> config -> getKey('url'), PHP_URL_PATH), '/'). '/');
-        
+
         $c = _PANTHERA_CORE_LOCALE_;
         if (class_exists($c))
             $this->locale = new $c($this);
@@ -1020,12 +1020,12 @@ class pantheraCore
             if ($this->session->get('debug.filter.mode'))
             {
                 $this->logging->filterMode = $this->session->get('debug.filter.mode');
-                
+
                 if ($this->session->exists('debug.filter'))
                     $this->logging->filter = $this->session->get('debug.filter');
             }
         }
-        
+
         $this -> dateFormat = $this -> config -> getKey('dateFormat', 'G:i:s d.m.Y', 'string');
 
         //$this->config->getKey('pluginsContext', array(), 'array');
@@ -1054,14 +1054,14 @@ class pantheraCore
             header('X-Content-Type-Options: nosniff');
 
         $this->pluginsDir = array(
-            PANTHERA_DIR. '/plugins', 
+            PANTHERA_DIR. '/plugins',
             SITE_DIR. '/content/plugins'
         );
     }
 
     /**
      * Get self instance
-     * 
+     *
      * @return pantheraCore object
      */
 
@@ -1069,42 +1069,42 @@ class pantheraCore
     {
         return self::$instance;
     }
-    
+
     /**
      * Raise an error eg. notfound
-     * 
+     *
      * @param string $name Error template name eg. notfound, forbidden
      * @param mixed $info Additional informations passed to template
      * @return null
      */
-    
+
     public static function raiseError($name, $info=null)
     {
         $panthera = pantheraCore::getInstance();
         $file = False;
-        
+
         // in debugging mode we can have special versions of error pages
         if ($panthera -> logging -> debug)
             $file = getContentDir('templates/' .$name. '.debug.php');
-        
+
         if (!$file)
             $file = getContentDir('templates/' .$name. '.php');
-        
+
         if ($file)
         {
             include $file;
             exit;
         }
     }
-    
+
     /**
       * Get cache time for selected object type
       *
       * @param string $cacheObjectType
-      * @return int 
+      * @return int
       * @author Damian Kęska
       */
-    
+
     public function getCacheTime($cacheObjectType)
     {
         if (!$cacheObjectType)
@@ -1112,11 +1112,11 @@ class pantheraCore
             $this->logging->output('Warning, an empty cache object type passed to getCacheTime', 'pantheraCore');
             return 120;
         }
-        
+
         $array = $this -> config -> getKey('cache_timing', array(
             'usersTable' => 60
         ), 'array');
-        
+
         if (isset($array[$cacheObjectType]))
             return $array[$cacheObjectType];
         else {
@@ -1143,7 +1143,7 @@ class pantheraCore
         {
             include_once $dir;
         }
-        
+
         if (class_exists('varCache_' .$varCacheType))
         {
             try {
@@ -1155,16 +1155,16 @@ class pantheraCore
                 $this->varCache = false;
             }
         }
-        
+
         if ($cacheType != '')
         {
             // if secondary cache type is same as primary, link both
             if ($cacheType == $varCacheType)
                 $this->cache = $this->varCache;
             else {
-                
+
                 $dir = null;
-                
+
                 if ($dir = getContentDir('modules/cache/varCache_' .$cacheType. '.module.php'))
                 {
                     include_once $dir;
@@ -1214,47 +1214,47 @@ class pantheraCore
             $this->modules[$module] = True;
             return True;
         }
-        
+
         $this->logging->startTimer();
         $f = '';
-        
+
         if (is_file(PANTHERA_DIR. '/modules/' .$module. '.module.php'))
         {
             $f = PANTHERA_DIR. '/modules/' .$module. '.module.php';
         } elseif (is_file(SITE_DIR. '/content/modules/' .$module. '.module.php')) {
             $f = SITE_DIR. '/content/modules/' .$module. '.module.php';
         }
-        
+
         if ($f)
         {
             include_once $f;
-            
+
             $this->logging->output('Imported "' .$module. '" from /lib/modules', 'pantheraCore');
             $this->modules[$module] = True;
         } else {
             $this->logging->output('Cannot import "' .$module. '" module', 'pantheraCore');
         }
-        
+
         if ($constructModule)
         {
             $name = basename($module). 'Module';
-            
+
             if (class_exists($name, true))
             {
                 return new $name;
             }
         }
-        
+
         return isset($this->modules[$module]);
     }
-    
+
     /**
       * Simply list all modules
       *
       * @return array
       * @author Damian Kęska
       */
-    
+
     public function listModules()
     {
         return $this->modules;
@@ -1294,7 +1294,7 @@ class pantheraCore
 
     /**
      * Getting permissions table entry
-     * 
+     *
      * @param string $name Permissions name
      * @return null|string|array
      */
@@ -1303,19 +1303,19 @@ class pantheraCore
     {
         if (!$this->permissionsTable)
             $this -> permissionsTable = $this -> config -> getKey('panthera.permissions', array(), 'array', 'meta'); // load from meta overlay
-        
+
         if (isset($this->permissionsTable[$name]))
         {
             if (!$dontLocalize and is_array($this->permissionsTable[$name]))
                 return localize($this->permissionsTable[$name][0], $this->permissionsTable[$name][1]);
-                      
+
             return $this->permissionsTable[$name];
         }
     }
 
     /**
      * List all cached permissions
-     * 
+     *
      * @return array
      */
 
@@ -1323,7 +1323,7 @@ class pantheraCore
     {
         if (!$this->permissionsTable)
             $this -> permissionsTable = $this -> config -> getKey('panthera.permissions', array(), 'array', 'meta'); // load from meta overlay
-        
+
         return $this->permissionsTable;
     }
 
@@ -1349,18 +1349,18 @@ class pantheraCore
 
     /**
      * Get all defined hooks
-     * 
+     *
      * @return array
      */
-    
+
     public function getAllHooks()
     {
         return $this->hooks;
     }
-    
+
     /**
      * Plug-in a function to a hook slot
-     * 
+     *
      * @param string $hookName Hooking slot name
      * @param string|array $function Function address eg. "var_dump" or "array($object, 'method')"
      * @param int $priority Priority on execution (this can be used to execute function before or after other hooked function) If there is already any other hook with same priority defined it will be increased.
@@ -1369,7 +1369,7 @@ class pantheraCore
     public function add_option($hookName, $function, $priority=null)
     {
         // create array with hooks group
-        
+
         if (!isset($this->hooks[$hookName]))
         {
             $this->hooks[$hookName] = array();
@@ -1395,20 +1395,20 @@ class pantheraCore
         if ($priority)
         {
             $priority = intval($priority);
-            
+
             while (isset($this->hooks[$hookName][$priority]))
             {
                 $priority++;
             }
-            
+
             $this->hooks[$hookName][$priority] = $function;
             return true;
         }
-        
+
         $this->hooks[$hookName][] = $function;
         return True;
     }
-    
+
     /**
       * Execute all hooks without returning output
       * WARNING: To avoid problems remember one important rule - always return args you get in modified or in unmodified form
@@ -1416,7 +1416,7 @@ class pantheraCore
       * @param string $hookName
       * @param mixed $args Args to pass to hook
       * @param mixed $additionalInfo Additional information to pass to function as a second argument
-      * @return bool 
+      * @return bool
       * @author Damian Kęska
       */
 
@@ -1426,7 +1426,7 @@ class pantheraCore
             return false;
 
         ksort($this->hooks[$hookName]);
-        
+
         foreach ($this->hooks[$hookName] as $key => $hook)
         {
             call_user_func_array($hook, array(
@@ -1434,10 +1434,10 @@ class pantheraCore
                 $additionalInfo
             ));
         }
-        
+
         return False;
     }
-    
+
     /**
       * Execute all hooks without returning output
       * WARNING: To avoid problems remember one important rule - always return args you get in modified or in unmodified form
@@ -1445,17 +1445,17 @@ class pantheraCore
       * @param string $hookName
       * @param mixed $args Args to pass to hook
       * @param mixed $additionalInfo Additional information to pass to function as a second argument
-      * @return bool 
+      * @return bool
       * @author Damian Kęska
       */
-    
+
     public function get_options_ref($hookName, &$args, $additionalInfo=null)
     {
         if(!isset($this->hooks[$hookName]))
             return false;
 
         ksort($this->hooks[$hookName]);
-        
+
         foreach ($this->hooks[$hookName] as $key => $hook)
         {
             if (gettype($hook) == "array")
@@ -1475,10 +1475,10 @@ class pantheraCore
                 $hook($args, $additionalInfo);
             }
         }
-        
+
         return False;
     }
-    
+
     /**
       * Execute all hooks and return parsed data
       * WARNING: To avoid problems remember one important rule - always return args you get in modified or in unmodified form
@@ -1487,7 +1487,7 @@ class pantheraCore
       * @param mixed $args Args to pass to hook
       * @param bool $fixOnFail Skip any hook that returns null or false
       * @param mixed $additionalInfo Additional information to pass to function as a second argument
-      * @return mixed 
+      * @return mixed
       * @author Damian Kęska
       */
 
@@ -1499,46 +1499,46 @@ class pantheraCore
         $backup = $args;
 
         ksort($this->hooks[$hookName]);
-        
+
         foreach ($this->hooks[$hookName] as $key => $hook)
         {
             $args = call_user_func_array($hook, array(
                 $args,
                 $additionalInfo
             ));
-            
+
             if ($args)
                 $backup = $args;
-            
+
             if (!$args and $fixOnFail)
                 $args = $backup;
         }
-        
+
         return $args;
     }
-    
+
     /*
      * Remove hooked function
-     * 
+     *
      * @param string $hookName Hook name
      * @param string|array $function Function or method name
      * @return bool
      */
-    
+
     public function remove_option($hookName, $function)
     {
         if (!$this->hooks[$hookName])
         {
             return False;
         }
-        
+
         if ($key = array_search($function, $this->hooks[$hookName]))
         {
             unset($this->hooks[$hookName][$key]);
             return True;
         }
     }
-    
+
     /**
       * Execute all hooks and return results from all hooks in an array
       *
@@ -1548,7 +1548,7 @@ class pantheraCore
       * @return array
       * @author Damian Kęska
       */
-    
+
     public function get_filters_array($hookName, $args='', $additionalInfo=null)
     {
         if(!isset($this->hooks[$hookName]))
@@ -1569,7 +1569,7 @@ class pantheraCore
                 } else {
                     $output[$hook[0].'___'.$hook[1]] = $hook[0]::$hook[1]($args, $additionalInfo);
                 }
-                
+
             } else {
                 if (!function_exists($hook))
                     continue;
@@ -1655,7 +1655,7 @@ class pantheraCore
                 $this->logging->output('Cannot find plugins directory "'.$dir.'"!', 'pantheraCore');
 
             $directoryListing = scandir($dir);
-            
+
             foreach ($directoryListing as $file)
             {
                 if ($file == "." or $file == ".." or is_file($file))
@@ -1668,10 +1668,10 @@ class pantheraCore
                     if ($configPlugins[$file] == True)
                         $enabled = True;
                 }
-                
+
                 $files[$file] = array(
-                    'include_path' => $dir. '/' .$file, 
-                    'enabled' => $enabled, 
+                    'include_path' => $dir. '/' .$file,
+                    'enabled' => $enabled,
                     'info' => $this->plugins[$file],
                 );
             }
@@ -1743,20 +1743,20 @@ class pantheraCore
                 unset($pluginClassName);
 
                 include($value."/plugin.php");
-                
+
                 if (!isset($pluginClassName))
                 {
                     $pluginClassName = str_replace('.cgi', '', basename($value)). 'Plugin';
                 }
-                
+
                 if (!class_exists($pluginClassName))
                 {
                     $this -> logging -> output('Failed to load plugin "' .$value. '", please check if it contains "' .$pluginClassName. '" class', 'pantheraCore');
                     continue;
                 }
-                
+
                 $pluginInfo = $pluginClassName::getPluginInfo();
-                
+
                 if (count($pluginInfo) > 0)
                 {
                     $this->registerPlugin($pluginInfo['name'], $value."/plugin.php", $pluginInfo);
@@ -1795,9 +1795,9 @@ class pantheraCore
 
         if (strpos($dir, '/') !== false) {
             $dir = explode("/", $dir);
-            $dir = end($dir);   
+            $dir = end($dir);
         }
-        
+
         $this->plugins[$dir] = array('name' => $pluginName, 'type' => 'module', 'file' => $file, 'meta' => $info);
         $this->logging->output("Registering plugin ".$pluginName." for file ".$file.", key=".$dir);
         return True;
@@ -1827,7 +1827,7 @@ class pantheraCore
 
 /**
  * Abstract Panthera class with Panthera object stored in $this->panthera
- * 
+ *
  * @package Panthera\core\system\kernel
  * @author Damian Kęska
  */
@@ -1836,7 +1836,7 @@ abstract class pantheraClass
 {
     protected $panthera = null;
     protected static $instance = null;
-    
+
     public function getInstance()
     {
         return self::$instance;
@@ -1854,7 +1854,7 @@ abstract class pantheraClass
   *
   * @package Panthera\core\system\autoloader
   * @param string $class name
-  * @return mixed 
+  * @return mixed
   * @author Damian Kęska
   */
 
@@ -1865,10 +1865,10 @@ function __pantheraAutoloader($class)
     if ($panthera)
     {
         $panthera -> logging -> output ('Requested ' .$class. ' class', 'pantheraCore');
-    
+
         // defaults
         $cachedClasses = $panthera -> autoloader;
-        
+
         $panthera -> logging -> startTimer();
         if (isset($cachedClasses[$class]))
         {
@@ -1877,23 +1877,23 @@ function __pantheraAutoloader($class)
             {
                 $exp = explode(':alias:', $cachedClasses[$class]);
                 $f = False;
-                
+
                 if (substr($exp[1], 0, 5) == 'file:')
                 {
-                    $f = pantheraUrl(substr($exp[1], 5, strlen($exp[1])), false, 'system'); 
-                    
+                    $f = pantheraUrl(substr($exp[1], 5, strlen($exp[1])), false, 'system');
+
                 } elseif (substr($exp[2], 0, 5) == 'file:') {
                     $f = pantheraUrl(substr($exp[2], 5, strlen($exp[2])), false, 'system');
                 }
-                
+
                 if ($f and is_file($f))
                     include_once $f;
-                
+
                 class_alias($exp[1], $class);
                 $panthera -> logging -> output('Created alias "' .$exp[1]. '" for "' .$class. '"', 'pantheraCore');
                 return $class;
             }
-            
+
             return $panthera -> importModule($cachedClasses[$class]);
         } else {
             // in case there is no class in cache and cache last refresh was later than 3600 seconds ago
@@ -1904,7 +1904,7 @@ function __pantheraAutoloader($class)
                 pantheraAutoloader::updateCache();
                 __pantheraAutoloader($class);
             }
-            
+
         }
     }
 }
@@ -2148,14 +2148,14 @@ class _arrayObject
         {
             return False;
         }
-        
+
         $this->__changed = True;
         $this->__data[$var] = $value;
     }
-    
+
     public function get($var) { return $this->__get($var); }
     public function set($var, $value) { return $this->__set($var, $value); }
-    
+
     /**
       * Remove a variable
       *
@@ -2163,7 +2163,7 @@ class _arrayObject
       * @return true|null
       * @author Damian Kęska
       */
-    
+
     public function remove($var)
     {
         if (isset($this->__data[$var]))
@@ -2203,25 +2203,25 @@ function ajax_exit($array)
 
     if ($panthera -> logging -> debug == True)
         $panthera -> logging -> output('ajax_exit: ' .json_encode($array), 'pantheraCore');
-        
+
     $panthera -> outputControl -> flushAndFinish();
-    
+
     // insert buffered log if avaliable to "message" element
     if (isset($array['message']))
     {
         $array['message'] = str_ireplace('{$bufferedOutput}', $panthera -> outputControl -> get(), $array['message']);
     }
-    
+
     // allow plugins to modify output
     $array = $panthera -> get_filters('panthera.ajax_exit', $array);
-    
+
     print(json_encode($array));
     pa_exit('', True);
 }
 
 /**
  * Ajax equivalent of var_dump
- * 
+ *
  * @package Panthera\core\system\kernel
  * @param mixed $mixed
  * @return null
@@ -2233,7 +2233,7 @@ function ajax_dump($mixed, $usePrint_r=False)
         $message = r_dump($mixed);
     else
         $message = print_r($mixed, true);
-    
+
     ajax_exit(array(
         'status' => 'failed',
         'message' => $message,
@@ -2277,24 +2277,24 @@ function pa_exit($string='', $ajaxExit=False)
 function pa_redirect($url, $code=null)
 {
     $panthera = pantheraCore::getInstance();
-    
+
     $base = $panthera->config->getKey('url');
-    
+
     if (substr($base, strlen($base)-1, 1) == '/')
         $base = substr($base, 0, strlen($base)-1);
-    
+
     $url = pantheraUrl($url, False, 'frontend');
-    
+
     if (substr($url, 0, 1) == '/')
         $url = substr($url, 1, strlen($url));
-    
+
     $url = $base. '/' .$url;
-    
+
     if (is_int($code))
         header('Location: ' .$url, TRUE, $code);
     else
         header('Location: ' .$url);
-    
+
     pa_exit();
 }
 
@@ -2324,7 +2324,7 @@ function parseMetaTags($tags)
 
 /**
  * Filter meta tag, strip quotes
- * 
+ *
  * @param string $tag Input tag string
  * @package Panthera\core\system\kernel
  * @return string
@@ -2374,13 +2374,13 @@ function pantheraUrl($url, $reverse=False, $type='')
     $panthera = pantheraCore::getInstance();
 
     $var = array( );
-    
+
     if (!$type or $type == 'frontend')
     {
         $var['{$AJAX_URL}'] = $panthera->config->getKey('ajax_url');
         $var['{$PANTHERA_URL}'] = $panthera->config->getKey('url');
     }
-    
+
     if (!$type or $type == 'system')
     {
         $var['{$PANTHERA_DIR}'] = PANTHERA_DIR;
@@ -2548,7 +2548,7 @@ function getContentDir($dir)
 {
     if (defined('IN_PHAR') and file_exists(IN_PHAR. '/.pharoverlay/' .$dir))
         return IN_PHAR. '/.pharoverlay/' .$dir;
-    
+
     if (file_exists(SITE_DIR.'/'.$dir))
         return SITE_DIR.'/'.$dir;
 
@@ -2604,14 +2604,14 @@ function object_dump($obj, $returnAsString=False)
 function r_dump()
 {
     ob_start();
-    $var = func_get_args(); 
+    $var = func_get_args();
     call_user_func_array('var_dump', $var);
     return ob_get_clean();
 }
 
 /**
  * Prints print_r inside of HTML code replacing \n to <br> and spaces to &nbsp; HTML codes
- * 
+ *
  * @debug
  * @package Panthera\core\system\kernel
  * @param mixed $input Input data of any type
@@ -2622,10 +2622,10 @@ function r_dump()
 function print_r_html($input, $return=false)
 {
     $result = nl2br(str_replace(' ', '&nbsp;', print_r($input, true)));
-    
+
     if (!$return)
         print($result);
-    
+
     return $result;
 }
 
@@ -2637,7 +2637,7 @@ function print_r_html($input, $return=false)
  * @param object|string $obj
  * @param bool $return Return as string
  * @package Panthera\core\system\kernel\debugging
- * @return string|bool 
+ * @return string|bool
  * @author Damian Kęska
  */
 
@@ -2655,7 +2655,7 @@ function object_info($obj, $return=False)
     {
         return ReflectionObject::export($obj, $return);
     }
-    
+
     return False;
 }
 
@@ -2703,7 +2703,7 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
     {
         $timestamp_past = date($panthera -> dateFormat, $timestamp_past);
     }
-    
+
     if (is_int($timestamp_future))
     {
         $timestamp_future = date($panthera -> dateFormat, $timestamp_future);
@@ -2713,7 +2713,7 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
         $past = new DateTime($timestamp_past);
         $future = new DateTime($timestamp_future);
         $diff = $future->diff($past);
-        
+
     } catch (Exception $e) {
         if ($display_output == False)
         {
@@ -2722,7 +2722,7 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
             return "";
         }
     }
-    
+
     $timeFormats = array(
         'years' => '%y',
         'months' => '%m',
@@ -2731,7 +2731,7 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
         'minutes' => '%i',
         'seconds' => '%s'
     );
-    
+
     if ($years == True)
     {
         if ($diff->format('%y') > 0)
@@ -2739,7 +2739,7 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
             $array['years'] = $diff->format('%y');
         }
     }
-    
+
     if ($months == True)
     {
         if ($diff->format('%m') > 0)
@@ -2747,7 +2747,7 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
             $array['months'] = $diff->format('%m');
         }
     }
-    
+
     if ($days == True)
     {
         if ($diff->format('%a') > 0)
@@ -2755,7 +2755,7 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
             $array['days'] = $diff->format('%a');
         }
     }
-    
+
     if ($hours == True)
     {
         if ($diff->format('%H') > 0)
@@ -2763,7 +2763,7 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
             $array['hours'] = $diff->format('%H');
         }
     }
-    
+
     if ($mins == True)
     {
         if ($diff->format('%i') > 0)
@@ -2771,7 +2771,7 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
             $array['minutes'] = $diff->format('%i');
         }
     }
-    
+
     if ($secs == True)
     {
         if ($diff->format('%s') > 0)
@@ -2779,35 +2779,35 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
             $array['seconds'] = $diff->format('%s');
         }
     }
-    
-    
-    
+
+
+
     if (!$display_output)
     {
         return $array;
-        
+
     } else {
         $output = '';
         $maxRange = 2; // we accept only max X data details eg. year, month (2 elements) or hour, minute
         $range = 0;
-    
+
         foreach ($array as $timeRange => $value)
         {
             $range++;
-            
+
             if ($range > $maxRange)
             {
                 break;
             }
-            
+
             $output .= $diff->format($timeFormats[$timeRange]). ' ' .localize($timeRange). ' ';
         }
-        
+
         $output = trim($output);
-        
+
         if (!$output)
             $output = localize('a moment');
-    
+
         return $output;
     }
 }
@@ -2817,7 +2817,7 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
  *
  * @package Panthera\core\system\kernel
  * @param string|int $time
- * @return string 
+ * @return string
  * @author Damian Kęska
  */
 
@@ -2839,16 +2839,16 @@ function elapsedTime($time)
 function filterInput($input, $filtersList)
 {
     $filters = explode(',', $filtersList);
-    
+
     if (in_array('wysiwyg', $filters))
         $input = str_replace("\n", '\n', str_replace("\r", '\r', htmlspecialchars($input, ENT_QUOTES)));
-    
+
     if (in_array('wysiwyg_newline', $filters))
         $input = htmlspecialchars($input, ENT_QUOTES);
 
     if(in_array('quotehtml', $filters))
         $input = htmlspecialchars($input);
-        
+
     if (in_array('strip', $filters))
         $input = strip_tags($input);
 
@@ -2919,7 +2919,7 @@ function verifyPassword($password, $hash)
  * @param array|string $mix Elements to add (useful if using "GET" or "POST" in first but want to add something) eg. "aaa=test&bbb=ccc" or array('aaa' => 'test', 'bbb' => 'ccc')
  * @param array|string $except List of parameters to skip eg. "display,cat" or array('display', 'cat')
  * @package Panthera\core\system\kernel
- * @return string 
+ * @return string
  * @author Damian Kęska
  */
 
@@ -2934,30 +2934,30 @@ function getQueryString($array=null, $mix=null, $except=null)
     elseif (is_string($array)) {
         parse_str($array, $array);
     }
-        
+
     if ($mix != null) {
         if (is_string($mix)) {
             parse_str($mix, $mix);
         }
-        
+
         if (is_array($mix)) {
             $array = array_merge($array, $mix);
         }
     }
-        
+
     if ($except !== null)
     {
         if (!is_array($except))
         {
             $except = explode(',', $except);
         }
-        
+
         foreach ($except as $exception)
         {
             unset($array[trim($exception)]);
         }
     }
-    
+
     return http_build_query($array);
 }
 
@@ -2966,7 +2966,7 @@ function getQueryString($array=null, $mix=null, $except=null)
  *
  * @param string $string
  * @package Panthera\core\system\kernel
- * @return string 
+ * @return string
  * @author Damian Kęska
  */
 
@@ -2986,22 +2986,22 @@ function stripNewLines($str)
 function captureStdout($function, $a=null, $b=null, $c=null, $d=null, $e=null, $f=null)
 {
     $panthera = pantheraCore::getInstance();
-    
+
     // capture old output if any
     $before = $panthera -> outputControl -> get();
     $handler = $panthera -> outputControl -> isEnabled();
     $panthera -> outputControl -> clean();
-    
+
     // start new buffering
     $panthera -> outputControl -> startBuffering();
-    
+
     // executing function
     $return = $function($a, $b, $c, $d, $e, $f);
     $contents = $panthera -> outputControl -> get();
 
     $panthera -> outputControl -> clean();
     $panthera -> outputControl -> flushAndFinish();
-    
+
     if ($handler === False)
     {
         $panthera -> outputControl -> flushAndFinish();
@@ -3009,7 +3009,7 @@ function captureStdout($function, $a=null, $b=null, $c=null, $d=null, $e=null, $
         $panthera -> outputControl -> startBuffering($handler);
         print($before);
     }
-    
+
     return array('return' => $return, 'output' => $contents);
 }
 
@@ -3023,12 +3023,12 @@ function captureStdout($function, $a=null, $b=null, $c=null, $d=null, $e=null, $
 class pantheraPlugin
 {
     protected static $pluginInfo = array();
-    
+
     public static function getPluginInfo()
     {
         return static::$pluginInfo;
     }
-    
+
     public static function run() {}
 }
 
@@ -3043,17 +3043,17 @@ class pantheraPlugin
 function forRange($range=0, $add=0, $zeroLength=0)
 {
     $arr = array();
-    
+
     for ($i=0; $i<$range; $i++)
 	{
 		$t = $i+$add;
-		
+
 	    if ($zeroLength and strlen($t) == $zeroLength and substr($t, 0, 1) !== '0')
 			$t = '0'.$t;
-		
+
         $arr[$t] = null;
 	}
-	
+
     return $arr;
 }
 
@@ -3063,33 +3063,33 @@ function forRange($range=0, $add=0, $zeroLength=0)
  * @package Panthera\core\system\kernel
  * @param array $aArray1
  * @param array $aArray2
- * @see http://stackoverflow.com/questions/3876435/recursive-array-diff 
+ * @see http://stackoverflow.com/questions/3876435/recursive-array-diff
  * @author mhitza
  * @author Damian Kęska
  */
 
-function arrayRecursiveDiff($aArray1, $aArray2, &$i=null) 
+function arrayRecursiveDiff($aArray1, $aArray2, &$i=null)
 {
     $aReturn = array();
-  
-    foreach ($aArray1 as $mKey => $mValue) 
+
+    foreach ($aArray1 as $mKey => $mValue)
     {
-        if (array_key_exists($mKey, $aArray2)) 
+        if (array_key_exists($mKey, $aArray2))
         {
-            if (is_array($mValue)) 
+            if (is_array($mValue))
             {
                 $aRecursiveDiff = arrayRecursiveDiff($mValue, $aArray2[$mKey], $i, $reverse);
-          
+
                 if (count($aRecursiveDiff))
                     $aReturn[$mKey] = $aRecursiveDiff;
-        
+
             } else {
-          
-                if ($mValue !== $aArray2[$mKey]) 
+
+                if ($mValue !== $aArray2[$mKey])
                 {
                     $aReturn[$mKey] = $aArray2[$mKey];
                     $aReturn['__meta_'.$mKey] = 'modified';
-            
+
                     if ($i !== null)
                         $i++;
                 }
@@ -3097,9 +3097,9 @@ function arrayRecursiveDiff($aArray1, $aArray2, &$i=null)
         } else {
             if (array_key_exists($mKey, $aArray1))
                 $aReturn['__meta_'.$mKey] = 'removed';
-        
+
             $aReturn[$mKey] = $mValue;
-        
+
             if ($i !== null)
                 $i++;
         }
@@ -3119,7 +3119,7 @@ function arrayRecursiveDiff($aArray1, $aArray2, &$i=null)
 
 /**
  * Convert bool, false, null to string
- * 
+ *
  * @package Panthera\core\system\kernel
  * @param mixed $input Input
  * @author Damian Kęska
@@ -3134,13 +3134,13 @@ function toString($input)
         $input = 'false';
     elseif ($input === true)
         $input = 'true';
-    
+
     return (string)$input;
 }
 
 /**
  * Get first non-null value
- * 
+ *
  * @package Panthera\core\system\kernel
  * @param mixed $1
  * @param mixed $2
@@ -3152,7 +3152,7 @@ function toString($input)
 function fallbackValue()
 {
     $args = func_get_args();
-    
+
     foreach ($args as $arg)
     {
         if ($arg)

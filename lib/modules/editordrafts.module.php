@@ -23,25 +23,25 @@ class editorDraft extends pantheraFetchDB
     protected $_tableName = 'editor_drafts';
     protected $_idColumn = 'id';
     protected $_constructBy = array('id', 'array', 'textid');
-    
+
     /**
       * Strip HTML tags, trim spaces and hash content to get more accurate textid
       *
       * @param string $content
-      * @return string 
+      * @return string
       * @author Damian Kęska
       */
-    
+
     public static function getHash($content)
     {
         $content = str_replace("\n", '', $content); // strip all new line tags
         $content = str_replace("\r", '', $content);
         $content = str_replace(' ', '', $content);
         $content = str_replace('&nbsp;', '', $content);
-    
+
         return hash('md4', strip_tags($content));
     }
-    
+
     /**
       * Remove a draft
       *
@@ -49,40 +49,40 @@ class editorDraft extends pantheraFetchDB
       * @return bool
       * @author Damian Kęska
       */
-    
+
     public static function removeDraft($id)
     {
         $panthera = pantheraCore::getInstance();
-    
+
         if (is_numeric($id))
         {
             $field = 'id';
         } else {
             $field = 'textid';
         }
-    
+
         $draft = new editorDraft($field, $id);
-        
+
         if (!$draft->exists())
         {
             return True;
         }
-        
+
         $id = $draft -> id;
-        
+
         $panthera -> db -> query ('DELETE FROM `{$db_prefix}editor_drafts` WHERE `id` = :id', array('id' => $id));
         return True;
     }
-    
+
     /**
       * Create a new draft or update existing with same content
       *
       * @param string $content
       * @param int|string|pantheraUser $user
-      * @return mixed 
+      * @return mixed
       * @author Damian Kęska
       */
-    
+
     public static function createDraft($content, $user='', $id='')
     {
         $panthera = pantheraCore::getInstance();
@@ -91,14 +91,14 @@ class editorDraft extends pantheraFetchDB
         {
             $user = pantheraUser::getAttribute('id', $user);
         }
-        
+
         if (!$user)
         {
             $user = -1; // nobody
         }
-        
+
         $contentHash = self::getHash($content);
-        
+
         if ($id)
         {
             $draft = new editorDraft('id', $id);
@@ -125,10 +125,10 @@ class editorDraft extends pantheraFetchDB
             'date' => DB_TIME_NOW,
             'textid' => $contentHash
         );
-        
+
         $prepared = $panthera -> db -> buildInsertString($data, False, 'editor_drafts');
         $SQL = $panthera -> db -> query ($prepared['query'], $prepared['values']);
-        
+
         return True;
     }
 
@@ -141,16 +141,16 @@ class editorDraft extends pantheraFetchDB
       * @param int $limitFrom
       * @param string $orderBy
       * @param string $order DESC/ASC
-      * @return array 
+      * @return array
       * @author Damian Kęska
       */
-      
+
     public static function fetch($by, $limit=0, $limitFrom=0, $orderBy='id', $order='DESC')
     {
           $panthera = pantheraCore::getInstance();
           return $panthera->db->getRows('editor_drafts', $by, $limit, $limitFrom, '', $orderBy, $order);
     }
-    
+
     /**
       * Fetch all user's drafts
       *
@@ -159,29 +159,29 @@ class editorDraft extends pantheraFetchDB
       * @param int $limitFrom
       * @param string $orderBy
       * @param string $order DESC/ASC
-      * @return array 
+      * @return array
       * @author Damian Kęska
       */
-    
+
     public static function fetchByUser($user, $directory='', $limit=0, $limitFrom=0, $orderBy='id', $order='DESC')
     {
         if (is_string($user))
         {
             $u = new pantheraUser('login', $user);
-            
+
             if ($u->exists)
             {
                 $user = $u->id;
             }
         }
-        
+
         $by = array('author_id' => $user);
-        
+
         if ($directory)
         {
             $by['directory'] = $directory;
         }
-    
+
         return self::fetch($by, $limit, $limitFrom, $orderBy, $order);
     }
 }

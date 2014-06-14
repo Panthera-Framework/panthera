@@ -19,19 +19,19 @@
  */
 
 function aasort (&$array, $key)
-{    	
+{
     $sorter = array();
     $ret = array();
     reset($array);
-    
+
     foreach ($array as $ii => $va)
         $sorter[$ii] = $va[$key];
 
     asort($sorter);
-	
+
     foreach ($sorter as $ii => $va)
         $ret[$ii] = $array[$ii];
-    
+
     $array = $ret;
 }
 
@@ -64,26 +64,26 @@ function array_reset_keys($array)
  * @return array
  * @author Damian Kęska
  */
-    
+
 function limitArray($array, $offset=0, $limit=0)
 {
     $newArray = array();
-    
+
     if ($offset == 0 and $limit == 0)
         return $array;
-        
+
     $c = count($array);
     $i = 0;
-        
+
     foreach ($array as $key => $value)
     {
         $i++;
-                
-        // rewrite only elements matching our range            
+
+        // rewrite only elements matching our range
         if ($i >= $limit and $i <= ($limit+$offset))
             $newArray[$key] = $value;
     }
-    
+
     return $newArray;
 }
 
@@ -105,17 +105,17 @@ function arrayWalkRecursive(&$array, $callback, $additional=null, $depth=1)
     {
         if (is_array($value))
             continue;
-        
+
         $additional = $callback($key, $value, $depth, $additional);
     }
-    
+
     foreach ($array as $key => &$value)
     {
         if (!is_array($value))
             continue;
-        
+
         $additional = arrayWalkRecursive($value, $callback, $additional, $depth++);
     }
-    
+
     return $additional;
 }

@@ -8,34 +8,34 @@
  * @author Damian Kęska
  */
 
-  
+
 if (!defined('IN_PANTHERA'))
     exit;
 
 /**
  * Gallery dash widget class
- * 
+ *
  * @package Panthera\core\users
  */
-  
+
 class lastLogged_dashWidget extends pantheraClass
 {
     /**
      * Main function that displays widget
-     * 
+     *
      * @return string
      */
-    
+
     public function display()
     {
         $u = pantheraUser::fetchAll('', 10, 0, 'lastlogin', 'DESC');
         $users = array();
-        
+
         foreach ($u as $key => $value)
         {
             if ($value->attributes->superuser)
                 continue;
-                
+
             $users[] = array(
                 'login' => $value->getName(),
                 'time' => date_calc_diff(strtotime($value->lastlogin), time()),

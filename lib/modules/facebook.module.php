@@ -7,10 +7,10 @@
   * @author Mateusz Warzyński
   * @license GNU Affero General Public License 3, see license.txt
   */
-  
+
 if (!defined('IN_PANTHERA'))
     exit;
-  
+
 // include facebook sdk library
 include(PANTHERA_DIR. '/share/facebook-php-sdk/src/facebook.php');
 
@@ -54,14 +54,14 @@ class facebookWrapper
             $panthera -> logging -> output('Facebook integration wrapper requires "facebook_appid" and "facebook_secret" to be configured', 'facebook');
             throw new Exception('Facebook integration wrapper requires "facebook_appid" and "facebook_secret" to be configured');
         }
-        
+
         if ($state)
         {
             $panthera -> logging -> output('Trying to restore object state', 'facebook');
             $t = unserialize($state);
             $this -> sdk = $t['sdk'];
             $this -> queryCache = $t['queryCache'];
-            
+
         } else {
             $this -> sdk = new Facebook(array('appId'  => $appid, 'secret' => $secret));
             $panthera -> logging -> output('Using appid=' .$appid. ' and secret=' .$secret, 'facebook');
@@ -72,16 +72,16 @@ class facebookWrapper
             $panthera -> logging -> output('Restoring access token from session token=' .$panthera -> session -> get('facebookToken'), 'facebook');
             $this -> sdk -> setAccessToken($panthera->session->get('facebookToken'));
         }
-        
+
         if (!$skipGetUser)
             $this -> sdk -> getUser();
-        
+
         $panthera -> add_option('session_save', array($this, 'saveAccessToken'));
     }
 
     /**
      * Save access token to session
-     * 
+     *
      * @return null
      */
 
@@ -89,14 +89,14 @@ class facebookWrapper
     {
        $this -> panthera -> session -> set('facebookToken', $this->sdk->getAccessToken());
     }
-    
+
     /**
-      * Return serialized Facebook object 
+      * Return serialized Facebook object
       *
       * @return string
       * @author Damian Kęska
       */
-    
+
     public function serializeState()
     {
         return serialize(array('sdk' => $this->sdk, 'queryCache' => $this->queryCache));
@@ -121,23 +121,23 @@ class facebookWrapper
 
         return True;
     }
-    
+
     /**
       * Check if current user likes specified fanpage
       *
       * @param int $pageID
-      * @scope user_likes 
-      * @return bool 
+      * @scope user_likes
+      * @return bool
       * @author Damian Kęska
       */
-    
+
     public function userLikesPage($pageID)
     {
         $checkIfUserLikePage = $this->api(array(
             "method"    => "fql.query",
             "query"     => "SELECT page_id FROM page_fan WHERE uid=me() AND page_id=".$pageID
         ));
-        
+
         return sizeof($checkIfUserLikePage);
 
     }
@@ -168,7 +168,7 @@ class facebookWrapper
       *
       * @param array $scope Array of priviledges
       * @param mixed $redirect Set to false if you want to grab redirect link as a function return, or use "script", "meta" or "header" redirection
-      * @param string $baseURL Replace facebook generated redirection url with your's  
+      * @param string $baseURL Replace facebook generated redirection url with your's
       * @return mixed
       * @author Damian Kęska
       */
@@ -176,39 +176,39 @@ class facebookWrapper
     public function loginUser($scope, $redirect=False, $baseURL=False)
     {
         $this -> cleanURI();
-		
+
         if ($this -> sdk -> getUser()) {
             return True;
         } else {
             $url = $this->sdk->getLoginUrl(array('scope' => $scope));
-            
-            if ($baseURL) 
+
+            if ($baseURL)
             {
                 $base = parse_url($url);
                 parse_str($base['query'], $args);
                 $url = str_ireplace(urlencode($args['redirect_uri']), urlencode($baseURL), $url);
             }
-            
+
             $this -> panthera -> logging -> output('facebookWrapper::Redirecting user to url=' .$url, 'facebook');
             return $this->panthera->template->redirect($url, $redirect);
         }
     }
-    
+
     /**
       * Clean URI
       *
       * @return bool
       * @author Mateusz Warzyński
       */
-    
+
     public function cleanURI()
     {
         $request = explode("&_=", $_SERVER['REQUEST_URI']);
         $_SERVER['REQUEST_URI'] = $request[0].substr($request[1], 13);
-        
+
         if (!strpos($_SERVER['REQUEST_URI'], "&_="))
             return True;
-            
+
         return False;
     }
 
@@ -247,7 +247,7 @@ class facebookWrapper
         $this -> panthera -> logging -> output('FQL query -> "' .$query. '"', 'facebook');
         return $result;
     }
-    
+
     /**
       * Make a API query
       *
@@ -255,47 +255,47 @@ class facebookWrapper
       * @return mixed
       * @author Damian Kęska
       */
-    
+
     public function api($arg, $allowCaching=False)
     {
         $this -> panthera -> logging -> startTimer();
-        
+
         if ($allowCaching and $this -> cacheTime > 0)
         {
             $argID = hash('md4', serialize($arg));
-            
+
             if (isset($this -> queryCache[$argID]))
             {
                 if ($this -> queryCache[$argID]['expiration'] <= time())
                 {
                     $this -> panthera -> logging -> output('Updating outdated argid=' .$argID, 'facebook');
-                    
+
                     $result = $this -> sdk -> api($arg);
                     $this -> queryCache[$argID] = array(
-                        'result' => $result, 
+                        'result' => $result,
                         'expiration' => time() + $this->cacheTime
                     );
                 } else {
                     $this -> panthera -> logging -> output('Received item from facebook cache', 'facebook');
                     $result = $this->queryCache[$argID]['result'];
                 }
-                
+
             } else {
                 $this -> panthera -> logging -> output('Cached argid=' .$argID, 'facebook');
-            
+
                 $result = $this -> sdk -> api($arg);
-            
+
                 $this -> queryCache[$argID] = array(
-                    'result' => $result, 
+                    'result' => $result,
                     'expiration' => time() + $this->cacheTime
                 );
             }
-            
-            
+
+
         } else {
             $result = $this -> sdk -> api($arg);
         }
-        
+
         $this -> panthera -> logging -> output('Finished API request', 'facebook');
         return $result;
     }

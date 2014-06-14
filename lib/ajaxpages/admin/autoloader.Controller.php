@@ -15,17 +15,17 @@
   * @author Damian Kęska
   * @author Mateusz Warzyński
   */
-  
+
 class autoloaderAjaxControllerCore extends pageController
 {
     protected $uiTitlebar = array(
         'Autoloader cache'
     );
-    
+
     protected $permissions = array(
         'admin.debug.autoloader' => array('Autoloader cache'),
     );
-    
+
     /**
      * Main, display template function
      *
@@ -44,20 +44,20 @@ class autoloaderAjaxControllerCore extends pageController
                 'message' => slocalize('Updated autoloader cache, counting %s items', 'system', count($items)),
             ));
         }
-        
+
         $cachedClasses = $this -> panthera -> autoloader;
-        
+
         foreach ($cachedClasses as $class => &$value)
         {
             if (substr($cachedClasses[$class], 0, 1) == ':')
             {
                 $exp = explode(':alias:', $cachedClasses[$class]);
                 $f = False;
-                
+
                 if (substr($exp[1], 0, 5) == 'file:')
                 {
-                    $f = pantheraUrl(substr($exp[1], 5, strlen($exp[1])), false, 'system'); 
-                    
+                    $f = pantheraUrl(substr($exp[1], 5, strlen($exp[1])), false, 'system');
+
                 } elseif (substr($exp[2], 0, 5) == 'file:') {
                     $f = pantheraUrl(substr($exp[2], 5, strlen($exp[2])), false, 'system');
                 }
@@ -71,6 +71,6 @@ class autoloaderAjaxControllerCore extends pageController
 
         $this -> panthera -> template -> push('autoloader', $cachedClasses);
         return $this -> panthera -> template -> compile('autoloader.tpl');
-        
-    }    
+
+    }
 }

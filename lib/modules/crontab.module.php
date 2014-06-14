@@ -1,7 +1,7 @@
 <?php
 /**
   * Scheduled tasks management
-  * 
+  *
   * @package Panthera\modules\core
   * @author Damian Kęska
   * @license GNU Affero General Public License 3, see license.txt
@@ -9,7 +9,7 @@
 
 if (!defined('IN_PANTHERA'))
     exit;
-  
+
 // YES! We are using third-party library
 include (PANTHERA_DIR. '/share/cron-expression/src/Cron/CronExpression.php');
 include (PANTHERA_DIR. '/share/cron-expression/src/Cron/FieldInterface.php');
@@ -27,31 +27,31 @@ class crontab extends pantheraFetchDB
     protected $_tableName = 'cronjobs';
     protected $_idColumn = 'jobid';
     protected $_constructBy = array('jobid', 'jobname', 'id', 'array');
-    
+
     /**
       * Get job data
       *
-      * @return mixed 
+      * @return mixed
       * @author Damian Kęska
       */
-    
+
     public function getData($serialize=False)
     {
         return unserialize($this->__get('data'));
     }
-    
+
     /**
       * Get interval expression in crontab-compatible syntax
       *
-      * @return string 
+      * @return string
       * @author Damian Kęska
       */
-    
+
     public function getIntervalExpression()
     {
         return $this->__get('minute'). ' ' .$this->__get('hour'). ' ' .$this->__get('day'). ' ' .$this->__get('month'). ' ' .$this->__get('year'). ' ' .$this->__get('weekday');
     }
-    
+
     /**
       * Set job data
       *
@@ -59,7 +59,7 @@ class crontab extends pantheraFetchDB
       * @return void
       * @author Damian Kęska
       */
-    
+
     public function setData($data)
     {
         $this->__set('data', serialize($data));
@@ -115,17 +115,17 @@ class crontab extends pantheraFetchDB
     public function execute()
     {
         //print("Execute: ".$this->jobname."\n");
-        
+
         // don't start a disabled job
         if (!$this -> enabled)
         {
             return False;
         }
-        
+
         // we are starting, so the start time should be resetted
         $this -> start_time = 0;
         $t = microtime_float();
-    
+
         if (intval($this->__get('count_left')) == 0)
             return "JOB_FINISHED";
 
@@ -137,21 +137,21 @@ class crontab extends pantheraFetchDB
 
             $filePath = getContentDir($data['file']);
             $this->panthera->logging->output('crontab::Including ' .$filePath, 'crontab');
-            
+
             if (!$filePath)
             {
                 $filePath = $data['fullFileName'];
             }
-            
+
             if (!is_file($filePath))
                 return 'ERR_CANNOT_INCLUDE_FILE';
-                
+
             //print("Including: ".$filePath."\n");
-            
+
             include_once $filePath;
-            
+
             $return = '';
-            
+
             //print("Handler: ".print_r($data['function'])."\n");
 
             if (is_array($data['function']))
@@ -168,7 +168,7 @@ class crontab extends pantheraFetchDB
                 if ($refl -> isStatic())
                 {
                     $return = $data['function'][0]::$data['function'][1]($data['data'], $this);
-                } else { 
+                } else {
                     // dynamic methods
                     $o = new $data['function'][0]();
 
@@ -184,28 +184,28 @@ class crontab extends pantheraFetchDB
 
                 $return = $data['function']($data['data'], $this);
             }
-            
-            
+
+
             $this->__set('count_executed', ($this->__get('count_executed')+1));
-            
+
             // finished jobs should be removed
             if ($return == 'FINISHED' or $return == 'JOB_FINISHED')
             {
                 $this->__set('count_left', "0");
                 return 'JOB_FINISHED';
             }
-            
+
             if ($this->__get('count_left') != -1)
                 $this->__set('count_left', (intval($this->__get('count_left'))-1));
-                
+
             $this -> updateExecutionTimeStats(microtime_float()-$t);
             $this -> log = $this -> panthera -> logging -> getOutput();
-                
+
             return $return;
             // $this->unlock();
         //}
     }
-    
+
     /**
       * Update job execution time statistics
       *
@@ -213,30 +213,30 @@ class crontab extends pantheraFetchDB
       * @return void
       * @author Damian Kęska
       */
-    
+
     protected function updateExecutionTimeStats($time)
     {
         $data = unserialize($this->__get('data'));
-        
+
         if (!isset($data['timing']))
         {
             $data['timing'] = array();
         }
-        
+
         if (!isset($data['maxtiming']))
         {
             $data['maxtiming'] = 15;
         }
-        
+
         $maxTiming = $data['maxtiming'];
-        
+
         if (count($data['timing']) >= $maxTiming)
         {
             ksort($data['timing']);
             reset($data['timing']);
             unset($data['timing'][key($data['timing'])]);
         }
-        
+
         $data['timing'][time()] = $time;
         $this -> __set('data', serialize($data));
     }
@@ -253,13 +253,13 @@ class crontab extends pantheraFetchDB
         // generate `next_interation` unix timestamp
         if ($this->__get('hour') == '')
             return False;
-            
+
         $this->panthera->logging->output('crontab::Regenerating time for crontab: ' .$this->__get('minute'). ' ' .$this->__get('hour'). ' ' .$this->__get('day'). ' ' .$this->__get('month'). ' ' .$this->__get('weekday'). ' ' .$this->__get('year'), 'crontab');
 
         $cron = Cron\CronExpression::factory($this->__get('minute'). ' ' .$this->__get('hour'). ' ' .$this->__get('day'). ' ' .$this->__get('month'). ' ' .$this->__get('weekday'). ' ' .$this->__get('year'));
-        
+
         $startTime = 0;
-        
+
         if (intval($this->start_time) != 0)
             $startTime = date($this -> panthera -> dateFormat, $this->start_time);
 
@@ -269,11 +269,11 @@ class crontab extends pantheraFetchDB
             //$this->start_time = 0;
         } else
             $time = $cron -> getNextRunDate();
-            
+
         $time = $time->getTimestamp();
-        
+
         //var_dump($time->getTimestamp());
-            
+
         if ($time != $this->__get('next_interation'))
             $this->__set('next_interation', $time);
     }
@@ -294,14 +294,14 @@ class crontab extends pantheraFetchDB
         // execute save function
         parent::save();
     }
-    
+
     /**
       * Mark job for deletion (set count_left to 0)
       *
-      * @return void 
+      * @return void
       * @author Damian Kęska
       */
-    
+
     public function finish()
     {
         $this->count_left = 0;
@@ -350,7 +350,7 @@ class crontab extends pantheraFetchDB
     public static function getJobs($by='', $limit=0, $limitFrom=0, $sortBy='jobid', $sortHow='DESC')
     {
         $panthera = pantheraCore::getInstance();
-        return $panthera->db->getRows('cronjobs', $by, $limit, $limitFrom, 'crontab', $sortBy, $sortHow);  
+        return $panthera->db->getRows('cronjobs', $by, $limit, $limitFrom, 'crontab', $sortBy, $sortHow);
     }
 
     /**
@@ -386,20 +386,20 @@ class crontab extends pantheraFetchDB
     public static function removeJob($jobid)
     {
         $panthera = pantheraCore::getInstance();
-        
+
         $job = new crontab('jobid', $jobid);
-        
+
         if (!$job -> exists())
         {
             return True;
         }
-        
+
         $job -> clearCache();
         $panthera -> logging -> output ('removeJob jobid=' .$jobid, 'crontab');
         $SQL = $panthera->db->query('DELETE FROM `{$db_prefix}cronjobs` WHERE `jobid` = :jobid', array('jobid' => $jobid));
         return (bool)$SQL->rowCount();
     }
-    
+
 
     /**
 	 * Create new planned job
@@ -408,7 +408,7 @@ class crontab extends pantheraFetchDB
      * @param mixed $function Function name (as string) or array in format array(string Classname, string Method)
      * @param mixed $data Data to be passed to hooked function
      * @param string $minute Minute (default: *) crontab format, eg. 10, eg. 8-10, eg. 10,11
-     * @param string $hour Hour (default: *) crontab format, eg. 10, eg. 8-10, eg. 10,11 
+     * @param string $hour Hour (default: *) crontab format, eg. 10, eg. 8-10, eg. 10,11
      * @param string $day Day (default: *) crontab format, eg. 10, eg. 8-10, eg. 10,11
      * @param string $month Month (default: *) crontab format, eg. 10, eg. 8-10, eg. 10,11
      * @param string $dayOfWeek Day of week (default: *) crontab format, eg. 0 for Monday
@@ -420,27 +420,27 @@ class crontab extends pantheraFetchDB
     public static function createJob($jobname, $function, $data, $minute='*', $hour='*', $day='*', $month='*', $dayOfWeek='*', $year='*', $enabled=True)
     {
         $panthera = pantheraCore::getInstance();
-        
+
         // check if job exists
         $job = new crontab('jobname', $jobname);
-        
+
         if ($job -> exists())
         {
             throw new Exception('Job "' .$jobname. '" already exists', 812);
         }
-        
+
         unset($job);
-        
+
         if (is_array($function))
         {
             // autoload specified class from autoloader
             $autoloader = $panthera -> config -> getKey('autoloader');
-        
+
             if (isset($autoloader[$function[0]]) and !class_exists($function[0]))
             {
                 $panthera -> importModule($autoloader[$function[0]]);
             }
-        
+
             // check if class and it's method exists
             if(class_exists($function[0]))
             {
@@ -467,26 +467,26 @@ class crontab extends pantheraFetchDB
         $time = $time->getTimeStamp();
 
         $array = array('data' => serialize(array(
-            'function' => $function, 
-            'data' => $data, 
-            'file' => str_replace(PANTHERA_DIR, '', $fileName), 
-            'fullFileName' => $fileName)), 
-            'jobname' => $jobname, 
-            'minute' => $minute, 
-            'hour' => $hour, 
-            'day' => $day, 
-            'month' => $month, 
-            'weekday' => $dayOfWeek, 
-            'year' => $year, 
+            'function' => $function,
+            'data' => $data,
+            'file' => str_replace(PANTHERA_DIR, '', $fileName),
+            'fullFileName' => $fileName)),
+            'jobname' => $jobname,
+            'minute' => $minute,
+            'hour' => $hour,
+            'day' => $day,
+            'month' => $month,
+            'weekday' => $dayOfWeek,
+            'year' => $year,
             'next_interation' => $time,
             'enabled' => intval($enabled),
         );
 
         $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}cronjobs` (`jobid`, `jobname`, `data`, `minute`, `hour`, `day`, `month`, `year`, `weekday`, `next_interation`, `created`, `enabled`) VALUES (NULL, :jobname, :data, :minute, :hour, :day, :month, :year, :weekday, :next_interation, NOW(), :enabled)', $array);
-        
+
         return (bool)$SQL->rowCount();
     }
-    
+
     /**
       * Get default intervals
       *
@@ -494,7 +494,7 @@ class crontab extends pantheraFetchDB
       * @return array
       * @author Damian Kęska
       */
-    
+
     public static function getDefaultIntervals($intervalName='')
     {
         $options = array();
@@ -506,19 +506,19 @@ class crontab extends pantheraFetchDB
         $options['30m'] = array('title' => slocalize('%s minutes', 'messages', 30), 'expression' => '*/30 * * * * *');
         $options['45m'] = array('title' => slocalize('%s minutes', 'messages', 45), 'expression' => '*/45 * * * * *');
         $options['50m'] = array('title' => slocalize('%s minutes', 'messages', 50), 'expression' => '*/50 * * * * *');
-    
+
         // hours
         for ($i=1; $i <= 24; $i++)
         {
             $options[$i. 'h'] = array('title' => slocalize('%s hours', 'messages', $i), 'expression' => '* */' .$i. ' * * * *');
         }
-        
+
         // days
         for ($i=1; $i <= 31; $i++)
         {
             $options[$i. 'd'] = array('title' => slocalize('%s days', 'messages', $i), 'expression' => '* * */' .$i. ' * * *');
         }
-        
+
         $options['1o'] = array('title' => slocalize('%s months', 'messages', 1), 'expression' => '* * * */1 * *');
         $options['2o'] = array('title' => slocalize('%s months', 'messages', 2), 'expression' => '* * * */2 * *');
         $options['3o'] = array('title' => slocalize('%s months', 'messages', 3), 'expression' => '* * * */3 * *');
@@ -526,17 +526,17 @@ class crontab extends pantheraFetchDB
         $options['8o'] = array('title' => slocalize('%s months', 'messages', 8), 'expression' => '* * * */8 * *');
         $options['10o'] = array('title' => slocalize('%s months', 'messages', 10), 'expression' => '* * * */10 * *');
         $options['12o'] = array('title' => slocalize('%s months', 'messages', 12), 'expression' => '* * * */12 * *');
-        
+
         if ($intervalName)
         {
             if (isset($options[$intervalName]))
             {
                 return $options[$intervalName];
             }
-            
+
             return '7d';
         }
-        
+
         return $options;
     }
 }
@@ -579,7 +579,7 @@ class cronjobs
                 $job -> regenerateInterationTime();
                 print("Found a job with bad `next_interation` time\n");
             }
-            
+
             // regenerateInterationTime and save
             $job->save();
         }
@@ -597,19 +597,19 @@ class cronjobs
         $panthera = pantheraCore::getInstance();
         $panthera -> db -> query('DELETE FROM `{$db_prefix}run` WHERE `expired` < :expiretime', array('expiretime' => (microtime(true)-15)));
     }
-    
+
     /**
 	 * Built-in crontab function to optimize in-memory table that takes too much RAM memory after some time
 	 *
 	 * @return void
 	 * @author Damian Kęska
 	 */
-	 
+
 	 public static function optimizeRunTable($data='')
 	 {
 	    $panthera = pantheraCore::getInstance();
 	    print("Optimizing ".$panthera -> db -> prefix."_run table.");
-	    
+
 	    if ($panthera->db->getSocketType() == 'mysql')
 	    {
 	        try {
@@ -618,14 +618,14 @@ class cronjobs
         } else
             print("Not using MySQL, so... skipping...");
 	 }
-	 
+
     /**
 	 * Built-in crontab function to remove not activated subscriptions within X days
 	 *
 	 * @return void
 	 * @author Damian Kęska
 	 */
-	 
+
 	 public static function removeExpiredSubscriptions ($data='')
 	 {
 	    $panthera = pantheraCore::getInstance();
@@ -635,14 +635,14 @@ class cronjobs
 	        $panthera -> db -> query('DELETE FROM `{$db_prefix}newsletter_users` WHERE `activate_id` != "" AND `added` < NOW() - INTERVAL ' .$days. ' DAYS');
 	    } catch (Exception $e) { /* pass */ }
 	 }
-	
+
     /**
 	 * Built-in crontab function to remove expired password recovery requests
 	 *
 	 * @return void
 	 * @author Damian Kęska
 	 */
-	 
+
 	 public static function removeExpiredPasswdRecovery($data='')
 	 {
 	    $panthera = pantheraCore::getInstance();
@@ -652,50 +652,50 @@ class cronjobs
 	        $panthera -> db -> query('DELETE FROM `{$db_prefix}password_recovery` WHERE `type` = "recovery" AND `date` < now() - interval :days days', array('days' => $days));
 	    } catch (Exception $e) { /* pass */ }
 	 }
-     
+
     /**
      * Built-in crontab function to remove expired database var cache keys
      *
      * @return void
      * @author Damian Kęska
      */
-     
+
      public static function cleanupDBvarCache($data='')
      {
          $panthera = pantheraCore::getInstance();
          $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}var_cache` WHERE expire < ' .time(). ' AND expire != -1;');
          $panthera -> logging -> output('Removed ' .$SQL -> rowCount(). ' outdated keys', 'pantheraCache');
      }
-     
+
      /**
       * Cleanup expired files var cache keys
-      * 
+      *
       * @return void
       * @author Damian Kęska
       */
-     
+
      public static function cleanupFilesvarCache($data='')
      {
          $panthera = pantheraCore::getInstance();
-         
+
          $time = microtime(TRUE);
-         
+
          $cache = null;
-         
+
          if ($panthera -> varCache -> name == 'files')
             $cache = $panthera -> varCache;
-         
+
          if ($panthera -> cache -> name == 'files')
             $cache = $panthera -> cache;
-            
+
          if (!$cache)
          {
              $panthera -> logging -> output('Files cache disabled', 'pantheraCache');
              return FALSE;
          }
-         
+
          $dir = filesystem::scandirDeeply($cache -> cacheDir, False);
-         
+
          foreach ($dir as $key => $item)
          {
              if (is_dir($item))
@@ -703,9 +703,9 @@ class cronjobs
 
              if (basename($item) == 'index.phps')
                 continue;
-             
+
              $read = unserialize(file_get_contents($item));
-             
+
              if (intval($read['expiration']) < time() and intval($read['expiration']) !== -1)
              {
                  $panthera -> logging -> output('Removing expired key "' .str_replace('.phps', '', basename($item)). '"', 'pantheraCache');
@@ -713,23 +713,21 @@ class cronjobs
                  unset($dir[$key]);
              }
          }
-         
+
          foreach ($dir as $key => $item)
          {
              if ($key === 0)
                 continue;
-             
+
              if (is_file($item))
                 continue;
-             
+
              if ((count(scandir($item)) == 2) or !is_readable($item))
              {
                  rmdir($item);
              }
          }
-         
+
          $panthera -> logging -> output('Files cache cleanup finished in ' .(microtime(TRUE)-$time). 's', 'pantheraCache');
      }
 }
-
-

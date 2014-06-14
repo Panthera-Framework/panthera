@@ -42,14 +42,14 @@ if (!$newsletter->exists())
   * @author Mateusz Warzyński
   * @author Damian Kęska
   */
-  
+
 if ($_GET['action'] == 'removeSubscriber')
 {
     if(newsletterManagement::removeSubscriber($_POST['id'])) {
         newsletterManagement::updateUsersCount($_GET['nid']);
         ajax_exit(array('status' => 'success'));
     }
-    
+
     ajax_exit(array('status' => 'failed', 'messsage' => localize('Cannot find subscriber', 'newsletter')));
 }
 
@@ -66,37 +66,37 @@ if ($_GET['action'] == 'addSubscriber')
 	{
 		ajax_exit(array('status' => 'failed', 'message' => localize('Check email address.', 'newsletter')));
 	}
-	
+
 	$userID = -1; // guest
     $type = '';
-	
+
 	if (isset($_POST['user']))
 	{
 	    $u = new pantheraUser('login', $_POST['user']);
-	    
+
 	    if ($u->exists())
 	    {
 	        $userID = $u->id;
 	    }
 	}
-	
+
 	if (in_array($_POST['type'], $types))
 	{
 	    $type = $_POST['type'];
 	}
-	
+
 	if ($newsletter -> registerUser($_POST['email'], $type, $userID, '', True, True))
     {
         newsletterManagement::updateUsersCount($_GET['nid']);
         $subscription = $newsletter -> getSubscription($_POST['email']);
         $notes = $subscription['notes'];
-        
+
         if ($_POST['notes'])
         {
             $notes = strip_tags($_POST['notes']);
             $subscriber = new newsletterSubscriber('id', $subscription['id']);
             $metas = $subscriber -> getMetas();
-            
+
             foreach ($additionalFields as $fieldName => $field)
             {
                 if ($_POST['extrafield_' .$fieldName])
@@ -104,13 +104,13 @@ if ($_GET['action'] == 'addSubscriber')
                     $metas -> set($fieldName, strip_tags($_POST['extrafield_' .$fieldName]));
                 }
             }
-            
+
             $metas -> save();
-            
+
             $subscriber -> notes = $notes;
             $subscriber -> save();
         }
-        
+
 	    ajax_exit(array('status' => 'success', 'id' => $subscription['id'], 'type' => $subscription['type'], 'address' => $subscription['address'], 'added' => $subscription['added'], 'notes' => $notes));
 	} else {
 		ajax_exit(array('status' => 'failed', 'message' => localize('Cannot add subscriber', 'newsletter')));
@@ -134,7 +134,7 @@ if ($page < 0)
 
 // get records only for current page
 $uiPager = new uiPager('adminNewsletter', $usersCount, 'adminNewsletter');
-$uiPager -> setActive($page); 
+$uiPager -> setActive($page);
 $uiPager -> setLinkTemplates('#', 'createPopup(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\', 1024);');
 $limit = $uiPager -> getPageLimit();
 

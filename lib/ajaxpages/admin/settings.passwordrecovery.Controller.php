@@ -7,8 +7,8 @@
  * @author Mateusz Warzyński
  * @license LGPLv3
  */
-  
-  
+
+
 /**
  * Password recovery settings page controller
  *
@@ -23,26 +23,26 @@ class settings_passwordrecoveryAjaxControllerSystem extends pageController
         'admin.settings.register.passwordrecovery' => array('Password recovery settings', 'passwordrecovery'),
         'admin.conftool' => array('Advanced system configuration editor', 'conftool'),
     );
-    
+
     protected $uiTitlebar = array(
         'Password recovery settings', 'passwordrecovery'
     );
-    
-    
-    
+
+
+
     /**
      * Display page based on generic template
      *
-     * @author Mateusz Warzyński 
+     * @author Mateusz Warzyński
      * @return string
      */
-     
+
     public function display()
     {
         $locales = $this -> panthera -> locale -> getLocales();
         $this -> panthera -> template -> push ('languages', $locales);
         $this -> panthera -> template -> push ('activeLanguage', $this -> panthera -> locale -> getFromOverride($_GET['language']));
-        
+
         // some defaults
         $this -> panthera -> config -> getKey('recovery.mail.title', array (
             'english' => 'Password recovery'
@@ -52,7 +52,7 @@ class settings_passwordrecoveryAjaxControllerSystem extends pageController
         $this -> panthera -> config -> getKey('recovery.mail.content', array(
             'english' => 'You requested a new password. If you want to change your current password to "{$recovery_passwd}" please visit this url: {$PANTHERA_URL}/pa-login.php?key={$recovery_key}'
         ), 'array', 'passwordrecovery');
-        
+
         // load uiSettings with "passwordrecovery" config section
         $config = new uiSettings('passwordrecovery');
         $config -> add('recovery.passwd.length', localize('New password length', 'passwordrecovery'), new integerRange(4, 32)); // please note that "." is replaced to "_-_"
@@ -62,19 +62,19 @@ class settings_passwordrecoveryAjaxControllerSystem extends pageController
         $config -> setFieldSaveHandler('recovery.mail.content', 'uiSettingsMultilanguageField');
         $config -> setFieldSaveHandler('recovery.mail.title', 'uiSettingsMultilanguageField');
         $result = $config -> handleInput($_POST);
-        
+
         if (is_array($result))
             ajax_exit(array(
                 'status' => 'failed',
                 'message' => $result['message'][1], 'field' => $result['field'],
             ));
-        
+
         elseif ($result === True)
             ajax_exit(array(
                 'status' => 'success',
             ));
-            
-        
+
+
         return $this -> panthera -> template -> compile('settings.passwordRecovery.tpl');
     }
 }

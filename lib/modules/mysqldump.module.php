@@ -8,10 +8,10 @@
 
 if (!defined('IN_PANTHERA'))
     exit;
-  
+
 if(!class_exists('Backup_Database'))
     include(PANTHERA_DIR. '/share/mysqldump.php');
-    
+
 /**
   * MySQL & SQLite3 dumping functions
   * @package Panthera\modules\database
@@ -34,20 +34,20 @@ class SQLDump
     public static function make($tables='*', $backupData=True, $resultArray=False, $replacePrefix=False)
     {
         $backupDatabase = self::initSQLDump();
-        
+
         if ($resultArray == True)
             $backupDatabase -> resultType = "array";
-            
+
         if ($replacePrefix == True)
             $backupDatabase -> replacePrefix = True;
-        
+
         return $backupDatabase->backupTables($tables, $backupData);
     }
 
     /**
       * Create a new, configured instance of Backup_Database class
       *
-      * @return object 
+      * @return object
       * @author Damian Kęska
       */
 
@@ -64,31 +64,31 @@ class SQLDump
         $backup -> resultType = "array";
         $backup -> replacePrefix = True;
         $backup -> dropTables = $dropTables;
-        
+
         $structure = $backup -> backupTables('*', False);
-        
+
         if (!is_dir(SITE_DIR. '/content/backups/db_structure'))
             mkdir(SITE_DIR. '/content/backups/db_structure');
-            
+
         $backupDir = SITE_DIR. '/content/backups/db_structure/' .date('G:i:s_d.m.Y');
-            
+
         // remove old directory if exists
         if (is_dir($backupDir))
         {
             $panthera -> importModule('filesystem');
             filesystem::deleteDirectory($backupDir);
         }
-        
+
         // here we will place all files
         mkdir($backupDir);
-        
+
         foreach ($structure as $table => $SQL)
         {
             $fp = fopen($backupDir. '/' .$table. '.sql', 'w');
             fwrite($fp, $SQL);
             fclose($fp);
         }
-        
+
         return $backupDir;
     }
 
@@ -105,8 +105,8 @@ class SQLDump
         $files = scandir(SITE_DIR. '/content/backups/db/'); // all files
         $rFiles = array(); // selected files
         $i = 0;
-        $count = intval($count);        
-        
+        $count = intval($count);
+
         sort($files);
         $files = array_reverse($files);
 
@@ -126,21 +126,21 @@ class SQLDump
                 {
                     $rFiles[] = SITE_DIR. '/content/backups/db/' .$file;
                 }
-                
+
                 // if limit was reached
                 if ($i >= ($limitFrom+$count) and $count > 0)
                     break;
             }
         }
-        
+
         if ($limitFrom === False)
         {
             return $i;
         }
-        
+
         return $rFiles;
     }
-    
+
     /**
       * Backup job for crontab
       *
@@ -148,11 +148,11 @@ class SQLDump
       * @return $data
       * @author Damian Kęska
       */
-    
+
     public static function cronjob($data='')
     {
         $panthera = pantheraCore::getInstance();
-    
+
         if ($panthera->db->getSocketType() == 'mysql')
         {
             $name = $panthera->config->getKey('db_name'). '-' .date('Y.m.d_G:i:s'). '.sql';
@@ -164,7 +164,7 @@ class SQLDump
                 $fp = fopen(SITE_DIR. '/content/backups/db/' .$name, 'wb');
                 fwrite($fp, $dump);
                 fclose($fp);
-                
+
                 print("Wrote backup to ".SITE_DIR. "/content/backups/db/" .$name."\n");
             }
         } elseif ($panthera->db->getSocketType() == 'sqlite') {
@@ -172,7 +172,7 @@ class SQLDump
             copy(SITE_DIR. '/content/database/' .$panthera->config->getKey('db_file'), SITE_DIR. '/content/backups/db/' .$name);
             print("Wrote backup to ".SITE_DIR. "/content/backups/db/" .$name. "\n");
         }
-        
+
         return $data;
     }
 }

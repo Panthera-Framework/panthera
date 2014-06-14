@@ -395,7 +395,7 @@ class cacheAjaxControllerSystem extends pageController {
 			// memory usage
 			$servers[$server]['memory_used'] = filesystem::bytesToSize($attributes['bytes']);
 			$servers[$server]['memory_max'] = filesystem::bytesToSize($attributes['limit_maxbytes']);
-            
+
             if ($maxLoad != 0 )
 			    $servers[$server]['load_percent'] = (($attributes['cmd_get'] + $attributes['cmd_set']) / $maxLoad) * 100;
             else
@@ -404,10 +404,10 @@ class cacheAjaxControllerSystem extends pageController {
 
 		$this -> panthera -> template -> push('memcachedServers', $servers);
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * XCache support
 	 *
@@ -452,7 +452,7 @@ class cacheAjaxControllerSystem extends pageController {
 	}
 
 
-	
+
 	/**
 	 * Redis support
 	 *
@@ -489,7 +489,7 @@ class cacheAjaxControllerSystem extends pageController {
 	 * @author Damian Kęska
 	 * @author Mateusz Warzyński
 	 */
-	 
+
 	public function display() {
 		$this -> panthera -> locale -> loadDomain('cache');
 
@@ -527,9 +527,9 @@ class cacheAjaxControllerSystem extends pageController {
 		$this -> cacheList['files'] = True;
 		$this -> cacheList['db'] = True;
 		// db is always available
-		
+
 		$this -> panthera -> importModule('autoloader.tools');
-		
+
 		// get list of avaliable cache methods from list of declared classes
 		foreach (pantheraAutoLoader::getClasses() as $key => $className) {
 			if (substr($className, 0, 9) == 'varCache_') {

@@ -1,7 +1,7 @@
 <?php
 /**
  * User management tools
- * 
+ *
  * @package Panthera\core\user
  * @author Mateusz Warzyński
  * @author Damian Kęska
@@ -10,7 +10,7 @@
 
 /**
  * User management tools
- * 
+ *
  * @package Panthera\core\user
  * @author Mateusz Warzyński
  * @author Damian Kęska
@@ -28,26 +28,26 @@ class userTools
      * @package Panthera\core\user
      * @author Damian Kęska
      */
-    
+
     public static function userCreateSession($user, $passwd, $forceWithoutPassword=False, $onlyCheck=False)
     {
         $panthera = pantheraCore::getInstance();
         $usr = new pantheraUser('login', $user);
-        
+
         // allow logging in using e-mail address
         if ($panthera -> config -> getKey('login.maillogin', 1, 'bool', 'pa-login'))
         {
             if (!$usr->exists())
                 $usr = new pantheraUser('mail', $user);
         }
-        
+
         // allow logging-in using Jabber address
         if ($panthera -> config -> getKey('login.jabberlogin', 0, 'bool', 'pa-login'))
         {
             if (!$usr->exists())
                 $usr = new pantheraUser('jabber', $user);
         }
-    
+
         if ($usr->exists())
         {
             // force login user without password
@@ -55,7 +55,7 @@ class userTools
             {
                 if ($onlyCheck)
                     return $usr;
-                
+
                 $panthera -> user = $usr;
                 $panthera -> session -> uid = $usr->id;
                 $usr -> lastlogin = DB_TIME_NOW;
@@ -63,16 +63,16 @@ class userTools
                 $usr -> save();
                 return True;
             }
-            
+
             if ($usr->isBanned())
                 return 'BANNED';
-        
+
             // check if password is correct
             if ($usr -> checkPassword($passwd)) {
-                
+
                 if ($onlyCheck)
                     return $usr;
-                
+
                 $panthera -> user = $usr;
                 $panthera -> session -> uid = $usr->id;
                 $usr -> lastlogin = DB_TIME_NOW;
@@ -81,7 +81,7 @@ class userTools
                 return $usr;
             }
         }
-    
+
         return False;
     }
 
@@ -93,19 +93,19 @@ class userTools
      * @package Panthera\core\user
      * @author Damian Kęska
      */
-    
+
     public static function userCreateSessionById($id)
     {
         $panthera = pantheraCore::getInstance();
-    
+
         $user = new pantheraUser('id', $id);
-    
-        if ($user -> exists()) 
+
+        if ($user -> exists())
             static::userCreateSession($user -> login, null, True);
-    
+
         return False;
     }
-    
+
     /**
      * Check if user is logged in
      *
@@ -113,17 +113,17 @@ class userTools
      * @package Panthera\core\user
      * @author Damian Kęska
      */
-    
+
     public static function userLoggedIn()
     {
         $panthera = pantheraCore::getInstance();
-    
+
         if (!is_object($panthera->user))
             return False;
-    
+
         return $panthera -> user -> exists();
     }
-    
+
     /**
      * Get current logged in user (if logged in)
      *
@@ -131,19 +131,19 @@ class userTools
      * @package Panthera\core\user
      * @author Damian Kęska
      */
-    
+
     public static function getCurrentUser()
     {
         $panthera = pantheraCore::getInstance();
-    
+
         $sessionKey = $panthera->config->getKey('session_key');
-    
+
         if($panthera -> session -> get('uid'))
             return new pantheraUser('id', $panthera -> session -> get('uid'));
-    
+
         return false;
     }
-    
+
     /**
      * Simply remove user by `name`. Returns True if any row was affected
      *
@@ -151,17 +151,17 @@ class userTools
      * @package Panthera\core\user
      * @author Mateusz Warzyński
      */
-    
+
     public static function removeUser($login)
     {
         $u = new pantheraUser('login', $login);
-        
+
         if ($u -> exists())
             return $u -> delete();
-    
+
         return False;
     }
-    
+
     /**
      * Simply logout user
      *
@@ -169,12 +169,12 @@ class userTools
      * @package Panthera\core\user
      * @author Damian Kęska
      */
-    
+
     public static function logoutUser()
     {
         $panthera = pantheraCore::getInstance();
         $panthera -> session -> remove ('uid');
-    
+
         return True;
     }
 }

@@ -20,35 +20,35 @@ class frontsidePanel_text
     public function display($data)
     {
         global $panthera;
-        
+
         if (!$data['template'])
         {
             $data['template'] = 'text.tpl';
         }
-        
+
         $login = '';
         $userName = '';
         $userID = '';
-        
+
         if ($panthera->user)
         {
             $userName = $panthera -> user -> getName();
             $login = $panthera -> user -> login;
             $userID = $panthera -> user -> id;
         }
-        
+
         $text = pantheraLocale::selectStringFromArray($data['info']['storage']['text']);
-        
+
         // user name, login, id etc.
         $text = str_ireplace('{$userName}', $userName, $text);
         $text = str_ireplace('{$login}', $login, $text);
         $text = str_ireplace('{$userID}', $userID, $text);
-        
+
         if (stripos($text, '{$query}'))
         {
             $text = str_ireplace('{$query}', getQueryString('GET', '_', ''), $text);
         }
-        
+
         // informations about user's browser
         $clientInfo = $panthera -> session -> get('clientInfo');
         $text = str_ireplace('{$browser}', $clientInfo['browser'], $text);

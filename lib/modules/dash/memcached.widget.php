@@ -7,24 +7,24 @@
  * @author Damian Kęska
  */
 
-  
+
 if (!defined('IN_PANTHERA'))
     exit;
 
 /**
  * Memcached statistics dash widget
- * 
+ *
  * @package Panthera\core\modules\cache
  */
-  
+
 class memcached_dashWidget extends pantheraClass
 {
     /**
      * Main function that display widget
-     * 
+     *
      * @return string
      */
-    
+
     public function display()
     {
         if (class_exists('Memcached'))
@@ -37,7 +37,7 @@ class memcached_dashWidget extends pantheraClass
 
             $servers = array();
             $i=0;
-            
+
             foreach ($stats as $server => $attributes)
             {
                 $servers[$server] = array();
@@ -50,8 +50,8 @@ class memcached_dashWidget extends pantheraClass
                     $servers[$server]['memory_usage'] = localize('Not connected', 'dash');
                 else
                     $servers[$server]['memory_usage'] = substr($usage, 0, 4)."%";
-            } 
-            
+            }
+
             $this -> panthera -> template -> push ('memcachedServers', $servers);
             return $this -> panthera -> template -> compile('dashWidgets/memcached.tpl');
         }

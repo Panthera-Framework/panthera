@@ -6,7 +6,7 @@
  * @author Damian Kęska
  * @license LGPLv3
  */
- 
+
 /**
  * Show information about PHP
  *
@@ -16,13 +16,13 @@
 class phpinfoAjaxControllerSystem extends pageController
 {
     protected $permissions = 'can_see_phpinfo';
-    
+
     /**
      * void main()
-     * 
+     *
      * @return null
      */
-    
+
     public function display()
     {
         if ($_GET['action'] == 'iframe')
@@ -30,7 +30,7 @@ class phpinfoAjaxControllerSystem extends pageController
             phpinfo();
             pa_exit();
         }
-        
+
         $this -> panthera -> importModule('phpquery');
         ob_start();
         phpinfo();
@@ -38,10 +38,10 @@ class phpinfoAjaxControllerSystem extends pageController
         $phpQuery = phpQuery::newDocument($html);
         $body = $phpQuery['body'];
         $this -> panthera -> template -> push('phpinfoContent', $body->html());
-        
-        
+
+
         $titlebar = new uiTitlebar(localize('phpinfo', 'settings'));
-        
+
         $this -> panthera -> template -> display('phpinfo.tpl');
         pa_exit();
     }

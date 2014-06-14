@@ -24,65 +24,65 @@ class uploadCategory extends pantheraFetchDB
     protected $_constructBy = array('id', 'name', 'array');
     protected $_viewPermission = 'upload.view.{$var}';
     protected $_viewPermissionColumn = 'name';
-    
+
     /**
      * Returns category name
-     * 
+     *
      * @return string
      */
-    
+
     public function getName()
     {
         if ($this -> title)
         {
             $t = @unserialize($this->title);
-        
+
             if ($t !== False)
             {
                 return localize($t[0], $t[1]);
             }
-            
+
             return $this -> title;
         }
-        
+
         return $this -> name;
     }
-    
+
     /**
      * Filter for "maxfilesize" column
      * Will be executed on __set()
-     * 
+     *
      * @param mixed &$value Input to filter
      * @author Damian Kęska
      * @return null
      */
-    
+
     public function maxfilesizeFilter(&$value)
     {
         if (!is_numeric($value))
             $value = filesystem::sizeToBytes($value);
     }
-    
+
     /**
      * Filter for "mime_type" column
-     * 
+     *
      * @param mixed &$value Input to filter
      * @author Damian Kęska
      * @return null
      */
-    
+
     public function mime_typeFilter(&$value)
     {
         $value = filesystem::validateMimes($value);
     }
-    
+
     /**
      * Finds real max file size limit (includes PHP's upload_max_filesize, post_max_size and Panthera config key upload.maxsize)
-     * 
+     *
      * @param bool $humanReadable Return in human readable format
      * @return string|int
      */
-    
+
     public function getMaxfilesize($humanReadable=False)
     {
         $sizes = array(
@@ -91,17 +91,17 @@ class uploadCategory extends pantheraFetchDB
             intval(filesystem::sizeToBytes(ini_get('upload_max_filesize'))),
             intval(filesystem::sizeToBytes(ini_get('post_max_size'))),
         );
-        
+
         $maxSize = min($sizes);
-        
+
         if ($humanReadable)
             return filesystem::bytesToSize($maxSize);
-        
+
         return intval($maxSize);
     }
 }
 
-  
+
 /**
   * Uploaded file management (wrapper for `uploads` table in DB)
   *
@@ -123,11 +123,11 @@ class uploadedFile extends pantheraFetchDB
 
         parent::__set($key, $value);
     }
-    
+
     /**
       * Get file link (returns full, parsed link)
       *
-      * @return string 
+      * @return string
       * @author Damian Kęska
       */
 
@@ -142,14 +142,14 @@ class uploadedFile extends pantheraFetchDB
                     'front' => 'download.php',
                 ), 'download');
             }
-            
+
             // generate seo url
             return $this -> panthera -> routing -> generate('download', array(
                 'fileid' => $this -> id,
                 'filename' => $this -> filename,
             ));
         }
-        
+
         $url = $this -> panthera -> config -> getKey('url'); // this site url
         $location = pantheraUrl($this->__get('location'));
 
@@ -158,7 +158,7 @@ class uploadedFile extends pantheraFetchDB
 
     /**
      * Get file name
-     * 
+     *
      * @return string
      */
 
@@ -166,20 +166,20 @@ class uploadedFile extends pantheraFetchDB
     {
         if (intval($this -> protected))
             return $this -> filename;
-        
+
         return basename($this->getLink());
     }
-    
+
     /**
       * Get thumbnail and create it if does not exists
       *
       * @param string|int $size Optional size eg. 100x100 or 200
       * @param bool $create Create thumbnail if does not exists (optional, False by default)
       * @param bool $leaveSmaller Leave smaller thumbnail if its too small to resize (optiona, True by default)
-      * 
+      *
       * @author Damian Kęska
-      * @author Mateusz Warzyński 
-      * @return string Link to thumbnail 
+      * @author Mateusz Warzyński
+      * @return string Link to thumbnail
       */
 
     public function getThumbnail($size='', $create=False, $leaveSmaller=True)
@@ -188,11 +188,11 @@ class uploadedFile extends pantheraFetchDB
 
         $fileType = filesystem::fileTypeByMime($this->__get('mime'));
         $fileInfo = pathinfo($this->__get('location'));
-        
+
         if ($size)
         {
             $thumb = pantheraUrl('{$upload_dir}/_thumbnails/' .$size. 'px_' .$fileInfo['filename']. '.jpg');
-            
+
             if(is_file($thumb))
                 return $thumb;
 
@@ -226,7 +226,7 @@ class uploadedFile extends pantheraFetchDB
 
         if ($fileType == 'image')
             return str_replace('{$SITE_DIR}', '{$PANTHERA_URL}', $this->__get('location'));
-           
+
         $mimesURL = pantheraUrl('{$PANTHERA_URL}/images/admin/mimes/');
 
         if (is_file(SITE_DIR. '/images/admin/mimes/' .$fileType. '.png'))
@@ -237,7 +237,7 @@ class uploadedFile extends pantheraFetchDB
 
     /**
      * Get file save path
-     * 
+     *
      * @return string
      */
 
@@ -245,22 +245,22 @@ class uploadedFile extends pantheraFetchDB
     {
         return pantheraUrl($this->__get('location'));
     }
-    
+
     /**
      * Get author object or name
-     * 
+     *
      * @param bool $name Return user name instead of object
      * @return string|pantheraUser
      */
-    
+
     public function getAuthor($name=True)
     {
         if (!$this -> __author)
             $this -> __author = new pantheraUser('id', $this -> uploader_id);
-        
+
         if ($name)
             return $this -> __author -> getName();
-        
+
         return $this -> __author;
     }
 }
@@ -269,7 +269,7 @@ class uploadedFile extends pantheraFetchDB
   * Upload functions
   *
   * @package Panthera\modules\filesystem
-  * 
+  *
   * @author Mateusz Warzyński
   * @author Damian Kęska
   */
@@ -287,42 +287,42 @@ class pantheraUpload
         101 => 'Invalid file type',
         102 => 'File reached accepted file size limit',
     );
-    
+
     /**
      * Create new upload category
      *
      * @param string $name of category
      * @param int $id of author
-     * @param array $mimeType of allowed files 
-     * 
+     * @param array $mimeType of allowed files
+     *
      * @author Mateusz Warzyński
      * @return string
      */
-     
+
     public static function createUploadCategory($name=null, $author_id='', $mimeType='', $title='', $maxFileSize=0, $skipUserCheck=False)
     {
         $panthera = pantheraCore::getInstance();
-        
+
         if (!$skipUserCheck)
         {
             $user = new pantheraUser('id', $author_id);
-            
+
             if (!$user->exists()) {
                 $panthera -> logging -> output('Author ID is invalid, there is no user with this ID.', 'upload');
                 return False;
             }
         }
-        
+
         if (!$mimeType) {
             return False;
         }
-        
+
         if (!is_numeric($maxFileSize))
             return False;
-        
+
         if (!$name)
             $name = seoUrl($title). '-' .substr(md5(time().rand(999,9999)), 0, 4);
-        
+
         return $panthera -> db -> insert('upload_categories', array(
             'name' => $name,
             'title' => $title,
@@ -339,7 +339,7 @@ class pantheraUpload
      * Delete upload category
      *
      * @param int $id of category
-     * 
+     *
      * @author Mateusz Warzyński
      * @return string
      */
@@ -357,7 +357,7 @@ class pantheraUpload
     /**
      * Pre-validate uploaded file to temporary directory before moving
      * Warning: returns int on fail and bool on success. Remember to compare the type eg. if (pantheraUpload::validate(...) !== True) { failed; }
-     * 
+     *
      * @param array $file Input file eg. $_FILES['file']
      * @param string $category (Optional) Check if uploaded file meets requirements of selected category
      * @param string|array $mimes Single mime as string or array of mimes (types also accepted @see filesystem::fileTypeByMime())
@@ -365,41 +365,41 @@ class pantheraUpload
      * @author Damian Kęska
      * @return int|bool Returns int on error with error code, true if everything is fine
      */
-    
+
     public static function validate($file, $category=null, $mimes=null, $size=null)
     {
         $panthera = pantheraCore::getInstance();
-        
+
         if ($file['error'])
             return $file['error'];
-        
+
         if (is_string($mimes))
             $mimes = array($mimes);
         elseif ($mimes === null)
             $mimes = array();
-        
+
         // get mime types from category
         if ($category)
         {
             $obj = new uploadCategory('name', $category);
-            
+
             if ($obj -> exists())
             {
                 if ($obj -> mime_type and $obj -> mime_type != 'all')
                     $mimes = array_merge($mimes, explode(',', str_replace(' ', '', $obj -> mime_type)));
-                
+
                 if (intval($obj -> maxfilesize) !== 0 and filesize($file['tmp_name']) > intval($obj -> maxfilesize))
                     return 102; // file size limit reached
             }
         }
-        
+
         if ($mimes)
         {
             $fileMime = filesystem::getFileMimeType($file['tmp_name']);
             $typeMime = filesystem::fileTypeByMime($fileMime); // allow expressions like "document", "audio", "video", "binary"
-           
+
             $panthera -> logging -> output('Validating ' .$fileMime. '/' .$typeMime. ' mime, allowed: ' .json_encode($mimes), 'pantheraUpload');
-           
+
             if (!in_array($fileMime, $mimes) and !in_array($typeMime, $mimes))
             {
                 return 101; // mime mismatch code
@@ -411,7 +411,7 @@ class pantheraUpload
 
     /**
      * Get upload error message (English)
-     * 
+     *
      * @param int $code Numeric code received from any validating function
      * @return string|null Returns english message
      */
@@ -437,14 +437,14 @@ class pantheraUpload
     public static function handleUpload($file, $category, $uploaderID, $uploaderLogin, $protected, $public, $mime=null, $description='', $validated=true)
     {
         $panthera = pantheraCore::getInstance();
-        
+
         if (!is_array($file))
             throw new Exception('$file must be array type');
-        
+
         if (!$validated)
         {
             $validation = self::validate($file, $category, $mime);
-            
+
             if ($validation !== true)
                 throw new Exception(self::getErrorMessage($validation), $validation);
         }
@@ -468,7 +468,7 @@ class pantheraUpload
 
         if (!$mime)
             $mime = filesystem::getFileMimeType($file['tmp_name']);
-        
+
         $name = $file['name'];
         $fileInfo = pathinfo($name);
 
@@ -477,20 +477,20 @@ class pantheraUpload
             $name = substr($fileInfo['filename'], 0, 30). '.' .$fileInfo['extension'];
 
         $uploadDir = SITE_DIR. '/' .$panthera -> config -> getKey('upload_dir'). '/' .$category;
-        
-        if (!is_dir($uploadDir)) 
+
+        if (!is_dir($uploadDir))
         {
             mkdir($uploadDir);
             chmod($uploadDir, 0700);
         }
-        
+
         // create directory for hidden files
         if (!is_dir($uploadDir. '/_private'))
         {
             mkdir($uploadDir. '/_private');
             chmod($uploadDir. '/_private', 0700);
         }
-        
+
         // support for Apache's .htaccess
         if (!is_file($uploadDir. '/_private/.htaccess'))
         {
@@ -498,9 +498,9 @@ class pantheraUpload
             fwrite($fp, "deny from all\n");
             fclose($fp);
         }
-        
+
         $originalName = basename($name);
-        
+
         // put file to hidden directory protected by .htaccess and router
         if ($protected == True)
         {
@@ -508,7 +508,7 @@ class pantheraUpload
             $name = md5(PANTHERA_SEED.rand(999, 9999).time());
             $panthera -> logging -> output('File marked as protected, setting destination as "' .$uploadDir. '" for "' .$originalName. '"', 'pantheraUpload');
         }
-        
+
         if (!is_writable($uploadDir))
             throw new Exception($uploadDir. ' is not a writable directory');
 
@@ -516,11 +516,11 @@ class pantheraUpload
         if (is_file($uploadDir. '/' .$name))
         {
             $i= 0;
-            
+
             while (True)
-            {   
+            {
                 $i++;
-                
+
                 if (!is_file($uploadDir. '/' .$i. '_' .$name)) {
                     $name = $i. '_' .$name;
                     break;
@@ -547,7 +547,7 @@ class pantheraUpload
                 'filename' => $originalName,
                 'created' => DB_TIME_NOW,
             );
-            
+
             $type = filesystem::fileTypeByMime($mime);
 
             $panthera -> logging -> output('File type is "' .$type. '"', 'pantheraUpload');
@@ -562,19 +562,19 @@ class pantheraUpload
                 $simpleImage = new SimpleImage();
                 $simpleImage -> load($uploadDir. '/' .$name);
                 $simpleImage -> resizeToWidth(200); // resize to 100px width
-                $simpleImage -> save($dir. '/200px_' .$fileInfo['filename']. '.png', IMAGETYPE_PNG, 85);        
+                $simpleImage -> save($dir. '/200px_' .$fileInfo['filename']. '.png', IMAGETYPE_PNG, 85);
                 chmod($dir. '/200px_' .$fileInfo['filename']. '.png', 0655);
             }
 
             return $panthera -> db -> insert('uploads', $values);
-            
+
         } else {
             $panthera -> logging -> output('Cannot save file "' .$name. '", to directory "' .$uploadDir. '", details: ' .json_encode($file), 'pantheraUpload');
         }
 
         return False;
     }
-    
+
     /**
       * Create a fake uploaded file
       *
@@ -582,9 +582,9 @@ class pantheraUpload
       * @param string $content Content encoded in base64 (without HTML data header)
       * @param string $fileName
       * @param string $type Mime type
-     * 
+     *
       * @author Damian Kęska
-      * @return bool 
+      * @return bool
       */
 
     public static function makeFakeUpload($formName, $content, $fileName, $type='text/plain')
@@ -601,7 +601,7 @@ class pantheraUpload
       *
       * @param string $data Data encoded in base64 with HTML data header
       * @param bool $decode Decode base64 content (optional)
-      * 
+      *
       * @author Damian Kęska
       * @return array of two elements - mime and content (encoded in base64)
       */
@@ -610,10 +610,10 @@ class pantheraUpload
     {
         $tmp = explode(';base64,', $data);
         $data = $tmp[1];
-        
+
         if ($decode == True)
             $data = base64_decode($data);
-        
+
         return array('mime' => str_ireplace('data:', '', $tmp[0]), 'content' => $data);
     }
 
@@ -622,7 +622,7 @@ class pantheraUpload
       *
       * @package Panthera\Package
       * @param string $variable
-      * 
+      *
       * @author Damian Kęska
       */
 
@@ -634,21 +634,21 @@ class pantheraUpload
         {
             $location = pantheraUrl($location);
             $fileInfo = pathinfo($location);
-            
+
             if (is_file($fileInfo['dirname']. '/../_thumbnails/200px_' .$fileInfo['filename']. '.' .$fileInfo['extension']))
-                @unlink($fileInfo['dirname']. '/../_thumbnails/200px_' .$fileInfo['filename']. '.' .$fileInfo['extension']);   
-            
+                @unlink($fileInfo['dirname']. '/../_thumbnails/200px_' .$fileInfo['filename']. '.' .$fileInfo['extension']);
+
             $thumbs = glob($fileInfo['dirname']. '/../_thumbnails/*_' .$fileInfo['filename']. '.' .$fileInfo['extension']);
-            
+
             foreach ($thumbs as $thumb)
             {
                 if (is_file($thumb))
                     @unlink($thumb);
             }
-            
+
             if (is_file($location))
                 @unlink($location);
-            
+
             if (!is_file($location))
                 return True;
         }
@@ -671,7 +671,7 @@ class filesystem
      *
      * @param string $dir Directory
      * @param bool $filesOnly Show only files?
-     * 
+     *
      * @author Damian Kęska
      * @return string
      */
@@ -688,7 +688,7 @@ class filesystem
         {
             if ($file == ".." or $file == ".")
                 continue;
-            
+
             if (is_link($dir. '/' .$file))
             {
                 if (in_array(readlink($dir. '/' .$file), $list))
@@ -696,42 +696,42 @@ class filesystem
             }
 
             if (is_file($dir. '/' .$file) or is_link($dir. '/' .$file)) {
-                $list[] = $dir. '/' .$file;   
-            
+                $list[] = $dir. '/' .$file;
+
             } else {
-            
+
                 //if (!$filesOnly)
                 //    $list[] = $dir. '/' .$file;
-                    
+
                 $dirFiles = self::scandirDeeply($dir. '/' .$file, $filesOnly);
 
                 foreach ($dirFiles as $dirFile)
                     $list[] = $dirFile;
             }
-                
+
         }
 
         return $list;
     }
-    
+
     /**
      * Convert size like "2M", "5 mb", "100 kilobytes" to bytes
-     * 
+     *
      * @param string $val Input string
      * @return int
      */
-    
+
     public static function sizeToBytes($val)
     {
         $val = str_replace(',', '.', $val); // replace all commas to dots
         preg_match_all('/([0-9\.]+)/', $val, $_matches, PREG_SET_ORDER);
-        
+
         if ($_matches)
         {
             $size = floatval($_matches[0][1]);
             $unit = str_replace($_matches[0][1], '', $val); // replace 0-9
             $unit = strtolower(trim($unit)); // remove whitespaces and make characters lowercase
-            
+
             if ($unit == 'g' or $unit == 'gb' or $unit == 'gbytes' or $unit == 'gigabytes')
                 $size *= 1024 * 1024 * 1024;
             elseif ($unit == 'm' or $unit == 'mb' or $unit == 'mbytes' or $unit == 'megabytes')
@@ -742,79 +742,79 @@ class filesystem
                 // do nothing
             } else
                 return false;
-            
+
             return $size; // size in bytes
         }
-        
+
         return false;
     }
-    
+
     /**
      * Remove directory recursively
      *
      * @param string $dir Path
      * @see http://pl1.php.net/manual/en/function.rmdir.php
-     * 
+     *
      * @author erkethan@free.fr
-     * @return bool 
+     * @return bool
      */
 
     public static function deleteDirectory($dir)
-    { 
-        if (!file_exists($dir)) 
-            return true; 
-            
-        if (!is_dir($dir) || is_link($dir)) 
-            return unlink($dir); 
-            
-            
-        foreach (scandir($dir) as $item) 
-        { 
-                if ($item == '.' || $item == '..') 
-                    continue; 
-                    
-                if (!deleteDirectory($dir . "/" . $item)) 
-                { 
-                    chmod($dir . "/" . $item, 0777); 
-                    
-                    if (!self::deleteDirectory($dir . "/" . $item)) 
-                        return false; 
+    {
+        if (!file_exists($dir))
+            return true;
+
+        if (!is_dir($dir) || is_link($dir))
+            return unlink($dir);
+
+
+        foreach (scandir($dir) as $item)
+        {
+                if ($item == '.' || $item == '..')
+                    continue;
+
+                if (!deleteDirectory($dir . "/" . $item))
+                {
+                    chmod($dir . "/" . $item, 0777);
+
+                    if (!self::deleteDirectory($dir . "/" . $item))
+                        return false;
                 }
-        } 
-        
+        }
+
         return rmdir($dir);
     }
-    
+
     /**
      * Make a recursive copy of a directory
      *
      * @see http://stackoverflow.com/questions/9835492/move-all-files-and-folders-in-a-folder-to-another
      * @param string $src
      * @param string $dst
-     * 
+     *
      * @author Baba
      * @return void
      */
 
-    public static function recurseCopy($src, $dst) 
-    { 
-        $dir = opendir($src); 
-        @mkdir($dst); 
-        
+    public static function recurseCopy($src, $dst)
+    {
+        $dir = opendir($src);
+        @mkdir($dst);
+
         while (false !== ($file = readdir($dir)))
-        { 
+        {
             if ($file != '.' and $file != '..')
-            { 
-                if (is_dir($src . '/' . $file)) 
-                    self::recurseCopy($src . '/' . $file,$dst . '/' . $file); 
+            {
+                if (is_dir($src . '/' . $file))
+                    self::recurseCopy($src . '/' . $file,$dst . '/' . $file);
                 else
-                    copy($src . '/' . $file,$dst . '/' . $file);  
-            } 
+                    copy($src . '/' . $file,$dst . '/' . $file);
+            }
         }
-         
-        closedir($dir); 
-    } 
-    
+
+        closedir($dir);
+    }
+
     /**
      * Get file basename
      *
@@ -823,12 +823,12 @@ class filesystem
      * @return string
      */
 
-    public static function mb_basename($file) 
+    public static function mb_basename($file)
     {
         $tmp = explode('/', strval($file));
-        return end($tmp); 
-    } 
-    
+        return end($tmp);
+    }
+
     /**
      * Recognize mime type by file extension
      *
@@ -841,30 +841,30 @@ class filesystem
     {
         if (!is_file($fileName) or !is_readable($fileName))
             return false;
-        
+
         // use finfo to detect mime type
         $finfo = finfo_open(FILEINFO_MIME);
         $mimetype = finfo_file($finfo, $fileName);
         $mimetype = explode(';', $mimetype);
-        
-        // close finfo resource 
+
+        // close finfo resource
         finfo_close($finfo);
-        
+
         if (!$mimetype or !$mimetype[0])
             return 'application/octet-stream';
-        
+
         return $mimetype[0];
     }
-    
+
     /**
      * Colorize PHP code and return in table
      *
      * @param string $source_code PHP source code
      * @param int $start Line to start from
      * @param int $end Line to finish
-     * 
+     *
      * @author fsx.nr01@gmail.com
-     * @author Damian Kęska 
+     * @author Damian Kęska
      * @return string
      */
 
@@ -872,7 +872,7 @@ class filesystem
     {
         if (is_array($source_code))
             return false;
-           
+
         $source_code = explode("\n", str_replace(array("\r\n", "\r"), "\n", $source_code));
         $line_count = 0;
 
@@ -887,7 +887,7 @@ class filesystem
                 continue;
 
             $formatted_code .= '<tr><td>'.$line_count.'</td>';
-               
+
             if (ereg('<\?(php)?[^[:graph:]]', $code_line))
                 $formatted_code .= '<td>'. str_replace(array('<code>', '</code>'), '', highlight_string($code_line, true)).'</td></tr>';
             else
@@ -896,12 +896,12 @@ class filesystem
 
         return '<table style="font: 1em Consolas, \'andale mono\', \'monotype.com\', \'lucida console\', monospace;">'.$formatted_code.'</table>';
     }
-    
+
     /**
      * Get panthera file type classification by mime type
      *
      * @param string $mime Input mime type
-     * 
+     *
      * @author Damian Kęska
      * @return string binary, archive, document, script, audio, image, video. If not identified returns binary.
      */
@@ -957,55 +957,55 @@ class filesystem
 
     public static function bytesToSize($bytes, $precision = 2)
     {
-        // size rate  
+        // size rate
         $kilobyte = 1024;
         $megabyte = $kilobyte * 1024;
         $gigabyte = $megabyte * 1024;
         $terabyte = $gigabyte * 1024;
-       
+
         if (($bytes >= 0) && ($bytes < $kilobyte))
             return $bytes . ' B';
-     
+
         elseif (($bytes >= $kilobyte) && ($bytes < $megabyte))
             return round($bytes / $kilobyte, $precision) . ' KB';
-     
+
         elseif (($bytes >= $megabyte) && ($bytes < $gigabyte))
             return round($bytes / $megabyte, $precision) . ' MB';
-     
+
         elseif (($bytes >= $gigabyte) && ($bytes < $terabyte))
             return round($bytes / $gigabyte, $precision) . ' GB';
-     
+
         elseif ($bytes >= $terabyte)
             return round($bytes / $terabyte, $precision) . ' TB';
-        
+
         else
             return $bytes . ' B';
     }
-    
+
     /**
      * Validates mime or group of comma separated mimes
-     * 
+     *
      * @param string|array $mimes Single mime or multiple mimes
-     * @return string Comma separated mime types 
+     * @return string Comma separated mime types
      */
-    
+
     public static function validateMimes($mimes)
     {
         if (!is_array($mimes))
             $mimes = explode(',', $mimes);
-        
+
         $newArray = array();
-        
+
         foreach ($mimes as $mime)
         {
             $mime = trim($mime);
-            
+
             if (!preg_match('/^([A-Za-z0-9]+)\/?([A-Za-z0-9\_\-]+)?$/', $mime))
                 continue;
-            
+
             $newArray[] = $mime;
         }
-        
+
         return implode(', ', $newArray);
     }
 }

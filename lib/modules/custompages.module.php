@@ -16,7 +16,7 @@ if (!defined('IN_PANTHERA'))
   * @package Panthera\modules\custompages
   * @author Damian Kęska
   */
-  
+
 class customPage extends pantheraFetchDB
 {
     protected $_tableName = 'custom_pages';
@@ -24,12 +24,12 @@ class customPage extends pantheraFetchDB
     protected $_constructBy = array('id', 'url_id', 'unique', 'array');
     protected $_meta;
     protected $_unsetColumns = array();
-    
+
     /**
       * Get custompage's meta attributes
       *
       * @param string $meta Type of meta, by `id` or `unique`
-      * @return object|null 
+      * @return object|null
       * @author Damian Kęska
       */
 
@@ -38,10 +38,10 @@ class customPage extends pantheraFetchDB
         if ($meta == 'unique')
             $data = $this->unique;
         elseif ($meta == 'id')
-            $data = $this->id;    
+            $data = $this->id;
         else
             return False;
-    
+
         if (!isset($this->_meta[$meta]))
             $this->_meta[$meta] = new metaAttributes($this->panthera, 'cpages_' .$meta, $this->unique);
 
@@ -52,7 +52,7 @@ class customPage extends pantheraFetchDB
       * Return columns from database with parsed Panthera URLS
       *
       * @param string $var Variable name
-      * @return mixed 
+      * @return mixed
       * @author Damian Kęska
       */
 
@@ -63,13 +63,13 @@ class customPage extends pantheraFetchDB
 
         return parent::__get($var);
     }
-    
+
     /**
       * Set column's value to database and convert automaticaly Panthera URLS
       *
       * @param string $var Variable name
       * @param string $value Value
-      * @return mixed 
+      * @return mixed
       * @author Damian Kęska
       */
 
@@ -81,7 +81,7 @@ class customPage extends pantheraFetchDB
        return parent::__set($var, $value);
 
     }
-    
+
     /**
      * Get all custom pages from `{$db_prefix}_custom_pages` matching criteries specified in parameters
      *
@@ -94,7 +94,7 @@ class customPage extends pantheraFetchDB
           $panthera = pantheraCore::getInstance();
           return $panthera->db->getRows('custom_pages', $by, $limit, $limitFrom, 'customPage', $orderBy, $order);
     }
-    
+
     /**
      * Create custom page
      *
@@ -126,12 +126,12 @@ class customPage extends pantheraFetchDB
 
         return False;
     }
-    
+
     /**
       * Remove selected custom pages from database
       *
       * @param array $where List of columns and values to put in where clause of sql query
-      * @return bool 
+      * @return bool
       * @author Damian Kęska
       */
 
@@ -142,7 +142,7 @@ class customPage extends pantheraFetchDB
         $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}custom_pages` WHERE ' .$dbSet[0], $dbSet[1]);
         return (bool)$SQL->rowCount();
     }
-    
+
     /**
      * Simply remove custom page by `id`. Returns True if any row was affected
      *
@@ -160,7 +160,7 @@ class customPage extends pantheraFetchDB
 
         return False;
     }
-    
+
     /**
       * Get custom page by unique id and language
       *
@@ -168,30 +168,30 @@ class customPage extends pantheraFetchDB
       * @param string $value
       * @param string $language
       * @param bool $languageFallback - fallback, forceNative
-      * @return mixed 
+      * @return mixed
       * @author Damian Kęska
       */
-    
+
     public static function getBy($field, $value, $language='', $languageFallback='fallback')
     {
         $panthera = pantheraCore::getInstance();
         $panthera -> importModule('meta');
-        
+
         // if not specified language it will be taken from active session
         if ($language == '')
             $language = $panthera -> locale -> getActive();
-            
+
         if (meta::get('var', 'cp_gen_' .$value))
             $language = 'all';
-            
+
         $statement = new whereClause();
         $statement -> add('', $field, '=', $value);
         $statement -> add('AND', 'language', '=', $language);
-        
+
         $cpage = new customPage($statement, '');
         $panthera -> logging -> output ('Trying to get customPage by field=' .$field. ', language=' .$language, 'customPages');
 
-        // the simplest way is to find page by `unique`        
+        // the simplest way is to find page by `unique`
         if ($field == 'unique')
         {
             if (!$cpage->exists())
@@ -202,41 +202,38 @@ class customPage extends pantheraFetchDB
             }
         } else {
             // no `unique` given but `id` or `url_id`
-        
+
             // if page with `url_id` or `id` does not exists in current language
             if (!$cpage->exists())
             {
                 // try to find page in other language to get `unique`
                 $cpage = new customPage($field, $value);
                 $panthera -> logging -> output ('customPage search by field=' .$field. ', value=' .$value, 'customPages');
-                
+
                 // if we found page by `unique` we can now search for page with that in unique in selected `langauge`
                 if ($cpage->exists())
                 {
                     $panthera -> logging -> output('And the result is positive, unique=' .$cpage->unique. ', now searching in language=' .$language, 'customPages');
-                    
+
                     $statement = new whereClause();
                     $statement -> add('', 'unique', '=', $cpage->unique);
                     $statement -> add('AND', 'language', '=', $language);
-                
+
                     $ppage = new customPage($statement, '');
-                    
+
                     // if found, replace cpage with ppage
                     if ($ppage -> exists())
                         $cpage = $ppage;
                     else {
                         if ($languageFallback == 'forceNative')
-                            $cpage = new customPage('array', array());                        
+                            $cpage = new customPage('array', array());
                     }
                 }
             }
         }
-        
+
         return $cpage;
     }
 }
-
-
-
 
 

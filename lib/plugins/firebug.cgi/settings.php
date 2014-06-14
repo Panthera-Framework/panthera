@@ -44,7 +44,7 @@ if ($_GET['display'] == 'firebugSettings')
           *
           * @author Damian Kęska
           */
-    
+
         case 'add':
             // check if ip address is valid
             if (!$panthera->types->validate($_POST['addr'], 'ip'))
@@ -101,7 +101,7 @@ if ($_GET['display'] == 'firebugSettings')
 
             if ($list[0] == '')
                 unset($list[0]);
-                
+
             new uiTitlebar(localize('Firebug settings', 'firebug'));
 
             $panthera -> template -> push ('server_version', FirePHP::VERSION);

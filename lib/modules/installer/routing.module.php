@@ -1,7 +1,7 @@
 <?php
 /**
  * Routing configuration step
- * 
+ *
  * @package Panthera\installer
  * @author Damian Kęska
  * @license GNU Lesser General Public License 3, see license.txt
@@ -9,7 +9,7 @@
 
  /**
  * Routing configuration step
- * 
+ *
  * @package Panthera\installer
  * @author Damian Kęska
  */
@@ -18,13 +18,13 @@ class routingInstallerControllerSystem extends installerController
 {
     /**
      * Main function to display everything
-     * 
+     *
      * @feature installer.routing null Install additional routes
-     * 
+     *
      * @author Damian Keska
      * @return null
      */
-    
+
     public function display()
     {
         // add routes to modules provided with Panthera
@@ -37,16 +37,16 @@ class routingInstallerControllerSystem extends installerController
         $this -> panthera -> routing -> map('GET|POST', 'login', array('front' => 'pa-login.php'), 'login');
         $this -> panthera -> routing -> map('GET|POST', 'index.[html|py|pyc|rb]', array('redirect' => '', 'code' => 301), 'index-html');
         $this -> panthera -> routing -> map('GET', 'file/[i:fileid]/[*:filename]', array('front' => 'download.php'), 'download');
-        
+
         $this -> getFeature('installer.routing');
-        
+
         // generate table log
         $routes = array();
-        
+
         foreach ($this -> panthera -> routing -> getRoutes() as $route => $data)
             $routes[] = array($route, $data[0], $data[1]);
-        
-        
+
+
         $this -> installer -> enableNextStep();
         $this -> panthera -> template -> push('spinnerStepMessage', localize('Installing default URL routes...', 'installer'));
         $this -> panthera -> template -> push('spinnerStepTable', $routes);

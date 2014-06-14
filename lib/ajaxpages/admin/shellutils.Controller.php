@@ -22,13 +22,13 @@ class shellutilsAjaxControllerSystem extends pageController
 	protected $uiTitlebar = array(
 		'Shell utils', 'debug',
 	);
-    
+
     /**
      * Main function
-     * 
+     *
      * @return null
      */
-	
+
 	public function display()
 	{
 		$shellCommands = array(
@@ -44,13 +44,13 @@ class shellutilsAjaxControllerSystem extends pageController
 		    'pwd' => 'pwd',
 		    'uname -a' => 'uname -a'
 		);
-		
+
 		switch ($_GET['exec'])
 		{
 		    case 'debug.py':
 		        try {
 		            $output = file_get_contents(SITE_DIR. '/content/tmp/debug.log');
-		
+
 		            ajax_exit(array(
 		            	'status' => 'success',
 		            	'message' => nl2br($output),
@@ -62,11 +62,11 @@ class shellutilsAjaxControllerSystem extends pageController
                     ));
 		        }
 		    break;
-		
+
 		    case 'ping google.com':
 		        try {
 		            $output = shell_exec('/bin/ping google.com -c 2');
-		
+
 		            ajax_exit(array(
 		                'status' => 'success',
 		                'message' => nl2br($output),
@@ -78,7 +78,7 @@ class shellutilsAjaxControllerSystem extends pageController
                     ));
 		        }
 		    break;
-		
+
 		    default:
 		        if (isset($shellCommands[$_GET['exec']]))
 		        {
@@ -100,7 +100,7 @@ class shellutilsAjaxControllerSystem extends pageController
 
 		// titlebar
 		$this -> uiTitlebarObject -> addIcon('{$PANTHERA_URL}/images/admin/menu/Apps-yakuake-icon.png', 'left');
-		
+
 		// template
 		$this -> panthera -> template -> push('commands', $shellCommands);
 		return $this -> panthera -> template -> compile('shellutils.tpl');

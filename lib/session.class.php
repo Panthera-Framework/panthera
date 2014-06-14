@@ -1,7 +1,7 @@
 <?php
 /**
  * Session management, navigation, "run" table
- * 
+ *
  * @package Panthera\core\session
  * @author Damian Kęska
  * @license LGPLv3
@@ -9,14 +9,14 @@
 
 if (!defined('IN_PANTHERA'))
 	exit;
-    
+
 /**
  * User session management class
  *
  * @package Panthera\core\session
  * @author Damian Kęska
  */
-    
+
 class pantheraSession
 {
     protected $sessionKey, $panthera, $_cookies;
@@ -44,12 +44,12 @@ class pantheraSession
 
                 if ($check == True and is_bool($check))
                     return True;
-                    
+
                 $panthera -> logging -> output ('Useragent check failed', 'pantheraSession');
                 $this->removeSession();
             }
         }
-         
+
         ini_set('session.gc_maxlifetime', (int)$panthera->config->getKey('session_lifetime', '3600', 'int'));
         ini_set('session.cookie_lifetime', (int)$panthera->config->getKey('session_lifetime', '3600', 'int'));
         @session_start();
@@ -77,16 +77,16 @@ class pantheraSession
         $addrs = $this->get('s_addrs');
         $addrs[$_SERVER['REMOTE_ADDR']] = True;
         $this->set('s_addrs', $addrs);
-        
+
         // Browser detection check
         if (!$this->get('clientInfo'))
             $this -> set('clientInfo', $this->detectBrowser());
     }
-    
+
     /**
       * Detect a browser and os types and versions
       *
-      * @return array 
+      * @return array
       * @author Damian Kęska
       */
 
@@ -95,28 +95,28 @@ class pantheraSession
         // require Mobile Detect library
         if (!class_exists('Mobile_Detect'))
             require PANTHERA_DIR. '/share/mobiledetectlib/Mobile_Detect.php';
-        
+
         $info = array('deviceType' => 'desktop', 'browser' => 'Unknown', 'os' => 'Unknown', 'browserVersion' => '', 'engineVersion' => '');
 
         $detect = new Mobile_Detect;
         // device type detection
         if ($detect->isMobile()) { $info['deviceType'] = 'mobile'; }
         elseif ($detect -> isTablet()) { $info['deviceType'] = 'tablet'; }
-        else {  
+        else {
             // desktop os and browser type & version
             $ua = strtolower($detect->getUserAgent());
-            
+
             if (strpos($ua, 'linux') !== False) { $info['os'] = 'Linux'; }
             elseif (strpos($ua, 'macintosh') !== False) { $info['os'] = 'OS X'; }
             elseif (strpos($ua, 'windows') !== False) { $info['os'] = 'Windows';}
-            
+
             if (strpos($ua, 'chrome') !== False) { $info['browser'] = 'Chrome'; $info['engineVersion'] = $detect->version('Webkit'); $info['browserVersion'] = $detect->version('Chrome'); }
             elseif (strpos($ua, 'msie') !== False) { $info['browser'] = 'IE'; $info['engineVersion'] = $detect->version('MSIE'); $info['browserVersion'] = $detect->version('Trident'); }
             elseif (strpos($ua, 'opera') !== False) { $info['browser'] = 'Opera'; $info['engineVersion'] = $detect->version('Webkit'); $info['browserVersion'] = $detect->version('Opera'); }
             elseif (strpos($ua, 'firefox') !== False) { $info['browser'] = 'Firefox'; $info['engineVersion'] = $detect->version('Gecko'); $info['browserVersion'] = $detect->version('Firefox'); }
             elseif (strpos($ua, 'safari') !== False) { $info['browser'] = 'Safari'; $info['engineVersion'] = $info['browserVersion'] = $detect->version('Webkit'); }
-               
-        } 
+
+        }
 
         // detect browser
         if ($detect->isChrome()) { $info['browser'] = 'Chrome'; $info['browserVersion'] = $detect->version('Chrome'); $info['engineVersion'] = $detect->version('Webkit'); }
@@ -126,7 +126,7 @@ class pantheraSession
         elseif ($detect->isSafari()) { $info['browser'] = 'Safari'; $info['browserVersion'] = $detect->version('Safari'); $info['engineVersion'] = $detect->version('Webkit');  }
         elseif ($detect->isIE()) { $info['browser'] = 'IE'; }
         elseif ($detect->isGenericBrowser()) { $info['browser'] = 'Generic'; }
-        
+
         // detect mobile os
         if ($detect->isAndroidOS()) { $info['os'] = 'Android'; }
         elseif ($detect->isiOS()) { $info['os'] = 'iOS'; }
@@ -141,7 +141,7 @@ class pantheraSession
 
         return (object)$info;
     }
-    
+
     /**
      * Remove all user session variables
      *
@@ -516,15 +516,15 @@ class run extends pantheraFetchDB
 
         return parent::__get($var);
     }
-    
+
     public function __set($var, $value)
     {
         if ($var == 'data' or $var == 'storage')
         {
             $var = 'storage';
             $value = serialize($value);
-        }   
-        
+        }
+
         return parent::__set($var, $value);
     }
 
@@ -569,12 +569,12 @@ class run extends pantheraFetchDB
                 $panthera -> db -> query('UPDATE `{$db_prefix}run` SET `expired` = :expired WHERE `rid` = :rid', array('expired' => microtime(true), 'rid' => $rid));
             else
                 $panthera -> db -> query('UPDATE `{$db_prefix}run` SET `expired` = :expired WHERE `pid` = :pid AND `name` = :name', array('expired' => microtime(true), 'pid' => intval($pid), 'name' => $name));
-                
-            return True;        
+
+            return True;
         } catch (Exception $e) {
-            $panthera -> logging -> output ('Warning: Cannot close socket pid=' .$pid. ', rid=' .$rid. ', exception=' .$e->getMessage(), 'run'); 
-            return False; 
-        }    
+            $panthera -> logging -> output ('Warning: Cannot close socket pid=' .$pid. ', rid=' .$rid. ', exception=' .$e->getMessage(), 'run');
+            return False;
+        }
     }
 
     /**
@@ -592,11 +592,11 @@ class run extends pantheraFetchDB
 
         try {
             $panthera -> db -> query('DELETE FROM `{$db_prefix}run` WHERE `pid` = :pid AND `name` = :name', array('pid' => intval($pid), 'name' => $name));
-            return True;        
-        } catch (Exception $e) { 
-            $panthera -> logging -> output ('Warning: Cannot remove socket pid=' .$pid. ', name=' .$name. ', exception=' .$e->getMessage(), 'run'); 
-            return False; 
-        }    
+            return True;
+        } catch (Exception $e) {
+            $panthera -> logging -> output ('Warning: Cannot remove socket pid=' .$pid. ', name=' .$name. ', exception=' .$e->getMessage(), 'run');
+            return False;
+        }
     }
 
     /**
@@ -615,7 +615,7 @@ class run extends pantheraFetchDB
     public static function getSockets($by='', $limit=0, $limitFrom=0, $sortBy='rid', $sortHow='DESC')
     {
         global $panthera;
-        return $panthera->db->getRows('run', $by, $limit, $limitFrom, 'run', $sortBy, $sortHow);  
+        return $panthera->db->getRows('run', $by, $limit, $limitFrom, 'run', $sortBy, $sortHow);
     }
 }
 
@@ -630,7 +630,7 @@ class navigation
 {
     private static $history = array();
     private static $bufferMax = 8;
-    
+
     /**
       * Add link to history
       *
@@ -644,73 +644,73 @@ class navigation
         // going back by two records $n-2 record equals url
         //if(self::$history[count(self::$history)-2] == $url)
         //    self::$history = array_slice(self::$history, 0, (count(self::$history)-2));
-        
+
         if ($_GET['display'] == 'navigation_history' or substr($_GET['display'], 0, 6) == '_popup')
             return False;
-        
+
         if (array_key_exists('__navigationBack', $_GET))
         {
             array_pop(self::$history);
             return False;
         }
-        
+
         if (!is_array(self::$history))
         {
             self::$history = array();
         }
-    
+
         if(end(self::$history) != $url)
         {
             // remove old element to keep buffer in static size
             if (count(self::$history) >= self::$bufferMax)
                 array_shift(self::$history);
-                
+
             self::$history[] = $url;
        }
-       
+
        return True;
     }
-    
+
     /**
       * Return array with visited urls
       *
-      * @return array 
+      * @return array
       * @author Damian Kęska
       */
-    
+
     public function getHistory()
     {
         return self::$history;
     }
-    
+
     /**
       * Load history from session
       *
-      * @return void 
+      * @return void
       * @author Damian Kęska
       */
-    
+
     public static function loadHistoryFromSession()
     {
         global $panthera;
         self::$history = $panthera->session->get('navigation_history');
     }
-    
+
     /**
       * Get back button link
       *
       * @param string name
-      * @return mixed 
+      * @return mixed
       * @author Damian Kęska
       */
-    
+
     public static function getBackButton()
     {
         if (!is_array(self::$history))
             return '';
-        
+
         $btn = end(self::$history);
-        
+
         if (strpos($btn, '__navigationBack') === False)
         {
             if (strpos($btn, '?') === False)
@@ -718,38 +718,38 @@ class navigation
             else
                 $btn .= '&__navigationBack=True';
         }
-        
+
         return $btn;
     }
-    
+
     /**
       * Save navigation history to session
       *
-      * @return void 
+      * @return void
       * @author Damian Kęska
       */
-    
+
     public static function save()
     {
         global $panthera;
         $panthera->session->set('navigation_history', self::$history);
     }
-    
+
     /**
       * Appends current page to history
       *
       * @param bool $ajaxExit Are we in ajax mode or not
-      * @return mixed 
+      * @return mixed
       * @author Damian Kęska
       */
-    
+
     public static function appendCurrentPage($ajaxExit)
     {
         if ($ajaxExit == False and PANTHERA_MODE == "CGI")
         {
             $url = parse_url($_SERVER['REQUEST_URI']);
             $url = preg_replace('/\&?\_\=([0-9]+)/', '', $url);
-            
+
             navigation::appendHistory(substr(PANTHERA_FRONTCONTROLLER, 1, strlen(PANTHERA_FRONTCONTROLLER)). '?' .$url['query']);
             navigation::save();
         }

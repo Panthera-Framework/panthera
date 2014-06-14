@@ -6,8 +6,8 @@
   * @author Damian Kęska
   * @license GNU Affero General Public License 3, see license.txt
   */
-  
-  
+
+
 if (!is_file('content/app.php'))
 {
     header('Location: install.php');
@@ -22,7 +22,7 @@ if (is_file('content/front.php'))
 
 // front controllers utils
 include PANTHERA_DIR. '/pageController.class.php';
-    
+
 // enable frontside panels
 frontsidePanels::init();
 
@@ -50,7 +50,7 @@ if (!defined('PAGES_DISABLE_LIB') and !$panthera -> config -> getKey('front.inde
     {
         $path = false;
     }
-    
+
 } else {
     if (is_dir(SITE_DIR. '/content/pages/' .$display. '.php'))
         $path = SITE_DIR. '/content/pages/' .$display. '.php';
@@ -60,15 +60,15 @@ if (!defined('PAGES_DISABLE_LIB') and !$panthera -> config -> getKey('front.inde
 if ($path)
 {
     include $path;
-    
+
     $controller = pageController::getController($display);
-    
+
     if ($controller)
     {
         print($controller -> run());
         pa_exit();
     }
-    
+
     pa_exit();
 } else {
     pantheraCore::raiseError('notfound');
