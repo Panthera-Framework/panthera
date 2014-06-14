@@ -1,11 +1,30 @@
 <?php
 /**
-  * Simple HTTP library for Panthera Framework
-  *
-  * @package Panthera\modules\httplib
-  * @author Damian Kęska
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Simple HTTP library for Panthera Framework
+ *
+ * @package Panthera\core\modules\httplib
+ * @author Damian Kęska
+ * @license LGPLv3
+ */
+ 
+/**
+ * Simple HTTP library for Panthera Framework
+ * 
+ * Example:
+ * <code>
+ * $http = new httplib;
+ * $http -> get('http://google.com');
+ * $http -> setProxy('192.168.1.242', 8080);
+ * $http -> get('http://google.com'); // google.com through proxy
+ * $http -> outgoingAddress = 'eth1'; // bind to eth1 interface
+ * $http -> get('http://google.com'); // connect to google.com through eth1 interface
+ * $http -> post('http://example.org', array('test' => 1));
+ * $http -> close();
+ * $http::request('http://example.org', 'GET'); // make a static request
+ *
+ * @package Panthera\core\modules\httplib
+ * @author Damian Kęska
+ */
   
 class httplib
 {
@@ -23,7 +42,8 @@ class httplib
      * Put here a interface name eg. eth0, eth1 or IPv6 address to be used (if multiple available)
      */
     
-    public $outgoingAddress = null; // eg. eth0 or eth0:1. For big IP count use eg. eth1
+    protected $addressesTmp = array();
+    public $outgoingAddress = null; // eg. eth0 or eth0:1. For big IP count use eg. eth1, array(0 => '1.1.1.1', 1 => '2.2.2.2')
     public $outgoingIPCount = null; // eg. 10000 IP addresses to use, or range 100-150
     public $outgoingIPSelection = 'in_sequence'; // in_sequence or random
     public $outgoingIPCursor = null;
@@ -71,6 +91,12 @@ class httplib
     
     public function selectAddress()
     {
+        if (is_array($this -> outgoingAddress))
+        {
+            $this -> addressesTmp = $this -> outgoingAddress;
+            $this -> outgoingIPCount = count($this -> addressesTmp);
+        }
+        
         if ($this -> outgoingIPCount)
         {
             if (is_string($this -> outgoingIPCount))
@@ -99,8 +125,16 @@ class httplib
                     $selected = $this -> outgoingIPCursor++;
                 }
                 
-                $exp = explode(':', $this -> outgoingAddress);
-                $this -> outgoingAddress = $exp[0]. ':' .$selected;
+                if ($this -> addressesTmp)
+                {
+                    if (!isset($this -> addressesTmp[$selected]))
+                        $selected = key($this -> addressesTmp);
+                    
+                    $this -> outgoingAddress = $this -> addressesTmp[$selected];
+                } else {
+                    $exp = explode(':', $this -> outgoingAddress);
+                    $this -> outgoingAddress = $exp[0]. ':' .$selected;
+                }
                 
                 $panthera = pantheraCore::getInstance();
                 $panthera -> logging -> output('Selected "' .$this -> outgoingAddress. '" interface', 'httplib');
@@ -128,6 +162,9 @@ class httplib
     public function close()
     {
         $this -> cleanup();
+        
+        $panthera = pantheraCore::getInstance();
+        $panthera -> get_options_ref('httplib.close', $this, $this -> instanceID);
     }
     
     /**
@@ -280,17 +317,14 @@ class httplib
     {
         $panthera = pantheraCore::getInstance();
         $this -> selectAddress();
+        $panthera -> get_options_ref('httplib.get.prepare', $this, $this -> instanceID);
     
         // compatibility
         if (!is_array($options))
-        {
             $options = array();
-        }
         
         if (!$method)
-        {
             $method = 'GET';
-        }
         
         $panthera -> logging -> output('Preparing to ' .$method. ' web url "' .$url. '"', 'httplib');
         
@@ -347,13 +381,8 @@ class httplib
         );
 
         // user defined headers
-        if (isset($options['headers']))
-        {
-            if (is_array($options['headers']))
-            {
-                $headers = array_merge($headers, $options['headers']);
-            }
-        }
+        if (isset($options['headers']) and is_array($options['headers']))
+            $headers = array_merge($headers, $options['headers']);
 
         // referer
         if (!isset($options['referer']))
@@ -376,9 +405,7 @@ class httplib
         if ($method == 'POST')
         {
             if (is_array($postFields) and !$uploadingFile)
-            {
                 $postFields = http_build_query($postFields);
-            }
         
             curl_setopt ($curl, CURLOPT_POST, 1);
             curl_setopt ($curl, CURLOPT_POSTFIELDS, $postFields);
@@ -394,10 +421,11 @@ class httplib
         
         $data = curl_exec($curl);
         
+        // plugins support
+        $panthera -> get_options_ref('httplib.get', $this, $this -> instanceID);
+        
         if ($data === False)
-        {
             throw new Exception('Failed to make HTTP request, details: ' .curl_error($curl));
-        }
         
         $panthera -> logging -> output('Request finished', 'httplib');
         curl_close($curl);

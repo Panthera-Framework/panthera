@@ -26,9 +26,9 @@ class GooglePR
      * @return int
      */
     
-    public static function goSleep($exec=True)
+    public static function goSleep($exec=True, $max=10)
     {
-        $s = rand(5, 10);
+        $s = rand(floor($max/2), $max);
         if ($exec) sleep($s);
         return $s;
     }
@@ -194,8 +194,10 @@ class GooglePR
                 $args = array_merge($args, $params);
         }
         
-        if ($page and $page > 2)
+        if ($page and $page >= 2)
             $args['start'] = (($page * 10) - 10);
+        else
+            $args['start'] = 0;
 
         $args['q'] = $query;
         $args['safe'] = 'off';
@@ -324,12 +326,13 @@ class GooglePR
      * Get count of indexed domain pages
      * 
      * @param string $domain Domain name eg. afed.org.uk
-     * @param httplib Object of httplib (to keep the session with all settings, proxy up)
+     * @param httplib $httplib Object of httplib (to keep the session with all settings, proxy up)
+     * @param bool $useGoogleApis (Optional) Allow to use ajax.googleapis.com (this may be unstable but worth testing)
      * @author Damian Kęska
      * @return int
      */
 
-    public static function getSiteRank($domain, $httplib=null)
+    public static function getSiteRank($domain, $httplib=null, $useGoogleApis=False, $sleep=0)
     {
         $panthera = pantheraCore::getInstance();
         
@@ -338,25 +341,30 @@ class GooglePR
         
         $panthera -> logging -> output('Getting site rank for "' .$domain. '" domain', 'GooglePR');
         
-        /** Try to use ajax.googleapis.com if available **/
-        try {
-            $panthera -> logging -> output('Trying to use ajax.googleapis.com', 'GooglePR');
-            
-            $response = json_decode($httplib -> get('http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=site:' .$domain. '&filter=0'), true);
-            
-            if ($response['responseStatus'] == 200)
-                return intval($response['responseData']['cursor']['estimatedResultCount']);
-            else
-                $panthera -> logging -> output('API returned bad code: ' .$response['responseData']['responseStatus'], 'GooglePR');
-            
-        } catch (Exception $e) { /* pass */ }
-        
+        if ($useGoogleApis)
+        {
+            /** Try to use ajax.googleapis.com if available **/
+            try {
+                $panthera -> logging -> output('Trying to use ajax.googleapis.com', 'GooglePR');
+                
+                $response = json_decode($httplib -> get('http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=site:' .$domain. '&filter=0'), true);
+                
+                if ($response['responseStatus'] == 200)
+                    return intval($response['responseData']['cursor']['estimatedResultCount']);
+                else
+                    $panthera -> logging -> output('API returned bad code: ' .$response['responseData']['responseStatus'], 'GooglePR');
+                
+            } catch (Exception $e) { /* pass */ }
+        }
         
         /** If not try desktop version **/
         $results = static::webSearch('site:' .$domain, null, null, null, $httplib);
         
         while (!$results['searchEndsAt'])
         {
+            if ($sleep)
+                $this -> goSleep(True, $sleep);
+            
             end($results['navigationPagesLinks']);
             $panthera -> logging -> output('Counting page "' .key($results['navigationPagesLinks']). '"', 'GooglePR');
             $results = static::webSearch('site:' .$domain, key($results['navigationPagesLinks']), /*$results['navigationPagesLinks'][key($results['navigationPagesLinks'])]*/null, '', $httplib);
@@ -374,14 +382,18 @@ class GooglePR
      * @param string $lang Search language (eg. pl, default: none)
      * @param string $excludeAds Exclude ads from results
      * @param string $excludeMaps Exclude maps from results
+     * @param int $maxPos Max position to check, if not reached return false
      * @param httplib $httplib httplib object
      * @return int|bool Returns false when no any result found, and int with position on positive result
      */
 
-    public static function getKeywordPosition($keyword, $domain, $lang='', $excludeAds=False, $excludeMaps=False, $httplib=null, $sleep=False)
+    public static function getKeywordPosition($keyword, $domain, $lang='', $excludeAds=False, $excludeMaps=False, $httplib=null, $sleep=0, $maxPos=100)
     {
         if (!$httplib)
             $httplib = new httplib;
+        
+        $panthera = pantheraCore::getInstance();
+        $panthera -> logging -> output('Looking up "' .$keyword. '" position for "' .$domain. '"', 'GooglePR');
         
         $maxPages = 100;
         $found = False;
@@ -393,7 +405,7 @@ class GooglePR
         {
             // sleep to try to avoid ban
             if ($sleep)
-                static::goSleep();
+                static::goSleep(True, $sleep);
             
             $page++;
             
@@ -418,11 +430,18 @@ class GooglePR
 
                 // if found, return position                
                 if (strpos(parse_url($result['link'], PHP_URL_HOST), $domain) !== False)
+                {
+                    $panthera -> logging -> output('Found keyword position at ' .$pos, 'GooglePR');
                     return $pos;
+                }
             }
             
-            if ($page >= 100)
+            // sprawdzamy tylko do 10 pozycji
+            if ($page >= ($maxPos/10))
+            {
+                $panthera -> logging -> output('Max position "' .$maxPos. '" (' .$page. ' reached), keyword position not found', 'GooglePR');
                 break;
+            }
         }
         
         return False;
