@@ -3,10 +3,10 @@
  * Router front controller
  * Resolves SEO urls to correct front controllers
  *
- * @package Panthera\core
+ * @package Panthera\core\frontcontrollers\route
  * @author Damian Kęska
  * @author Mateusz Warzyński
- * @license GNU Affero General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
 require_once 'content/app.php';
