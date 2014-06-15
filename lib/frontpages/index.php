@@ -26,12 +26,8 @@ if (!is_file('content/app.php'))
 
 require_once 'content/app.php';
 
-// include custom functions to default front controller
-if (is_file('content/front.php'))
-    require 'content/front.php';
-
 // front controllers utils
-include PANTHERA_DIR. '/pageController.class.php';
+include_once PANTHERA_DIR. '/pageController.class.php';
 
 // enable frontside panels
 //frontsidePanels::init(); // commented - please include this line in your front.php if you want to use frontisdePanels
@@ -57,6 +53,12 @@ class indexFrontControllerSystem extends pageController
     
     public function display()
     {
+        $panthera = pantheraCore::getInstance();
+        
+        // include custom functions to default front controller
+        if (is_file('content/front.php'))
+            require 'content/front.php';
+        
         // a small posibility to change "?display" to other param name
         $displayVar = 'display';
         
@@ -90,7 +92,6 @@ class indexFrontControllerSystem extends pageController
         // here we will include site pages
         if ($path)
         {
-            $panthera = pantheraCore::getInstance();
             include $path;
         
             $controller = pageController::getController($display);

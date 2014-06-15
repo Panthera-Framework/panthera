@@ -8,7 +8,7 @@
  */
 
 require_once 'content/app.php';
-include getContentDir('pageController.class.php');
+include_once getContentDir('pageController.class.php');
 
 /**
  * Files download controller
