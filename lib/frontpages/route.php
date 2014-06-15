@@ -3,7 +3,7 @@
  * Router front controller
  * Resolves SEO urls to correct front controllers
  *
- * @package Panthera\core\frontcontrollers\route
+ * @package Panthera\core\frontcontrollers
  * @author Damian Kęska
  * @author Mateusz Warzyński
  * @license LGPLv3
@@ -22,7 +22,7 @@ include_once PANTHERA_DIR. '/pageController.class.php';
  * Router front controller
  * Resolves SEO urls to correct front controllers
  *
- * @package Panthera\core\frontcontrollers\route
+ * @package Panthera\core\frontcontrollers
  * @author Damian Kęska
  * @author Mateusz Warzyński
  * @license LGPLv3

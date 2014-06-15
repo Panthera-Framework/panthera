@@ -2,7 +2,7 @@
 /**
  * Panthera crontab front controller
  *
- * @package Panthera\core\frontcontrollers\crontab
+ * @package Panthera\core\frontcontrollers
  * @author Damian Kęska
  * @license LGPLv3
  */
@@ -22,7 +22,7 @@ include getContentDir('pageController.class.php');
  * Executes scheduled jobs. Should be executed every one minute by operating system's crontab.
  * Can be used from shell using php _crontab.php or via url including ?_appkey=$YOUR_APP_KEY (see crontab_key in configuration)
  *
- * @package Panthera\core\frontcontrollers\crontab
+ * @package Panthera\core\frontcontrollers
  * @author Damian Kęska
  */
 
@@ -216,9 +216,5 @@ class _crontabControllerSystem extends pageController
     }
 }
 
-// if you want to copy this front controller to your site directory instead of linking please change PANTHERA_DIR to SITE_DIR inside of your copy or you can make a include
-if (strpos(__FILE__, PANTHERA_DIR) !== FALSE)
-{
-    $object = new _crontabControllerSystem();
-    $object -> display();
-}
+// this code will run this controller only if this file is executed directly, not included
+pageController::runFrontController(__FILE__, '_crontabControllerSystem');

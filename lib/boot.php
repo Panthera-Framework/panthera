@@ -156,7 +156,6 @@ if ($panthera->config->getKey('debug', False, 'bool') == True)
 {
     $panthera -> logging -> debug = True;
     $panthera -> add_option('debug_msg', array($panthera->logging, 'getOutput'));
-    $panthera -> logging -> tofile = True;
 }
 
 /**

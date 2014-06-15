@@ -78,7 +78,6 @@ jQuery(document).ready(function($) {
 });
 </script>
 
-{$titleBarInclude='custompages_editpage.titlebar'}
 {include="ui.titlebar"}
 
 <form action="{$AJAX_URL}?id={$custompage.unique}&lang={$custompage_language}&display=custom&cat=admin&action=savePage&pid={$custompage.id}" method="POST" id="save_form">
