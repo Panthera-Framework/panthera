@@ -20,6 +20,8 @@
 
 class GooglePR
 {
+    public static $debug = False;
+    
     /**
      * Go sleep to make a pause between HTTP requests
      *
@@ -219,13 +221,25 @@ class GooglePR
             'pagePosStart' => $args['start'],
             'pagePosEnd' => ($args['start']+10),
             'args' => $args,
+            'html' => '',
         );
 
         $result = $httplib -> get($url);
+        
+        $resultSet['html'] = $result;
 
         if (strpos($result, '<img src="/sorry/image?id=') !== False)
+        {
+            if (static::$debug)
+            {
+                $fp = fopen(SITE_DIR. '/content/tmp/googlecaptcha.html', 'w');
+                fwrite($fp, $result);
+                fclose($fp);
+            }
+            
             throw new Exception('Google captcha detected, exiting');
-
+        }
+        
         /*$fp = fopen('/tmp/googlesearch', 'w');
         fwrite($fp, $result);
         fclose($fp);
@@ -359,6 +373,10 @@ class GooglePR
 
         /** If not try desktop version **/
         $results = static::webSearch('site:' .$domain, null, null, null, $httplib);
+        $panthera -> logging -> output('Counting page "' .key($results['navigationPagesLinks']). '"', 'GooglePR');
+
+        $pos = 0;
+        end($results['navigationPagesLinks']); $lastMaxPage = key($results['navigationPagesLinks']);
 
         while (!$results['searchEndsAt'])
         {
@@ -366,8 +384,20 @@ class GooglePR
                 $this -> goSleep(True, $sleep);
 
             end($results['navigationPagesLinks']);
-            $panthera -> logging -> output('Counting page "' .key($results['navigationPagesLinks']). '"', 'GooglePR');
-            $results = static::webSearch('site:' .$domain, key($results['navigationPagesLinks']), /*$results['navigationPagesLinks'][key($results['navigationPagesLinks'])]*/null, '', $httplib);
+            
+            // in case any error just jump to last page or to next page
+            if (key($results['navigationPagesLinks']) > $pos)
+                $pos = key($results['navigationPagesLinks']);
+            else
+                $pos++;
+            
+            // if current position reaches maximum pagination
+            if ($pos > key($results['navigationPagesLinks']))
+                break;
+            
+            $results = static::webSearch('site:' .$domain, $pos, /*$results['navigationPagesLinks'][key($results['navigationPagesLinks'])]*/null, '', $httplib);
+            $panthera -> logging -> output('Counting page "' .$pos. '"', 'GooglePR');
+            end($results['navigationPagesLinks']); $lastMaxPage = key($results['navigationPagesLinks']);
         }
 
         $httplib -> close();
@@ -413,9 +443,10 @@ class GooglePR
                 $search = static::webSearch($keyword, $page, null, $lang, $httplib);
             } catch (Exception $e) {
                 $pos += 10; // skip page and add 10 positions
+                $panthera -> logging -> output('Got exception in webSearch: ' .$e -> getMessage(), 'GooglePR');
             }
 
-            if (!count($search['results']))
+            if (!isset($search) or !count($search['results']))
                 break;
 
             foreach ($search['results'] as $result)

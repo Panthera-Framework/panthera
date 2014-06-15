@@ -73,9 +73,5 @@ class downloadControllerSystem extends pageController
     }
 }
 
-// if you want to copy this front controller to your site directory instead of linking please change PANTHERA_DIR to SITE_DIR inside of your copy or you can make a include
-if (strpos(__FILE__, PANTHERA_DIR) !== FALSE)
-{
-    $object = new downloadControllerSystem();
-    $object -> display();
-}
+// this code will run this controller only if this file is executed directly, not included
+pageController::runFrontController(__FILE__, 'downloadControllerSystem');

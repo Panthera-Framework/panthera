@@ -569,6 +569,33 @@ abstract class pageController extends pantheraClass {
 
         return $this -> panthera -> get_options_ref($featureName, $args, $additionalInfo);
     }
+    
+    /**
+     * Check if front controller wasnt included or running directly from PANTHERA_DIR
+     * 
+     * On success it will construct an object and execute display() on it and return object itself
+     * 
+     * Example:
+     * <code>
+     * pageController::runFrontController(__FILE__, 'pa_loginControllerSystem');
+     * </code>
+     * 
+     * @param string $file Input __FILE__
+     * @param string $className Controller class name to create instance of
+     * @author Damian Kęska
+     * @return object|null
+     */
+    
+    public static function runFrontController($file, $className)
+    {
+        if (strpos($file, PANTHERA_DIR) !== FALSE or !in_array($file, get_included_files()))
+        {
+            $object = new $className();
+            $object -> display();
+            
+            return $object;
+        }
+    }
 }
 
 /**

@@ -28,10 +28,13 @@
 
 class httplib
 {
+    public $userAgentOptions = ''; // {random_chromium}
     public static $userAgent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1667.0 Safari/537.36';
     protected $cookiesTempFile = '';
     public $timeout = 16;
     public $instanceID = null;
+    public $enableCookies = True;
+    public $curlHeader = False;
 
     // proxy settings
     protected $proxyAuth = null;
@@ -137,8 +140,28 @@ class httplib
                 }
 
                 $panthera = pantheraCore::getInstance();
-                $panthera -> logging -> output('Selected "' .$this -> outgoingAddress. '" interface', 'httplib');
+                $panthera -> logging -> output('Selected "' .$this -> outgoingAddress. '" (#' .$selected. ') for interface', 'httplib');
             }
+        }
+    }
+
+    /**
+     * Generate an useragent if needed
+     * 
+     * @return null
+     */
+
+    public function selectUserAgent()
+    {
+        if ($this -> userAgentOptions == '{random_chromium}')
+        {
+            $webkit = rand(530, 580). '.' .rand(10, 40);
+            $chrome = rand(35, 45). '.' .rand(1,5). '.' .rand(500,1500). '.' .rand(1, 5); // 35.0.1667.0
+            
+            static::$userAgent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/' .$webkit. ' (KHTML, like Gecko) Chrome/' .$chrome. ' Safari/' .$webkit;
+            
+            $panthera = pantheraCore::getInstance();
+            $panthera -> logging -> output('Generated Chromium UA: ' .static::$userAgent, 'GooglePR');
         }
     }
 
@@ -317,6 +340,7 @@ class httplib
     {
         $panthera = pantheraCore::getInstance();
         $this -> selectAddress();
+        $this -> selectUserAgent();
         $panthera -> get_options_ref('httplib.get.prepare', $this, $this -> instanceID);
 
         // compatibility
@@ -335,7 +359,7 @@ class httplib
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_FAILONERROR, False);
-        curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_HEADER, $this -> curlHeader);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, True);
         curl_setopt($curl, CURLOPT_MAXREDIRS, 5 );
         curl_setopt($curl, CURLOPT_TIMEOUT, intval($this->timeout));
@@ -386,9 +410,7 @@ class httplib
 
         // referer
         if (!isset($options['referer']))
-        {
             $options['referer'] = parse_url($url, PHP_URL_SCHEME). '//' .parse_url($url, PHP_URL_HOST);
-        }
 
         curl_setopt($curl, CURLOPT_REFERER, $options['referer']);
 
@@ -411,7 +433,7 @@ class httplib
             curl_setopt ($curl, CURLOPT_POSTFIELDS, $postFields);
         }
 
-        if (!@$options['disablecookies'])
+        if ($this -> enableCookies and (!isset($options['disablecookies']) or !$options['disableCookies']))
         {
             // cookies
             curl_setopt($curl, CURLOPT_COOKIESESSION, false); // force keep old cookies
