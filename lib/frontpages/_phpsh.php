@@ -2,11 +2,16 @@
 <?php
 /**
  * Front controller for CLI app - phpsh
+ * 
+ * Usage: fron shell type phpsh _phpsh.php, and your are in
+ * 
+ * To include your custom startup functions create "/content/phpsh.rc.php" file with your functions and classes
+ * 
  *
  * @package Panthera\core\frontcontrollers
  * @author Damian Kęska
  * @see http://www.phpsh.org/
- * @license GNU Affero General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
 # include app config and libs
@@ -22,7 +27,6 @@ if (PANTHERA_MODE == 'cgi')
  * @package Panthera\core\frontcontrollers
  * @author Damian Kęska
  * @see http://www.phpsh.org/
- * @license GNU Affero General Public License 3, see license.txt
  */
 
 class _phpshControllerSystem extends pageController

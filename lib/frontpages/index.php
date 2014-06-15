@@ -13,7 +13,7 @@
  * Titlebar:
  * ui.Titlebar is a module that allows setting title for every page. Use $uiTitlebar to set title eg. array('My title', 'my-translation-domain-name') or just 'My title in English'
  *
- * @package Panthera\core\frontcontrollers\index
+ * @package Panthera\core\frontcontrollers
  * @author Damian Kęska
  * @license LGPLv3
  */
@@ -39,7 +39,7 @@ include PANTHERA_DIR. '/pageController.class.php';
 /**
  * Front controller that loads pages from /lib/pages and /content/pages. 
  *
- * @package Panthera\core\frontcontrollers\index
+ * @package Panthera\core\frontcontrollers
  * @author Damian Kęska
  */
 
