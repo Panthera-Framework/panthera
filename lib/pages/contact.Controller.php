@@ -1,20 +1,23 @@
 <?php
 /**
-  * Example contact action handler
-  *
-  * @package Panthera\core\pages
-  * @author Damian Kęska
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Example contact page handler
+ * 
+ * This is just a example usage of "contact" module.
+ * This page shows contact text, handles contact form, sends mail and displays place on Google map (if available)
+ *
+ * @package Panthera\core\components\contact
+ * @author Damian Kęska
+ * @license LGPLv3
+ */
 
 /**
- * Contact front controller
+ * Contact page controller
  *
- * @package Panthera\core\pages
+ * @package Panthera\core\components\contact
  * @author Damian Kęska
  */
 
-class contactControllerCore extends pageController
+class contactControllerSystem extends pageController
 {
     protected $contact;
 
@@ -26,7 +29,7 @@ class contactControllerCore extends pageController
     /**
      * Constructor
      *
-     * @return object :)
+     * @return object
      */
 
     public function __construct()

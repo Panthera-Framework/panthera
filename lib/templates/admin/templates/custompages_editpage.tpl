@@ -145,14 +145,16 @@ jQuery(document).ready(function($) {
                 </tr>
                 
                 <tr id="tr_image">
-                    <td>{function="localize('Image', 'custompages')"}:<br><small>{function="localize('Page image or thumbnail', 'custompages')"}</small></td><td><input type="text" id="content_image" name="content_image" value="{$custompage.image|addslashes}" style="min-width: 40px; width: 40%;"> 
+                    <td title="{function="localize('Page image or thumbnail', 'custompages')"}">{function="localize('Image URL', 'custompages')"}:</td>
+                    <td>
+                    	<input type="text" id="content_image" name="content_image" value="{$custompage.image|addslashes}" style="min-width: 40px; width: 40%;"> 
                         <input type="button" value="Select" onclick="panthera.popup.toggle('_ajax.php?display=upload&cat=admin&popup=true&callback=upload_file_callback');">
                     </td>
                 </tr>
                 
                 <tr id="tr_for_all_languages">
-                    <td>{function="localize('Set this page for all languages', 'custompages')"}:<br><small>{function="localize('Content of this static page will be visibile in all languages', 'custompages')"}</small></td>
-                    <td><input type="checkbox" name="for_all_languages" value="1" {if="$allPages == True}checked{/if"}></td>
+                    <td title="{function="localize('Content of this static page will be visibile in all languages', 'custompages')"}">{function="localize('Set this page for all languages', 'custompages')"}:</td>
+                    <td><input type="checkbox" name="allLanguages" value="1" {if="$allLanguages"}checked{/if}></td>
                 </tr>
                 
                 <tr id="tr_save_language">
@@ -167,7 +169,7 @@ jQuery(document).ready(function($) {
                 </tr>
                 
                 <tr id="try_url_id">
-                    <td style="width: 60%;">{function="localize('SEO name', 'custompages')"}:<br><small>{function="localize('Must be unique', 'custompages')"}, (A-Z, a-z, 0-9, -, _, ., ,, +, %)</small></td>
+                    <td style="width: 60%;" title="{function="localize('Must be unique', 'custompages')"}, (A-Z, a-z, 0-9, -, _, ., ,, +, %)">{function="localize('SEO name', 'custompages')"}:</td>
                     <td><input type="text" name="url_id" value="{$custompage.url_id}" style="width: 99%;"></td>
                 </tr>
             </tbody>

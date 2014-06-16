@@ -1,21 +1,27 @@
 <?php
 /**
-  * Newsletter module with support for multiple protocols like e-mail (smtp), jabber etc.
-  *
-  * @package Panthera\core\custompages
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Static pages - module, contains database data model
+ * 
+ * Example:
+ * <code>
+ * $page = new customPage('unique', 'xyz'); // construct object by unique column = xyz
+ * $page -> 
+ *
+ * @package Panthera\core\components\custompages
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license LGPLv3
+ */
 
 if (!defined('IN_PANTHERA'))
     exit;
 
 /**
-  * Panthera fetch DB based wrapper for custom_pages table in database
-  * @package Panthera\modules\custompages
-  * @author Damian Kęska
-  */
+ * Panthera fetch DB based wrapper for custom_pages table in database
+ * 
+ * @package Panthera\core\components\custompages
+ * @author Damian Kęska
+ */
 
 class customPage extends pantheraFetchDB
 {
@@ -26,12 +32,15 @@ class customPage extends pantheraFetchDB
     protected $_unsetColumns = array();
 
     /**
-      * Get custompage's meta attributes
-      *
-      * @param string $meta Type of meta, by `id` or `unique`
-      * @return object|null
-      * @author Damian Kęska
-      */
+     * Get custompage's meta attributes
+     * 
+     * This function is diffirent from $this -> getMetas() as this function is using UNIQUE column to identify meta tags.
+     * In brief it returns tags for every language of this page.
+     *
+     * @param string $meta Type of meta, by `id` or `unique`
+     * @return object|null
+     * @author Damian Kęska
+     */
 
     public function meta($meta='id')
     {
@@ -83,82 +92,47 @@ class customPage extends pantheraFetchDB
     }
 
     /**
-     * Get all custom pages from `{$db_prefix}_custom_pages` matching criteries specified in parameters
-     *
-     * @return array
-     * @author Mateusz Warzyński
-     */
-
-    public static function fetch($by, $limit=0, $limitFrom=0, $orderBy='id', $order='DESC')
-    {
-          $panthera = pantheraCore::getInstance();
-          return $panthera->db->getRows('custom_pages', $by, $limit, $limitFrom, 'customPage', $orderBy, $order);
-    }
-
-    /**
      * Create custom page
      *
      * @return bool
      * @author Mateusz Warzyński
      */
 
-    public static function create($title, $language, $author_name, $author_id, $unique, $url_id, $admin_tpl='')
+    public static function create($title, $language, $authorName, $authorId='', $unique='', $urlId='', $adminTpl='')
     {
         $panthera = pantheraCore::getInstance();
+        
+        if (!$urlId)
+            $urlId = $panthera -> db -> createUniqueData('custompages', 'unique', $title);
+        
+        if (!$unique)
+            $unique = $urlId;
+        
+        $language = pantheraLocale::getFromOverride($language);
+        
+        if (is_object($authorName) and $authorName instanceof pantheraFetchDB)
+        {
+            $authorId = $authorName -> id;
+            $authorName = $authorName -> getName();
+        }
+        
         $array = array(
             'unique' => $unique,
-            'url_id' => $url_id,
+            'url_id' => $urlId,
             'title' => $title,
             'meta_tags' => '',
             'html' => '',
-            'author_name' => $author_name,
-            'author_id' => $author_id,
+            'author_name' => $authorName,
+            'author_id' => $authorId,
             'language' => $language,
-            'mod_author_name' => $author_name,
-            'mod_author_id' => $author_id,
-            'admin_tpl' => $admin_tpl,
+            'mod_author_name' => $authorName,
+            'mod_author_id' => $authorId,
+            'admin_tpl' => $adminTpl,
+            'created' => DB_TIME_NOW,
+            'mod_time' => DB_TIME_NOW,
         );
 
-        $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}custom_pages` (`id`, `unique`, `url_id`, `title`, `meta_tags`, `html`, `author_name`, `author_id`, `language`, `created`, `mod_author_name`, `mod_author_id`, `mod_time`, `admin_tpl`) VALUES (NULL, :unique, :url_id, :title, :meta_tags, :html, :author_name, :author_id, :language, NOW(), :mod_author_name, :mod_author_id, NOW(), :admin_tpl);', $array);
-
-        if ($SQL)
-          return True;
-
-        return False;
-    }
-
-    /**
-      * Remove selected custom pages from database
-      *
-      * @param array $where List of columns and values to put in where clause of sql query
-      * @return bool
-      * @author Damian Kęska
-      */
-
-    public static function remove($where)
-    {
-        $panthera = pantheraCore::getInstance();
-        $dbSet = $panthera->db->dbSet($where, $sep = " AND ");
-        $SQL = $panthera -> db -> query('DELETE FROM `{$db_prefix}custom_pages` WHERE ' .$dbSet[0], $dbSet[1]);
-        return (bool)$SQL->rowCount();
-    }
-
-    /**
-     * Simply remove custom page by `id`. Returns True if any row was affected
-     *
-     * @return bool
-     * @author Mateusz Warzyński
-     */
-
-    public static function removeById($id)
-    {
-        $panthera = pantheraCore::getInstance();
-        $SQL = $panthera->db->query('DELETE FROM `{$db_prefix}custom_pages` WHERE `id` = :id', array('id' => $id));
-
-        if ($SQL)
-            return True;
-
-        return False;
+        return parent::create($array);
     }
 
     /**
@@ -181,7 +155,7 @@ class customPage extends pantheraFetchDB
         if ($language == '')
             $language = $panthera -> locale -> getActive();
 
-        if (meta::get('var', 'cp_gen_' .$value))
+        if ($field == 'unique' and meta::get('var', 'cp_gen_' .$value))
             $language = 'all';
 
         $statement = new whereClause();
@@ -234,6 +208,16 @@ class customPage extends pantheraFetchDB
 
         return $cpage;
     }
+
+    /**
+     * Custom delete function
+     * 
+     * @return bool
+     */
+
+    public function delete()
+    {
+        meta::remove('var', 'cp_gen_' .$this->unique);
+        return parent::delete();
+    }
 }
-
-

@@ -1,6 +1,6 @@
 <?php
 /**
- * Custom pages manager
+ * Static pages - management (admin panel)
  *
  * @package Panthera\core\components\custompages
  * @author Damian Kęska
@@ -75,15 +75,17 @@ class customAjaxControllerSystem extends pageController
             'custompages.manage.lang.' .$cpage->language,
         ));
 
-        if (!isset($_POST['for_all_languages']))
+        if (!isset($_POST['allLanguages']))
         {
             meta::remove('var', 'cp_gen_' .$cpage->unique);
 
         } else {
-            meta::remove('var', 'cp_gen_' .$cpage->unique);
-
-            if (!meta::get('var', 'cp_gen_' .$cpage->unique))
-                meta::create('cp_gen_' .$cpage->unique, 1, 'var', $cpage->id);
+            try {
+                if (!meta::get('var', 'cp_gen_' .$cpage->unique))
+                    meta::create('cp_gen_' .$cpage->unique, 1, 'var', $cpage->id);
+            } catch (Exception $e) {
+                // pass
+            }
         }
 
         // if there is title specified
@@ -92,15 +94,11 @@ class customAjaxControllerSystem extends pageController
             $title = htmlspecialchars($_POST['content_title']);
 
             if (strlen($title) > 0)
-            {
                 $cpage -> title = $title;
-            }
         }
 
         if (isset($_POST['content_description']))
-        {
             $cpage -> description = htmlspecialchars($_POST['content_description']);
-        }
 
         if (isset($_POST['content_image']))
         {
@@ -207,9 +205,7 @@ class customAjaxControllerSystem extends pageController
 
             // mark as read only (this should hide save button)
             if (!$this -> checkPermissions(array('custompages.edit.' .$cpage->unique, 'custompages.edit.id.' .$cpage->id, 'custompages.management'), true) and $this -> checkPermissions('custompage.viewall', true))
-            {
                 $this -> panthera -> template -> push('readOnly', True);
-            }
 
         } else {
 
@@ -247,9 +243,7 @@ class customAjaxControllerSystem extends pageController
 
             // mark as read only (this should hide save button)
             if (!$managePermissions)
-            {
                 $this -> panthera -> template -> push('readOnly', True);
-            }
 
             $title = $ppage->title;
 
@@ -315,7 +309,7 @@ class customAjaxControllerSystem extends pageController
 
         if (meta::get('var', 'cp_gen_' .$cpage->unique))
         {
-            $this -> panthera -> template -> push ('allPages', True);
+            $this -> panthera -> template -> push ('allLanguages', True);
             $this -> panthera -> template -> push ('custompage_language', 'all');
         } else
             $this -> panthera -> template -> push ('custompage_language', $cpage -> language);
@@ -365,10 +359,25 @@ class customAjaxControllerSystem extends pageController
 
     public function createPageAction()
     {
+        $allLanguages = False;
         $unique = $this -> panthera -> db -> createUniqueData('custom_pages', 'unique', seoUrl($_POST['title']));
 
+        // if invalid locale specified - set default
+        if (!$this -> panthera -> locale -> exists($_POST['language']))
+        {
+            $allLanguages = True;
+            $_POST['language'] = $this -> panthera -> locale -> getActive();
+        }
+        
         if (customPage::create($_POST['title'], $_POST['language'], $this -> panthera -> user -> login, $this -> panthera -> user -> id, $unique, seoUrl($_POST['title'])))
         {
+            // set this page for all languages
+            if ($allLanguages)
+            {
+                $cpage = new customPage('unique', $unique);
+                meta::create('cp_gen_' .$cpage->unique, 1, 'var', $cpage->id);
+            }
+
             ajax_exit(array(
                 'status' => 'success',
             ));
@@ -408,7 +417,7 @@ class customAjaxControllerSystem extends pageController
             $data = $cpage -> getData();
 
             // perform a deletion
-            if (customPage::removeById($cpage -> id))
+            if ($cpage -> delete())
             {
                 ajax_exit(array(
                     'status' => 'success',

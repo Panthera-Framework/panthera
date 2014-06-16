@@ -1,29 +1,31 @@
 <?php
 /**
-  * Custom pages example action handler
-  *
-  * @package Panthera\core\pages
-  * @author Damian Kęska
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Custom pages example action handler
+ *
+ * @package Panthera\core\components\custompages
+ * @author Damian Kęska
+ * @license LGPLv3
+ */
 
 /**
  * Custom pages front controller
  *
- * @package Panthera\core\pages
+ * @package Panthera\core\components\custompages
  * @author Damian Kęska
  */
 
-class customControllerCore extends pageController
+class customControllerSystem extends pageController
 {
     protected $mode = 'fallback';
     protected $cpage = null;
-    protected $requirements = array('custompages'); // list of required modules
+    protected $requirements = array(
+        'custompages',
+    ); // list of required modules
 
     /**
      * Constructor
      *
-     * @return object :)
+     * @return object
      */
 
     public function __construct()
@@ -98,15 +100,11 @@ class customControllerCore extends pageController
         $panthera -> template -> setTitle($this -> cpage -> title);
 
         if ($this -> cpage -> description)
-        {
             $panthera -> template -> addMetaTag('description', str_replace("\n", ' ', strip_tags($this -> cpage -> description)));
-        }
 
         // add facebook og:image tag, property type
         if ($this -> cpage -> image)
-        {
             $panthera -> template -> addMetaTag('og:image', $this -> cpage -> image, True);
-        }
 
         $panthera -> template -> push('custompage', $this -> cpage -> getData());
         $panthera -> template -> display('custom.tpl');
