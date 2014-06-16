@@ -418,9 +418,7 @@ class httplib
         $userAgent = self::$userAgent;
 
         if (isset($options['userAgent']))
-        {
             $userAgent = $options['userAgent'];
-        }
 
         curl_setopt($curl, CURLOPT_USERAGENT, $userAgent);
 
@@ -447,7 +445,7 @@ class httplib
         $panthera -> get_options_ref('httplib.get', $this, $this -> instanceID);
 
         if ($data === False)
-            throw new Exception('Failed to make HTTP request, details: ' .curl_error($curl));
+            throw new Exception('Failed to make HTTP request, details: ' .curl_error($curl). ', url: ' .$url);
 
         $panthera -> logging -> output('Request finished', 'httplib');
         curl_close($curl);

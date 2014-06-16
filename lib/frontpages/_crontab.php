@@ -107,24 +107,28 @@ class _crontabControllerSystem extends pageController
         // cont the jobs
         $jobsCount = 0;
 
-        if (isset($_GET['jobname']))
-        {
-            $j = new crontab('jobname', $_GET['jobname']);
-
-            if ($j -> exists())
+        try {
+            if (isset($_GET['jobname']))
             {
-                print("Starting job: ".$j->jobname."\n");
-                $this -> startJob($j);
-                $jobsCount++;
+                $j = new crontab('jobname', $_GET['jobname']);
+    
+                if ($j -> exists())
+                {
+                    print("Starting job: ".$j->jobname."\n");
+                    $this -> startJob($j);
+                    $jobsCount++;
+                }
+            } else {
+                foreach ($jobs as $key => $job)
+                {
+                    $jobsCount++;
+                    print("Starting job: ".$job->jobname."\n");
+                    $this -> startJob($job);
+                    $job->save();
+                }
             }
-        } else {
-            foreach ($jobs as $key => $job)
-            {
-                $jobsCount++;
-                print("Starting job: ".$job->jobname."\n");
-                $this -> startJob($job);
-                $job->save();
-            }
+        } catch (Exception $e) {
+            $this -> panthera -> logging -> output('Catched exception during job execution: ' .$e -> getMessage(), 'crontab');
         }
 
         if ($jobsCount == 0)

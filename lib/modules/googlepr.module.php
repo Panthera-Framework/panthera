@@ -399,7 +399,16 @@ class GooglePR
             $panthera -> logging -> output('Counting page "' .$pos. '"', 'GooglePR');
             end($results['navigationPagesLinks']); $lastMaxPage = key($results['navigationPagesLinks']);
         }
-
+        
+        // in case of any parse exception it's better to return approximate value than zero
+        if (!$results['searchEndsAt'])
+        {
+            $panthera -> logging -> output('Warning: Calculating approximate value because of possible parser error', 'GooglePR');
+            $results['searchEndsAt'] = $pos;
+        }
+        
+        $panthera -> logging -> output('Returning "' .($results['searchEndsAt']*10). '" siterank', 'GooglePR');
+        
         $httplib -> close();
         return ($results['searchEndsAt']*10);
     }

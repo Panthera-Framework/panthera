@@ -11,6 +11,8 @@
 if (!defined('IN_PANTHERA'))
     exit;
 
+set_time_limit(0);
+
 /**
  * Scheduled jobs management page controller
  *
@@ -348,6 +350,7 @@ class crontabAjaxControllerSystem extends pageController
         }
 
         $http = new httplib;
+        $http -> timeout = 864000;
         $data = $http -> get($url);
         $http -> close();
 

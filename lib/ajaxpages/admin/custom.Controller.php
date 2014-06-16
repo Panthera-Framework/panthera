@@ -29,7 +29,10 @@ class customAjaxControllerSystem extends pageController
     protected $actionPermissions = array(
         'main' => _CONTROLLER_PERMISSION_INLINE_,
         'removePage' => _CONTROLLER_PERMISSION_INLINE_,
-        'createPage' => array('custompages.management' => array('Custom pages management', 'custompages')),
+        'createPage' => array(
+            'custompages.management' => array('Custom pages management', 'custompages'),
+            'custompages.addpage' => array('Add a new custompage', 'custompages'),
+        ),
         'editPage' => _CONTROLLER_PERMISSION_INLINE_,
         'savePage' => _CONTROLLER_PERMISSION_INLINE_,
     );
