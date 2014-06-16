@@ -80,9 +80,7 @@ class customControllerSystem extends pageController
         $panthera = pantheraCore::getInstance();
 
         if (!$this -> cpage or !$this -> cpage->exists())
-        {
             pa_redirect($panthera -> config -> getKey('err404.url', '?404', 'string', 'errors'));
-        }
     }
 
     /**
@@ -94,6 +92,10 @@ class customControllerSystem extends pageController
     public function display()
     {
         $panthera = pantheraCore::getInstance();
+        
+        // public or private? If private then check view permissions
+        if (!$this -> cpage -> public)
+            $this -> checkPermissions($this -> cpage -> getPermissions('view'));
 
         $tags = unserialize($this -> cpage -> meta_tags);
         $panthera -> template -> putKeywords($tags);

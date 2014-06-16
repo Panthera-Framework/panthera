@@ -474,11 +474,12 @@ class SQLStructure
         {
             foreach ($diff['diff']['columns'] as $column => $attr)
             {
-                $attr = array_merge($attr, $diff['a']['columns'][$column], $diff['b']['columns'][$column]);
-
+                //$attr = array_merge($attr, $diff['a']['columns'][$column], $diff['b']['columns'][$column]);
+                //var_dump($attr);
+                
                 if (substr($column, 0, 7) == '__meta_')
                     continue;
-
+                
                 $operation = "MODIFY";
 
                 // if column was created
@@ -498,7 +499,7 @@ class SQLStructure
 
                 // MODIFY and ADD operations
                 $patch .= " ".$attr['type'];
-
+                
                 if (intval($attr['length']))
                     $patch .= "(".$attr['length'].")";
 

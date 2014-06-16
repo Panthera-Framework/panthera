@@ -83,6 +83,7 @@ class customAjaxControllerSystem extends pageController
             try {
                 if (!meta::get('var', 'cp_gen_' .$cpage->unique))
                     meta::create('cp_gen_' .$cpage->unique, 1, 'var', $cpage->id);
+                
             } catch (Exception $e) {
                 // pass
             }
@@ -153,8 +154,9 @@ class customAjaxControllerSystem extends pageController
                 $tags[] = $Value;
             }
         }
-
+        
         $cpage -> meta_tags = serialize($tags);
+        $cpage -> public = (bool)intval($_POST['public']);
         $cpage = $this -> getFeature('custompages.savePage.save', $cpage);
         $cpage -> save();
 
@@ -193,15 +195,7 @@ class customAjaxControllerSystem extends pageController
         if ($cpage -> exists())
         {
             // is author or can manage this page or can manage all pages or can view all pages (but not edit)
-            $this -> checkPermissions(array(
-                'custompages.view.' .$cpage->unique,
-                'custompages.view.id.' .$cpage->id,
-                'custompages.edit.' .$cpage->unique,
-                'custompages.edit.id.' .$cpage->id,
-                'custompages.management',
-                'custompage.viewall',
-                'custompages.manage.lang.' .$cpage->language,
-            ));
+            $this -> checkPermissions($cpage -> getPermissions('edit'));
 
             // mark as read only (this should hide save button)
             if (!$this -> checkPermissions(array('custompages.edit.' .$cpage->unique, 'custompages.edit.id.' .$cpage->id, 'custompages.management'), true) and $this -> checkPermissions('custompage.viewall', true))
@@ -227,19 +221,9 @@ class customAjaxControllerSystem extends pageController
                 $this -> checkPermissions(False);
             }
 
-            $managePermissions = $this -> checkPermissions(array(
-                'custompages.edit.' .$ppage->unique,
-                'custompages.edit.id.' .$ppage->id,
-                'custompages.management',
-                'custompages.manage.lang.' .$language, // access all pages in this selected language
-                'custompages.manage.lang.' .$ppage->language,
-            ), true);
+            $managePermissions = $this -> checkPermissions($cpage -> getPermissions('management'), true);
 
-            $this -> checkPermissions(array(
-                'custompages.view.' .$ppage->unique,
-                'custompages.view.id.' .$ppage->id,
-                'custompages.viewall',
-            ));
+            $this -> checkPermissions($cpage -> getPermissions('view'));
 
             // mark as read only (this should hide save button)
             if (!$managePermissions)
@@ -274,10 +258,10 @@ class customAjaxControllerSystem extends pageController
 
 
         /**
-          * This ajax subpage returns custom page's tags
-          *
-          * @author Damian Kęska
-          */
+         * This ajax subpage returns custom page's tags
+         *
+         * @author Damian Kęska
+         */
 
         if ($_GET['section'] == 'tags')
         {
@@ -302,15 +286,20 @@ class customAjaxControllerSystem extends pageController
         $html = str_replace("\r", '\\r', $html);
         $html = htmlspecialchars($html, ENT_QUOTES);
 
-        $this -> panthera -> template -> push('custompage', $cpage -> getData());
-        $this -> panthera -> template -> push('tag_list', @unserialize($cpage -> meta_tags));
-        $this -> panthera -> template -> push('action', 'edit_page');
-        $this -> panthera -> template -> push('languages', $this -> panthera -> locale -> getLocales());
+        $this -> panthera -> template -> push(array(
+            'customPageObject' => $cpage,
+            'custompage' => $cpage -> getData(),
+            'tag_list' => @unserialize($cpage -> meta_tags),
+            'action' => 'edit_page',
+            'languages' => $this -> panthera -> locale -> getLocales(),
+        ));
 
         if (meta::get('var', 'cp_gen_' .$cpage->unique))
         {
-            $this -> panthera -> template -> push ('allLanguages', True);
-            $this -> panthera -> template -> push ('custompage_language', 'all');
+            $this -> panthera -> template -> push (array(
+                'allLanguages' => True,
+                'custompage_language' => 'all',
+            ));
         } else
             $this -> panthera -> template -> push ('custompage_language', $cpage -> language);
 
@@ -359,25 +348,8 @@ class customAjaxControllerSystem extends pageController
 
     public function createPageAction()
     {
-        $allLanguages = False;
-        $unique = $this -> panthera -> db -> createUniqueData('custom_pages', 'unique', seoUrl($_POST['title']));
-
-        // if invalid locale specified - set default
-        if (!$this -> panthera -> locale -> exists($_POST['language']))
+        if (customPage::create($_POST['title'], $_POST['language'], $this -> panthera -> user))
         {
-            $allLanguages = True;
-            $_POST['language'] = $this -> panthera -> locale -> getActive();
-        }
-        
-        if (customPage::create($_POST['title'], $_POST['language'], $this -> panthera -> user -> login, $this -> panthera -> user -> id, $unique, seoUrl($_POST['title'])))
-        {
-            // set this page for all languages
-            if ($allLanguages)
-            {
-                $cpage = new customPage('unique', $unique);
-                meta::create('cp_gen_' .$cpage->unique, 1, 'var', $cpage->id);
-            }
-
             ajax_exit(array(
                 'status' => 'success',
             ));
@@ -406,7 +378,7 @@ class customAjaxControllerSystem extends pageController
         $cpage = new customPage('id', $pid);
 
         // permissions check
-        $this -> checkPermissions('custompage.page.edit.' .$cpage -> unique);
+        $this -> checkPermissions($cpage -> getPermissions('edit'));
 
         // plugins event
         $cpage = $this -> getFeature('custompages.removePage', $cpage, $uid);
@@ -564,7 +536,7 @@ class customAjaxControllerSystem extends pageController
                     'mod_author_name' => $page -> mod_author_name,
                     'language' => $page -> language,
                     'languages' => $languages,
-                    'managementRights' => $this -> checkPermissions('custompage.page.edit.' .$page->unique, true),
+                    'managementRights' => $this -> checkPermissions($page -> getPermissions('management'), true),
                 );
             }
 
@@ -580,7 +552,7 @@ class customAjaxControllerSystem extends pageController
             foreach ($tmp as $pageUnique => $page)
             {
                 // dont show pages user dont have rights
-                if (!$this -> checkPermissions('custompage.page.edit.' .$page['unique']) and $this -> checkPermissions('custompage.viewall'))
+                if (!$this -> checkPermissions('custompage.page.edit.' .$page['unique'], true) and $this -> checkPermissions('custompage.viewall', true))
                 {
                     unset($tmp[$pageUnique]);
                     continue;

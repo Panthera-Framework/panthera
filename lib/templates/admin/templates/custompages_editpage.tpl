@@ -145,16 +145,21 @@ jQuery(document).ready(function($) {
                 </tr>
                 
                 <tr id="tr_image">
-                    <td title="{function="localize('Page image or thumbnail', 'custompages')"}">{function="localize('Image URL', 'custompages')"}:</td>
+                    <td>{function="localize('Image URL', 'custompages')"}:</td>
                     <td>
-                    	<input type="text" id="content_image" name="content_image" value="{$custompage.image|addslashes}" style="min-width: 40px; width: 40%;"> 
+                    	<input type="text" id="content_image" name="content_image" value="{$custompage.image|addslashes}" style="min-width: 40px; width: 40%;" title="{function="localize('Page image or thumbnail', 'custompages')"}"> 
                         <input type="button" value="Select" onclick="panthera.popup.toggle('_ajax.php?display=upload&cat=admin&popup=true&callback=upload_file_callback');">
                     </td>
                 </tr>
                 
                 <tr id="tr_for_all_languages">
-                    <td title="{function="localize('Content of this static page will be visibile in all languages', 'custompages')"}">{function="localize('Set this page for all languages', 'custompages')"}:</td>
-                    <td><input type="checkbox" name="allLanguages" value="1" {if="$allLanguages"}checked{/if}></td>
+                    <td>{function="localize('Set this page for all languages', 'custompages')"}:</td>
+                    <td><input type="checkbox" name="allLanguages" value="1" {if="$allLanguages"}checked{/if} title="{function="localize('Content of this static page will be visibile in all languages', 'custompages')"}"></td>
+                </tr>
+                
+                <tr id="tr_public">
+                    <td>{function="localize('Publish', 'custompages')"}:</td>
+                    <td><input type="checkbox" name="public" value="1" {if="$customPageObject->public"}checked{/if} title="{function="localize('If not, only logged users with view permissions set will be able to access this page on front-end', 'custompages')"}"></td>
                 </tr>
                 
                 <tr id="tr_save_language">

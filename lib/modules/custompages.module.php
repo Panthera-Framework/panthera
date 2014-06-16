@@ -93,20 +93,33 @@ class customPage extends pantheraFetchDB
 
     /**
      * Create custom page
-     *
+     * 
+     * @param string $title Page title
+     * @param string $language Valid, installed language. If invalid specified it will fallback to current active or system default
+     * @param string|pantheraUser $authorName Author name or pantheraUser object
+     * @param int $authorId Author ID, optional if pantheraUser object specified in $authorName argument
+     * @param string $unique Unique ID string that will identify all translated versions of this static page
+     * @param string $urlId SEO link, can be same as unique
+     * @param string $adminTpl Administration panel template to display instead of default
+     * @param bool $public Is this a public page or still a draft/private page?
+     * 
      * @return bool
      * @author Mateusz Warzyński
      */
 
-    public static function create($title, $language, $authorName, $authorId='', $unique='', $urlId='', $adminTpl='')
+    public static function create($title, $language, $authorName, $authorId='', $unique='', $urlId='', $adminTpl='', $public=False)
     {
         $panthera = pantheraCore::getInstance();
+        $allLanguages = False;
         
         if (!$urlId)
             $urlId = $panthera -> db -> createUniqueData('custompages', 'unique', $title);
         
         if (!$unique)
             $unique = $urlId;
+        
+        if ($language == 'all')
+            $allLanguages = True;
         
         $language = pantheraLocale::getFromOverride($language);
         
@@ -130,9 +143,23 @@ class customPage extends pantheraFetchDB
             'admin_tpl' => $adminTpl,
             'created' => DB_TIME_NOW,
             'mod_time' => DB_TIME_NOW,
+            'public' => $public,
         );
-
-        return parent::create($array);
+        
+        $r = parent::create($array);
+        
+        if ($allLanguages)
+        {
+            $w = new whereClause;
+            $w -> add('AND', 'unique', '=', $unique);
+            $w -> add('AND', 'title', '=', $title);
+            $w -> add('AND', 'language', '=', $language);
+            $cpage = new customPage($w, false);
+            
+            meta::create('cp_gen_' .$unique, 1, 'var', $cpage->id);
+        }
+        
+        return $r;
     }
 
     /**
@@ -219,5 +246,45 @@ class customPage extends pantheraFetchDB
     {
         meta::remove('var', 'cp_gen_' .$this->unique);
         return parent::delete();
+    }
+    
+    /**
+     * Get permissions for view, edit, delete and management
+     * 
+     * @param string $type Permissions type - view, edit, delete, management
+     * @return array
+     */
+    
+    public function getPermissions($type='view')
+    {
+        $standard = array(
+            'custompages.management',
+            'custompages.manage.lang.' .$this -> language,
+        );
+        
+        switch ($type)
+        {
+            case 'view':
+                return array_merge($standard, array(
+                    'custompages.view.' .$this -> unique,
+                    'custompages.view.id.' .$this -> id,
+                    'custompages.edit.' .$this -> unique,
+                    'custompages.edit.id.' .$this -> id,
+                    'custompage.viewall',
+                ));
+            break;
+            
+            case 'delete':
+            case 'edit':
+                return array_merge($standard,array(
+                    'custompages.edit.' .$this -> unique,
+                    'custompages.edit.id.' .$this -> id,
+                ));
+            break;
+            
+            case 'management':
+                return $standard;
+            break;
+        }
     }
 }

@@ -16,8 +16,9 @@ CREATE TABLE `{$db_prefix}custom_pages` (
   `mod_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `admin_tpl` varchar(24) NOT NULL COMMENT 'Template file name for admin panel',
   `description` varchar(1024) NOT NULL,
-  `image` varchar(256) NOT NULL, 
+  `image` varchar(256) NOT NULL,
+  `public` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `url_id` (`url_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 

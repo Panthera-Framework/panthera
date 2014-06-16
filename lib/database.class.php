@@ -1963,4 +1963,16 @@ class pantheraDBStatement extends PDOStatement
         else
             return parent::fetch($how);
     }
+    
+    /**
+     * IMPLEMENT PERMISSIONS LISTING HERE
+     * 
+     * @param string $type Permission types eg. view, edit, management
+     * @return array
+     */
+    
+    public function getPermissions($type='view')
+    {
+        throw new Exception('Feature "getPermissions" not implemented in this model', 42953);
+    }
 }
