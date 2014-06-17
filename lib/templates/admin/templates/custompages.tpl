@@ -125,9 +125,10 @@ function getOtherCustomPages()
             <thead>
                 <tr>
                     <th>{function="localize('Title', 'custompages')"}</th>
-                    <th>{function="localize('Created', 'custompages')"}</th>
+                    <!--<th>{function="localize('Created', 'custompages')"}</th>-->
                     <th>{function="localize('Modified', 'custompages')"}</th>
                     <th>{function="localize('Avaliable in', 'custompages')"}</th>
+                    <th>{function="localize('Status', 'custompages')"}</th>
                     <th>{function="localize('Options', 'custompages')"}</th>
                 </tr>
             </thead>
@@ -136,9 +137,15 @@ function getOtherCustomPages()
                 {if="count($pages_list) > 0"}
                 {loop="$pages_list"}
                 <tr id="custompage_row_{$value.id}">
-                    <td><a href="{$AJAX_URL}?display=custom&cat=admin&action=editPage&uid={$value.unique}" class="ajax_link">{$value.title|localize}</a></td>
-                    <td>{$value.created} {function="localize('by', 'custompages')"} {$value.author_name}</td>
-                    <td>{if="$value['created'] == $value['modified']"}{function="localize('without changes', 'custompages')"}{else}{$value.modified} {function="localize('by', 'custompages')"} {$value.mod_author_name}{/if}</td>
+                    <td{if="$value.additionalInfo"} title="{$value.additionalInfo}"{/if}>
+                    	<a href="{$AJAX_URL}?display=custom&cat=admin&action=editPage&uid={$value.unique}" class="ajax_link">{$value.title|localize}</a>
+                    </td>
+                    
+                    <!--<td>{$value.created} {function="localize('by', 'custompages')"} {$value.author_name}</td>-->
+                    <td title="{function="localize('Created', 'custompages')"}: {$value.created} {function="localize('by', 'custompages')"} {$value.author_name}">
+                    	{$value.modified} {function="localize('by', 'custompages')"} {$value.mod_author_name}
+                    </td>
+                    
                     <td>
                         <select>
                             {loop="$value['languages']"}
@@ -146,6 +153,12 @@ function getOtherCustomPages()
                             {/loop}
                         </select>
                     </td>
+                    
+                    <td>
+                    	{if="$value.object->public"}{function="localize('Published', 'custompages')"}{else}{function="localize('Not published', 'custompages')"}{/if}
+                    </td>
+                    
+                    <!-- Options -->
                     <td>{if="$value.managementRights"}
                         <a href="#" onclick="removeCustomPage({$value.id});">
                         <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove', 'messages')"}">

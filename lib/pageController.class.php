@@ -66,6 +66,7 @@ abstract class pageController extends pantheraClass {
     protected $db;
     protected $user;
     protected $locale;
+    protected $session;
 
     /**
      * Initialize front controller
@@ -85,6 +86,7 @@ abstract class pageController extends pantheraClass {
         $this -> db = &$this -> panthera -> db;
         $this -> user = &$this -> panthera -> user;
         $this -> locale = &$this -> panthera -> locale;
+        $this -> session = &$this -> panthera -> session;
 
         if ($this -> permissions)
             $this -> checkPermissions($this -> permissions);

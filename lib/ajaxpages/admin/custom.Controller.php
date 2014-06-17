@@ -462,33 +462,17 @@ class customAjaxControllerSystem extends pageController
 
         // search query
         if ($_GET['query'])
-        {
             $filter['title*LIKE*'] = '%' .trim(strtolower($_GET['query'])). '%';
-        }
 
         // only pages created by current user
         if (isset($_GET['only_mine']))
-        {
             $filter['author_id'] = $this -> panthera -> user -> id;
-        }
 
         $filter = $this -> getFeature('custompages.main.queryFilter', $filter);
         $page = intval($_GET['page']);
-        /*$sid = hash('md4', 'search.custom:' .http_build_query($filter).$page);
-
-        if ($this -> panthera->cache)
-        {
-            if ($this -> panthera -> cache -> exists($sid))
-            {
-                //list($tmp, $itemsCount) = $this -> panthera -> cache -> get($sid);
-                $this -> panthera -> logging -> output('Loaded list of ' .$itemsCount. ' pages from cache sid:' .$sid, 'customPages');
-            }
-        }*/
 
         if (!isset($itemsCount))
-        {
             $itemsCount = customPage::fetchAll($filter, False);
-        }
 
         $uiPager = new uiPager('customPages', $itemsCount, 'adminCustomPages', 128);
         $uiPager -> setActive($page);
@@ -511,6 +495,7 @@ class customAjaxControllerSystem extends pageController
                     $page->language => True,
                 );
 
+                // group pages in multiple languages by unique
                 if (isset($tmp[$page->unique]))
                 {
                     $languages = $tmp[$page->unique]['languages'];
@@ -523,7 +508,7 @@ class customAjaxControllerSystem extends pageController
                         continue;
                     }
                 }
-
+                
                 $tmp[$page->unique] = array(
                     'id' => $page -> id,
                     'unique' => $page -> unique,
@@ -537,14 +522,10 @@ class customAjaxControllerSystem extends pageController
                     'language' => $page -> language,
                     'languages' => $languages,
                     'managementRights' => $this -> checkPermissions($page -> getPermissions('management'), true),
+                    'object' => $page,
+                    'additionalInfo' => $this -> panthera -> logging -> debug ? "==== DEBUG: ID: " .$page -> id. ", Unique: " .$page -> unique. ", url_id: " .$page -> url_id : "",
                 );
             }
-
-            /*if ($this -> panthera -> cache)
-            {
-                $this -> panthera -> cache -> set($sid, array($tmp, $itemsCount), 'customPages.list');
-                $this -> panthera -> logging -> output('Updating Custom Pages list cache sid:' .$sid, 'customPages');
-            }*/
         }
 
         if (count($tmp) > 0)

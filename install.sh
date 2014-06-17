@@ -51,7 +51,11 @@ mv vendor/mpdf/mpdf lib/share/mpdf --force
 rm -rf lib/share/mpdf/examples
 rm -rf lib/share/mpdf/.git
 
-echo `pwd`
+echo "Moving minify"
+mv vendor/mrclay/minify lib/share/minify
+rm -rf lib/share/minify/.git
+rm -rf lib/share/minify/min_unit_tests
+rm -rf lib/share/minify/min_extras
 
 # This is temporary while waiting for RainTPLv3 author to merge pull requests with fixes required Panthera to work
 echo "Cloning Panthera-Framework/raintpl3 fork of RainTPLv3"

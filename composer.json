@@ -8,6 +8,7 @@
         "facebook/php-sdk": ">=v3.2.2",
         "ircmaxell/password-compat": "dev-master",
         "mobiledetect/mobiledetectlib": "2.6.4",
-        "mpdf/mpdf": "dev-master"
+        "mpdf/mpdf": "dev-master",
+        "mrclay/minify": "dev-master"
     }
 }

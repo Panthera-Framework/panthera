@@ -80,7 +80,7 @@ class customControllerSystem extends pageController
         $panthera = pantheraCore::getInstance();
 
         if (!$this -> cpage or !$this -> cpage->exists())
-            pa_redirect($panthera -> config -> getKey('err404.url', '?404', 'string', 'errors'));
+            pantheraCore::raiseError('notfound');
     }
 
     /**
@@ -109,7 +109,6 @@ class customControllerSystem extends pageController
             $panthera -> template -> addMetaTag('og:image', $this -> cpage -> image, True);
 
         $panthera -> template -> push('custompage', $this -> cpage -> getData());
-        $panthera -> template -> display('custom.tpl');
-        pa_exit();
+        return $panthera -> template -> compile('custom.tpl');
     }
 }
