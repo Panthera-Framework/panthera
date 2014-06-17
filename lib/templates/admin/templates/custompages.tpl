@@ -50,7 +50,7 @@ function getOtherCustomPages()
     <div class="separatorHorizontal"></div>
     
     <div class="searchBarButtonArea">
-        <input type="button" value="{function="localize('Add new custom page', 'custompages')"}" onclick="panthera.popup.toggle('element:#addNewPagePopup')">
+        <input type="button" value="{function="localize('Create new static page', 'custompages')"}" onclick="panthera.popup.toggle('element:#addNewPagePopup')">
     </div>
 </div>
 
@@ -63,7 +63,7 @@ function getOtherCustomPages()
              <thead>
                  <tr>
                     <td colspan="2" class="formTableHeader" style="padding-top: 0px; padding-bottom: 30px;">
-                        <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px;">{function="localize('Add new custom page', 'custompages')"}</p>
+                        <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px;">{function="localize('Create new static page', 'custompages')"}</p>
                     </td>
                  </tr>
              </thead>
