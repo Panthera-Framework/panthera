@@ -2,7 +2,7 @@
 /**
  * Session management, navigation, "run" table
  *
- * @package Panthera\core\session
+ * @package Panthera\core\system\session
  * @author Damian Kęska
  * @license LGPLv3
  */
@@ -13,7 +13,7 @@ if (!defined('IN_PANTHERA'))
 /**
  * User session management class
  *
- * @package Panthera\core\session
+ * @package Panthera\core\system\session
  * @author Damian Kęska
  */
 
@@ -33,7 +33,7 @@ class pantheraSession
     {
         $this->panthera = $panthera;
         $this->sessionKey = $this->panthera->config->getKey('session_key');
-        $this->_cookies = new pantheraCookie($this->sessionKey, $this->panthera);
+        $this->_cookies = new pantheraCookie($this->sessionKey);
 
         // Security: Check user-agent
         if ($panthera->config->getKey('session_useragent', True, 'bool'))
@@ -87,17 +87,17 @@ class pantheraSession
         // extending session life-time on some server configurations
         if (!$this -> exists('__lifetime'))
         {
-            setcookie('PHPSESSID', session_id(), (time()+(int)$panthera->config->getKey('session_lifetime', '3600', 'int'))); 
+            setcookie(session_name(), session_id(), (time()+(int)$panthera->config->getKey('session_lifetime', '3600', 'int'))); 
             $this -> set('__lifetime', true);
         } 
     }
 
     /**
-      * Detect a browser and os types and versions
-      *
-      * @return array
-      * @author Damian Kęska
-      */
+     * Detect a browser and os types and versions
+     *
+     * @return array
+     * @author Damian Kęska
+     */
 
     public function detectBrowser()
     {
@@ -235,7 +235,7 @@ class pantheraSession
         if ($key == 'cookies')
             return $this->_cookies;
 
-        if (array_key_exists($key, $_SESSION[$this->sessionKey]))
+        if (isset($_SESSION[$this->sessionKey][$key]))
             return $_SESSION[$this->sessionKey][$key];
 
         return NULL;
@@ -330,19 +330,26 @@ class pantheraSession
 }
 
 /**
-  * Cookie support extension for session management
-  *
-  * @package Panthera\core\session
-  * @author Damian Kęska
-  */
+ * Cookie support extension for session management
+ *
+ * @package Panthera\core\system\session
+ * @author Damian Kęska
+ */
 
 class pantheraCookie
 {
     protected $cookieKey, $panthera, $encryption = False, $ivsize = 16, $encryptionVector = '', $encryptionKey = '';
+    
+    /**
+     * Panthera Cookies management constructor
+     * 
+     * @param string $cookieKey Cookie prefix
+     * @author Damian Kęska
+     */
 
-    public function __construct($cookieKey, $panthera)
+    public function __construct($cookieKey)
     {
-        $this->panthera = $panthera;
+        $this->panthera = pantheraCore::getInstance();
         $this->cookieKey = substr(md5($cookieKey), 0, 6);
 
         // Security: Encrypt cookies with AES-128 bit in CBC mode if possible
@@ -375,11 +382,27 @@ class pantheraCookie
         }
     }
 
+    /**
+     * Encrypt a string using RIJNDAEL 128 bit and encode to base64
+     * 
+     * @param string $string Input string to encode
+     * @author Damian Kęska
+     * @return string
+     */
+
     public function encrypt($string)
     {
         $string = utf8_encode($string);
         return base64_encode($this->encryptionVector.mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $this->encryptionKey, 'hdr^' .$string, MCRYPT_MODE_CBC, $this->encryptionVector));
     }
+    
+    /**
+     * Decode from base64 and decrypt from RIJNDAEL 128
+     * 
+     * @param string $string Input encoded string
+     * @author Damian Kęska
+     * @return string|null Returns null on decoding error (when header not found)
+     */
 
     public function decrypt($string)
     {
@@ -499,18 +522,48 @@ class pantheraCookie
         return True;
     }
 
-    // aliases
+    /**
+     * Alias to __get()
+     * 
+     * Example:
+     * <code>
+     * // see $this -> set() method example
+     * var_dump($panthera -> session -> get('name'));
+     * </code>
+     * 
+     * @see this->__get()
+     * @author Damian Kęska
+     */
+    
     public function get($key) { return $this->__get($key); }
+    
+    /**
+     * Alias to __set()
+     * 
+     * Example:
+     * <code>
+     * $panthera -> session -> set('name', 'John', time()+120); // set cookie "name" with value "John" for 120 seconds
+     * </code>
+     * 
+     * @see this->__set()
+     * @param string $key Cookie name
+     * @param string $value Value
+     * @param int $time Expiration date in UNIX timestamp eg. time()+60 = 60 seconds from now
+     * @param bool $globalCookie (Optional) Don't use cookie prefix, other Panthera-based websites on this domain should be able to use that cookie
+     * @author Damian Kęska
+     * @return bool
+     */
+    
     public function set($key, $value, $time, $globalCookie=False) { return $this->__set($key, array($value, $time, $globalCookie)); }
 }
 
 /**
-  * Tool for benchmarking, monitoring activity on website
-  * In UNIX systems we would call it /var/run where are stored pids/sockets
-  *
-  * @package Panthera\core\session
-  * @author Damian Kęska
-  */
+ * Tool for benchmarking, monitoring activity on website
+ * In UNIX systems we would call it /var/run where are stored pids/sockets
+ *
+ * @package Panthera\core\system\session
+ * @author Damian Kęska
+ */
 
 class run extends pantheraFetchDB
 {
@@ -631,11 +684,11 @@ class run extends pantheraFetchDB
 }
 
 /**
-  * Website navigation based on user session storage
-  *
-  * @package Panthera\core\session
-  * @author Damian Kęska
-  */
+ * Website navigation based on user session storage
+ *
+ * @package Panthera\core\system\session
+ * @author Damian Kęska
+ */
 
 class navigation
 {
@@ -643,12 +696,12 @@ class navigation
     private static $bufferMax = 8;
 
     /**
-      * Add link to history
-      *
-      * @param string $url
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Add link to history
+     *
+     * @param string $url
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public static function appendHistory($url)
     {
@@ -683,11 +736,11 @@ class navigation
     }
 
     /**
-      * Return array with visited urls
-      *
-      * @return array
-      * @author Damian Kęska
-      */
+     * Return array with visited urls
+     *
+     * @return array
+     * @author Damian Kęska
+     */
 
     public function getHistory()
     {
@@ -695,11 +748,11 @@ class navigation
     }
 
     /**
-      * Load history from session
-      *
-      * @return void
-      * @author Damian Kęska
-      */
+     * Load history from session
+     *
+     * @return void
+     * @author Damian Kęska
+     */
 
     public static function loadHistoryFromSession()
     {
@@ -708,12 +761,12 @@ class navigation
     }
 
     /**
-      * Get back button link
-      *
-      * @param string name
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Get back button link
+     *
+     * @param string name
+     * @return mixed
+     * @author Damian Kęska
+     */
 
     public static function getBackButton()
     {
@@ -734,25 +787,25 @@ class navigation
     }
 
     /**
-      * Save navigation history to session
-      *
-      * @return void
-      * @author Damian Kęska
-      */
+     * Save navigation history to session
+     *
+     * @return void
+     * @author Damian Kęska
+     */
 
     public static function save()
     {
-        global $panthera;
+        $panthera = pantheraCore::getInstance();
         $panthera->session->set('navigation_history', self::$history);
     }
 
     /**
-      * Appends current page to history
-      *
-      * @param bool $ajaxExit Are we in ajax mode or not
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Appends current page to history
+     *
+     * @param bool $ajaxExit Are we in ajax mode or not
+     * @return mixed
+     * @author Damian Kęska
+     */
 
     public static function appendCurrentPage($ajaxExit)
     {
