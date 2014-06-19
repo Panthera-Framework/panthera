@@ -50,6 +50,8 @@ class pantheraSession
             }
         }
 
+        ini_set("session.gc_divisor", "1");
+        ini_set("session.gc_probability", "1");
         ini_set('session.gc_maxlifetime', (int)$panthera->config->getKey('session_lifetime', '3600', 'int'));
         ini_set('session.cookie_lifetime', (int)$panthera->config->getKey('session_lifetime', '3600', 'int'));
         @session_start();
@@ -81,6 +83,13 @@ class pantheraSession
         // Browser detection check
         if (!$this->get('clientInfo'))
             $this -> set('clientInfo', $this->detectBrowser());
+        
+        // extending session life-time on some server configurations
+        if (!$this -> exists('__lifetime'))
+        {
+            setcookie('PHPSESSID', session_id(), (time()+(int)$panthera->config->getKey('session_lifetime', '3600', 'int'))); 
+            $this -> set('__lifetime', true);
+        } 
     }
 
     /**
@@ -419,16 +428,18 @@ class pantheraCookie
 
     public function __set($cookieName, $value)
     {
-        if (!is_array($value))
-            return False;
-
-        if (count($value) != 2)
+        if (!is_array($value) or count($value) < 2)
             return False;
 
         if ($this->encryption == True)
             $value[0] = $this->encrypt($value[0]);
+        
+        if (!isset($value[2]) or !$value[2])
+            $name = $this->cookieKey. '_' .$cookieName;
+        else
+            $name = $cookieName;
 
-        setCookie($this->cookieKey. '_' .$cookieName, $value[0], $value[1]);
+        setCookie($name, $value[0], $value[1]);
 
         // caching for encryption support
         $this->cache[$cookieName] = $value;
@@ -490,7 +501,7 @@ class pantheraCookie
 
     // aliases
     public function get($key) { return $this->__get($key); }
-    public function set($key, $value, $time) { return $this->__set($key, array($value, $time)); }
+    public function set($key, $value, $time, $globalCookie=False) { return $this->__set($key, array($value, $time, $globalCookie)); }
 }
 
 /**
