@@ -353,15 +353,15 @@ class pantheraCookie
         $this->cookieKey = substr(md5($cookieKey), 0, 6);
 
         // Security: Encrypt cookies with AES-128 bit in CBC mode if possible
-        if ($panthera->config->getKey('cookie_encrypt', 0, 'bool') and function_exists('mcrypt_encrypt'))
+        if ($this -> panthera -> config -> getKey ('cookie_encrypt', 0, 'bool') and function_exists('mcrypt_encrypt'))
         {
-            $this->encryptionKey = base64_decode($panthera->config->getKey('cookie_encrypt_key'));
+            $this->encryptionKey = base64_decode($this->panthera->config->getKey('cookie_encrypt_key'));
 
             // create new encryption key
             if (!$this->encryptionKey)
             {
                 $this->encryptionKey = hash("SHA256", rand(999999, 9999999999), True);
-                $panthera->config->setKey('cookie_encrypt_key', base64_encode($this->encryptionKey), "string");
+                $this->panthera->config->setKey('cookie_encrypt_key', base64_encode($this->encryptionKey), "string");
             }
 
             $this->encryption = True;
@@ -370,15 +370,15 @@ class pantheraCookie
             $this->ivsize = mcrypt_get_iv_size('rijndael-128', 'cbc');
 
             // create new encryption initialization vector if no any present
-            if (!$panthera->config->getKey('cookie_encrypt_vector'))
+            if (!$this->panthera->config->getKey('cookie_encrypt_vector'))
             {
                 $iv = mcrypt_create_iv($this->ivsize, MCRYPT_DEV_URANDOM);
-                $panthera->config->setKey('cookie_encrypt_vector', base64_encode($iv), 'string');
+                $this->panthera->config->setKey('cookie_encrypt_vector', base64_encode($iv), 'string');
 
             }
 
             // get encryption initialization vector
-            $this->encryptionVector = base64_decode($panthera->config->getKey('cookie_encrypt_vector'));
+            $this->encryptionVector = base64_decode($this->panthera->config->getKey('cookie_encrypt_vector'));
         }
     }
 
