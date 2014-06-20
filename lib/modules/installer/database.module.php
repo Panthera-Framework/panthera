@@ -2,10 +2,10 @@
 /**
  * Database configuration for pantheraInstaller
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  * @author Mateusz Warzyński
- * @license GNU Affero General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
 if (!defined('PANTHERA_INSTALLER'))
@@ -14,17 +14,13 @@ if (!defined('PANTHERA_INSTALLER'))
 /**
  * Database configuration for pantheraInstaller
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  * @author Mateusz Warzyński
  */
 
 class databaseInstallerControllerSystem extends installerController
 {
-    protected $requirements = array(
-        'appconfig',
-    );
-
     /**
      * Main function executed right after controller will be called
      *

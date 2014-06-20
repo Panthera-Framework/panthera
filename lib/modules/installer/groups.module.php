@@ -2,15 +2,17 @@
 /**
  * Users and groups configuration
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  * @license LGPLv3
  */
 
 /**
  * Users and groups configuration
+ * 
+ * This step is creating default groups and adds default permissions
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  */
 

@@ -1,8 +1,8 @@
 <?php
 /**
- * Requirements check
+ * Application requirements check
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  * @author Mateusz Warzyński
  * @license LGPLv3
@@ -11,15 +11,42 @@
 installerController::$searchFrontControllerName = 'environmentInstallerControllerSystem';
 
 /**
- * Requirements check
+ * Application requirements check
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  * @author Mateusz Warzyński
  */
 
 class environmentInstallerControllerSystem extends installerController
 {
+     public $requiredExtensions = array(
+        'pcre' => 'any',
+        'hash' => 'any',
+        'fileinfo' => 'any',
+        'json' => 'any',
+        'session' => 'any',
+        'Reflection' => 'any',
+        'Phar' => 'any',
+        'PDO' => 'any',
+        'gd' => 'any',
+        'pdo_mysql' => 'any',
+        'pdo_sqlite' => 'any',
+     );
+
+     public $optionalExtensions = array(
+         'mcrypt' => 'any',
+         'curl' => 'any',
+         'memcached' => 'any',
+         'XCache' => 'any',
+         'apc' => 'any',
+         'xdebug' => 'any',
+         'redis' => 'any',
+         'memcache' => 'any',
+     );
+     
+     public $requiredPHPVersion = '5.3.0';
+    
     /**
      * Main function that will execute first
      *
@@ -29,70 +56,42 @@ class environmentInstallerControllerSystem extends installerController
      * @feature installer.environment.requirements &array Requirements
      * @return null
      */
-
+     
     public function display()
     {
-        // we will check here the PHP version and required basic modules
-        $requiredExtensions = array(
-            'pcre' => 'any',
-            'hash' => 'any',
-            'fileinfo' => 'any',
-            'json' => 'any',
-            'session' => 'any',
-            'Reflection' => 'any',
-            'Phar' => 'any',
-            'PDO' => 'any',
-            'gd' => 'any',
-            'pdo_mysql' => 'any',
-            'pdo_sqlite' => 'any',
-        );
-
-        $optionalExtensions = array(
-            'mcrypt' => 'any',
-            'curl' => 'any',
-            'memcached' => 'any',
-            'XCache' => 'any',
-            'apc' => 'any',
-            'xdebug' => 'any',
-            'redis' => 'any',
-            'memcache' => 'any',
-        );
-
-        $requiredPHPVersion = '5.2.0';
-
         // errors count
         $errors = 0;
 
         if ($installer->config->requiredPHPVersion)
-            $requiredPHPVersion = $installer->config->requiredPHPVersion;
+            $this -> requiredPHPVersion = $installer->config->requiredPHPVersion;
 
-        $this -> getFeatureRef('installer.environment.phpversion', $requiredPHPVersion);
+        $this -> getFeatureRef('installer.environment.phpversion', $this -> requiredPHPVersion);
 
         if ($installer->config->requiredExtensions)
-            $requiredExtensions = array_merge($requiredExtensions, $installer->config->requiredExtensions);
+            $this -> requiredExtensions = array_merge($this -> requiredExtensions, $installer->config->requiredExtensions);
 
         if ($installer->config->optionalExtensions)
-            $optionalExtensions = array_merge($optionalExtensions, $installer->config->optionalExtensions);
+            $this -> optionalExtensions = array_merge($this -> optionalExtensions, $installer->config->optionalExtensions);
 
         $requirements = array();
 
         // php version requirement
-        $requirements['PHP'] = array('installed' => phpversion(), 'required' => $requiredPHPVersion, 'passed' => True);
+        $requirements['PHP'] = array('installed' => phpversion(), 'required' => $this -> requiredPHPVersion, 'passed' => True);
 
         // check PHP version
-        if (strnatcmp(phpversion(), $requiredPHPVersion) < 0)
+        if (strnatcmp(phpversion(), $this -> requiredPHPVersion) < 0)
         {
             $errors++;
             $requirements['PHP']['note'] = localize('Your PHP is outdated, please upgrade', 'installer');
             $requirements['PHP']['passed'] = False;
         }
 
-        $this -> getFeatureRef('installer.environment.req-exts', $requiredExtensions);
+        $this -> getFeatureRef('installer.environment.req-exts', $this -> requiredExtensions);
 
         // all required extensions
-        foreach ($requiredExtensions as $extension => $version)
+        foreach ($this -> requiredExtensions as $extension => $version)
         {
-            $requirements[$extension] = array('installed' => localize('Yes', 'installer'), 'required' => slocalize('any for >=%s PHP version', 'installer', $requiredPHPVersion), 'passed' => True);
+            $requirements[$extension] = array('installed' => localize('Yes', 'installer'), 'required' => slocalize('any for >=%s PHP version', 'installer', $this -> requiredPHPVersion), 'passed' => True);
 
             if (!extension_loaded($extension))
             {
@@ -119,11 +118,11 @@ class environmentInstallerControllerSystem extends installerController
             }
         }
 
-        $this -> getFeatureRef('installer.environment.opt-exts', $optionalExtensions);
+        $this -> getFeatureRef('installer.environment.opt-exts', $this -> optionalExtensions);
 
-        foreach ($optionalExtensions as $extension => $version)
+        foreach ($this -> optionalExtensions as $extension => $version)
         {
-            $requirements[$extension] = array('installed' => localize('Yes', 'installer'), 'required' => slocalize('any for >=%s PHP version', 'installer', $requiredPHPVersion), 'passed' => True);
+            $requirements[$extension] = array('installed' => localize('Yes', 'installer'), 'required' => slocalize('any for >=%s PHP version', 'installer', $this -> requiredPHPVersion), 'passed' => True);
 
             if (!extension_loaded($extension))
             {

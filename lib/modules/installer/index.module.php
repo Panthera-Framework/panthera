@@ -2,16 +2,18 @@
 /**
  * Index step in Panthera installer
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  * @author Mateusz Warzyński
- * @license GNU Lesser General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
- /**
+/**
  * Index step in Panthera installer
+ * 
+ * Locales and timezone configuration. Should be put at first or second step.
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  * @author Mateusz Warzyński
  */

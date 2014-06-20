@@ -2,10 +2,10 @@
 /**
  * Final step in pantheraInstaller
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  * @author Mateusz Warzyński
- * @license GNU Affero General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
 if (!defined('PANTHERA_INSTALLER'))
@@ -14,7 +14,7 @@ if (!defined('PANTHERA_INSTALLER'))
 /**
  * Final step in Panthera Installer
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  * @author Mateusz Warzyński
  */
@@ -33,8 +33,7 @@ class finishInstallerControllerSystem extends installerController
 
     public function display()
     {
-        $app = new appConfigEditor();
-        $config = (array)$app -> config;
+        $config = (array)$this -> appConfig -> config;
 
         $config = $this -> getFeature('installer.finish.config', $config);
 
@@ -52,8 +51,8 @@ class finishInstallerControllerSystem extends installerController
         $this -> panthera -> config -> setKey('url', $url, 'string');
 
 
-        $app -> config = (object)$config;
-        $app -> save();
+        $this -> appConfig -> config = (object)$config;
+        $this -> appConfig -> save();
 
         $this -> panthera -> template -> push('userLogin', $panthera -> user -> login);
         $this -> installer -> template = 'finish';

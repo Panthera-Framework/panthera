@@ -67,6 +67,7 @@ abstract class pageController extends pantheraClass {
     protected $user;
     protected $locale;
     protected $session;
+    protected $config;
 
     /**
      * Initialize front controller
@@ -87,6 +88,7 @@ abstract class pageController extends pantheraClass {
         $this -> user = &$this -> panthera -> user;
         $this -> locale = &$this -> panthera -> locale;
         $this -> session = &$this -> panthera -> session;
+        $this -> config = &$this -> panthera -> config;
 
         if ($this -> permissions)
             $this -> checkPermissions($this -> permissions);
@@ -473,9 +475,7 @@ abstract class pageController extends pantheraClass {
         $propsReturn['__methods'] = array();
 
         foreach ($reflection -> getMethods() as $method)
-        {
             $propsReturn['__methods'][$method->name] = $method->class;
-        }
 
         unset($propsReturn['instance']);
 

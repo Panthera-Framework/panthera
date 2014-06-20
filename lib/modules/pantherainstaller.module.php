@@ -2,7 +2,7 @@
 /**
  * Panthera Installer core class
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  * @author Mateusz Warzyński
  * @license LGPLv3
@@ -13,7 +13,7 @@ require_once PANTHERA_DIR. '/pageController.class.php';
 /**
  * Panthera Installer core class
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  * @author Mateusz Warzyński
  */
@@ -22,6 +22,7 @@ class pantheraInstaller
 {
     public $template = null;
     public $appConfig = null;
+    public static $instance = null;
 
     /**
      * Constructor
@@ -34,6 +35,7 @@ class pantheraInstaller
     public function __construct($panthera)
     {
         $this -> panthera = $panthera;
+        self::$instance = $this;
 
         if (!($index = getContentDir('installer/config.json')))
             throw new Exception('Cannot find /lib/installer/config.json (check Panthera installation integrity), and /lib/installer/config.json');
@@ -262,6 +264,14 @@ class pantheraInstaller
 class installerController extends pageController
 {
     public $installer = null;
+    public $appConfig = null;
+    
+    public function __construct()
+    {
+        parent::__construct();
+        $this -> installer = pantheraInstaller::$instance;
+        $this -> appConfig = $this -> installer -> appConfig;
+    }
 
 	/**
      * Lookup for controller class name

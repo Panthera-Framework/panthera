@@ -2,7 +2,7 @@
 /**
  * Admin account creator for pantheraInstaller
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  * @author Mateusz Warzyński
  * @license LGPLv3
@@ -11,7 +11,7 @@
 /**
  * Admin account creator for pantheraInstaller
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  * @author Mateusz Warzyński
  */

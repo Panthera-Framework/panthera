@@ -2,15 +2,17 @@
 /**
  * Introduction step
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  * @license LGPLv3
  */
 
- /**
+/**
  * Introduction step
+ * 
+ * If you want to display a license text in your application installer this step is created to bring this functionality out of the box
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  */
 

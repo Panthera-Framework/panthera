@@ -2,20 +2,24 @@
 /**
  * Upload and gallery configuration step
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
- * @license GNU Lesser General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
 /**
  * Upload and gallery configuration step
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  */
 
 class uploadInstallerControllerSystem extends installerController
 {
+    public $requirements = array(
+        'filesystem',
+    );
+    
     /**
      * Main function to display everything
      *
@@ -27,8 +31,6 @@ class uploadInstallerControllerSystem extends installerController
 
     public function display()
     {
-        $this -> panthera -> importModule('filesystem');
-
         // generate table log
         $log = array();
         $default = $this -> panthera -> config -> getKey('upload.default.category', 'default', 'string', 'upload');

@@ -2,15 +2,16 @@
 /**
  * Routing configuration step
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
- * @license GNU Lesser General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
- /**
+/**
  * Routing configuration step
+ * Installs all routes default to built-in Panthera components like custompages, facebook integration, contact, login etc.
  *
- * @package Panthera\installer
+ * @package Panthera\core\components\installer
  * @author Damian Kęska
  */
 
