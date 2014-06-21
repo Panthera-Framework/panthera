@@ -140,12 +140,12 @@ class routing {
         //$this -> panthera -> config -> setKey('routing.cache', $data, 'array');
     }
     /**
-      * Create router in one call from config.
-      *
-      * @param array $routes
-      * @param string $basePath
-      * @param array $matchTypes
-      */
+     * Create router in one call from config.
+     *
+     * @param array $routes
+     * @param string $basePath
+     * @param array $matchTypes
+     */
 
     public function __construct( $routes = array(), $basePath = '', $matchTypes = array() )
     {
@@ -155,9 +155,7 @@ class routing {
         $this -> getCache();
 
         foreach( $routes as $route )
-        {
             call_user_func_array(array($this,'map'),$route);
-        }
     }
 
     /**
@@ -246,9 +244,7 @@ class routing {
     public function getParams($routeName)
     {
         if(!isset($this->routes[$routeName]))
-        {
             throw new Exception("Route '{$routeName}' does not exist.");
-        }
 
         $route = $this->routes[$routeName][1];
         $compiled = $this -> compileRoute($this->routes[$routeName][1]);
@@ -303,9 +299,7 @@ class routing {
                 list($block, $pre, $type, $param, $optional) = $match;
 
                 if ($pre)
-                {
                     $block = substr($block, 1);
-                }
 
                 if(isset($params[$param]))
                 {
@@ -351,32 +345,28 @@ class routing {
         $this -> panthera -> logging -> startTimer();
         $params = array();
         $match = false;
-
+        
         // set Request Url if it isn't passed as parameter
         if($requestUrl === null)
-        {
             $requestUrl = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
-        }
+        
+        $this -> panthera -> logging -> output('Request URL is "' .$requestUrl. '"', 'routing');
 
         // strip base path from request url
         $requestUrl = substr($requestUrl, strlen($this->basePath));
 
         // Strip query string (?a=b) from Request Url
         if (($strpos = strpos($requestUrl, '?')) !== false)
-        {
             $requestUrl = substr($requestUrl, 0, $strpos);
-        }
 
         // set Request Method if it isn't passed as a parameter
         if($requestMethod === null)
-        {
             $requestMethod = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
-        }
 
         // Force request_order to be GP
         // http://www.mail-archive.com/internals@lists.php.net/msg33119.html
         $_REQUEST = array_merge($_GET, $_POST);
-
+        
         foreach($this->routes as $handler)
         {
             list($method, $_route, $target, $name) = $handler;
@@ -391,41 +381,46 @@ class routing {
                     break;
                 }
             }
-
+            
             // Method did not match, continue to next route.
-            if(!$method_match) continue;
-
+            if(!$method_match) 
+                continue;
+            
             // Check for a wildcard (matches all)
             if ($_route === '*') {
                 $match = true;
+                
             } elseif (isset($_route[0]) && $_route[0] === '@') {
                 $match = preg_match('`' . substr($_route, 1) . '`', $requestUrl, $params);
+                
             } else {
                 $route = null;
                 $regex = false;
                 $j = 0;
                 $n = isset($_route[0]) ? $_route[0] : null;
                 $i = 0;
-
+                
                 // Find the longest non-regex substring and match it against the URI
                 while (true) {
-                    if (!isset($_route[$i])) {
+                    
+                    if (!isset($_route[$i])) 
                         break;
-                    } elseif (false === $regex) {
+                    elseif (false === $regex) {
+                        
                         $c = $n;
                         $regex = $c === '[' || $c === '(' || $c === '.';
                         if (false === $regex && false !== isset($_route[$i+1])) {
                             $n = $_route[$i + 1];
                             $regex = $n === '?' || $n === '+' || $n === '*' || $n === '{';
                         }
-                        if (false === $regex && $c !== '/' && (!isset($requestUrl[$j]) || $c !== $requestUrl[$j])) {
+                        if (false === $regex && $c !== '/' && (!isset($requestUrl[$j]) || $c !== $requestUrl[$j]))
                             continue 2;
-                        }
+                        
                         $j++;
                     }
                     $route .= $_route[$i++];
                 }
-
+                
                 $regex = $this->compileRoute($route);
                 $regex = $regex['regex'];
                 $match = @preg_match($regex, $requestUrl, $params);
@@ -441,7 +436,8 @@ class routing {
                 {
                     foreach($params as $key => $value)
                     {
-                        if(is_numeric($key)) unset($params[$key]);
+                        if(is_numeric($key))
+                            unset($params[$key]);
                     }
                 }
 

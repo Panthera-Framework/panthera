@@ -42,8 +42,11 @@ class routeFrontControllerSystem extends pageController
     {
         $match = $this -> panthera -> routing -> resolve();
         
+        // load index page if no page specified
         if (!$match and $_SERVER['REQUEST_URI'] == '/')
-            pa_redirect('index.html');
+            $match = array(
+                'target' => array('front' => 'index.php'),
+            );
 
         if ($match)
         {

@@ -25,6 +25,7 @@ $config = $panthera -> config -> getConfig(true);
 $config['ajax_url'][1] = $schema.$_SERVER['HTTP_HOST']. '/_ajax.php';
 $config['url'][1] = $schema.$_SERVER['HTTP_HOST']. '/';
 $panthera -> config -> updateConfigCache($config, true);
+$panthera -> routing -> setBasePath('/');
 
 // refresh PANTHERA_URL
 $panthera -> template -> push('PANTHERA_URL', $config['url'][1]);
