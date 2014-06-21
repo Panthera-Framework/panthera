@@ -138,7 +138,7 @@
             'section' => array('title' => localize('Section', 'conftool'), 'selected' => ($_GET['order'] == 'section'))
         ));
 
-        $overlay = $this->panthera->config->getOverlay();
+        $overlay = $this->panthera->config->getConfig(true);
         $array = array();
 
         foreach ($overlay as $key => $value)

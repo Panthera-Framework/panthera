@@ -285,6 +285,31 @@ class customAjaxControllerSystem extends pageController
         $html = str_replace("\n", '\\n', $cpage -> html);
         $html = str_replace("\r", '\\r', $html);
         $html = htmlspecialchars($html, ENT_QUOTES);
+        
+        $routeData = array(
+            array(
+                'title' => localize('Link with url_id', 'custompages'),
+                'routeName' => 'custom_url_id',
+                'params' => array('forceNative' => false, 'url_id' => $cpage -> url_id),
+            ),
+            
+            array(
+                'title' => localize('Link with unique', 'custompage'),
+                'routeName' => 'custom_unique',
+                'params' => array('forceNative' => false, 'unique' => $cpage -> unique),
+            ),
+            
+            array(
+                'title' => localize('Link with ID', 'custompage'),
+                'routeName' => 'custom_id',
+                'params' => array('forceNative' => false, 'id' => $cpage -> id),
+            ),
+            
+            array(
+                'title' => localize('Management', 'custompage'),
+                'link' => '?display=custom&cat=admin&action=editPage&uid=' .$cpage->unique,
+            ),
+        );
 
         $this -> panthera -> template -> push(array(
             'customPageObject' => $cpage,
@@ -292,6 +317,7 @@ class customAjaxControllerSystem extends pageController
             'tag_list' => @unserialize($cpage -> meta_tags),
             'action' => 'edit_page',
             'languages' => $this -> panthera -> locale -> getLocales(),
+            'routeData' => base64_encode(serialize($routeData)),
         ));
 
         if (meta::get('var', 'cp_gen_' .$cpage->unique))

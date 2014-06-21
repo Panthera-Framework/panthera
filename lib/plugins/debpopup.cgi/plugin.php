@@ -181,7 +181,7 @@ class debpopupPlugin extends pantheraPlugin
 
         /*$tables['pantheraconfig'] = array(
             'name' => 'Loaded config',
-            'items' => $this->iterateInputArray($panthera -> config -> getOverlay()),
+            'items' => $this->iterateInputArray($panthera -> config -> getConfig(true)),
             'header' => array(
                 'Key', 'Value'
             )

@@ -97,20 +97,36 @@ class menueditAjaxControllerSystem extends pageController
 
     public function quickAddFromPopupAction()
     {
-        if (substr($_GET['link'], 0, 5) == 'data:')
+        $link = null;
+        
+        if (isset($_GET['link']))
         {
-            $_GET['link'] = base64_decode(substr($_GET['link'], strpos($_GET['link'], 'base64,')+7, strlen($_GET['link'])));
+            $link = $_GET['link'];
+            
+            if (substr($link, 0, 5) == 'data:')
+                $link = base64_decode(substr($link, strpos($link, 'base64,')+7, strlen($link)));
         }
-
+        
+        $title = $_GET['title'];
+        
+        if (!$this -> panthera -> user -> isAdmin())
+            $title = htmlspecialchars($title);
+        
         $language = $this -> panthera -> locale -> getFromOverride($_GET['language']);
-        $categories = simpleMenu::getCategories('');
+        $categories = menuCategory::fetchTree();
+        
+        $routeData = null;
+        
+        if (isset($_GET['routeData']))
+            $routeData = unserialize(base64_decode($_GET['routeData']));
 
         $this -> panthera -> template -> push (array(
-            'link' => $_GET['link'],
-            'title' => $_GET['title'],
+            'link' => $link,
+            'title' => $title,
             'currentLanguage' => $language,
             'categories' => $categories,
-            'languages' => $this -> panthera -> locale -> getLocales()
+            'languages' => $this -> panthera -> locale -> getLocales(),
+            'routeData' => $routeData,
         ));
 
         $this -> panthera -> template -> display('menuedit_quickaddfrompopup.tpl');
@@ -771,13 +787,8 @@ class menueditAjaxControllerSystem extends pageController
 
         // show only categories user have access to
         arrayWalkRecursive($categories, function ($key, &$value, $depth, $this) {
-            if (is_object($value))
-            {
-                if (!$this->checkPermissions('can_update_menu_' .$value->type_name, TRUE))
-                {
-                    $value = null;
-                }
-            }
+            if (is_object($value) and !$this->checkPermissions('can_update_menu_' .$value->type_name, TRUE))
+                $value = null;
         });
 
         /*$c = array();

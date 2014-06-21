@@ -216,7 +216,7 @@ class fwconsole extends cliApp
             }
         } else {
             // copied from conftool_ajaxpage
-            $overlay = $this -> panthera -> config -> getOverlay();
+            $overlay = $this -> panthera -> config -> getConfig(true);
             $array = array();
 
             foreach ($overlay as $key => $value)

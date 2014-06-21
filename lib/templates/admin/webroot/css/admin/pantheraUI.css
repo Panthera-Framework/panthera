@@ -1397,3 +1397,19 @@ ul.dropdown li:hover > a.dir {
 .tableTitleHeader {
     background-color: #404c5a;
 }
+
+code {
+	color: #C2C2C2; 
+	margin-top: 5px; 
+	margin-bottom: 35px;
+}
+
+.instructionBox {
+	margin-left: 100px;
+	margin-right: 100px;
+	color: white;
+}
+
+.instructionBoxDescription {
+	margin-left: 5px;
+}

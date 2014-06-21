@@ -858,37 +858,32 @@ class pantheraConfig
       * @author Damian Kęska
       */
 
-    public function getConfig()
+    public function getConfig($overlay=False)
     {
-        return $this->config;
+        if ($overlay)
+            return $this -> overlay;
+        
+        return $this -> config;
     }
 
     /**
-      * Update in-memory configuration
-      *
-      * @param array $array
-      * @return void
-      * @author Damian Kęska
-      */
+     * Update in-memory configuration
+     *
+     * @param array $array 
+     * @param bool $overlay Modify overlay or just config cache?
+     * @return void
+     * @author Damian Kęska
+     */
 
-    public function updateConfigCache($array)
+    public function updateConfigCache($array, $overlay=False)
     {
         if (is_array($array))
         {
-            $this->config = $array;
+            if ($overlay)
+                $this -> overlay = $array;
+            else
+                $this->config = $array;
         }
-    }
-
-    /**
-      * Get all configuration variables from overlay in database
-      *
-      * @return array
-      * @author Damian Kęska
-      */
-
-    public function getOverlay()
-    {
-        return $this->overlay;
     }
 }
 

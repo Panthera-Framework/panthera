@@ -41,6 +41,9 @@ class routeFrontControllerSystem extends pageController
     public function display()
     {
         $match = $this -> panthera -> routing -> resolve();
+        
+        if (!$match and $_SERVER['REQUEST_URI'] == '/')
+            pa_redirect('index.html');
 
         if ($match)
         {
@@ -106,6 +109,14 @@ class routeFrontControllerSystem extends pageController
         pantheraCore::raiseError('notfound');
     }
 }
+
+$webServerFalse = False;
+
+if (php_sapi_name() == 'cli-server') 
+    include getContentDir('modules/phpWebserver.php');
+
+if ($webServerFalse)
+    return False;
 
 // this code will run this controller only if this file is executed directly, not included
 pageController::runFrontController(__FILE__, 'routeFrontControllerSystem');

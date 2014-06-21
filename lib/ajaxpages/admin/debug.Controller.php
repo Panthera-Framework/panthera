@@ -363,7 +363,7 @@ class debugAjaxControllerSystem extends settingsAjaxControllerSystem
             'description' => localize('Lookup for all object\'s meta tags', 'debug'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/acl.search.png'
         );
-
+        
         /** Tools **/
 
         $defaults['Tools'] = array();
@@ -429,6 +429,13 @@ class debugAjaxControllerSystem extends settingsAjaxControllerSystem
             'name' => localize('Page rank checker', 'debug'),
             'description' => localize('Shows page rank of given url', 'debug'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/google.jpg'
+        );
+        
+        $defaults['Tools']['debuggingIntegration'] = array(
+            'link' => '?display=static-tpl&cat=admin&name=debuggingIntegration',
+            'name' => localize('Integration with external development tools', 'debug'),
+            'description' => localize('PHP Web Server, phpsh', 'debug'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/php.png'
         );
     }
 }

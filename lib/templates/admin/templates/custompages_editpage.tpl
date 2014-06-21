@@ -100,7 +100,7 @@ jQuery(document).ready(function($) {
             </ul>
         </div>
        
-        <input type="button" value="{function="localize('Add to menu', 'menuedit')"}" onclick="createPopup('_ajax.php?display=menuedit&cat=admin&popup=true&action=quickAddFromPopup&link={$custompage_url_id_address}&title={$custompage.title}&language={$custompage_language}');">
+        <input type="button" value="{function="localize('Add to menu', 'menuedit')"}" onclick="createPopup('_ajax.php?display=menuedit&cat=admin&popup=true&action=quickAddFromPopup&routeData={$routeData}&title={$custompage.title}&language={$custompage_language}');">
         <input type="submit" value="{function="localize('Save page', 'custompages')"}">
     </div>
 </div>

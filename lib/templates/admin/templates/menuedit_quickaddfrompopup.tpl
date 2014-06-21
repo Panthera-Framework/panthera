@@ -19,15 +19,31 @@
             </tfoot>
             <tbody>
                 <tr>
-                    <th>{function="localize('Title', 'menuedit')"}</th>
+                    <th>{function="localize('Title', 'menuedit')"}:</th>
                     <th><input type="text" name="item_title" value="{$title}" style="width: 99%;"></th>
                 </tr>
+                
+                {if="$routeData"}
                 <tr>
-                    <th>{function="localize('Link', 'menuedit')"}</th>
+                	<th>{function="localize('Link', 'menuedit')"}:</th>
+                	<th>
+                		<select name="route">
+                {loop="$routeData"}
+                	<option value="{$value|serialize|base64_encode}">{$value.title}</option>
+                {/loop}
+                		</select>
+                	</th>
+                </tr>
+                {else}
+                
+                <tr>
+                    <th>{function="localize('Link', 'menuedit')"}:</th>
                     <th><input type="text" name="item_link" value="{$link}" style="width: 99%;"></th>
                 </tr>
+                {/if}
+                
                 <tr>
-                    <th>{function="localize('Language', 'menuedit')"}</th>
+                    <th>{function="localize('Language', 'menuedit')"}:</th>
                     <th>
                         <select name="item_language">
                          {loop="$languages"}
@@ -38,7 +54,7 @@
                 </tr>
                 
                 <tr>
-                    <th>{function="localize('Category', 'menuedit')"}</th>
+                    <th>{function="localize('Category', 'menuedit')"}:</th>
                     <th>
                         <select name="cat_type">
                         {loop="$categories"}
@@ -49,22 +65,22 @@
                 </tr>
                 
                 <tr>
-                    <th>{function="localize('SEO friendly name', 'menuedit')"} <small>({function="localize('Optional', 'menuedit')"})</small></th>
+                    <th>{function="localize('SEO friendly name', 'menuedit')"} <small>({function="localize('Optional', 'menuedit')"})</small>:</th>
                     <th><input type="text" name="item_url_id" style="width: 99%;"></th>
                 </tr>
                 
                 <tr>
-                    <th>{function="localize('Tooltip', 'menuedit')"} <small>({function="localize('Optional', 'menuedit')"})</small></th>
+                    <th>{function="localize('Tooltip', 'menuedit')"} <small>({function="localize('Optional', 'menuedit')"})</small>:</th>
                     <th><input type="text" name="item_tooltip" style="width: 99%;"></th>
                 </tr>
                 
                 <tr>
-                    <th>{function="localize('Icon', 'menuedit')"} <small>({function="localize('Optional', 'menuedit')"})</small></th>
+                    <th>{function="localize('Icon', 'menuedit')"} <small>({function="localize('Optional', 'menuedit')"})</small>:</th>
                     <th><input type="text" name="item_icon" style="width: 99%;"></th>
                 </tr>
                 
                 <tr>
-                    <th>{function="localize('Attributes', 'menuedit')"} <small>({function="localize('Optional', 'menuedit')"})</small></th>
+                    <th>{function="localize('Attributes', 'menuedit')"} <small>({function="localize('Optional', 'menuedit')"})</small>:</th>
                     <th><input type="text" name="item_attributes" style="width: 99%;"></th>
                 </tr>
             </tbody>

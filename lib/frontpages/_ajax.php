@@ -11,7 +11,7 @@
 require_once 'content/app.php';
 
 // front controllers utils
-include PANTHERA_DIR. '/pageController.class.php';
+include_once PANTHERA_DIR. '/pageController.class.php';
 
 $cat = '';
 
@@ -21,9 +21,7 @@ if (isset($_GET['cat']))
     $cat = str_replace('/', '', str_replace('.', '', $_GET['cat']));
 
     if (!getContentDir('ajaxpages/' .$cat))
-    {
         $cat = '';
-    }
 
     $cat .= '/';
 }
