@@ -11,6 +11,7 @@ lib/share/vendor
 lib/share/mobiledetectlib
 lib/share/php-markdown
 lib/share/mpdf
+lib/share/minify
 
 example-app/css
 example-app/images
