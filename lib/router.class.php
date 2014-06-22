@@ -54,6 +54,7 @@ class routing {
     public function getCache()
     {
         $data = null;
+        
         if ($this->cacheType == 'varcache' and $this -> panthera -> varCache)
         {
             $this -> panthera -> logging -> output('Trying varCache:routing.cache', 'routing');
@@ -78,7 +79,7 @@ class routing {
             $this -> routes = $data['routes'];
             $this -> compiledRegexes = $data['compiledRegexes'];
 
-            if (!is_file(SITE_DIR. '/content/tmp/routing.cache.php') or ($this->cacheType == 'varcache' and $this -> panthera -> varCache))
+            if (!is_file(SITE_DIR. '/content/tmp/routing.cache.php') or ($this->cacheType == 'varcache' and $this -> panthera -> varCache and !$this -> panthera -> varCache -> exists('routing.cache')))
                 $this -> saveCache();
         }
 

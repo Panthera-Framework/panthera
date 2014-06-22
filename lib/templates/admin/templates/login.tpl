@@ -10,6 +10,12 @@
     	<script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery-1.10.0.min.js"></script>
         <script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery-migrate-1.2.1.min.js"></script>
     	<script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery.dropdown.js"></script>
+    	
+    	<style>
+    	html {
+    		color: white;
+    	}
+    	</style>
     </head>
 
  <body class="login">

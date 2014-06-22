@@ -425,9 +425,7 @@ class crontab extends pantheraFetchDB
         $job = new crontab('jobname', $jobname);
 
         if ($job -> exists())
-        {
             throw new Exception('Job "' .$jobname. '" already exists', 812);
-        }
 
         unset($job);
 

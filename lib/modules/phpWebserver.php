@@ -10,10 +10,14 @@
  */
  
 $url = parse_url($_SERVER['REQUEST_URI']);
-$file = pathinfo($url['path']);
 
-if (in_array($file['extension'], array('png', 'jpg', 'jpeg', 'gif', 'css', 'js', 'php')))
-    $webServerFalse = true;
+if (isset($url['path']))
+{
+    $file = pathinfo($url['path']);
+    
+    if (in_array($file['extension'], array('png', 'jpg', 'jpeg', 'gif', 'css', 'js', 'php')))
+        $webServerFalse = true;
+}
 
 $schema = 'http://';
 

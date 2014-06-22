@@ -57,6 +57,9 @@ class _crontabControllerSystem extends pageController
 
         // clean up files var cache
         try {crontab::createJob('files_varcache', array('cronjobs', 'cleanupFilesvarCache'), '', '*/45'); } catch (Exception $e) {}
+        
+        // minfy HTML code
+        try {crontab::createJob('minify_all', array('minifyJob', 'minifyAll'), '', '0', '22', '*/1'); } catch (Exception $e) {}
     }
 
     /**
