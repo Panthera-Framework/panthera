@@ -315,6 +315,7 @@ function removeUser(id)
             </tfoot>
             
             <tbody>
+              {if="$users_list"}
               {loop="$users_list"}
                  <tr id="user_{$value.login}"}>
                     <td style="padding-left: 15px; padding-right: 15px;"><img src="{$value.avatar}" style="max-height: 30px; max-width: 23px;"></td>
@@ -328,6 +329,11 @@ function removeUser(id)
                     </td>
                  </tr>
               {/loop}
+              {else}
+              <tr id="noUsersOnList">
+                  <td colspan="5">{function="localize('No users found matching current query', 'users')"}</td>
+              </tr>
+              {/if}
             </tbody>
        </table>
        

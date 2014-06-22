@@ -585,7 +585,6 @@ class usersAjaxControllerCore extends pageController
         $sBar -> setQuery($_GET['query']);
         $sBar -> setAddress('?display=users&cat=admin');
         $sBar -> navigate(True);
-        $sBar -> addIcon($this -> panthera -> template -> getStockIcon('permissions'), '#', '?display=acl&cat=admin&popup=true&name=can_see_users_table', localize('Manage permissions'));
         $sBar -> addSetting('order', localize('Order by', 'search'), 'select', array(
             'id' => array('title' => 'id', 'selected' => ($_GET['order'] == 'id')),
             'login' => array('title' => localize('Login', 'users'), 'selected' => ($_GET['order'] == 'login')),

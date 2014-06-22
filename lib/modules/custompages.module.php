@@ -123,7 +123,7 @@ class customPage extends pantheraFetchDB
         
         // correct user input
         $unique = seoUrl($unique);
-        $urlId = seUrl($urlId);
+        $urlId = seoUrl($urlId);
         
         $language = pantheraLocale::getFromOverride($language);
         
