@@ -474,13 +474,14 @@ class SQLStructure
         {
             foreach ($diff['diff']['columns'] as $column => $attr)
             {
-                //$attr = array_merge($attr, $diff['a']['columns'][$column], $diff['b']['columns'][$column]);
-                //var_dump($attr);
+                $attr = array_merge($attr, $diff['a']['columns'][$column], $diff['b']['columns'][$column]);
                 
                 if (substr($column, 0, 7) == '__meta_')
                     continue;
                 
+                $currentDiffs = 0;
                 $operation = "MODIFY";
+                $columnPatch = '';
 
                 // if column was created
                 if (isset($diff['diff']['columns']['__meta_'.$column]) and $diff['diff']['columns']['__meta_'.$column] == 'created')
@@ -488,29 +489,70 @@ class SQLStructure
                 elseif (isset($diff['diff']['columns']['__meta_'.$column]) and $diff['diff']['columns']['__meta_'.$column] == 'removed')
                     $operation = "DROP";
 
-                $patch .= "ALTER TABLE `" .$diff['tableName']. "` ".$operation." `".$column."`";
+                $columnPatch .= "ALTER TABLE `" .$diff['tableName']. "` ".$operation." `".$column."`";
 
                 // DROP operation
                 if ($operation == "DROP")
                 {
-                    $patch .= ";\n";
+                    $columnPatch .= ";\n";
                     continue;
                 }
-
+                
                 // MODIFY and ADD operations
-                $patch .= " ".$attr['type'];
+                $columnPatch .= " ".$attr['type'];
                 
                 if (intval($attr['length']))
-                    $patch .= "(".$attr['length'].")";
+                    $columnPatch .= "(".$attr['length'].")";
+                
+                if (intval($attr['length']) !== intval($diff['a']['columns'][$column]['length']))
+                    $currentDiffs++;
+                
+                if ($attr['null'] !== $diff['a']['columns'][$column]['null'])
+                {
+                    if (!$attr['null']) {$columnPatch .= " NOT NULL"; } else { $columnPatch .= " NULL";}
+                    $currentDiffs++;
+                }
+                   
+                if ($attr['default'] !== $diff['a']['columns'][$column]['default'])
+                {
+                    if ($attr['default'] !== null) {$columnPatch .= " DEFAULT \"".$attr['default']."\"";}
+                    $currentDiffs++;
+                }
+   
+                if ($attr['autoIncrement'] !== $diff['a']['columns'][$column]['autoIncrement'])
+                {
+                    if ($attr['autoIncrement']) $columnPatch .= " AUTO_INCREMENT";
+                    $currentDiffs++;
+                }
+                
+                if ($attr['primaryKey'] !== $diff['a']['columns'][$column]['primaryKey'])
+                {
+                    if ($attr['primaryKey']) $columnPatch .= " PRIMARY KEY";
+                    $currentDiffs++;
+                }
 
-                if (!$attr['null']) {$patch .= " NOT NULL"; } else { $patch .= " NULL";}
-                if ($attr['default']) $patch .= " DEFAULT \"".$attr['default']."\"";
-                if ($attr['autoIncrement']) $patch .= " AUTO_INCREMENT";
-                if ($attr['primaryKey']) $patch .= " PRIMARY KEY";
-                if ($attr['uniqueKey']) $patch .= " UNIQUE KEY";
-                if ($attr['foreignKey']) $patch .= " FOREIGN KEY";
-                if ($attr['onUpdate']) { if($attr['onUpdate'] === 8) { $attr['onUpdate'] = 'CURRENT_TIMESTAMP'; }  $patch .= " ON UPDATE ".$attr['onUpdate']; }
-                $patch .= ";\n";
+                if ($attr['uniqueKey'] !== $diff['a']['columns'][$column]['uniqueKey'])
+                {
+                    if ($attr['uniqueKey']) $columnPatch .= " UNIQUE KEY";
+                    $currentDiffs++;
+                }
+                
+                if ($attr['foreignKey'] !== $diff['a']['columns'][$column]['foreignKey'])
+                {
+                    if ($attr['foreignKey']) $columnPatch .= " FOREIGN KEY";
+                    $currentDiffs++;
+                }
+                
+                if ($attr['onUpdate'] !== $diff['a']['columns'][$column]['onUpdate'])
+                {
+                    if ($attr['onUpdate']) { if($attr['onUpdate'] === 8) { $attr['onUpdate'] = 'CURRENT_TIMESTAMP'; }  $columnPatch .= " ON UPDATE ".$attr['onUpdate']; }
+                    $currentDiffs++;
+                }
+
+                $columnPatch .= ";\n";
+                
+                if ($currentDiffs)
+                    $patch .= $columnPatch;
             }
         }
 
