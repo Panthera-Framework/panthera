@@ -2,10 +2,10 @@
 /**
   * Simple menu module allows generating lists of menus, storing them in databases
   *
-  * @package Panthera\modules\core\simplemenu
+  * @package Panthera\core\modules\simplemenu
   * @author Damian Kęska
   * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
+  * @license LGPLv3
   */
 
 if (!defined('IN_PANTHERA'))
@@ -14,7 +14,7 @@ if (!defined('IN_PANTHERA'))
 /**
   * Simple menu module allows generating lists of menus, storing them in databases
   *
-  * @package Panthera\modules\core\simplemenu
+  * @package Panthera\core\modules\simplemenu
   * @author Damian Kęska
   * @author Mateusz Warzyński
   */
@@ -36,9 +36,7 @@ class simpleMenu extends pantheraClass
         parent::__construct();
 
         if ($category)
-        {
             $this -> loadFromDB($category);
-        }
 
         // configure caching
         if ($this -> panthera->cacheType('cache') == 'memory' and $this -> panthera->db->cache > 0)
@@ -236,14 +234,13 @@ class simpleMenu extends pantheraClass
             $language = 'all';
 
         if (!$panthera -> locale -> exists($language) and $language != 'all' and $language)
-        {
             throw new Exception('Cannot create item in unknown language', 1339);
-        }
 
         if ($routeData and !is_array($routeData))
-        {
             throw new Exception('Invalid route data: non empty but not an array', 1340);
-        }
+        
+        if (is_array($routeGET))
+            parse_str($routeGET, $routeGET);
 
         $SQL = $panthera -> db -> insert('menus', array(
             'type' => $type,
@@ -257,7 +254,7 @@ class simpleMenu extends pantheraClass
             'tooltip' => $tooltip,
             'route' => $route,
             'routedata' => serialize($routeData),
-            'routeget' => serialize($routeGET),
+            'routeget' => $routeGET,
             'enabled' => (bool)$enabled,
         ));
 
@@ -265,7 +262,7 @@ class simpleMenu extends pantheraClass
         if ($panthera->cache)
             $panthera->cache->remove('menu.'.$type);
 
-        return (bool)$SQL->rowCount();
+        return $SQL;
     }
 
     /**
@@ -342,12 +339,12 @@ class simpleMenu extends pantheraClass
 }
 
 /**
-  * Simple menu category class
-  *
-  * @package Panthera\modules\core\simplemenu
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  */
+ * Simple menu category class
+ *
+ * @package Panthera\modules\core\simplemenu
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
 
 class menuCategory extends pantheraFetchDB
 {
@@ -361,12 +358,12 @@ class menuCategory extends pantheraFetchDB
 }
 
 /**
-  * Simple menu item class
-  *
-  * @package Panthera\modules\core\simplemenu
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  */
+ * Simple menu item class
+ *
+ * @package Panthera\modules\core\simplemenu
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
 
 class menuItem extends pantheraFetchDB
 {

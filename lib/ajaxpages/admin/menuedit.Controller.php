@@ -112,14 +112,15 @@ class menueditAjaxControllerSystem extends pageController
         if (!$this -> panthera -> user -> isAdmin())
             $title = htmlspecialchars($title);
         
+        $route['example'] = $route['link'];
         $language = $this -> panthera -> locale -> getFromOverride($_GET['language']);
-        $categories = menuCategory::fetchTree();
+        $categories = $this -> categoriesSelectBox();
         
         $routeData = null;
         
         if (isset($_GET['routeData']))
             $routeData = unserialize(base64_decode($_GET['routeData']));
-
+        
         $this -> panthera -> template -> push (array(
             'link' => $link,
             'title' => $title,
@@ -271,14 +272,54 @@ class menueditAjaxControllerSystem extends pageController
             $url_id = seoUrl(strtolower(filterInput($_POST['item_title'], 'quotehtml')));
         else
             $url_id = seoUrl($_POST['item_url_id']);
-
-
+        
         // filter all variables to avoid problems with HTML & JS injection and/or bugs with text inputs
         $title = filterInput($_POST['item_title'], 'quotehtml');
-        $link = filterInput($_POST['item_link'], 'quotehtml,quotes');
-        $attributes = filterInput($_POST['item_attributes'], 'quotehtml');
+        $attributes = filterInput($_POST['item_attributes'], 'routequotehtml');
         $tooltip = filterInput($_POST['item_tooltip'], 'quotehtml');
         $icon = filterInput($_POST['item_icon'], 'quotehtml');
+        $enabled = False;
+        
+        if (isset($_POST['item_link']))
+            $link = filterInput($_POST['item_link'], 'quotehtml,quotes');
+        
+        $routeName = '';
+        $routeParams = '';
+        $routeGET = '';
+
+        // route data encoded in base64 (eg. menuedit popup)
+        if (isset($_POST['routeEncoded']))
+        {
+            $route = unserialize(base64_decode($_POST['routeEncoded']));
+            
+            if (!$route)
+            {
+                ajax_exit(array(
+                    'status' => 'failed',
+                    'message' => localize('Please select a valid route', 'menuedit'),
+                ));
+            }
+            
+            $link = '/';
+            $routeName = $route['routeName'];
+            
+            if (isset($route['params']))
+                $routeParams = $route['params'];
+            
+            if (isset($route['get']))
+                $routeGET = $route['get'];
+            
+            if (isset($route['link']))
+                $link = $route['link'];
+        }
+        
+        if (!$link and !$routeName)
+        {
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => localize('Please specify a valid URL address', 'menuedit'),
+            ));
+        }
 
 
         if (!array_key_exists($_POST['item_language'], $this -> panthera -> locale -> getLocales()))
@@ -289,12 +330,11 @@ class menueditAjaxControllerSystem extends pageController
 
         $language = $this -> panthera -> locale -> getActive();
 
-        simpleMenu::createItem($_POST['cat_type'], $title, $attributes, $link, $language, $url_id, $order, $icon, $tooltip);
+        simpleMenu::createItem($_POST['cat_type'], $title, $attributes, $link, $language, $url_id, $order, $icon, $tooltip, $routeName, $routeParams, $routeGET, $enabled);
         simpleMenu::updateItemsCount($_POST['cat_type']);
 
         ajax_exit(array(
             'status' => 'success',
-            'message' => localize('Item has been successfully added', 'menuedit'),
         ));
     }
 
@@ -436,9 +476,7 @@ class menueditAjaxControllerSystem extends pageController
             $str = '';
 
             if (isset($first))
-            {
                 $depth = 0;
-            }
 
             if ($lastID)
             {
@@ -449,17 +487,13 @@ class menueditAjaxControllerSystem extends pageController
             $depth++;
 
             if ($depth > 1)
-            {
                 $str = str_repeat('--', $depth). ' ';
-            }
 
             if ($this->checkPermissions('can_update_menu_' .$value['item']->type_name, TRUE))
                 $result[$value['item']->type_name] = $str.$value['item'] -> title;
 
             if ($value['subcategories'])
-            {
                 $result = $this -> categoriesSelectBox($value['subcategories'], $depth, $result, $value['item']);
-            }
 
             $lastID = $value['item'];
         }
@@ -497,9 +531,7 @@ class menueditAjaxControllerSystem extends pageController
         }
 
         foreach ($routes as $key => &$value)
-        {
             $value = null;
-        }
 
         ajax_exit(array(
             'status' => 'success',
@@ -786,24 +818,10 @@ class menueditAjaxControllerSystem extends pageController
         $categories = menuCategory::fetchTree();
 
         // show only categories user have access to
-        arrayWalkRecursive($categories, function ($key, &$value, $depth, $this) {
+        arrays::arrayWalkRecursive($categories, function ($key, &$value, $depth, $this) {
             if (is_object($value) and !$this->checkPermissions('can_update_menu_' .$value->type_name, TRUE))
                 $value = null;
         });
-
-        /*$c = array();
-
-        foreach ($categories as $key => $value)
-        {
-            $c[$value -> id] = array(
-                'name' => filterInput($value -> type_name, 'quotehtml'),
-                'title' => filterInput($value -> title, 'quotehtml'),
-                'description' => filterInput($value -> description, 'quotehtml'),
-                'elements' => intval($value -> elements),
-                'id' => $value -> id,
-                'tooltip' => htmlspecialchars($value -> tooltip),
-            );
-        }*/
 
         $this -> panthera -> template -> push(array(
             'menu_categories' => $categories,

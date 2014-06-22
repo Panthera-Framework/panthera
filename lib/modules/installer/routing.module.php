@@ -32,7 +32,7 @@ class routingInstallerControllerSystem extends installerController
         $this -> panthera -> routing -> map('GET|POST', 'contact', array('front' => 'index.php', 'GET' => array('display' => 'contact')), 'contact');
         $this -> panthera -> routing -> map('GET|POST', 'pu[n:forceNative]?/[*:url_id].html', array('front' => 'index.php', 'GET' => array('display' => 'custom')), 'custom_url_id');
         $this -> panthera -> routing -> map('GET|POST', 'pi[n:forceNative]?/[i:id].html', array('front' => 'index.php', 'GET' => array('display' => 'custom')), 'custom_id');
-        $this -> panthera -> routing -> map('GET|POST', 'pq[n:forceNative]?/,[i:unique].html', array('front' => 'index.php', 'GET' => array('display' => 'custom')), 'custom_unique');
+        $this -> panthera -> routing -> map('GET|POST', 'pq[n:forceNative]?/[*:unique].html', array('front' => 'index.php', 'GET' => array('display' => 'custom')), 'custom_unique');
         $this -> panthera -> routing -> map('GET|POST', 'facebook/#[*:back]', array('front' => 'index.php', 'GET' => array('display' => 'facebook.connect')), 'facebook_connect');
         $this -> panthera -> routing -> map('GET|POST', 'register', array('front' => 'index.php', 'GET' => array('display' => 'register')), 'register');
         $this -> panthera -> routing -> map('GET|POST', 'login', array('front' => 'pa-login.php'), 'login');

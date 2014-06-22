@@ -288,21 +288,21 @@ class customAjaxControllerSystem extends pageController
         
         $routeData = array(
             array(
-                'title' => localize('Link with url_id', 'custompages'),
+                'title' => localize('Link to page using url_id', 'custompages'),
                 'routeName' => 'custom_url_id',
-                'params' => array('forceNative' => false, 'url_id' => $cpage -> url_id),
+                'params' => array('forceNative' => 'n', 'url_id' => $cpage -> url_id),
             ),
             
             array(
-                'title' => localize('Link with unique', 'custompage'),
+                'title' => localize('Link to page using unique', 'custompage'),
                 'routeName' => 'custom_unique',
-                'params' => array('forceNative' => false, 'unique' => $cpage -> unique),
+                'params' => array('forceNative' => 'n', 'unique' => $cpage -> unique),
             ),
             
             array(
-                'title' => localize('Link with ID', 'custompage'),
+                'title' => localize('Link to page using ID', 'custompage'),
                 'routeName' => 'custom_id',
-                'params' => array('forceNative' => false, 'id' => $cpage -> id),
+                'params' => array('forceNative' => 'n', 'id' => $cpage -> id),
             ),
             
             array(
@@ -310,7 +310,15 @@ class customAjaxControllerSystem extends pageController
                 'link' => '?display=custom&cat=admin&action=editPage&uid=' .$cpage->unique,
             ),
         );
-
+        
+        foreach ($routeData as &$route)
+        {
+            $route['example'] = $route['link'];
+            
+            if (!isset($route['link']))
+                $route['example'] = $this -> panthera -> routing -> generate($route['routeName'], $route['params']);
+        }
+        
         $this -> panthera -> template -> push(array(
             'customPageObject' => $cpage,
             'custompage' => $cpage -> getData(),

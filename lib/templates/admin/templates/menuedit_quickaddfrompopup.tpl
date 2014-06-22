@@ -1,5 +1,5 @@
 
-    <form id="add_item_form" method="POST" action="?display=menuedit&cat=admin&action=add_item">
+    <form id="add_item_form" method="POST" action="?display=menuedit&cat=admin&action=createItem">
         <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
             <thead>
                  <tr>
@@ -27,7 +27,8 @@
                 <tr>
                 	<th>{function="localize('Link', 'menuedit')"}:</th>
                 	<th>
-                		<select name="route">
+                		<select name="routeEncoded">
+                		<option value=""></option>
                 {loop="$routeData"}
                 	<option value="{$value|serialize|base64_encode}">{$value.title}</option>
                 {/loop}
@@ -58,7 +59,7 @@
                     <th>
                         <select name="cat_type">
                         {loop="$categories"}
-                            <option value="{$value->type_name}">{$value->title}</option>
+                            <option value="{$key}">{$value}</option>
                         {/loop}
                         </select>
                     </th>
