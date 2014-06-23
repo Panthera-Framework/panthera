@@ -131,6 +131,8 @@ class pantheraAutoloader
                 $autoload[$realClassName] = ':alias:' .$className. ':alias:' .$moduleName;
         }
 
+        $autoload['panthera'] = ':alias:pantheraCore';
+
         //$panthera -> config -> setKey('autoloader', $autoload, 'array');
         $fp = fopen(SITE_DIR. '/content/tmp/autoloader.php', 'w');
         fwrite($fp, "<?php\n\$autoloader = " .var_export($autoload, true). ";\n");

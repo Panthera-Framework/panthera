@@ -325,7 +325,7 @@ class pantheraLogging
 
         $this->_output[] = array($msg, $type, $time, $this->timer, memory_get_usage($this->isRealMemUsage));
 
-        if ($dontResetTimer == False)
+        if (!$dontResetTimer)
             $this->timer = 0;
 
         return True;
@@ -887,7 +887,56 @@ class pantheraConfig
     }
 }
 
-// here will be our plugin system etc.
+/**
+ * Simple pantheraFetchDB proxy
+ * 
+ * This proxy class allows builiding object using syntax panthera::getModel('custompages') -> unique('my-page')
+ * 
+ * @package Panthera\core\system\kernel
+ * @author Damian Kęska
+ */
+
+class pantheraModelProxy
+{
+    protected $className = null;
+    
+    /**
+     * Set class name we will be redirecting to
+     * 
+     * @param string $className Class name
+     * @author Damian Kęska
+     */
+    
+    public function __construct($className)
+    {
+        $this -> className = $className;
+    }
+    
+    /**
+     * Construct a new object - new $className($name, $args[0])
+     * 
+     * @param string $name Column name to construct by
+     * @param array $args Function arguments
+     * @author Damian Kęska
+     * @return object
+     */
+    
+    public function __call($name, $args='')
+    {
+        if (!isset($args[0]))
+            throw new Exception('No data passed as first argument', 621);
+        
+        return new $this -> className($name, $args[0]);
+    }
+}
+
+/**
+ * Core class that manages everything
+ * 
+ * @package Panthera\core\system\kernel
+ * @author Damian Kęska
+ */
+
 class pantheraCore
 {
     protected $hooks = array();
@@ -1055,6 +1104,51 @@ class pantheraCore
     }
 
     /**
+     * Construct pantheraFetchDB model in Zend/Magento style
+     * 
+     * Example:
+     * <code>
+     * $crmContact = panthera::getModel('myCompany/myModule/crmContacts') -> mail('example@example.org');
+     * $customPage = panthera::getModel('cutompages') -> unique('my-unique-name');
+     * </code>
+     * 
+     * @param string $modelName Model class name or  path string eg. vendorName/pluginName/modelName or just custmopages if built-in Panthera
+     * @author Damian Kęska
+     * @return pantheraModelProxy
+     */
+
+    public static function getModel($modelName)
+    {
+        $panthera = panthera::getInstance();
+        $exp = explode('/', $modelName);
+        $model = $modelName;
+        $dir = null;
+        
+        if (isset($exp[2]))
+        {
+            // plugins/vendor/pluginName/model/name.class.php
+            // exp[0] - vendor name
+            // exp[1] - plugin name
+            $dir = getContentDir('plugins/' .$exp[0]. '/Model/' .$exp[1]. '.class.php');
+            $model = $exp[2];
+            
+        } elseif (isset($exp[1])) {
+            // exp[0] - plugin name
+            $dir = getContentDir('plugins/' .$exp[0]. '/Model/' .$exp[1]. '.class.php');
+            $model = $exp[1];
+        }
+        
+        if ($dir)
+            include $dir;
+        
+        if (!class_exists($model) or !is_subclass_of($model, 'pantheraFetchDB'))
+            throw new Exception('Cannot find model "' .$model. '" constructed by "' .$modelName. '"', 632);
+        
+        $panthera -> logging -> output('Found "' .$model. '" model', 'pantheraCore');
+        return new pantheraModelProxy($model);
+    }
+
+    /**
      * Get self instance
      *
      * @return pantheraCore object
@@ -1135,9 +1229,7 @@ class pantheraCore
     {
         // primary cache (variables cache)
         if ($dir = getContentDir('modules/cache/varCache_' .$varCacheType. '.module.php'))
-        {
             include_once $dir;
-        }
 
         if (class_exists('varCache_' .$varCacheType))
         {
@@ -1161,9 +1253,7 @@ class pantheraCore
                 $dir = null;
 
                 if ($dir = getContentDir('modules/cache/varCache_' .$cacheType. '.module.php'))
-                {
                     include_once $dir;
-                }
 
                 // load secondary cache
                 if (class_exists('varCache_' .$cacheType))
@@ -1198,7 +1288,7 @@ class pantheraCore
     {
         $module = strtolower($module);
 
-        if ($this->moduleImported($module) and $forceReload == False)
+        if ($this->moduleImported($module) and !$forceReload)
             return True;
 
         // load built-in phpQuery library
@@ -1214,11 +1304,9 @@ class pantheraCore
         $f = '';
 
         if (is_file(PANTHERA_DIR. '/modules/' .$module. '.module.php'))
-        {
             $f = PANTHERA_DIR. '/modules/' .$module. '.module.php';
-        } elseif (is_file(SITE_DIR. '/content/modules/' .$module. '.module.php')) {
+        elseif (is_file(SITE_DIR. '/content/modules/' .$module. '.module.php'))
             $f = SITE_DIR. '/content/modules/' .$module. '.module.php';
-        }
 
         if ($f)
         {
@@ -1235,9 +1323,7 @@ class pantheraCore
             $name = basename($module). 'Module';
 
             if (class_exists($name, true))
-            {
                 return new $name;
-            }
         }
 
         return isset($this->modules[$module]);
@@ -1718,7 +1804,7 @@ class pantheraCore
             if (!array_key_exists($key, $configPlugins))
                 continue;
             else { // disable plugins with False value in configuration file
-                if($configPlugins[$key] == False)
+                if(!$configPlugins[$key])
                     continue;
             }
 
@@ -1814,7 +1900,7 @@ class pantheraCore
     // in case when developer forgot to use finish() at the end of script
     function __destruct()
     {
-        if($this->_savedSession == False)
+        if(!$this->_savedSession)
             $this->finish();
     }
 
@@ -1874,12 +1960,9 @@ function __pantheraAutoloader($class)
                 $f = False;
 
                 if (substr($exp[1], 0, 5) == 'file:')
-                {
                     $f = pantheraUrl(substr($exp[1], 5, strlen($exp[1])), false, 'system');
-
-                } elseif (substr($exp[2], 0, 5) == 'file:') {
+                elseif (isset($exp[2]) and substr($exp[2], 0, 5) == 'file:')
                     $f = pantheraUrl(substr($exp[2], 5, strlen($exp[2])), false, 'system');
-                }
 
                 if ($f and is_file($f))
                     include_once $f;
@@ -2676,46 +2759,41 @@ function microtime_float($time='')
 /**
  * Calculate diffirences between dates and show in user friendly format
  *
- * @param int $timestamp_past
- * @param int $timestamp_future
+ * @param int $timestampPast
+ * @param int $timestampFuture
  * @param bool $years
  * @param bool $months
  * @param bool $days
  * @param bool $hours
  * @param bool $mins
  * @param bool $secs
- * @param bool $display_output
+ * @param bool $outputString
  * @package Panthera\core\system\kernel
  * @return string|array
  * @author Damian Kęska
  */
 
-function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $months = true, $days = true, $hours = true, $mins = true, $secs = true, $display_output = true)
+function date_calc_diff($timestampPast, $timestampFuture, $years = true, $months = true, $days = true, $hours = true, $minutes = true, $seconds = true, $outputString = true)
 {
     $panthera = pantheraCore::getInstance();
+    $array = array();
 
-    if (is_int($timestamp_past))
-    {
-        $timestamp_past = date($panthera -> dateFormat, $timestamp_past);
-    }
+    if (is_int($timestampPast))
+        $timestampPast = date($panthera -> dateFormat, $timestampPast);
 
-    if (is_int($timestamp_future))
-    {
-        $timestamp_future = date($panthera -> dateFormat, $timestamp_future);
-    }
+    if (is_int($timestampFuture))
+        $timestampFuture = date($panthera -> dateFormat, $timestampFuture);
 
     try {
-        $past = new DateTime($timestamp_past);
-        $future = new DateTime($timestamp_future);
+        $past = new DateTime($timestampPast);
+        $future = new DateTime($timestampFuture);
         $diff = $future->diff($past);
 
     } catch (Exception $e) {
-        if ($display_output == False)
-        {
+        if (!$outputString)
             return array();
-        } else {
-            return "";
-        }
+        
+        return "";
     }
 
     $timeFormats = array(
@@ -2726,62 +2804,18 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
         'minutes' => '%i',
         'seconds' => '%s'
     );
-
-    if ($years == True)
+    
+    foreach ($timeFormats as $name => $format)
     {
-        if ($diff->format('%y') > 0)
-        {
-            $array['years'] = $diff->format('%y');
-        }
+        $rDiff = $diff->format($format);
+        
+        if ($$name and $rDiff)
+            $array[$name] = $rDiff;
     }
-
-    if ($months == True)
-    {
-        if ($diff->format('%m') > 0)
-        {
-            $array['months'] = $diff->format('%m');
-        }
-    }
-
-    if ($days == True)
-    {
-        if ($diff->format('%a') > 0)
-        {
-            $array['days'] = $diff->format('%a');
-        }
-    }
-
-    if ($hours == True)
-    {
-        if ($diff->format('%H') > 0)
-        {
-            $array['hours'] = $diff->format('%H');
-        }
-    }
-
-    if ($mins == True)
-    {
-        if ($diff->format('%i') > 0)
-        {
-            $array['minutes'] = $diff->format('%i');
-        }
-    }
-
-    if ($secs == True)
-    {
-        if ($diff->format('%s') > 0)
-        {
-            $array['seconds'] = $diff->format('%s');
-        }
-    }
-
-
-
-    if (!$display_output)
-    {
+    
+    if (!$outputString)
         return $array;
-
-    } else {
+    else {
         $output = '';
         $maxRange = 2; // we accept only max X data details eg. year, month (2 elements) or hour, minute
         $range = 0;
@@ -2791,9 +2825,7 @@ function date_calc_diff($timestamp_past, $timestamp_future, $years = true, $mont
             $range++;
 
             if ($range > $maxRange)
-            {
                 break;
-            }
 
             $output .= $diff->format($timeFormats[$timeRange]). ' ' .localize($timeRange). ' ';
         }

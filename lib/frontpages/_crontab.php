@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Panthera crontab front controller
  *
@@ -12,7 +13,7 @@
 //define('SKIP_TEMPLATE', True);
 
 require_once 'content/app.php';
-include getContentDir('pageController.class.php');
+include_once getContentDir('pageController.class.php');
 
 @set_time_limit(0);
 

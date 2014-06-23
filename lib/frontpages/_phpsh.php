@@ -16,7 +16,7 @@
 
 # include app config and libs
 require_once 'content/app.php';
-include getContentDir('pageController.class.php');
+include_once getContentDir('pageController.class.php');
 
 if (PANTHERA_MODE == 'cgi')
     die('This controller is not available in CGI mode.');
