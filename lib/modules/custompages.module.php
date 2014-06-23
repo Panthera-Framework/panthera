@@ -113,7 +113,7 @@ class customPage extends pantheraFetchDB
         $allLanguages = False;
         
         if (!$urlId)
-            $urlId = $panthera -> db -> createUniqueData('custom_pages', 'unique', seoUrl($title));
+            $urlId = $panthera -> db -> createUniqueData('custom_pages', 'unique', Tools::seoUrl($title));
         
         if (!$unique)
             $unique = $urlId;
@@ -122,8 +122,8 @@ class customPage extends pantheraFetchDB
             $allLanguages = True;
         
         // correct user input
-        $unique = seoUrl($unique);
-        $urlId = seoUrl($urlId);
+        $unique = Tools::seoUrl($unique);
+        $urlId = Tools::seoUrl($urlId);
         
         $language = pantheraLocale::getFromOverride($language);
         

@@ -13,7 +13,7 @@
 
 {$depth=$depth+1}
 <tr id="category_{$value.item.id}">
-    <td>{if="$depth > 1"}{loop="forRange($depth)"}--{/loop}>&nbsp;&nbsp;{/if}
+    <td>{if="$depth > 1"}{loop="arrays::forRange($depth)"}--{/loop}>&nbsp;&nbsp;{/if}
         <a href="?display=menuedit&cat=admin&action=getCategory&category={$z.item->type_name}" class="ajax_link">{$z.item->title}</a></td>
     <td>
         <a href="?display=menuedit&cat=admin&action=getCategory&category={$z.item->type_name}" class="ajax_link">{$z.item->type_name}</a>

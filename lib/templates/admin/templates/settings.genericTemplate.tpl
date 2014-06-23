@@ -18,7 +18,7 @@
         });
         
         $('#languageSelection').change(function () {
-            navigateTo('?{function="getQueryString('GET', '', array('_', 'language'))"}&language='+$('#languageSelection').val());
+            navigateTo('?{function="Tools::getQueryString('GET', '', array('_', 'language'))"}&language='+$('#languageSelection').val());
         });
     });
     
@@ -30,7 +30,7 @@
 
 {include="ui.titlebar"}
 
-<form action="?{function="getQueryString('GET', '', '_')"}" method="POST" id="settingsFormSave">
+<form action="?{function="Tools::getQueryString('GET', '', '_')"}" method="POST" id="settingsFormSave">
 
 <div id="topContent">
     <div class="searchBarButtonArea">

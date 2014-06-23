@@ -9,7 +9,7 @@
 
 function initEditor()
 {
-    mceSetContent('recovery_mail_content', htmlspecialchars_decode("{function="stripNewLines(htmlspecialchars($variables['recovery_-_mail_-_content']['value'], ENT_QUOTES))"}"));
+    mceSetContent('recovery_mail_content', htmlspecialchars_decode("{function="Tools::stripNewLines(htmlspecialchars($variables['recovery_-_mail_-_content']['value'], ENT_QUOTES))"}"));
 }
 </script>
 
@@ -32,7 +32,7 @@ function initEditor()
         });
 
         $('#languageSelection').change(function () {
-            navigateTo('?{function="getQueryString('GET', '', array('_', 'language'))"}&language='+$('#languageSelection').val());
+            navigateTo('?{function="Tools::getQueryString('GET', '', array('_', 'language'))"}&language='+$('#languageSelection').val());
         });
     });
     
@@ -40,7 +40,7 @@ function initEditor()
 
 {include="ui.titlebar"}
 
-<form action="?{function="getQueryString('GET', '', '_')"}" method="POST" id="settingsFormSave">
+<form action="?{function="Tools::getQueryString('GET', '', '_')"}" method="POST" id="settingsFormSave">
 
 <div id="topContent">
     <div class="searchBarButtonArea">
@@ -93,7 +93,7 @@ function initEditor()
                     <td valign="top">{$variables['recovery_-_mail_-_content']['label']}:</td>
                     <td>
                         <b>{function="localize('Avaliable tags', 'passwordrecovery')"}:</b> {&#36;recovery_key}, {&#36;recovery_passwd}, {&#36;PANTHERA_URL}, {&#36;userName}, {&#36;userID}<br><br>
-                        <textarea name="recovery_-_mail_-_content" id="recovery_mail_content" style="width: 95%; height: 250px;">{$variables['recovery_-_mail_-_content']['value']|stripNewLines|htmlspecialchars}</textarea>
+                        <textarea name="recovery_-_mail_-_content" id="recovery_mail_content" style="width: 95%; height: 250px;">{$variables['recovery_-_mail_-_content']['value']|Tools::stripNewLines|htmlspecialchars}</textarea>
                     </td>
                 </tr>
             </tbody>

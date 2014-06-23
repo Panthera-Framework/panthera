@@ -637,7 +637,7 @@ class usersAjaxControllerCore extends pageController
         // uiPager
         $uiPager = new uiPager('users', $usersTotal, 'adminUsersList');
         $uiPager -> setActive($usersPage);
-        $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\');');
+        $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .Tools::getQueryString($_GET, 'page={$page}', '_'). '\');');
         $limit = $uiPager -> getPageLimit();
 
 

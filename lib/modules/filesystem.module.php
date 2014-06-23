@@ -38,9 +38,7 @@ class uploadCategory extends pantheraFetchDB
             $t = @unserialize($this->title);
 
             if ($t !== False)
-            {
                 return localize($t[0], $t[1]);
-            }
 
             return $this -> title;
         }
@@ -321,7 +319,7 @@ class pantheraUpload
             return False;
 
         if (!$name)
-            $name = seoUrl($title). '-' .substr(md5(time().rand(999,9999)), 0, 4);
+            $name = Tools::seoUrl($title). '-' .substr(md5(time().rand(999,9999)), 0, 4);
 
         return $panthera -> db -> insert('upload_categories', array(
             'name' => $name,

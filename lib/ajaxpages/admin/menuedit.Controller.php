@@ -165,9 +165,9 @@ class menueditAjaxControllerSystem extends pageController
 
 
         if (!$_POST['item_url_id'] or strlen($_POST['item_url_id']) < 3)
-            $url_id = seoUrl(strtolower(filterInput($_POST['item_title'], 'quotehtml')));
+            $url_id = Tools::seoUrl(strtolower(filterInput($_POST['item_title'], 'quotehtml')));
         else
-            $url_id = seoUrl($_POST['item_url_id']);
+            $url_id = Tools::seoUrl($_POST['item_url_id']);
 
         // change category if destination category exists
         if ($_POST['category'])
@@ -269,9 +269,9 @@ class menueditAjaxControllerSystem extends pageController
 
 
         if (!$_POST['item_url_id'] or strlen($_POST['item_url_id']) < 3)
-            $url_id = seoUrl(strtolower(filterInput($_POST['item_title'], 'quotehtml')));
+            $url_id = Tools::seoUrl(strtolower(filterInput($_POST['item_title'], 'quotehtml')));
         else
-            $url_id = seoUrl($_POST['item_url_id']);
+            $url_id = Tools::seoUrl($_POST['item_url_id']);
         
         // filter all variables to avoid problems with HTML & JS injection and/or bugs with text inputs
         $title = filterInput($_POST['item_title'], 'quotehtml');
@@ -393,7 +393,7 @@ class menueditAjaxControllerSystem extends pageController
         $type_name = filterInput($_POST['category_type_name'], 'quotehtml');
 
         if (!$type_name)
-            $type_name = seoUrl($title);
+            $type_name = Tools::seoUrl($title);
 
         // filter all variables to avoid problems with HTML & JS injection and/or bugs with text inputs
         $description = filterInput($_POST['category_description'], 'quotehtml');
@@ -746,7 +746,7 @@ class menueditAjaxControllerSystem extends pageController
         $category = new menuCategory('id', $_POST['category_id']);
         $this -> checkCategoryExists($category);
 
-        $_POST['category_type_name'] = seoUrl($_POST['category_type_name']);
+        $_POST['category_type_name'] = Tools::seoUrl($_POST['category_type_name']);
 
         // check required permissions: 1. Can edit current category 2. Can edit destination, 3. Can edit all categories
         $permissions = array(

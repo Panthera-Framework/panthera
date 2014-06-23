@@ -37,7 +37,7 @@ class uiPager extends pantheraClass
             'total' => $totalItems,
             'pageMax' => $maxOnPage,
             'maxLinks' => 6,
-            'linkTemplate' => getQueryString('GET', 'page={$page}', '_'),
+            'linkTemplate' => Tools::getQueryString('GET', 'page={$page}', '_'),
             'onclickTemplate' => False,
             'backBtn' => False,
             'nextBtn' => False,
@@ -75,7 +75,7 @@ class uiPager extends pantheraClass
 
         if (stripos($link, '{$queryString}') !== False)
         {
-            $link = str_ireplace('{$queryString}', getQueryString($_GET, 'page={$page}', '_'), $link);
+            $link = str_ireplace('{$queryString}', Tools::getQueryString($_GET, 'page={$page}', '_'), $link);
             $link = str_replace('%7B%24', '{$', str_replace('%7D', '}', $link));
         }
 
@@ -87,7 +87,7 @@ class uiPager extends pantheraClass
 
             if (stripos($onclick, '{$queryString}') !== False)
             {
-                $onclick = str_ireplace('{$queryString}', getQueryString($_GET, 'page={$page}', '_'), $onclick);
+                $onclick = str_ireplace('{$queryString}', Tools::getQueryString($_GET, 'page={$page}', '_'), $onclick);
                 $onclick = str_replace('%7B%24', '{$', str_replace('%7D', '}', $onclick));
             }
 

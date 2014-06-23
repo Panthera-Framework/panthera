@@ -82,14 +82,14 @@ function mergeChanges()
 	            
             	<tr class="diff diff_{function="getMetaValue($key, $diff.diff.columns)"}">
             		<td>{$key}</td>
-            		<td class="diff diff_{function="getMetaValue('type', $value)"}">{function="fallbackValue($value.type, $diff['b']['columns'][$key]['type'])"}</td>
-            		<td class="diff diff_{function="getMetaValue('length', $value)"}">{function="fallbackValue($value.length, $diff['b']['columns'][$key]['length'])"}</td>
-            		<td class="diff diff_{function="getMetaValue('default', $value)"}">{function="fallbackValue($value.default, $diff['b']['columns'][$key]['default'])"}</td>
-            		<td class="diff diff_{function="getMetaValue('null', $value)"}">{if="isset($value.nukk)"}{function="toString($value.null)"}{else}{function="toString($diff['b']['columns'][$key]['null'])"}{/if}</td>
-            		<td class="diff diff_{function="getMetaValue('autoIncrement', $value)"}">{if="isset($value.autoIncrement)"}{function="toString($value.autoIncrement)"}{else}{function="toString($diff['b']['columns'][$key]['autoIncrement'])"}{/if}</td>
-            		<td class="diff diff_{function="getMetaValue('primaryKey', $value)"}">{if="isset($value.primaryKey)"}{function="toString($value.primaryKey)"}{else}{function="toString($diff['b']['columns'][$key]['primaryKey'])"}{/if}</td>
-            		<td class="diff diff_{function="getMetaValue('uniqueKey', $value)"}">{if="isset($value.uniqueKey)"}{function="toString($value.uniqueKey)"}{else}{function="toString($diff['b']['columns'][$key]['uniqueKey'])"}{/if}</td>
-            		<td class="diff diff_{function="getMetaValue('foreignKey', $value)"}">{if="isset($value.foreignKey)"}{function="toString($value.foreignKey)"}{else}{function="toString($diff['b']['columns'][$key]['foreignKey'])"}{/if}</td>
+            		<td class="diff diff_{function="getMetaValue('type', $value)"}">{function="Tools::fallbackValue($value.type, $diff['b']['columns'][$key]['type'])"}</td>
+            		<td class="diff diff_{function="getMetaValue('length', $value)"}">{function="Tools::fallbackValue($value.length, $diff['b']['columns'][$key]['length'])"}</td>
+            		<td class="diff diff_{function="getMetaValue('default', $value)"}">{function="Tools::fallbackValue($value.default, $diff['b']['columns'][$key]['default'])"}</td>
+            		<td class="diff diff_{function="getMetaValue('null', $value)"}">{if="isset($value.nukk)"}{function="Tools::toString($value.null)"}{else}{function="Tools::toString($diff['b']['columns'][$key]['null'])"}{/if}</td>
+            		<td class="diff diff_{function="getMetaValue('autoIncrement', $value)"}">{if="isset($value.autoIncrement)"}{function="Tools::toString($value.autoIncrement)"}{else}{function="Tools::toString($diff['b']['columns'][$key]['autoIncrement'])"}{/if}</td>
+            		<td class="diff diff_{function="getMetaValue('primaryKey', $value)"}">{if="isset($value.primaryKey)"}{function="Tools::toString($value.primaryKey)"}{else}{function="Tools::toString($diff['b']['columns'][$key]['primaryKey'])"}{/if}</td>
+            		<td class="diff diff_{function="getMetaValue('uniqueKey', $value)"}">{if="isset($value.uniqueKey)"}{function="Tools::toString($value.uniqueKey)"}{else}{function="Tools::toString($diff['b']['columns'][$key]['uniqueKey'])"}{/if}</td>
+            		<td class="diff diff_{function="getMetaValue('foreignKey', $value)"}">{if="isset($value.foreignKey)"}{function="Tools::toString($value.foreignKey)"}{else}{function="Tools::toString($diff['b']['columns'][$key]['foreignKey'])"}{/if}</td>
             	</tr>
             {/loop}
         </tbody>

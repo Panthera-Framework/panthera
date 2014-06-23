@@ -65,7 +65,7 @@
 <!-- Create new gallery popup -->
 
 <div id="createGallery" style="display: none;">
-   <form action="?{function="getQueryString('GET', 'action=createCategory', '_')"}" method="POST" id="newGalleryForm">
+   <form action="?{function="Tools::getQueryString('GET', 'action=createCategory', '_')"}" method="POST" id="newGalleryForm">
     <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
         
         <thead>

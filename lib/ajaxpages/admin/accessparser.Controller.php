@@ -81,7 +81,7 @@ class accessparserAjaxControllerCore extends pageController
 
         $uiPager = new uiPager('accessParserLines', count($lines), 'accessParserLines', 100);
         $uiPager -> setActive($page);
-        $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString('GET', 'page={$page}', '_'). '\');');
+        $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .Tools::getQueryString('GET', 'page={$page}', '_'). '\');');
         $limit = $uiPager->getPageLimit();
 
         $results = array();

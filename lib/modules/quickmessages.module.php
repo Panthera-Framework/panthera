@@ -275,7 +275,7 @@ class quickCategory extends pantheraFetchDB
         // generate new category name if there is no providen any
         if (!$categoryName)
         {
-            $categoryName = substr(seoUrl($title), 0, 32);
+            $categoryName = substr(Tools::seoUrl($title), 0, 32);
         }
 
         // get current user id from session if not provided manually

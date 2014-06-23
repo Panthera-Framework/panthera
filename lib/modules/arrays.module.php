@@ -164,7 +164,7 @@ class arrays
     /**
      * Recursive array diff
      *
-     * @package Panthera\core\system\kernel
+     * @package Panthera\core\modules\arrays
      * @param array $aArray1
      * @param array $aArray2
      * @see http://stackoverflow.com/questions/3876435/recursive-array-diff
@@ -219,5 +219,68 @@ class arrays
         }
     
         return $aReturn;
+    }
+
+    /**
+     * Capture function stdout
+     *
+     * @param string|function $function
+     * @package Panthera\core\modules\arrays
+     * @author Damian Kęska
+     */
+    
+    public static function captureStdout($function, $a=null, $b=null, $c=null, $d=null, $e=null, $f=null)
+    {
+        $panthera = pantheraCore::getInstance();
+    
+        // capture old output if any
+        $before = $panthera -> outputControl -> get();
+        $handler = $panthera -> outputControl -> isEnabled();
+        $panthera -> outputControl -> clean();
+    
+        // start new buffering
+        $panthera -> outputControl -> startBuffering();
+    
+        // executing function
+        $return = $function($a, $b, $c, $d, $e, $f);
+        $contents = $panthera -> outputControl -> get();
+    
+        $panthera -> outputControl -> clean();
+        $panthera -> outputControl -> flushAndFinish();
+    
+        if ($handler === False)
+        {
+            $panthera -> outputControl -> flushAndFinish();
+        } else {
+            $panthera -> outputControl -> startBuffering($handler);
+            print($before);
+        }
+    
+        return array('return' => $return, 'output' => $contents);
+    }
+    
+    /**
+     * Create array of defined size, filled with null values (useful for creating for loop in RainTPL)
+     *
+     * @param int $range Count of iterations
+     * @package Panthera\core\modules\arrays
+     * @author Damian Kęska
+     */
+    
+    public static function forRange($range=0, $add=0, $zeroLength=0)
+    {
+        $arr = array();
+    
+        for ($i=0; $i<$range; $i++)
+        {
+            $t = $i+$add;
+    
+            if ($zeroLength and strlen($t) == $zeroLength and substr($t, 0, 1) !== '0')
+                $t = '0'.$t;
+    
+            $arr[$t] = null;
+        }
+    
+        return $arr;
     }
 }

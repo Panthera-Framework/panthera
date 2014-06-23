@@ -21,7 +21,7 @@ $(document).ready(function() {
 });
 </script>
 
-<form action="?{function="getQueryString('GET', 'action=new', 'action')"}&action=edit" method="POST" id="editRouteForm">
+<form action="?{function="Tools::getQueryString('GET', 'action=new', 'action')"}&action=edit" method="POST" id="editRouteForm">
          <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
              <thead>
                  <tr>
@@ -143,7 +143,7 @@ $(document).ready(function() {
          
 <script type="text/javascript">
       
-        var canonicalLink = '{function="getQueryString('GET', '', 'action')"}';
+        var canonicalLink = '{function="Tools::getQueryString('GET', '', 'action')"}';
       
         $(document).ready(function () {
 
@@ -157,7 +157,7 @@ $(document).ready(function() {
                 panthera.jsonPOST( { data: '#editRouteForm', success: function (response) {
         
                         if (response.status == "success") {
-                            navigateTo('?{function="getQueryString('GET', '', 'action')"}');
+                            navigateTo('?{function="Tools::getQueryString('GET', '', 'action')"}');
                         }
                     }
                 });

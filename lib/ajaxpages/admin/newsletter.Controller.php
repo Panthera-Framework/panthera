@@ -95,7 +95,7 @@ class newsletterAjaxControllerSystem extends pageController
 		// pager
 		$uiPager = new uiPager('adminNewsletterCategories', $count, 'adminNewsletterCategories');
 		$uiPager -> setActive($page);
-		$uiPager -> setLinkTemplates('#', 'navigateTo(\'?'.getQueryString($_GET, 'page={$page}', '_').'\');');
+		$uiPager -> setLinkTemplates('#', 'navigateTo(\'?'.Tools::getQueryString($_GET, 'page={$page}', '_').'\');');
 		$limit = $uiPager -> getPageLimit();
 		$newsletters = newsletterManagement::search('', $limit[1], $limit[0]);
 

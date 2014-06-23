@@ -602,9 +602,7 @@ class pantheraTemplate extends pantheraClass
         $siteTitle = pantheraLocale::selectStringFromArray($this->panthera->config->getKey('site_title'));
 
         if (!$siteTitle)
-        {
             $siteTitle = 'Panthera';
-        }
 
         $this->push('siteTitle', $siteTitle);
 
@@ -632,16 +630,16 @@ class pantheraTemplate extends pantheraClass
                 {
                     foreach ($this->attributes['links'] as $key => $value)
                     {
-                        $link = '<link href="' .filterMetaTag($value['href']). '"';
+                        $link = '<link href="' .Tools::filterMetaTag($value['href']). '"';
 
                         if ($value['title'] != '')
-                            $link .= ' title="' .filterMetaTag($value['title']). '"';
+                            $link .= ' title="' .Tools::filterMetaTag($value['title']). '"';
 
                         if ($value['rel'] != '')
-                            $link .= ' rel="' .filterMetaTag($value['rel']). '"';
+                            $link .= ' rel="' .Tools::filterMetaTag($value['rel']). '"';
 
                         if ($value['type'] != '')
-                            $link .= ' type="' .filterMetaTag($value['type']). '"';
+                            $link .= ' type="' .Tools::filterMetaTag($value['type']). '"';
 
                         $link .= '>';
 
@@ -659,7 +657,7 @@ class pantheraTemplate extends pantheraClass
                     $script = '<script type="text/javascript"';
 
                     if ($value['src'] != '')
-                        $script .= ' src="' .filterMetaTag($value['src']). '"';
+                        $script .= ' src="' .Tools::filterMetaTag($value['src']). '"';
 
                     $script .= '>' .$value['content']. '</script>';
 
@@ -679,7 +677,7 @@ class pantheraTemplate extends pantheraClass
                     else
                         $exp[1] = 'property';
 
-                    $header .= '<meta ' .$exp[1]. '="' .filterMetaTag($exp[0]). '" content="' .filterMetaTag($value). '">';
+                    $header .= '<meta ' .$exp[1]. '="' .Tools::filterMetaTag($exp[0]). '" content="' .Tools::filterMetaTag($value). '">';
                     $header .= "\n";
                 }
             }
@@ -689,7 +687,7 @@ class pantheraTemplate extends pantheraClass
                 // put all keywords
                 if (count($this->attributes['keywords']) > 0)
                 {
-                    $header .= '<meta name="keywords" content="' .parseMetaTags($this->attributes['keywords']). '">';
+                    $header .= '<meta name="keywords" content="' .Tools::parseMetaTags($this->attributes['keywords']). '">';
                     $header .= "\n";
                 }
             }

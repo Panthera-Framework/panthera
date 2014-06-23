@@ -51,7 +51,7 @@ function addGroup(acl)
 
 function selectPermission()
 {
-    panthera.popup.navigate('?{function="getQueryString('GET', 'current=$target', '_')"}'.replace('%24target', $('#permissionSelect').val()));
+    panthera.popup.navigate('?{function="Tools::getQueryString('GET', 'current=$target', '_')"}'.replace('%24target', $('#permissionSelect').val()));
 }
 
 $(document).ready(function () {

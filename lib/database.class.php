@@ -950,9 +950,7 @@ class pantheraDB extends pantheraClass
             $i++;
 
             if ($i > 1)
-            {
-                $unique = $seoUrl.$i;
-            }
+                $unique = $Tools::seoUrl.$i;
 
             if ($i > 10)
                 $unique = hash('md4', rand(9999, 999999));

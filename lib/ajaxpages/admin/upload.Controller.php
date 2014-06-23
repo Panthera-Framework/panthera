@@ -161,7 +161,7 @@ class uploadAjaxControllerCore extends pageController
         if (!strlen($_POST['mime']))
             $_POST['mime'] = 'all';
 
-        $name = seoUrl($_POST['title']). '-' .substr(md5(time().rand(999,9999)), 0, 4);
+        $name = Tools::seoUrl($_POST['title']). '-' .substr(md5(time().rand(999,9999)), 0, 4);
 
         // create upload directory and send success if created
         if (pantheraUpload::createUploadCategory($name, $this->panthera->user->id, $_POST['mime'], $_POST['title'], filesystem::sizeToBytes($_POST['maxfilesize'])))
@@ -560,7 +560,7 @@ class uploadAjaxControllerCore extends pageController
         // initialize searchBar
         $searchBar = new uiSearchbar('uiTop');
         $searchBar -> setQuery($_GET['query']);
-        $searchBar -> setAddress('?' .getQueryString('GET', '', array('_', 'page', 'query')));
+        $searchBar -> setAddress('?' .Tools::getQueryString('GET', '', array('_', 'page', 'query')));
         $searchBar -> navigate(True);
         $searchBar -> addIcon('{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_upload,can_add_files', localize('Manage permissions'));
 

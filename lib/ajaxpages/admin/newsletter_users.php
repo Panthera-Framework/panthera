@@ -135,7 +135,7 @@ if ($page < 0)
 // get records only for current page
 $uiPager = new uiPager('adminNewsletter', $usersCount, 'adminNewsletter');
 $uiPager -> setActive($page);
-$uiPager -> setLinkTemplates('#', 'createPopup(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\', 1024);');
+$uiPager -> setLinkTemplates('#', 'createPopup(\'?' .Tools::getQueryString($_GET, 'page={$page}', '_'). '\', 1024);');
 $limit = $uiPager -> getPageLimit();
 
 // get all avaliable newsletter types

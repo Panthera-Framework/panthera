@@ -119,7 +119,7 @@ class customAjaxControllerSystem extends pageController
         $cpage -> mod_time = DB_TIME_NOW;
         $cpage -> html = $_POST['page_content_custom'];
 
-        //$cpage -> url_id = seoUrl($cpage -> title);
+        //$cpage -> url_id = Tools::seoUrl($cpage -> title);
 
         if ($cpage -> url_id != $_POST['url_id'] and $_POST['url_id'] != '')
         {
@@ -131,7 +131,7 @@ class customAjaxControllerSystem extends pageController
                     'message' => localize('There is already other page with same SEO name', 'custompages'),
                 ));
 
-            $cpage -> url_id = seoUrl($_POST['url_id']);
+            $cpage -> url_id = Tools::seoUrl($_POST['url_id']);
         }
 
         $i = 0;
@@ -143,7 +143,7 @@ class customAjaxControllerSystem extends pageController
             if (substr($Key, 0, 4) == "tag_")
             {
                 $i++;
-                $Value = filterMetaTag($Value);
+                $Value = Tools::filterMetaTag($Value);
 
                 if ($Value == "")
                     continue;
@@ -233,7 +233,7 @@ class customAjaxControllerSystem extends pageController
 
             if ($managePermissions)
             {
-                if (customPage::create($title, $language, $this -> panthera -> user -> login, $this -> panthera -> user -> id, $uid, seoUrl($seoURL)))
+                if (customPage::create($title, $language, $this -> panthera -> user -> login, $this -> panthera -> user -> id, $uid, Tools::seoUrl($seoURL)))
                 {
                     $cpage = new customPage($statement, $uid);
 

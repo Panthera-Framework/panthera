@@ -64,10 +64,10 @@ class routingAjaxControllerSystem extends pageController
                 $post = '';
 
                 if (isset($route[2]['GET']))
-                    $get = getQueryString($route[2]['GET']);
+                    $get = Tools::getQueryString($route[2]['GET']);
 
                 if (isset($route[2]['POST']))
-                    $post = getQueryString($route[2]['POST']);
+                    $post = Tools::getQueryString($route[2]['POST']);
 
                 $dataTpl[] = array(
                     'name' => $route[3],

@@ -46,7 +46,7 @@ class frontsidePanel_text
 
         if (stripos($text, '{$query}'))
         {
-            $text = str_ireplace('{$query}', getQueryString('GET', '_', ''), $text);
+            $text = str_ireplace('{$query}', Tools::getQueryString('GET', '_', ''), $text);
         }
 
         // informations about user's browser

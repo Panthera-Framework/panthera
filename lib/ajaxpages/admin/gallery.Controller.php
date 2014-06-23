@@ -484,7 +484,7 @@ class galleryAjaxControllerCore extends pageController
         // pager implementation
         $uiPager = new uiPager('adminGalleryItems', $totalItems, 'adminGalleryItems', 16);
         $uiPager -> setActive($page);
-        $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString($_GET, 'page={$page}', '_'). '\');');
+        $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .Tools::getQueryString($_GET, 'page={$page}', '_'). '\');');
 
         // get limites
         $limit = $uiPager -> getPageLimit();
@@ -999,7 +999,7 @@ class galleryAjaxControllerCore extends pageController
         // implement searchbar
         $sBar = new uiSearchbar('uiTop');
         $sBar -> setQuery($_GET['query']);
-        $sBar -> setAddress('?' .getQueryString('GET', '', array('_', 'page', 'query')));
+        $sBar -> setAddress('?' .Tools::getQueryString('GET', '', array('_', 'page', 'query')));
         $sBar -> navigate(True);
         $sBar -> addIcon($this -> panthera -> template -> getStockIcon('permissions'), '#', '?display=acl&cat=admin&popup=true&name=can_manage_galleries,can_read_own_galleries,can_read_all_galleries', localize('Manage permissions'));
 
@@ -1034,7 +1034,7 @@ class galleryAjaxControllerCore extends pageController
         // implement pager
         $uiPager = new uiPager('adminGalleryCategories', $itemsCount, 'adminGalleryCategories');
         $uiPager -> setActive($page);
-        $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .getQueryString('GET', 'page={$page}', '_'). '\');');
+        $uiPager -> setLinkTemplates('#', 'navigateTo(\'?' .Tools::getQueryString('GET', 'page={$page}', '_'). '\');');
         $limit = $uiPager -> getPageLimit();
 
         // get categories for current page

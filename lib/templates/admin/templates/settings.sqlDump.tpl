@@ -7,7 +7,7 @@
     });
 </script>
 
-<form action="?{function="getQueryString('GET', '', '_')"}" method="POST" id="settingsFormSave">
+<form action="?{function="Tools::getQueryString('GET', '', '_')"}" method="POST" id="settingsFormSave">
     <table style="margin: 0 auto; margin-top: 50px; margin-bottom: 50px;" class="formTable">
         <thead>
             <tr>

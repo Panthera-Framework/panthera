@@ -20,7 +20,7 @@ function removeCategory(categoryName)
     panthera.confirmBox.create('{function="localize('Are you sure you want delete this category?', 'qmessages')"}', function (responseText) {
        if (responseText == 'Yes')
         {
-            panthera.jsonPOST( { url: '?{function="getQueryString('GET', 'action=removeCategory', '_')"}', data: 'category='+categoryName, messageBox: 'w2ui', success: function (response) {
+            panthera.jsonPOST( { url: '?{function="Tools::getQueryString('GET', 'action=removeCategory', '_')"}', data: 'category='+categoryName, messageBox: 'w2ui', success: function (response) {
                     if (response.status == 'success')
                     {
                         $('#category_'+categoryName).remove();
@@ -86,7 +86,7 @@ function removeCategory(categoryName)
                         <img src="{$PANTHERA_URL}/images/admin/ui/permissions.png" style="max-height: 22px; margin-left: 3px;" alt="{function="localize('Manage permissions')"}">
                     </a>
                         
-                    <a href="#" onclick="panthera.popup.toggle('?display=menuedit&cat=admin&popup=true&action=quickAddFromPopup&link=data:text/plain;base64,{function="base64_encode('?' .getQueryString('display=messages&cat=admin&action=display_category&category=' .$value->category_name))"}&title={$value->title}');" alt="{function="localize('Add to menu', 'menuedit')"}">
+                    <a href="#" onclick="panthera.popup.toggle('?display=menuedit&cat=admin&popup=true&action=quickAddFromPopup&link=data:text/plain;base64,{function="base64_encode('?' .Tools::getQueryString('display=messages&cat=admin&action=display_category&category=' .$value->category_name))"}&title={$value->title}');" alt="{function="localize('Add to menu', 'menuedit')"}">
                         <img src="{$PANTHERA_URL}/images/admin/menu/Actions-transform-move-icon.png" style="max-height: 22px; margin-left: 3px;" alt="{function="localize('Manage permissions')"}">
                     </a>
                 </td>
@@ -107,7 +107,7 @@ function removeCategory(categoryName)
 <!-- New category popup -->
 
 <div id="newCategoryPopup" style="display: none;">
-    <form action="?{function="getQueryString('GET', 'action=newCategory', '_')"}" method="POST" id="newCategoryForm">
+    <form action="?{function="Tools::getQueryString('GET', 'action=newCategory', '_')"}" method="POST" id="newCategoryForm">
     <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
         <thead>
             <tr>

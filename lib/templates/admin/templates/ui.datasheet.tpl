@@ -1,10 +1,10 @@
 <script type="text/javascript">
     function tableTakeAction(tableID, action, contentID, target)
     {
-        panthera.jsonPOST( { url: '?{function="getQueryString('GET', '', 'action')"}&action='+action, data: 'id='+contentID+'&tableID='+tableID, success: function (response) {
+        panthera.jsonPOST( { url: '?{function="Tools::getQueryString('GET', '', 'action')"}&action='+action, data: 'id='+contentID+'&tableID='+tableID, success: function (response) {
                 if (response.status == 'success')
                 {
-                    navigateTo('?{function="getQueryString('GET', '', 'action')"}');
+                    navigateTo('?{function="Tools::getQueryString('GET', '', 'action')"}');
                 }
             }
         });
@@ -27,7 +27,7 @@
     {
         function tableActionEdit(tableID, contentID)
         {
-             panthera.popup.toggle('?{function="getQueryString('GET', '', 'action,tableID,id')"}&action=editForm&tableID='+tableID+'&id='+contentID);
+             panthera.popup.toggle('?{function="Tools::getQueryString('GET', '', 'action,tableID,id')"}&action=editForm&tableID='+tableID+'&id='+contentID);
         }
     }
 </script>

@@ -5,7 +5,7 @@
 <div id="newRoutePopup" style="display: none;">
       <script type="text/javascript">
       
-        var canonicalLink = '{function="getQueryString('GET', '', 'action')"}';
+        var canonicalLink = '{function="Tools::getQueryString('GET', '', 'action')"}';
         
         function selectRoutingType()
         {
@@ -31,7 +31,7 @@
                 panthera.jsonPOST( { data: '#addRouteForm', success: function (response) {
         
                         if (response.status == "success") {
-                            navigateTo('?{function="getQueryString('GET', '', 'action')"}');
+                            navigateTo('?{function="Tools::getQueryString('GET', '', 'action')"}');
                         }
                     }
                 });
@@ -40,7 +40,7 @@
         });
       </script>
       
-      <form action="?{function="getQueryString('GET', 'action=new', 'action')"}&action=new" method="POST" id="addRouteForm">
+      <form action="?{function="Tools::getQueryString('GET', 'action=new', 'action')"}&action=new" method="POST" id="addRouteForm">
          <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
              <thead>
                  <tr>
@@ -180,7 +180,7 @@
         });
       </script>
       
-      <form action="?{function="getQueryString('GET', 'action=resolveTest', 'action')"}&action=resolveTest" method="POST" id="resolveRouteForm">
+      <form action="?{function="Tools::getQueryString('GET', 'action=resolveTest', 'action')"}&action=resolveTest" method="POST" id="resolveRouteForm">
          <table class="formTable" style="margin: 0 auto; margin-bottom: 30px;">
              <thead>
                  <tr>

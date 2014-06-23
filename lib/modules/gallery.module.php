@@ -60,7 +60,7 @@ class galleryItem extends pantheraFetchDB
             foreach ($items as $item) {
                 $array[] = array('title' => $item -> title,
                     'description' => $item -> description,
-                    'url_id' => seoUrl(rand(99, 9999). '-' .$item -> title."_".$language),
+                    'url_id' => Tools::seoUrl(rand(99, 9999). '-' .$item -> title."_".$language),
                     'link' => $item -> link,
                     'thumbnail' => $item -> thumbnail,
                     'gallery_id' => $newCategory -> id,
@@ -134,7 +134,7 @@ class galleryItem extends pantheraFetchDB
 
         $thumbnail = $panthera->config->getKey('url'). '/' .$thumb;
 
-        $url_id = seoUrl(rand(99, 9999). '-' .$title);
+        $url_id = Tools::seoUrl(rand(99, 9999). '-' .$title);
 
         $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}gallery_items` (`id`, `title`, `description`, `created`, `url_id`, `link`, `thumbnail`, `gallery_id`, `visibility`, `upload_id`, `author_id`, `author_login`) VALUES (NULL, :title, :description, NOW(), :url_id, :link, :thumbnail, :gallery_id, :visibility, :upload_id, :author_id, :author_login);', array('title' => $title, 'description' => $description, 'url_id' => $url_id, 'link' => $link, 'thumbnail' => $thumbnail, 'gallery_id' => $gallery_id, 'visibility' => $visibility, 'upload_id' => $upload->id, 'author_id' => $author_id, 'author_login' => $author_login));
         return (bool)$SQL->rowCount();
@@ -358,9 +358,7 @@ class gallery
         $panthera = pantheraCore::getInstance();
 
         if (!$unique)
-        {
-            $unique = seoUrl($panthera->db->createUniqueData('gallery_categories', 'unique', $title));
-        }
+            $unique = Tools::seoUrl($panthera->db->createUniqueData('gallery_categories', 'unique', $title));
 
         $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}gallery_categories` (`id`, `title`, `author_login`, `author_id`, `language`, `created`, `modified`, `visibility`, `author_full_name`, `thumb_id`, `thumb_url`, `unique`) VALUES (NULL, :title, :author_login, :author_id, :language, NOW(), NOW(), :visibility, :author_full_name, "", "", :unique);', array('title' => $title, 'author_login' => $login, 'language' => $language, 'author_id' => $user_id, 'visibility' => $visibility, 'author_full_name' => $user_full_name, 'unique' => $unique));
 

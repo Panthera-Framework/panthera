@@ -2345,66 +2345,6 @@ function pa_redirect($url, $code=null)
 }
 
 /**
- * This function will safely parse meta tags from array
- *
- * @package Panthera\core\system\kernel
- * @param array $tags Meta tags in an associative array
- * @return string
- * @author Damian Kęska
- */
-
-function parseMetaTags($tags)
-{
-    if (count($tags) == 0 or !is_array($tags))
-        return "";
-
-    $code = '';
-
-    foreach ($tags as $meta)
-    {
-        $code .= filterMetaTag($meta). ',';
-    }
-
-    return rtrim($code, ',');
-}
-
-/**
- * Filter meta tag, strip quotes
- *
- * @param string $tag Input tag string
- * @package Panthera\core\system\kernel
- * @return string
- * @author Damian Kęska
- */
-
-function filterMetaTag($tag)
-{
-    $a = array('"', "'");
-    return trim(strip_tags(str_replace($a, '', $tag)));
-}
-
-/**
- * Create SEO friendly name
- *
- * @package Panthera\core\system\kernel
- * @param string $string Article title, or file name, just a string to be converted
- * @return string
- * @author Alexander <http://forum.codecall.net/topic/59486-php-create-seo-friendly-url-titles-slugs/#axzz2JCfcCHFX>
- */
-
-function seoUrl($string) {
-    //Unwanted:  {UPPERCASE} ; / ? : @ & = + $ , . ! ~ * ' ( )
-    $string = strtolower($string);
-    //Strip any unwanted characters
-    $string = preg_replace("/[^a-z0-9_\s-]/", "", $string);
-    //Clean multiple dashes or whitespaces
-    $string = preg_replace("/[\s-]+/", " ", $string);
-    //Convert whitespaces and underscore to dash
-    $string = preg_replace("/[\s_]/", "-", $string);
-    return $string;
-}
-
-/**
  * Convert Panthera special variables in urls with reverse function
  *
  * @package Panthera\core\system\kernel
@@ -2762,185 +2702,20 @@ function verifyPassword($password, $hash)
 }
 
 /**
- * Get query string form GET/POST or other array, supports exceptions (some arguments can be skipped)
+ * A base plugins class
  *
- * @param array|string $array Array of elements, or a string value "GET" or "POST"
- * @param array|string $mix Elements to add (useful if using "GET" or "POST" in first but want to add something) eg. "aaa=test&bbb=ccc" or array('aaa' => 'test', 'bbb' => 'ccc')
- * @param array|string $except List of parameters to skip eg. "display,cat" or array('display', 'cat')
- * @package Panthera\core\system\kernel
- * @return string
- * @author Damian Kęska
- */
-
-function getQueryString($array=null, $mix=null, $except=null)
-{
-    if ($array === null)
-        $array = $_GET;
-    elseif ($array == 'GET')
-        $array = $_GET;
-    elseif ($array == 'POST')
-        $array = $_POST;
-    elseif (is_string($array)) {
-        parse_str($array, $array);
-    }
-
-    if ($mix != null) {
-        if (is_string($mix)) {
-            parse_str($mix, $mix);
-        }
-
-        if (is_array($mix)) {
-            $array = array_merge($array, $mix);
-        }
-    }
-
-    if ($except !== null)
-    {
-        if (!is_array($except))
-            $except = explode(',', $except);
-
-        foreach ($except as $exception)
-            unset($array[trim($exception)]);
-    }
-
-    return http_build_query($array);
-}
-
-/**
- * Strip new lines
- *
- * @param string $string
- * @package Panthera\core\system\kernel
- * @return string
- * @author Damian Kęska
- */
-
-function stripNewLines($str)
-{
-    return str_replace("\r", '\\r', str_replace("\n", '\\n', $str));
-}
-
-/**
- * Capture function stdout
- *
- * @param string|function $function
  * @package Panthera\core\system\kernel
  * @author Damian Kęska
  */
-
-function captureStdout($function, $a=null, $b=null, $c=null, $d=null, $e=null, $f=null)
-{
-    $panthera = pantheraCore::getInstance();
-
-    // capture old output if any
-    $before = $panthera -> outputControl -> get();
-    $handler = $panthera -> outputControl -> isEnabled();
-    $panthera -> outputControl -> clean();
-
-    // start new buffering
-    $panthera -> outputControl -> startBuffering();
-
-    // executing function
-    $return = $function($a, $b, $c, $d, $e, $f);
-    $contents = $panthera -> outputControl -> get();
-
-    $panthera -> outputControl -> clean();
-    $panthera -> outputControl -> flushAndFinish();
-
-    if ($handler === False)
-    {
-        $panthera -> outputControl -> flushAndFinish();
-    } else {
-        $panthera -> outputControl -> startBuffering($handler);
-        print($before);
-    }
-
-    return array('return' => $return, 'output' => $contents);
-}
-
-/**
-  * A base plugins class
-  *
-  * @package Panthera\core\system\kernel
-  * @author Damian Kęska
-  */
-
+    
 class pantheraPlugin
 {
     protected static $pluginInfo = array();
-
+    
     public static function getPluginInfo()
     {
         return static::$pluginInfo;
     }
-
+    
     public static function run() {}
-}
-
-/**
-  * Create array of defined size, filled with null values (useful for creating for loop in RainTPL)
-  *
-  * @param int $range Count of iterations
-  * @package Panthera\core\system\kernel
-  * @author Damian Kęska
-  */
-
-function forRange($range=0, $add=0, $zeroLength=0)
-{
-    $arr = array();
-
-    for ($i=0; $i<$range; $i++)
-	{
-		$t = $i+$add;
-
-	    if ($zeroLength and strlen($t) == $zeroLength and substr($t, 0, 1) !== '0')
-			$t = '0'.$t;
-
-        $arr[$t] = null;
-	}
-
-    return $arr;
-}
-
-/**
- * Convert bool, false, null to string
- *
- * @package Panthera\core\system\kernel
- * @param mixed $input Input
- * @author Damian Kęska
- * @return string
- */
-
-function toString($input)
-{
-    if ($input === null)
-        $input = 'null';
-    elseif ($input === false)
-        $input = 'false';
-    elseif ($input === true)
-        $input = 'true';
-
-    return (string)$input;
-}
-
-/**
- * Get first non-null value
- *
- * @package Panthera\core\system\kernel
- * @param mixed $1
- * @param mixed $2
- * @param mixed $3
- * @param mixed $n
- * @return mixed
- */
-
-function fallbackValue()
-{
-    $args = func_get_args();
-
-    foreach ($args as $arg)
-    {
-        if ($arg)
-            return $arg;
-    }
 }

@@ -78,7 +78,7 @@
                         <ul class="searchBarDropdown-menu">
                             {loop="$flags"}
                                 <li>
-                                    <a href="?{function="getQueryString('GET', '', array('_', '_locale'))"}&_locale={$value}&cat=admin">
+                                    <a href="?{function="Tools::getQueryString('GET', '', array('_', '_locale'))"}&_locale={$value}&cat=admin">
                                         <img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 12px; margin: 1px; vertical-align: middle;"> {$value}
                                     </a>
                                 </li>
@@ -119,9 +119,9 @@
         <!-- Footer -->
         
         <div id="footer" class="centerWithContent">
-            {if="$mobileTemplate == True"}<a href="{$PANTHERA_URL}/pa-admin.php?{function="getQueryString('GET', '', array('_', '__switchdevice'))"}&__switchdevice=mobile">Mobile</a>{/if} | 
-            {if="$tabletTemplate == True"}<a href="{$PANTHERA_URL}/pa-admin.php?{function="getQueryString('GET', '', array('_', '__switchdevice'))"}&__switchdevice=tablet">Tablet</a>{/if} | 
-            <a href="{$PANTHERA_URL}/pa-admin.php?{function="getQueryString('GET', '', array('_', '__switchdevice'))"}&__switchdevice=desktop"><b>Desktop</b></a>
+            {if="$mobileTemplate == True"}<a href="{$PANTHERA_URL}/pa-admin.php?{function="Tools::getQueryString('GET', '', array('_', '__switchdevice'))"}&__switchdevice=mobile">Mobile</a>{/if} | 
+            {if="$tabletTemplate == True"}<a href="{$PANTHERA_URL}/pa-admin.php?{function="Tools::getQueryString('GET', '', array('_', '__switchdevice'))"}&__switchdevice=tablet">Tablet</a>{/if} | 
+            <a href="{$PANTHERA_URL}/pa-admin.php?{function="Tools::getQueryString('GET', '', array('_', '__switchdevice'))"}&__switchdevice=desktop"><b>Desktop</b></a>
             <div style="float: right;">
                 Powered by <a href="https://github.com/webnull/panthera" target="_blank"><b>Panthera Framework</b></a> {$PANTHERA_VERSION}
             </div>

@@ -13,7 +13,7 @@
             panthera.jsonPOST({ url: '?display=sqldump&cat=admin', data: 'dump=True', messageBox: 'w2ui', success: function (response) {
                     if (response.status == "success")
                     {
-                        navigateTo('?{function="getQueryString('GET', '', '_,action')"}');
+                        navigateTo('?{function="Tools::getQueryString('GET', '', '_,action')"}');
                     }
                 }
             });
@@ -31,7 +31,7 @@
             panthera.jsonPOST({ url: '?display=sqldump&cat=admin&action=manageCronjob', data: 'management='+mode, messageBox: 'w2ui', success: function (response) {
                     if (response.status == "success")
                     {
-                        navigateTo('?{function="getQueryString('GET', '', '_,action')"}');
+                        navigateTo('?{function="Tools::getQueryString('GET', '', '_,action')"}');
                     }
                 }
             });
@@ -52,7 +52,7 @@
 </div>
     
 <div class="ajax-content" style="text-align: center;">
-    <form action="?{function="getQueryString('GET', 'action=newCategory', '_')"}" method="POST" id="newCategoryForm">
+    <form action="?{function="Tools::getQueryString('GET', 'action=newCategory', '_')"}" method="POST" id="newCategoryForm">
     <div style="display: inline-block; margin: 0 auto;">
         <table style="margin: 0 auto;">
             <thead>

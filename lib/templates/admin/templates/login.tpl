@@ -34,7 +34,7 @@
                 <ul class="searchBarDropdown-menu">
                     {loop="$flags"}
                     <li>
-                        <a href="?{function="getQueryString('GET', '', array('_', '_locale'))"}&_locale={$value}&cat=admin">
+                        <a href="?{function="Tools::getQueryString('GET', '', array('_', '_locale'))"}&_locale={$value}&cat=admin">
                         <img src="{$PANTHERA_URL}/images/admin/flags/{$value}.png" style="height: 12px; margin: 1px;"> {$value}
                         </a>
                     </li>

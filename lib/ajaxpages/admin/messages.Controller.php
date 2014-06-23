@@ -60,7 +60,7 @@ class messagesAjaxControllerSystem extends pageController
             $categoryName = $_POST['title'];
 
         // strip out of special characters
-        $categoryName = seoUrl($categoryName);
+        $categoryName = Tools::seoUrl($categoryName);
 
         $qmsg = quickCategory::create(filterInput($_POST['title'], 'quotehtml'), $_POST['description'], $categoryName);
 
@@ -104,7 +104,7 @@ class messagesAjaxControllerSystem extends pageController
         $message = $_POST['edit_msg_content'];
         $msgid = intval($_POST['edit_msg_id']);
         $icon = filterInput($_POST['message_icon'], 'quotehtml');
-        $url_id = seoUrl($_POST['edit_url_id']);
+        $url_id = Tools::seoUrl($_POST['edit_url_id']);
 
         $m = new quickMessage('id', $msgid);
 
@@ -201,7 +201,7 @@ class messagesAjaxControllerSystem extends pageController
         $m -> mod_author_full_name = $this -> panthera -> user -> getName();
 
         if (!$url_id)
-            $url_id = seoUrl($title);
+            $url_id = Tools::seoUrl($title);
 
         $m -> url_id = $url_id;
 
@@ -286,7 +286,7 @@ class messagesAjaxControllerSystem extends pageController
                 $language = $_POST['language'];
         }
 
-        $url_id = seoUrl($title);
+        $url_id = Tools::seoUrl($title);
 
         $q = new quickMessage('url_id', $url_id);
 
