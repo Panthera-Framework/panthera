@@ -1003,13 +1003,6 @@ class pantheraDB extends pantheraClass
     }
 }
 
-/** Creating new WHERE clause for SQL query from array **/
-
-//$w = new whereClause();
-//$w -> add( 'AND', 'id', '=', 1);
-//$w -> add( 'AND', 'data', '=', 'test');
-//var_dump($w->show()); => array(2) { [0]=> string(27) " `id`=:id AND `data`=:data " [1]=> array(1) { ["data"]=> string(6) ""test"" } }
-
 /**
   * Where clause generator
   *

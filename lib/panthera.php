@@ -315,7 +315,7 @@ class pantheraLogging
                 return False;
         }
 
-        $time = microtime();
+        $time = microtime(true);
 
         if ($this->printOutput)
             print($msg. "\n");
@@ -352,7 +352,7 @@ class pantheraLogging
 
     public function startTimer()
     {
-        $this->timer = microtime_float();
+        $this->timer = microtime(true);
     }
 
     /**
@@ -383,12 +383,12 @@ class pantheraLogging
         // convert output to string
         foreach ($this->_output as $line)
         {
-            $time = microtime_float($line[2])-$_SERVER['REQUEST_TIME_FLOAT'];
+            $time = $line[2]-$_SERVER['REQUEST_TIME_FLOAT'];
             $real = '';
 
             if ($line[3] > 0)
             {
-                $executionTime = (microtime_float($line[2])-$line[3])*1000;
+                $executionTime = ($line[2]-$line[3])*1000;
                 $real = ' real';
             } else {
                 $executionTime = ($time-$lastTime)*1000;
@@ -398,7 +398,7 @@ class pantheraLogging
             $lastTime = $time;
         }
 
-        $msg .= "[".substr(microtime_float()-$_SERVER['REQUEST_TIME_FLOAT'], 0, 9).", ".substr((microtime_float()-$_SERVER['REQUEST_TIME_FLOAT']-$lastTime)*1000, 0, 9)."ms] [".filesystem::bytesToSize(memory_get_usage($this->isRealMemUsage))."]  [pantheraLogging] Done\n";
+        $msg .= "[".substr(microtime(true)-$_SERVER['REQUEST_TIME_FLOAT'], 0, 9).", ".substr((microtime(true)-$_SERVER['REQUEST_TIME_FLOAT']-$lastTime)*1000, 0, 9)."ms] [".filesystem::bytesToSize(memory_get_usage($this->isRealMemUsage))."]  [pantheraLogging] Done\n";
 
         return $defaults.$msg;
     }
@@ -421,13 +421,8 @@ class pantheraLogging
             @fclose($fp);
         }
 
-        if ($this->toVarCache)
-        {
-            if ($this->panthera->varCache)
-            {
-                $this->panthera->varCache->set('debug.log', base64_encode($output), 864000);
-            }
-        }
+        if ($this->toVarCache and $this->panthera->varCache)
+            $this->panthera->varCache->set('debug.log', base64_encode($output), 864000);
     }
 
     /**
@@ -439,29 +434,22 @@ class pantheraLogging
 
     public function readSavedLog()
     {
-        if ($this->toVarCache and $this->panthera->varCache)
-        {
-            if ($this->panthera->varCache->exists('debug.log'))
-            {
-                return base64_decode($this->panthera->varCache->get('debug.log'));
-            }
-        }
+        if ($this->toVarCache and $this->panthera->varCache and $this->panthera->varCache->exists('debug.log'))
+            return base64_decode($this->panthera->varCache->get('debug.log'));
 
         if ($this->tofile and is_file(SITE_DIR. '/content/tmp/debug.log'))
-        {
             return @file_get_contents(SITE_DIR. '/content/tmp/debug.log');
-        }
 
         return False;
     }
 }
 
 /**
-  * Configuration management with database storage support
-  *
-  * @Package Panthera\core\kernel\config
-  * @author Damian Kęska
-  */
+ * Configuration management with database storage support
+ *
+ * @Package Panthera\core\kernel\config
+ * @author Damian Kęska
+ */
 
 class pantheraConfig
 {
@@ -472,6 +460,13 @@ class pantheraConfig
     protected $sections = array();
     protected $overlays = 0; // count of loaded overlays
     protected $modifiedSections = array(); // list of modified overlays
+    
+    /**
+     * Constructor
+     * Hooking up self->save() to session_save to allow configuration save on application exit
+     * 
+     * @return null
+     */
 
     public function __construct($panthera, $config)
     {
@@ -485,14 +480,14 @@ class pantheraConfig
     }
 
     /**
-      * Get configuration key and create it if does not exists if provided default values and type
-      *
-      * @param string $key name
-      * @param mixed $default value
-      * @param string $type Data type
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Get configuration key and create it if does not exists if provided default values and type
+     *
+     * @param string $key name
+     * @param mixed $default value
+     * @param string $type Data type
+     * @return mixed
+     * @author Damian Kęska
+     */
 
     public function getKey($key, $default='__none', $type='__none', $section=null)
     {
@@ -517,12 +512,12 @@ class pantheraConfig
     }
 
     /**
-      * Load configuration section
-      *
-      * @param string $section name
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Load configuration section
+     *
+     * @param string $section name
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function loadSection($section)
     {
@@ -536,12 +531,12 @@ class pantheraConfig
     }
 
     /**
-      * Simply get key using config->KEYNAME
-      *
-      * @param string $var Key name
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Simply get key using config->KEYNAME
+     *
+     * @param string $var Key name
+     * @return mixed
+     * @author Damian Kęska
+     */
 
     public function __get($var)
     {
@@ -549,14 +544,14 @@ class pantheraConfig
     }
 
     /**
-      * Set configuration key
-      *
-      * @param string $key
-      * @param mixed $value
-      * @param string $type
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Set configuration key
+     *
+     * @param string $key
+     * @param mixed $value
+     * @param string $type
+     * @return mixed
+     * @author Damian Kęska
+     */
 
     public function setKey($key, $value=null, $type=null, $section=null)
     {
@@ -735,11 +730,11 @@ class pantheraConfig
 
 
     /**
-      * Save cached changes to database
-      *
-      * @return void
-      * @author Damian Kęska
-      */
+     * Save cached changes to database
+     *
+     * @return void
+     * @author Damian Kęska
+     */
 
     public function save()
     {
@@ -773,10 +768,10 @@ class pantheraConfig
                 }
 
                 /**
-                  * Creating new entry
-                  *
-                  * @author Damian Kęska
-                  */
+                 * Creating new entry
+                 *
+                 * @author Damian Kęska
+                 */
 
                 // creating new record in database
                 if ($this->overlay_modified[$key] === 'created')
@@ -796,10 +791,10 @@ class pantheraConfig
                     }
 
                 /**
-                  * Removing configuration variable
-                  *
-                  * @author Damian Kęska
-                  */
+                 * Removing configuration variable
+                 *
+                 * @author Damian Kęska
+                 */
 
                 } elseif ($this->overlay_modified[$key] === 'delete') {
 
@@ -811,10 +806,10 @@ class pantheraConfig
                     }
 
                 /**
-                  * Upading existing variable
-                  *
-                  * @author Damian Kęska
-                  */
+                 * Upading existing variable
+                 *
+                 * @author Damian Kęska
+                 */
 
                 // updating existing
                 } else {
@@ -852,11 +847,11 @@ class pantheraConfig
     }
 
     /**
-      * Get all configuration variables from app.php
-      *
-      * @return array
-      * @author Damian Kęska
-      */
+     * Get all configuration variables from app.php
+     *
+     * @return array
+     * @author Damian Kęska
+     */
 
     public function getConfig($overlay=False)
     {
@@ -1883,25 +1878,20 @@ class pantheraCore
         $this->logging->output("Registering plugin ".$pluginName." for file ".$file.", key=".$dir);
         return True;
     }
-
+    
     /**
-	 * Executes at the end of the script (save all caches etc.)
-	 *
-	 * @return void
-	 * @author Damian Kęska
-	 */
-
-    function finish()
+     * Executes at the end of the script (save all caches etc.)
+     * 
+     * @author Damian Kęska
+     * @return null
+     */
+    
+    public function __destruct()
     {
-        $this->_savedSession = True;
-        $this->get_options('session_save', False);
-    }
-
-    // in case when developer forgot to use finish() at the end of script
-    function __destruct()
-    {
-        if(!$this->_savedSession)
-            $this->finish();
+        if(!$this -> _savedSession)
+            $this -> get_options('session_save', False);
+        
+        $this -> _savedSession = True;
     }
 
 }
@@ -2298,27 +2288,6 @@ function ajax_exit($array)
 }
 
 /**
- * Ajax equivalent of var_dump
- *
- * @package Panthera\core\system\kernel
- * @param mixed $mixed
- * @return null
- */
-
-function ajax_dump($mixed, $usePrint_r=False)
-{
-    if (!$usePrint_r)
-        $message = r_dump($mixed);
-    else
-        $message = print_r($mixed, true);
-
-    ajax_exit(array(
-        'status' => 'failed',
-        'message' => $message,
-    ));
-}
-
-/**
  * Finish all processes and exit application
  *
  * @package Panthera\core\system\kernel
@@ -2336,8 +2305,7 @@ function pa_exit($string='', $ajaxExit=False)
 
     // execute all hooks to save data
     $panthera -> get_options('page_load_ends', $ajaxExit);
-    $panthera -> finish();
-
+    $panthera -> __destruct();
     ob_start();
 
     die($string);
@@ -2486,33 +2454,6 @@ if (!function_exists('json_last_error'))
 }
 
 /**
- * Checks if string is a valid json type
- *
- * @package Panthera\core\system\kernel
- * @return bool
- * @author Damian Kęska
- */
-
-function isJson($string) {
-    @json_decode($string);
-    return (json_last_error() == JSON_ERROR_NONE);
-}
-
-/**
- * Is Panthera running in debugging mode?
- *
- * @package Panthera\core\system\kernel
- * @return bool
- * @author Damian Kęska
- */
-
-function isDebugging()
-{
-    $panthera = pantheraCore::getInstance();
-    return $panthera->logging->debug;
-}
-
-/**
  * Get full path of error page template. Returns empty string if template does not exists either in content as in lib
  *
  * @package Panthera\core\system\kernel
@@ -2635,125 +2576,6 @@ function getContentDir($dir)
 
     if (file_exists(PANTHERA_DIR. '/'.$dir))
         return PANTHERA_DIR.'/'.$dir;
-}
-
-/**
- * Print object informations
- *
- * @package Panthera\core\system\kernel
- * @param object $obj Input object
- * @param bool $returnAsString
- * @debug
- * @return void
- * @author Damian Kęska
- */
-
-function object_dump($obj, $returnAsString=False)
-{
-    if (!is_object($obj))
-        return False;
-
-    $class = new ReflectionClass($obj);
-
-    $data = array('class' => get_class($obj),
-                  'file' => $class->getFileName(),
-                  'methods' => $class->getMethods(),
-                  'properties' => $class->getProperties(),
-                  'constants' => $class->getConstants()
-    );
-
-    if ($returnAsString)
-    {
-        return r_dump($data);
-    } else {
-        var_dump($data);
-    }
-}
-
-/**
- * Make a var_dump and return result
- *
- * @debug
- * @package Panthera\core\system\kernel
- * @return array
- * @author Damian Kęska
- */
-
-function r_dump()
-{
-    ob_start();
-    $var = func_get_args();
-    call_user_func_array('var_dump', $var);
-    return ob_get_clean();
-}
-
-/**
- * Prints print_r inside of HTML code replacing \n to <br> and spaces to &nbsp; HTML codes
- *
- * @debug
- * @package Panthera\core\system\kernel
- * @param mixed $input Input data of any type
- * @param bool $return Return output
- * @return string
- */
-
-function print_r_html($input, $return=false)
-{
-    $result = nl2br(str_replace(' ', '&nbsp;', print_r($input, true)));
-
-    if (!$return)
-        print($result);
-
-    return $result;
-}
-
-/**
- * List all class/object methods
- *
- * @debug
- * @package Panthera\core\system\kernel
- * @param object|string $obj
- * @param bool $return Return as string
- * @package Panthera\core\system\kernel\debugging
- * @return string|bool
- * @author Damian Kęska
- */
-
-function object_info($obj, $return=False)
-{
-    if (is_string($obj))
-    {
-        if(class_exists($obj))
-        {
-            return ReflectionClass::export($obj, $return);
-        }
-    }
-
-    if (is_object($obj))
-    {
-        return ReflectionObject::export($obj, $return);
-    }
-
-    return False;
-}
-
-/**
- * Splits seconds with microseconds from microtime() output
- *
- * @debug
- * @param string $time Optional input time, if not specified it will be generated with microtime()
- * @package Panthera\core\system\kernel
- * @return float
- * @author http://php.net
- */
-
-function microtime_float($time='')
-{
-    if ($time == '')
-        $time = microtime();
-
-    list($usec, $sec) = explode(" ", $time);
-    return ((float)$usec + (float)$sec);
 }
 
 /**
@@ -2975,14 +2797,10 @@ function getQueryString($array=null, $mix=null, $except=null)
     if ($except !== null)
     {
         if (!is_array($except))
-        {
             $except = explode(',', $except);
-        }
 
         foreach ($except as $exception)
-        {
             unset($array[trim($exception)]);
-        }
     }
 
     return http_build_query($array);
@@ -3082,66 +2900,6 @@ function forRange($range=0, $add=0, $zeroLength=0)
 	}
 
     return $arr;
-}
-
-/**
- * Recursive array diff
- *
- * @package Panthera\core\system\kernel
- * @param array $aArray1
- * @param array $aArray2
- * @see http://stackoverflow.com/questions/3876435/recursive-array-diff
- * @author mhitza
- * @author Damian Kęska
- */
-
-function arrayRecursiveDiff($aArray1, $aArray2, &$i=null)
-{
-    $aReturn = array();
-
-    foreach ($aArray1 as $mKey => $mValue)
-    {
-        if (array_key_exists($mKey, $aArray2))
-        {
-            if (is_array($mValue))
-            {
-                $aRecursiveDiff = arrayRecursiveDiff($mValue, $aArray2[$mKey], $i, $reverse);
-
-                if (count($aRecursiveDiff))
-                    $aReturn[$mKey] = $aRecursiveDiff;
-
-            } else {
-
-                if ($mValue !== $aArray2[$mKey])
-                {
-                    $aReturn[$mKey] = $aArray2[$mKey];
-                    $aReturn['__meta_'.$mKey] = 'modified';
-
-                    if ($i !== null)
-                        $i++;
-                }
-            }
-        } else {
-            if (array_key_exists($mKey, $aArray1))
-                $aReturn['__meta_'.$mKey] = 'removed';
-
-            $aReturn[$mKey] = $mValue;
-
-            if ($i !== null)
-                $i++;
-        }
-    }
-
-    foreach ($aArray2 as $mKey => $mValue)
-    {
-        if (!array_key_exists($mKey, $aArray1))
-        {
-            $aReturn['__meta_'.$mKey] = 'created';
-            $aReturn[$mKey] = $mValue;
-        }
-    }
-
-    return $aReturn;
 }
 
 /**

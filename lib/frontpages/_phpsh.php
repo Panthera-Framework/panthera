@@ -65,7 +65,7 @@ class _phpshControllerSystem extends pageController
         $out .= "=> \$panthera -> routing\n";
         $out .= "=> \$panthera -> types\n";
 
-        $out .= "\n\n* Useful functions:\n=> object_info(), r_dump(), object_dump(), var_dump(), print_r(), getContentDir(), pantheraUrl(), libtemplate::webrootMerge()";
+        $out .= "\n\n* Useful functions:\n=> debugTools::object_info(), debugTools::r_dump(), debugTools::object_dump(), var_dump(), print_r(), getContentDir(), pantheraUrl(), libtemplate::webrootMerge(), pantheraAutoloader::updateCache()";
 
         // make some space before prompt
         $out .= "\n\n";

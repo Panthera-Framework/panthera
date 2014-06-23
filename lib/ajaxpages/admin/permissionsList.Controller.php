@@ -41,7 +41,7 @@ class permissionsListAjaxControllerSystem extends pageController
             $permissionsLocalized[$permission] = $value;
         }
 
-        $var_dump = r_dump($this -> panthera -> listPermissions());
+        $var_dump = debugTools::r_dump($this -> panthera -> listPermissions());
         $this -> panthera -> template -> push('var_dump', $var_dump);
         $this -> panthera -> template -> push('permissions', $permissionsLocalized);
         return $this -> panthera -> template -> compile('permissionsList.tpl');

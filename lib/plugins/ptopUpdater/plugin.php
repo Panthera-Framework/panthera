@@ -44,7 +44,7 @@ class ptopUpdater extends pantheraPlugin
         if ($panthera -> user)
             $user = $panthera -> user -> login;
 
-        self::$time = microtime_float();
+        self::$time = microtime(true);
         self::$rid = run::openSocket('page', intval(getmypid()), array('client' => $_SERVER['REMOTE_ADDR'], 'method' => $_SERVER['REQUEST_METHOD'], 'url' => $_SERVER['REQUEST_URI'], 'user' => $user));
     }
 
@@ -58,8 +58,8 @@ class ptopUpdater extends pantheraPlugin
     public static function finish()
     {
         global $panthera;
-        $page = microtime_float()-self::$time;
-        $overall = microtime_float()-$_SERVER['REQUEST_TIME_FLOAT'];
+        $page = microtime(true)-self::$time;
+        $overall = microtime(true)-$_SERVER['REQUEST_TIME_FLOAT'];
 
         if (self::$rid != False)
         {

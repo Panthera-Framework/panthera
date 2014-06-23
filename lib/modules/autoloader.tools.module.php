@@ -1,18 +1,18 @@
 <?php
 /**
-  * Panthera autoloader tools
-  *
-  * @package Panthera\modules\autoloader.tools
-  * @author Damian Kęska
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Panthera autoloader tools
+ *
+ * @package Panthera\core\modules\autoloader.tools
+ * @author Damian Kęska
+ * @license LGPLv3
+ */
 
 /**
-  * Rebuild autoloader database
-  *
-  * @package Panthera\modules\autoloader.tools
-  * @author Damian Kęska
-  */
+ * Rebuild autoloader database
+ *
+ * @package Panthera\modules\autoloader.tools
+ * @author Damian Kęska
+ */
 
 class pantheraAutoloader
 {

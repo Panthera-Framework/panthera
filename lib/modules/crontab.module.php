@@ -124,7 +124,7 @@ class crontab extends pantheraFetchDB
 
         // we are starting, so the start time should be resetted
         $this -> start_time = 0;
-        $t = microtime_float();
+        $t = microtime(true);
 
         if (intval($this->__get('count_left')) == 0)
             return "JOB_FINISHED";

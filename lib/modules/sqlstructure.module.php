@@ -433,7 +433,7 @@ class SQLStructure
         }
 
         $i = 1;
-        $diff = arrayRecursiveDiff($a, $b, $i);
+        $diff = arrays::arrayRecursiveDiff($a, $b, $i);
         $i--;
 
         if (isset($diff['__mysqlRawAttrs']['AUTO_INCREMENT']))

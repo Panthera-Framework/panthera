@@ -150,7 +150,7 @@ class contactAjaxControllerSystem extends pageController
         if (!defined('CONTACT_SKIP_MAP'))
         {
             // set map location data
-            if(!isJson($mdata))
+            if(!debugTools::isJson($mdata))
             {
                 ajax_exit(array(
                     'status' => 'failed',

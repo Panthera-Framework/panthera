@@ -1,11 +1,11 @@
 <?php
 /**
-  * Admin Panel front controller
-  *
-  * @package Panthera\core
-  * @author Damian Kęska
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Admin Panel front controller
+ *
+ * @package Panthera\core
+ * @author Damian Kęska
+ * @license LGPLv3
+ */
 
 require_once 'content/app.php';
 
@@ -67,4 +67,3 @@ $panthera -> template -> push('displayPage', $_GET['display']);
 $panthera -> template -> push('queryString', $_SERVER['QUERY_STRING']);
 $panthera -> template -> push('PANTHERA_VERSION', PANTHERA_VERSION);
 $panthera -> template -> display();
-$panthera -> finish();

@@ -585,7 +585,7 @@ class pantheraTemplate extends pantheraClass
 
     public function display($template=NuLL, $renderOnly=False, $skipHooking=False, $vars='', $altTemplateDir='')
     {
-        $this->timer = microtime_float();
+        $this->timer = microtime(true);
 
         // execute hooks
         if (!$skipHooking)
@@ -741,7 +741,7 @@ class pantheraTemplate extends pantheraClass
             $this -> tpl -> assign($var, $value);
 
         $render = $this -> tpl -> draw(str_replace('.tpl', '', $file), True);
-        $this -> timer = (microtime_float() - $this -> timer);
+        $this -> timer = (microtime(true) - $this -> timer);
 
         if (!$skipHooking)
             $render = $this->panthera->get_filters('template.display.rendered', $render, True);

@@ -82,7 +82,7 @@ class mailingAjaxControllerCore extends pageController
             if ($r)
                 ajax_exit($r);
             else
-                ajax_dump($response, true);
+                debugTools::ajax_dump($response, true);
         }
 
         if (strlen($_POST['body']) < 3)

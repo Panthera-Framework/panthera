@@ -57,7 +57,7 @@ class debug_createTableParserAjaxControllerCore extends pageController
                     break;
 
                     case 'var_dump':
-                        $result = r_dump($result);
+                        $result = debugTools::r_dump($result);
                     break;
 
                     case 'print_r':
