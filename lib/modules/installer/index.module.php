@@ -29,10 +29,10 @@ class indexInstallerControllerSystem extends installerController
     );
 
     /**
-     * @var $config array List of configuration variables
+     * @var $cfg array List of configuration variables
      */
 
-    protected $config = array(
+    protected $cfg = array(
         'language.enableselect' => array(
             'value' => TRUE, 'type' => 'bool', 'description' => array('Can user select a language?', 'installer'),
         ),
@@ -68,11 +68,11 @@ class indexInstallerControllerSystem extends installerController
                 $locales[$locale] = is_file(SITE_DIR. '/images/admin/flags/' .$locale. '.png');
         }
 
-        $this -> config['language.default']['values'] = $locales;
+        $this -> cfg['language.default']['values'] = $locales;
 
         /** List of locales, current language **/
 
-        //$currentLocale = $this->config['language.default']['value'];
+        //$currentLocale = $this->cfg['language.default']['value'];
         $currentLocale = $this -> panthera -> locale -> getActive();
 
         //if (localesManagement::getDomainDir($this -> panthera -> locale -> getActive(), 'installer'))
@@ -81,7 +81,7 @@ class indexInstallerControllerSystem extends installerController
         if (is_file(SITE_DIR. '/images/admin/flags/' .$currentLocale. '.png'))
             $this -> template -> push ('currentLocaleFlag', True);
 
-        if ($this->config['language.enableselect']['value'])
+        if ($this->cfg['language.enableselect']['value'])
             $this -> template -> push ('languages', $locales);
 
         $this -> template -> push ('currentLocale', $currentLocale);
@@ -107,11 +107,11 @@ class indexInstallerControllerSystem extends installerController
             $timezones[$timezone] = $time -> format($this -> panthera -> dateFormat);
         }
 
-        $this->config['timezone.default']['values'] = $timezones;
+        $this->cfg['timezone.default']['values'] = $timezones;
         $defaultTimezone = $this->panthera->config->getKey('timezone');
 
-        if ($this->config['timezone.default']['value'])
-            $defaultTimezone = $this->config['timezone.default']['value'];
+        if ($this->cfg['timezone.default']['value'])
+            $defaultTimezone = $this->cfg['timezone.default']['value'];
 
         $this -> template -> push ('timezone', $defaultTimezone);
 
@@ -133,7 +133,7 @@ class indexInstallerControllerSystem extends installerController
         if ($this->panthera->config->getKey('timezone') or !$this->config['timezone.enableselect']['value'])
             $this -> installer -> enableNextStep();
 
-        if ($this->config['timezone.enableselect']['value'])
+        if ($this->cfg['timezone.enableselect']['value'])
         {
             $time = new DateTime('NOW');
             $time -> setTimezone(new DateTimeZone($this->panthera->config->getKey('timezone')));
