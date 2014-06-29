@@ -3,10 +3,10 @@
 <script type="text/javascript">
 
 /**
-  * Remove custom page from database
-  *
-  * @author Mateusz Warzyński
-  */
+ * Remove custom page from database
+ *
+ * @author Mateusz Warzyński
+ */
 
 function removeCustomPage(id)
 {
@@ -29,10 +29,10 @@ function uiTop_callback(response)
 
 
 /**
-  * Get custom pages by language
-  *
-  * @author Mateusz Warzyński
-  */
+ * Get custom pages by language
+ *
+ * @author Mateusz Warzyński
+ */
 
 function getOtherCustomPages()
 {
@@ -101,10 +101,10 @@ function getOtherCustomPages()
     
     <script type="text/javascript">
     /**
-      * Submit add_page form
-      *
-      * @author Mateusz Warzyński
-      */
+     * Submit add_page form
+     *
+     * @author Mateusz Warzyński
+     */
 
     $('#add_page').submit(function () {
         panthera.jsonPOST({ data: '#add_page', mce: 'tinymce_all', success: function (response) {

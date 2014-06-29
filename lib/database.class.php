@@ -938,26 +938,24 @@ class pantheraDB extends pantheraClass
     public function createUniqueData($table, $column, $title='')
     {
         if ($title)
-        {
             $unique = $seoUrl = $title;
-        } else {
+        else
             $unique = $seoUrl = generateRandomString(8);
-        }
-
+        
         $i = 0;
 
         do {
             $i++;
 
             if ($i > 1)
-                $unique = $Tools::seoUrl.$i;
+                $unique = $seoUrl.$i;
 
             if ($i > 10)
                 $unique = hash('md4', rand(9999, 999999));
 
             $SQL = $this -> query('SELECT `' .$column. '` FROM `{$db_prefix}' .$table. '` WHERE `' .$column. '` = :unique', array('unique' => $unique));
         } while ( $SQL -> rowCount() > 0);
-
+        
         return $unique;
     }
 
@@ -1002,58 +1000,54 @@ class pantheraDB extends pantheraClass
 }
 
 /**
-  * Where clause generator
-  *
-  * @package Panthera\core\database
-  * @author Damian Kęska
-  */
+ * Where clause generator
+ *
+ * @package Panthera\core\system\database
+ * @author Damian Kęska
+ */
 
 class whereClause
 {
 	protected $SQL=NuLL, $vals = array(), $groups = array();
-
+    
 	/**
 	  * Add statement before group of instructions
 	  *
 	  * @param int $group
 	  * @param string $statement "AND" or "OR"
-	  * @return void
+	  * @return object
 	  * @author Damian Kęska
 	  */
 
 	public function setGroupStatement($group, $statement)
 	{
 	    if ($statement != 'AND' and $statement != 'OR')
-	    {
 	        return False;
-	    }
 
 	    if (!isset($this->groups[$group]))
-	    {
 	        $this->groups[$group] = array('query' => '', 'statement' => 'AND');
-	    }
 
 	    $this->groups[$group]['statement'] = $statement;
+        
+        return $this;
 	}
 
 	/**
-	  * Add new instruction
-	  *
-	  * @param string $Statement "OR", "AND", "", or ","
-	  * @param string $Column
-	  * @param string $Equals '=' , '!=', '<', '>', '<=', '>=', 'LIKE'
-	  * @param mixed $Value
-	  * @param int $group
-	  * @return bool
-	  * @author Damian Kęska
-	  */
+	 * Add new instruction
+	 *
+	 * @param string $Statement "OR", "AND", "", or ","
+	 * @param string $Column
+	 * @param string $Equals '=' , '!=', '<', '>', '<=', '>=', 'LIKE'
+	 * @param mixed $Value
+	 * @param int $group
+	 * @return bool|object Returns self object on true
+	 * @author Damian Kęska
+	 */
 
 	public function add ($Statement, $Column, $Equals, $Value, $group = 1)
 	{
 	    if (!isset($this->groups[$group]))
-	    {
 	        $this->groups[$group] = array('query' => '', 'statement' => 'AND');
-	    }
 
         $this->Values = array();
 		$Equals_list = array ( '=' , '!=', '<', '>', '<=', '>=', 'LIKE' );
@@ -1070,20 +1064,16 @@ class whereClause
 			return false;
 
 		if (!$this->groups[$group]['query'])
-		{
 			$Statement = '';
-		}
 
 		$columnTmp = $Column;
 
 		while (isset($this->vals[$columnTmp]))
-		{
 		    $columnTmp = $Column.rand(0,9999);
-		}
 
 		$this->groups[$group]['query'] .= $Statement. ' `' .$Column. '` ' .$Equals. ' :' .$columnTmp. ' ';
         $this->vals[(string)$columnTmp] = $Value;
-		return true;
+		return $this;
 	}
 
 	/**
@@ -1098,9 +1088,7 @@ class whereClause
 	    $this->SQL = '';
 
 	    foreach ($this->groups as $group)
-	    {
 	        $this->SQL .= ' ' .$group['statement']. ' (' .$group['query']. ')';
-	    }
 
 	    $this -> SQL = ltrim($this -> SQL, 'AND OR');
 
@@ -1504,7 +1492,7 @@ abstract class pantheraFetchDB
     {
         $panthera = pantheraCore::getInstance();
         $info = static::_getClassInfoStatic();
-
+        
         return $panthera -> db -> insert($info['tableName'], $args);
     }
 

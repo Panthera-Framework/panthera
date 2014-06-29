@@ -164,7 +164,7 @@ class Tools
      * @author Alexander <http://forum.codecall.net/topic/59486-php-create-seo-friendly-url-titles-slugs/#axzz2JCfcCHFX>
      */
     
-    public static function seoUrl($string) 
+    public static function seoUrl($string)
     {
         //Unwanted:  {UPPERCASE} ; / ? : @ & = + $ , . ! ~ * ' ( )
         $string = strtolower($string);
@@ -175,5 +175,68 @@ class Tools
         //Convert whitespaces and underscore to dash
         $string = preg_replace("/[\s_]/", "-", $string);
         return $string;
+    }
+    
+    /**
+     * Convert user-friendly date eg. +30 days to currentdate+30 days in $format
+     * 
+     * @param string|int $string Input date string or int
+     * @param string $format (Optional) Date format, defaults to "d-m-Y H:i" (MySQL default)
+     * @author Damian Kęska
+     * @return string
+     */
+    
+    public static function userFriendlyStringToDate($string, $format='d-m-Y H:i')
+    {
+        $string = trim($string); // strip out of whitespaces
+        
+        if (in_array(substr($string, 0, 1), array('+', '-')))
+        {
+            // integration with current active system locale
+            $localized = array(
+                localize('second') => 'second',
+                localize('seconds') => 'seconds',
+                localize('minute') => 'minute',
+                localize('minutes') => 'minutes',
+                localize('hour') => 'hour',
+                localize('hours') => 'hours',
+                localize('day') => 'day',
+                localize('days') => 'days',
+                localize('month') => 'month',
+                localize('months') => 'months',
+                localize('year') => 'year',
+                localize('years') => 'years',
+            );
+            
+            foreach ($localized as $translated => $original)
+                $string = str_ireplace($translated, $original, $string);
+            
+            $date = new DateTime;
+            $date -> modify($string);
+            return $date -> format($format);
+        }
+
+        if (!is_int($string))
+            $string = strtotime($string);
+
+        return date($format, $string);
+    }
+
+    /**
+     * Check if date expired
+     * 
+     * @param string|int $date Input date
+     * @return bool
+     */
+
+    public static function dateExpired($date)
+    {
+        if (is_string($date))
+            $date = strtotime($date);
+        
+        if ($date > time())
+            return false;
+        
+        return true;
     }
 }

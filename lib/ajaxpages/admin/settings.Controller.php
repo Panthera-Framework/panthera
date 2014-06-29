@@ -477,5 +477,12 @@ class settingsAjaxControllerSystem extends pageController
             'icon' => '{$PANTHERA_URL}/images/admin/menu/routing.png',
             'linkType' => 'ajax'
         );
+        
+        $defaults['content']['advertisements'] = array(
+            'link' => '?display=advertisements&cat=admin',
+            'name' => localize('Adveristiments management', 'advertisements&cat'),
+            'icon' => '{$PANTHERA_URL}/images/admin/menu/ads.png',
+            'linkType' => 'ajax'
+        );
     }
 }
