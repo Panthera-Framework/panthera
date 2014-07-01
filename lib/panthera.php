@@ -1080,9 +1080,12 @@ class pantheraCore
         if ($this->config->getKey('header_framing', 'sameorigin', 'string'))
             header('X-Frame-Options: ' .$this->config->getKey('header_framing'));
 
-        // Security: Mask PHP version
+        // Security through obscurity: Mask PHP version
         if ($this->config->getKey('header_maskphp'))
-            header('X-Powered-By: Django/1.2.1 SVN-13336');
+        {
+            header('X-Powered-By: WSGIServer');
+            header('Server: lighttpd/2.0.0');
+        }
 
         // Security: XSS protection for IE
         if ($this->config->getKey('header_xssprot'))
