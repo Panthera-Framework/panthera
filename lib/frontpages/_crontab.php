@@ -169,8 +169,11 @@ class _crontabControllerSystem extends pageController
 
     public function checkCrontabKey()
     {
+        if (PANTHERA_MODE == 'CLI')
+            return True;
+        
         $key = $_GET['_appkey'];
-
+        
         if ($key != $this -> panthera -> config -> getKey('crontab_key', generateRandomString(64), 'string'))
         {
             header('HTTP/1.1 403 Forbidden');
