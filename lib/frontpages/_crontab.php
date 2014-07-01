@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Panthera crontab front controller
  *
