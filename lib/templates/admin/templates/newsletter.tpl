@@ -111,7 +111,7 @@ function removeCategory(id)
         <tbody>
         {loop="$categories"}
             <tr id="nid_{$value.nid}">
-	            <td><a href="#{$value.title}" onclick="navigateTo('?display=compose_newsletter&cat=admin&nid={$value.nid}')">{$value.title}</a></td>
+	            <td><a href="?display=newsletter.compose&cat=admin&nid={$value.nid}" class="ajax_link">{$value.title}</a></td>
 	            <td>{$value.users}</td>
 	            <td>{$value.default_type}</td>
 	            <td>{$value.created}</td>

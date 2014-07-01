@@ -99,7 +99,7 @@ class newsletterAjaxControllerSystem extends pageController
 		$limit = $uiPager -> getPageLimit();
 		$newsletters = newsletterManagement::search('', $limit[1], $limit[0]);
 
-		if ($_GET['query'] != '')
+		if (isset($_GET['query']) and $_GET['query'])
 		{
 		    foreach ($newsletters as $key => $newsletter)
 		    {
@@ -112,15 +112,12 @@ class newsletterAjaxControllerSystem extends pageController
 
 		$this -> panthera -> locale -> loadDomain('search');
 
-		$sBar = new uiSearchbar( 'uiTop' );
-		$sBar -> setQuery( $_GET['query'] );
-		$sBar -> setAddress( '?display=newsletter&cat=admin' );
-		$sBar -> navigate( True );
-		$sBar -> addIcon( '{$PANTHERA_URL}/images/admin/ui/permissions.png', '#', '?display=acl&cat=admin&popup=true&name=can_manage_newsletter', localize( 'Manage permissions' ) );
+		$sBar = new uiSearchbar('uiTop');
+		$sBar -> navigate(True);
 
-		$this -> panthera -> template -> push('mailingTypes', newsletterManagement::getTypes());
-		$this -> panthera -> template -> push('categories', $newsletters);
+		$this -> template -> push('mailingTypes', newsletterManagement::getTypes());
+		$this -> template -> push('categories', $newsletters);
 
-		return $this -> panthera -> template -> compile('newsletter.tpl');
+		return $this -> template -> compile('newsletter.tpl');
 	}
 }

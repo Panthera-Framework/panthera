@@ -42,9 +42,7 @@ class pantheraAutoloader
             $modulesContent = filesystem::scandirDeeply(SITE_DIR. '/content/modules');
 
             if (is_array($modulesContent))
-            {
                 $modules = array_merge($modules, $modulesContent);
-            }
         }
 
         $modules = array_merge($modules, filesystem::scandirDeeply(PANTHERA_DIR. '/pages', True));

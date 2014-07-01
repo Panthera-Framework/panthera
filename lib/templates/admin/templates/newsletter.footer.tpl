@@ -14,9 +14,7 @@ jQuery(document).ready(function($) {
     $('#newsletterFooterForm').submit(function(event){
         panthera.jsonPOST({ data: '#newsletterFooterForm', mce: 'tinymce_all', success: function (response) {
                 if (response.status == 'success')
-                {
-                    navigateTo('{$AJAX_URL}?display=compose_newsletter&cat=admin&nid={$nid}');
-                }
+                    navigateTo('{$AJAX_URL}?display=newsletter.compose&cat=admin&nid={$nid}');
             } 
         });
         
@@ -26,7 +24,7 @@ jQuery(document).ready(function($) {
 </script>
 
 <div style="margin-top: 25px;">
-<form id="newsletterFooterForm" action="{$AJAX_URL}?display=compose_newsletter&cat=admin&nid={$nid}&action=editFooter" method="POST">
+<form id="newsletterFooterForm" action="{$AJAX_URL}?display=newsletter.compose&cat=admin&nid={$nid}&action=editFooter" method="POST">
     <table class="formTable" style="margin: 0 auto;">
         <thead>
             <tr>

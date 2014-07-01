@@ -17,41 +17,6 @@
     </div>
 </div>
 
-<style>
-.blockMenu {
-	width: 30%;
-	background-color: #56687B;
-	float: left;
-	padding-bottom: 80px;
-	border-bottom: solid 1px #343e4a;
-	margin-right: 50px;
-	min-width: 355px;
-}
-
-.blockMenu li {
-	list-style: none outside none;
-	color: white;
-	background-color: #56687B;
-	padding: 10px;
-	border: solid 1px #6a7b8f;
-	border-top: 0px;
-	border-left: 0px;
-}
-
-.blockMenu li:nth-child(1) {
-	background: url('../../../images/admin/pantheraUI/searchbar-bg.png') repeat scroll 0% 0% transparent;
-}
-
-.blockMenu li:nth-child(2n) {
-	background-color: #404c5a;
-}
-
-.blockMenu a {
-	color: white;
-	text-decoration: none;
-}
-</style>
-
 <script type="text/javascript">
 $('#newBlockForm').submit(function () {
 	panthera.jsonPOST({data: '#newBlockForm', success: function(response) {

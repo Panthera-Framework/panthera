@@ -1,12 +1,12 @@
 <?php
 /**
-  * Compose newsletter
-  *
-  * @package Panthera\core\components\newsletter
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Compose newsletter
+ *
+ * @package Panthera\core\components\newsletter
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license LGPLv3
+ */
 
 /**
  * Compose newsletter
@@ -16,9 +16,9 @@
  * @author Mateusz Warzyński
  */
 
-class composeNewsletterAjaxControllerCore extends pageController
+class newsletter_composeAjaxControllerCore extends pageController
 {
-	protected $permissions = 'can_compose_newsletters';
+	protected $permissions = 'admin.newsletter.cat.{$nid}';
 
     protected $newsletter = null;
 
@@ -40,18 +40,26 @@ class composeNewsletterAjaxControllerCore extends pageController
 		$this -> checkPermissions(array('can_manage_newsletter', 'can_manage_newsletter_'.$this->newsletter->nid));
 
 		// content cannot be shorten than 10 characters
-		if (strlen($_POST['content']) < 5)
-			ajax_exit(array('status' => 'failed', 'message' => localize('Message is too short', 'newsletter')));
+        if (strlen($_POST['content']) < 5)
+            ajax_exit(array(
+			    'status' => 'failed',
+			    'message' => localize('Message is too short', 'newsletter'),
+            ));
 
 		if (strlen($_POST['title']) < 3 and !$_POST['saveasdraft'])
-		    ajax_exit(array('status' => 'failed', 'message' => localize('Title is too short', 'newsletter')));
+		    ajax_exit(array(
+		        'status' => 'failed',
+		        'message' => localize('Title is too short', 'newsletter'),
+            ));
 
 		if (@$_POST['putToDrafts'] or @$_POST['saveasdraft'])
 		{
 		    editorDraft::createDraft($_POST['content'], $this->panthera->user->id);
 
 		    if (@$_POST['saveasdraft'])
-				ajax_exit(array('status' => 'success', 'message' => localize('Saved')));
+				ajax_exit(array(
+				    'status' => 'success',
+                ));
 		}
 
 		$options = array(
@@ -60,7 +68,9 @@ class composeNewsletterAjaxControllerCore extends pageController
 
 		$this -> newsletter -> execute($_POST['content'], htmlspecialchars($_POST['title']), $_POST['from'], $options);
 
-		ajax_exit(array('status' => 'success', 'message' => localize('Sent', 'newsletter')));
+		ajax_exit(array(
+		    'status' => 'success',
+        ));
 	}
 
 
@@ -74,17 +84,20 @@ class composeNewsletterAjaxControllerCore extends pageController
 
 	public function editFooterAction()
 	{
-		$this -> checkPermissions(array('can_manage_newsletter', 'can_manage_newsletter_' .$this->newsletter->nid));
+		$this -> checkPermissions(array('can_manage_newsletter', 'admin.newsletter.cat.' .$this->newsletter->nid));
 
 	    if (isset($_POST['footerContent']))
 	    {
 	        $attr['footer'] = $_POST['footerContent'];
 	        $this -> newsletter -> attributes = serialize($attr);
 	        $this -> newsletter -> save();
-	        ajax_exit(array('status' => 'success'));
+            
+	        ajax_exit(array(
+	           'status' => 'success',
+            ));
 	    }
 
-	    $this -> panthera -> template -> display('newsletter_footer.tpl');
+	    $this -> panthera -> template -> display('newsletter.footer.tpl');
 	    pa_exit();
 	}
 
@@ -166,9 +179,7 @@ class composeNewsletterAjaxControllerCore extends pageController
 		$this -> panthera -> template -> push ('mailFooter', filterInput($attr['footer'], 'wysiwyg'));
 
 		$this -> dispatchAction();
-
-		return $this -> panthera -> template -> compile('compose_newsletter.tpl');
-
+		return $this -> panthera -> template -> compile('newsletter.compose.tpl');
 	}
 
 }

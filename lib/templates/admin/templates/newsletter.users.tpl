@@ -1,9 +1,9 @@
 <script type="text/javascript">
 /**
-  * Add a new subscriber
-  *
-  * @author Damian Kęska
-  */
+ * Add a new subscriber
+ *
+ * @author Damian Kęska
+ */
 
 function addSubscriber()
 {
@@ -17,16 +17,16 @@ function addSubscriber()
 }
 
 /**
-  * Remove old one
-  *
-  * @param string name
-  * @return mixed 
-  * @author Damian Kęska
-  */
+ * Remove old one
+ *
+ * @param string name
+ * @return mixed 
+ * @author Damian Kęska
+ */
 
 function removeSubscriber(id, elementID)
 {
-    panthera.jsonPOST({ url: '?display=newsletter_users&cat=admin&nid={$nid}&action=removeSubscriber', data: 'id='+id, messageBox: 'w2ui', success: function (response) {
+    panthera.jsonPOST({ url: '?display=newsletter.users&cat=admin&nid={$nid}&action=removeSubscriber', data: 'id='+id, messageBox: 'w2ui', success: function (response) {
             if (response.status == "success")
             {
                 $("#sub_"+elementID).remove();
@@ -50,7 +50,7 @@ function removeSubscriber(id, elementID)
                 <th>{function="localize('Options', 'newsletter')"}</th>
             </tr>
         </thead>
-        <tbody id="newsletterUsers">
+        <tbody id="newsletterUsers" class="bgTable">
             {loop="$newsletter_users"}
             <tr id="sub_{$value.id}">
                 <td>{$value.type}</td>
@@ -69,27 +69,23 @@ function removeSubscriber(id, elementID)
             </tr>
             {/loop}
             
-            <form action="?display=newsletter_users&cat=admin&nid={$nid}&action=addSubscriber" method="POST" id="addSubscriberForm">
             <tr>
-                <td>
+                <td colspan="5">
+                	<form action="?display=newsletter.users&cat=admin&nid={$nid}&action=addSubscriber" method="POST" id="addSubscriberForm">
                     <select name="add_user_type" name="type">
                         {loop="$newsletter_types"}
                         <option value="{$value}">{$value}</option>
                         {/loop}
                     </select>
-                </td>
-                <td colspan="2"><input type="text" id="add_user_email" name="email" placeholder="{function="localize('Address', 'newsletter')"}" style="width: 95%;"></td>
-                <td><input type="text" id="add_user_notes" name="notes" placeholder="{function="localize('Notes', 'newsletter')"}" style="width: 95%;"></td>
+                <input type="text" id="add_user_email" name="email" placeholder="{function="localize('Address', 'newsletter')"}">
+                <input type="text" id="add_user_notes" name="notes" placeholder="{function="localize('Notes', 'newsletter')"}">
                 {loop="$additionalFields"}
-                <td><input type="text" id="add_user_extrafield_{$key}" name="extrafield_{$key}" placeholder="{function="localize($value[0], $value[1])"}"></th>
+                <input type="text" id="add_user_extrafield_{$key}" name="extrafield_{$key}" placeholder="{function="localize($value[0], $value[1])"}">
                 {/loop}
-                <td>
-                    <a onclick="addSubscriber();" style="cursor: pointer;">
-                    <img src="{$PANTHERA_URL}/images/admin/list-add.png" style="height: 20px;">
-                    </a>
+                    <input type="button" value="{function="localize('Add')"}" onclick="addSubscriber();">
+                    </form>
                 </td>
             </tr>
-            </form>
         </tbody>
     </table>
     

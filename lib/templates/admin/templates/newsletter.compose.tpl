@@ -17,9 +17,7 @@ jQuery(document).ready(function($) {
         event.preventDefault();
         panthera.jsonPOST({ data: '#newsletter_form', mce: 'tinymce_all', success: function (response) {
                 if (response.status == 'success')
-                {
                     $('#messagesQueueNoMessages').hide();
-                }
             } 
         });
     });
@@ -37,11 +35,11 @@ function saveAsDraft()
 
 <div id="topContent">
     <div class="searchBarButtonArea">
-        <input type="button" value="{function="localize('Saved drafts', 'editor')"}" onclick="panthera.popup.toggle('?display=editor_drafts&cat=admin&popup=true&callback=mceInsertContent')">
-        <input type="button" value="{function="localize('Edit footer', 'newsletter')"}" onclick="panthera.popup.toggle('?display=compose_newsletter&cat=admin&nid={$nid}&action=editFooter')">
-        <input type="button" value="{function="localize('New message', 'newsletter')"}" onclick="navigateTo('?display=compose_newsletter&cat=admin&nid={$nid}')">
+        <input type="button" value="{function="localize('Saved drafts', 'editor')"}" onclick="panthera.popup.toggle('?display=editor.drafts&cat=admin&popup=true&callback=mceInsertContent')">
+        <input type="button" value="{function="localize('Edit footer', 'newsletter')"}" onclick="panthera.popup.toggle('?display=newsletter.compose&cat=admin&nid={$nid}&action=editFooter')">
+        <input type="button" value="{function="localize('New message', 'newsletter')"}" onclick="navigateTo('?display=newsletter.compose&cat=admin&nid={$nid}')">
         <input type="button" value="{function="localize('Messages queue', 'newsletter')"}" onclick="panthera.popup.toggle('element:#messagesQueue')">
-        <input type="button" value="{function="localize('Manage subscribers', 'newsletter')"}" onclick="panthera.popup.toggle('?display=newsletter_users&cat=admin&nid={$nid}')">
+        <input type="button" value="{function="localize('Manage subscribers', 'newsletter')"}" onclick="panthera.popup.toggle('?display=newsletter.users&cat=admin&nid={$nid}')">
         <input type="button" value="{function="localize('Recent subscribers', 'newsletter')"}" onclick="panthera.popup.toggle('element:#lastSubscribed')">
     </div>
 </div>
@@ -50,14 +48,14 @@ function saveAsDraft()
 
 <!-- Messages queue popup -->
 <div style="display: none;" id="messagesQueue">
-    <table style="margin: 0 auto;">
+    <table style="margin: 0 auto; min-width: 50%;">
             <thead>
                 <tr>
                     <th colspan="3">{function="localize('Queued messages to send', 'newsletter')"}</th>
                 </tr>
             </thead>
             
-            <tbody>
+            <tbody class="bgTable">
                 {if="count($messages_queue)"}
                 {loop="$messages_queue"}
                     <tr>
@@ -75,14 +73,14 @@ function saveAsDraft()
 
 <!-- Last subscriptions popup -->
 <div style="display: none;" id="lastSubscribed">
-    <table style="margin: 0 auto;">
+    <table style="margin: 0 auto; min-width: 50%;">
             <thead>
                 <tr>
                     <th colspan="2">{function="localize('Recently subscribed by', 'newsletter')"}</th>
                 </tr>
             </thead>
             
-            <tbody>
+            <tbody class="bgTable">
                 {if="count($recent_subscribers) > 0"}
                 {loop="$recent_subscribers"}
                     <tr><td>{$value.address}</td><td>{$value.added}</td></tr>
@@ -93,7 +91,7 @@ function saveAsDraft()
             </tbody>
         </table>
 </div>
-<form id="newsletter_form" action="{$AJAX_URL}?display=compose_newsletter&cat=admin&nid={$nid}" method="POST">
+<form id="newsletter_form" action="{$AJAX_URL}?display=newsletter.compose&cat=admin&nid={$nid}" method="POST">
 <div class="ajax-content centeredObject" style="text-align: center; padding-left: 0px;">
     <div style="display: inline-block; margin: 0 auto;">
         <table style="width: 100%; min-width: 800px; margin-bottom: 25px;">

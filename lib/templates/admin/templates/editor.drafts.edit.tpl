@@ -1,7 +1,7 @@
 {$site_header}
 
 <div style="margin-top: 25px;">
-<form action="?display=editor_drafts&cat=admin&id={$draftID}&action=saveDraft" method="POST" id="saveDraftForm">
+<form action="?display=editor.drafts&cat=admin&id={$draftID}&action=saveDraft" method="POST" id="saveDraftForm">
     <table class="formTable" style="margin: 0 auto;">
         <thead>
             <tr>
@@ -20,7 +20,7 @@
         <tfoot>
             <tr>
                 <td colspan="2" style="padding-top: 35px;">
-                    <input type="button" value="{function="localize('Cancel')"}" onclick="panthera.popup.create('?display=editor_drafts&cat=admin&callback={$callback}')" style="float: left; margin-left: 30px;">
+                    <input type="button" value="{function="localize('Cancel')"}" onclick="panthera.popup.create('?display=editor.drafts&cat=admin&callback={$callback}')" style="float: left; margin-left: 30px;">
                     <input type="submit" value="{function="localize('Save')"}" style="float: right;">
                 </td>
             </tr>
@@ -31,10 +31,10 @@
 
 <script type="text/javascript">
 /**
-  * Init MCE editor
-  *
-  * @author Damian Kęska
-  */
+ * Init MCE editor
+ *
+ * @author Damian Kęska
+ */
 
 function initEditor()
 {
@@ -42,17 +42,15 @@ function initEditor()
 }
 
     /**
-      * Init MCE Editor
-      *
-      * @author Damian Kęska
-      */
+     * Init MCE Editor
+     *
+     * @author Damian Kęska
+     */
     
     $('#saveDraftForm').submit(function () {
         panthera.jsonPOST({data: '#saveDraftForm', mce: 'tinymce_all', success: function (response) {
                 if (response.status == 'success')
-                {
-                    panthera.popup.create('?display=editor_drafts&cat=admin&popup=true&callback={$callback}');
-                }
+                    panthera.popup.create('?display=editor.drafts&cat=admin&popup=true&callback={$callback}');
             }
         })               
 

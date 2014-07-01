@@ -1,0 +1,4 @@
+{
+    "pagerLink": "#",
+    "pagerOnClick": "panthera.popup.create('?{$queryString}')"
+}

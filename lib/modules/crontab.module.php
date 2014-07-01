@@ -1,11 +1,11 @@
 <?php
 /**
-  * Scheduled tasks management
-  *
-  * @package Panthera\modules\core
-  * @author Damian Kęska
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Scheduled tasks management
+ *
+ * @package Panthera\core\components\crontab
+ * @author Damian Kęska
+ * @license LGPLv3
+ */
 
 if (!defined('IN_PANTHERA'))
     exit;
@@ -22,6 +22,13 @@ include (PANTHERA_DIR. '/share/cron-expression/src/Cron/MonthField.php');
 include (PANTHERA_DIR. '/share/cron-expression/src/Cron/DayOfWeekField.php');
 include (PANTHERA_DIR. '/share/cron-expression/src/Cron/YearField.php');
 
+/**
+ * Scheduled tasks management
+ *
+ * @package Panthera\core\components\crontab
+ * @author Damian Kęska
+ */
+
 class crontab extends pantheraFetchDB
 {
     protected $_tableName = 'cronjobs';
@@ -29,11 +36,11 @@ class crontab extends pantheraFetchDB
     protected $_constructBy = array('jobid', 'jobname', 'id', 'array');
 
     /**
-      * Get job data
-      *
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Get job data
+     *
+     * @return mixed
+     * @author Damian Kęska
+     */
 
     public function getData($serialize=False)
     {
@@ -41,11 +48,11 @@ class crontab extends pantheraFetchDB
     }
 
     /**
-      * Get interval expression in crontab-compatible syntax
-      *
-      * @return string
-      * @author Damian Kęska
-      */
+     * Get interval expression in crontab-compatible syntax
+     *
+     * @return string
+     * @author Damian Kęska
+     */
 
     public function getIntervalExpression()
     {
@@ -53,12 +60,12 @@ class crontab extends pantheraFetchDB
     }
 
     /**
-      * Set job data
-      *
-      * @param mixed data
-      * @return void
-      * @author Damian Kęska
-      */
+     * Set job data
+     *
+     * @param mixed data
+     * @return void
+     * @author Damian Kęska
+     */
 
     public function setData($data)
     {
@@ -198,7 +205,7 @@ class crontab extends pantheraFetchDB
             if ($this->__get('count_left') != -1)
                 $this->__set('count_left', (intval($this->__get('count_left'))-1));
 
-            $this -> updateExecutionTimeStats(microtime_float()-$t);
+            $this -> updateExecutionTimeStats(microtime(true)-$t);
             $this -> log = $this -> panthera -> logging -> getOutput();
 
             return $return;
@@ -207,11 +214,11 @@ class crontab extends pantheraFetchDB
     }
 
     /**
-      * Update job execution time statistics
-      *
-      * @param float $time
-      * @return void
-      * @author Damian Kęska
+     * Update job execution time statistics
+     *
+     * @param float $time
+     * @return void
+     * @author Damian Kęska
       */
 
     protected function updateExecutionTimeStats($time)
@@ -296,11 +303,11 @@ class crontab extends pantheraFetchDB
     }
 
     /**
-      * Mark job for deletion (set count_left to 0)
-      *
-      * @return void
-      * @author Damian Kęska
-      */
+     * Mark job for deletion (set count_left to 0)
+     *
+     * @return void
+     * @author Damian Kęska
+     */
 
     public function finish()
     {
@@ -486,12 +493,12 @@ class crontab extends pantheraFetchDB
     }
 
     /**
-      * Get default intervals
-      *
-      * @param string $intervalName to get expression for
-      * @return array
-      * @author Damian Kęska
-      */
+     * Get default intervals
+     *
+     * @param string $intervalName to get expression for
+     * @return array
+     * @author Damian Kęska
+     */
 
     public static function getDefaultIntervals($intervalName='')
     {
@@ -507,15 +514,17 @@ class crontab extends pantheraFetchDB
 
         // hours
         for ($i=1; $i <= 24; $i++)
-        {
-            $options[$i. 'h'] = array('title' => slocalize('%s hours', 'messages', $i), 'expression' => '* */' .$i. ' * * * *');
-        }
+            $options[$i. 'h'] = array(
+                'title' => slocalize('%s hours', 'messages', $i),
+                'expression' => '* */' .$i. ' * * * *',
+            );
 
         // days
         for ($i=1; $i <= 31; $i++)
-        {
-            $options[$i. 'd'] = array('title' => slocalize('%s days', 'messages', $i), 'expression' => '* * */' .$i. ' * * *');
-        }
+            $options[$i. 'd'] = array(
+                'title' => slocalize('%s days', 'messages', $i),
+                'expression' => '* * */' .$i. ' * * *',
+            );
 
         $options['1o'] = array('title' => slocalize('%s months', 'messages', 1), 'expression' => '* * * */1 * *');
         $options['2o'] = array('title' => slocalize('%s months', 'messages', 2), 'expression' => '* * * */2 * *');
@@ -528,9 +537,7 @@ class crontab extends pantheraFetchDB
         if ($intervalName)
         {
             if (isset($options[$intervalName]))
-            {
                 return $options[$intervalName];
-            }
 
             return '7d';
         }
@@ -721,9 +728,7 @@ class cronjobs
                 continue;
 
              if ((count(scandir($item)) == 2) or !is_readable($item))
-             {
                  rmdir($item);
-             }
          }
 
          $panthera -> logging -> output('Files cache cleanup finished in ' .(microtime(TRUE)-$time). 's', 'pantheraCache');
