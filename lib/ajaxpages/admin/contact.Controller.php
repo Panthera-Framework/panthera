@@ -1,21 +1,23 @@
 <?php
 /**
-  * Contact page configuration
-  *
-  * @package Panthera\core\components\contact
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license LGPLv3
-  */
+ * Contact page configuration
+ *
+ * @package Panthera\core\components\contact
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license LGPLv3
+ */
+ 
+pageController::$searchFrontControllerName = 'contactAjaxControllerSystem';
 
 /**
-  * Contact page configuration
-  *
-  * @package Panthera\core\components\contact
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  */
-
+ * Contact page configuration
+ *
+ * @package Panthera\core\components\contact
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ */
+ 
 class contactAjaxControllerSystem extends pageController
 {
     protected $permissions = array(
@@ -77,7 +79,7 @@ class contactAjaxControllerSystem extends pageController
         $html = str_replace("\n", '\\n', $this->panthera->config->getKey($fields['contact_text']));
         $html = str_replace("\r", '\\r', $html);
         $html = htmlspecialchars($html, ENT_QUOTES);
-
+        
         if (!defined('CONTACT_SKIP_MAP'))
         {
             if ($contactData['map'] == NULL)
@@ -98,7 +100,7 @@ class contactAjaxControllerSystem extends pageController
 
             if (!$zoom)
                 $zoom = 1;
-
+            
             $this -> panthera -> template -> push ('map_zoom', $zoom);
             $this -> panthera -> template -> push ('map_x', $x);
             $this -> panthera -> template -> push ('map_y', $y);
@@ -116,8 +118,7 @@ class contactAjaxControllerSystem extends pageController
         $this -> panthera -> template -> push ('contact_mail', $contactData['mail']);
         $this -> panthera -> template -> push ('adress_text', htmlspecialchars(str_replace("\n", ' ', $contactData['text'])));
         $this -> panthera -> template -> push ('contactLanguage', $this->language);
-        $this -> panthera -> template -> display('contact.tpl');
-        pa_exit();
+        return $this -> panthera -> template -> compile('contact.tpl');
     }
 
     /**
