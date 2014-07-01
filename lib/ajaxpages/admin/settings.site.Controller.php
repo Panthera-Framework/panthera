@@ -69,7 +69,7 @@ class settings_siteAjaxControllerSystem extends pageController
         $config -> setDescription('url', localize('A full domain with protocol included eg. http://example.com', 'settings'));
         $config -> setDescription('redirect_after_login', localize('Redirect unprivileged user to this page after login (relative path)', 'settings'));
         $config -> setDescription('crontab_key', localize('A secret key used to execute cron jobs', 'settings'));
-        $config -> setDescription('gmaps_key', localize('Google APIs key', 'settings'));
+        $config -> setDescription('contact.gmaps_key', localize('Google APIs key', 'settings'));
         $config -> setDescription('debug', localize('Rich featured and lightweight Panthera debugger', 'settings'));
         $config -> setDescription('dateFormat', localize('Preferred, system wide date format accessible via $this -> panthera -> dateFormat', 'settings'));
 
