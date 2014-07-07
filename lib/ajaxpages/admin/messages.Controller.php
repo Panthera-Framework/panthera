@@ -522,14 +522,10 @@ class messagesAjaxControllerSystem extends pageController
 
         // order by
         if (in_array($_GET['order'], $orderColumns))
-        {
             $order = $_GET['order'];
-         }
 
         if ($_GET['direction'] == 'DESC' or $_GET['direction'] == 'ASC')
-        {
             $direction = $_GET['direction'];
-        }
 
         if ($sBar -> getQuery())
         {
@@ -549,9 +545,9 @@ class messagesAjaxControllerSystem extends pageController
         // get all categories
         $categories = quickCategory::fetchAll($w, $limit[1], $limit[0], $order, $direction);
         $this -> panthera -> template -> push('categories', $categories);
-
+        
         // add icon to titlebar
         $this -> uiTitlebarObject -> addIcon($this -> panthera -> template -> getStockIcon('quickMessages'), 'left');
-        return $this -> panthera -> template -> compile('messages.tpl');
+        return $this -> template -> compile('messages.tpl');
     }
 }

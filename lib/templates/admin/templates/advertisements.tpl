@@ -39,6 +39,18 @@ $('#removeBlockForm').submit(function () {
 	
 	return false;
 });
+
+function removeAd(adid)
+{
+	panthera.confirmBox.create('{function="localize('Are you sure you want delete this advertisement?', 'advertisements')"}', function (responseText) {
+        if (responseText == 'Yes')
+        {
+        	panthera.jsonPOST({url: '?display=advertisements&cat=admin&action=removeAd', data: 'adId='+adid, success: function(response) {
+				if (response.status == 'success') { navigateTo(window.location.href); }
+			}});
+        }
+	});
+}
 {/if}
 </script>
 
@@ -78,6 +90,10 @@ $('#removeBlockForm').submit(function () {
                 <th>
                     <b>{function="localize('Expires', 'advertisements')"}</b>
                 </th>
+                
+                <th>
+                	<b>{function="localize('Options')"}
+                </th>
             </tr>
         </thead>
         
@@ -88,6 +104,7 @@ $('#removeBlockForm').submit(function () {
            		<td>{$value->position}</td>
            		<td><a style="cursor: pointer;" onclick="panthera.popup.toggle('?display=advertisements&cat=admin&action=editAd&adId={$value->adid}');">{$value->name}</a></td>
            		<td>{if="Tools::dateExpired($value->expires)"}<b>{$value->expires} ({function="localize('expired', 'advertisements')"})</b>{else}{$value->expires}{/if}</td>
+           		<td><img src="{$PANTHERA_URL}/images/admin/ui/delete.png" onclick="removeAd('{$value->adid}')" style="max-height: 22px; cursor: pointer;" alt="{function="localize('Remove')"}" title="{function="localize('Remove')"}"></a>
            	</tr>
            	{/loop}
            	{else}

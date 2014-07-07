@@ -1,7 +1,25 @@
 <?php
+/**
+ * Advertisements management for Panthera Framework
+ * 
+ * @package Panthera\core\components\advertisements
+ * @author Damian Kęska
+ * @license LGPLv3
+ */
+ 
+/**
+ * Advertisements management for Panthera Framework
+ * 
+ * @package Panthera\core\components\advertisements
+ * @author Damian Kęska
+ */
+
 class advertisementsAjaxControllerSystem extends pageController
 {
-    protected $permissions = 'admin';
+    protected $permissions = array(
+        'admin.adveristiments' => array('Adveristiments management', 'adveristiments'),
+    );
+    
     protected $uiTitlebar = array(
         'Adveristiments management', 'adveristiments',
     );
@@ -46,6 +64,30 @@ class advertisementsAjaxControllerSystem extends pageController
         $this -> template -> push('adItem', $item);
         $this -> template -> display('advertisements.new.tpl');
         pa_exit();
+    }
+
+    /**
+     * Remove advertisement
+     * 
+     * @author Damian Kęska
+     * @return null
+     */
+
+    public function removeAdAction()
+    {
+        $item = new adItem('adid', $_POST['adId']);
+        
+        if (!$item -> exists())
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => localize('Advertisement not found', 'advertisements'),
+            ));
+            
+        $item -> delete();
+        
+        ajax_exit(array(
+            'status' => 'success',
+        ));
     }
     
     /**
