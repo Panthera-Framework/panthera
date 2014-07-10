@@ -1,19 +1,19 @@
 <?php
 /**
-  * Simple package manager for Panthera Framework
-  *
-  * @package Panthera\modules\leopard
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Simple package manager for Panthera Framework
+ *
+ * @package Panthera\core\system\leopard
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license LGPLv3
+ */
 
 /**
-  * Panthera package creator
-  *
-  * @package Panthera\modules\leopard
-  * @author Damian Kęska
-  */
+ * Panthera package edit class
+ *
+ * @package Panthera\core\system\leopard
+ * @author Damian Kęska
+ */
 
 class leopardPackage
 {
@@ -24,11 +24,11 @@ class leopardPackage
     protected $panthera;
 
     /**
-      * Constructor
-      *
-      * @param string $destination Phar file
-      * @author Damian Kęska
-      */
+     * Constructor
+     *
+     * @param string $destination Phar file
+     * @author Damian Kęska
+     */
 
     public function __construct($destination)
     {
@@ -46,6 +46,7 @@ class leopardPackage
             'files' => array(),
             'version' => 0.1,
             'release' => 1,
+            'dependencies' => array(),
             'ignoredfiles' => array(),
             'requirements' => array(
                 'dependencies' => array(),
@@ -53,80 +54,96 @@ class leopardPackage
             )
         );
 
-        $this->destination = $destination;
-        $this->packageName = leopard::packageName($this->destination);
+        $this -> destination = $destination;
+        $this -> packageName = leopard::packageName($this->destination);
         $import = False;
 
-        if (is_file($this->destination))
+        if (is_file($this -> destination))
             $import = True;
 
         $panthera -> logging -> output ('Opening "' .$destination. '" file and starting buffering mode', 'leopard');
 
-        $this->phar = new Phar($destination);
-        $this->phar->startBuffering();
+        $this -> phar = new Phar($destination);
+        $this -> phar -> startBuffering();
 
         if ($import == True)
         {
             try {
-                $this -> manifest = json_decode(file_get_contents($this->phar['manifest.json']->getPathName()), True);
+                $this -> manifest = json_decode(file_get_contents($this -> phar['manifest.json'] -> getPathName()), True);
             } catch (Exception $e) {
                 $panthera -> logging -> output('Cannot open manifest.json file', 'leopard');
             }
         }
 
-        if (!$this->manifest['name'])
-            $this->manifest['name'] = $this->packageName;
+        if (!isset($this->manifest['name']) and !$this -> manifest['name'])
+            $this -> manifest['name'] = $this->packageName;
+        
+        $this -> packageName = $this -> manifest['name'];
 
         // TODO: Manifest integrity check
 
-        if (!is_array($this->manifest))
-            throw new Exception('Manifest is not an array after deserialization, check your JSON code');
+        if (!is_array($this -> manifest))
+            throw new leopardException('Manifest is not an array after deserialization, check your JSON code');
     }
 
     /**
-      * Provides read only manifest access
-      *
-      * @return object
-      * @author Damian Kęska
-      */
+     * Provides read only manifest access
+     *
+     * @return object
+     * @author Damian Kęska
+     */
 
     public function manifest()
     {
-        return (object)$this->manifest;
+        return (object)$this -> manifest;
+    }
+    
+    /**
+     * Read manifest file and return as array object
+     * 
+     * @param string $path Path to manifest.json
+     * @return stdObject
+     */
+    
+    public static function readManifestFile($path)
+    {
+        if (is_dir($path))
+            $path .= '/manifest.json';
+        
+        if (is_file($path))
+            return json_decode(file_get_contents($path));
+
+        return false;
     }
 
     /**
-      * Add file to ignore list
-      *
-      * @param string $fileName
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Add file to ignore list
+     *
+     * @param string $fileName
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function addIgnoredFile($fileName)
     {
         if ($fileName[0] == '.' or $fileName[0] == '/')
-        {
-            throw new Exception('Slashes and dots are not allowed at beigning destination path in archive');
-        }
+            throw new leopardException('Slashes and dots are not allowed at beigning destination path in archive');
 
-        if (in_array($fileName, $this->manifest['ignoredfiles']))
-        {
+        if (in_array($fileName, $this -> manifest['ignoredfiles']))
             return True;
-        }
 
-        $this->manifest['ignoredfiles'][] = $fileName;
+        $this -> manifest['ignoredfiles'][] = $fileName;
 
         return True;
     }
 
     /**
-      * Set package name
-      *
-      * @param string $name
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Set package name
+     *
+     * @param string $name
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function setPackageName($name)
     {
@@ -137,123 +154,135 @@ class leopardPackage
     }
 
     /**
-      * Set requirement, eg. Panthera or PHP version, required PHP modules
-      *
-      * @param string $requirement
-      * @param string $value
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Set requirement, eg. Panthera or PHP version, required PHP modules
+     *
+     * @param string $requirement
+     * @param string $value
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function setRequire($requirement, $value)
     {
-        $requirementsList = array('PHP', 'Panthera', 'Template_Engine', 'PHP_Modules', 'Database_Driver');
+        $requirementsList = array(
+            'PHP', 
+            'Panthera', 
+            'Template_Engine', 
+            'PHP_Modules', 
+            'Database_Driver',
+        );
 
         if (!in_array($requirement, $requirementsList))
-        {
-            throw new Exception('Unsupported requirement "' .$requirement. ', not in list: ' .implode(', ', $requirementsList). '"');
-        }
+            throw new leopardException('Unsupported requirement "' .$requirement. ', not in list: ' .implode(', ', $requirementsList). '"');
 
-        $this->manifest['requirements']['environment'][$requirement] = $value;
+        $this -> manifest['requirements']['environment'][$requirement] = $value;
         return True;
     }
 
     /**
-      * Add required package as dependency
-      *
-      * @param string $package name
-      * @param string $version
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Add required package as dependency
+     *
+     * @param string $package name
+     * @param string $version
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function addRequiredPackage($package, $version)
     {
-        $this->manifest['requirements']['dependencies'][$package] = $version;
+        $this -> manifest['requirements']['dependencies'][$package] = $version;
         return True;
     }
 
     /**
-      * Get package name
-      *
-      * @return string
-      * @author Damian Kęska
-      */
+     * Get package name
+     *
+     * @return string
+     * @author Damian Kęska
+     */
 
     public function getName()
     {
-        return $this->packageName;
+        return $this -> packageName;
     }
 
     /**
-      * Set package title
-      *
-      * @param string $title
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Set package title
+     *
+     * @param string $title
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function setTitle($title)
     {
         if (strlen($title) < 3 or strlen($title) > 64)
-            throw new Exception('The title can be only 3-64 characters size');
+            throw new leopardException('The title can be only 3-64 characters size');
 
         $this -> manifest['title'] = strip_tags($title);
         return True;
     }
 
     /**
-      * Package description
-      *
-      * @param string $description
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Package description
+     *
+     * @param string $description
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function setDescription($description)
     {
         if (strlen($description) < 3 or strlen($description) > 2048)
-            throw new Exception('Description cant be shorter than 3 characters and longer than 2048 characters');
+            throw new leopardException('Description cant be shorter than 3 characters and longer than 2048 characters');
 
         $this -> manifest['description'] = strip_tags($description);
         return True;
     }
 
     /**
-      * Package author
-      *
-      * @param string $author
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Package author
+     *
+     * @param string $author
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function setAuthor($author)
     {
         if (strlen($author) < 3 or strlen($author) > 64)
-            throw new Exception('Author name cant be shorter than 3 characters and longer than 64 characters');
+            throw new leopardException('Author name cant be shorter than 3 characters and longer than 64 characters');
 
         $this -> manifest['author'] = strip_tags($author);
         return True;
     }
 
     /**
-      * Add contact informations
-      *
-      * @param string $contact
-      * @param string $type eg. jabber, e-mail, gadu-gadu, aim, yahoo, msn or skype
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Add contact informations
+     *
+     * @param string $contact
+     * @param string $type eg. jabber, e-mail, gadu-gadu, aim, yahoo, msn or skype
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function addContact($contact, $type)
     {
-        $contactTypes = array('jabber', 'e-mail', 'gadu-gadu', 'aim', 'yahoo', 'msn', 'skype');
+        $contactTypes = array(
+            'jabber',
+            'e-mail',
+            'gadu-gadu',
+            'aim',
+            'yahoo',
+            'msn',
+            'skype',
+        );
 
         if (!in_array($type, $contactTypes))
-            throw new Exception('Invalid contact type');
+            throw new leopardException('Invalid contact type');
 
         if (strlen($contact) < 3 or strlen($contact) > 64)
-            throw new Exception('Contact address cant be shorter than 3 characters and longer than 64 characters');
+            throw new leopardException('Contact address cant be shorter than 3 characters and longer than 64 characters');
 
         if (!is_array($this->manifest['contact']))
             $this->manifest['contact'] = array();
@@ -263,38 +292,38 @@ class leopardPackage
     }
 
     /**
-      * Set project's website
-      *
-      * @param string $url
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Set project's website
+     *
+     * @param string $url
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function setWebsite($url)
     {
         if(!filter_var($url, FILTER_VALIDATE_URL))
-            throw new Exception('Invalid URL address specified');
+            throw new leopardException('Invalid URL address specified');
 
         $this->manifest['url'] = $url;
         return True;
     }
 
     /**
-      * Set package version
-      *
-      * @param float $version
-      * @param int $release
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Set package version
+     *
+     * @param float $version
+     * @param int $release
+     * @return mixed
+     * @author Damian Kęska
+     */
 
     public function setVersion($version, $release=1)
     {
         if (!is_float($version))
-            throw new Exception('Input version must be a float number eg. 1.0, not 1');
+            throw new leopardException('Input version must be a float number eg. 1.0, not 1');
 
         if (!is_int($release) or is_float($release))
-            throw new Exception('Release number must be an integer, and cannot be a float');
+            throw new leopardException('Release number must be an integer, and cannot be a float');
 
         $this->manifest['version'] = $version;
         $this->manifest['release'] = $release;
@@ -302,17 +331,17 @@ class leopardPackage
     }
 
     /**
-      * Import ready to use manifest file
-      *
-      * @param string $file Path to manifest.json file
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Import ready to use manifest file
+     *
+     * @param string $file Path to manifest.json file
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function importManifest($file)
     {
         if(!is_file($file))
-            throw new Exception('Cannot find manifest file "' .$file. '"');
+            throw new leopardException('Cannot find manifest file "' .$file. '"');
 
         $json = json_decode(file_get_contents($file), True);
 
@@ -326,12 +355,12 @@ class leopardPackage
     }
 
     /**
-      * Export manifest to file
-      *
-      * @param string $file Path where to save manifest.json file
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Export manifest to file
+     *
+     * @param string $file Path where to save manifest.json file
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function exportManifest($file)
     {
@@ -350,11 +379,11 @@ class leopardPackage
     }
 
     /**
-      * Show JSON formatted manifest file
-      *
-      * @return string
-      * @author Damian Kęska
-      */
+     * Show JSON formatted manifest file
+     *
+     * @return string
+     * @author Damian Kęska
+     */
 
     public function showManifest()
     {
@@ -365,18 +394,18 @@ class leopardPackage
     }
 
     /**
-      * Add a file to package archive
-      *
-      * @param string $local Path to file in local filesystem
-      * @param string $inArchive Destination path in archive
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Add a file to package archive
+     *
+     * @param string $local Path to file in local filesystem
+     * @param string $inArchive Destination path in archive
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function addFile($local, $inArchive)
     {
         if(!is_file($local))
-            throw new Exception('Cannot open "' .$local. '" in read mode"');
+            throw new leopardException('Cannot open "' .$local. '" in read mode"');
 
         if (in_array($inArchive, $this->manifest['ignoredfiles']))
         {
@@ -385,7 +414,7 @@ class leopardPackage
         }
 
         if ($inArchive[0] == '/' or $inArchive[0] == '.')
-            throw new Exception('Slashes and dots are not allowed at beigning destination path in archive');
+            throw new leopardException('Slashes and dots are not allowed at beigning destination path in archive');
 
         if (strtolower($inArchive) == 'manifest.json')
             return False;
@@ -396,12 +425,12 @@ class leopardPackage
     }
 
     /**
-      * Build a package from directory
-      *
-      * @param string $directory
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Build a package from directory
+     *
+     * @param string $directory
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function buildFromDirectory($directory)
     {
@@ -456,12 +485,12 @@ class leopardPackage
     }
 
     /**
-      * Make empty directory inside of archive
-      *
-      * @param string $dir Path to directory
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Make empty directory inside of archive
+     *
+     * @param string $dir Path to directory
+     * @return mixed
+     * @author Damian Kęska
+     */
 
     public function mkdir($dir)
     {
@@ -474,12 +503,12 @@ class leopardPackage
     }
 
     /**
-      * Remove file from package
-      *
-      * @param string $inArchive path to file
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Remove file from package
+     *
+     * @param string $inArchive path to file
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function removeFile($inArchive)
     {
@@ -499,12 +528,12 @@ class leopardPackage
     }
 
     /**
-      * Check if file exists in archive
-      *
-      * @param string $inArchive path to file
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Check if file exists in archive
+     *
+     * @param string $inArchive path to file
+     * @return mixed
+     * @author Damian Kęska
+     */
 
     public function fileExists($inArchive)
     {
@@ -512,11 +541,11 @@ class leopardPackage
     }
 
     /**
-      * Write manifest and save to file
-      *
-      * @return void
-      * @author Damian Kęska
-      */
+     * Write manifest and save to file
+     *
+     * @return void
+     * @author Damian Kęska
+     */
 
     public function save()
     {
@@ -531,12 +560,12 @@ class leopardPackage
     }
 
     /**
-      * Get complete list of files inside archive
-      *
-      * @param bool $listAllFiles List all files in archive
-      * @return array
-      * @author Damian Kęska
-      */
+     * Get complete list of files inside archive
+     *
+     * @param bool $listAllFiles List all files in archive
+     * @return array
+     * @author Damian Kęska
+     */
 
     public function getFiles($listAllFiles=False)
     {
@@ -547,25 +576,27 @@ class leopardPackage
             $ph = new Phar($this->destination);
 
             foreach (new RecursiveIteratorIterator($ph) as $key => $file)
-            {
-                $filePath = str_replace($pharRoot, '', $key);
-                $files[] = $filePath;
-            }
+                $files[] = str_replace($pharRoot, '', $key);
 
             unset($ph);
             return $files;
         } else {
-            return $this->manifest['files'];
+            $files = array();
+            
+            foreach ($this->manifest['files'] as $path => $file)
+                $files[] = $path;
+            
+            return $files;
         }
     }
 
     /**
-      * Update files inside of archive
-      *
-      * @param string $dir Root directory where source files are
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Update files inside of archive
+     *
+     * @param string $dir Root directory where source files are
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function updateFiles($dir='')
     {
@@ -577,7 +608,7 @@ class leopardPackage
         foreach ($files as $file)
         {
             if (is_file($dir. '/' .$file))
-                $this->addFile($dir. '/' .$file, $file);
+                $this -> addFile($dir. '/' .$file, $file);
         }
 
         return True;
@@ -585,22 +616,22 @@ class leopardPackage
 }
 
 /**
-  * Panthera package manager
-  *
-  * @package Panthera\modules\leopard
-  * @author Damian Kęska
-  */
+ * Panthera package manager
+ *
+ * @package Panthera\core\system\leopard
+ * @author Damian Kęska
+ */
 
 class leopard
 {
     protected static $database = null;
 
     /**
-      * Copy MySQL database to memory for faster and easier access
-      *
-      * @return void
-      * @author Damian Kęska
-      */
+     * Copy SQL database to memory for faster and easier access
+     *
+     * @return void
+     * @author Damian Kęska
+     */
 
     protected static function rebuildDB()
     {
@@ -616,9 +647,10 @@ class leopard
         $panthera -> logging -> output ('Read ' .count($fetch). ' packages from database', 'leopard');
 
         foreach ($fetch as $row)
-        {
-            self::$database[$row['name']] = array('info' => $row, 'files' => array());
-        }
+            self::$database[$row['name']] = array(
+                'info' => $row,
+                'files' => array(),
+            );
 
         if (count(self::$database) > 0)
         {
@@ -627,22 +659,20 @@ class leopard
             $fetch = $SQL -> fetchAll(PDO::FETCH_ASSOC);
 
             foreach ($fetch as $row)
-            {
                 self::$database[$row['package']]['files'][$row['path']] = $row;
-            }
 
             $panthera -> logging -> output ('Found ' .count($fetch). ' managed files', 'leopard');
         }
     }
 
     /**
-      * Compare two package versions
-      *
-      * @param string $first package
-      * @param string $second package
-      * @return bool True if first package is newer than second package
-      * @author Damian Kęska
-      */
+     * Compare two package versions
+     *
+     * @param string $first package
+     * @param string $second package
+     * @return bool True if first package is newer than second package
+     * @author Damian Kęska
+     */
 
     public static function compareVersions($first, $second)
     {
@@ -651,14 +681,10 @@ class leopard
 
         // convert package name to only version
         if (!is_numeric($checkFirst[1]))
-        {
             $first = str_replace($checkFirst[1]. '-', '', $first);
-        }
 
         if (!is_numeric($checkSecond[1]))
-        {
             $second = str_replace($checkSecond[1]. '-', '', $second);
-        }
 
         // example of input: 1.1-1
         $first = intval(str_replace('-', '', str_replace('.', '', $first)));
@@ -671,11 +697,11 @@ class leopard
     }
 
     /**
-      * Get list of installed packages
-      *
-      * @return array
-      * @author Damian Kęska
-      */
+     * Get list of installed packages
+     *
+     * @return array
+     * @author Damian Kęska
+     */
 
     public static function getInstalledPackages()
     {
@@ -687,12 +713,12 @@ class leopard
 
 
     /**
-      * Check if package is installed
-      *
-      * @param string $package name
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Check if package is installed
+     *
+     * @param string $package name
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public static function checkInstalled($package)
     {
@@ -708,12 +734,12 @@ class leopard
     }
 
     /**
-      * Get package informations
-      *
-      * @param string $package name
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Get package informations
+     *
+     * @param string $package name
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public static function getInstalled($package)
     {
@@ -724,13 +750,13 @@ class leopard
     }
 
     /**
-      * Convert package path to package name
-      *
-      * @param string $inputPath
-      * @param bool $returnMatches
-      * @return string
-      * @author Damian Kęska
-      */
+     * Convert package path to package name
+     *
+     * @param string $inputPath
+     * @param bool $returnMatches
+     * @return string
+     * @author Damian Kęska
+     */
 
     public static function packageName($inputPath, $returnMatches=False)
     {
@@ -745,14 +771,14 @@ class leopard
     }
 
     /**
-      * Pre installation check
-      *attach
-      * @param string $packageFile Path to package file
-      * @param bool $overwriteFS Allow overwriting files on filesystem
-      * @param bool $overwritePKGS Allow overwriting files that belongs to already installed package (can be dangerous)
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Pre installation check
+     *
+     * @param string $packageFile Path to package file
+     * @param bool $overwriteFS Allow overwriting files on filesystem
+     * @param bool $overwritePKGS Allow overwriting files that belongs to already installed package (can be dangerous)
+     * @return mixed
+     * @author Damian Kęska
+     */
 
     protected static function preInstallCheck($packageName, $package, $overwriteFS=True, $overwritePKGS=False)
     {
@@ -761,9 +787,7 @@ class leopard
         $packageMeta = $package -> manifest();
 
         if ($packageMeta->name)
-        {
             $packageName = $packageMeta->name;
-        }
 
         $packageName = strtolower($packageName);
 
@@ -789,14 +813,14 @@ class leopard
                         $fetch = $SQL->fetch(PDO::FETCH_ASSOC);
                         $panthera -> logging -> output('Warning: ' .SITE_DIR. '/' .$file. ' already belongs to ' .$fetch['package']. ' but ' .$packageFile. ' is providing it too', 'leopard');
 
-                        if ($overwritePKGS == False)
+                        if (!$overwritePKGS)
                         {
                             $panthera -> logging -> output ('preInstallCheck failed, cannot overwrite files that already belongs to other package', 'leopard');
                             return False;
                         }
                     }
 
-                    if ($overwriteFS == False)
+                    if (!$overwriteFS)
                     {
                         $panthera -> logging -> output ('preInstallCheck failed, cannot overwrite files that already exists in filesystem', 'leopard');
                         return False;
@@ -809,14 +833,14 @@ class leopard
     }
 
     /**
-      * Install package from phar archive
-      *
-      * @param string $packageFile
-      * @param bool $overwriteFS Overwrite existing files in filesystem
-      * @param bool $overwritePKGS Overwrite existing files that belongs to already installed packages
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Install package from phar archive
+     *
+     * @param string $packageFile
+     * @param bool $overwriteFS Overwrite existing files in filesystem
+     * @param bool $overwritePKGS Overwrite existing files that belongs to already installed packages
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public static function install($packageFile, $overwriteFS=True, $overwritePKGS=False)
     {
@@ -838,10 +862,8 @@ class leopard
 
         $packageMeta = $package -> manifest();
 
-        if ($packageMeta->name)
-        {
-            $packageName = $packageMeta->name;
-        }
+        if ($packageMeta -> name)
+            $packageName = $packageMeta -> name;
 
         $packageName = strtolower($packageName);
 
@@ -855,6 +877,7 @@ class leopard
         try {
             $package -> phar['leopard.hooks.php'];
             include_once $package -> phar['leopard.hooks.php'];
+            
         } catch (Exception $e) {
             // pass
             $panthera -> logging -> output('leopard.hooks.php file not found in archive root or other error occured, exception: ' .$e->getMessage(), 'leopard');
@@ -868,7 +891,14 @@ class leopard
         // TODO: Dependency support
 
         // create package record
-        $array = array('name' => $packageName, 'manifest' => file_get_contents($package -> phar['manifest.json']), 'installed_as' => 'manual', 'version' => $packageMeta->version, 'release' => $packageMeta->release, 'status' => 'broken');
+        $array = array(
+            'name' => $packageName,
+            'manifest' => file_get_contents($package -> phar['manifest.json']),
+            'installed_as' => 'manual', 'version' => $packageMeta->version,
+            'release' => $packageMeta->release,
+            'status' => 'broken',
+        );
+        
         $panthera -> db -> query('INSERT INTO `{$db_prefix}leopard_packages` (`id`, `name`, `manifest`, `installed_as`, `version`, `release`, `status`) VALUES (NULL, :name, :manifest, :installed_as, :version, :release, :status)', $array);
 
         // create backup directory
@@ -961,13 +991,13 @@ class leopard
     }
 
     /**
-      * Remove a package
-      *
-      * @param string $packageName
-      * @param bool $dontRestoreBackup
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Remove a package
+     *
+     * @param string $packageName
+     * @param bool $dontRestoreBackup
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public static function remove($packageName, $dontRestoreBackup=False)
     {
@@ -1065,3 +1095,5 @@ class leopard
         return True;
     }
 }
+
+class leopardException extends Exception {}

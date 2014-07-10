@@ -109,7 +109,7 @@ function removeAd(adid)
            	{/loop}
            	{else}
            	<tr>
-           		<td colspan="3" style="text-align: center;">{function="localize('No any advertisements found to be placed in this block', 'advertisements')"}</td>
+           		<td colspan="4" style="text-align: center;">{function="localize('No any advertisements found to be placed in this block', 'advertisements')"}</td>
            	</tr>
            	{/if}
         </tbody>

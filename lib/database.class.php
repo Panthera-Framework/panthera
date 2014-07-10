@@ -1,16 +1,18 @@
 <?php
 /**
-  * Database management classes and functions, helpers
-  * @package Panthera\core\database
-  * @author Damian Kęska
-  */
+ * Database management classes and functions, helpers
+ * 
+ * @package Panthera\core\system\database
+ * @author Damian Kęska
+ * @license LGPLv3
+ */
 
 /**
-  * Panthera Database class
-  *
-  * @package Panthera\core\database
-  * @author Damian Kęska
-  */
+ * Panthera Database class
+ *
+ * @package Panthera\core\system\database
+ * @author Damian Kęska
+ */
 
 class pantheraDB extends pantheraClass
 {
@@ -23,13 +25,13 @@ class pantheraDB extends pantheraClass
     protected $lastQuery = '';
 
     /**
-      * Prepare database connection
-      *
-      * @param object $panthera
-      * @config build_missing_tables
-      * @return void
-      * @author Damian Kęska
-      */
+     * Prepare database connection
+     *
+     * @param object $panthera
+     * @config build_missing_tables
+     * @return void
+     * @author Damian Kęska
+     */
 
     public function __construct($panthera, $alternativeConfig='', $dontTriggerError=False)
     {
@@ -574,9 +576,7 @@ class pantheraDB extends pantheraClass
     public function buildUpdateString($array, $ignoreColumns=null)
     {
         if (!is_array($array))
-        {
             return False;
-        }
 
         if (!is_array($ignoreColumns))
         {
@@ -620,9 +620,7 @@ class pantheraDB extends pantheraClass
         $queryTable = '';
 
         if ($tableName)
-        {
             $queryTable = 'INSERT INTO `{$db_prefix}' .$tableName. '` ';
-        }
 
         // single row code
         if (!$multipleRows)
@@ -655,9 +653,7 @@ class pantheraDB extends pantheraClass
             // multiple rows code
 
             foreach ($array[0] as $key => $value)
-            {
                 $columns .= '`' .$key. '`, ';
-            }
 
             $dataRows = '';
             $i = 0;
@@ -742,16 +738,12 @@ class pantheraDB extends pantheraClass
         $vars = $setString['values'];
 
         if (!$whereClause and $whereClause !== null)
-        {
             throw new Exception('$whereClause is empty but not a null value, please make sure you don\'t want to delete entire data from table', 7842);
-        }
 
         if (is_object($whereClause))
         {
             if (!method_exists($whereClause, 'show'))
-            {
                 throw new Exception('$whereClause variable does not contain a valid object with show() method', 587);
-            }
 
             $show = $whereClause->show();
             $query .= ' WHERE ' .$show[0];
@@ -780,9 +772,7 @@ class pantheraDB extends pantheraClass
 
         // take care about mistakes when $whereClause == "" but is not a null value
         if (!$whereClause and $whereClause !== null)
-        {
             throw new Exception('$whereClause is empty but not a null value, please make sure you don\'t want to delete entire data from table', 7842);
-        }
 
         if (is_string($whereClause))
         {
@@ -791,9 +781,7 @@ class pantheraDB extends pantheraClass
         } elseif (is_object($whereClause)) {
 
             if (!method_exists($whereClause, 'show'))
-            {
                 throw new Exception('$whereClause variable does not contain a valid object with show() method', 587);
-            }
 
             $show = $whereClause->show();
             $query .= ' WHERE ' .$show[0];
@@ -801,14 +789,10 @@ class pantheraDB extends pantheraClass
         }
 
         if (is_string($orderBy))
-        {
             $query .= ' ORDER BY `' .$orderBy. '` ' .$orderDirection;
-        }
 
         if (is_int($limit))
-        {
             $query .= ' LIMIT ' .$limit;
-        }
 
         return $this -> query($query, $vars);
     }

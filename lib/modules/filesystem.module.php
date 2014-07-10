@@ -771,11 +771,11 @@ class filesystem
                 if ($item == '.' || $item == '..')
                     continue;
 
-                if (!deleteDirectory($dir . "/" . $item))
+                if (!static::deleteDirectory($dir . "/" . $item))
                 {
                     chmod($dir . "/" . $item, 0777);
 
-                    if (!self::deleteDirectory($dir . "/" . $item))
+                    if (!static::deleteDirectory($dir . "/" . $item))
                         return false;
                 }
         }
