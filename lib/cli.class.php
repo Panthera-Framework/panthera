@@ -1,28 +1,23 @@
 <?php
 /**
-    * @package Panthera
-    * @subpackage core
-    * @copyright (C) Damian Kęska, Mateusz Warzyński
-    * @license GNU/AGPL, see lib/license.txt
-    * Panthera is free software; you can redistribute it and/or
-    * modify it under the terms of the GNU Affero General Public License 3
-    * as published by the Free Software Foundation.
-    *
-    * Panthera is distributed in the hope that it will be useful,
-    * but WITHOUT ANY WARRANTY; without even the implied warranty of
-    * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    * GNU General Public License for more details.
-    *
-    * You should have received a copy of the GNU Affero General Public License
-    * along with Panthera; if not, write to the Free Software
-    * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
-    * or see http://www.gnu.org/licenses/.
-    */
+ * Commandline tools for Panthera Framework
+ *
+ * @package Panthera\core\components\cli
+ * @author Damian Kęska
+ * @license LGPLv3
+ */
 
 if (!defined('IN_PANTHERA'))
     exit;
 
-include(PANTHERA_DIR. '/share/CommandLine.php');
+include getContentDir('share/CommandLine.php');
+
+/**
+ * Commandline tools for Panthera Framework
+ *
+ * @package Panthera\core\components\cli
+ * @author Damian Kęska
+ */
 
 class pantheraCli
 {
@@ -133,6 +128,15 @@ class pantheraCli
         for($j=0; $j<$height; $j++) { writeStr($x, $y+$j, $str, $bg, $bg); }
     }
 }
+
+/**
+ * Abstract cliApp base class
+ * Extend this class with your app eg. myApplication extends cliApp
+ *
+ * @package Panthera\core\components\cli
+ * @author Damian Kęska
+ * @license LGPLv3
+ */
 
 abstract class cliApp
 {

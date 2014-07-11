@@ -22,8 +22,10 @@ print("Panthera Framework libraries phar archive packager\n");
 if (!is_writable('./'))
     die("Current directory ".getcwd()." is not writable!\n");
 
+mkdir('portablePanthera');
+
 try {
-    $phar = new Phar('./pantheralib.phar');
+    $phar = new Phar('./portablePanthera/pantheralib.phar');
 } catch (Exception $e) {
     die("Cannot open Phar archive: ".$e -> getMessage()."\n");
 }
@@ -44,9 +46,11 @@ $phar->setStub($phar->createDefaultStub("boot.php"));
 if ($withoutShare)
 {
     print("Copying thirdparty libraries...\n");
-    @mkdir('.pharoverlay');
-    recurseCopy('lib/share', '.pharoverlay/share');
-    print("NOTE: Copied thirdparty libraries to .pharoverlay/share directory, it must be placed in same directory as phar archive\n");
+    @mkdir('portablePanthera/.pharoverlay');
+    recurseCopy('lib/share', 'portablePanthera/.pharoverlay/share');
+    print("NOTE: Copied thirdparty libraries to portablePanthera/.pharoverlay/share 
+directory, it must be placed in same directory as phar archive\n");
 }
 
-print("Created phar archive.\n");
+print("Created phar archive with 3rd party libraries in 
+portablePanthera directory.\n");

@@ -1,11 +1,11 @@
 <?php
 /**
-  * Panthera bootstrap
-  *
-  * @package Panthera\core
-  * @author Damian Kęska
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Panthera bootstrap
+ *
+ * @package Panthera\core\system\bootstrap
+ * @author Damian Kęska
+ * @license LGPLv3
+ */
 
 ini_set('memory_limit', '128M');
 
@@ -50,8 +50,72 @@ if (get_magic_quotes_gpc()) {
 }
 
 // panthera main directory
-if (substr($config['lib'], 0, 7) == 'phar://')
+if (class_exists('Phar') and Phar::running())
 {
+    $siteDir = pathinfo(realpath($_SERVER['SCRIPT_FILENAME']), PATHINFO_DIRNAME);
+    
+    if (!isset($config))
+    {
+        if (is_file($siteDir. '/content/app.php'))
+            include_once $siteDir. '/content/app.php';
+        else {
+            if (!is_dir($siteDir. '/content'))
+            {
+                mkdir($siteDir. '/content/');
+            
+                if (!is_dir($siteDir. '/content/tmp'))
+                    mkdir($siteDir. '/content/tmp');
+                
+                if (!is_dir($siteDir. '/content/database'))
+                    mkdir($siteDir. '/content/database');
+                
+                if (!is_dir($siteDir. '/content/pages'))
+                    mkdir($siteDir. '/content/pages');
+                
+                if (!is_dir($siteDir. '/content/ajaxpages'))
+                {
+                    mkdir($siteDir. '/content/ajaxpages');
+                    mkdir($siteDir. '/content/ajaxpages/admin');
+                }
+                
+                if (!is_dir($siteDir. '/content/templates'))
+                    mkdir($siteDir. '/content/templates');
+                
+                if (!is_dir($siteDir. '/content/modules'))
+                    mkdir($siteDir. '/content/modules');
+                
+                if (!is_dir($siteDir. '/content/plugins'))
+                    mkdir($siteDir. '/content/plugins');
+                
+                if (!is_dir($siteDir. '/content/uploads'))
+                    mkdir($siteDir. '/content/uploads');
+            }
+            
+            // create default minimum config
+            $config = array(
+                'lib' => Phar::running(),
+                'SITE_DIR' => $siteDir,
+                'db_file' => 'pharApp.sqlite3',
+                'db_socket' => 'sqlite',
+                'build_missing_tables' => True,
+            );
+            
+            if (!is_file($siteDir. '/content/database/' .$config['db_file']))
+            {
+                $fp = fopen($siteDir. '/content/database/' .$config['db_file'], 'w');
+                fwrite($fp, '');
+                fclose($fp);
+            }
+            
+            if (!defined('NO_APP_PHP'))
+            {
+                $fp = fopen($config['SITE_DIR']. '/app.php', 'w');
+                fwrite($fp, '<?php $config = ' .var_export($config, true). ';');
+                fclose($fp);
+            }
+        }
+    }
+    
     $r = realpath(str_replace('phar://', '', $config['lib']));
     define('IN_PHAR', str_replace(basename($r), '', $r));
     define('PANTHERA_DIR', $config['lib']);

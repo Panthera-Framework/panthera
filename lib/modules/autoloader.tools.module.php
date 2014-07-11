@@ -10,19 +10,19 @@
 /**
  * Rebuild autoloader database
  *
- * @package Panthera\modules\autoloader.tools
+ * @package Panthera\core\modules\autoloader.tools
  * @author Damian Kęska
  */
 
 class pantheraAutoloader
 {
     /**
-      * Panthera autoloader cache update cronjob
-      *
-      * @param string $data
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Panthera autoloader cache update cronjob
+     *
+     * @param string $data
+     * @return mixed
+     * @author Damian Kęska
+     */
 
     public static function updateCache($data='')
     {
