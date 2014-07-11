@@ -131,16 +131,16 @@ function pantheraExceptionHandler($exception)
 }
 
 /**
-  * Error handler
-  *
-  * @param int $errno
-  * @param string $errstr
-  * @param string $errfile
-  * @param string $errline
-  * @return mixed
-  * @Package Panthera\core\kernel
-  * @author Damian Kęska
-  */
+ * Error handler
+ *
+ * @param int $errno
+ * @param string $errstr
+ * @param string $errfile
+ * @param string $errline
+ * @return mixed
+ * @Package Panthera\core\kernel
+ * @author Damian Kęska
+ */
 
 function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $errline='unknown')
 {
@@ -232,9 +232,7 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
             $errorPage = getContentDir('templates/error_debug.php');
 
             if ($errorPage)
-            {
                 include_once $errorPage;
-            }
 
             exit;
         } else {
@@ -969,13 +967,15 @@ class pantheraCore
         self::$instance = $this;
         $config['SITE_DIR'] = realpath($config['SITE_DIR']);
         define('SITE_DIR', $config['SITE_DIR']); // get SITE_DIR from configuration if avaliable
-
-        if (!is_file(SITE_DIR. '/content/app.php'))
+        
+        if (!defined('IN_PHAR') and !is_file(SITE_DIR. '/content/app.php'))
             throw new Exception('Cannot find /content/app.php, looking in SITE_DIR=' .SITE_DIR);
 
         $c = _PANTHERA_CORE_TYPES_; $this->types = new $c($this); // data types
         $c = _PANTHERA_CORE_LOGGING_; $this->logging = new $c($this);
-        $c = _PANTHERA_CORE_OUTPUT_CONTROL_; $this->outputControl = new $c($this);
+        
+        if (!defined('SKIP_TEMPLATE'))
+            $c = _PANTHERA_CORE_OUTPUT_CONTROL_; $this->outputControl = new $c($this);
 
         if ((isset($config['varCache']) and isset($config['cache'])) and !defined('SKIP_CACHE'))
         {
@@ -1968,14 +1968,13 @@ function __pantheraAutoloader($class)
             return $panthera -> importModule($cachedClasses[$class]);
         } else {
             // in case there is no class in cache and cache last refresh was later than 3600 seconds ago
-            if ((time()-filemtime(SITE_DIR. '/content/tmp/autoloader.php')) > 3600)
+            if (!is_file(SITE_DIR. '/content/tmp/autoloader.php') or (time()-filemtime(SITE_DIR. '/content/tmp/autoloader.php')) > 3600)
             {
                 $panthera -> logging -> output('Reloading outdated cache', 'pantheraCore');
                 $panthera -> importModule('autoloader.tools');
                 pantheraAutoloader::updateCache();
                 __pantheraAutoloader($class);
             }
-
         }
     }
 }

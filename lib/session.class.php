@@ -102,10 +102,22 @@ class pantheraSession
     public function detectBrowser()
     {
         // require Mobile Detect library
-        if (!class_exists('Mobile_Detect'))
+        if (!class_exists('Mobile_Detect') and is_file(PANTHERA_DIR. '/share/mobiledetectlib/Mobile_Detect.php'))
             require PANTHERA_DIR. '/share/mobiledetectlib/Mobile_Detect.php';
-
-        $info = array('deviceType' => 'desktop', 'browser' => 'Unknown', 'os' => 'Unknown', 'browserVersion' => '', 'engineVersion' => '');
+        
+        if (!class_exists('Mobile_Detect'))
+        {
+            $this -> panthera -> logging -> output('Warning: Mobile Detect library not installed', 'pantheraSession');
+            return (object)array();
+        }
+        
+        $info = array(
+            'deviceType' => 'desktop',
+            'browser' => 'Unknown',
+            'os' => 'Unknown',
+            'browserVersion' => '',
+            'engineVersion' => '',
+        );
 
         $detect = new Mobile_Detect;
         // device type detection
