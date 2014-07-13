@@ -1019,7 +1019,7 @@ class pantheraCore
         if (!function_exists('password_hash'))
         {
             // in older PHP versions there is no password hashing tools
-            require PANTHERA_DIR. '/share/password-compat/lib/password.php';
+            require getContentDir('share/password-compat/lib/password.php');
             $this -> logging -> output ('Including userspace implementation of password hashing', 'pantheraCore');
         }
 
@@ -2740,7 +2740,7 @@ class suspendException extends Exception {}
  * @author Damian Kęska
  */
 
-trait suspendClass
+abstract class suspendClass
 {
     /**
      * Last restored data instance id
