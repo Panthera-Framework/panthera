@@ -333,15 +333,10 @@ class uploadAjaxControllerCore extends pageController
         if ($this -> checkPermissions('admin.upload.insertfile', true))
             $this -> panthera -> template -> push('upload_files', True);
 
-        $callback = False;
-
-        if (isset($_GET['callback']))
-            $callback = True;
-
         // max_string_length = 27
 
         $this -> panthera -> template -> push(array(
-            'callback' => $callback,
+            'callback' => isset($_GET['callback']) ? $_GET['callback'] : False,
             'categories' => $categories,
             'setCategory' => $category -> name,
             'category' => $category,
@@ -350,7 +345,6 @@ class uploadAjaxControllerCore extends pageController
             'view_type' => $viewType,
             'view_change' => $viewChange,
             'directory' => $directory,
-            'callback_name' => $_GET['callback'],
             'user_login' => $this -> panthera -> user -> login,
             'isAdmin' => $this -> panthera -> user -> isAdmin(),
         ));
@@ -475,6 +469,7 @@ class uploadAjaxControllerCore extends pageController
             'setCategory' => $category,
             'categories' => $categories,
             'category' => $uploadDirectory,
+            'callback' => isset($_GET['callback']) ? $_GET['callback'] : False,
         ));
         $this -> panthera -> template -> display('upload.popup.newfile.tpl');
         pa_exit();
@@ -577,7 +572,8 @@ class uploadAjaxControllerCore extends pageController
 
         $this -> panthera -> template -> push(array(
             'fileMaxSize' => filesystem::bytesToSize($this -> panthera -> config -> getKey('upload.maxsize', 3145728, 'int', 'upload')),
-            'categories' => $categories
+            'categories' => $categories,
+            'callback' => isset($_GET['callback']) ? $_GET['callback'] : False,
         ));
         $this -> panthera -> template -> display('upload.tpl');
         pa_exit();

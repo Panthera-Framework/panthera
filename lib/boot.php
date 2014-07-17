@@ -270,7 +270,7 @@ if (!defined('SKIP_USER') and !defined('SKIP_SESSION'))
         if ($user -> exists())
         {
             // debugging is always turned on for root
-            if ($user -> acl -> get('root'))
+            if ($user -> acl -> get('superuser'))
                 $panthera -> logging -> debug = true;
 
             if (!$panthera->session->exists('language'))
