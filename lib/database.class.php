@@ -6,7 +6,7 @@
  * @author Damian Kęska
  * @license LGPLv3
  */
-
+ 
 /**
  * Panthera Database class
  *
@@ -815,13 +815,8 @@ class pantheraDB extends pantheraClass
     {
         $sqlLimit = '';
 
-        if (is_numeric($limit))
-        {
-            if (intval($limit) > 0)
-            {
-                $sqlLimit = ' LIMIT ' .intval($offset). ',' .intval($limit);
-            }
-        }
+        if (is_numeric($limit) and intval($limit) > 0)
+            $sqlLimit = ' LIMIT ' .intval($offset). ',' .intval($limit);
 
         $whereClause = '';
         $q = array('', '');
@@ -854,6 +849,10 @@ class pantheraDB extends pantheraClass
 
         if (is_bool($limit))
             $what = '`' .$orderColumn. '`';
+        
+        // construct an empty object to get query details
+        if ($returnAs and !is_object($returnAs) and class_exists($returnAs))
+            $returnAs = new $returnAs(null);
 
         // get query from selected object
         if (is_object($returnAs))
@@ -864,19 +863,16 @@ class pantheraDB extends pantheraClass
                 $selectQuery = $returnAs->getQuery('count');
 
             $returnAs = get_class($returnAs);
-        } else {
+        } elseif (!$returnAs)
             $selectQuery = 'SELECT ' .$what. ' FROM `{$db_prefix}' .$db. '`';
-        }
-
+        
         $SQL = $this->panthera->db->query($selectQuery.$whereClause. ' ORDER BY `' .$orderColumn. '` ' .$order.@$sqlLimit, @$q[1]);
 
 
         $results = array();
 
         if (is_bool($limit))
-        {
             return $SQL->rowCount();
-        }
 
         if ($SQL->rowCount() > 0)
         {
@@ -910,14 +906,14 @@ class pantheraDB extends pantheraClass
     }
 
     /**
-      * Create an unique value for database column
-      *
-      * @param string $table
-      * @param string $column
-      * @param string $title Optional title to parse and create an unique url
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Create an unique value for database column
+     *
+     * @param string $table
+     * @param string $column
+     * @param string $title Optional title to parse and create an unique url
+     * @return mixed
+     * @author Damian Kęska
+     */
 
     public function createUniqueData($table, $column, $title='')
     {
@@ -1105,10 +1101,12 @@ abstract class pantheraFetchDB
     protected $_joinColumns = array(
         /*array('LEFT JOIN', 'groups', array('group_id' => 'primary_group'), array('name' => 'group'))*/
     );
-    protected $_queryCache = array(
+    
+    public $_queryCache = array(
         'joinColumns' => '',
         'joinQuery' => '',
     );
+    
     protected $__meta = null;
 
     /**
@@ -1164,15 +1162,11 @@ abstract class pantheraFetchDB
 
         // if it's just empty object
         if ($by === null)
-        {
             return false;
-        }
 
         // in case when we have other column identificator but want to use `id` to construct object
         if ($by == 'id' and $this->_idColumn != 'id')
-        {
             $by = $this->_idColumn;
-        }
 
         /**
           * Cache
@@ -1181,9 +1175,7 @@ abstract class pantheraFetchDB
 
         // get cache life time from database class
         if ($panthera->cacheType('cache') == 'memory' and $panthera->db->cache > 0 and $this->cache !== -1 and $this->cache !== False)
-        {
             $this->cache = $panthera->db->cache;
-        }
 
         // create a content cacheID, but at first check if caching is possible (we cant cache complicated objects like those constructed by array or object)
         if ($this->cache > 0 and is_string($by) and $by != 'array' and $this->panthera->cache)
@@ -1193,14 +1185,11 @@ abstract class pantheraFetchDB
             $panthera -> logging -> output('Cache disabled for this ' .get_class($this). ' object', $this->cacheGroup);
         }
 
-        if ($this->cacheID)
+        if ($this->cacheID and $panthera->cache->exists($this->cacheID))
         {
-            if ($panthera->cache->exists($this->cacheID))
-            {
-                $panthera->logging->output('Found record in cache by id=' .$this->cacheID, $this->cacheGroup);
-                $this->_data = $panthera->cache->get($this->cacheID);
-                return True;
-            }
+            $panthera->logging->output('Found record in cache by id=' .$this->cacheID, $this->cacheGroup);
+            $this->_data = $panthera->cache->get($this->cacheID);
+            return True;
         }
 
         // check if child class has met requirements - if the table name is provided
@@ -1235,9 +1224,7 @@ abstract class pantheraFetchDB
                 if (is_array($value))
                 {
                     foreach ($value as $k => $v)
-                    {
                         $w -> add( 'AND', $k, '=', $v);
-                    }
 
                     $q = $w -> show();
                     $SQL = $panthera->db->query($this->getQuery(). ' WHERE '.$q[0]. ' ORDER BY `id` DESC LIMIT 0,1', $q[1]);
@@ -1246,9 +1233,8 @@ abstract class pantheraFetchDB
             }
 
             /**
-              * Constructing by multiple columns
-              *
-              */
+             * Constructing by multiple columns
+             */
 
             if (!$SQL and is_object($by))
             {
@@ -1348,7 +1334,7 @@ abstract class pantheraFetchDB
     public function buildJoinQuery($selectString=False, $force=False)
     {
         $sql = '';
-
+        
         if (!$this->_joinColumns)
             return "";
 
@@ -1361,12 +1347,8 @@ abstract class pantheraFetchDB
                 return $this->_queryCache['joinColumns'];
 
             foreach ($this->_joinColumns as $table)
-            {
                 foreach ($table[3] as $column => $alias)
-                {
                     $sql .= '{$db_prefix}' .$table[1]. '.' .$column. ' as ' .$alias. ',';
-                }
-            }
 
             $this->_queryCache['joinColumns'] = $sql;
             return ', ' .trim($sql, ', ');
@@ -1476,6 +1458,17 @@ abstract class pantheraFetchDB
     {
         $panthera = pantheraCore::getInstance();
         $info = static::_getClassInfoStatic();
+        
+        $c = get_called_class();
+        $instance = new $c(null);
+        
+        foreach ($args as $key => &$value)
+        {
+            $method = $key. 'Filter';
+            
+            if (method_exists($instance, $method))
+                $instance -> $method($value);
+        }
         
         return $panthera -> db -> insert($info['tableName'], $args);
     }
@@ -1631,9 +1624,7 @@ abstract class pantheraFetchDB
     public function clearCache($index=False)
     {
         if (!$this->exists())
-        {
             return False;
-        }
 
         if (!$this -> panthera -> cache or !$this->cacheID)
         {
@@ -1709,11 +1700,11 @@ abstract class pantheraFetchDB
     }
 
     /**
-      * Check if object exists
-      *
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Check if object exists
+     *
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function exists()
     {
@@ -1724,29 +1715,35 @@ abstract class pantheraFetchDB
     }
 
     /**
-      * Get data from column
-      *
-      * @param string $var Column name
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Get data from column
+     *
+     * @param string $var Column name
+     * @return mixed
+     * @author Damian Kęska
+     */
 
-    // Fast columns access from DB
     public function __get($var)
     {
         if(isset($this->_data[$var]))
+        {
+            // support for on-save filters
+            $f = $var."ReadFilter";
+            if (method_exists($this, $f))
+                return $this -> $f($this->_data[$var]);
+            
             return $this->_data[$var];
-
+        }
+        
         return False;
     }
 
     /**
-      * Get raw data by column name
-      *
-      * @param string $key name
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Get raw data by column name
+     *
+     * @param string $key name
+     * @return mixed
+     * @author Damian Kęska
+     */
 
     public function getRaw($key)
     {
