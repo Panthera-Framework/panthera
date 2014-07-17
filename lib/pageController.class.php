@@ -626,3 +626,157 @@ abstract class adminController extends pageController
         parent::__construct();
     }
 }
+
+/**
+ * Page controller which includes pantheraFetchDB table integration (add, remove, edit, display data)
+ *
+ * @package Panthera\core\system\controllers
+ * @author Damian Kęska
+ */
+
+abstract class dataModelManagementController extends pageController
+{
+    protected $__dataModelClass = null;
+    protected $__baseTemplate = '';
+    protected $__defaultDisplay = 'list';
+    protected $__listId = 'categoryid';
+    
+    /**
+     * Remove a object
+     *
+     * @input int $_POST['objectID'] Object id
+     * @author Damian Kęska
+     */
+    
+    public function removeAction()
+    {
+        $class = $this -> __dataModelClass;
+        $object = new $class('id', $_POST['objectID']);
+        
+        if ($object -> exists())
+            $object -> delete();
+            
+        ajax_exit(array(
+            'status' => 'success',
+        ));
+    }
+    
+    /**
+     * Edit / create new object action
+     * Post list of fields eg. object_id, object_title, object_creation etc. with "object_" prefix
+     * To insert code and modify this function use hooks (features)
+     *
+     * @input @_POST
+     * @author Damian Kęska
+     * @return null
+     */
+    
+    public function editAction()
+    {
+        $class = $this -> __dataModelClass;
+        $hookName = str_replace('Ajax', '', get_called_class($this));
+        $hookName = substr($hookName, 0, strpos($hookName, 'Controller'));
+        
+        if (isset($_POST['objectID']) and $_POST['action'] == 'edit')
+        {
+            $object = new $class('id', $_POST['objectID']);
+            
+            if ($object -> exists())
+            {
+                $this -> getFeature('datamodel.' .$hookName. '.preedit', $object);
+            
+                foreach ($object -> getData() as $key => $oldValue)
+                {
+                    if (isset($_POST['object_' .$key]))
+                        $object -> __set($key, $_POST['object_' .$key]);
+                }
+                
+                $this -> getFeature('datamodel.' .$hookName. '.postedit', $object);
+                
+                try {
+                    $object -> save();
+
+                } catch (Exception $e) {
+                    $this -> getFeature('datamodel.' .$hookName. '.editfailure', $object);
+                
+                    ajax_exit(array(
+                        'status' => 'failed',
+                        'message' => slocalize('Field validation failure, details: %s', 'messages', $e -> getMessage()),
+                    ));
+                }
+                
+                ajax_exit(array(
+                    'status' => 'success',
+                ));
+            }
+        } else {
+            // creating a new object
+            if ($_POST['action'] == 'new')
+            {
+                $values = array(
+
+                );
+            
+                foreach ($_POST as $key => $value)
+                {
+                    if (strpos($key, 'object_') !== 0)
+                        continue;
+
+                    $key = str_replace('object_', '', $key);                    
+                    $values[$key] = $value;
+                }
+                
+                try {
+                    $this -> getFeatureRef('datamodel.' .$hookName. '.precreate', $values);
+                    $class::create($values);
+                    
+                } catch (Exception $e) {
+                    $this -> getFeatureRef('datamodel.' .$hookName. '.creationfailure', $_POST);
+                
+                    ajax_exit(array(
+                        'status' => 'failed',
+                        'message' => slocalize('Cannot add new object, field validation failure, details: %s', 'messages', $e -> getMessage()),
+                    ));
+                }
+            }
+        }
+    }
+    
+    /**
+     * Display list view
+     *
+     * @input string $_GET['__filterData'] Column value 
+     * @author Damian Kęska
+     */
+    
+    public function __displayList()
+    {
+        $class = $this -> __dataModelClass;
+        $filter = new whereClause;
+        
+        if (isset($_GET['__filterData']))
+            $filter -> add('AND', $this -> __listId, '=', $_GET['__filterData']);
+
+        $this -> template -> push(array(
+            'foundElements' => $class::fetchAll($filter),
+        ));
+    }
+    
+    /**
+     * Main function
+     *
+     * @author Damian Kęska
+     */
+    
+    public function display()
+    {
+        $this -> dispatchAction();
+
+        if ($this -> __defaultDisplay == 'list')
+            $this -> __displayList();
+        else
+            $this -> __displayItem();
+
+        return $this -> template -> compile($this -> __baseTemplate);     
+    }
+}

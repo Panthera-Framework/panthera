@@ -5,7 +5,7 @@ var selected = new Array;
 
 function callBack()
 {
-    callback = eval("{$callback_name}");
+    callback = eval("{$callback}");
 
     if (typeof callback == 'function' && $("#file_link").val() != '')
     {
@@ -50,10 +50,10 @@ $(document).ready(function(){
     });
     
     /**
-      * Upload multiple files
-      *
-      * @author Damian Kęska
-      */
+     * Upload multiple files
+     *
+     * @author Damian Kęska
+     */
     
     panthera.multiuploadArea({ id: '#upload_list_window', callback: function (content, fileName, fileNum, fileCount) {
             panthera.jsonPOST({ url: '?display=upload&cat=admin&action=popupHandleFile', isUploading: true, data: { 'image': content, 'fileName': fileName}});
@@ -68,12 +68,12 @@ $(document).ready(function(){
 function changeCategory()
 {
     var category = $("#upload_category").val();
-    panthera.popup.toggle('?display=upload&cat=admin&directory='+category+'&popup=True');
+    panthera.popup.toggle('?display=upload&cat=admin&directory='+category+'&popup=True{if="$callback"}&callback={$callback}{/if}');
 }
 
 function getUploadsPage(data)
 {
-    panthera.htmlPOST({ url: '?display=upload&cat=admin&popup=true&action=displayList', data: data, 'success': '#upload_list'});
+    panthera.htmlPOST({ url: '?display=upload&cat=admin&popup=true&action=displayList{if="$callback"}&callback={$callback}{/if}', data: data, 'success': '#upload_list'});
 }
 
 /**
@@ -92,10 +92,7 @@ function deleteSelectedFiles()
             {
                 panthera.jsonGET( { url: '{$AJAX_URL}?display=upload&cat=admin&action=popupDelete&id='+ids, messageBox: 'w2ui', success: function (response) {
                         if (response.status == 'success')
-                        {
-                            panthera.popup.toggle('?display=upload&cat=admin&directory={$setCategory}&popup=True;');
-                        }
-                
+                            panthera.popup.toggle('?display=upload&cat=admin&directory={$setCategory}&popup=True{if="$callback"}&callback={$callback}{/if}');
                     }
                 });
             }
@@ -144,7 +141,8 @@ function selectFile(id)
         $("#file_"+old_id).css("background-color", "#ffffff");
        
        {/if} 
-        
+       
+       $("#file_delete").slideDown();
     {else}
         $("#file_delete").slideDown();
         

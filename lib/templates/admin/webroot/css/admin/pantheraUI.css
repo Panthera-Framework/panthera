@@ -831,11 +831,13 @@ ul.dropdown li:hover > a.dir {
     font-size: 13px;
     font-weight: 700;
     padding: 10px;
+    vertical-align: text-top;
 }
 
 .formTable td {
     border: 0px;
     padding: 0px;
+    vertical-align: text-top;
 }
 
 .formTable tbody tr:nth-child(even) {

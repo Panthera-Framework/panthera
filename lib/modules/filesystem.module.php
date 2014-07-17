@@ -121,6 +121,40 @@ class uploadedFile extends pantheraFetchDB
 
         parent::__set($key, $value);
     }
+    
+    /**
+     * Check if user can access this resource
+     *
+     * @param pantheraUser $user User object
+     * @author Damian Kęska
+     */
+    
+    public function canRead($user='')
+    {
+        if (!$user)
+            $user = panthera::getInstance() -> user;
+            
+        if (getUserRightAttribute($user, 'upload.deleteown') and ($user -> id == $this -> uploader_id))
+            return True;
+            
+        // is this a public file?
+        if (!$this -> __get('protected'))
+            return True;
+            
+        return False;
+    }
+    
+    /**
+     * In this case it's just an alias to canRead()
+     *
+     * @param pantheraUser $user User object
+     * @author Damian Kęska
+     */
+    
+    public function canWrite($user='')
+    {
+        return $this -> canRead($user);
+    }
 
     /**
       * Get file link (returns full, parsed link)

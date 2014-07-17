@@ -1765,7 +1765,7 @@ abstract class pantheraFetchDB
     public function __set($var, $value)
     {
         // dont allow create new keys (because we will save those keys in database and we cant create new columns)
-        if(!isset($this->_data[$var]))
+        if(!array_key_exists($var, $this->_data))
         {
             $this->panthera->logging->output(get_class($this). '::Trying to set non-existing property "' .$var. '"', $this->cacheGroup);
             return False;
