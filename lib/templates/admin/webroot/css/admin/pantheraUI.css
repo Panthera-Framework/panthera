@@ -388,10 +388,10 @@ td {
     border-bottom: 1px solid #b8bcbf;
     border-left: 1px solid #b8bcbf;
     height: 35px;
-    padding-right: 35px;
+    padding-right: 18px;
     font-size: 13px;
     font-weight: 100;
-    padding-left: 20px;
+    padding-left: 18px;
 }
 
 .hovered tr:hover {

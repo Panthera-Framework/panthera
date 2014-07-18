@@ -79,13 +79,13 @@ function rebuildMetaList(metas)
 }
 
 /**
-  * Add or remove user in a group
-  *
-  * @param string action
-  * @param string user
-  * @return void
-  * @author Damian Kęska
-  */
+ * Add or remove user in a group
+ *
+ * @param string action
+ * @param string user
+ * @return void
+ * @author Damian Kęska
+ */
 
 function saveGroupUser(action, group, user)
 {
@@ -98,7 +98,7 @@ function saveGroupUser(action, group, user)
     panthera.jsonPOST({ url: '?display=acl&cat=admin&action=groupUsers', data: 'user='+user+'&subaction='+action+'&group='+group, success: function (response) {
             if (response.status == "success")
             {
-                rebuildUserList();
+                rebuildUserList(response.userList);
                 panthera.popup.close();
             }
         }

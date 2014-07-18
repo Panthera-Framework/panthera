@@ -106,7 +106,7 @@ class mailingAjaxControllerCore extends pageController
                 foreach ($group->findUsers() as $user)
                 {
                     if (strlen($user['mail']) > 4 )
-                        $recipients[] = $user['mail'];
+                        $recipients[] = $user -> mail;
                 }
             } elseif(strpos($recipient, 'user:') !== False) {
                 $recipient = trim(str_ireplace('user:', '', $recipient));

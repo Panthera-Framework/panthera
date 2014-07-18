@@ -14,6 +14,7 @@ CREATE TABLE `{$db_prefix}users` (
   `profile_picture` varchar(196) NOT NULL,
   `lastlogin` datetime NOT NULL,
   `lastip` varchar(16) NOT NULL COMMENT 'Last IP address used by user when logging in',
+  `groups` varchar(32) NOT NULL COMMENT 'Comma separated group ids',
   PRIMARY KEY (`id`),
   UNIQUE KEY `login` (`login`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;

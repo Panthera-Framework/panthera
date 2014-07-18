@@ -24,24 +24,50 @@ class uiSearchbar
      * Constructor
      *
      * @param string $barName Search bar name that will be used to identify this searchbar in template
-     * @return null :D
+     * @return null
      */
 
     public function __construct ($barName)
     {
-        global $panthera;
+        $panthera = panthera::getInstance();
+
         $this -> panthera = $panthera;
         $this -> barName = $barName;
+
         self::$searchBars[$this->barName] = array(
             'icons' => array(),
             'settings' => array(),
-            'formAction' => '?' .Tools::getQueryString('GET', '', '_,query'),
+            'formAction' => '',
             'formMethod' => 'GET',
             'navigate' => False,
-            'query' => @$_GET['query']
+            'query' => @$_GET['query'],
+            'instance' => $this,
         );
-
+        
+        $this -> rebuildFormAction();
         $panthera -> add_option('template.display', array($this, 'applyToTemplate'));
+    }
+    
+    /**
+     * Rebuild form action
+     * 
+     * @authot Damian Kęska
+     * @return null
+     */
+    
+    public function rebuildFormAction()
+    {
+        $settings = array();
+        
+        foreach (self::$searchBars[$this->barName]['settings'] as $settingID => $setting)
+            $settings[] = $settingID;
+        
+        $settings = implode(',', $settings);
+        
+        if (strlen($settings) > 2)
+            $settings = ',' .$settings;
+        
+        self::$searchBars[$this->barName]['formAction'] = '?' .Tools::getQueryString('GET', '', '_,query' .$settings);
     }
 
     /**
@@ -57,16 +83,12 @@ class uiSearchbar
         $output = array();
 
         if ($sBar['formMethod'] == 'POST')
-        {
             $array = $_POST;
-        }
 
         foreach (self::$searchBars[$this->barName]['settings'] as $id => $values)
         {
             if (isset($array[$id]))
-            {
                 $output[$id] = $array[$id];
-            }
         }
 
         return $output;
@@ -89,23 +111,17 @@ class uiSearchbar
         reset($array);
 
         foreach ($array as $ii => $va)
-        {
             $sorter[$ii]=$va[$column];
-        }
 
         $sortingFunction($sorter);
 
         foreach ($sorter as $ii => $va)
-        {
             $ret[$ii]=$array[$ii];
-        }
 
         $array = $ret;
 
         if (strtolower($direction) == 'desc')
-        {
             $array = array_reverse($array);
-        }
 
         return $array;
     }
@@ -138,9 +154,7 @@ class uiSearchbar
                     $value = print_r_html($value, true);
 
                 if (strpos($value, $queryString) !== False)
-                {
                     $found = True;
-                }
             }
 
             if (!$found)
@@ -216,9 +230,7 @@ class uiSearchbar
         $type = strtolower($type); // avoid mistakes
 
         if (!in_array($type, array('checkbox', 'text', 'select')))
-        {
             throw new Exception('Unsupported setting type "' .$type. '" in uiSearchbar id="' .$this->barName. '"', 8795);
-        }
 
         $setting = array(
             'id' => $id,
@@ -268,20 +280,18 @@ class uiSearchbar
     public function setMethod($method)
     {
         if (!in_array($method, array('GET', 'POST', 'HEAD')))
-        {
             throw new Exception('Unsupported method type "' .$method. '" in uiSearchBar id="' .$this->barName. '"');
-        }
 
         self::$searchBars[$this->barName]['formMethod'] = $method;
     }
 
     /**
-      * Set HTTP address
-      *
-      * @param string $address Address to destination script, accepts Panthera URLs
-      * @return void
-      * @author Damian Kęska
-      */
+     * Set HTTP address
+     *
+     * @param string $address Address to destination script, accepts Panthera URLs
+     * @return void
+     * @author Damian Kęska
+     */
 
     public function setAddress($address)
     {
@@ -310,10 +320,14 @@ class uiSearchbar
 
     public static function applyToTemplate()
     {
-        global $panthera;
+        $panthera = panthera::getInstance();
+        
         if ($panthera -> logging -> debug)
-            $panthera -> logging -> output ('Adding ui.Searchbars to template: ' .json_encode(self::$searchBars), 'pantheraAdminUI');
+            $panthera -> logging -> output ('Adding ui.Searchbars to template: ' .json_encode(static::$searchBars), 'pantheraAdminUI');
 
-        $panthera -> template -> push('uiSearchbars', self::$searchBars);
+        foreach (static::$searchBars as &$searchBar)
+            $searchBar['instance'] -> rebuildFormAction();
+
+        $panthera -> template -> push('uiSearchbars', static::$searchBars);
     }
 }

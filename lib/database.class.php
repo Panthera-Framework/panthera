@@ -62,7 +62,7 @@ class pantheraDB extends pantheraClass
             if (strtolower(@$config['db_socket']) == 'sqlite')
             {
                 if (!is_file(SITE_DIR. '/content/database/' .$config['db_file']))
-                    throw new Exception('Database fils is missing in /content/database/, please check app.php (variable - db_file) and file name');
+                    throw new databaseException('Database fils is missing in /content/database/, please check app.php (variable - db_file) and file name');
 
                 $this->socketType = 'sqlite';
                 $this->sql = new PDO('sqlite:' .SITE_DIR. '/content/database/' .$config['db_file']);
@@ -96,7 +96,7 @@ class pantheraDB extends pantheraClass
             if ($dontTriggerError == False)
                 $this->_triggerErrorPage($e);
             else
-                throw new Exception($e->getMessage());
+                throw new databaseException($e->getMessage());
         }
 
         $this -> defineConstants();
@@ -357,10 +357,10 @@ class pantheraDB extends pantheraClass
                 }
 
             } else
-                throw new Exception($e->getMessage());
+                throw new databaseException($e->getMessage());
 
         } else
-            throw new Exception($e->getMessage());
+            throw new databaseException($e->getMessage());
     }
 
     /**
@@ -399,10 +399,10 @@ class pantheraDB extends pantheraClass
                 }
 
             } else
-                throw new Exception($e->getMessage());
+                throw new databaseException($e->getMessage());
 
         } else
-            throw new Exception($e->getMessage());
+            throw new databaseException($e->getMessage());
     }
 
     /**
@@ -472,9 +472,7 @@ class pantheraDB extends pantheraClass
             $SQL = $this -> query ('SHOW TABLES FROM `' .$this->config['db_name'].'`');
 
             foreach ($SQL -> fetchAll(PDO::FETCH_ASSOC) as $table)
-            {
                 $tables[] = end($table);
-            }
         }
 
         return $tables;
@@ -738,12 +736,12 @@ class pantheraDB extends pantheraClass
         $vars = $setString['values'];
 
         if (!$whereClause and $whereClause !== null)
-            throw new Exception('$whereClause is empty but not a null value, please make sure you don\'t want to delete entire data from table', 7842);
+            throw new databaseException('$whereClause is empty but not a null value, please make sure you don\'t want to delete entire data from table', 7842);
 
         if (is_object($whereClause))
         {
             if (!method_exists($whereClause, 'show'))
-                throw new Exception('$whereClause variable does not contain a valid object with show() method', 587);
+                throw new databaseException('$whereClause variable does not contain a valid object with show() method', 587);
 
             $show = $whereClause->show();
             $query .= ' WHERE ' .$show[0];
@@ -772,7 +770,7 @@ class pantheraDB extends pantheraClass
 
         // take care about mistakes when $whereClause == "" but is not a null value
         if (!$whereClause and $whereClause !== null)
-            throw new Exception('$whereClause is empty but not a null value, please make sure you don\'t want to delete entire data from table', 7842);
+            throw new databaseException('$whereClause is empty but not a null value, please make sure you don\'t want to delete entire data from table', 7842);
 
         if (is_string($whereClause))
         {
@@ -781,7 +779,7 @@ class pantheraDB extends pantheraClass
         } elseif (is_object($whereClause)) {
 
             if (!method_exists($whereClause, 'show'))
-                throw new Exception('$whereClause variable does not contain a valid object with show() method', 587);
+                throw new databaseException('$whereClause variable does not contain a valid object with show() method', 587);
 
             $show = $whereClause->show();
             $query .= ' WHERE ' .$show[0];
@@ -868,12 +866,11 @@ class pantheraDB extends pantheraClass
         
         $SQL = $this->panthera->db->query($selectQuery.$whereClause. ' ORDER BY `' .$orderColumn. '` ' .$order.@$sqlLimit, @$q[1]);
 
-
         $results = array();
 
         if (is_bool($limit))
             return $SQL->rowCount();
-
+        
         if ($SQL->rowCount() > 0)
         {
         	// this code consumes less cpu and runs faster
@@ -887,21 +884,8 @@ class pantheraDB extends pantheraClass
                 else
                     $results[] = $item;
             }
-
-
-			/*
-			// this code consumes less memory but runs slower
-			while ($item = $SQL -> fetch(PDO::FETCH_ASSOC))
-			{
-				// return results as object
-				if (class_exists($returnAs))
-                    $results[] = new $returnAs('array', $item);
-                else
-                    $results[] = $item;
-			}*/
-
         }
-
+        
         return $results;
     }
 
@@ -1144,7 +1128,7 @@ abstract class pantheraFetchDB
             '_viewPermissionColumn' => $this -> _viewPermissionColumn,
         );
     }
-
+    
     /**
       * Constructor, here are logics that parses and loads all data, cache management etc.
       *
@@ -1154,7 +1138,7 @@ abstract class pantheraFetchDB
       * @author Damian Kęska
       */
 
-    public function __construct($by, $value)
+    public function __construct($by, $value='')
     {
         $panthera = pantheraCore::getInstance();
         $this->panthera = $panthera;
@@ -1194,16 +1178,19 @@ abstract class pantheraFetchDB
 
         // check if child class has met requirements - if the table name is provided
         if (!$this->_tableName)
-            throw new Exception('$this->_tableName was not specified, cannot construct object of ' .get_class($this). ' extended by pantheraFetchDB');
+            throw new databaseException('$this->_tableName was not specified, cannot construct object of ' .get_class($this). ' extended by pantheraFetchDB');
 
         /**
-          * Constructing object by array
-          *
-          */
+         * Constructing object by array
+         *
+         */
 
         // construct object using existing data, so we dont have to make a SQL query again
-        if ($by == 'array' and in_array('array', $this->_constructBy))
+        if ($by == 'array')
         {
+            if (!in_array('array', $this->_constructBy))
+                throw new databaseException('Constructing by array disabled in this object');
+            
             if ($panthera -> logging -> debug == True)
                 $panthera -> logging -> output(get_class($this). '::Creating object from array ' .json_encode($value), $this->cacheGroup);
 
@@ -1239,7 +1226,7 @@ abstract class pantheraFetchDB
             if (!$SQL and is_object($by))
             {
                 if (get_class($by) != "whereClause")
-                    throw new Exception('Input $by must be a whereClause object or a string with column name');
+                    throw new databaseException('Input $by must be a whereClause object or a string with column name');
 
                 $clause = $by->show();
                 $SQL = $panthera->db->query($this->getQuery(). ' WHERE ' .$clause[0]. ' LIMIT 0,1', $clause[1]);
@@ -1251,16 +1238,16 @@ abstract class pantheraFetchDB
             }
 
             /**
-              * Constructing by column
-              *
-              */
+             * Constructing by column
+             *
+             */
 
             // if we dont have array to take fetched data we must fetch it by our own
             if (in_array($by, $this->_constructBy) and $SQL == NULL)
                 $SQL = $panthera->db->query($this->getQuery(). ' WHERE `' .$by. '` = :' .$by. ' LIMIT 0,1', array($by => $value));
 
             // getting results and building a object
-            if ($SQL != NULL)
+            if ($SQL)
             {
                 if ($SQL -> rowCount() > 0)
                 {
@@ -1294,10 +1281,32 @@ abstract class pantheraFetchDB
     {
         return $this -> _dataModified;
     }
+    
+    /**
+     * Convert array of objects to associative arrays
+     * 
+     * @static
+     * @param array $list Array of objects
+     * @return array
+     */
+    
+    public static function toAssoc($list)
+    {
+        $array = array();
+        
+        foreach ($list as $object)
+        {
+            if (is_object($object) and method_exists($object, 'getData'))
+                $array[] = $object -> getData();
+        }
+        
+        return $array;
+    }
 
     /**
      * Static version of _getClassInfo() function
      *
+     * @static
      * @author Damian Kęska
      * @return array
      */
@@ -1487,13 +1496,13 @@ abstract class pantheraFetchDB
 
     public static function fetchAll($by, $limit=0, $limitFrom=0, $order='id', $direction='DESC')
     {
-        global $panthera;
+        $panthera = panthera::getInstance();
 
         $info = static::_getClassInfoStatic();
 
         if ($order == 'id' and $info['idColumn'])
             $order = $info['idColumn'];
-
+        
         return $panthera->db->getRows($info['tableName'], $by, $limit, $limitFrom, get_called_class(), $order, $direction);
     }
 
@@ -1525,7 +1534,7 @@ abstract class pantheraFetchDB
         $info = static::_getClassInfoStatic();
 
         if (!$info['_viewPermissionColumn'] or !$info['_viewPermission'])
-            throw new Exception('In order to use pantheraFetchDB::userFetchAll() function you have to set _viewPermission and _viewPermissionColumn variables', 331);
+            throw new databaseException('In order to use pantheraFetchDB::userFetchAll() function you have to set _viewPermission and _viewPermissionColumn variables', 331);
 
         // remove items user don't have access to
         foreach ($items as &$item)
@@ -1933,6 +1942,8 @@ class pantheraDBStatement extends PDOStatement
     
     public function getPermissions($type='view')
     {
-        throw new Exception('Feature "getPermissions" not implemented in this model', 42953);
+        throw new databaseException('Feature "getPermissions" not implemented in this model', 42953);
     }
 }
+
+class databaseException extends Exception {}

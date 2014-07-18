@@ -245,7 +245,7 @@ class aclAjaxControllerSystem extends pageController
         $this -> panthera -> template -> push('metas', $metasTpl);
         $this -> panthera -> template -> push('groupName', $groupName);
         $this -> panthera -> template -> push('groupDescription', $group->description);
-        $this -> panthera -> template -> push('groupUsers', $group -> findUsers($limit[0], $limit[1]));
+        $this -> panthera -> template -> push('groupUsers', pantheraFetchDB::toAssoc($group -> findUsers($limit[0], $limit[1])));
 
         $this -> uiTitlebarObject -> setTitle(slocalize('Editing group "%s"', 'users', $groupName));
         $this -> uiTitlebarObject -> addIcon('{$PANTHERA_URL}/images/admin/menu/users.png', 'left');
@@ -274,10 +274,10 @@ class aclAjaxControllerSystem extends pageController
             ));
 
         /**
-          * Setting user's primary group
-          *
-          * @author Damian Kęska
-          */
+         * Setting user's primary group
+         *
+         * @author Damian Kęska
+         */
 
         if ($_POST['subaction'] == 'add' or $_POST['subaction'] == 'remove')
         {
@@ -291,20 +291,15 @@ class aclAjaxControllerSystem extends pageController
 
             // reset user's primary group
             if ($_POST['subaction'] == 'remove')
-            {
-                if ($groupName != 'users')
-                    $groupName = 'users';
-                else
-                    $groupName = '';
-            }
-
-            // TODO: In future we may support multiple groups for one user
-            $usr -> primary_group = $group->group_id;
+                $usr -> leaveGroup($group -> group_id);
+            else
+                $usr -> joinGroup($group -> group_id);
+            
             $usr -> save();
-
+            
             ajax_exit(array(
                 'status' => 'success',
-                'userList' => $group -> findUsers(),
+                'userList' => pantheraFetchDB::toAssoc($group -> findUsers()),
             ));
         }
 

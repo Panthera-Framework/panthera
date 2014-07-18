@@ -2,7 +2,7 @@
 /**
  * Panthera user management
  *
- * @package Panthera\core\user
+ * @package Panthera\core\system\user
  * @author Damian Kęska
  * @license LGPLv3
  */
@@ -10,7 +10,7 @@
 /**
  * Panthera User Management Class
  *
- * @package Panthera\core\user
+ * @package Panthera\core\system\user
  * @author Damian Kęska
  */
 
@@ -31,9 +31,12 @@ class pantheraUser extends pantheraFetchDB
      * @return null
      */
 
-    public function __construct($by, $value)
+    public function __construct($by, $value='')
     {
         parent::__construct($by, $value);
+        
+        if ($value === null)
+            return false;
 
         if ($this->panthera->cacheType('cache') == 'memory' and $this->panthera->db->cache and $this->cache == True)
             $this->cache = $this->panthera->db->cache;
@@ -48,7 +51,115 @@ class pantheraUser extends pantheraFetchDB
 
             // merge group rights with user rights
             $this -> acl -> loadOverlay('g', $this->_data['primary_group']);
+            
+            foreach (explode(',', $this -> _data['groups']) as $group)
+                $this -> acl -> loadOverlay('g', $group);
         }
+    }
+    
+    /**
+     * Filter "groups" field before saving to database
+     * 
+     * @param array $input Input array to be converted to CSV
+     * @author Damian Kęska
+     * @return bool
+     */
+    
+    public function groupsFilter(&$input)
+    {
+        if (is_array($input))
+            $input = str_replace(' ', '', implode(',', $input));
+
+        return True;
+    }
+    
+    /**
+     * "groups" field read filter (converts comma separated values to array)
+     * 
+     * @param string $input Input string from database
+     * @author Damian Kęska
+     * @return array
+     */
+    
+    public function groupsReadFilter($input)
+    {
+        if (!$input)
+            return array();
+        
+        return explode(',', $input);
+    }
+    
+    /**
+     * Join a group
+     * 
+     * @param int|string|pantheraGroup $groupID Group ID or group object
+     * @author Damian Kęska
+     * @return bool True on success, False when group does not exists
+     */
+    
+    public function joinGroup($group)
+    {
+        if (!is_object($group) or !($group instanceof pantheraGroup))
+            $group = new pantheraGroup('group_id', $group);
+        
+        if ($group -> exists())
+        {
+            $groups = $this -> groups;
+
+            if (!in_array($group -> group_id, $groups))
+            {
+                $groups[] = $group -> group_id;
+                $this -> groups = $groups;
+                
+                try {
+                    groupJoinHistory::create(array(
+                        'joinid' => hash('md4', $this -> id.':'.$group -> group_id),
+                        'userid' => $this -> id,
+                        'groupid' => $group -> group_id,
+                        'joined' => DB_TIME_NOW,
+                    ));
+                } catch (Exception $e) {
+                    // pass
+                }
+            }
+            
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Leave a group
+     * 
+     * @param int|string|pantheraGroup $groupID Group ID or group object
+     * @author Damian Kęska
+     * @return bool True on success, False when group does not exists
+     */
+    
+    public function leaveGroup($group)
+    {
+        if (!is_object($group) or !($group instanceof pantheraGroup))
+            $group = new pantheraGroup('group_id', $group);
+        
+        if ($group -> exists())
+        {
+            $groups = $this -> groups;
+            $search = array_search($group -> group_id, $groups);
+            
+            if ($search !== False)
+            {
+                unset($groups[$search]);
+                $this -> groups = $groups;
+                
+                $history = new groupJoinHistory('joinid', hash('md4', $this -> id.':'.$group -> group_id));
+                $history -> delete();
+            }
+            
+            return True;
+        }
+        
+        return False;
     }
 
 	/**
@@ -83,7 +194,7 @@ class pantheraUser extends pantheraFetchDB
 
     public function changePassword($passwd)
     {
-        if (trim($passwd) == '')
+        if (!trim($passwd))
             return False;
 
         $this->__set('passwd', encodePassword($passwd));
@@ -100,10 +211,7 @@ class pantheraUser extends pantheraFetchDB
 
     public function checkPassword($passwd)
     {
-        if (verifyPassword($passwd, $this->passwd))
-            return True;
-
-        return False;
+        return verifyPassword($passwd, $this->passwd);
     }
 
     /**
@@ -150,8 +258,7 @@ class pantheraUser extends pantheraFetchDB
         if($var == 'meta')
             return $this->acl;
 
-        if (isset($this->_data[$var]))
-            return $this->_data[$var];
+        return parent::__get($var);
     }
 
     public function __set($var, $value)
@@ -245,13 +352,13 @@ class pantheraUser extends pantheraFetchDB
     }
 
     /**
-      * Get user attribute by id, pantheraUser object, login or current logged in user
-      *
-      * @param string $attribute Attribute name to get eg. id, login
-      * @param string|int|pantheraUser $input Input data to find user by (integer input means id, string means login and pantheraUser object means user itself)
-      * @return
-      * @author Damian Kęska
-      */
+     * Get user attribute by id, pantheraUser object, login or current logged in user
+     *
+     * @param string $attribute Attribute name to get eg. id, login
+     * @param string|int|pantheraUser $input Input data to find user by (integer input means id, string means login and pantheraUser object means user itself)
+     * @return
+     * @author Damian Kęska
+     */
 
     public static function getAttribute($attribute, $input='')
     {
@@ -319,7 +426,7 @@ class pantheraUser extends pantheraFetchDB
 /**
   * Panthera groups management
   *
-  * @package Panthera\core\user\groups
+  * @package Panthera\core\system\user
   * @author Damian Kęska
   */
 
@@ -457,30 +564,30 @@ class pantheraGroup extends pantheraFetchDB
     }
 
     /**
-      * Find all group users
-      *
-      * @return array
-      * @author Damian Kęska
-      */
+     * Find all group users
+     *
+     * @return array
+     * @author Damian Kęska
+     */
 
     public function findUsers($limit=0, $offset=0)
     {
-        $limitQuery = '';
-        $what = '`login`, `id`';
-
-        if ($limit and $offset)
-            $limitQuery = ' LIMIT ' .intval($offset). ', ' .intval($limit);
-        elseif ($limit === False)
-            $what = 'count(*)';
-
-        $SQL = $this -> panthera -> db -> query('SELECT ' .$what. ' FROM `{$db_prefix}users` WHERE `primary_group` = :gid ' .$limitQuery, array('gid' => $this->group_id));
-
-        if ($limit === False) {
-            $array = $SQL -> fetch(PDO::FETCH_ASSOC);
-            return intval($array['count(*)']);
+        $filter = new whereClause;
+        $filter -> add('OR', 'primary_group', '=', $this -> group_id);
+        
+        $groupFilter = new whereClause;
+        $groupFilter -> add('', 'groupid', '=', $this -> group_id);
+        
+        $groupUsers = groupJoinHistory::fetchAll($groupFilter);
+        
+        if ($groupUsers)
+        {
+            foreach ($groupUsers as $historyEntry)
+                $filter -> add('OR', 'id', '=', $historyEntry -> userid);
+                
         }
-
-        return $SQL -> fetchAll(PDO::FETCH_ASSOC);
+        
+        return pantheraUser::fetchAll($filter, $limit, $offset);
     }
 }
 
@@ -488,7 +595,7 @@ class pantheraGroup extends pantheraFetchDB
  * Create new user in {$db_prefix}users
  *
  * @return bool
- * @package Panthera\core\user
+ * @package Panthera\core\system\user
  * @author Mateusz Warzyński
  * @author Damian Kęska
  */
@@ -687,7 +794,7 @@ function getUserRightAttribute($user, $attribute)
 /**
  * Meta tags management class
  *
- * @package Panthera\core\metaAttributes
+ * @package Panthera\core\system\metaAttributes
  * @author Damian Kęska
  */
 
@@ -1036,10 +1143,10 @@ class metaAttributes
                     }
 
                 /**
-                  * Updating existing one
-                  *
-                  * @author Damian Kęska
-                  */
+                 * Updating existing one
+                 *
+                 * @author Damian Kęska
+                 */
 
                 } else {
 
@@ -1072,13 +1179,22 @@ class metaAttributes
                 $panthera -> cache -> set ($this->_cacheID, $this->_metas, 'metaAttributes');
                 $panthera -> logging -> output ('Saved meta to cache id=' .$this->_cacheID, 'metaAttributes');
             }
-
-            // write to cache
-            /*if ($this->cache > 0)
-            {
-                $this->panthera->cache->set('um.'.$this->_user, $this->_input, $this->cache);
-                $this->panthera->logging->output('Wrote usermeta to cache id=um.'.$this->__get('id'), 'pantheraUser');
-            }*/
         }
     }
+}
+
+/**
+ * User group join history
+ * 
+ * @package Panthera\core\system\user
+ * @author Damian Kęska
+ */
+
+class groupJoinHistory extends pantheraFetchDB
+{
+    protected $_tableName = 'groups_users_history';
+    protected $_constructBy = array(
+        'joinid', 'id', 'array',
+    );
+    protected $_idColumn = 'joinid';
 }

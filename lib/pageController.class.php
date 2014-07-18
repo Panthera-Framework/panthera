@@ -541,11 +541,11 @@ abstract class pageController extends pantheraClass {
     public function getFeature($featureName, $args='', $additionalInfo=null, $fixOnFail=True)
     {
         $f = preg_replace('/[^\da-zA-Z0-9]/i', '_', $featureName). 'Feature';
+        
+        $this -> panthera -> logging -> output('Looking for this->' .$f. '(args, additionalInfo)', get_called_class());
 
         if (method_exists($this, $f))
-        {
             $args = $this->$f($args, $additionalInfo);
-        }
 
         return $this -> panthera -> get_filters($featureName, $args, $fixOnFail, $additionalInfo);
     }
@@ -563,11 +563,11 @@ abstract class pageController extends pantheraClass {
     public function getFeatureRef($featureName, &$args='', $additionalInfo=null, $fixOnFail=True)
     {
         $f = preg_replace('/[^\da-zA-Z0-9]/i', '_', $featureName). 'Feature';
+        
+        $this -> panthera -> logging -> output('Looking for this->' .$f. '(&args, additonalInfo)', get_called_class());
 
         if (method_exists($this, $f))
-        {
             $this->$f($args, $additionalInfo);
-        }
 
         return $this -> panthera -> get_options_ref($featureName, $args, $additionalInfo);
     }
@@ -637,9 +637,73 @@ abstract class adminController extends pageController
 abstract class dataModelManagementController extends pageController
 {
     protected $__dataModelClass = null;
+    
+    /**
+     * New object action form template
+     * 
+     * @var $__newTemplate
+     */
+    
+    protected $__newTemplate = '';
+    
+    /**
+     * New action form template
+     * 
+     * @var $__editTemplate
+     */
+    
+    protected $__editTemplate = '';
+    
+    /**
+     * Base template for main view
+     * 
+     * @var $__baseTemplate
+     */
+    
     protected $__baseTemplate = '';
+    
+    /**
+     * By default display a list or a item? (list, item)
+     * 
+     * @var $__defaultDisplay
+     */
+    
     protected $__defaultDisplay = 'list';
     protected $__listId = 'categoryid';
+    
+    /**
+     * List of specific translation strings like alert box questions
+     * This will be passed to template as $lang but array will be converted to translated string
+     * 
+     * @var $lang
+     */
+    
+    protected $lang = array(
+        'deletionConfirm' => array('Are you sure you want to delete this position?', 'admin'),
+    );
+    
+    /**
+     * List of fields to display in new/edit template (optional - if not using default template)
+     * 
+     * Example:
+     * <code>
+     * $__fields = array(
+     *     'title' => array('title' => array('Title', 'domain'), 'type' => 'text'),
+     *     'description' => array('title' => 'Description', 'type' => 'wysiwyg'),
+     * );
+     * </code>
+     * 
+     * @var $__fields
+     */
+    
+    protected $__fields = array(
+        
+    );
+    
+    protected $__searchBarName = 'uiTop';
+    protected $__searchBarQueryColumns = array(
+    
+    );
     
     /**
      * Remove a object
@@ -665,6 +729,7 @@ abstract class dataModelManagementController extends pageController
      * Edit / create new object action
      * Post list of fields eg. object_id, object_title, object_creation etc. with "object_" prefix
      * To insert code and modify this function use hooks (features)
+     * Mark save request with $_POST['postData']
      *
      * @input @_POST
      * @author Damian Kęska
@@ -677,41 +742,62 @@ abstract class dataModelManagementController extends pageController
         $hookName = str_replace('Ajax', '', get_called_class($this));
         $hookName = substr($hookName, 0, strpos($hookName, 'Controller'));
         
-        if (isset($_POST['objectID']) and $_POST['action'] == 'edit')
+        if (isset($_GET['objectGroupID']))
+            $this -> template -> push('objectGroupID', $_GET['objectGroupID']);
+        
+        if (isset($_GET['objectID']))
         {
-            $object = new $class('id', $_POST['objectID']);
+            $object = new $class('id', $_GET['objectID']);
             
             if ($object -> exists())
             {
-                $this -> getFeature('datamodel.' .$hookName. '.preedit', $object);
-            
-                foreach ($object -> getData() as $key => $oldValue)
+                if (isset($_POST['postData']) and $_POST['postData'])
                 {
-                    if (isset($_POST['object_' .$key]))
-                        $object -> __set($key, $_POST['object_' .$key]);
-                }
-                
-                $this -> getFeature('datamodel.' .$hookName. '.postedit', $object);
-                
-                try {
-                    $object -> save();
-
-                } catch (Exception $e) {
-                    $this -> getFeature('datamodel.' .$hookName. '.editfailure', $object);
-                
+                    $this -> getFeature('datamodel.' .$hookName. '.preedit', $object);
+                    
+                    if (method_exists($this, 'validateObjectModification'))
+                        $this -> validateObjectModification($_POST);
+                    
+                    // set all available fields
+                    foreach ($object -> getData() as $key => $oldValue)
+                    {
+                        if (isset($_POST['object_' .$key]))
+                            $object -> __set($key, $_POST['object_' .$key]);
+                    }
+                    
+                    $this -> getFeature('datamodel.' .$hookName. '.postedit', $object);
+                    
+                    try {
+                        $object -> save();
+    
+                    } catch (Exception $e) {
+                        $this -> getFeature('datamodel.' .$hookName. '.editfailure', $object);
+                    
+                        ajax_exit(array(
+                            'status' => 'failed',
+                            'message' => slocalize('Field validation failure, details: %s', 'messages', $e -> getMessage()),
+                        ));
+                    }
+                    
                     ajax_exit(array(
-                        'status' => 'failed',
-                        'message' => slocalize('Field validation failure, details: %s', 'messages', $e -> getMessage()),
+                        'status' => 'success',
                     ));
                 }
-                
-                ajax_exit(array(
-                    'status' => 'success',
+
+                // display a edit template form
+                $this -> template -> push(array(
+                    'action' => 'edit',
+                    'fields' => $this -> __fields,
+                    'dataObject' => $object,
                 ));
+                
+                $this -> template -> display($this -> __editTemplate);
+                pa_exit();
             }
+
         } else {
             // creating a new object
-            if ($_POST['action'] == 'new')
+            if (isset($_POST['postData']) and $_POST['postData'])
             {
                 $values = array(
 
@@ -722,9 +808,12 @@ abstract class dataModelManagementController extends pageController
                     if (strpos($key, 'object_') !== 0)
                         continue;
 
-                    $key = str_replace('object_', '', $key);                    
+                    $key = str_replace('object_', '', $key);
                     $values[$key] = $value;
                 }
+                
+                if (method_exists($this, 'validateNewObject'))
+                    $this -> validateNewObject($values);
                 
                 try {
                     $this -> getFeatureRef('datamodel.' .$hookName. '.precreate', $values);
@@ -735,10 +824,20 @@ abstract class dataModelManagementController extends pageController
                 
                     ajax_exit(array(
                         'status' => 'failed',
+                        'fields' => $this -> __fields,
                         'message' => slocalize('Cannot add new object, field validation failure, details: %s', 'messages', $e -> getMessage()),
                     ));
                 }
+                
+                ajax_exit(array(
+                    'status' => 'success',
+                ));
             }
+
+            // display a new object form
+            $this -> template -> push('action', 'edit');
+            $this -> template -> display($this -> __newTemplate);
+            pa_exit();
         }
     }
     
@@ -752,14 +851,40 @@ abstract class dataModelManagementController extends pageController
     public function __displayList()
     {
         $class = $this -> __dataModelClass;
+        $hookName = str_replace('Ajax', '', get_called_class());
+        $hookName = substr($hookName, 0, strpos($hookName, 'Controller'));
         $filter = new whereClause;
         
-        if (isset($_GET['__filterData']))
-            $filter -> add('AND', $this -> __listId, '=', $_GET['__filterData']);
+        // add searchbar only if selected columns to query via search field
+        if ($this -> __searchBarQueryColumns)
+        {
+            $this -> __searchBar = new uiSearchbar($this -> __searchBarName);
+            $this -> __searchBar -> navigate(True);
+            
+            if ($this -> __searchBarQueryColumns and $this -> __searchBar -> getQuery())
+            {
+                $filter -> setGroupStatement(2, 'OR');
+                
+                foreach ($this -> __searchBarQueryColumns as $column)
+                    $filter -> add('OR', $column, 'LIKE', '%' .$this -> __searchBar -> getQuery(). '%', 2);
+            }
+        }
+
+        if (isset($_GET['objectGroupID']) and intval($_GET['objectGroupID']) !== -1)
+            $filter -> add('AND', $this -> __listId, '=', $_GET['objectGroupID']);
+        
+        // allow modify filter list by searchbar
+        $this -> getFeatureRef('datamodel.' .$hookName. '.list.filter', $filter);
 
         $this -> template -> push(array(
+            'fields' => $this -> __fields,
             'foundElements' => $class::fetchAll($filter),
         ));
+    }
+
+    public function __displayItem()
+    {
+        // TODO: Implement this function
     }
     
     /**
@@ -771,6 +896,17 @@ abstract class dataModelManagementController extends pageController
     public function display()
     {
         $this -> dispatchAction();
+        
+        // localization support
+        foreach ($this -> lang as &$lang)
+            $lang = $this -> panthera -> locale -> localizeFromArray($lang);
+
+        $this -> template -> push(array(
+            'lang' => $this -> lang,
+        ));
+        
+        if (isset($_GET['objectGroupID']))
+            $this -> template -> push('objectGroupID', $_GET['objectGroupID']);
 
         if ($this -> __defaultDisplay == 'list')
             $this -> __displayList();
