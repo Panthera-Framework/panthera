@@ -1034,9 +1034,15 @@ class whereClause
 
 		while (isset($this->vals[$columnTmp]))
 		    $columnTmp = $Column.rand(0,9999);
-
-		$this->groups[$group]['query'] .= $Statement. ' `' .$Column. '` ' .$Equals. ' :' .$columnTmp. ' ';
-        $this->vals[(string)$columnTmp] = $Value;
+        
+        if ($Value == DB_TIME_NOW)
+            $mark = 'NOW()';   
+        else {
+            $mark = ':' .$columnTmp;
+            $this -> vals[(string)$columnTmp] = $Value;
+        }
+		$this->groups[$group]['query'] .= $Statement. ' `' .$Column. '` ' .$Equals. ' ' .$mark. ' ';
+        
 		return $this;
 	}
 
