@@ -701,10 +701,33 @@ abstract class dataModelManagementController extends pageController
         
     );
     
+    /**
+     * ui.Searchbar object
+     * 
+     * @var $__searchBar
+     */
+    
+    protected $__searchBar = null;
     protected $__searchBarName = 'uiTop';
+    
+    /**
+     * Columns to search in
+     * eg. array('title', 'description') (less = better performance, more = more results and detailed search)
+     * 
+     * @var $__searchBarQueryColumns
+     */
+    
     protected $__searchBarQueryColumns = array(
     
     );
+    
+    /**
+     * ui.Pager object
+     * 
+     * @var $__pager
+     */
+    
+    protected $__pager = null;
     
     /**
      * Remove a object
@@ -855,6 +878,11 @@ abstract class dataModelManagementController extends pageController
         $class = $this -> __dataModelClass;
         $hookName = str_replace('Ajax', '', get_called_class());
         $hookName = substr($hookName, 0, strpos($hookName, 'Controller'));
+        
+        /**
+         * Searchbar and filtering
+         */
+        
         $filter = new whereClause;
         
         // add searchbar only if selected columns to query via search field
@@ -871,16 +899,31 @@ abstract class dataModelManagementController extends pageController
                     $filter -> add('OR', $column, 'LIKE', '%' .$this -> __searchBar -> getQuery(). '%', 2);
             }
         }
-
+        
         if (isset($_GET['objectGroupID']) and intval($_GET['objectGroupID']) !== -1)
             $filter -> add('AND', $this -> __listId, '=', $_GET['objectGroupID']);
         
-        // allow modify filter list by searchbar
+        /**
+         * Pagination
+         */
+        
+        $this -> __pager = new uiPager(get_called_class(), $class::fetchAll($filter, false), get_called_class(). 'Management', 20);
+
+        if ($this -> __pagerTemplatesConfig)
+            $this -> __pager -> setLinkTemplatesFromConfig($this -> __pagerTemplatesConfig);
+        
+        /**
+         * Plugins and extensions support
+         */
+        
+        // allow modify filter list by searchbar, next line allows plugins to modify pager
         $this -> getFeatureRef('datamodel.' .$hookName. '.list.filter', $filter);
+        $this -> getFeatureRef('datamodel.' .$hookName. '.list.pager', $this -> __pager);
 
         $this -> template -> push(array(
             'fields' => $this -> __fields,
-            'foundElements' => $class::fetchAll($filter),
+            'foundElements' => $class::fetchAll($filter, $this -> __pager),
+            'uiPagerName' => get_called_class(),
         ));
     }
 

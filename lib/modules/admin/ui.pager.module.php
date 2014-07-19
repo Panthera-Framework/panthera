@@ -27,9 +27,7 @@ class uiPager extends pantheraClass
         $this -> panthera -> importModule('pager');
 
         if ($maxOnPage === '')
-        {
             $maxOnPage = $name;
-        }
 
         self::$pagers[$this->name] = array(
             'links' => array(),
@@ -37,7 +35,7 @@ class uiPager extends pantheraClass
             'total' => $totalItems,
             'pageMax' => $maxOnPage,
             'maxLinks' => 6,
-            'linkTemplate' => Tools::getQueryString('GET', 'page={$page}', '_'),
+            'linkTemplate' => '?' .str_replace('%7B%24', '{$', str_replace('%7D', '}', Tools::getQueryString('GET', 'page={$page}', '_'))),
             'onclickTemplate' => False,
             'backBtn' => False,
             'nextBtn' => False,
@@ -61,13 +59,13 @@ class uiPager extends pantheraClass
     }
 
     /**
-      * Set link templates
-      *
-      * @param string $link eg. ?display=users&page={$page}
-      * @param string $onclick
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Set link templates
+     *
+     * @param string $link eg. ?display=users&page={$page}
+     * @param string $onclick
+     * @return mixed
+     * @author Damian Kęska
+     */
 
     public function setLinkTemplates($link, $onclick=False)
     {
@@ -107,14 +105,12 @@ class uiPager extends pantheraClass
 
     public function setLinkTemplatesFromConfig($templateName)
     {
-        global $panthera;
+        $panthera = panthera::getInstance();
 
         $config = $panthera->template->getFileConfig($templateName);
 
         if (!$config)
-        {
             return False;
-        }
 
         $this->setLinkTemplates($config->pagerLink, $config->pagerOnClick);
 
@@ -143,9 +139,7 @@ class uiPager extends pantheraClass
 
             // rewrite only elements matching our range
             if ($i >= $limit[0] and $i <= ($limit[0]+$limit[1]))
-            {
                 $newArray[$key] = $value;
-            }
         }
 
         return $newArray;
@@ -164,9 +158,7 @@ class uiPager extends pantheraClass
         self::$pagers[$this->name]['active'] = intval($pageID);
 
         if (self::$pagers[$this->name]['active'] < 0)
-        {
             self::$pagers[$this->name]['active'] = 0;
-        }
     }
 
     /**
@@ -223,9 +215,7 @@ class uiPager extends pantheraClass
             );
 
             if ($num == $lastKey)
-            {
                 $links[$num]['last'] = True;
-            }
         }
 
         self::$pagers[$this->name]['links'] = $links;
@@ -294,16 +284,12 @@ class uiPager extends pantheraClass
 
     public static function applyToTemplate()
     {
-        global $panthera;
-
+        $panthera = panthera::getInstance();
+        
         foreach (self::$pagers as $pager)
-        {
             if (!$pager['links'])
-            {
                 $pager['object']->build();
-            }
-        }
-
+            
         if ($panthera -> logging -> debug)
             $panthera -> logging -> output ('Adding ui.Pagers to template: ' .json_encode(self::$pagers), 'pantheraAdminUI');
 

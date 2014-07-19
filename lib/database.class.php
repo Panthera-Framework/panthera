@@ -1494,8 +1494,8 @@ abstract class pantheraFetchDB
      * Perform a multi-row select on table that uses this class
      *
      * @param whereClause|array $by
-     * @param int $limit Offset
-     * @param int $limitFrom Limit
+     * @param int|object $limit Limit (can be a pager object that contains getPageLimit() method and returns a valid array)
+     * @param int $limitFrom Offset
      * @param string $order Order by column
      * @param string $direction ASC or DESC direction
      *
@@ -1510,6 +1510,19 @@ abstract class pantheraFetchDB
 
         if ($order == 'id' and $info['idColumn'])
             $order = $info['idColumn'];
+        
+        // pager support
+        if (is_object($limit))
+        {
+            if (method_exists($limit, 'getPageLimit'))
+            {
+                $pager = $limit -> getPageLimit();
+                $limit = $pager[0];
+                $limitFrom = $pager[1];
+            } else
+                throw new InvalidArgumentException('In $limit argument got object that does not have getPageLimit() method', 4);
+            
+        }
         
         return $panthera->db->getRows($info['tableName'], $by, $limit, $limitFrom, get_called_class(), $order, $direction);
     }
