@@ -670,6 +670,7 @@ abstract class dataModelManagementController extends pageController
     
     protected $__defaultDisplay = 'list';
     protected $__listId = 'categoryid';
+    protected $__modelIdColumn = 'id';
     
     /**
      * List of specific translation strings like alert box questions
@@ -747,7 +748,7 @@ abstract class dataModelManagementController extends pageController
         
         if (isset($_GET['objectID']))
         {
-            $object = new $class('id', $_GET['objectID']);
+            $object = new $class($this -> __modelIdColumn, $_GET['objectID']);
             
             if ($object -> exists())
             {
@@ -783,6 +784,7 @@ abstract class dataModelManagementController extends pageController
                         'status' => 'success',
                     ));
                 }
+
 
                 // display a edit template form
                 $this -> template -> push(array(
@@ -864,7 +866,7 @@ abstract class dataModelManagementController extends pageController
             if ($this -> __searchBarQueryColumns and $this -> __searchBar -> getQuery())
             {
                 $filter -> setGroupStatement(2, 'OR');
-                
+
                 foreach ($this -> __searchBarQueryColumns as $column)
                     $filter -> add('OR', $column, 'LIKE', '%' .$this -> __searchBar -> getQuery(). '%', 2);
             }

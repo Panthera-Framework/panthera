@@ -934,7 +934,7 @@ class pantheraDB extends pantheraClass
       */
 
     function bindArrayValue($req, $array, $typeArray = false)
-    {//echo '<br><br>';
+    {
         if(is_object($req) && ($req instanceof PDOStatement))
         {
             foreach($array as $key => $value)
@@ -942,7 +942,7 @@ class pantheraDB extends pantheraClass
                 if($typeArray)
                 {
                     //print('Bind '.$key.' = '.$value);
-                    $req->bindValue(":$key",$value,$typeArray[$key]);
+                    $req -> bindValue(":$key",$value,$typeArray[$key]);
                 } else {
                     $param = PDO::PARAM_STR;
 
@@ -955,8 +955,7 @@ class pantheraDB extends pantheraClass
                     elseif(is_string($value))
                         $param = PDO::PARAM_STR;
 
-                    //print('Bind '.$key.' = '.$value. '<br>');
-                    $req->bindValue(":$key",$value,$param);
+                    $req -> bindValue(":$key",$value,$param);
                 }
             }
         }

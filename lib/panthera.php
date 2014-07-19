@@ -2543,10 +2543,10 @@ function date_calc_diff($timestampPast, $timestampFuture, $years = true, $months
     $array = array();
 
     if (is_int($timestampPast))
-        $timestampPast = date($panthera -> dateFormat, $timestampPast);
+        $timestampPast = date('Y-m-d H:i:s', $timestampPast);
 
     if (is_int($timestampFuture))
-        $timestampFuture = date($panthera -> dateFormat, $timestampFuture);
+        $timestampFuture = date('Y-m-d H:i:s', $timestampFuture);
 
     try {
         $past = new DateTime($timestampPast);
@@ -2569,12 +2569,28 @@ function date_calc_diff($timestampPast, $timestampFuture, $years = true, $months
         'seconds' => '%s'
     );
     
+    $timeRanges = array(
+        'months' => array('value' => 12, 'column' => 'years', 'increment' => 1),
+        'days' => array('value' => 30, 'column' => 'months', 'increment' => 1),
+        'hours' => array('value' => 24, 'column' => 'days', 'increment' => 1),
+        'minutes' => array('value' => 60, 'column' => 'hours', 'increment' => 1),
+        'seconds' => array('value' => 60, 'column' => 'minutes', 'increment' => 1),
+    );
+    
     foreach ($timeFormats as $name => $format)
     {
         $rDiff = $diff->format($format);
         
         if ($$name and $rDiff)
-            $array[$name] = $rDiff;
+        {
+            $array[$name] = intval($rDiff);
+            
+            while ($array[$name] > $timeRanges[$name]['value'])
+            {
+                $array[$name] -= $timeRanges[$name]['value'];
+                $array[$timeRanges[$name]['column']] += $timeRanges[$name]['increment'];
+            }
+        }
     }
     
     if (!$outputString)
@@ -2591,10 +2607,10 @@ function date_calc_diff($timestampPast, $timestampFuture, $years = true, $months
             if ($range > $maxRange)
                 break;
 
-            $output .= $diff->format($timeFormats[$timeRange]). ' ' .localize($timeRange). ' ';
+            $output .= $timeFormats[$timeRange]. ' ' .localize($timeRange). ' ';
         }
 
-        $output = trim($output);
+        $output = $diff->format(trim($output));
 
         if (!$output)
             $output = localize('a moment');
