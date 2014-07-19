@@ -110,6 +110,7 @@ class pantheraUser extends pantheraFetchDB
             {
                 $groups[] = $group -> group_id;
                 $this -> groups = $groups;
+                $this -> panthera -> logging -> output('Adding user ' .$this -> id. ' to group id ' .$group -> group_id, 'pantheraUser');
                 
                 try {
                     groupJoinHistory::create(array(
@@ -152,6 +153,7 @@ class pantheraUser extends pantheraFetchDB
                 unset($groups[$search]);
                 $this -> groups = $groups;
                 
+                $this -> panthera -> logging -> output('Removing user ' .$this -> id. ' from group id ' .$group -> group_id, 'pantheraUser');
                 $history = new groupJoinHistory('joinid', hash('md4', $this -> id.':'.$group -> group_id));
                 $history -> delete();
             }

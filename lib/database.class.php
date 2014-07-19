@@ -1481,7 +1481,10 @@ abstract class pantheraFetchDB
             $method = $key. 'Filter';
             
             if (method_exists($instance, $method))
+            {
+                $panthera -> logging -> output('Calling ' .$method. '() method to filter data', get_called_class());
                 $instance -> $method($value);
+            }
         }
         
         return $panthera -> db -> insert($info['tableName'], $args);

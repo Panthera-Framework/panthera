@@ -772,7 +772,7 @@ abstract class dataModelManagementController extends pageController
                         $object -> save();
     
                     } catch (Exception $e) {
-                        $this -> getFeature('datamodel.' .$hookName. '.editfailure', $object);
+                        $this -> getFeature('datamodel.' .$hookName. '.editfailure', $object, $e);
                     
                         ajax_exit(array(
                             'status' => 'failed',
@@ -822,8 +822,8 @@ abstract class dataModelManagementController extends pageController
                     $class::create($values);
                     
                 } catch (Exception $e) {
-                    $this -> getFeatureRef('datamodel.' .$hookName. '.creationfailure', $_POST);
-                
+                    $this -> getFeatureRef('datamodel.' .$hookName. '.creationfailure', $_POST, $e);
+                    
                     ajax_exit(array(
                         'status' => 'failed',
                         'fields' => $this -> __fields,

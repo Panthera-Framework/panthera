@@ -2585,10 +2585,11 @@ function date_calc_diff($timestampPast, $timestampFuture, $years = true, $months
         {
             $array[$name] = intval($rDiff);
             
-            while ($array[$name] > $timeRanges[$name]['value'])
+            if ($array[$name] > $timeRanges[$name]['value'])
             {
-                $array[$name] -= $timeRanges[$name]['value'];
-                $array[$timeRanges[$name]['column']] += $timeRanges[$name]['increment'];
+                $m = round($array[$name]/$timeRanges[$name]['value']);
+                $array[$name] -= ($m * $timeRanges[$name]['value']);
+                $array[$timeRanges[$name]['column']] += ($timeRanges[$name]['increment'] * $m);
             }
         }
     }
@@ -2602,11 +2603,14 @@ function date_calc_diff($timestampPast, $timestampFuture, $years = true, $months
 
         foreach ($array as $timeRange => $value)
         {
+            if (!$value)
+                continue;
+            
             $range++;
 
             if ($range > $maxRange)
                 break;
-
+            
             $output .= $value. ' ' .localize($timeRange). ' ';
         }
         
