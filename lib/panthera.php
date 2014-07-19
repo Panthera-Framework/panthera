@@ -2607,11 +2607,9 @@ function date_calc_diff($timestampPast, $timestampFuture, $years = true, $months
             if ($range > $maxRange)
                 break;
 
-            $output .= $timeFormats[$timeRange]. ' ' .localize($timeRange). ' ';
+            $output .= $value. ' ' .localize($timeRange). ' ';
         }
-
-        $output = $diff->format(trim($output));
-
+        
         if (!$output)
             $output = localize('a moment');
 
