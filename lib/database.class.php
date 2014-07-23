@@ -805,11 +805,12 @@ class pantheraDB extends pantheraClass
       * @param int $returnAs leave empty to return array of data, put class name to return array of objects
       * @param string $orderColumn column to order by
       * @param string $order Order direction, default DESC
+      * @param array $what List of columns
       * @return mixed
       * @author Damian Kęska
       */
 
-    public function getRows($db, $by, $limit, $offset, $returnAs='', $orderColumn='id', $order='DESC')
+    public function getRows($db, $by, $limit, $offset, $returnAs='', $orderColumn='id', $order='DESC', $what='')
     {
         $sqlLimit = '';
 
@@ -843,7 +844,12 @@ class pantheraDB extends pantheraClass
                 $whereClause = ' WHERE ' .$q[0];
         }
 
-        $what = '*';
+        if (!$what)
+            $what = '*';
+        else {
+            $what = implode(',', $what);
+        }
+
 
         if (is_bool($limit))
             $what = '`' .$orderColumn. '`';
@@ -863,17 +869,22 @@ class pantheraDB extends pantheraClass
             $returnAs = get_class($returnAs);
         } elseif (!$returnAs)
             $selectQuery = 'SELECT ' .$what. ' FROM `{$db_prefix}' .$db. '`';
-        
+            
         $SQL = $this->panthera->db->query($selectQuery.$whereClause. ' ORDER BY `' .$orderColumn. '` ' .$order.@$sqlLimit, @$q[1]);
-
         $results = array();
 
         if (is_bool($limit))
+        {
+            $fetch = $SQL->fetchAll(PDO::FETCH_ASSOC);
+            
+            if (isset($fetch[0]['count(*)']))
+                return intval($fetch[0]['count(*)']);
+            
             return $SQL->rowCount();
+        }
         
         if ($SQL->rowCount() > 0)
         {
-        	// this code consumes less cpu and runs faster
             $array = $SQL->fetchAll(PDO::FETCH_ASSOC);
 
             foreach ($array as $item)
@@ -1090,6 +1101,7 @@ abstract class pantheraFetchDB
     protected $_joinColumns = array(
         /*array('LEFT JOIN', 'groups', array('group_id' => 'primary_group'), array('name' => 'group'))*/
     );
+    protected $__metaTable = 'metas';
     
     public $_queryCache = array(
         'joinColumns' => '',
@@ -1883,7 +1895,7 @@ abstract class pantheraFetchDB
     public function getMeta()
     {
         if (!$this -> __meta)
-            $this -> __meta = new metaAttributes($this -> panthera, get_called_class(), $this -> __get($this -> _idColumn), $this -> cache);
+            $this -> __meta = new metaAttributes($this -> panthera, get_called_class(), $this -> __get($this -> _idColumn), $this -> cache, $this -> __metaTable);
 
         return $this -> __meta;
     }

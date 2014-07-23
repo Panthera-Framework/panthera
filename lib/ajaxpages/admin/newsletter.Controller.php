@@ -90,20 +90,20 @@ class newsletterAjaxControllerSystem extends pageController
 		$this -> dispatchAction();
 
 		$page = intval($_GET['page']);
-		$count = newsletterManagement::search('', False);
+		$count = newsletter::fetchAll('', False);
 
 		// pager
 		$uiPager = new uiPager('adminNewsletterCategories', $count, 'adminNewsletterCategories');
 		$uiPager -> setActive($page);
 		$uiPager -> setLinkTemplates('#', 'navigateTo(\'?'.Tools::getQueryString($_GET, 'page={$page}', '_').'\');');
 		$limit = $uiPager -> getPageLimit();
-		$newsletters = newsletterManagement::search('', $limit[1], $limit[0]);
+		$newsletters = newsletter::fetchAll('', $limit[1], $limit[0]);
 
 		if (isset($_GET['query']) and $_GET['query'])
 		{
 		    foreach ($newsletters as $key => $newsletter)
 		    {
-		        if ( stripos( $newsletter['title'], $_GET['query'] ) !== False )
+		        if (stripos( $newsletter -> title, $_GET['query'] ) !== False)
 		            $news_array[] = $newsletter;
 			}
 

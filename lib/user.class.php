@@ -25,6 +25,10 @@ class pantheraUser extends pantheraFetchDB
     );
     protected $_unsetColumns = array('created', 'modified', 'mod_time', 'last_result', 'group_name');
 
+    public static $genders = array(
+        'male', 'female', 'transgender', 'other',
+    );
+
     /**
      * Customized constructor that also loads meta attributes
      *
@@ -810,6 +814,7 @@ class metaAttributes
     protected $_cacheID = '';
     protected $panthera;
     protected $overlays = array();
+    protected $_tableName = 'metas';
 
     /**
      * Constructor
@@ -817,14 +822,19 @@ class metaAttributes
      * @param pantheraCore $panthera
      * @param string $type Meta type eg. gallery
      * @param string $objectID Object ID eg. 1 (first image in gallery)
+     * @param bool (Optional) Use cache?
+     * @param string $tableName (Optional) Other table name than "metas"
      * @author Damian Kęska
      */
 
-    public function __construct(pantheraCore $panthera, $type, $objectID, $cache=True)
+    public function __construct($panthera, $type, $objectID, $cache=True, $tableName='')
     {
         $this->panthera = $panthera;
         $this->_type = $type;
         $this->_objectID = $objectID;
+        
+        if ($tableName)
+            $this -> _tableName = $tableName;
 
         // check if cache is avaliable
         if ($cache and $panthera -> cache)
@@ -837,7 +847,7 @@ class metaAttributes
 
         if ($this->_metas === null)
         {
-            $SQL = $panthera -> db -> query ('SELECT * FROM `{$db_prefix}metas` WHERE `userid` = :objectID AND `type` = :type', array('objectID' => $objectID, 'type' => $type));
+            $SQL = $panthera -> db -> query ('SELECT * FROM `{$db_prefix}' .$this -> _tableName. '` WHERE `userid` = :objectID AND `type` = :type', array('objectID' => $objectID, 'type' => $type));
             $Array = $SQL -> fetchAll(PDO::FETCH_ASSOC);
 
             if (count($Array) > 0) {
@@ -1002,7 +1012,11 @@ class metaAttributes
         // creating new keys
         if (!array_key_exists($meta, $this->_metas))
         {
-            $this->_metas[$meta] = array('value' => $value, 'overlay' => '');
+            $this->_metas[$meta] = array(
+                'value' => $value,
+                'overlay' => '',
+            );
+            
             $this->_changed[$meta] = 'create';
             return True;
         }
@@ -1067,7 +1081,7 @@ class metaAttributes
 
         if ($Array === null)
         {
-            $SQL = $this -> panthera -> db -> query ('SELECT * FROM `{$db_prefix}metas` WHERE `type` = :type AND `userid` = :objectID', array('type' => $type, 'objectID' => $objectID));
+            $SQL = $this -> panthera -> db -> query ('SELECT * FROM `{$db_prefix}' .$this -> _tableName. '` WHERE `type` = :type AND `userid` = :objectID', array('type' => $type, 'objectID' => $objectID));
             $Array = $SQL -> fetchAll (PDO::FETCH_ASSOC);
 
             if ($this -> _cacheID)
@@ -1114,16 +1128,16 @@ class metaAttributes
                     // create new meta key in database
                     $metaValues = array('name' => $key, 'value' => serialize($meta['value']), 'type' => $this->_type, 'userid' => $this->_objectID);
                     try {
-                        $panthera -> db -> query('INSERT INTO `{$db_prefix}metas` (`metaid`, `name`, `value`, `type`, `userid`) VALUES (NULL, :name, :value, :type, :userid)', $metaValues);
+                        $panthera -> db -> query('INSERT INTO `{$db_prefix}' .$this -> _tableName. '` (`metaid`, `name`, `value`, `type`, `userid`) VALUES (NULL, :name, :value, :type, :userid)', $metaValues);
                     } catch (Exception $e) {
                         $panthera -> logging -> output ('Cannot create meta attribute id=' .$meta['metaid']. ', exception=' .$e->getMessage(), 'metaAttributes');
                     }
 
                 /**
-                  * Removing attribute
-                  *
-                  * @author Damian Kęska
-                  */
+                 * Removing attribute
+                 *
+                 * @author Damian Kęska
+                 */
 
                 } elseif ((string)$value == 'remove') {
 
@@ -1138,7 +1152,7 @@ class metaAttributes
                     );
 
                     try {
-                        $panthera -> db -> query('DELETE FROM `{$db_prefix}metas` WHERE `userid` = :userid AND `type` = :type AND `name` = :name', $metaValues);
+                        $panthera -> db -> query('DELETE FROM `{$db_prefix}' .$this -> _tableName. '` WHERE `userid` = :userid AND `type` = :type AND `name` = :name', $metaValues);
                         unset($this->_metas[$key]);
                     } catch (Exception $e) {
                         $panthera -> logging -> output ('Cannot remove meta attribute id=' .$meta['metaid']. ', exception=' .$e->getMessage(), 'metaAttributes');
@@ -1165,7 +1179,7 @@ class metaAttributes
                     );
 
                     try {
-                        $panthera -> db -> query('UPDATE `{$db_prefix}metas` SET `value` = :value WHERE `userid` = :userid AND `type` = :type AND `name` = :name', $metaValues);
+                        $panthera -> db -> query('UPDATE `{$db_prefix}' .$this -> _tableName. '` SET `value` = :value WHERE `userid` = :userid AND `type` = :type AND `name` = :name', $metaValues);
                     } catch (Exception $e) {
                         $panthera -> logging -> output ('Cannot update meta attribute id=' .$meta['metaid']. ', exception=' .$e->getMessage(), 'metaAttributes');
                     }

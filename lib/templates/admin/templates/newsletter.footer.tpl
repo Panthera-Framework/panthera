@@ -23,6 +23,16 @@ jQuery(document).ready(function($) {
 });
 </script>
 
+<style>
+.formTable tbody td {
+    padding-right: 0px;
+}
+
+.tableRightColumn {
+    padding-right: 90px;
+}
+</style>
+
 <div style="margin-top: 25px;">
 <form id="newsletterFooterForm" action="{$AJAX_URL}?display=newsletter.compose&cat=admin&nid={$nid}&action=editFooter" method="POST">
     <table class="formTable" style="margin: 0 auto;">

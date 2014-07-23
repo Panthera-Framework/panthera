@@ -763,7 +763,7 @@ abstract class dataModelManagementController extends pageController
     public function editAction()
     {
         $class = $this -> __dataModelClass;
-        $hookName = str_replace('Ajax', '', get_called_class($this));
+        $hookName = str_replace('Ajax', '', get_called_class());
         $hookName = substr($hookName, 0, strpos($hookName, 'Controller'));
         
         if (isset($_GET['objectGroupID']))
@@ -842,7 +842,7 @@ abstract class dataModelManagementController extends pageController
                 
                 try {
                     $this -> getFeatureRef('datamodel.' .$hookName. '.precreate', $values);
-                    $class::create($values);
+                    $create = $class::create($values);
                     
                 } catch (Exception $e) {
                     $this -> getFeatureRef('datamodel.' .$hookName. '.creationfailure', $_POST, $e);
@@ -853,6 +853,8 @@ abstract class dataModelManagementController extends pageController
                         'message' => slocalize('Cannot add new object, field validation failure, details: %s', 'messages', $e -> getMessage()),
                     ));
                 }
+                
+                $this -> getFeature('datamodel.' .$hookName. '.created', $values, $create);
                 
                 ajax_exit(array(
                     'status' => 'success',
@@ -906,25 +908,37 @@ abstract class dataModelManagementController extends pageController
         /**
          * Pagination
          */
+         
+        $args = $this -> getFeature('datamodel.' .$hookName. '.list.fetchall.args', array($filter, $this -> __pager, false));
         
-        $this -> __pager = new uiPager(get_called_class(), $class::fetchAll($filter, false), get_called_class(). 'Management', 20);
-
-        if ($this -> __pagerTemplatesConfig)
-            $this -> __pager -> setLinkTemplatesFromConfig($this -> __pagerTemplatesConfig);
-        
-        /**
-         * Plugins and extensions support
-         */
-        
-        // allow modify filter list by searchbar, next line allows plugins to modify pager
-        $this -> getFeatureRef('datamodel.' .$hookName. '.list.filter', $filter);
-        $this -> getFeatureRef('datamodel.' .$hookName. '.list.pager', $this -> __pager);
-
-        $this -> template -> push(array(
-            'fields' => $this -> __fields,
-            'foundElements' => $class::fetchAll($filter, $this -> __pager),
-            'uiPagerName' => get_called_class(),
-        ));
+        if (!is_null($args))
+        {
+            $tmp = $args[1];
+            $args[1] = False;
+            $total = call_user_func_array($class. '::fetchAll', $args);
+            
+            $this -> __pager = new uiPager(get_called_class(), $total, get_called_class(). 'Management', 25);
+    
+            if ($this -> __pagerTemplatesConfig)
+                $this -> __pager -> setLinkTemplatesFromConfig($this -> __pagerTemplatesConfig);
+            
+            /**
+             * Plugins and extensions support
+             */
+            
+            // allow modify filter list by searchbar, next line allows plugins to modify pager
+            $this -> getFeatureRef('datamodel.' .$hookName. '.list.filter', $filter);
+            $this -> getFeatureRef('datamodel.' .$hookName. '.list.pager', $this -> __pager);
+            
+            $args[1] = $tmp;
+            
+            $this -> template -> push(array(
+                'fields' => $this -> __fields,
+                'foundElements' => call_user_func_array($class. '::fetchAll', $args),
+                'uiPagerName' => get_called_class(),
+                'totalElements' => $total,
+            ));
+        }
     }
 
     public function __displayItem()

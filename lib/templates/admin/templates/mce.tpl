@@ -3,9 +3,14 @@
     function mcePantheraInsertFile(link, mime, type, directory, id, description, author)
     {
         if (type == "image")
-            tinyMCE.activeEditor.setContent(tinyMCE.activeEditor.getContent()+' <img src="'+link+'">');
+            mceAppend('<img src="'+link+'">');
         else
-            tinyMCE.activeEditor.setContent(tinyMCE.activeEditor.getContent()+' <a href="'+link+'">'+link+'</a>');
+            mceAppend('<a href="'+link+'">'+link+'</a>');
+    }
+    
+    function mceAppend(text)
+    {
+    	tinyMCE.activeEditor.setContent(tinyMCE.activeEditor.getContent()+text);
     }
     
     function callback_mceInsertContent(content)
@@ -38,7 +43,7 @@
         
         ed.addButton('pantheraDrafts', { title : '{function="localize('Paste a draft', 'mce')"}', image : '{$PANTHERA_URL}/images/admin/ui/mce-drafts.png', onclick : function() {
                 ed.focus();
-                createPopup('{$AJAX_URL}?display=editor_drafts&cat=admin&popup=true&callback=mceInsertContent', 1024);
+                createPopup('{$AJAX_URL}?display=editor.drafts&cat=admin&popup=true&callback=mceInsertContent', 1024);
             }
         });
     }    

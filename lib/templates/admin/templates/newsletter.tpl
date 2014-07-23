@@ -110,18 +110,24 @@ function removeCategory(id)
         
         <tbody>
         {loop="$categories"}
-            <tr id="nid_{$value.nid}">
-	            <td><a href="?display=newsletter.compose&cat=admin&nid={$value.nid}" class="ajax_link">{$value.title}</a></td>
-	            <td>{$value.users}</td>
-	            <td>{$value.default_type}</td>
-	            <td>{$value.created}</td>
+            <tr id="nid_{$value->nid}">
+	            <td><a href="?display=newsletter.compose&cat=admin&nid={$value->nid}" class="ajax_link">{$value->title}</a></td>
+	            <td>{$value->users}</td>
+	            <td>{$value->default_type}</td>
+	            <td>{$value->created}</td>
 	            <td style="width: 50px;">
-	                <a href="#" onclick="removeCategory('{$value.nid}');">
+	                <a href="#" onclick="removeCategory('{$value->nid}');">
 	                    <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
 	                </a>
 	            </td>
 	        </tr>
         {/loop}
+
+		<tr id="nid_users">
+			<td colspan="5">
+				<a href="?display=newsletter.compose&cat=admin&nid=users" class="ajax_link">{function="localize('Registered users', 'newsletter')"}</a>
+			</td>
+		</tr>
         
         {if="!count($categories)"}
             <tr>

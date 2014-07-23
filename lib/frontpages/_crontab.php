@@ -89,7 +89,7 @@ class _crontabControllerSystem extends pageController
             error_reporting(E_ALL);
             $this -> panthera -> logging -> tofile = True;
         }
-
+        
         $this -> startCrontab();
     }
 
@@ -106,6 +106,19 @@ class _crontabControllerSystem extends pageController
 
         // get all expired jobs to start working
         $jobs = crontab::getJobsForWork();
+        
+        if (isset($_GET['api']) and $_GET['api'] == 'json' and isset($_GET['action']) and $_GET['action'] == 'list')
+        {
+            $links = array();
+            
+            foreach ($jobs as $job)
+                $links[$job->jobname] = pantheraUrl('{$PANTHERA_URL}/_crontab.php?_appkey=' .$_GET['_appkey']. '&jobname=' .$job->jobname);
+            
+            ajax_exit(array(
+                'status' => 'success',
+                'links' => $links,
+            ));
+        }
 
         // cont the jobs
         $jobsCount = 0;

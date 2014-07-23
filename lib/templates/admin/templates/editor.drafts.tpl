@@ -39,12 +39,21 @@ function removeDraft(id)
 .pagerLink {
     color: white;
 }
+
+.formTable tbody td {
+    padding-right: 0px;
+}
+
+.tableRightColumn {
+    padding-right: 90px;
+}
 </style>
 
 {if="!$callback"}
 {include="ui.titlebar"}
 {/if}
 
+<div style="text-align: center;">
 <div style="display: inline-block;">
 <table class="formTable" style="margin: 0 auto;">
         <thead>
@@ -92,4 +101,5 @@ function removeDraft(id)
             {/if}
         </tbody>
 </table>
+</div>
 </div>

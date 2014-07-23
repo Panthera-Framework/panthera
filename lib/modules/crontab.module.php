@@ -133,7 +133,7 @@ class crontab extends pantheraFetchDB
         $this -> start_time = 0;
         $t = microtime(true);
 
-        if (intval($this->__get('count_left')) == 0)
+        if (intval($this->__get('count_left')) === 0)
             return "JOB_FINISHED";
 
         //if ($this->locked() == False)
@@ -565,7 +565,7 @@ class cronjobs
         foreach ($jobs as $job)
         {
             // delete finished jobs
-            if (intval($job->count_left) == 0)
+            if (intval($job->count_left) === 0)
             {
                 print("Job finished: ".$job->jobname."\n");
                 crontab::removeJob($job->jobid);

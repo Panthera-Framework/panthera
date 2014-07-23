@@ -182,11 +182,12 @@ class Tools
      * 
      * @param string|int $string Input date string or int
      * @param string $format (Optional) Date format, defaults to "d-m-Y H:i" (MySQL default)
+     * @param string|int $now (Optional) Relative date
      * @author Damian Kęska
      * @return string
      */
     
-    public static function userFriendlyStringToDate($string, $format='d-m-Y H:i')
+    public static function userFriendlyStringToDate($string, $format='d-m-Y H:i', $now='now')
     {
         $string = trim($string); // strip out of whitespaces
         
@@ -211,8 +212,9 @@ class Tools
             foreach ($localized as $translated => $original)
                 $string = str_ireplace($translated, $original, $string);
             
-            $date = new DateTime;
+            $date = new DateTime($now);
             $date -> modify($string);
+            
             return $date -> format($format);
         }
 
@@ -238,5 +240,37 @@ class Tools
             return false;
         
         return true;
+    }
+    
+    /**
+     * Parse template variables in a string
+     * 
+     * Example:
+     * <code>
+     * $str = "Hello {$user.login}!";
+     * 
+     * var_dump(Tools::parseTemplateVars($str, 'user', $panthera -> user));
+     *  => 'Hello admin!'
+     * </code>
+     * 
+     * @param string $string Input string
+     * @param string $objectName Object name
+     * @param object $objectData|array pantheraFetchDb based object or associative array
+     * @author Damian Kęska
+     * @return string
+     */
+    
+    public static function parseTemplateVars($string, $objectName, $objectData)
+    {
+        if (method_exists($objectData, 'getName'))
+            $string = str_replace('{$' .$objectName. '.__name}', $objectData -> getName(), $string);
+        
+        if (!is_array($objectData))
+            $objectData = $objectData -> getData();
+        
+        foreach ($objectData as $key => $value)
+            $string = str_replace('{$' .$objectName. '.' .$key. '}', $value, $string);
+
+        return $string;
     }
 }

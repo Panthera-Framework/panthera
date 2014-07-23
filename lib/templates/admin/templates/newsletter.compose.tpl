@@ -9,7 +9,7 @@ function initEditor ()
 
 {function="uiMce::display()"}
 <script type="text/javascript">
-jQuery(document).ready(function($) {
+$(document).ready(function($) {
     //{include file="mce.tpl"}
     mceInit('content_textarea');
     
@@ -36,11 +36,17 @@ function saveAsDraft()
 <div id="topContent">
     <div class="searchBarButtonArea">
         <input type="button" value="{function="localize('Saved drafts', 'editor')"}" onclick="panthera.popup.toggle('?display=editor.drafts&cat=admin&popup=true&callback=mceInsertContent')">
-        <input type="button" value="{function="localize('Edit footer', 'newsletter')"}" onclick="panthera.popup.toggle('?display=newsletter.compose&cat=admin&nid={$nid}&action=editFooter')">
-        <input type="button" value="{function="localize('New message', 'newsletter')"}" onclick="navigateTo('?display=newsletter.compose&cat=admin&nid={$nid}')">
+        {if="!$specialCategory"}
+        <input type="button" value="{function="localize('Edit footer', 'newsletter')"}" onclick="panthera.popup.toggle('?{function="Tools::getQueryString('GET', 'action=editFooter', '_')"}')">
+        {/if}
+        <input type="button" value="{function="localize('New message', 'newsletter')"}" onclick="navigateTo('?{function="Tools::getQueryString('GET', 'display=newsletter.compose', '_')"}')">
         <input type="button" value="{function="localize('Messages queue', 'newsletter')"}" onclick="panthera.popup.toggle('element:#messagesQueue')">
-        <input type="button" value="{function="localize('Manage subscribers', 'newsletter')"}" onclick="panthera.popup.toggle('?display=newsletter.users&cat=admin&nid={$nid}')">
-        <input type="button" value="{function="localize('Recent subscribers', 'newsletter')"}" onclick="panthera.popup.toggle('element:#lastSubscribed')">
+        {if="!$specialCategory"}
+        	<input type="button" value="{function="localize('Manage subscribers', 'newsletter')"}" onclick="panthera.popup.toggle('?{function="Tools::getQueryString('GET', 'display=newsletter.users', '_')"}')">
+        	<input type="button" value="{function="localize('Recent subscribers', 'newsletter')"}" onclick="panthera.popup.toggle('element:#lastSubscribed')">
+    	{else}
+    		<input type="button" value="{function="localize('Recipients', 'newsletter')"}" onclick="panthera.popup.toggle('?{function="Tools::getQueryString('GET', 'display=newsletter.recipients', '_')"}')">
+    	{/if}
     </div>
 </div>
 
@@ -91,7 +97,7 @@ function saveAsDraft()
             </tbody>
         </table>
 </div>
-<form id="newsletter_form" action="{$AJAX_URL}?display=newsletter.compose&cat=admin&nid={$nid}" method="POST">
+<form id="newsletter_form" action="?{function="Tools::getQueryString('GET', '', '_')"}" method="POST">
 <div class="ajax-content centeredObject" style="text-align: center; padding-left: 0px;">
     <div style="display: inline-block; margin: 0 auto;">
         <table style="width: 100%; min-width: 800px; margin-bottom: 25px;">
@@ -114,7 +120,31 @@ function saveAsDraft()
             </tbody>
         </table>
         
+        <table style="margin-top: 25px; margin-bottom: 25px; width: 100%;">
+            <thead>
+                <tr>
+                    <th>{function="localize('Tags', 'newsletter')"}</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+            	<tr>
+            		<td><div style="max-width: 650px; word-spacing: 13px; line-height: 25px;"><i>
+            			{$i=0}
+            			{loop="$tags"}
+            				{$i=$i+1}
+            				<a onclick="mceAppend('{$key}');" style="cursor: pointer;" {if="$value"}title="{$value}"{/if}>{$key}</a>{if="$i != count($tags)"},{/if}
+            			{/loop}
+            		</i></div></td>
+            	</tr>
+            </tbody>
+        </table>
+        
         <textarea name="content" id="content_textarea" style="height: 400px; width: 100%;"></textarea>
+        
+        {if="$specialCategory"}
+        <input type="hidden" name="recipientsData" id="recipientsData">
+        {/if}
         
         <!-- Options -->
         
@@ -126,9 +156,11 @@ function saveAsDraft()
             </thead>
             
             <tbody>
+            	{if="!$specialCategory"}
                 <tr>
                     <td colspan="2"><input type="checkbox" name="sendToAllUsers" value="1"> {function="localize('Send to all users in database', 'newsletter')"}</td>
                 </tr>
+                {/if}
                 
                 <tr>
                     <td colspan="2"><input type="checkbox" name="putToDrafts" value="1"> {function="localize('Save message copy into message drafts', 'newsletter')"}</td>

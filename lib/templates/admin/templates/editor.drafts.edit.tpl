@@ -1,5 +1,15 @@
 {$site_header}
 
+<style>
+.formTable tbody td {
+    padding-right: 0px;
+}
+
+.tableRightColumn {
+    padding-right: 90px;
+}
+</style>
+
 <div style="margin-top: 25px;">
 <form action="?display=editor.drafts&cat=admin&id={$draftID}&action=saveDraft" method="POST" id="saveDraftForm">
     <table class="formTable" style="margin: 0 auto;">

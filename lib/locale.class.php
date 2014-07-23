@@ -1,12 +1,12 @@
 <?php
 /**
-  * Panthera localisation class
-  * Provides simple strings translation from serialized array files
-  *
-  * @package Panthera\core\locale
-  *
-  * @author Damian Kęska
-  */
+ * Panthera localisation class
+ * Provides simple strings translation from serialized array files
+ *
+ * @package Panthera\core\locale
+ *
+ * @author Damian Kęska
+ */
 
 if (!defined('IN_PANTHERA'))
     exit;
@@ -391,41 +391,32 @@ class pantheraLocale
     }
 
     /**
-      * Select a translated string from array with a translation priority
-      *
-      * @param string name
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Select a translated string from array with a translation priority
+     *
+     * @param array $input String array 
+     * @param string $language Preffered language
+     * @return mixed
+     * @author Damian Kęska
+     */
 
-    public static function selectStringFromArray($input)
+    public static function selectStringFromArray($input, $language='')
     {
         $panthera = pantheraCore::getInstance();
 
         if (!is_array($input))
-        {
             return $input;
-        }
 
-        $language = $panthera -> locale -> getActive();
+        if (!$language)
+            $language = $panthera -> locale -> getActive();
 
         if (isset($input[$language]))
-        {
             return $input[$language];
-        }
 
-        if ($panthera->user)
-        {
-            if (isset($input[$panthera->user->language]))
-            {
-                return $input[$panthera->user->lantguage];
-            }
-        }
+        if ($panthera->user and isset($input[$panthera->user->language]))
+            return $input[$panthera->user->lantguage];
 
         if (isset($input['english']))
-        {
             return $input['english'];
-        }
 
         return end($input);
     }

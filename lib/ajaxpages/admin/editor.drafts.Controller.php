@@ -128,6 +128,9 @@ class editor_draftsAjaxControllerSystem extends pageController
     
     public function display()
     {
+        if (!isset($_GET['action']) and isset($_POST['action']))
+            $_GET['action'] = $_POST['action'];
+        
         // titlebar
         $titlebar = new uiTitlebar(localize('Saved drafts', 'editordrafts'));
         $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/newsletter.png', 'left');
