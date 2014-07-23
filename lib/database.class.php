@@ -110,7 +110,8 @@ class pantheraDB extends pantheraClass
 
     protected function defineConstants()
     {
-        define('DB_TIME_NOW', PANTHERA_SEED. '.DB.NOW()');
+        if (!defined('DB_TIME_NOW'))
+            define('DB_TIME_NOW', PANTHERA_SEED. '.DB.NOW()');
     }
 
     /**
@@ -525,7 +526,7 @@ class pantheraDB extends pantheraClass
             if ($SQL -> rowCount())
             {
                 $fetch = $SQL -> fetch(PDO::FETCH_ASSOC);
-                $string = str_replace($table, $rawTable, $fetch['Create Table']);
+                $string = str_replace($table, $rawTable, $fetch['Create Table']). ";";
             }
         }
 
@@ -850,9 +851,8 @@ class pantheraDB extends pantheraClass
             $what = implode(',', $what);
         }
 
-
         if (is_bool($limit))
-            $what = '`' .$orderColumn. '`';
+            $what = 'count(*)';
         
         // construct an empty object to get query details
         if ($returnAs and !is_object($returnAs) and class_exists($returnAs))
@@ -870,7 +870,12 @@ class pantheraDB extends pantheraClass
         } elseif (!$returnAs)
             $selectQuery = 'SELECT ' .$what. ' FROM `{$db_prefix}' .$db. '`';
             
-        $SQL = $this->panthera->db->query($selectQuery.$whereClause. ' ORDER BY `' .$orderColumn. '` ' .$order.@$sqlLimit, @$q[1]);
+        $orderClause = '';
+            
+        if ($orderColumn)
+            $orderClause = 'ORDER BY `' .$orderColumn. '` ' .$order. ' ';
+            
+        $SQL = $this->panthera->db->query($selectQuery.$whereClause. ' ' .$orderClause. ' ' .@$sqlLimit, @$q[1]);
         $results = array();
 
         if (is_bool($limit))
@@ -898,6 +903,39 @@ class pantheraDB extends pantheraClass
         }
         
         return $results;
+    }
+
+    /**
+     * Export selected row from database
+     * 
+     * @param string $table Table
+     * @param array $data Input record data
+     */
+
+    public function exportRow($table, $data)
+    {
+        $SQL = 'INSERT INTO `' .$table. '`' ;
+        
+        // columns
+        $SQL .= ' (';
+        
+        foreach ($data as $key => $value)
+            $SQL .= '`' .$key. '`, ';
+        
+        $SQL = rtrim($SQL, ', ');
+        $SQL .= ') ';
+        
+        // values
+        $SQL .= 'VALUES (';
+        
+        foreach ($data as $key => $value)
+            $SQL .= $this -> sql -> quote($value). ', ';
+        
+        $SQL = rtrim($SQL, ', ');
+        
+        $SQL .= ');';
+        
+        return $SQL;
     }
 
     /**

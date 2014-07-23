@@ -7,8 +7,6 @@
  * @license LGPLv3
  */
 
-// TODO: SQLite3 support
-
 ini_set('memory_limit', '256M');
 
 /**
@@ -20,46 +18,58 @@ ini_set('memory_limit', '256M');
 
 class sqldumpAjaxControllerSystem extends pageController
 {
-    protected $permissions = 'can_manage_sql_dumps';
-
+    protected $permissions = array(
+        'admin.database.backups' => array(
+            'Backup your database to prevent data loss', 'database',
+        ),
+    );
+    
     protected $uiTitlebar = array('Backup your database to prevent data loss', 'database');
 
 
-
     /**
-      * Manage sql dump
-      *
-      * @author Damian Kęska
-      * @return null
-      */
+     * Manage sql dump
+     *
+     * @author Damian Kęska
+     * @return null
+     */
 
-    protected function makeSqlDump()
+    public function createAction()
     {
+        if (!isset($_POST['action']) or $_POST['action'] != 'create')
+            ajax_exit(array(
+                'status' => 'failed',
+            ));
+            
         if ($this->panthera->db->getSocketType() == 'mysql')
-            $name = $this->panthera->config->getKey('db_name'). '-' .date('Y.m.d_G:i:s'). '.sql';
+            $name = $this->panthera->config->getKey('db_name'). '-' .date('Y.m.d_H:i:s'). '.sql';
+        else
+            $name = date('Y.m.d_H:i:s'). '-' .$panthera->config->getKey('db_file'). '.sql';
 
         $dump = SQLDump::make();
 
-        if ($dump != '')
+        if ($dump)
         {
-            $fp = fopen(SITE_DIR. '/content/backups/db/' .$name, 'wb');
-            fwrite($fp, $dump);
-            fclose($fp);
-
-            ajax_exit(array('status' => 'success', 'message' => localize('Done')));
+            rename($dump, SITE_DIR. '/content/backups/db/' .$name);
+            
+            ajax_exit(array(
+                'status' => 'success',
+            ));
         }
 
-        ajax_exit(array('status' => 'failed'));
+        ajax_exit(array(
+            'status' => 'failed',
+        ));
     }
 
 
 
     /**
-      * Manage "sqldump" cronjob
-      *
-      * @author Damian Kęska
-      * @return null
-      */
+     * Manage "sqldump" cronjob
+     *
+     * @author Damian Kęska
+     * @return null
+     */
 
     public function manageCronjobAction()
     {
@@ -71,12 +81,17 @@ class sqldumpAjaxControllerSystem extends pageController
         }
 
         if (!$job -> exists() and $_POST['management'] == 'createJob')
-            ajax_exit(array('status' => 'failed', 'message' => slocalize('Cannot create a cronjob, database error', 'crontab')));
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => slocalize('Cannot create a cronjob, database error', 'crontab'),
+            ));
 
         if ($_POST['management'] == 'removeJob')
             crontab::removeJob($job -> jobid);
 
-        ajax_exit(array('status' => 'success'));
+        ajax_exit(array(
+            'status' => 'success',
+        ));
     }
 
 
@@ -99,19 +114,13 @@ class sqldumpAjaxControllerSystem extends pageController
                 header('Content-type: application/octet-stream');
                 header('Content-Disposition: attachment; filename="' .$file. '"');
                 header("Cache-Control: no-cache, must-revalidate");
-                header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+                header("Expires: Sat, 26 Jul ".(intval(date('Y'))-5)." 05:00:00 GMT");
                 print(file_get_contents(SITE_DIR. '/content/backups/db/' .$file));
                 pa_exit();
             }
         }
 
-        // make a SQL dump
-        if (isset($_POST['dump']))
-            $this -> makeSqlDump();
-
-
         $this -> dispatchAction();
-
 
         $uiPager = new uiPager('adminSQLDumps', SQLDump::getSQLDumps(False));
         $uiPager -> setActive(intval($_GET['page']));
@@ -138,27 +147,3 @@ class sqldumpAjaxControllerSystem extends pageController
         return $this -> panthera -> template -> compile('sqldump.tpl');
     }
 }
-
-
-
-#if ($_GET['action'] == 'settings')
-#{
-#    $job = new crontab('jobname', 'sqldump');
-#
-#    if (!$job -> exists())
-#    {
-#        crontab::createJob('sqldump', array('SQLDump', 'cronjob'), '', '*', '*', '*/7'); // 7 days interval by default
-#        $job = new crontab('jobname', 'sqldump');
-#    }
-#
-#    if (isset($_POST['timeInterval']))
-#    {
-#        $string = crontab::getDefaultIntervals($_POST['getDefaultIntervals']);
-#    }
-#
-#    $titlebar = new uiTitlebar(localize('Automatic backup settings', 'database'));
-#    $panthera -> template -> push('jobInterval', crontab::getIntervalExpression());
-#    $panthera -> template -> push('cronIntervals', crontab::getDefaultIntervals());
-#    $panthera -> template -> display('settings.sqldump.tpl');
-#    pa_exit();
-#}

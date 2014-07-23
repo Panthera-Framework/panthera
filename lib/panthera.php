@@ -1883,6 +1883,36 @@ class pantheraCore
     }
     
     /**
+     * Get unique temporary path
+     * 
+     * @param bool $returnAsBuffer (Optional) Return as opened file buffer
+     * @param string $fileMode (Optional) File open mode (to be used with first argument)
+     * @param string $prefix (Optional) File name prefix
+     * @return string
+     */
+    
+    public static function getTmp($returnAsBuffer=False, $fileMode='w', $prefix='')
+    {
+        if (!is_dir(SITE_DIR. '/content/tmp') and is_writable(SITE_DIR. '/content/tmp'))
+            mkdir(SITE_DIR. '/content/tmp');
+        
+        if (is_dir(SITE_DIR. '/content/tmp') and is_writable(SITE_DIR. '/content/tmp'))
+            $dir = SITE_DIR. '/content/tmp';
+        elseif (is_writable('/tmp'))
+            $dir = '/tmp';
+        
+        $fileName = $dir. '/' .$prefix.generateRandomString(6);
+        
+        while (file_exists($fileName))
+            $fileName = $dir. '/' .$prefix.generateRandomString(6);
+        
+        if ($returnAsBuffer)
+            return fopen($returnAsBuffer, $fileMode);
+        
+        return $fileName;
+    }
+    
+    /**
      * Executes at the end of the script (save all caches etc.)
      * 
      * @author Damian Kęska

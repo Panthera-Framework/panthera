@@ -10,11 +10,9 @@
         
         function makeDump()
         {
-            panthera.jsonPOST({ url: '?display=sqldump&cat=admin', data: 'dump=True', messageBox: 'w2ui', success: function (response) {
+            panthera.jsonPOST({ url: '?display=sqldump&cat=admin&action=create', data: 'action=create', success: function (response) {
                     if (response.status == "success")
-                    {
                         navigateTo('?{function="Tools::getQueryString('GET', '', '_,action')"}');
-                    }
                 }
             });
             return false;
