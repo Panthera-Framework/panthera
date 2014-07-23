@@ -15,6 +15,10 @@ CREATE TABLE `{$db_prefix}users` (
   `lastlogin` datetime NOT NULL,
   `lastip` varchar(16) NOT NULL COMMENT 'Last IP address used by user when logging in',
   `groups` varchar(32) NOT NULL COMMENT 'Comma separated group ids',
+  `gender` varchar(16) NOT NULL,
+  `city` varchar(16) NOT NULL,
+  `address` varchar(32) NOT NULL,
+  `postal_code` varchar(16) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `login` (`login`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
