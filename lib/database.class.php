@@ -1635,10 +1635,16 @@ abstract class pantheraFetchDB
      * @return array
      */
 
-    public static function resultsToTree($categories, $item=null, $idColumn='id', $parentColumn='parent')
+    public static function resultsToTree($categories, $item=null, $idColumn='id', $parentColumn='parent', &$registry='')
     {
+        if (!$registry)
+            $registry = array();
+        
         if ($item)
         {
+            if (isset($registry[$item -> get($idColumn)]))
+                return false;
+            
             $map = array(
                 'item' => $item,
                 'subcategories' => array(),
@@ -1647,9 +1653,10 @@ abstract class pantheraFetchDB
             foreach ($categories as $key => $object)
             {
                 if ($object -> get($parentColumn) == $item -> get($idColumn))
-                    $map['subcategories'][$object->get($idColumn)] = static::resultsToTree($categories, $object, $idColumn, $parentColumn);
+                    $map['subcategories'][$object->get($idColumn)] = static::resultsToTree($categories, $object, $idColumn, $parentColumn, $registry);
             }
-
+            
+            $registry[$item -> get($idColumn)] = true;
             return $map;
         }
 
@@ -1660,6 +1667,8 @@ abstract class pantheraFetchDB
         {
             if (!$category -> parent)
             {
+                //$registry[$category -> get($idColumn)] = True;
+                
                 $map[$category -> get($idColumn)] = array(
                     'item' => $category,
                     'subcategories' => array(),
@@ -1668,7 +1677,7 @@ abstract class pantheraFetchDB
         }
 
         foreach ($map as $name => $attr)
-            $map[$name] = static::resultsToTree($categories, $attr['item'], $idColumn, $parentColumn);
+            $map[$name] = static::resultsToTree($categories, $attr['item'], $idColumn, $parentColumn, $registry);
 
         return $map;
     }

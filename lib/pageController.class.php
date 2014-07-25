@@ -943,7 +943,21 @@ abstract class dataModelManagementController extends pageController
 
     public function __displayItem()
     {
-        // TODO: Implement this function
+        $class = $this -> __dataModelClass;
+        $hookName = str_replace('Ajax', '', get_called_class());
+        $hookName = substr($hookName, 0, strpos($hookName, 'Controller'));
+        
+        $item = new $class($this -> __modelIdColumn, $_GET['objectID']);
+        
+        $decision = $item -> exists();
+        $this -> getFeatureRef('datamodel.' .$hookName. '.item', $decision, $item);
+        
+        if (!$decision)
+            panthera::raiseError('notfound');
+        
+        $this -> template -> push(array(
+            'object' => $item,
+        ));
     }
     
     /**

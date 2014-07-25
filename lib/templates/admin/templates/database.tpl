@@ -4,7 +4,6 @@
 <div id="topContent">
     <div class="searchBarButtonArea">
         <input type="button" value="{function="localize('Manage backups', 'database')"}" onclick="navigateTo('?display=sqldump&cat=admin')">
-        <input type="button" value="{function="localize('Manage permissions', 'messages')"}" onclick="panthera.popup.toggle('?display=acl&cat=admin&popup=true&name=can_manage_databases');">
     </div>
 </div>
 
