@@ -29,7 +29,7 @@ $_SERVER['print'] = False;
         </thead>
         <tbody>
             <tr>
-	   			<th>{function="localize('Title', 'categories')"}:</th>
+	   			<th><span style="color: red;"><b>*</b></span> {function="localize('Title', 'categories')"}:</th>
 	   			<td><input type="text" name="object_title"></td>
 	   		</tr>
 	   			
@@ -39,7 +39,7 @@ $_SERVER['print'] = False;
 	   		</tr>
 	   			
 	   		<tr>
-	   			<th>{function="localize('Public', 'categories')"}:</th>
+	   			<th><span style="color: red;"><b>*</b></span> {function="localize('Public', 'categories')"}:</th>
 	   			<td><input type="radio" name="object___public" value="1"> {function="localize('Yes')"} <input type="radio" name="object___public" value="0" checked> {function="localize('No')"}</td>
 	   		</tr>
 	   			

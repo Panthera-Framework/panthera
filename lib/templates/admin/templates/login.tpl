@@ -17,13 +17,10 @@
     	}
     	</style>
     </head>
-
+    
  <body class="login">
-   
    <div id="wrapper">
-
-    <form name="loginform" id="loginform" action="?" method="post" class="login-form">
-
+    <form name="loginform" id="loginform" action="?{function="Tools::getQueryString('GET', '', '_')"}" method="post" class="login-form">
         <div class="header">
            <div style="float: right;">
             <span data-searchbardropdown="#languageDropdown" id="languageDropdownSpan" style="font-size: 11px; cursor: pointer;">
@@ -44,7 +41,7 @@
            </div>
             
             <center>
-                <h1>Panthera Framework</h1>
+                <h1>{function="localize('Welcome', 'login')"}</h1>
                 {if="isset($message)"}
                     <span>{function="localize($message, 'login')"}!</span><br/>
                 {else}
@@ -55,17 +52,26 @@
         </div>
 
         <div class="content">
-            <input type="text" name="log" id="user_login" class="input username" placeholder="{function="localize('Username', 'login')"}" />
-            <input type="password" name="pwd" id="user_pass"  class="input password" placeholder="{function="localize('Password', 'login')"}" style="margin-top: 10px;"/>
+        	{if="!$recoveryOption"}
+	            <input type="text" name="log" id="user_login" class="input username" placeholder="{function="localize('Username', 'login')"}" />
+	            <input type="password" name="pwd" id="user_pass"  class="input password" placeholder="{function="localize('Password', 'login')"}" style="margin-top: 10px;"/>
+        	{else}
+        		<input type="hidden" name="recovery" value="1">
+        		<input type="text" name="log" id="user_login" class="input username" placeholder="{function="localize('Username', 'login')"}" />
+        	{/if}
         </div>
 
         <div class="footer">
+        	{if="!$recoveryOption"}
             <center><input type="submit" class="button" value="{function="localize('Sign in', 'login')"}" /></center><br>
-            <input type="hidden" name="recovery" id="recovery">
             {if="$mobileTemplate == True"}<a class="recover" onclick="window.location = 'pa-login.php?__switchdevice=mobile'" style="float: left;">Mobile</a>{/if}
             {if="$tabletTemplate == True"}<a class="recover" onclick="window.location = 'pa-login.php?__switchdevice=tablet'" style="float: left; margin-left: 12px;">Tablet</a>{/if}
             {if="$facebook"}<a class="recover" href="?facebook" style="float: left; margin-left: 12px; text-decoration: none;">{function="localize('Login with Facebook', 'facebook')"}</a>{/if}
-            <a class="recover" onclick="$('#recovery').val('1');" style="float: right;"/>{function="localize('Recover password', 'login')"}</a>
+            <a class="recover" href="?{function="Tools::getQueryString('GET', 'action=recovery', '_')"}" style="float: right;">{function="localize('Recover password', 'login')"}</a>
+            {else}
+            <center><input type="submit" class="button" value="{function="localize('Send a password recovery request', 'login')"}" /></center><br>
+            <a class="recover" href="?{function="Tools::getQueryString('GET', '', '_,action')"}" style="float: right;">{function="localize('Sign in', 'login')"}</a>
+            {/if}
         </div>
 
     </form>

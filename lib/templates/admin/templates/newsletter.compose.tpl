@@ -17,7 +17,10 @@ $(document).ready(function($) {
         event.preventDefault();
         panthera.jsonPOST({ data: '#newsletter_form', mce: 'tinymce_all', success: function (response) {
                 if (response.status == 'success')
+                {
+                	panthera.alertBox.create('{function="localize('Sent', 'newsletter')"}');
                     $('#messagesQueueNoMessages').hide();
+                }
             } 
         });
     });
