@@ -68,7 +68,7 @@ class simpleconfigurationInstallerControllerSystem extends installerController
                     }
         
                     if ($type == 'int')
-                        $value = intval($type);
+                        $value = intval($value);
         
                     if (isset($config[$key]))
                         unset($config[$key]);
