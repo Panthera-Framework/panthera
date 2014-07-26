@@ -404,6 +404,20 @@ class usersAjaxControllerCore extends pageController
 
         if (filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
             $u->jabber = $_POST['jabber'];
+        
+        
+        if ($_POST['gender'] == 'male' or $_POST['gender'] == 'female')
+            $u->gender = $_POST['gender'];
+
+        if (strlen($_POST['address']) > 3)
+            $u->address = $_POST['address'];
+        
+        if (strlen($_POST['city']) > 3)
+            $u->city = $_POST['city'];
+
+        if (strlen($_POST['postal_code']) > 3)
+            $u->postal_code = $_POST['postal_code'];
+
 
         $languages = $this->panthera->locale->getLocales();
 

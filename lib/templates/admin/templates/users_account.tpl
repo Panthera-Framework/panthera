@@ -188,7 +188,34 @@ function getAvatar(link, id)
                     </div>
                  </th>
                 </tr>
-
+                
+                <tr>
+                  <th>{function="localize('Gender', 'users')"} {$user->gender}<small>({function="localize('optionally', 'users')"})</small></th>
+                  <th>
+                    <div class="select" style="margin-top: 14px; margin-left: 3px; width: 208px;">
+                     <select onChange="changeCategory();" name="gender" style="width: 210px;">
+                        <option {if="$user->gender == 'male'"} selected {/if} value="male">{function="localize('male', 'users')"}</option>
+                        <option {if="$user->gender == 'female'"} selected {/if} value="female">{function="localize('female', 'users')"}</option>
+                     </select>
+                    </div>
+                 </th>
+                </tr>
+                
+                <tr>
+                  <th>{function="localize('Address', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+                  <th><input type="text" name="address" placeholder="" value="{$user->address}"></th>
+                </tr>
+                
+                <tr>
+                  <th>{function="localize('City', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+                  <th><input type="text" name="city" placeholder="Warsaw" value="{$user->city}"></th>
+                </tr>
+                
+                <tr>
+                  <th>{function="localize('Postal code', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+                  <th><input type="text" name="postal_code" placeholder="10-200" value="{$user->postal_code}"></th>
+                </tr>
+                
                 <tr>
                   <th>{function="localize('E-mail', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
                   <th><input type="text" name="email" placeholder="user@gmail.com" value="{$user->email}"></th>
