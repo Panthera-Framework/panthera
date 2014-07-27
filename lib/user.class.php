@@ -606,7 +606,7 @@ class pantheraGroup extends pantheraFetchDB
  * @author Damian Kęska
  */
 
-function createNewUser($login, $passwd, $full_name, $primary_group='', $attributes, $language, $mail='', $jabber='', $profile_picture='{$PANTHERA_URL}/images/default_avatar.png', $ip='', $requiresConfirmation=False)
+function createNewUser($login, $passwd, $full_name, $primary_group='', $attributes, $language, $gender='', $address='', $city='', $postal_code='', $mail='', $jabber='', $profile_picture='{$PANTHERA_URL}/images/default_avatar.png', $ip='', $requiresConfirmation=False)
 {
     $panthera = pantheraCore::getInstance();
 
@@ -669,6 +669,10 @@ function createNewUser($login, $passwd, $full_name, $primary_group='', $attribut
         'primary_group' => $primary_group,
         'attributes' => $attributes,
         'language' => $language,
+        'gender' => $gender,
+        'address' => $address,
+        'city' => $city,
+        'postal_code' => $postal_code,
         'mail' => $mail,
         'jabber' => $jabber,
         'profile_picture' => $profile_picture,
@@ -725,7 +729,7 @@ function createNewUser($login, $passwd, $full_name, $primary_group='', $attribut
         $mailRecovery -> send($message, 'html');
     }
 
-    $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}users` (`id`, `login`, `passwd`, `full_name`, `primary_group`, `joined`, `attributes`, `language`, `mail`, `jabber`, `profile_picture`, `lastlogin`, `lastip`) VALUES (NULL, :login, :passwd, :full_name, :primary_group, NOW(), :attributes, :language, :mail, :jabber, :profile_picture, NOW(), :ip);', $array);
+    $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}users` (`id`, `login`, `passwd`, `full_name`, `primary_group`, `joined`, `attributes`, `language`, `mail`, `jabber`, `profile_picture`, `lastlogin`, `lastip`, `gender`, `city`, `address`, `postal_code`) VALUES (NULL, :login, :passwd, :full_name, :primary_group, NOW(), :attributes, :language, :mail, :jabber, :profile_picture, NOW(), :ip, :gender, :city, :address, :postal_code);', $array);
 
     if (!$SQL) {
         $panthera -> logging -> output('Cannot insert new user to users table, details: ' .$SQL->errorInfo(), 'users');
