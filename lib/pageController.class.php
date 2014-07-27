@@ -528,51 +528,6 @@ abstract class pageController extends pantheraClass {
     }
 
     /**
-     * Execute hooks and defined functions with name $featureName
-     * Example: $featureName = 'custompages.add' will execute $this->custompages_addFeature($args, $additionalInfo) and $this->panthera->get_filters($featureName, $args, $additionalInfo)
-     *
-     * @param string $featureName Hook and function name
-     * @param mixed $args Args to pass to function and/or hook
-     * @param mixed $additionalInfo Additional informations
-     * @param bool $fixOnFail Don't loose arguments data if any hook will fail (return false or null)
-     * @return $args Mixed arguments
-     */
-
-    public function getFeature($featureName, $args='', $additionalInfo=null, $fixOnFail=True)
-    {
-        $f = preg_replace('/[^\da-zA-Z0-9]/i', '_', $featureName). 'Feature';
-        
-        $this -> panthera -> logging -> output('Looking for this->' .$f. '(args, additionalInfo)', get_called_class());
-
-        if (method_exists($this, $f))
-            $args = $this->$f($args, $additionalInfo);
-
-        return $this -> panthera -> get_filters($featureName, $args, $fixOnFail, $additionalInfo);
-    }
-
-    /**
-     * Same as getFeature but $arg parameter is passed as reference
-     *
-     * @param string $featureName Hook and function name
-     * @param mixed $args Args to pass to function and/or hook
-     * @param mixed $additionalInfo Additional informations
-     * @param bool $fixOnFail Don't loose arguments data if any hook will fail (return false or null)
-     * @return $args Mixed arguments
-     */
-
-    public function getFeatureRef($featureName, &$args='', $additionalInfo=null, $fixOnFail=True)
-    {
-        $f = preg_replace('/[^\da-zA-Z0-9]/i', '_', $featureName). 'Feature';
-        
-        $this -> panthera -> logging -> output('Looking for this->' .$f. '(&args, additonalInfo)', get_called_class());
-
-        if (method_exists($this, $f))
-            $this->$f($args, $additionalInfo);
-
-        return $this -> panthera -> get_options_ref($featureName, $args, $additionalInfo);
-    }
-    
-    /**
      * Check if front controller wasnt included or running directly from PANTHERA_DIR
      * 
      * On success it will construct an object and execute display() on it and return object itself

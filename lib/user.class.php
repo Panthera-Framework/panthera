@@ -931,7 +931,7 @@ class metaAttributes
         foreach ($this->_metas as $key => $value)
         {
             // skip items marked for removal
-            if ($this->_changed[$key] == 'remove')
+            if (isset($this->_changed[$key]) and $this->_changed[$key] == 'remove')
                 continue;
 
             $array[$key] = $value['value'];

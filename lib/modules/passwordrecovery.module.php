@@ -78,24 +78,41 @@ function recoveryCreate($login)
         $message = end($messages);
         $title = end($titles);
     }
+    
+    $recoveryURL = pantheraUrl('{$PANTHERA_URL}/pa-login.php?key=' .$recoveryKey);
+    
+    try {
+        $recoveryURL = panthera::getInstance() -> routing -> generate('login.recovery', array(
+            'recoveryKey' => $recoveryKey,
+        ));
+        
+    } catch (Exception $e) {}
 
-    $message = str_replace('{$recovery_key}', $recoveryKey,
+    $message = str_replace('{$recovery_url}', $recoveryURL, 
+               str_replace('{$recovery_key}', $recoveryKey,
                str_replace('{$recovery_passwd}', $newPassword,
                str_replace('{$userName}', $user->getName(),
-               str_replace('{$userID}', $user->id, pantheraUrl($message)))));
+               str_replace('{$userID}', $user->id, pantheraUrl($message))))));
 
-    $title = str_replace('{$recovery_key}', $recoveryKey,
+    $title = str_replace('{$recovery_url}', $recoveryURL, 
+               str_replace('{$recovery_key}', $recoveryKey,
                str_replace('{$recovery_passwd}', $newPassword,
                str_replace('{$userName}', $user->getName(),
-               str_replace('{$userID}', $user->id, pantheraUrl($title)))));
+               str_replace('{$userID}', $user->id, pantheraUrl($title))))));
 
+    if (!$message)
+        throw new Exception('No recovery message set for this language', 1);
+    
+    if (!$title)
+        throw new Exception('No recovery message title set for this language', 2);
+               
     // send a mail
     $panthera -> importModule('mailing');
     $mailRecovery = new mailMessage();
     $mailRecovery -> setSubject($title);
     $mailRecovery -> addRecipient($user->mail);
     $mailRecovery -> send($message, 'html');
-
+    
     if ($SQL -> rowCount() > 0)
         return True;
 

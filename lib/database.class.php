@@ -1121,7 +1121,7 @@ class whereClause
   * @author Damian Kęska
   */
 
-abstract class pantheraFetchDB
+abstract class pantheraFetchDB extends pantheraClass
 {
     protected $cacheGroup = 'pantheraFetchDB';
     protected $_dataModified = False; // save modifications to database?

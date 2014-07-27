@@ -514,18 +514,18 @@ class newsletter extends pantheraFetchDB
 
 
     /**
-      * Register user in a current newsletter
-      *
-      * @param string $address Contact address
-      * @param string $type Contact address type eg. e-mail, jabber or any other if supported
-      * @param int $userid Userid (optional)
-      * @param string $cookied Cookie or session id used to identify user (optional)
-      * @param bool $activated by default false, but can be activated immediately
-      * @param bool $dontSendConfirmation Send a confirmation message, false by default
-      * @throws UnexpectedValueException
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Register user in a current newsletter
+     *
+     * @param string $address Contact address
+     * @param string $type Contact address type eg. e-mail, jabber or any other if supported
+     * @param int $userid Userid (optional)
+     * @param string $cookied Cookie or session id used to identify user (optional)
+     * @param bool $activated by default false, but can be activated immediately
+     * @param bool $dontSendConfirmation Send a confirmation message, false by default
+     * @throws UnexpectedValueException
+     * @return mixed
+     * @author Damian Kęska
+     */
 
     public function registerUser($address, $type='', $userid=-1, $cookieid='', $activated='', $dontSendConfirmation='')
     {
@@ -571,9 +571,7 @@ class newsletter extends pantheraFetchDB
                 $u = new pantheraUser('id', $userid);
 
                 if ($u -> exists())
-                {
                     $userName = $u -> getName();
-                }
             }
 
             $topic = str_ireplace('{$userName}', $userName,
@@ -673,10 +671,10 @@ class newsletter extends pantheraFetchDB
         // check if we have any users to send newsletter to
         if (!$usersCount and (!$options or !$options['recipientsData']))
         {
-            $this->panthera->logging->output('No users to send message for nid=' .$this->nid, 'newsletter');
+            $this->panthera->logging->output('No users selected to send message', 'newsletter');
             
             if ($exceptions)
-                throw new Exception('No users to send message for nid=' .$this->nid, 2);
+                throw new Exception(localize('No users selected to send message', 'newsletter'), 2);
             
             return False;
         }
