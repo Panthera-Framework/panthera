@@ -190,7 +190,7 @@ function getAvatar(link, id)
                 </tr>
                 
                 <tr>
-                  <th>{function="localize('Gender', 'users')"} {$user->gender}<small>({function="localize('optionally', 'users')"})</small></th>
+                  <th>{function="localize('Gender', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
                   <th>
                     <div class="select" style="margin-top: 14px; margin-left: 3px; width: 208px;">
                      <select onChange="changeCategory();" name="gender" style="width: 210px;">
@@ -347,6 +347,34 @@ function getAvatar(link, id)
                   <td>{function="localize('Status', 'users')"}</td>
                   <td><p>{if="!$user->isBanned()"}<span style="color: green;"> {function="localize('Normal', 'users')"} </span> {else} <span style="color: red;"> {function="localize('Blocked  ', 'users')"} </span> {/if} </p></td>
                 </tr>
+                
+              {if="$user->gender"}
+                <tr>
+                  <td>{function="localize('Gender', 'users')"} <small>({function="localize('optionally', 'users')"})</small></td>
+                  <td><p>{$user->gender}</p></td>
+                </tr>
+              {/if}
+              
+              {if="$user->address"}
+                <tr>
+                  <td>{function="localize('Address', 'users')"} <small>({function="localize('optionally', 'users')"})</small></td>
+                  <td><p>{$user->address}</p></td>
+                </tr>
+              {/if}
+              
+              {if="$user->city"}
+                <tr>
+                  <td>{function="localize('City', 'users')"} <small>({function="localize('optionally', 'users')"})</small></td>
+                  <td><p>{$user->city}</p></td>
+                </tr>
+              {/if}
+              
+              {if="$user->postal_code"}
+                <tr>
+                  <td>{function="localize('Postal code', 'users')"} <small>({function="localize('optionally', 'users')"})</small></td>
+                  <td><p>{$user->postal_code}</p></td>
+                </tr>
+              {/if}
 
               {if="$user->email"}
                 <tr>
