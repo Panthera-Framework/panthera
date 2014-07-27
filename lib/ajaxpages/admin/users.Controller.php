@@ -539,6 +539,10 @@ class usersAjaxControllerCore extends pageController
         else
             $avatar = '{$PANTHERA_URL}/images/default_avatar.png';
 
+        $gender = $_POST['gender'];
+        $address = $_POST['address'];
+        $city = $_POST['city'];
+        $postal_code = $_POST['postal_code'];
         $mail = $_POST['email'];
         $jabber = $_POST['jabber'];
 
@@ -547,7 +551,7 @@ class usersAjaxControllerCore extends pageController
 
         $attributes = array();
 
-        if (createNewUser($login, $password, $full_name, $primary_group, $attributes, $language, $mail, $jabber, $avatar))
+        if (createNewUser($login, $password, $full_name, $primary_group, $attributes, $language, $gender, $address, $city, $postal_code, $mail, $jabber, $avatar))
         {
             ajax_exit(array(
                 'status' => 'success',

@@ -167,10 +167,35 @@ function removeUser(id)
                   <th>
                     <select name="language" style="width: 160px;">
                         {loop="$locales_added"}
-                          <option value="{$key}">{$key}</option>
+                          <option {if="$key == 'english'"} selected {/if} value="{$key}">{$key}</option>
                         {/loop}
                     </select>
                  </th>
+                </tr>
+
+                <tr>
+                  <th>{function="localize('Gender', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+                  <th>
+                      <select name="gender" style="width: 210px;">
+                        <option value="male">{function="localize('male', 'users')"}</option>
+                        <option value="female">{function="localize('female', 'users')"}</option>
+                     </select>
+                  </th>
+                </tr>
+                
+                <tr>
+                  <th>{function="localize('Address', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+                  <th><input type="text" name="address" placeholder=""></th>
+                </tr>
+                
+                <tr>
+                  <th>{function="localize('City', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+                  <th><input type="text" name="city" placeholder="Warsaw"></th>
+                </tr>
+                
+                <tr>
+                  <th>{function="localize('Postal code', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+                  <th><input type="text" name="postal_code" placeholder="10-200"></th>
                 </tr>
 
                 <tr>
