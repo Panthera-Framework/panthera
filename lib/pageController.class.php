@@ -735,7 +735,7 @@ abstract class dataModelManagementController extends pageController
                     $this -> getFeature('datamodel.' .$hookName. '.preedit', $object);
                     
                     if (method_exists($this, 'validateObjectModification'))
-                        $this -> validateObjectModification($_POST);
+                        $this -> validateObjectModification($_POST, $object);
                     
                     // set all available fields
                     foreach ($object -> getData() as $key => $oldValue)
@@ -886,10 +886,14 @@ abstract class dataModelManagementController extends pageController
             $this -> getFeatureRef('datamodel.' .$hookName. '.list.pager', $this -> __pager);
             
             $args[1] = $tmp;
+            $this -> getFeatureRef('datamodel.' .$hookName. '.list.fetchargs', $args);
+            
+            $elements = call_user_func_array($class. '::fetchAll', $args);
+            $this -> getFeatureRef('datamodel.' .$hookName. '.list', $elements);
             
             $this -> template -> push(array(
                 'fields' => $this -> __fields,
-                'foundElements' => call_user_func_array($class. '::fetchAll', $args),
+                'foundElements' => $elements,
                 'uiPagerName' => get_called_class(),
                 'totalElements' => $total,
             ));

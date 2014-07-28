@@ -297,9 +297,7 @@ class localesManagement
             return False;
 
         if (is_dir(SITE_DIR. '/content/locales/' .$locale) and !is_dir(SITE_DIR. '/content/locales/' .$newName))
-        {
             return rename(SITE_DIR. '/content/locales/' .$locale, SITE_DIR. '/content/locales/' .$newName);
-        }
 
         return false;
     }
@@ -322,12 +320,12 @@ class localesManagement
     }*/
 
     /**
-      * Search for missing translations in PHP and tpl files
-      *
-      * @param string $tree Path to directory to scan recursively
-      * @return array
-      * @author Damian Kęska
-      */
+     * Search for missing translations in PHP and tpl files
+     *
+     * @param string $tree Path to directory to scan recursively
+     * @return array
+     * @author Damian Kęska
+     */
 
     public static function scanForMissingStrings($tree, $locale='')
     {
@@ -335,14 +333,10 @@ class localesManagement
         $panthera -> importModule('filesystem');
 
         if (!$locale)
-        {
             $locale = $panthera -> locale -> getActive();
-        }
 
         if (!is_dir($tree))
-        {
             return array();
-        }
 
         $missing = array();
         $files = filesystem::scandirDeeply($tree, false);
@@ -353,15 +347,11 @@ class localesManagement
             $pathinfo = pathinfo($file);
 
             if (strpos($file, '/tmp/') !== False)
-            {
                 continue;
-            }
 
             // in Python style
             if (!in_array(strtolower(@$pathinfo['extension']), array('php', 'tpl', 'html')))
-            {
                 continue;
-            }
 
             $contents = file($file);
             $i = 0;

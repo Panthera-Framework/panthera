@@ -30,7 +30,7 @@ function updateMissingStringsCache($locale)
         localesManagement::scanForMissingStrings(SITE_DIR. '/content/plugins', $locale),
         localesManagement::scanForMissingStrings(SITE_DIR. '/content/frontpages', $locale)
     );
-
+    
     $panthera -> logging -> output('Creating new missing strings cache in "langtool.scan.missing.' .$locale. '"', 'langtool');
     $panthera -> varCache -> remove('langtool.scan.missing.' .$locale);
     $panthera -> varCache -> set('langtool.scan.missing.' .$locale, $missingStrings, 360);
@@ -42,23 +42,29 @@ function langtoolLimitArray($array, $limit)
 {
     $newArray = array();
 
-    $c = count($array);
+    $offset = $limit[0];
+    $stops = $limit[0] + $limit[1];
     $i = 0;
 
-    foreach ($array as $domainName => $domain)
+    foreach ($array as $section => $keys)
     {
-        foreach ($domain as $key => $value)
+        foreach ($keys as $key => $value)
         {
             $i++;
-
-            // rewrite only elements matching our range
-            if ($i >= $limit[0] and $i <= ($limit[0]+$limit[1]))
-            {
-                $newArray[$domainName][$key] = $value;
-            }
+            
+            if ($i < $offset)
+                continue;
+            
+            if (!isset($newArray[$section]))
+                $newArray[$section] = array();
+            
+            $newArray[$section][$key] = $value;
+            
+            if ($i >= $stops)
+                return $newArray;
         }
     }
-
+    
     return $newArray;
 }
 
@@ -93,30 +99,21 @@ if (@$_GET['display'] == 'langtool')
         if ($panthera->varCache)
         {
             if (!$panthera->varCache->exists('langtool.scan.missing.' .$locale))
-            {
                 $missingStrings = updateMissingStringsCache($locale);
-            } else {
+            else
                 $missingStrings = $panthera -> varCache -> get('langtool.scan.missing.' .$locale);
-            }
 
             // remove domains user don't have permissions to write to
             foreach ($missingStrings as $domainName => $domain)
             {
                 // search results also for missing translation strings
-                if (@$_GET['query'])
-                {
-                    if(stripos($domainName, $_GET['query']) === False)
-                    {
-                        unset($missingStrings[$domainName]);
-                    }
-                }
+                if (@$_GET['query'] and stripos($domainName, $_GET['query']) === False)
+                    unset($missingStrings[$domainName]);
 
                 if (!getUserRightAttribute($panthera->user, 'langtool_' .$locale. '_' .$domainName) and !$permissions['management'] and !getUserRightAttribute($panthera->user, 'langtool_locale_' .$locale))
-                {
                     unset($missingStrings[$domainName]);
-                }
             }
-        }
+        }       
 
         if ($_GET['action'] == 'domains')
         {
@@ -129,9 +126,7 @@ if (@$_GET['display'] == 'langtool')
             $panthera -> template -> push('missingTranslations', $d); // limit array results to satisfy current page
         } else {
             if (isset($missingStrings[$_GET['domain']]))
-            {
                 $panthera -> template -> push ('missingTranslations', $missingStrings[$_GET['domain']]);
-            }
         }
     }
 

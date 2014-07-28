@@ -379,7 +379,7 @@ class aclAjaxControllerSystem extends pageController
             $aclName = $permissionsTable[$aclId]['desc'];
 
         // groups with required permissions we are looking for
-        $groupsWhoCan = meta::getUsers($aclId, True);
+        $groupsWhoCan = meta::getUsers($aclId, True, True);
         $groupList = array();
 
         foreach ($groupsWhoCan as $key => $gid)
@@ -395,8 +395,8 @@ class aclAjaxControllerSystem extends pageController
         }
 
         // here we will generate list of users who have required rights we are looking for
-        $usersWhoCan = meta::getUsers($aclId);
-
+        $usersWhoCan = meta::getUsers($aclId, False, True);
+        
         foreach ($usersWhoCan as $userID => $value)
         {
             $u = new pantheraUser('id', $userID);

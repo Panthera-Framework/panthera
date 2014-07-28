@@ -814,7 +814,7 @@ class pantheraDB extends pantheraClass
     public function getRows($db, $by, $limit, $offset, $returnAs='', $orderColumn='id', $order='DESC', $what='')
     {
         $sqlLimit = '';
-
+        
         if (is_numeric($limit) and intval($limit) > 0)
             $sqlLimit = ' LIMIT ' .intval($offset). ',' .intval($limit);
 
@@ -862,7 +862,7 @@ class pantheraDB extends pantheraClass
         if (is_object($returnAs))
         {
             if ($what == '*')
-                $selectQuery = $returnAs->getQuery();
+                $selectQuery = $returnAs->getQuery('data', $what);
             else
                 $selectQuery = $returnAs->getQuery('count');
 
@@ -873,7 +873,14 @@ class pantheraDB extends pantheraClass
         $orderClause = '';
             
         if ($orderColumn)
-            $orderClause = 'ORDER BY `' .$orderColumn. '` ' .$order. ' ';
+        {
+            $orderTags = '`';
+            
+            if (strpos($orderColumn, '(') !== False)
+                $orderTags = '';
+            
+            $orderClause = 'ORDER BY ' .$orderTags.$orderColumn.$orderTags. ' ' .$order. ' ';
+        }
             
         $SQL = $this->panthera->db->query($selectQuery.$whereClause. ' ' .$orderClause. ' ' .@$sqlLimit, @$q[1]);
         $results = array();
@@ -1438,9 +1445,14 @@ abstract class pantheraFetchDB extends pantheraClass
                     $exp[1] = $exp[0];
                     $exp[0] = "";
                 }
+                
+                if (substr($right, 0, 1) == '=')
+                    $right = '"' .substr($right, 1, strlen($right)). '"';
+                else
+                    $right = '{$db_prefix}' .$this->_tableName. '.' .$right;
 
                 // AND table1.column = table2.column
-                $sql .= $exp[0]. ' {$db_prefix}' .$table[1]. '.' .$exp[1]. ' = {$db_prefix}' .$this->_tableName. '.' .$right. ' ';
+                $sql .= $exp[0]. ' {$db_prefix}' .$table[1]. '.' .$exp[1]. ' = ' .$right. ' ';
             }
         }
 
@@ -1567,11 +1579,10 @@ abstract class pantheraFetchDB extends pantheraClass
             if (method_exists($limit, 'getPageLimit'))
             {
                 $pager = $limit -> getPageLimit();
-                $limit = $pager[0];
-                $limitFrom = $pager[1];
+                $limit = $pager[1];
+                $limitFrom = $pager[0];
             } else
                 throw new InvalidArgumentException('In $limit argument got object that does not have getPageLimit() method', 4);
-            
         }
         
         return $panthera->db->getRows($info['tableName'], $by, $limit, $limitFrom, get_called_class(), $order, $direction);

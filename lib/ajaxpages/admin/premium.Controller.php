@@ -1,12 +1,8 @@
 <?php
 class premiumAjaxControllerSystem extends dataModelManagementController
 {
-    protected $permissions = array(
-        'admin.premium', 'admin.premium.moderate',
-    );
-    
     protected $uiTitlebar = array(
-        'Premium accounts management', 'places',
+        'Premium accounts management', 'premium',
     );
     
     protected $__dataModelClass = 'userPremiumAccount';
@@ -30,6 +26,11 @@ class premiumAjaxControllerSystem extends dataModelManagementController
     public function validateUserCardAction()
     {
         $results = null;
+        
+        $this -> checkPermissions(array(
+            'admin.premium' => localize('Premium accounts management', 'places'),
+            'admin.premium.validate' => localize('Validate premium card', 'places'),
+        ));
         
         if (isset($_POST['card']) and $_POST['card'])
         {
@@ -156,11 +157,17 @@ class premiumAjaxControllerSystem extends dataModelManagementController
      * @param array &$data POST data
      * @return null
      */
-    
-    public function validateObjectModification(&$data)
+
+    public function validateObjectModification(&$data, $object)
     {
         // for security reasons we prefer login
         unset($data['object_userid']);
+        
+        $permissions = array(
+            'admin.premium.management' => localize('Premium accounts management', 'premium'),
+            'admin.premium.addcard' => localize('Add card number', 'premium'),
+            'admin.premium.id.' .$object->id => slocalize('Modify premium for user - %s', 'premium', $object -> getUser() -> getName()),
+        );
         
         $user = new pantheraUser('login', $data['object_userlogin']);
         
@@ -179,11 +186,38 @@ class premiumAjaxControllerSystem extends dataModelManagementController
                 'message' => localize('Invalid premium type specified', 'premium'),
             ));
         }
-        
+
+        if ($object -> additionalfield1 and $data['object_additionalfield1'] != $object -> additionalfield1)
+        {
+            $permissions['admin.premium.editcard'] = localize('Edit card number', 'premium');
+            unset($permissions['admin.premium.addcard']);
+        }
+         
+        $this -> checkPermissions($permissions);
+
         // only administrator can 
-        if (!$this -> checkPermissions('admin.premium', true))
+        if (!$this -> checkPermissions('admin.premium.activate', true))
             unset($data['object_active']);
+
+        $diff = ($data['object_expires']-time());
+
+        if ($diff >= 31104000) // 12 months
+        {
+            $permissions['admin.premium.add12months'] = slocalize('+%s months to premium', 'premium', 12);
+
+        } elseif ($diff >= 23328000) // 9 months
+            $permissions['admin.premium.add9months'] = slocalize('+%s months to premium', 'premium', 9);
         
+        elseif ($diff >= 15552000) // 6 months
+            $permissions['admin.premium.add6months'] = slocalize('+%s months to premium', 'premium', 6);
+        
+        elseif ($diff >= 7776000) // 3 months
+            $permissions['admin.premium.add3months'] = slocalize('+%s months to premium', 'premium', 3);
+
+        $permissions['admin.premium.extend'] = localize('Extend premium', 'premium');
+        
+        $this -> checkPermissions($permissions);
+
         if (strtotime($data['object_expires']) < strtotime($data['object_starts']))
         {
             ajax_exit(array(
@@ -191,7 +225,7 @@ class premiumAjaxControllerSystem extends dataModelManagementController
                 'message' => localize('Start time should be before expiration', 'premium'),
             ));
         }
-        
+
         $data['object_userid'] = $user -> id;
     }
     
@@ -205,6 +239,11 @@ class premiumAjaxControllerSystem extends dataModelManagementController
     
     public function validateNewObject(&$data)
     {
+        $this -> checkPermissions(array(
+            'admin.premium.management' => localize('Premium accounts management', 'premium'),
+            'admin.premium.add' => localize('Give user a premium account', 'premium'),
+        ));
+        
         if (isset($data['userlogin']))
         {
             $user = new pantheraUser('login', $data['userlogin']);
@@ -236,5 +275,26 @@ class premiumAjaxControllerSystem extends dataModelManagementController
                 'status' => 'failed',
                 'message' => localize('Expiration time is in the past', 'premium'),
             ));
+    }
+
+    public function datamodel_premium_listFeature($data)
+    {
+        $this -> checkPermissions(array(
+            'admin.premium.management' => localize('Premium accounts management', 'premium'),
+            'admin.premium.addcard' => localize('Add card number', 'premium'),
+            'admin.premium.editcard' => localize('Edit card number', 'premium'),
+            'admin.premium.add12months' => slocalize('+%s months to premium', 'premium', 12),
+            'admin.premium.add9months' => slocalize('+%s months to premium', 'premium', 9),
+            'admin.premium.add6months' => slocalize('+%s months to premium', 'premium', 6),
+            'admin.premium.add3months' => slocalize('+%s months to premium', 'premium', 3),
+            'admin.premium.extend' => localize('Extend premium', 'premium'),
+            'admin.premium.activate' => localize('Activate or deactivate premium', 'premium'),
+        ), True);
+        
+        // add permissions
+        foreach ($data as $premium)
+            $this -> checkPermissions(array(
+                'admin.premium.id.' .$premium->id => slocalize('Modify premium for user - %s', 'premium', $premium -> getUser() -> getName())
+            ), True);
     }
 }
