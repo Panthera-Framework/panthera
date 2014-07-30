@@ -1,6 +1,7 @@
 {$site_header}
 
 <script type="text/javascript">
+{if="!isset($skip_map)"}
 var gmap = "";
 var map = "";
 
@@ -14,6 +15,7 @@ function gmapsCallback ()
     
     gmap.createMap("map", mapOptions);
 }
+{/if}
 
 /**
   * Init MCE editor
@@ -42,6 +44,7 @@ jQuery(document).ready(function() {
 
     setTimeout(initEditor, 500);
     
+    {if="!isset($skip_map)"}
     if ($('#map').length > 0)
     {
         {if="!isset($map_zoom)"}
@@ -84,6 +87,7 @@ jQuery(document).ready(function() {
             return false;
         });
     }
+    {/if}
 
     /**
       * Save contact information
@@ -118,12 +122,14 @@ jQuery(document).ready(function() {
 <div id="topContent" style="min-height: 0px; text-align: center;">
     <!-- Search bar -->
     <p style="font-size: 11px;">
+    	{if="!$skip_map"}
         <form action="?display=contact&cat=admin&action=save&language={$contactLanguage}" method="GET" id="map_form">
             <input type="text" value="" id="map_searchbox" placeholder="{function="localize('Search on the map', 'contactpage')"}" style="width:200px; font-size:11px;">
             <a href="#" onclick="$('#map_form').submit()">
                 <img src="images/admin/pantheraUI/transparent.png" class="pantheraIcon icon-Search" alt="Configure" style="vertical-align: middle;">
             </a>
         </form>
+        {/if}
     </p>
 
     <div class="searchBarButtonArea">
