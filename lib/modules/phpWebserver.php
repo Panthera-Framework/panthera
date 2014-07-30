@@ -15,7 +15,7 @@ if (isset($url['path']))
 {
     $file = pathinfo($url['path']);
     
-    if (in_array($file['extension'], array('png', 'jpg', 'jpeg', 'gif', 'css', 'js', 'php')))
+    if (in_array($file['extension'], array('png', 'jpg', 'jpeg', 'gif', 'css', 'js', 'php', 'htm')))
         $webServerFalse = true;
 }
 

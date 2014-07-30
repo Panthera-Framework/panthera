@@ -83,7 +83,7 @@ class _crontabControllerSystem extends pageController
 
         $this -> createDefaultJobs();
         $this -> checkCrontabKey();
-
+        
         if (isset($_GET['debug']))
         {
             error_reporting(E_ALL);
@@ -114,10 +114,11 @@ class _crontabControllerSystem extends pageController
             foreach ($jobs as $job)
                 $links[$job->jobname] = pantheraUrl('{$PANTHERA_URL}/_crontab.php?_appkey=' .$_GET['_appkey']. '&jobname=' .$job->jobname);
             
-            ajax_exit(array(
+            
+            die(json_encode(array(
                 'status' => 'success',
                 'links' => $links,
-            ));
+            )));
         }
 
         // cont the jobs

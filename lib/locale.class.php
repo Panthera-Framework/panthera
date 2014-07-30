@@ -82,6 +82,24 @@ class pantheraLocale
       */
 
     public function exists($localeName) { return array_key_exists($localeName, $this->getLocales()); }
+    
+    /**
+     * Get domain translations as array
+     * 
+     * @param string $domainName Domain name
+     * @return array|bool
+     */
+    
+    public function getDomain($domainName)
+    {
+        if (!isset($this -> memory[$domainName]))
+        {
+            if (!$this -> loadDomain($domainName))
+                return false;
+        }
+        
+        return $this -> memory[$domainName];
+    }
 
     /**
      * Set system default locale
@@ -209,9 +227,7 @@ class pantheraLocale
             $this -> panthera -> logging -> output ('Autoloading domain "' .$domain. '" on-demand', 'pantheraLocale');
 
             if (isset($this->invalidDomains[$domain]))
-            {
                 return $string;
-            }
 
             $this->loadDomain($domain);
         }
@@ -265,8 +281,7 @@ class pantheraLocale
     public function loadDomain($domain, $force=False)
     {
         // dont load same domains multiple times
-
-        if (isset($this->domains[$domain]) and !$force)
+        if ((isset($this->domains[$domain]) and !$force) or isset($this->invalidDomains[$domain]))
             return False;
 
         $dirs = array(SITE_DIR. '/content/locales/' .$this->locale, PANTHERA_DIR. '/locales/' .$this->locale);

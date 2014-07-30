@@ -21,9 +21,43 @@ include getContentDir('share/CommandLine.php');
 
 class pantheraCli
 {
+    /**
+     * Handle json and base64 encoded arguments to emulate CGI application
+     * 
+     * @author Damian Kęska
+     * @return null
+     */
+    
     public function __construct()
     {
         $this->picker = new cliColor();
+        
+        $stdin = fopen('php://stdin', 'r');
+        $read = '';
+        $array = null;
+        
+        $read = trim(fread($stdin, 80960));
+        fclose($stdin);
+        
+        if ($read)
+        {
+            if (substr($read, 0, 9) == 'base64://')
+            {
+                $array = json_decode(base64_decode(substr($read, 8, strlen($read))), true);
+                
+            } elseif (substr($read, 0, 7) == 'json://') {
+                $array = json_decode(substr($read, 7, strlen($read)));
+            } elseif (substr($read, 0, 1) == '?') {
+                parse_str(substr($read, 1, strlen($read)), $_GET);
+            }
+        }
+        
+        // unpack variables
+        if ($array)
+        {
+            foreach ($array as $varName => $value)
+                $$varName = $value;
+        }
     }
 
     /**

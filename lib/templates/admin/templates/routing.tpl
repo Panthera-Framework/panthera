@@ -48,18 +48,18 @@
                          <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px;" class="actionNew">{function="localize('New SEO url', 'routing')"}</p>
                          <p style="color: #e5ebef; padding: 0px; margin: 0px; margin-left: 30px; display: none;" class="actionEdit">{function="localize('Editing URL', 'routing')"}</p>
                          
-                         <p style="margin-top: 30px;">
-<pre style="color: white;">*                    // {function="localize('Match all request URIs', 'routing')"}
-[i]                  // {function="localize('Match an integer', 'routing')"}
-[i:id]               // {function="localize('Match an integer as \'id\'', 'routing')"}
-[a:action]           // {function="localize('Match alphanumeric characters as \'action\'', 'routing')"}
-[h:key]              // {function="localize('Match hexadecimal characters as \'key\'', 'routing')"}
-[:action]            // {function="localize('Match anything up to the next / or end of the URI as \'action\'', 'routing')"}
-[create|edit:action] // {function="localize('Match either \'create\' or \'edit\' as \'action\'', 'routing')"}
-[*]                  // {function="localize('Catch all (lazy, stops at the next trailing slash)', 'routing')"}
-[*:trailing]         // {function="localize('Catch all as \'trailing\' (lazy)', 'routing')"}
-[**:trailing]        // {function="localize('Catch all (possessive - will match the rest of the URI)', 'routing')"}
-.[:format]?          // {function="localize('Match an optional parameter \'format\' - a / or . before the block is also optional', 'routing')"}</pre>
+                         <p style="margin-top: 30px; font-size: 12px;">
+* // {function="localize('Match all request URIs', 'routing')"}<br>
+[i]                  // {function="localize('Match an integer', 'routing')"}<br>
+[i:id]               // {function="localize('Match an integer as \'id\'', 'routing')"}<br>
+[a:action]           // {function="localize('Match alphanumeric characters as \'action\'', 'routing')"}<br>
+[h:key]              // {function="localize('Match hexadecimal characters as \'key\'', 'routing')"}<br>
+[:action]            // {function="localize('Match anything up to the next / or end of the URI as \'action\'', 'routing')"}<br>
+[create|edit:action] // {function="localize('Match either \'create\' or \'edit\' as \'action\'', 'routing')"}<br>
+[*]                  // {function="localize('Catch all (lazy, stops at the next trailing slash)', 'routing')"}<br>
+[*:trailing]         // {function="localize('Catch all as \'trailing\' (lazy)', 'routing')"}<br>
+[**:trailing]        // {function="localize('Catch all (possessive - will match the rest of the URI)', 'routing')"}<br>
+.[:format]?          // {function="localize('Match an optional parameter \'format\' - a / or . before the block is also optional', 'routing')"}<br>
 </p>
                      </td>
                  </tr>
