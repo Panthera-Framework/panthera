@@ -31,13 +31,10 @@ $(document).ready(function(){
             
             fileReader.onload = (function(file) {
                 // upload a single file
-                panthera.jsonPOST({ url: '?display=upload&cat=admin&action=popupHandleFile', data: { 'image': this.result, 'fileName': fileName.name}});
-                
+                panthera.jsonPOST({ url: '?{function="Tools::getQueryString('GET', 'action=popupHandleFile', '_')"}', data: { 'image': this.result, 'fileName': fileName.name}});
             });
             
             fileReader.readAsDataURL(file);
-            
-            if (panthera.logging )
             
             // finished
             if (index == (files.length-1))
@@ -56,7 +53,7 @@ $(document).ready(function(){
      */
     
     panthera.multiuploadArea({ id: '#upload_list_window', callback: function (content, fileName, fileNum, fileCount) {
-            panthera.jsonPOST({ url: '?display=upload&cat=admin&action=popupHandleFile', isUploading: true, data: { 'image': content, 'fileName': fileName}});
+            panthera.jsonPOST({ url: '?{function="Tools::getQueryString('GET', 'action=popupHandleFile', '_')"}', isUploading: true, data: { 'image': content, 'fileName': fileName}});
             
             // finished
             if (fileNum == fileCount)
@@ -67,13 +64,12 @@ $(document).ready(function(){
 
 function changeCategory()
 {
-    var category = $("#upload_category").val();
-    panthera.popup.toggle('?display=upload&cat=admin&directory='+category+'&popup=True{if="$callback"}&callback={$callback}{/if}');
+    panthera.popup.toggle("?{function="Tools::getQueryString('GET', 'directory=__category__', '_')"}".replace('__category__', $("#upload_category").val()));
 }
 
 function getUploadsPage(data)
 {
-    panthera.htmlPOST({ url: '?display=upload&cat=admin&popup=true&action=displayList{if="$callback"}&callback={$callback}{/if}', data: data, 'success': '#upload_list'});
+    panthera.htmlPOST({ url: '?{function="Tools::getQueryString('GET', 'action=displayList', '_')"}', data: data, 'success': '#upload_list'});
 }
 
 /**
@@ -92,7 +88,7 @@ function deleteSelectedFiles()
             {
                 panthera.jsonGET( { url: '{$AJAX_URL}?display=upload&cat=admin&action=popupDelete&id='+ids, messageBox: 'w2ui', success: function (response) {
                         if (response.status == 'success')
-                            panthera.popup.toggle('?display=upload&cat=admin&directory={$setCategory}&popup=True{if="$callback"}&callback={$callback}{/if}');
+                            panthera.popup.toggle('?{function="Tools::getQueryString('GET', '', '_')"}');
                     }
                 });
             }

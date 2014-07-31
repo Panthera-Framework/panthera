@@ -137,7 +137,7 @@
   <div style="width: 65%; margin: 0 auto; padding-bottom: 10px;">
     <div style="text-align: center; font-size: 12px; color: white; margin-bottom: -20px;">{$uiPagerName="adminUpload"}{include="ui.pager"}</div>
     <input type="button" value="{function="localize('Close')"}" style="float: right;" onclick="panthera.popup.close();">
-    <input type="button" value="{function="localize('Change view', 'upload')"}" style="float: right;" onclick="panthera.popup.create('?display=upload&cat=admin&changeView={$view_change}&directory={$setCategory}&popup=true{if="$callback"}&callback={$callback}{/if}')">
+    <input type="button" value="{function="localize('Change view', 'upload')"}" style="float: right;" onclick="panthera.popup.create('?{function="Tools::getQueryString('GET', 'changeView=' .$view_change, '_')"}')">
 
     <input type="text" id="file_name" style="display: none;">
     <input type="text" id="file_description" style="display: none;">
@@ -150,20 +150,20 @@
     <input type="text" id="file_k" style="display: none;">
     
     {if="$upload_files == True"}
-        <input type='button' value="{function="localize('Add new file', 'files')"}" style="margin-left: 5px; float: left;" onclick="panthera.popup.toggle('?display=upload&cat=admin&action=popupUploadFileWindow&directory={$setCategory}&popup=True{if="$callback"}&callback={$callback}{/if}')">
+        <input type='button' value="{function="localize('Add new file', 'upload')"}" style="margin-left: 5px; float: left;" onclick="panthera.popup.toggle('?{function="Tools::getQueryString('GET', 'action=popupUploadFileWindow', '_')"}')">
       {/if}
     {if="$callback"}
-        <input type="button" value="{function="localize('Select this file', 'files')"}" style="float: left; margin-left: 5px;" onclick="callBack();" id="_upl_select_file">
+        <input type="button" value="{function="localize('Select this file', 'upload')"}" style="float: left; margin-left: 5px;" onclick="callBack();" id="_upl_select_file">
     {else}
       
       	{if="$isAdmin"}
         	{if="$seeOtherUsersUploads"}
-            	<input type="button" style="float: left;" value="{function="localize('Hide other users files', 'files')"}" onclick="panthera.popup.create('?display=upload&cat=admin&otherUsers=false&popup=true')">
+            	<input type="button" style="float: left;" value="{function="localize('Hide other users files', 'upload')"}" onclick="panthera.popup.create('?{function="Tools::getQueryString('GET', 'otherUsers=false', '_')"}')">
                 {else}
-                <input type="button" style="float: left;" value="{function="localize('Show other users files', 'files')"}" onclick="panthera.popup.create('?display=upload&cat=admin&otherUsers=true&popup=true')">
+                <input type="button" style="float: left;" value="{function="localize('Show other users files', 'upload')"}" onclick="panthera.popup.create('?{function="Tools::getQueryString('GET', 'otherUsers=true', '_')"}')">
             {/if}
         {/if}
     {/if}
-    <input type="button" value="{function="localize('Delete selected files', 'files')"}" style="float: left; margin-left: 5px; display: none;" id="file_delete" onclick="deleteSelectedFiles();">
+    <input type="button" value="{function="localize('Delete selected files', 'upload')"}" style="float: left; margin-left: 5px; display: none;" id="file_delete" onclick="deleteSelectedFiles();">
   </div>
  </div>

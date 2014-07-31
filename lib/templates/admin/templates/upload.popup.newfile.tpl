@@ -14,7 +14,7 @@ $(document).ready(function(){
                 if (response.status == "success")
                 {
                     var category = $("#category").val();
-                    panthera.popup.create('?display=upload&cat=admin&directory='+category+'&popup=True{if="$callback"}&callback={$callback}{/if}');
+                    panthera.popup.create('?{function="Tools::getQueryString('GET', 'action=displayList&directory=__directory__', '_')"}'.replace('__directory__', category));
                 }
             } 
         });
@@ -24,7 +24,7 @@ $(document).ready(function(){
 });
 </script>
 
-<form action="?display=upload&cat=admin&action=popupHandleFile&popup=true{if="$callback"}&callback={$callback}{/if}" method="POST" enctype="multipart/form-data" id="upload_form">
+<form action="?{function="Tools::getQueryString('GET', 'action=popupHandleFile', '_')"}" method="POST" enctype="multipart/form-data" id="upload_form">
     <table class="formTable" style="margin: 0 auto; margin-top: 30px; margin-bottom: 30px;" id="upload_box_window">
         <thead>
             <tr>
@@ -54,7 +54,7 @@ $(document).ready(function(){
              
              <tr>
              	<th>{function="localize('Secure access only for me', 'upload')"}:</th>
-             	<td><input type="checkbox" name="protected" value="1" checked></td>
+             	<td><input type="checkbox" name="protected" value="1"></td>
              </tr>
              
              <tr>
@@ -76,7 +76,7 @@ $(document).ready(function(){
              <tr>
                  <td colspan="5" style="padding-top: 25px;">
                      <input type="submit" value="{function="localize('Send')"}" style="float: right; margin-right: 30px;">
-                     <input type="button" id="_upl_back_btn" value="{function="localize('Back')"}" style="float: left; margin-left: 30px;" onclick="panthera.popup.toggle('?display=upload&cat=admin&directory={$setCategory}&popup=True{if="$callback"}&callback={$callback}{/if}')">
+                     <input type="button" id="_upl_back_btn" value="{function="localize('Back')"}" style="float: left; margin-left: 30px;" onclick="panthera.popup.toggle('?{function="Tools::getQueryString('GET', 'action=displayList&directory=' .$setCategory, '_')"}')">
                  </td>
              </tr>
          </tfoot>

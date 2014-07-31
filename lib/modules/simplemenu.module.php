@@ -83,7 +83,7 @@ class simpleMenu extends pantheraClass
                 $this->panthera->cache->set('menu.'.$category, $rows, $this->cache);
             }
         }
-
+        
         if (count($rows) > 0)
         {
             foreach ($rows as $row)
