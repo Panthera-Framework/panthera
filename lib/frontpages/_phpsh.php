@@ -15,6 +15,7 @@
  */
 
 # include app config and libs
+define('PANTHERA_NO_STDIN_READ', true);
 require_once 'content/app.php';
 include_once getContentDir('pageController.class.php');
 

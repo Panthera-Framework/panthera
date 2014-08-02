@@ -1066,20 +1066,36 @@ class whereClause
 	public function add ($Statement, $Column, $Equals, $Value, $group = 1)
 	{
 	    if (!isset($this->groups[$group]))
-	        $this->groups[$group] = array('query' => '', 'statement' => 'AND');
+	        $this->groups[$group] = array(
+	            'query' => '',
+	            'statement' => 'AND'
+            );
 
         $this->Values = array();
-		$Equals_list = array ( '=' , '!=', '<', '>', '<=', '>=', 'LIKE' );
+		$Equals_list = array (
+		    '=',
+		    '!=',
+		    '<',
+		    '>',
+		    '<=',
+		    '>=',
+		    'LIKE',
+        );
 
-		if ( !in_array ( $Equals, $Equals_list ) )
+		if (!in_array($Equals, $Equals_list))
 			return false;
 
 		if ($Equals == 'LIKE')
 			$Equals = ' LIKE '; // to be valid with syntax
 
-		$Statement_list = array ( 'OR', 'AND', '', ',' );
+		$Statement_list = array (
+		    'OR',
+		    'AND',
+		    '',
+		    ','
+        );
 
-		if ( !in_array ( $Statement, $Statement_list ) )
+		if (!in_array ($Statement, $Statement_list))
 			return false;
 
 		if (!$this->groups[$group]['query'])
@@ -1090,7 +1106,7 @@ class whereClause
 		while (isset($this->vals[$columnTmp]))
 		    $columnTmp = $Column.rand(0,9999);
         
-        if ($Value == DB_TIME_NOW)
+        if ($Value === DB_TIME_NOW)
             $mark = 'NOW()';   
         else {
             $mark = ':' .$columnTmp;

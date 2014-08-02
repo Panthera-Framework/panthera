@@ -32,31 +32,34 @@ class pantheraCli
     {
         $this->picker = new cliColor();
         
-        $stdin = fopen('php://stdin', 'r');
-        $read = '';
-        $array = null;
-        
-        $read = trim(fread($stdin, 80960));
-        fclose($stdin);
-        
-        if ($read)
+        if (!defined('PANTHERA_NO_STDIN_READ'))
         {
-            if (substr($read, 0, 9) == 'base64://')
+            $stdin = fopen('php://stdin', 'r');
+            $read = '';
+            $array = null;
+            
+            $read = trim(fread($stdin, 80960));
+            fclose($stdin);
+            
+            if ($read)
             {
-                $array = json_decode(base64_decode(substr($read, 8, strlen($read))), true);
-                
-            } elseif (substr($read, 0, 7) == 'json://') {
-                $array = json_decode(substr($read, 7, strlen($read)));
-            } elseif (substr($read, 0, 1) == '?') {
-                parse_str(substr($read, 1, strlen($read)), $_GET);
+                if (substr($read, 0, 9) == 'base64://')
+                {
+                    $array = json_decode(base64_decode(substr($read, 8, strlen($read))), true);
+                    
+                } elseif (substr($read, 0, 7) == 'json://') {
+                    $array = json_decode(substr($read, 7, strlen($read)));
+                } elseif (substr($read, 0, 1) == '?') {
+                    parse_str(substr($read, 1, strlen($read)), $_GET);
+                }
             }
-        }
-        
-        // unpack variables
-        if ($array)
-        {
-            foreach ($array as $varName => $value)
-                $$varName = $value;
+            
+            // unpack variables
+            if ($array)
+            {
+                foreach ($array as $varName => $value)
+                    $$varName = $value;
+            }
         }
     }
 
