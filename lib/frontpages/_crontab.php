@@ -227,7 +227,7 @@ class _crontabControllerSystem extends pageController
                 print("Job returned code: ".$text."\n");
 
             // mark finished job as done
-            if (strtolower($text) == 'job_finished')
+            if ((is_string($text) and strtolower($text) == 'job_finished'))
                 $job -> finish();
 
             $job -> unlock();
