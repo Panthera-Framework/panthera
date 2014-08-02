@@ -35,8 +35,12 @@ class crontabApp(baseKernel.pantheraDesktopApplication):
         command = 'echo \"'+params+'\" | php '+self.appDir+'/_crontab.php'
         
         self.logging.output('Executing "'+command+'"')
-        task = subprocess.Popen([command], stdout=subprocess.PIPE, shell=True)
-        data = task.communicate()[0]
+        
+        try:
+            task = subprocess.Popen([command], stdout=subprocess.PIPE, shell=True)
+            data = task.communicate()[0]
+        except Exception:
+            self.logging.output('Catched exception while trying to open process. Details: '+str(e))
         
         self.logging.output(data)
         self.logging.output('Task returned code '+str(task.returncode))
