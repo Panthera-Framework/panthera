@@ -31,8 +31,8 @@ class crontabApp(baseKernel.pantheraDesktopApplication):
     appDir = '.'
     qapp = None
     
-    def executeJob(self, params, thread=''):
-        command = 'echo \"'+params+'\" | php 'r+self.appDir+'/_crontab.php'
+    def executeJob(self, params, thread):
+        command = 'echo \"'+params+'\" | php '+self.appDir+'/_crontab.php'
         
         self.logging.output('Executing "'+command+'"')
         task = subprocess.Popen([command], stdout=subprocess.PIPE, shell=True)
@@ -40,6 +40,7 @@ class crontabApp(baseKernel.pantheraDesktopApplication):
         
         self.logging.output(data)
         self.logging.output('Task returned code '+str(task.returncode))
+        thread.terminate()
 
 
     def updateTasksList(self):
@@ -57,7 +58,7 @@ class crontabApp(baseKernel.pantheraDesktopApplication):
                     args = urlparse.parse_qs(params)
                     self.threads[args['jobname'][0]] = {}
                     self.threads[args['jobname'][0]]['appThread'], self.threads[args['jobname'][0]]['appWorker'] = baseKernel.createThread(self.executeJob, params, autostart=True)
-                    time.sleep(0aur/oh-my-zsh-git.2)
+                    time.sleep(0.2)
             
             time.sleep(60)
     
