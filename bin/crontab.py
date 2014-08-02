@@ -8,7 +8,7 @@ import string
 import subprocess
 import time
 import json
-from urlparse import urlparse
+import urlparse
 from PyQt4 import Qt
 import subprocess
 
@@ -31,8 +31,8 @@ class crontabApp(baseKernel.pantheraDesktopApplication):
     appDir = '.'
     qapp = None
     
-    def executeJob(self, params):
-        command = 'echo \"'+params+'\" | php '+self.appDir+'/_crontab.php'
+    def executeJob(self, params, thread=''):
+        command = 'echo \"'+params+'\" | php 'r+self.appDir+'/_crontab.php'
         
         self.logging.output('Executing "'+command+'"')
         task = subprocess.Popen([command], stdout=subprocess.PIPE, shell=True)
@@ -51,12 +51,15 @@ class crontabApp(baseKernel.pantheraDesktopApplication):
             
             if data['links']:
                 for job in data['links']:
-                    params = '?'+urlparse(data['links'][job]).query
+                    params = '?'+urlparse.urlparse(data['links'][job]).query
                     self.logging.output('Executing job: '+params)
-                    appThread, appWorker = baseKernel.createThread(self.executeJob, params, autostart=True)
-                    time.sleep(0.2)
+                    
+                    args = urlparse.parse_qs(params)
+                    self.threads[args['jobname'][0]] = {}
+                    self.threads[args['jobname'][0]]['appThread'], self.threads[args['jobname'][0]]['appWorker'] = baseKernel.createThread(self.executeJob, params, autostart=True)
+                    time.sleep(0aur/oh-my-zsh-git.2)
             
-            time.sleep(50)
+            time.sleep(60)
     
     def initApp(self, a=''):
         os.chdir(self.appDir)
