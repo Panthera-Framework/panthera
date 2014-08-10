@@ -161,7 +161,6 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
             E_DEPRECATED,
             E_COMPILE_WARNING,
             E_CORE_WARNING,
-            E_WARNING,
         );
 
         // we will show warning messages in debugging mode
@@ -239,9 +238,7 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
             $errorPage = getContentDir('templates/error.php');
 
             if ($errorPage)
-            {
                 include_once $errorPage;
-            }
 
             exit;
         }
@@ -1284,7 +1281,7 @@ class pantheraCore
 
     public function importModule($module, $constructModule=False, $forceReload=False)
     {
-        $module = strtolower($module);
+        //$module = strtolower($module);
 
         if ($this->moduleImported($module) and !$forceReload)
             return True;
