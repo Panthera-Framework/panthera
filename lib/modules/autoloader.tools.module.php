@@ -156,43 +156,45 @@ class pantheraAutoloader
     }
 
     /**
-      * Get list of declared class in PHP file (without including it)
-      *
-      * @param string $fileName
-      * @return array
-      * @author AbiusX <http://stackoverflow.com/questions/7153000/get-class-name-from-file>
-      */
+     * Get list of declared class in PHP file (without including it)
+     *
+     * @param string $fileName
+     * @author Damian Kęska
+     * @author AbiusX <http://stackoverflow.com/questions/7153000/get-class-name-from-file>
+     * @return array
+     */
 
     public static function fileGetClasses($fileName)
     {
-        $php_code = file_get_contents ( $fileName );
-        $classes = array ();
-        $namespace="";
-        $tokens = token_get_all ( $php_code );
-        $count = count ( $tokens );
+        $php_code = file_get_contents($fileName);
+        $classes = array();
+        $namespace = '';
+        $tokens = token_get_all($php_code);
+        $count = count($tokens);
 
-        for($i = 0; $i < $count; $i ++)
+        for ($i=0; $i < $count; $i++)
         {
-            if ($tokens[$i][0]===T_NAMESPACE)
+            if ($tokens[$i][0] === T_NAMESPACE)
             {
-                for ($j=$i+1;$j<$count;++$j)
+                for ($j=$i+1; $j<$count; ++$j)
                 {
                     if ($tokens[$j][0]===T_STRING)
-                        $namespace.="\\".$tokens[$j][1];
-                    elseif ($tokens[$j]==='{' or $tokens[$j]===';')
+                        $namespace .= "\\".$tokens[$j][1];
+                    elseif ($tokens[$j] === '{' || $tokens[$j] === ';')
                         break;
                 }
             }
 
-            if ($tokens[$i][0]===T_CLASS)
+            if ($tokens[$i][0] === T_CLASS || $tokens[$i][0] === T_TRAIT)
             {
-                for ($j=$i+1;$j<$count;++$j)
+                for ($j=$i+1; $j<$count; ++$j)
                 {
-                	if ($tokens[$j]==='{')
-                        $classes[]=$namespace."\\".$tokens[$i+2][1];
+                	if ($tokens[$j] === '{')
+                        $classes[] = $namespace."\\".$tokens[$i+2][1];
                 }
             }
         }
+        
         return $classes;
     }
 }
