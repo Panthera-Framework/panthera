@@ -166,7 +166,7 @@ function getAvatar(link, id)
                   <th>{function="localize('Primary group', 'users')"}</th>
                   <th>
                     <div class="select" style="margin-top: 14px; margin-left: 3px; width: 208px;">
-                     <select onChange="changeCategory();" name="primary_group" style="width: 210px;">
+                     <select name="primary_group" style="width: 210px;">
                        {loop="$groups"}
                         <option value="{$value.group_id}" {if="$value.group_id == $user->primary_group"} selected {/if}>{$value.name}</option>
                        {/loop}
@@ -180,7 +180,7 @@ function getAvatar(link, id)
                   <th>{function="localize('Language', 'users')"}</th>
                   <th>
                     <div class="select" style="margin-top: 14px; margin-left: 3px; width: 208px;">
-                     <select onChange="changeCategory();" name="language" style="width: 210px;">
+                     <select name="language" style="width: 210px;">
                        {loop="$locales_added"}
                         <option{if="$key == $user->language"} selected {/if}>{$key}</option>
                        {/loop}
@@ -193,7 +193,7 @@ function getAvatar(link, id)
                   <th>{function="localize('Gender', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
                   <th>
                     <div class="select" style="margin-top: 14px; margin-left: 3px; width: 208px;">
-                     <select onChange="changeCategory();" name="gender" style="width: 210px;">
+                     <select name="gender" style="width: 210px;">
                         <option {if="$user->gender == 'male'"} selected {/if} value="male">{function="localize('male', 'users')"}</option>
                         <option {if="$user->gender == 'female'"} selected {/if} value="female">{function="localize('female', 'users')"}</option>
                      </select>
