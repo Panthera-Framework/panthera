@@ -1993,6 +1993,41 @@ abstract class pantheraClass
 
         return $this -> panthera -> get_options_ref($featureName, $args, $additionalInfo);
     }
+    
+    /**
+     * Don't allow Panthera and PDO objects to gets serialized
+     * 
+     * @magic
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return array
+     */
+    
+    public function __sleep()
+    {
+        $reflection = new ReflectionClass(get_called_class());
+        $properties = array();
+        
+        foreach ($reflection -> getProperties() as $property)
+        {
+            if ($property -> getName() == 'panthera')
+                continue;
+            
+            $properties[] = $property -> getName();
+        }
+        return $properties;
+    }
+    
+    /**
+     * Restore Panthera instance after unserializing
+     * 
+     * @magic
+     * @author Damian Kęska <webnull.www@gmail.com>
+     */
+    
+    public function __wakeup()
+    {
+        $this -> panthera = panthera::getInstance();
+    }
 }
 
 /**
