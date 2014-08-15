@@ -109,6 +109,8 @@ class customControllerSystem extends pageController
             $panthera -> template -> addMetaTag('og:image', $this -> cpage -> image, True);
 
         $panthera -> template -> push('custompage', $this -> cpage -> getData());
+        $panthera -> template -> push('custompageObject', $this -> cpage);
+        
         return $panthera -> template -> compile('custom.tpl');
     }
 }
