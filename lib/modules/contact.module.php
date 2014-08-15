@@ -44,6 +44,7 @@ class contactFrontpage
     );
 
     protected $canSend = True;
+    protected $captcha = null;
 
     /**
       * Constructor
@@ -78,6 +79,11 @@ class contactFrontpage
         $this->settings = $panthera->config->getKey($fieldName, $contactDefaults, 'array', 'contact');
         $panthera -> add_option('template.display', array($this, 'applyToTemplate'));
         $this -> checkCanSend();
+        
+        $this -> captcha = captcha::createInstance();
+        
+        if ($this -> captcha && $panthera -> config -> getKey('contact.captcha', 1, 'bool', 'contact') && $this -> captcha -> enabled)
+            $panthera -> template -> push('captchaCode', $this -> captcha -> generateCode());
     }
 
     /**
@@ -102,12 +108,12 @@ class contactFrontpage
     }
 
     /**
-      * Set a cookie, save ip address, check captcha or any other method to secure form from spam
-      *
-      * @param string name
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Set a cookie, save ip address, check captcha or any other method to secure form from spam
+     *
+     * @param string name
+     * @return mixed
+     * @author Damian Kęska
+     */
 
     public function executeProtection()
     {
@@ -123,12 +129,12 @@ class contactFrontpage
     }
 
     /**
-      * Send a message
-      *
-      * @param array $array
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Send a message
+     *
+     * @param array $array
+     * @return bool
+     * @author Damian Kęska
+     */
 
     protected function sendMessage($array)
     {
@@ -160,18 +166,20 @@ class contactFrontpage
     }
 
     /**
-      * Validate all input data, eg. from $_POST source
-      *
-      * @hook contact.handledata $array, $valid
-      * @param array $array
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Validate all input data, eg. from $_POST source
+     *
+     * @hook contact.handledata $array, $valid
+     * @param array $array
+     * @return mixed
+     * @author Damian Kęska
+     */
 
     public function handleData($array)
     {
 		$panthera = pantheraCore::getInstance();
-
+        $panthera -> template -> push($array); // send back to template in case of any error
+        
+$this->canSend = true;
         if (!$this->canSend)
             return array('error' => localize('The mailing form is not avaliable at this time', 'contactpage'), 'messageid' => 'PROTECTION_CANNOT_SEND');
 
@@ -307,6 +315,13 @@ class contactFrontpage
             }
         }
 
+        if ($this -> captcha && $panthera -> config -> getKey('contact.captcha', 1, 'bool', 'contact') && $this -> captcha -> enabled and !is_bool($this -> captcha -> verify()))
+            return array(
+                'error' => localize('Invalid captcha code', 'contactpage'),
+                'messageid' => 'INVALID_CAPTCHA_CODE',
+                'field' => 'p_captchaCode',
+            );
+
         return $this->sendMessage($array);
     }
 
@@ -321,9 +336,12 @@ class contactFrontpage
     {
         $panthera = pantheraCore::getInstance();
 
-        $panthera -> template -> push ('p_contactText', $this->settings['text']);
-        $panthera -> template -> push ('p_contactMap', $this->settings['map']);
-        $panthera -> template -> push ('p_contactMail', $this->settings['mail']);
-        $panthera -> template -> push ('p_contactFields', $this->fields);
+        $panthera -> template -> push ('p_contactText', $this -> settings['text']);
+        $panthera -> template -> push ('p_contactMap', $this -> settings['map']);
+        $panthera -> template -> push ('p_contactMail', $this -> settings['mail']);
+        $panthera -> template -> push ('p_contactFields', $this -> fields);
+        
+        if ($panthera -> config -> getKey('contact.captcha', 1, 'bool', 'contact') && $this -> captcha -> enabled)
+            $panthera -> template -> push ('p_captchaCode', $this -> captcha -> generateCode());
     }
 }
