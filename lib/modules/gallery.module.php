@@ -113,7 +113,7 @@ class galleryItem extends pantheraFetchDB
 
         $thumbnail = '';
 
-        $panthera -> importModule('simpleImage');
+        $panthera -> importModule('simpleimage');
         $fileInfo = pathinfo($link);
         $size = intval($panthera -> config -> getKey('gallery_thumbs_width', 240, 'int'));
 
