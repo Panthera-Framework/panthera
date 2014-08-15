@@ -338,7 +338,7 @@ class httplib
 
     public function get($url, $method=null, $options=null, $postFields=null, $uploadingFile=False)
     {
-        $panthera = pantheraCore::getInstance();
+        $panthera = panthera::getInstance();
         $this -> selectAddress();
         $this -> selectUserAgent();
         $panthera -> get_options_ref('httplib.get.prepare', $this, $this -> instanceID);
@@ -350,8 +350,14 @@ class httplib
         if (!$method)
             $method = 'GET';
 
-        $panthera -> logging -> output('Preparing to ' .$method. ' web url "' .$url. '"', 'httplib');
-
+        if ($panthera -> logging -> debug)
+        {
+            $panthera -> logging -> output('Preparing to ' .$method. ' web url "' .$url. '"', 'httplib');
+            
+            if ($method == 'POST')
+                $panthera -> logging -> output('POST data: ' .json_encode($postFields), 'httplib');
+        }
+        
         // restoring session from previous connection on this object
         $curl = curl_init();
 
