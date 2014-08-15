@@ -1208,20 +1208,22 @@ abstract class pantheraFetchDB extends pantheraClass
     }
     
     /**
-      * Constructor, here are logics that parses and loads all data, cache management etc.
-      *
-      * @param mixed $by
-      * @param mixed $value
-      * @return void
-      * @author Damian Kęska
-      */
+     * Constructor, here are logics that parses and loads all data, cache management etc.
+     *
+     * @param mixed $by
+     * @param mixed $value
+     * @return void
+     * @author Damian Kęska
+     */
 
     public function __construct($by, $value='')
     {
         $panthera = pantheraCore::getInstance();
         $this->panthera = $panthera;
         $this->cacheGroup = get_class($this);
-
+        
+        $panthera -> logging -> output('Created pantheraFetchDB "' .get_called_class(). '" object', 'database');
+        
         // if it's just empty object
         if ($by === null)
             return false;
