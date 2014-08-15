@@ -76,14 +76,12 @@ class contactControllerSystem extends pageController
 
         if (isset($_GET['send']))
         {
-            $result = $contact->handleData($_POST); // any array can be used to test the form
+            $result = $this -> contact -> handleData($_POST); // any array can be used to test the form
 
             if (is_array($result))
-            {
-                $panthera -> template -> push('p_contactErrorMsg', $result['error']);
-            } else {
-                $panthera -> template -> push('p_contactSuccess', True);
-            }
+                $this -> panthera -> template -> push('p_contactErrorMsg', $result['error']);
+            else
+                $this -> panthera -> template -> push('p_contactSuccess', True);
         }
     }
 
