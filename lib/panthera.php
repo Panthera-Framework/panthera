@@ -1346,11 +1346,11 @@ class pantheraCore
 
     public function moduleExists($module)
     {
-        if (is_file(PANTHERA_DIR. '/modules/' .$module. '.module.php'))
-            return PANTHERA_DIR. '/modules/' .$module. '.module.php';
-
         if (is_file(SITE_DIR. '/content/modules/' .$module. '.module.php'))
             return SITE_DIR. '/content/modules/' .$module. '.module.php';
+        
+        if (is_file(PANTHERA_DIR. '/modules/' .$module. '.module.php'))
+            return PANTHERA_DIR. '/modules/' .$module. '.module.php';
 
         return False;
     }
@@ -1447,9 +1447,7 @@ class pantheraCore
         // create array with hooks group
 
         if (!isset($this->hooks[$hookName]))
-        {
             $this->hooks[$hookName] = array();
-        }
 
         // is this a class method or just a function?
         if(gettype($function) == "array") // here is situation when it will be a class
@@ -1473,9 +1471,7 @@ class pantheraCore
             $priority = intval($priority);
 
             while (isset($this->hooks[$hookName][$priority]))
-            {
                 $priority++;
-            }
 
             $this->hooks[$hookName][$priority] = $function;
             return true;
@@ -1704,9 +1700,7 @@ class pantheraCore
         foreach ($this->pluginsDir as $dir)
         {
             if (is_dir($dir. '/' .$name. '/'))
-            {
                 return True;
-            }
         }
 
         return False;
