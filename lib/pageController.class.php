@@ -545,7 +545,7 @@ abstract class pageController extends pantheraClass {
     
     public static function runFrontController($file, $className)
     {
-        if (strpos($file, PANTHERA_DIR) !== FALSE or !in_array($file, get_included_files()))
+        if (!is_link($file) and (strpos($file, PANTHERA_DIR) !== FALSE or !in_array($file, get_included_files())))
         {
             $object = new $className();
             $object -> display();
