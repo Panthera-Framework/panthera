@@ -535,30 +535,34 @@ class customAjaxControllerSystem extends pageController
                     $languages = $tmp[$page->unique]['languages'];
                     $languages[$page->language] = $page -> title;
                     $tmp[$page->unique]['languages'] = $languages;
+                    
+                } else {
+                    
+                    $tmp[$page->unique] = array(
+                        'id' => $page -> id,
+                        'unique' => $page -> unique,
+                        'url_id' => $page -> url_id,
+                        'author_id' => $page -> author_id,
+                        'modified' => $page -> mod_time,
+                        'created' => $page -> created,
+                        'title' => $page -> title,
+                        'author_name' => $page -> author_name,
+                        'mod_author_name' => $page -> mod_author_name,
+                        'language' => $page -> language,
+                        'languages' => $languages,
+                        'managementRights' => $this -> checkPermissions($page -> getPermissions('management'), true),
+                        'object' => $page,
+                        'additionalInfo' => $this -> panthera -> logging -> debug ? "==== DEBUG: ID: " .$page -> id. ", Unique: " .$page -> unique. ", url_id: " .$page -> url_id : "",
+                    );    
+                }
 
-                    if (isset($tmp[$page->unique]['languages'][$this -> panthera -> locale -> getActive()]))
-                    {
-                        $tmp[$page->unique]['title'] = $tmp[$page->unique]['languages'][$this -> panthera -> locale -> getActive()];
-                        continue;
-                    }
+                if ($this->panthera->locale->getActive() == $page->language)
+                {
+                    $tmp[$page->unique]['title'] = $page->title;
+                    continue;
                 }
                 
-                $tmp[$page->unique] = array(
-                    'id' => $page -> id,
-                    'unique' => $page -> unique,
-                    'url_id' => $page -> url_id,
-                    'author_id' => $page -> author_id,
-                    'modified' => $page -> mod_time,
-                    'created' => $page -> created,
-                    'title' => $page -> title,
-                    'author_name' => $page -> author_name,
-                    'mod_author_name' => $page -> mod_author_name,
-                    'language' => $page -> language,
-                    'languages' => $languages,
-                    'managementRights' => $this -> checkPermissions($page -> getPermissions('management'), true),
-                    'object' => $page,
-                    'additionalInfo' => $this -> panthera -> logging -> debug ? "==== DEBUG: ID: " .$page -> id. ", Unique: " .$page -> unique. ", url_id: " .$page -> url_id : "",
-                );
+                
             }
         }
 
