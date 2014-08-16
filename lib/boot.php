@@ -28,7 +28,7 @@ if (PANTHERA_MODE == 'CLI') {
 
 } else {
     // CGI mode
-    ini_set("display_errors", 1);
+    ini_set("display_errors", 'On');
     error_reporting(E_ERROR | E_PARSE | E_WARNING);
 }
 
@@ -190,6 +190,9 @@ if ($t[0] == "/")
 
 define('PANTHERA_FRONTCONTROLLER', '/' .$t); // detect front controller
 
+if ($panthera -> logging -> debug)
+    error_reporting(E_ALL);
+
 /*
  * Error handler and CLI functions
  */
@@ -285,6 +288,9 @@ if (!defined('SKIP_USER') and !defined('SKIP_SESSION'))
                 if (!defined('SKIP_SESSION'))
                     $panthera->session->set('language', $user->language);
             }
+            
+            if (!defined('SKIP_TEMPLATE'))
+                $panthera -> template -> push('activeUser', $user);
         }
     }
 }
