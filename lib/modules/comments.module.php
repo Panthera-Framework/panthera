@@ -4,7 +4,7 @@
  *
  * @package Panthera\core\components\comments
  * @author Mateusz Warzyński
- * @license GNU Affero General Public License 3, see license.txt
+ * @license LGPLv3
  */
 
 /**
@@ -17,68 +17,64 @@
 
 class userComment extends pantheraFetchDB
 {
+    use userModelExtension;
+    
     protected $_tableName = 'users_comments';
     protected $_idColumn = 'id';
-    protected $_constructBy = array('id', 'array');
-
-    public $author_login;
-
-
+    protected $_constructBy = array(
+        'id', 'array',
+    );
+    
     /**
-      * Get comments from database
-      *
-      * @param string $sBarQuery, search bar query
-      * @param string $group, eg. "custompage", "blogpost"
-      * @param int $objectID group id, eg. custompage id or quick message id
-      * @param int $limit
-      * @param int $limitFrom
-      * @param string $orderBy, eg. 'id'
-      * @param string $orderDirection, 'DESC'/'ASC'
-      * @return mixed
-      * @author Mateusz Warzyński
-      */
-
-    public static function fetchComments($w, $limit=0, $limitFrom=0, $orderBy='id', $orderDirection='DESC', $total=False)
+     * Fetch comments for specified objects group
+     * 
+     * Example:
+     * <code>
+     * $whereClause = new whereClause;
+     * $whereClause -> add('AND', 'articleID', '=', 5);
+     * $comments = userComment::fetchComments('articles', $whereClause, 5, 0, 'ASC'); // @see pantheraFetchDB::fetchAll() args
+     * </code>
+     * 
+     * @see pantheraFetchDB::fetchAll()
+     * @args pantheraFetchDB::fetchAll()
+     * @return array
+     */
+    
+    public static function fetchComments()
     {
-        $comments = static::fetchAll($w, $limit, $limitFrom, $orderBy, $orderDirection);
-
-        if ($total)
-            return $comments;
-
-        // get information about user
-        foreach ($comments as $comment)
-        {
-            $comment->content = htmlspecialchars_decode($comment->content);
-
-            $user = new pantheraUser('id', $comment->author_id);
-            $comment->author_login = $user->login;
-        }
-
-        return $comments;
+        $args = func_get_args();
+        
+        if (!isset($args[1]) || !is_object($args[1]))
+            $args[1] = new whereClause;
+        
+        $args[1] -> add('AND', 'group', '=', $args[0]); 
+        
+        // remove first additional argument
+        array_shift($args);
+        
+        return call_user_func_array('parent::fetchAll', $args);
     }
 
-
-
     /**
-      * Post comment, add record to database
-      *
-      * @param string $content
-      * @param int $userId
-      * @param string $group, group of page where comment is added, eg. 'custompage'
-      * @param int $objectID, ID of group object, eg. 5
-      * @param int $allowed, if should be moderated
-      * @return mixed
-      * @author Mateusz Warzyński
-      */
+     * Post comment, add record to database
+     *
+     * @param string $content
+     * @param int $userId
+     * @param string $group, group of page where comment is added, eg. 'custompage'
+     * @param int $objectID, ID of group object, eg. 5
+     * @param int $allowed, if should be moderated
+     * @return mixed
+     * @author Mateusz Warzyński
+     */
 
     public static function postComment($content, $userId, $group, $objectID, $allowed=1)
     {
         $panthera = pantheraCore::getInstance();
 
         if (strlen($content) > 5500)
-        return False;
+            return False;
 
-        if ($userId == false or $userId == null) {
+        if ($userId === false or $userId === null) {
             $user = -1;
         } else {
             $author = new pantheraUser('id', $userId);
@@ -89,13 +85,7 @@ class userComment extends pantheraFetchDB
                 return False;
         }
 
-        if (strlen($content) < 5)
-            return False;
-
-        if (strlen($group) < 3)
-            return False;
-
-        if (!isset($objectID))
+        if (strlen($content) < 5 || strlen($group) < 3 || isset($objectID))
             return False;
 
         $array = array(
@@ -103,54 +93,57 @@ class userComment extends pantheraFetchDB
             'userid' => $user,
             'group' => $group,
             'objectID' => $objectID,
-            'allowed' => (bool)$allowed
+            'allowed' => (bool)$allowed,
+            'posted' => DB_TIME_NOW,
+            'modified' => DB_TIME_NOW,
         );
 
-        $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}users_comments` (`id`, `content`, `author_id`, `group`, `object_id`, `posted`, `modified`, `allowed`) VALUES (NULL, :content, :userid, :group, :objectID, NOW(), NOW(), :allowed);', $array);
+        return self::create($array);
     }
 
 
 
     /**
-      * Delete comments by id
-      *
-      * @param array $id, ids of comments to delete, eg. {1, 2, 3, 4, 5}
-      * @return bool
-      * @author Mateusz Warzyński
-      */
+     * Delete comments by id
+     *
+     * @param array $id Ids of comments to delete, eg. {1, 2, 3, 4, 5}
+     * @return bool
+     * @author Mateusz Warzyński
+     */
 
     public static function deleteComments($id)
     {
         $panthera = pantheraCore::getInstance();
 
-        $where = new whereClause;
+        if (is_numeric($id))
+            $id = array($id);
 
-        foreach ($id as $key => $i)
-            $where -> add('OR', 'id', '=', strval($i));
-
-        $show = $where->show();
-        $query = 'DELETE FROM `{$db_prefix}users_comments` WHERE ' .$show[0];
-
-        $SQL = $panthera -> db -> query($query, $show[1]);
-        return (bool)$SQL->rowCount();
+        foreach ($id as $key => $value)
+        {
+            $object = new static('id', $value);
+            $object -> delete();
+        }
+        
+        return true;
     }
 
-
-
     /**
-      * Hold comments
-      *
-      * @param array $id, ids of comments to delete, eg. {1, 2, 3, 4, 5}
-      * @return bool
-      * @author Mateusz Warzyński
-      */
+     * Hold comments
+     *
+     * @param array|string|int $id Ids of comments to delete, eg. {1, 2, 3, 4, 5}. Can be also a numeric string or number eg. "1", 1, "50"
+     * @return bool
+     * @author Mateusz Warzyński
+     */
 
-    public static function holdComments($id)
+    public static function holdComments($id, $value=True)
     {
+        if (is_numeric($id))
+            $id = array($id);
+        
         foreach ($id as $i)
         {
             $comment = new userComment('id', $i);
-            $comment->allowed = !(bool)$comment->allowed;
+            $comment -> allowed = (bool)$value;
             $comment -> save();
         }
 
