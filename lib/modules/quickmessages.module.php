@@ -130,7 +130,7 @@ class quickMessage extends pantheraFetchDB
 
         // close all unclosed tags
         $doc = new DOMDocument();
-        $doc->loadHTML($message);
+        $doc->loadHTML(mb_convert_encoding($message, 'HTML-ENTITIES', 'UTF-8'));
         $message = trim($doc->saveHTML());
 
         if (strlen($message) < strlen($this->message))
