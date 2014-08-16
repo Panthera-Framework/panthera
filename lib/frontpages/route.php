@@ -45,7 +45,9 @@ class routeFrontControllerSystem extends pageController
         // load index page if no page specified
         if (!$match and $_SERVER['REQUEST_URI'] == '/')
             $match = array(
-                'target' => array('front' => 'index.php'),
+                'target' => array(
+                    'front' => 'index.php'
+                ),
             );
 
         if ($match)
@@ -104,8 +106,11 @@ class routeFrontControllerSystem extends pageController
             $this -> panthera -> logging -> output('Including front page from path ' .SITE_DIR. '/' .$controller, 'routing');
         
             if (is_file(SITE_DIR. '/' .$controller))
-                include SITE_DIR. '/' .$controller;
-        
+            {
+                
+                require SITE_DIR. '/' .$controller;
+            }
+            
             pa_exit();
         }
         
