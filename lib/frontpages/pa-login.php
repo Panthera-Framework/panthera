@@ -32,6 +32,30 @@ class pa_loginControllerSystem extends pageController
     protected $requirements = array(
         'userregistration', 'passwordrecovery',
     );
+    
+    /**
+     * Constructor
+     * 
+     * @author Damian Kęska
+     */
+    
+    public function __construct()
+    {
+        parent::__construct();
+        $this -> panthera -> template -> setTemplate('admin');
+    }
+    
+    /**
+     * Display the template
+     * 
+     * @author Damian Kęska
+     * @return null
+     */
+    
+    public function displayTemplate()
+    {
+        return $this -> panthera -> template -> display('login.tpl');
+    }
 
     /**
      * Support for login extensions
@@ -125,8 +149,7 @@ class pa_loginControllerSystem extends pageController
             $this -> panthera -> session -> set('login_referer', $_SERVER['HTTP_REFERER']);
 
         $this -> panthera -> template -> setTitle(localize('Log in'));
-        $this -> panthera -> template -> setTemplate('admin');
-        $this -> panthera -> template -> display('login.tpl');
+        $this -> displayTemplate();
         pa_exit();
     }
 
@@ -142,7 +165,6 @@ class pa_loginControllerSystem extends pageController
 
         $u = userTools::userCreateSession($_POST['log'], null, true, true);
         $this -> getFeatureRef('login.checkauth', $continueChecking, $u);
-        $this -> panthera -> template -> setTemplate('admin');
 
         // if module decided to break
         if (!$continueChecking or is_string($continueChecking))
@@ -150,7 +172,7 @@ class pa_loginControllerSystem extends pageController
             if (is_string($continueChecking))
                 $this -> panthera -> template -> push('message', $continueChecking);
 
-            $this -> panthera -> template -> display('login.tpl');
+            $this -> displayTemplate();
             pa_exit();
         }
 
@@ -167,7 +189,7 @@ class pa_loginControllerSystem extends pageController
                 } else {
                     $this -> panthera -> get_options('login.failures.exceeded', array('user' => $u, 'failures' => $u -> attributes -> get('loginFailures'), 'expiration' => $u -> attributes -> get('loginFailureExpiration')));
                     $this -> panthera -> template -> push('message', localize('Number of login failures exceeded, please wait a moment before next try', 'messages'));
-                    $this -> panthera -> template -> display('login.tpl');
+                    $this -> displayTemplate();
                     pa_exit();
                 }
             }
