@@ -980,36 +980,61 @@ class pantheraDB extends pantheraClass
     }
 
     /**
-      * Bind array of values
-      *
-      * @param object $req
-      * @param array $array
-      * @param array|bool $typeArray Optional array specifing data types
-      * @return mixed
-      * @author Damian Kęska
-      */
+     * Bind array of values
+     *
+     * @param object $req
+     * @param array $array
+     * @param array|bool $typeArray Optional array specifing data types
+     * @return mixed
+     * @author Damian Kęska
+     */
 
-    function bindArrayValue($req, $array, $typeArray = false)
+    public function bindArrayValue($req, $array, $typeArray = false)
     {
+        $types = array(
+            'int' => PDO::PARAM_INT,
+            'i' => PDO::PARAM_INT,
+            'b' => PDO::PARAM_BOOL,
+            'bool' => PDO::PARAM_BOOL,
+            'n' => PDO::PARAM_NULL,
+            'null' => PDO::PARAM_NULL,
+            's' => PDO::PARAM_STR,
+            'string' => PDO::PARAM_STR,
+        );
+        
         if(is_object($req) && ($req instanceof PDOStatement))
         {
             foreach($array as $key => $value)
             {
+                $param = null;
+                $exp = explode('|', $key);
+
+                // static typing by eg. "variable|string" or "test|int", "othervar|b"
+                if (isset($exp[1]) and isset($types[$exp[1]]))
+                    $param = $types[$exp[1]];
+                
+                // static typing from separate array
                 if($typeArray)
                 {
-                    //print('Bind '.$key.' = '.$value);
                     $req -> bindValue(":$key",$value,$typeArray[$key]);
+                    
                 } else {
-                    $param = PDO::PARAM_STR;
-
-                    if(is_int($value))
-                        $param = PDO::PARAM_INT;
-                    elseif(is_bool($value))
-                        $param = PDO::PARAM_BOOL;
-                    elseif(is_null($value))
-                        $param = PDO::PARAM_NULL;
-                    elseif(is_string($value))
+                    // automatic detection
+                    if (!$param)
+                    {
                         $param = PDO::PARAM_STR;
+    
+                        if(is_numeric($value))
+                        {
+                            $value = intval($value);
+                            $param = PDO::PARAM_INT;
+                        } elseif(is_bool($value))
+                            $param = PDO::PARAM_BOOL;
+                        elseif(is_null($value))
+                            $param = PDO::PARAM_NULL;
+                        elseif(is_string($value))
+                            $param = PDO::PARAM_STR;
+                    }
 
                     $req -> bindValue(":$key",$value,$param);
                 }
@@ -1027,7 +1052,9 @@ class pantheraDB extends pantheraClass
 
 class whereClause
 {
-	protected $SQL=NuLL, $vals = array(), $groups = array();
+	protected $SQL = null;
+	protected $vals = array();
+	protected $groups = array();
     
 	/**
 	  * Add statement before group of instructions
@@ -1117,12 +1144,41 @@ class whereClause
 		return $this;
 	}
 
+    /**
+     * Returns query data
+     * 
+     * @return array 
+     */
+
+    public function getData()
+    {
+        return $this -> groups;
+    }
+    
+    /**
+     * Merge other whereClause object or array
+     * 
+     * @param array|object $array Array return of whereClause::getData() or just whereClause object
+     */
+    
+    public function merge($array)
+    {
+        if (is_array($array) || is_object($array))
+        {
+            if (is_object($array))
+                $array = $array -> getData();
+            
+            $this -> groups = array_merge($this -> groups, $array);
+            return true;
+        }
+    }
+
 	/**
-	  * Build and return query
-	  *
-	  * @return array with query and values
-	  * @author Damian Kęska
-	  */
+	 * Build and return query
+	 *
+	 * @return array with query and values
+	 * @author Damian Kęska
+	 */
 
 	public function show()
 	{
@@ -1132,7 +1188,6 @@ class whereClause
 	        $this->SQL .= ' ' .$group['statement']. ' (' .$group['query']. ')';
 
 	    $this -> SQL = ltrim($this -> SQL, 'AND OR');
-
 		return array($this->SQL, $this->vals);
 	}
 }
