@@ -306,9 +306,7 @@ class pantheraTemplate extends pantheraClass
     public function addMetaTag($meta, $content, $isProperty=False)
     {
         if ($isProperty)
-        {
             $meta .= '::property';
-        }
 
         $this->attributes['metas'][$meta] = $content;
         return True;
