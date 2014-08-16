@@ -89,6 +89,33 @@ class facebookWrapper
     {
        $this -> panthera -> session -> set('facebookToken', $this->sdk->getAccessToken());
     }
+    
+    /**
+     * Get sharer popup link
+     * 
+     * @static
+     * @param string $address URL address
+     * @param string $title Title
+     * @param string $summary Summary
+     * @param string $image Image url
+     * @return string URL address
+     */
+    
+    public static function getSharerLink($address, $title='', $summary='', $image='')
+    {
+        $url = 'https://www.facebook.com/sharer/sharer.php?s=100&p[url]=' .$address;
+        
+        if ($title)
+            $url .= '&p[title]=' .$title;
+        
+        if ($summary)
+            $url .= '&p[summary]=' .$summary;
+        
+        if ($image)
+            $url .= '&p[images][0]=' .$image;
+        
+        return $url;
+    }
 
     /**
       * Return serialized Facebook object
