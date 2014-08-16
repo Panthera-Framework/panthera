@@ -273,4 +273,16 @@ class Tools
 
         return $string;
     }
+    
+    /**
+     * Get full request URL
+     * 
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return string
+     */
+    
+    public static function getRequestURL()
+    {
+        return "http://".strip_tags(addslashes($_SERVER['HTTP_HOST'])).$_SERVER['REQUEST_URI'];
+    }
 }
