@@ -937,6 +937,7 @@ class pantheraCore
     protected static $instance = null;
 
     public $config;
+    public $debugger = null;
     public $db;
     public $user;
     public $template;
