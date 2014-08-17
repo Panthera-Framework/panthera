@@ -1056,6 +1056,16 @@ class whereClause
 	protected $vals = array();
 	protected $groups = array();
     
+    protected $operators = array(
+        '=',
+        '!=',
+        '<',
+        '>',
+        '<=',
+        '>=',
+        'LIKE',
+    );
+    
 	/**
 	  * Add statement before group of instructions
 	  *
@@ -1090,7 +1100,7 @@ class whereClause
 	 * @author Damian Kęska
 	 */
 
-	public function add ($Statement, $Column, $Equals, $Value, $group = 1)
+	public function add ($Statement, $Column, $equals, $Value, $group = 1)
 	{
 	    if (!isset($this->groups[$group]))
 	        $this->groups[$group] = array(
@@ -1099,21 +1109,12 @@ class whereClause
             );
 
         $this->Values = array();
-		$Equals_list = array (
-		    '=',
-		    '!=',
-		    '<',
-		    '>',
-		    '<=',
-		    '>=',
-		    'LIKE',
-        );
-
-		if (!in_array($Equals, $Equals_list))
+        
+		if (!in_array($equals, $this -> operators))
 			return false;
 
-		if ($Equals == 'LIKE')
-			$Equals = ' LIKE '; // to be valid with syntax
+		if ($equals == 'LIKE')
+			$equals = ' LIKE '; // to be valid with syntax
 
 		$Statement_list = array (
 		    'OR',
@@ -1129,6 +1130,10 @@ class whereClause
 			$Statement = '';
 
 		$columnTmp = $Column;
+        
+        // raw SQL functions support
+        if (strpos($columnTmp, '(') !== false)
+            $columnTmp = generateRandomString(9);
 
 		while (isset($this->vals[$columnTmp]))
 		    $columnTmp = $Column.rand(0,9999);
@@ -1139,7 +1144,7 @@ class whereClause
             $mark = ':' .$columnTmp;
             $this -> vals[(string)$columnTmp] = $Value;
         }
-		$this->groups[$group]['query'] .= $Statement. ' `' .$Column. '` ' .$Equals. ' ' .$mark. ' ';
+		$this->groups[$group]['query'] .= $Statement. ' ' .$Column. ' ' .$equals. ' ' .$mark. ' ';
         
 		return $this;
 	}
