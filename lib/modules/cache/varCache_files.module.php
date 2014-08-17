@@ -37,25 +37,13 @@ class varCache_files extends pantheraClass
         $this -> indexInterval = $panthera -> config -> getKey('varcache_files.index');
 
         if (substr($this -> cacheDir, 0, 1) !== '/')
-        {
             $this -> cacheDir = SITE_DIR. '/content/' .$this -> cacheDir;
-        }
 
-        if (!is_dir($this -> cacheDir))
-        {
-            if (!mkdir($this->cacheDir))
-            {
-                throw new Exception('Cannot create cache directory in "' .$this -> cacheDir. '"', 31381);
-            }
-        }
+        if (!is_dir($this -> cacheDir) && !mkdir($this->cacheDir))
+            throw new Exception('Cannot create cache directory in "' .$this -> cacheDir. '"', 31381);
 
-        if (!is_writable($this->cacheDir))
-        {
-            if (!chmod($this->cacheDir, 0755))
-            {
-                throw new Exception('Cache directory "' .$this->cacheDir. '" is not writable!', 31382);
-            }
-        }
+        if (!is_writable($this->cacheDir) && !chmod($this->cacheDir, 0755))
+            throw new Exception('Cache directory "' .$this->cacheDir. '" is not writable!', 31382);
 
         // cleanup indexed files
         if ($this->indexEnabled)
@@ -89,9 +77,7 @@ class varCache_files extends pantheraClass
                         continue;
 
                     if (filemtime($file) < intval($exp[1]))
-                    {
                         unlink($file);
-                    }
                 }
             }
         }
@@ -110,9 +96,7 @@ class varCache_files extends pantheraClass
         $cacheDir = $this->cacheDir. '/' .substr($cacheName, 0, 3);
 
         if (!is_file($cacheDir. '/' .$cacheName. '.phps'))
-        {
             return null;
-        }
 
         if (!isset($this -> memory[$cacheName]))
             $unpacked = unserialize(file_get_contents($cacheDir. '/' .$cacheName. '.phps'));
@@ -145,9 +129,7 @@ class varCache_files extends pantheraClass
         $cacheDir = $this->cacheDir. '/' .substr($cacheName, 0, 3);
 
         if (!is_file($cacheDir. '/' .$cacheName. '.phps'))
-        {
             return FALSE;
-        }
 
         return TRUE;
     }
@@ -169,18 +151,14 @@ class varCache_files extends pantheraClass
         $cacheDir = $this->cacheDir. '/' .substr($cacheName, 0, 3);
 
         if (!is_dir($cacheDir))
-        {
             mkdir($cacheDir);
-        }
 
         if ($expiration > 0)
-        {
             $expiration = time()+$expiration;
-        }
 
         $array = array(
-                'expiration' => $expiration,
-                'data' => $value,
+            'expiration' => $expiration,
+            'data' => $value,
         );
 
         $this -> memory[$cacheName] = $array;
