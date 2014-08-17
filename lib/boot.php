@@ -190,9 +190,6 @@ if ($t[0] == "/")
 
 define('PANTHERA_FRONTCONTROLLER', '/' .$t); // detect front controller
 
-if ($panthera -> logging -> debug)
-    error_reporting(E_ALL);
-
 /*
  * Error handler and CLI functions
  */
@@ -292,6 +289,25 @@ if (!defined('SKIP_USER') and !defined('SKIP_SESSION'))
             if (!defined('SKIP_TEMPLATE'))
                 $panthera -> template -> push('activeUser', $user);
         }
+    }
+}
+
+if ($panthera -> logging -> debug)
+{
+    error_reporting(E_ALL);
+    
+    $debugFile = getContentDir('share/pantheraDebugger/lib/Debug.php');
+    
+    if (is_file($debugFile))
+    {
+        include_once $debugFile;
+        
+        define('DEBUG_ENABLE_LOGGING', True);
+        define('DEBUG_ENABLE_OVERLAY', True);
+        
+        $panthera -> debugger = new pantheraDebugger;
+        $panthera -> debugger -> loadPlugin('pantheraFrameworkDebugger');
+        $panthera -> debugger -> displayOverlay();
     }
 }
 
