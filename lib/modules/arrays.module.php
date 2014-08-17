@@ -283,4 +283,47 @@ class arrays
     
         return $arr;
     }
+    
+    /**
+     * Get value of an array by using "root/branch/leaf" notation
+     *
+     * @param array $array   Array to traverse
+     * @param string $path   Path to a specific option to extract
+     * @param mixed $default Value to use if the path was not found
+     * @return mixed
+     */
+     
+    public static function arrayXpathWalk(array $array, $path, $default = null)
+    {
+        // specify the delimiter
+        $delimiter = '/';
+    
+        // fail if the path is empty
+        if (empty($path)) 
+            throw new Exception('Path cannot be empty');
+    
+        // remove all leading and trailing slashes
+        $path = trim($path, $delimiter);
+    
+        // use current array as the initial value
+        $value = $array;
+    
+        // extract parts of the path
+        $parts = explode($delimiter, $path);
+    
+        // loop through each part and extract its value
+        foreach ($parts as $part) 
+        {
+            if (isset($value[$part]))
+            {
+                // replace current value with the child
+                $value = $value[$part];
+            } else {
+                // key doesn't exist, fail
+                return $default;
+            }
+        }
+    
+        return $value;
+    }
 }
