@@ -209,7 +209,7 @@ class commentsAjaxControllerCore extends pageController
         if ($_GET['direction'] == 'DESC' or $_GET['direction'] == 'ASC')
             $direction = $_GET['direction'];
 
-        $total = userComment::fetchComments($w, False, False, $order, $direction, True);
+        $total = userComment::fetchComments('', $w, False, False, $order, $direction, True);
 
         // Pager stuff
         $uiPager = new uiPager('comments', $total, 'comments', 50);
@@ -217,7 +217,7 @@ class commentsAjaxControllerCore extends pageController
         $uiPager -> setLinkTemplatesFromConfig('messages.tpl');
         $limit = $uiPager -> getPageLimit();
 
-        $comments = userComment::fetchComments($w, $limit[1], $limit[0], $order, $direction);
+        $comments = userComment::fetchComments('', $w, $limit[1], $limit[0], $order, $direction);
 
         $this -> panthera -> template -> push('commentsList', $comments);
 

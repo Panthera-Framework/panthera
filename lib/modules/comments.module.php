@@ -47,7 +47,9 @@ class userComment extends pantheraFetchDB
         if (!isset($args[1]) || !is_object($args[1]))
             $args[1] = new whereClause;
         
-        $args[1] -> add('AND', 'group', '=', $args[0]); 
+        // empty string as first argument will tell us that we want to explore comments from all modules
+        if ($args[0])
+	    $args[1] -> add('AND', 'group', '=', $args[0]);
         
         // remove first additional argument
         array_shift($args);
