@@ -545,7 +545,27 @@ abstract class pageController extends pantheraClass {
     
     public static function runFrontController($file, $className)
     {
-        if (!is_link($file) and (strpos($file, PANTHERA_DIR) !== FALSE or !in_array($file, get_included_files())))
+        $routingMatches = panthera::getInstance() -> routing -> lastMatched;
+        $scriptName = $_SERVER['SCRIPT_NAME'];
+        
+        if ($routingMatches && isset($routingMatches['target']['front']))
+            $scriptName = '/' .$routingMatches['target']['front'];
+        
+        $run = false;
+        
+        // decide to run the controller or not
+        if (is_link($_SERVER['DOCUMENT_ROOT'].$scriptName))
+            $run = true;
+        else {
+            // if cannot detect if it's a symlink or not try with reflection
+            $root = $_SERVER['DOCUMENT_ROOT'].str_replace('/route.php', '', $_SERVER['PHP_SELF']);
+            $reflection = new ReflectionClass($className);
+            
+            if (realpath($root.$scriptName) == $reflection -> getFileName())
+                $run = true;
+        }
+
+        if ($run)
         {
             $object = new $className();
             $object -> display();
