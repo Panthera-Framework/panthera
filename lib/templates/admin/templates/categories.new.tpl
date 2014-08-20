@@ -42,6 +42,21 @@ $_SERVER['print'] = False;
 	   			<th><span style="color: red;"><b>*</b></span> {function="localize('Public', 'categories')"}:</th>
 	   			<td><input type="radio" name="object___public" value="1"> {function="localize('Yes')"} <input type="radio" name="object___public" value="0" checked> {function="localize('No')"}</td>
 	   		</tr>
+	   		
+	   		<tr>
+	   			<th>{function="localize('Optional field', 'categories')"} #1:</th>
+	   			<td><input type="text" name="object_optionalfield_1"></td>
+	   		</tr>
+	   		
+	   		<tr>
+	   			<th>{function="localize('Optional field', 'categories')"} #2:</th>
+	   			<td><input type="text" name="object_optionalfield_2"></td>
+	   		</tr>
+	   		
+	   		<tr>
+	   			<th>{function="localize('Optional field', 'categories')"} #3:</th>
+	   			<td><input type="text" name="object_optionalfield_3"></td>
+	   		</tr>
 	   			
 	   		<tr>
 	   			<th>{function="localize('Parent category', 'categories')"}:</th>

@@ -64,6 +64,21 @@ include getContentDir('templates/admin/helpers/categories.php');
 	   			</tr>
 	   			
 	   			<tr>
+		   			<td>{function="localize('Optional field', 'categories')"} #1:</td>
+		   			<td><input type="text" name="object_optionalfield_1" value="{$object->optionalfield_1}"></td>
+		   		</tr>
+		   		
+		   		<tr>
+		   			<td>{function="localize('Optional field', 'categories')"} #2:</td>
+		   			<td><input type="text" name="object_optionalfield_2" value="{$object->optionalfield_2}"></td>
+		   		</tr>
+		   		
+		   		<tr>
+		   			<td>{function="localize('Optional field', 'categories')"} #3:</td>
+		   			<td><input type="text" name="object_optionalfield_3" value="{$object->optionalfield_3}"></td>
+		   		</tr>
+	   			
+	   			<tr>
 	   				<td>{function="localize('Parent category', 'categories')"}:</td>
 	   				<td>
 	   					<select name="object_parentid">
