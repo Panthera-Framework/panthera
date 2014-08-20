@@ -455,13 +455,6 @@ class settingsAjaxControllerSystem extends pageController
             'linkType' => 'ajax'
         );
 
-        $defaults['content']['custompages'] = array(
-            'link' => '?display=settings.custompages&cat=admin',
-            'name' => localize('Static pages configuration', 'settings'),
-            'icon' => '{$PANTHERA_URL}/images/admin/menu/custom-pages.png',
-            'linkType' => 'ajax'
-        );
-
         $defaults['content']['comments'] = array(
             'link' => '?display=comments&cat=admin',
             'name' => localize('Comments management', 'settings'),
