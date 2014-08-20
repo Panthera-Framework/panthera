@@ -158,7 +158,7 @@ class pantheraDB extends pantheraClass
         if (is_file($debugTemplate))
         {
             global $panthera;
-            include($debugTemplate);
+            require_once $debugTemplate;
             exit;
         }
 

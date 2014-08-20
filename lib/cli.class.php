@@ -10,7 +10,7 @@
 if (!defined('IN_PANTHERA'))
     exit;
 
-include getContentDir('share/CommandLine.php');
+require_once getContentDir('share/CommandLine.php');
 
 /**
  * Commandline tools for Panthera Framework

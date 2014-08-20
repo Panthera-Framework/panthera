@@ -112,7 +112,7 @@ function pantheraExceptionHandler($exception)
 
         if ($exceptionPage)
         {
-            include_once $exceptionPage;
+            require_once $exceptionPage;
         }
 
         $panthera->logging->saveLog();
@@ -123,7 +123,7 @@ function pantheraExceptionHandler($exception)
 
         if ($exceptionPage)
         {
-            include_once $exceptionPage;
+            require_once $exceptionPage;
         }
 
         exit;
@@ -231,14 +231,14 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
             $errorPage = getContentDir('templates/error_debug.php');
 
             if ($errorPage)
-                include_once $errorPage;
+                require_once $errorPage;
 
             exit;
         } else {
             $errorPage = getContentDir('templates/error.php');
 
             if ($errorPage)
-                include_once $errorPage;
+                require_once $errorPage;
 
             exit;
         }
@@ -1041,7 +1041,7 @@ class pantheraCore
         /** END OF CACHE SYSTEM **/
 
         $c = _PANTHERA_CORE_ROUTER_;
-        include_once PANTHERA_DIR. '/router.class.php';
+        require_once PANTHERA_DIR. '/router.class.php';
         $this -> routing = new $c;
         $this -> routing -> setBasePath(rtrim(parse_url($this -> config -> getKey('url'), PHP_URL_PATH), '/'). '/');
 
@@ -1225,7 +1225,7 @@ class pantheraCore
     {
         // primary cache (variables cache)
         if ($dir = getContentDir('modules/cache/varCache_' .$varCacheType. '.module.php'))
-            include_once $dir;
+            require_once $dir;
 
         if (class_exists('varCache_' .$varCacheType))
         {
@@ -1249,7 +1249,7 @@ class pantheraCore
                 $dir = null;
 
                 if ($dir = getContentDir('modules/cache/varCache_' .$cacheType. '.module.php'))
-                    include_once $dir;
+                    require_once $dir;
 
                 // load secondary cache
                 if (class_exists('varCache_' .$cacheType))
@@ -1290,7 +1290,7 @@ class pantheraCore
         // load built-in phpQuery library
         if ($module == 'phpquery')
         {
-            include_once PANTHERA_DIR. '/share/phpQuery.php';
+            require_once PANTHERA_DIR. '/share/phpQuery.php';
             $this->logging->output('Imported "phpquery" from /lib/modules', 'pantheraCore');
             $this->modules[$module] = True;
             return True;
@@ -1306,7 +1306,7 @@ class pantheraCore
 
         if ($f)
         {
-            include_once $f;
+            require_once $f;
 
             $this->logging->output('Imported "' .$module. '" from /lib/modules', 'pantheraCore');
             $this->modules[$module] = True;
@@ -2060,7 +2060,7 @@ function __pantheraAutoloader($class)
                     $f = pantheraUrl(substr($exp[2], 5, strlen($exp[2])), false, 'system');
 
                 if ($f and is_file($f))
-                    include_once $f;
+                    require_once $f;
 
                 class_alias($exp[1], $class);
                 $panthera -> logging -> output('Created alias "' .$exp[1]. '" for "' .$class. '"', 'pantheraCore');

@@ -64,7 +64,7 @@ class routing {
         if (!$data and is_file(SITE_DIR. '/content/tmp/routing.cache.php'))
         {
             $this -> panthera -> logging -> output('Trying /content/tmp/routing.cache.php', 'routing');
-            include SITE_DIR. '/content/tmp/routing.cache.php';
+            require_once SITE_DIR. '/content/tmp/routing.cache.php';
         }
 
         if (!$data)
@@ -279,9 +279,7 @@ class routing {
     {
         // Check if route exists
         if(!isset($this->routes[$routeName]))
-        {
             throw new Exception("Route '{$routeName}' does not exist.");
-        }
 
         // get parameters
         $route = $this->routes[$routeName][1];

@@ -449,7 +449,7 @@ abstract class pageController extends pantheraClass {
         if (!$file)
             return False;
 
-        include_once $file;
+        require_once $file;
 
         $name = static::getControllerName($name);
 

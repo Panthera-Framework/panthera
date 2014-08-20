@@ -39,7 +39,7 @@ class cacheAjaxControllerSystem extends pageController {
 		$varcache = $_POST['varcache'];
 
 		if ($dir = getContentDir('modules/cache/varCache_' . $cache . '.module.php'))
-			include_once $dir;
+			require_once $dir;
 
 		// check if selected cache is avaliable
 		if (!class_exists('varCache_' . $cache))

@@ -7,7 +7,7 @@
  * @license LGPLv3
  */
 
-ini_set('memory_limit', '128M');
+ini_set('memory_limit', '256M');
 
 // in CLI we have specific environment eg. ctrl+c catching
 if (php_sapi_name() == 'cli') {
@@ -57,7 +57,7 @@ if (class_exists('Phar') and Phar::running())
     if (!isset($config))
     {
         if (is_file($siteDir. '/content/app.php'))
-            include_once $siteDir. '/content/app.php';
+            require_once $siteDir. '/content/app.php';
         else {
             if (!is_dir($siteDir. '/content'))
             {
@@ -130,21 +130,21 @@ define('IN_PANTHERA', True);
  */
 
 // include core functions
-include_once PANTHERA_DIR. '/panthera.php';
-include_once PANTHERA_DIR. '/database.class.php';
+require_once PANTHERA_DIR. '/panthera.php';
+require_once PANTHERA_DIR. '/database.class.php';
 
 // panthera.min mode support - BE CAREFUL WHEN USING THIS MODE!
 if (!defined('SKIP_TEMPLATE'))
-    include_once PANTHERA_DIR. '/templates.class.php';
+    require_once PANTHERA_DIR. '/templates.class.php';
 
 if (!defined('SKIP_USER'))
-    include_once PANTHERA_DIR. '/user.class.php';
+    require_once PANTHERA_DIR. '/user.class.php';
 
 if (!defined('SKIP_LOCALE'))
-    include_once PANTHERA_DIR. '/locale.class.php';
+    require_once PANTHERA_DIR. '/locale.class.php';
 
 if (!defined('SKIP_SESSION'))
-    include_once PANTHERA_DIR. '/session.class.php';
+    require_once PANTHERA_DIR. '/session.class.php';
 
 if (!defined('_PANTHERA_CORE_'))
     define('_PANTHERA_CORE_', 'pantheraCore');
@@ -299,16 +299,7 @@ if ($panthera -> logging -> debug)
     $debugFile = getContentDir('share/pantheraDebugger/lib/Debug.php');
     
     if (is_file($debugFile))
-    {
-        include_once $debugFile;
-        
-        define('DEBUG_ENABLE_LOGGING', True);
-        define('DEBUG_ENABLE_OVERLAY', True);
-        
-        $panthera -> debugger = new pantheraDebugger;
-        $panthera -> debugger -> loadPlugin('pantheraFrameworkDebugger');
-        $panthera -> debugger -> displayOverlay();
-    }
+        pantheraFrameworkDebugger::configure();
 }
 
 // getting locale from current session
