@@ -1134,6 +1134,8 @@ class whereClause
         // raw SQL functions support
         if (strpos($columnTmp, '(') !== false)
             $columnTmp = generateRandomString(9);
+        else
+            $column = '`' .$column. '`';
 
 		while (isset($this->vals[$columnTmp]))
 		    $columnTmp = $Column.rand(0,9999);
