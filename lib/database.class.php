@@ -1135,17 +1135,18 @@ class whereClause
         if (strpos($columnTmp, '(') !== false)
             $columnTmp = generateRandomString(9);
         else
-            $column = '`' .$column. '`';
-
+            $Column = '`' .$Column. '`';
+        
 		while (isset($this->vals[$columnTmp]))
 		    $columnTmp = $Column.rand(0,9999);
         
         if ($Value === DB_TIME_NOW)
-            $mark = 'NOW()';   
+            $mark = 'NOW()';
         else {
             $mark = ':' .$columnTmp;
             $this -> vals[(string)$columnTmp] = $Value;
         }
+        
 		$this->groups[$group]['query'] .= $Statement. ' ' .$Column. ' ' .$equals. ' ' .$mark. ' ';
         
 		return $this;
