@@ -285,4 +285,27 @@ class Tools
     {
         return "http://".strip_tags(addslashes($_SERVER['HTTP_HOST'])).$_SERVER['REQUEST_URI'];
     }
+    
+    /**
+     * Parse array using a callback function
+     * 
+     * @param array $array Input array to parse values
+     * @param string|callable $parser Parser function, defaults to intval
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return array
+     */
+    
+    public static function parseArray($array, $parser='intval')
+    {
+        if (!is_callable($parser) or !function_exists($parser))
+            return $array;
+        
+        if ($array)
+        {
+            foreach ($array as $key => &$value)
+                $value = $parser($value);
+        }
+        
+        return $array;
+    }
 }
