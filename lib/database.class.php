@@ -1190,13 +1190,22 @@ class whereClause
 
 	public function show()
 	{
-	    $this->SQL = '';
+	    $this -> SQL = '';
 
-	    foreach ($this->groups as $group)
-	        $this->SQL .= ' ' .$group['statement']. ' (' .$group['query']. ')';
-
+        if ($this -> groups)
+        {
+    	    foreach ($this -> groups as $group)
+            {
+                if (!$group['statement'] or !$group['query'])
+                    continue;
+                
+    	        $this->SQL .= ' ' .$group['statement']. ' (' .$group['query']. ')';
+            }
+        }
+        
 	    $this -> SQL = ltrim($this -> SQL, 'AND OR');
-		return array($this->SQL, $this->vals);
+        
+		return array($this -> SQL, $this -> vals);
 	}
 }
 
