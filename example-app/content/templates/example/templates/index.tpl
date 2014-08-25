@@ -1,8 +1,9 @@
-<?php if(!class_exists('Rain\Tpl')){exit;}?><!DOCTYPE html>
+<!DOCTYPE html>
 <html>
     <head>
         <title>Example application</title>
         <meta charset="utf-8">
+        <script type="text/javascript" src="{$PANTHERA_URL}/js/panthera.js"></script>
         
         <style type="text/css">
             html * { padding:0; margin:0; }
@@ -29,7 +30,7 @@
         </div>
         <div id="info">
             <p>
-                This site is powered by Panthera Framework <?php echo $PANTHERA_VERSION; ?> which features:
+                This site is powered by Panthera Framework {$PANTHERA_VERSION} which features:
                 
                 <ol>
                     <li>Many libraries to make your job easier and faster</li>
@@ -37,10 +38,10 @@
                     <li>Ready to use Admin Panel</li>
                     <li>PDO database integrated with MySQL and SQLite3 support</li>
                     <li>Plugins, modules and packages with integrated package manager "Leopard" (works like in Unix/Linux operating systems)</li>
-                    <li>Uses fast and lightweight template engine - RainTPL</li>
+                    <li>Fast and lightweight template engine - RainTPL</li>
                     <li>Web and shell tools for debugging and monitoring your application</li>
                     <li>Panthera CLI lets you create shell tools integrated with your application</li>
-                    <li>Supports caching queries, templates and many other things</li>
+                    <li>Support for caching queries, templates and many other things</li>
                     <li>Built-in facebook wrapper, gallery module, custom static pages and many other modules</li>
                 </ol>
             </p>  

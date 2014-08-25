@@ -9,4 +9,3 @@
  */
  
 // do something on _phpsh.php startup
-$captcha = captcha::createInstance();
