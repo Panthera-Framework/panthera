@@ -1,6 +1,8 @@
-Client addr(192.168.1.102) => GET /example-app/
-Importing "filesystem" from /lib/modules
-Read id=tpl.cfg.example from cache
-pantheraLocale::setLocale(polski)
-Adding domain "messages" from /home/panthera/public_html/lib/locales/polski
-Displaying /home/panthera/public_html/example-app//content//templates/example/templates/index.tpl
+Client addr(::1) => GET //js/tiny_mce/themes/advanced/skins/thebigreason/img/icons.png
+[0.0089869, 1.2488365ms real] [685 KB] [pantheraLocale] setLocale(polski)
+[0.0090401, 0.0531673ms] [688.13 KB] [pantheraLocale] Adding domain "messages" from /srv/http/Zlecenia/studentportal/panthera/example-app/content/locales/polski
+[0.0096158, 0.5757808ms] [711.78 KB] [pantheraLocale] Read id=locale.polski.messages from cache
+[0.0101320, 0.5161762ms] [766.02 KB] [PHP] unknown in unknown on line unknown
+[0.0103209, 0.1080036ms real] [809.72 KB] [pantheraCore] Imported "filesystem" from /lib/modules
+[0.0103440, 0.0231266ms] [810.13 KB] [pantheraLogging] Generating output
+[0.0104899, 0.1518726ms] [811.41 KB]  [pantheraLogging] Done

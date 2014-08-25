@@ -2921,3 +2921,20 @@ abstract class suspendClass
         return true;
     }
 }
+
+if (!function_exists('cal_days_in_month'))
+{
+    /**
+     * Calculate days in month
+     * 
+     * @param $optional
+     * @param string|int $month
+     * @param string|int $year
+     * @return int
+     */
+    
+    function cal_days_in_month($optional, $month, $year) 
+    { 
+        return intval(date('t', mktime(0, 0, 0, $month+1, 0, $year))); 
+    }
+}
