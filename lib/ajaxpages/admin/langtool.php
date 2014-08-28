@@ -522,6 +522,7 @@ if (@$_GET['display'] == 'langtool')
         }
 
         $panthera -> template -> push ('flag', $icon);
+        $panthera -> template -> push('currentLanguage', $locale);
 
         // send data to template
         $template -> push('locale', $locale);
