@@ -298,7 +298,7 @@ if ($panthera -> logging -> debug)
     
     $debugFile = getContentDir('share/pantheraDebugger/lib/Debug.php');
     
-    if (is_file($debugFile))
+    if (is_file($debugFile) && class_exists('pantheraFrameworkDebugger'))
         pantheraFrameworkDebugger::configure();
 }
 
