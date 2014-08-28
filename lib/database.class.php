@@ -1130,15 +1130,19 @@ class whereClause
 			$Statement = '';
 
 		$columnTmp = $Column;
+        $i = 0;
+        
+        while (isset($this->vals[$columnTmp]))
+        {
+            $i++;
+            $columnTmp = $Column.$i;
+        }
         
         // raw SQL functions support
         if (strpos($columnTmp, '(') !== false)
             $columnTmp = generateRandomString(9);
         else
             $Column = '`' .$Column. '`';
-        
-		while (isset($this->vals[$columnTmp]))
-		    $columnTmp = $Column.rand(0,9999);
         
         if ($Value === DB_TIME_NOW)
             $mark = 'NOW()';
@@ -1147,7 +1151,7 @@ class whereClause
             $this -> vals[(string)$columnTmp] = $Value;
         }
         
-		$this->groups[$group]['query'] .= $Statement. ' ' .$Column. ' ' .$equals. ' ' .$mark. ' ';
+		$this -> groups[$group]['query'] .= $Statement. ' ' .$Column. ' ' .$equals. ' ' .$mark. ' ';
         
 		return $this;
 	}
