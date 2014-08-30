@@ -177,6 +177,7 @@ class search
     }
 }
 
-$search = new search;
+/*$search = new search;
 $search -> setModules(array('events', 'config', 'places'));
 var_dump($search -> query('', 3));
+*/
