@@ -1460,7 +1460,8 @@ class pantheraCore
             }
 
         } else { // and here is just a simple function
-            if(!function_exists($function))
+        
+            if(gettype($function) != 'object' && !function_exists($function))
             {
                 $this->logging->output("Hooked function ".$function." does not exists.", 'pantheraCore');
                 return False;
@@ -1542,7 +1543,7 @@ class pantheraCore
                     $hook[0]::$hook[1]($args, $additionalInfo);
 
             } else {
-                if (!function_exists($hook))
+                if (!function_exists($hook) && !is_callable($hook))
                     continue;
 
                 $hook($args, $additionalInfo);
@@ -1644,7 +1645,7 @@ class pantheraCore
                 }
 
             } else {
-                if (!function_exists($hook))
+                if (!function_exists($hook) && !is_callable($hook))
                     continue;
 
                 $output[$hook] = $hook($args, $additionalInfo);
