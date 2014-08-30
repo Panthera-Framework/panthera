@@ -1,5 +1,5 @@
 <?php
-class configSearchengine
+class configSearchengine extends pantheraClass
 {
     /**
      * Query database
