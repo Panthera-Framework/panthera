@@ -165,6 +165,11 @@ class uploadedFile extends pantheraFetchDB
 
     public function getLink()
     {
+        if (!$this->__get('location'))
+        {
+            return '';
+        }
+        
         if (intval($this -> protected))
         {
             // install seo url if there is no any for downloads
