@@ -9,7 +9,7 @@
 
 require_once 'content/app.php';
 
-if (!checkUserPermissions($panthera->user, True) and !getUserRightAttribute($panthera->user, 'can_access_pa'))
+if (!checkUserPermissions($panthera->user, True) and !getUserRightAttribute($panthera->user, 'admin.accesspanel'))
     pa_redirect('pa-login.php');
 
 $panthera -> template -> setTemplate('admin');

@@ -68,7 +68,7 @@ function addOtherString(j, locale, domain, id)
 <div id="topContent" style="min-height: 50px;">
     <div class="searchBarButtonArea">
         <div style="float: left; display: inline-block; margin-left: 10px;">
-            <input type="button" value="{function="slocalize('Back to %s', 'messages', $language)"}" onclick="navigateTo('?display=langtool&cat=admin&action=domains&locale={$language}')">
+            <input type="button" value="{function="slocalize('Back to %s', 'messages', $language)"}" onclick="navigateTo('?display=langtool&cat=admin&action=domains&locale={$currentLanguage}')">
         </div>
     
         <input type="button" value="{function="localize('Add new translation', 'langtool')"}" onclick="panthera.popup.toggle('element:#addNewStringPopup')">
