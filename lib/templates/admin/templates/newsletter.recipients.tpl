@@ -8,6 +8,19 @@
 <div style="text-align: center;">
 	<form action="?{function="Tools::getQueryString('GET', 'action=saveRecipients', '_')"}" method="POST" id="newsletterRecipients">
 		<div style="margin: 0 auto; display: inline-block; text-align: center; min-width: 50%;">
+			<table style="margin: 0 auto; min-width: 100%; margin-bottom: 35px;">
+				<thead>
+					<tr>
+			    		<th colspan="3"><h2><b>{function="localize('Match rules', 'newsletter')"}</b></h2></th>
+			    	</tr>
+			   	</thead>
+			   	
+			   	<tbody class="bgTable">
+			    	<tr><td class="checkboxColumn"><input type="radio" name="matchRules" id="matchRules" value="matchAll"> {function="localize('User have to meet all conditions to get selected', 'newsletter')"}</tr>
+			    	<tr><td class="checkboxColumn"><input type="radio" name="matchRules" id="matchRules" value="matchSingle" checked> {function="localize('User have to meet at least one condition to get selected', 'newsletter')"}</td></tr>
+			    </tbody>
+			</table>
+		
 			<table style="margin: 0 auto; min-width: 100%;">
 			    <thead>
 				    <tr>
@@ -93,13 +106,37 @@
 		
 			for(section in json)
 			{
-				console.log('Entering section '+section);
+				panthera.logging.output('Entering section '+section);
 				eval('items = json.'+section);
-			
-				for (item in items)
+				
+				if (typeof(items) == "string")
 				{
-					console.log('Adding item '+items[item]);
-					$('input[name="'+section+'[]"][value="'+items[item]+'"]').attr('checked', true);
+					if ($('input[name="'+section+'"]').attr('type') == 'radio')
+					{
+						// disable all radio buttons
+						$('input[name="'+section+'"]').attr('checked', false);
+						
+						var items;
+					
+						// enable only one with selected value
+						$('input[name="'+section+'"]').each(function(i, radio) { 
+							if ($(radio).val() == items)
+							{
+								panthera.logging.output('Found radio item "'+section+'"');
+								$(radio).attr('checked', true);
+							}
+						});
+						
+					} else {
+						$('input[name="'+section+'"]').val(items);
+					}
+
+				} else {
+					for (item in items)
+					{
+						panthera.logging.output('Adding item '+items[item]);
+						$('input[name="'+section+'[]"][value="'+items[item]+'"]').attr('checked', true);
+					}
 				}
 			}
 	}

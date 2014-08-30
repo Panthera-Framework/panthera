@@ -716,14 +716,44 @@ class newsletter extends pantheraFetchDB
             $users = array();
             $userFilter = new whereClause;
             
+            /**
+             * Match rules
+             */
+            
+            // matchSingle is by default
+            $logicOperator = 'OR';
+            
+            // matchAll can be selected
+            if (isset($options['recipientsData']['matchRules']) and $options['recipientsData']['matchRules'] == 'matchAll');
+                $logicOperator = 'AND';
+            
+            // ==== End of match rules
+            
+            /**
+             * Gender
+             */
+            
             if (isset($options['recipientsData']['gender']) and $options['recipientsData']['gender'])
                 foreach ($options['recipientsData']['gender'] as $gender)
                     $userFilter -> add('OR', 'gender', '=', $gender);
+            
+            // ==== End of gender
+            
+            /**
+             * City
+             */
             
             if (isset($options['recipientsData']['city']) and $options['recipientsData']['city'])
                 foreach ($options['recipientsData']['city'] as $city)
                     $userFilter -> add('OR', 'city', '=', $city);
             
+            
+            // ==== End of city
+
+            /**
+             * Groups
+             */
+                        
             /*if (isset($options['recipientsData']['group']) and $options['recipientsData']['group'])
                 foreach ($options['recipientsData']['group'] as $group)
                     $userFilter -> add('OR', 'primary_group', '=', $group);*/
@@ -733,9 +763,11 @@ class newsletter extends pantheraFetchDB
                 foreach ($options['recipientsData']['group'] as $group)
                 {
                     $g = new pantheraGroup('group_id', $group);
-                    $users = array_merge($users, $g -> getUsers());
+                    $users = array_merge($users, $g -> findUsers());
                 }
             }
+            
+            // ==== End of groups
             
             /**
              * Premium accounts support
@@ -764,6 +796,16 @@ class newsletter extends pantheraFetchDB
                     continue;
                 
                 $data['customUsersList'][$user->id] = $user -> mail;
+            }
+
+            if (!$data['customUsersList'])
+            {
+                $this -> panthera -> logging -> output('No any users found matching selected rules', 'newsletter');
+                
+                if ($exceptions)
+                    throw new Exception('No any users found matching selected rules', 535);
+                    
+                return false;
             }
         }
 
