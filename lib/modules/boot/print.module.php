@@ -43,7 +43,7 @@ class printingModule
     {
         global $panthera;
 
-        $panthera -> remove_option('template.display', array('printingModule', 'printPlain'));
+        $panthera -> removeOption('template.display', array('printingModule', 'printPlain'));
 
         if (libtemplate::exists($panthera -> template -> name, 'printable/' .$name))
         {
@@ -70,7 +70,7 @@ class printingModule
         global $panthera;
 
         // remove self hook
-        $panthera -> remove_option('template.display', array('printingModule', 'printPDF'));
+        $panthera -> removeOption('template.display', array('printingModule', 'printPDF'));
 
         if (libtemplate::exists($panthera -> template -> name, 'printable-pdf/' .$name))
         {

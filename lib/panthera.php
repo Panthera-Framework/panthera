@@ -1599,13 +1599,28 @@ class pantheraCore
      * @return bool
      */
 
-    public function remove_option($hookName, $function)
+    public function removeOption($hookName, $function)
     {
         if (!$this->hooks[$hookName])
         {
             return False;
         }
-
+        
+        if (is_object($function))
+        {
+            $hash = spl_object_hash($function);
+            
+            foreach ($this -> hooks[$hookName] as $key => $hookedFunction)
+            {
+                if (is_object($hookedFunction) && spl_object_hash($hookedFunction))
+                {
+                    unset($this->hooks[$hookName][$key]);
+                    return true;
+                }
+            }
+        }
+        
+        
         if ($key = array_search($function, $this->hooks[$hookName]))
         {
             unset($this->hooks[$hookName][$key]);
