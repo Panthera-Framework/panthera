@@ -41,7 +41,7 @@ class meta
      * @return array
      */
 
-    public static function getTags($tag=Null, $type=Null, $value=Null, $user=Null, $detailed=False)
+    public static function getTags($tag=Null, $type=Null, $value=Null, $user=Null, $detailed=False, $table='metas')
     {
         $panthera = pantheraCore::getInstance();
 
@@ -65,7 +65,7 @@ class meta
         if ($wc[0])
             $where = 'WHERE ' .$wc[0];
         
-        $SQL = $panthera -> db -> query ('SELECT * FROM `{$db_prefix}metas` ' .$where. ' ORDER BY `name` ASC LIMIT 0, 1000;', $wc[1]);
+        $SQL = $panthera -> db -> query ('SELECT * FROM `{$db_prefix}' .$table. '` ' .$where. ' ORDER BY `name` ASC LIMIT 0, 1000;', $wc[1]);
 
         if ($SQL -> rowCount() > 0)
         {
