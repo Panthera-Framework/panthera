@@ -178,11 +178,10 @@ abstract class validableForm
             $this -> panthera -> template -> display($this->formTemplateDisabled); // template for disabled form
             pa_exit();
         }
-
+        
         $this -> panthera -> logging -> output('Displaying form, name=' .$this->formName, 'form');
         $this -> panthera -> template -> push('disabledFields', $this->disabledFields);
         $this -> panthera -> template -> push('registrationFields', $this->source);
-        $this -> panthera -> template -> display($this->formTemplateEnabled);
-        pa_exit();
+        return $this -> panthera -> template -> compile($this->formTemplateEnabled);
     }
 }
