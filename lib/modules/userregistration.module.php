@@ -12,8 +12,8 @@ class userRegistration extends validableForm
     public $disabledFields = array(); // eg. array('login')
     public $fieldsSettings = array(
         'login' => array('lengthFrom' => 5, 'lengthTo' => 16),
-        'mail' => array('lengthFrom' => 5, 'lengthTo' => 48),
-        'passwd' => array('lengthFrom' => 5, 'lengthTo' => 64),
+        'mail' => array('lengthFrom' => 5, 'lengthTo' => 48, 'repeat' => true),
+        'passwd' => array('lengthFrom' => 5, 'lengthTo' => 64, 'generate' => false),
         'fullname' => array('lengthFrom' => 2, 'lengthTo' => 64, 'optional' => True)
     );
 
@@ -56,7 +56,7 @@ class userRegistration extends validableForm
         {
             return False;
         }
-
+        
         // ===== support for "login" field
         if (!$this->disabledFields['login'])
         {
@@ -152,7 +152,7 @@ class userRegistration extends validableForm
                 );
             }
 
-            if ($this->source['mail'] != $this->source['mail_repeat'])
+            if ($this->fieldSettings['mail']['repeat'] && $this->source['mail'] != $this->source['mail_repeat'])
             {
                 return array(
                     'message' => localize('Entered e-mail address does not match confirmation e-mail adddress', 'register'),
@@ -178,35 +178,41 @@ class userRegistration extends validableForm
         // ===== passwords
         if (!$this->disabledFields['passwd'])
         {
-            $this->source['passwd'] = trim($this->source['passwd']);
-
-            if (!$this->source['passwd'])
+            if ($this -> fieldsSettings['passwd']['generate'])
             {
-                return array(
-                    'message' => localize('Please fill password field', 'register'), // Mark: localize
-                    'code' => 'PASSWD_FILL',
-                    'field' => 'passwd'
-                );
-            }
-
-            if (strlen($this->source['passwd']) > $this->fieldsSettings['passwd']['lengthTo'] or strlen($this->source['passwd']) <= $this->fieldsSettings['passwd']['lengthFrom'])
-            {
-                return array(
-                    'message' => localize('Invalid password length', 'register'), // Mark: localize
-                    'settings' => $this->fieldsSettings['passwd'],
-                    'code' => 'PASSWD_LENGTH',
-                    'field' => 'passwd'
-                );
-            }
-
-            if ($this->source['passwd'] != $this->source['passwd_repeat'])
-            {
-                return array(
-                    'message' => localize('Passwords do not match', 'register'), // Mark: localize
-                    'settings' => $this->fieldsSettings['passwd'],
-                    'code' => 'PASSWD_MATCH_FIELDS',
-                    'field' => 'passwd_repeat'
-                );
+                $this->source['passwd'] = generateRandomString(9);
+                
+            } else {
+                $this->source['passwd'] = trim($this->source['passwd']);
+    
+                if (!$this->source['passwd'])
+                {
+                    return array(
+                        'message' => localize('Please fill password field', 'register'), // Mark: localize
+                        'code' => 'PASSWD_FILL',
+                        'field' => 'passwd'
+                    );
+                }
+    
+                if (strlen($this->source['passwd']) > $this->fieldsSettings['passwd']['lengthTo'] or strlen($this->source['passwd']) <= $this->fieldsSettings['passwd']['lengthFrom'])
+                {
+                    return array(
+                        'message' => localize('Invalid password length', 'register'), // Mark: localize
+                        'settings' => $this->fieldsSettings['passwd'],
+                        'code' => 'PASSWD_LENGTH',
+                        'field' => 'passwd'
+                    );
+                }
+    
+                if ($this->source['passwd'] != $this->source['passwd_repeat'])
+                {
+                    return array(
+                        'message' => localize('Passwords do not match', 'register'), // Mark: localize
+                        'settings' => $this->fieldsSettings['passwd'],
+                        'code' => 'PASSWD_MATCH_FIELDS',
+                        'field' => 'passwd_repeat'
+                    );
+                }
             }
         }
 
@@ -243,8 +249,6 @@ class userRegistration extends validableForm
             }
         }
 
-
-
         // additional fields
         $additionalFields = $this->validateAdditionalFields();
 
@@ -256,7 +260,7 @@ class userRegistration extends validableForm
         return True;
     }
 
-    /*
+    /**
      * Create new user
      *
      * @return bool
@@ -288,6 +292,10 @@ class userRegistration extends validableForm
             $u -> acl -> set('facebook', $this -> panthera -> session -> get('registerFacebook'));
             $u -> acl -> save();
         }
+        
+        $this -> panthera -> get_options_ref('register.created.userObject', $u);
+        
+        $u -> save();
 
         return $u->exists();
     }

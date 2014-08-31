@@ -1,11 +1,11 @@
 <?php
 /**
-  * User registration module
-  *
-  * @package Panthera\modules\userregistration
-  * @author Damian Kęska
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * User registration module
+ *
+ * @package Panthera\core\modules\userregistration
+ * @author Damian Kęska
+ * @license LGPLv3
+ */
 
 abstract class validableForm
 {
@@ -182,6 +182,7 @@ abstract class validableForm
         $this -> panthera -> logging -> output('Displaying form, name=' .$this->formName, 'form');
         $this -> panthera -> template -> push('disabledFields', $this->disabledFields);
         $this -> panthera -> template -> push('registrationFields', $this->source);
+        
         return $this -> panthera -> template -> compile($this->formTemplateEnabled);
     }
 }

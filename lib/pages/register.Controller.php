@@ -32,22 +32,28 @@ class registerControllerSystem extends pageController
         $c = $this -> registerClassName;
         $registration = new $c($_POST, True);
         //$registration = new userRegistration;
-        
         if ($registration -> isPostingAForm())
         {
-            if ($registration -> validateForm() === True)
+            $v = $registration -> validateForm();
+            $this -> panthera -> template -> push('registrationFields', $registration -> getInput());
+            
+            if ($v === True)
             {
                 try {
                     $registration -> execute();
                     
                 } catch (Exception $e) {
+                    $this -> template -> push('formState', 'failed');
                     $this -> panthera -> template -> push('formError', localize($e -> getMessage(), 'register'));
                     return $registration -> displayForm();
                 }
         
-                $this -> panthera -> template -> push('registrationFields', $registration -> getInput());
+                $this -> template -> push('formState', 'completed');
                 return $this -> panthera -> template -> compile('registrationForm.complete.tpl');
             }
+            
+            $this -> template -> push('formState', 'failed');
+            $this -> template -> push('validation', $v);
         }
         
        return $registration -> displayForm();
