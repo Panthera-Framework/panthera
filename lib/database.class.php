@@ -1981,7 +1981,7 @@ abstract class pantheraFetchDB extends pantheraClass
 
     public function __get($var)
     {
-        if(isset($this->_data[$var]))
+        if(array_key_exists($var, $this->_data))
         {
             // support for on-save filters
             $f = $var."ReadFilter";
