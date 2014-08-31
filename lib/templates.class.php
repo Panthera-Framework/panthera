@@ -12,6 +12,8 @@ if (!defined('IN_PANTHERA'))
 
 require getContentDir('share/raintpl3/library/Rain/autoload.php');
 
+define('TEMPLATES_SKIP_RENDERING', 'pTpl:r:1');
+
 /**
  * Panthera template wrapper
  *
@@ -595,6 +597,9 @@ class pantheraTemplate extends pantheraClass
                 'additionalVars' => $vars,
                 'altTemplateDir' => $altTemplateDir,
             ));
+            
+            if ($template === TEMPLATES_SKIP_RENDERING)
+                return false;
         }
 
         $siteTitle = pantheraLocale::selectStringFromArray($this->panthera->config->getKey('site_title'));
