@@ -275,7 +275,7 @@ class routing {
      * @param array|string $get Optional $_GET parameters
      * @return string The URL of the route with named parameters in place.
      */
-    public function generate($routeName, array $params = array(), $get=null)
+    public function generate($routeName, $params = array(), $get=null, $stripslash=false)
     {
         // Check if route exists
         if(!isset($this->routes[$routeName]))
@@ -328,7 +328,10 @@ class routing {
 
             $url .= http_build_query($get);
         }
-
+        
+        if ($stripslash && substr($url, 0, 1) == '/')
+            return ltrim($url, '/');
+        
         return $url;
     }
 
@@ -526,8 +529,8 @@ class routing {
  * @return string
  */
 
-function getRoute($routeName, $params, $get)
+function getRoute($routeName, $params, $get=null, $stripSlash=false)
 {
     $panthera = pantheraCore::getInstance();
-    return $panthera -> routing -> generate($routeName, $params, $get);
+    return $panthera -> routing -> generate($routeName, $params, $get, $stripSlash);
 }
