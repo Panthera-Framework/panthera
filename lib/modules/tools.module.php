@@ -29,24 +29,16 @@ class Tools
     
     public static function getQueryString($array=null, $mix=null, $except=null)
     {
-        if ($array === null)
-            $array = $_GET;
-        elseif ($array == 'GET')
-            $array = $_GET;
-        elseif ($array == 'POST')
-            $array = $_POST;
-        elseif (is_string($array)) {
-            parse_str($array, $array);
-        }
+        $array = static::toQueryArray($array);
     
-        if ($mix != null) {
-            if (is_string($mix)) {
+        if ($mix != null)
+        {
+            if (is_string($mix))
                 parse_str($mix, $mix);
-            }
+            
     
-            if (is_array($mix)) {
+            if (is_array($mix))
                 $array = array_merge($array, $mix);
-            }
         }
     
         if ($except !== null)
@@ -59,6 +51,73 @@ class Tools
         }
     
         return http_build_query($array);
+    }
+
+    /**
+     * Build HTML input type hidden fields from array
+     * This function can be helpful in creating dynamic GET forms
+     * 
+     * @param array|string $array Array of elements, or a string value "GET" or "POST"
+     * @param array|string $mix Elements to add (useful if using "GET" or "POST" in first but want to add something) eg. "aaa=test&bbb=ccc" or array('aaa' => 'test', 'bbb' => 'ccc')
+     * @param array|string $except List of parameters to skip eg. "display,cat" or array('display', 'cat')
+     * @package Panthera\core\modules\tools
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return string
+     */
+
+    public static function buildHiddenFields($array, $mix=null, $except=null, $endl='')
+    {
+        $array = static::toQueryArray($array);
+        
+        if ($mix != null) {
+            if (is_string($mix))
+                parse_str($mix, $mix);
+            
+    
+            if (is_array($mix))
+                $array = array_merge($array, $mix);
+        }
+    
+        if ($except !== null)
+        {
+            if (!is_array($except))
+                $except = explode(',', $except);
+    
+            foreach ($except as $exception)
+                unset($array[trim($exception)]);
+        }
+        
+        $html = '';
+        
+        foreach ($array as $key => $value)
+        {
+            $html .= '<input type="hidden" name="' .$key. '" value="' .$value. '"' .$endl. '>'; 
+        }
+        
+        return $html;
+    }
+    
+    /**
+     * Convert everything to query array. Eg. query string, "GET" or "POST" input
+     * 
+     * @param string|null|array $array Input
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return array
+     */
+    
+    public static function toQueryArray($array)
+    {
+        if ($array === null)
+            $array = $_GET;
+        elseif ($array == 'GET')
+            $array = $_GET;
+        elseif ($array == 'POST')
+            $array = $_POST;
+        elseif (is_string($array)) {
+            parse_str($array, $array);
+        }
+        
+        return $array;
     }
     
     /**
