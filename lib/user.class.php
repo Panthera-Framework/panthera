@@ -606,7 +606,7 @@ class pantheraGroup extends pantheraFetchDB
  * @author Damian Kęska
  */
 
-function createNewUser($login, $passwd, $full_name, $primary_group='', $attributes, $language, $gender='', $address='', $city='', $postal_code='', $mail='', $jabber='', $profile_picture='{$PANTHERA_URL}/images/default_avatar.png', $ip='', $requiresConfirmation=False)
+function createNewUser($login, $passwd, $full_name, $primary_group='', $attributes, $language, $mail='', $jabber='', $profile_picture='{$PANTHERA_URL}/images/default_avatar.png', $ip='', $requiresConfirmation=False, $gender='', $address='', $city='', $postal_code='')
 {
     $panthera = pantheraCore::getInstance();
 
