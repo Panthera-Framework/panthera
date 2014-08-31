@@ -407,15 +407,15 @@ class pantheraDB extends pantheraClass
     }
 
     /**
-      * Duplicate a row in a table
-      *
-      * @param string $table Table name
-      * @param int $idField Table's id field
-      * @param int $idValue ID value of a record
-      * @param array $newValues Optional values override
-      * @return int
-      * @author Damian Kęska
-      */
+     * Duplicate a row in a table
+     *
+     * @param string $table Table name
+     * @param int $idField Table's id field
+     * @param int $idValue ID value of a record
+     * @param array $newValues Optional values override
+     * @return int
+     * @author Damian Kęska
+     */
 
     public function duplicateRow($table, $idField, $idValue, $newValues = '')
     {
@@ -448,11 +448,11 @@ class pantheraDB extends pantheraClass
     }
 
     /**
-      * List tables in current database
-      *
-      * @return array
-      * @author Damian Kęska
-      */
+     * List tables in current database
+     *
+     * @return array
+     * @author Damian Kęska
+     */
 
     public function listTables()
     {
@@ -816,8 +816,16 @@ class pantheraDB extends pantheraClass
         $sqlLimit = '';
         
         if (is_numeric($limit) and intval($limit) > 0)
-            $sqlLimit = ' LIMIT ' .intval($offset). ',' .intval($limit);
-
+        {
+            $offset = intval($offset);
+            $limit = intval($limit);
+            
+            if ($offset < 0)
+                $offset = 0;
+            
+            $sqlLimit = ' LIMIT ' .$offset. ',' .$limit;
+        }
+        
         $whereClause = '';
         $q = array('', '');
 
@@ -1083,11 +1091,65 @@ class whereClause
 	    if (!isset($this->groups[$group]))
 	        $this->groups[$group] = array('query' => '', 'statement' => 'AND');
 
-	    $this->groups[$group]['statement'] = $statement;
+	    $this -> groups[$group]['statement'] = $statement;
         
         return $this;
 	}
-
+    
+    /**
+     * Get raw data
+     * 
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return array
+     */
+    
+    public function getRawList()
+    {
+        return array(
+            'groups' => $this -> groups,
+            'values' => $this -> vals,
+        );
+    }
+    
+    /**
+     * Clear all data
+     * 
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return bool
+     */
+    
+    public function clear()
+    {
+        $this -> vals = array();
+        $this -> groups = array();
+        return true;
+    }
+    
+    /**
+     * Remove a group
+     * 
+     * @param int $groupID Group ID, can be taken from output of whereClause::getRawList()
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return bool
+     */
+    
+    public function removeGroup($groupID)
+    {
+        if (isset($this -> groups[$groupID]))
+        {
+            foreach ($this -> groups[$groupID]['keys'] as $key => $value)
+            {
+                unset($this -> groups[$groupID]['keys'][$key]);
+                unset($this -> vals[$key]);
+            }
+            
+            unset($this -> groups[$groupID]);
+            return true;
+        }
+        
+        return false;
+    }
+    
 	/**
 	 * Add new instruction
 	 *
@@ -1123,7 +1185,7 @@ class whereClause
 		    ','
         );
 
-		if (!in_array ($Statement, $Statement_list))
+		if (!in_array($Statement, $Statement_list))
 			return false;
 
 		if (!$this->groups[$group]['query'])
@@ -1148,7 +1210,8 @@ class whereClause
             $mark = 'NOW()';
         else {
             $mark = ':' .$columnTmp;
-            $this -> vals[(string)$columnTmp] = $Value;
+            $this -> vals[(string)$columnTmp] = $Value; // helper
+            $this -> groups[$group]['keys'][(string)$columnTmp] = true;
         }
         
 		$this -> groups[$group]['query'] .= $Statement. ' ' .$Column. ' ' .$equals. ' ' .$mark. ' ';
