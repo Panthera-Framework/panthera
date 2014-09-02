@@ -8,4 +8,4 @@
         &nbsp;{if="!isset($value.last)"}|{/if}
     {/loop}
 
-    &nbsp;{if="$pager.nextBtn"}<a href="{$pager.nextBtn.link}"{if="$pager.nextBtn.onclick"} onclick="{$pager.nextBtn.onclick}"{/if}>>></a>{/if}
+    {if="$pager.nextBtn"}&nbsp;<a href="{$pager.nextBtn.link}"{if="$pager.nextBtn.onclick"} onclick="{$pager.nextBtn.onclick}"{/if}>>></a>{/if}{function="localize('Total')"}: {$pager.total},&nbsp; {function="localize('Total pages')"}: {$pager.pages}
