@@ -1213,7 +1213,7 @@ class whereClause
             $this -> groups[$group]['keys'][(string)$columnTmp] = true;
         }
         
-        if (count($this->groups[$group]['query']) === 0)
+        if (empty($this->groups[$group]['query']))
             $Statement = '';
         
         // $Statement. ' ' .$Column. ' ' .$equals. ' ' .$mark. '
@@ -1283,6 +1283,8 @@ class whereClause
             {
                 if (!$group['statement'] or !$group['query'])
                     continue;
+                
+                $query = '';
                 
                 foreach ($group['query'] as $q)
                 {
