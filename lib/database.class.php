@@ -157,7 +157,9 @@ class pantheraDB extends pantheraClass
         // if database error page exists
         if (is_file($debugTemplate))
         {
-            global $panthera;
+            $panthera = panthera::getInstance();
+            $lastQuery = $this -> lastQuery;
+            
             require_once $debugTemplate;
             exit;
         }
@@ -593,9 +595,7 @@ class pantheraDB extends pantheraClass
         foreach ($array as $key => $value)
         {
             if (in_array($key, $ignoreColumns))
-            {
                 continue;
-            }
 
             $updateString .= '`' .$key. '` = :' .$key. ', ';
         }
@@ -839,9 +839,9 @@ class pantheraDB extends pantheraClass
                 {
                     if (strpos($k, '*LIKE*') !== False)
                     {
-                        $w -> add( 'AND', str_replace('*LIKE*', '', $k), 'LIKE', $v);
+                        $w -> add('AND', str_replace('*LIKE*', '', $k), 'LIKE', $v);
                     } else {
-                        $w -> add( 'AND', $k, '=', $v);
+                        $w -> add('AND', $k, '=', $v);
                     }
                 }
             } else
@@ -1074,6 +1074,8 @@ class whereClause
         'LIKE',
     );
     
+    public $tableName = '';
+    
 	/**
 	  * Add statement before group of instructions
 	  *
@@ -1201,7 +1203,7 @@ class whereClause
         }
         
         // raw SQL functions support
-        if (strpos($columnTmp, '(') !== false)
+        if (strpos($columnTmp, '(') !== false || strpos($columnTmp, '.') !== false)
             $columnTmp = generateRandomString(9);
         else
             $Column = '`' .$Column. '`';
@@ -1214,10 +1216,23 @@ class whereClause
             $this -> groups[$group]['keys'][(string)$columnTmp] = true;
         }
         
-		$this -> groups[$group]['query'] .= $Statement. ' ' .$Column. ' ' .$equals. ' ' .$mark. ' ';
+        // $Statement. ' ' .$Column. ' ' .$equals. ' ' .$mark. '
+		$this -> groups[$group]['query'][] = array($Statement, $Column, $equals, $mark);
         
 		return $this;
 	}
+
+    /**
+     * Build query string from array
+     * 
+     * @param array $args List of arguments generated in add() method
+     * @return string
+     */
+
+    protected function buildQueryFromStatement($args)
+    {
+        return $args[0]. ' ' .$args[1]. ' ' .$args[2]. ' ' .$args[3]. ' ';
+    }
 
     /**
      * Returns query data
@@ -1255,9 +1270,12 @@ class whereClause
 	 * @author Damian Kęska
 	 */
 
-	public function show()
+	public function show($tableName='')
 	{
 	    $this -> SQL = '';
+        
+        if ($this -> tableName)
+            $tableName = $this -> tableName;
 
         if ($this -> groups)
         {
@@ -1266,7 +1284,16 @@ class whereClause
                 if (!$group['statement'] or !$group['query'])
                     continue;
                 
-    	        $this->SQL .= ' ' .$group['statement']. ' (' .$group['query']. ')';
+                foreach ($group['query'] as $q)
+                {
+                    // if specified table name, then prefix the column
+                    if ($tableName)
+                        $q[1] = $tableName. '.' .$q[1];
+                
+                    $query .= $this -> buildQueryFromStatement($q);
+                }
+                
+    	        $this->SQL .= ' ' .$group['statement']. ' (' .$query. ')';
             }
         }
         
@@ -1573,7 +1600,7 @@ abstract class pantheraFetchDB extends pantheraClass
 
 
         // build list of columns for SELECT string eg. pa_groups.name as group_name
-        $j = 0;
+        //$j = 0;
         
         if ($selectString)
         {
@@ -1588,8 +1615,9 @@ abstract class pantheraFetchDB extends pantheraClass
 
             foreach ($this->_joinColumns as $table)
             {
-                $j++;
-                $tablePrefix = substr($table[1], 0, 3).$j;
+                //$j++;
+                //$tablePrefix = substr($table[1], 0, 3).$j;
+                $tablePrefix = $table[1];
                 
                 foreach ($table[3] as $column => $alias)
                     $sql .= $tablePrefix. '.' .$column. ' as ' .$alias. ',';
@@ -1614,12 +1642,13 @@ abstract class pantheraFetchDB extends pantheraClass
         if ($this->_queryCache['joinQuery'] and !$force)
             return $this->_queryCache['joinQuery'];
         
-        $j = 0;
+        //$j = 0;
 
         foreach ($this->_joinColumns as $table)
         {
-            $j++;
-            $tablePrefix = substr($table[1], 0, 3).$j;
+            //$j++;
+            //$tablePrefix = substr($table[1], 0, 3).$j;
+            $tablePrefix = $table[1];
             
             // LEFT JOIN table ON
             $sql .= $table[0]. ' {$db_prefix}' .$table[1]. ' AS ' .$tablePrefix. ' ON ';
@@ -1637,7 +1666,7 @@ abstract class pantheraFetchDB extends pantheraClass
                 if (substr($right, 0, 1) == '=')
                     $right = '"' .substr($right, 1, strlen($right)). '"';
                 else
-                    $right = '{$db_prefix}' .$this->_tableName. '.' .$right;
+                    $right = $this->_tableName. '.' .$right;
 
                 // AND table1.column = table2.column
                 $sql .= $exp[0]. ' ' .$tablePrefix. '.' .$exp[1]. ' = ' .$right. ' ';
@@ -1645,7 +1674,7 @@ abstract class pantheraFetchDB extends pantheraClass
         }
         
         if ($systemCache)
-            $this -> panthera -> cache -> set($cacheName, $r);
+            $this -> panthera -> cache -> set($cacheName, $sql);
         else
             $this->_queryCache['joinQuery'] = $sql;
         
@@ -1664,15 +1693,15 @@ abstract class pantheraFetchDB extends pantheraClass
         switch ($type)
         {
             case 'data':
-                return 'SELECT {$db_prefix}' .$this->_tableName. '.*' .$this->buildJoinQuery(1). ' FROM `{$db_prefix}' .$this->_tableName. '` ' .$this->buildJoinQuery();
+                return 'SELECT ' .$this->_tableName. '.*' .$this->buildJoinQuery(1). ' FROM `{$db_prefix}' .$this->_tableName. '` as ' .$this->_tableName. ' ' .$this->buildJoinQuery();
             break;
 
             case 'count':
-                return 'SELECT count(*) FROM `{$db_prefix}' .$this->_tableName. '`';
+                return 'SELECT count(*) FROM `{$db_prefix}' .$this->_tableName. '` as ' .$this->_tableName;
             break;
 
             case 'checkExists':
-                return 'SELECT ' .$this->_idColumn. ' FROM `{$db_prefix}' .$this->_tableName. '`';
+                return 'SELECT ' .$this->_idColumn. ' FROM `{$db_prefix}' .$this->_tableName. '` as ' .$this->_tableName;
             break;
         }
     }
