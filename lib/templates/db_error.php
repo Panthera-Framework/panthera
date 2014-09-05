@@ -37,6 +37,7 @@ if (!defined('IN_PANTHERA'))
 
             <ol id="summaryDetails">
                 <li><b>Message:</b> <span style="color: #C00;"><?php echo $message; ?></span></li>
+                <li><b>Query:</b> <span style="color: #C00;"><?php echo $lastQuery[0]; ?></span></li>
             </ol>
         </div>
         <div class="lighter">
