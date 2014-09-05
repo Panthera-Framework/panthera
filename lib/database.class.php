@@ -1307,6 +1307,7 @@ abstract class pantheraFetchDB extends pantheraClass
         'joinColumns' => '',
         'joinQuery' => '',
     );
+    protected $_queryCacheUseSystem = true;
     
     protected $__meta = null;
 
@@ -1562,36 +1563,66 @@ abstract class pantheraFetchDB extends pantheraClass
     public function buildJoinQuery($selectString=False, $force=False)
     {
         $sql = '';
+        $systemCache = false;
         
-        if (!$this->_joinColumns)
+        if ($this -> _queryCacheUseSystem && $this -> panthera -> cache)
+            $systemCache = true;
+        
+        if (!$this -> _joinColumns)
             return "";
 
 
         // build list of columns for SELECT string eg. pa_groups.name as group_name
+        $j = 0;
+        
         if ($selectString)
         {
+            $cacheName = 'db.join.select.' .get_called_class();
+            
+            if ($systemCache && $this -> panthera -> cache -> exists($cacheName))
+                return $this -> panthera -> cache -> get($cacheName);
+            
             // get this part of query string from cache
             if ($this->_queryCache['joinColumns'] and !$force)
                 return $this->_queryCache['joinColumns'];
 
             foreach ($this->_joinColumns as $table)
+            {
+                $j++;
+                $tablePrefix = substr($table[1], 0, 3).$j;
+                
                 foreach ($table[3] as $column => $alias)
-                    $sql .= '{$db_prefix}' .$table[1]. '.' .$column. ' as ' .$alias. ',';
+                    $sql .= $tablePrefix. '.' .$column. ' as ' .$alias. ',';
+            }
 
             $this->_queryCache['joinColumns'] = $sql;
-            return ', ' .trim($sql, ', ');
+            $r = ', ' .trim($sql, ', ');
+            
+            if ($systemCache)
+                $this -> panthera -> cache -> set($cacheName, $r);
+            
+            return $r;
         }
 
 
+        $cacheName = 'db.join.' .get_called_class();
+            
+        if ($systemCache && $this -> panthera -> cache -> exists($cacheName))
+            return $this -> panthera -> cache -> get($cacheName);
 
         // build JOIN statement eg. LEFT JOIN pa_groups ON pa_groups.group_id = pa_users.primary_group
         if ($this->_queryCache['joinQuery'] and !$force)
             return $this->_queryCache['joinQuery'];
+        
+        $j = 0;
 
         foreach ($this->_joinColumns as $table)
         {
+            $j++;
+            $tablePrefix = substr($table[1], 0, 3).$j;
+            
             // LEFT JOIN table ON
-            $sql .= $table[0]. ' {$db_prefix}' .$table[1]. ' ON ';
+            $sql .= $table[0]. ' {$db_prefix}' .$table[1]. ' AS ' .$tablePrefix. ' ON ';
 
             foreach ($table[2] as $left => $right)
             {
@@ -1609,11 +1640,15 @@ abstract class pantheraFetchDB extends pantheraClass
                     $right = '{$db_prefix}' .$this->_tableName. '.' .$right;
 
                 // AND table1.column = table2.column
-                $sql .= $exp[0]. ' {$db_prefix}' .$table[1]. '.' .$exp[1]. ' = ' .$right. ' ';
+                $sql .= $exp[0]. ' ' .$tablePrefix. '.' .$exp[1]. ' = ' .$right. ' ';
             }
         }
-
-        $this->_queryCache['joinQuery'] = $sql;
+        
+        if ($systemCache)
+            $this -> panthera -> cache -> set($cacheName, $r);
+        else
+            $this->_queryCache['joinQuery'] = $sql;
+        
         return $sql;
     }
 
@@ -1721,7 +1756,7 @@ abstract class pantheraFetchDB extends pantheraClass
      * @return array
      */
 
-    public static function fetchAll($by, $limit=0, $limitFrom=0, $order='id', $direction='DESC')
+    public static function fetchAll($by='', $limit=0, $limitFrom=0, $order='id', $direction='DESC')
     {
         $panthera = panthera::getInstance();
 
@@ -1743,6 +1778,26 @@ abstract class pantheraFetchDB extends pantheraClass
         }
         
         return $panthera->db->getRows($info['tableName'], $by, $limit, $limitFrom, get_called_class(), $order, $direction);
+    }
+    
+    /**
+     * Fetch one object and return directly (not in array)
+     * 
+     * @param whereClause|array $by
+     * @param string $order Order by column
+     * @param string $direction ASC or DESC direction
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return bool|object
+     */
+    
+    public static function fetchOne($by='', $order='id', $direction='DESC')
+    {
+        $result = static::fetchAll($by, 1, 0, $order, $direction);
+        
+        if ($result)
+            return $result[0];
+        
+        return false;
     }
 
     /**
@@ -2027,7 +2082,7 @@ abstract class pantheraFetchDB extends pantheraClass
             $this->panthera->logging->output(get_class($this). '::Trying to set non-existing property "' .$var. '"', $this->cacheGroup);
             return False;
         }
-
+        
         // support for on-save filters
         $f = $var."Filter";
         if (method_exists($this, $f))
