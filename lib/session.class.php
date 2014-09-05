@@ -219,14 +219,14 @@ class pantheraSession
     /**
      * Check if variable exists
      *
-     * @param string $cookieName Cookie name
+     * @param string $key Key name
      * @return bool
      * @author Damian Kęska
      */
 
-    public function exists($cookieName)
+    public function exists($key)
     {
-        if (@array_key_exists($cookieName, $_SESSION[$this->sessionKey]))
+        if (@array_key_exists($key, $_SESSION[$this->sessionKey]))
             return True;
 
         return False;
@@ -298,7 +298,7 @@ class pantheraSession
         // dont accept integers, arrays or objects
         if (!is_string($key))
             return False;
-
+        
         $_SESSION[$this->sessionKey][$key] = $value;
 
         return True;
