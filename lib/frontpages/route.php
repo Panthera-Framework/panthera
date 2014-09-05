@@ -104,11 +104,12 @@ class routeFrontControllerSystem extends pageController
             }
         
             $this -> panthera -> logging -> output('Including front page from path ' .SITE_DIR. '/' .$controller, 'routing');
+            $this -> getFeature('fc.route.beforeDisplay', $controller);
         
             if (is_file(SITE_DIR. '/' .$controller))
             {
-                
                 require SITE_DIR. '/' .$controller;
+                $this -> getFeature('fc.route.afterDisplay', $controller);
             }
             
             pa_exit();
