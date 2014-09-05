@@ -41,24 +41,39 @@ class passwordrecoveryModule extends pageController
 
     public function passwordRecovery(&$continueChecking, $u)
     {
-        if ($_POST['recovery'] == "1" or isset($_GET['key']))
+        if ($_POST['recovery'] == "1" || isset($_GET['key']) || isset($_GET['confirmation']))
         {
             if (isset($_GET['key']))
             {
+                $recovery = new pantheraRecovery('recovery_key', $_GET['key']);
+                $result = pantheraRecovery::recoveryChangePassword($_GET['key']);
+                
+                // notify template that we are activating an account
+                if ($recovery -> type == 'confirmation')
+                    panthera::getInstance() -> template -> push('isActivatingAccount', true);
+                
                 // change user password
-                if ($result = recoveryChangePassword($_GET['key']))
-                    $continueChecking= localize('Password changed, you can use new one', 'messages');
-                else
-                    $continueChecking = localize('Invalid recovery key, please check if you copied link correctly', 'messages');
+                if ($result)
+                {
+                    if ($recovery -> type == 'confirmation')
+                        $continueChecking = localize('Account activated', 'messages');
+                    else
+                        $continueChecking = localize('Password changed, you can use new one', 'messages');
+                } else
+                    $continueChecking = localize('Invalid key, please check if you copied link correctly', 'messages');
+                
 
                 $this -> getFeature('login.passwordrecovery.afterChange', array(
                     'result' => $result,
                     'key' => $_GET['key'],
+                    'object' => $recovery,
                 ));
 
             } else {
                 // send an e-mail with new password
-                if ($result = recoveryCreate($_POST['log']))
+                $result = pantheraRecovery::recoveryCreate($_POST['log']);
+                
+                if ($result)
                     $continueChecking = localize('New password was sent in a e-mail message to you', 'messages');
                 else
                     $continueChecking = localize('Invalid user name specified', 'messages');
