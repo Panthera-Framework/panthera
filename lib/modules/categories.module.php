@@ -28,6 +28,64 @@ class category extends pantheraFetchDB
     protected $treeParent = 'parentid';
     
     /**
+     * Read filter for optionalfield_1
+     * 
+     * @author Damian Kęska
+     * @return string
+     */
+    
+    public function optionalfield_1ReadFilter() { return pantheraUrl($this->_data['optionalfield_1']); }
+    
+    
+    /**
+     * Read filter for optionalfield_2
+     * 
+     * @author Damian Kęska
+     * @return string
+     */
+    
+    public function optionalfield_2ReadFilter() { return pantheraUrl($this->_data['optionalfield_2']); }
+    
+    /**
+     * Read filter for optionalfield_3
+     * 
+     * @author Damian Kęska
+     * @return string
+     */
+    
+    public function optionalfield_3ReadFilter() { return pantheraUrl($this->_data['optionalfield_3']); }
+    
+    /**
+     * Write filter for optionalfield_1
+     * 
+     * @param string &$value Input value
+     * @author Damian Kęska
+     * @return string
+     */
+    
+    public function optionalfield_1Filter(&$value) { $value = pantheraUrl($value, true); }
+    
+    /**
+     * Write filter for optionalfield_2
+     * 
+     * @param string &$value Input value
+     * @author Damian Kęska
+     * @return string
+     */
+    
+    public function optionalfield_2Filter(&$value) { $value = pantheraUrl($value, true); }
+    
+    /**
+     * Write filter for optionalfield_3
+     * 
+     * @param string &$value Input value
+     * @author Damian Kęska
+     * @return string
+     */
+    
+    public function optionalfield_3Filter(&$value) { $value = pantheraUrl($value, true); }
+    
+    /**
      * Get categories from specified module ordered by priority
      * 
      * @param string $moduleName Module name
