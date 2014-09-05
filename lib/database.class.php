@@ -1164,11 +1164,11 @@ class whereClause
 	 * @author Damian Kęska
 	 */
 
-	public function add ($Statement, $Column, $equals, $Value, $group = 1)
+	public function add($Statement, $Column, $equals, $Value, $group = 1)
 	{
 	    if (!isset($this->groups[$group]))
 	        $this->groups[$group] = array(
-	            'query' => '',
+	            'query' => array(),
 	            'statement' => 'AND'
             );
 
@@ -1189,9 +1189,6 @@ class whereClause
 
 		if (!in_array($Statement, $Statement_list))
 			return false;
-
-		if (!$this->groups[$group]['query'])
-			$Statement = '';
 
 		$columnTmp = $Column;
         $i = 0;
@@ -1215,6 +1212,9 @@ class whereClause
             $this -> vals[(string)$columnTmp] = $Value; // helper
             $this -> groups[$group]['keys'][(string)$columnTmp] = true;
         }
+        
+        if (count($this->groups[$group]['query']) === 0)
+            $Statement = '';
         
         // $Statement. ' ' .$Column. ' ' .$equals. ' ' .$mark. '
 		$this -> groups[$group]['query'][] = array($Statement, $Column, $equals, $mark);
@@ -1288,7 +1288,7 @@ class whereClause
                 {
                     // if specified table name, then prefix the column
                     if ($tableName)
-                        $q[1] = $tableName. '.' .$q[1];
+                        $q[1] = $tableName. '.' .str_replace('`', '', $q[1]);
                 
                     $query .= $this -> buildQueryFromStatement($q);
                 }
@@ -1454,6 +1454,7 @@ abstract class pantheraFetchDB extends pantheraClass
             if ($by == 'last_result')
             {
                 $w = new whereClause();
+                $w -> tableName = $this -> _tableName;
 
                 if (is_array($value))
                 {
@@ -1475,6 +1476,7 @@ abstract class pantheraFetchDB extends pantheraClass
                 if (get_class($by) != "whereClause")
                     throw new databaseException('Input $by must be a whereClause object or a string with column name');
 
+                $by -> tableName = $this -> _tableName;
                 $clause = $by->show();
                 $SQL = $panthera->db->query($this->getQuery(). ' WHERE ' .$clause[0]. ' LIMIT 0,1', $clause[1]);
                 //$by = $clause[0]; // caching object cannot be realized, its almost impossible
@@ -1491,7 +1493,7 @@ abstract class pantheraFetchDB extends pantheraClass
 
             // if we dont have array to take fetched data we must fetch it by our own
             if (in_array($by, $this->_constructBy) and $SQL == NULL)
-                $SQL = $panthera->db->query($this->getQuery(). ' WHERE `' .$by. '` = :' .$by. ' LIMIT 0,1', array($by => $value));
+                $SQL = $panthera->db->query($this->getQuery(). ' WHERE ' .$this -> _tableName. '.' .$by. ' = :' .$by. ' LIMIT 0,1', array($by => $value));
 
             // getting results and building a object
             if ($SQL)
