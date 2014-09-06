@@ -558,7 +558,7 @@ abstract class pageController extends pantheraClass {
             $run = true;
         else {
             // if cannot detect if it's a symlink or not try with reflection
-            $root = $_SERVER['DOCUMENT_ROOT'].str_replace('/route.php', '', $_SERVER['PHP_SELF']);
+            $root = $_SERVER['DOCUMENT_ROOT'].str_replace('/' .basename($_SERVER['PHP_SELF']), '', $_SERVER['PHP_SELF']);
             $reflection = new ReflectionClass($className);
             
             if (realpath($root.$scriptName) == $reflection -> getFileName())
