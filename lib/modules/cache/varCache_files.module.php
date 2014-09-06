@@ -32,10 +32,18 @@ class varCache_files extends pantheraClass
     public function __construct ($panthera, $sessionKey='')
     {
         parent::__construct();
-        $this -> cacheDir = $panthera -> config -> getKey('varcache_files.dir', 'tmp/cache', 'string');
-        $this -> indexEnabled = (bool)$panthera -> config -> getKey('varcache_files.index', 3600, 'int');
-        $this -> indexInterval = $panthera -> config -> getKey('varcache_files.index');
-
+        
+        $this -> cacheDir = 'tmp/cache';
+        $this -> indexEnabled = 3600;
+        $this -> indexInterval = null;
+        
+        if ($panthera -> config)
+        {
+            $this -> cacheDir = $panthera -> config -> getKey('varcache_files.dir', 'tmp/cache', 'string');
+            $this -> indexEnabled = (bool)$panthera -> config -> getKey('varcache_files.index', 3600, 'int');
+            $this -> indexInterval = $panthera -> config -> getKey('varcache_files.index');
+        }
+        
         if (substr($this -> cacheDir, 0, 1) !== '/')
             $this -> cacheDir = SITE_DIR. '/content/' .$this -> cacheDir;
 
