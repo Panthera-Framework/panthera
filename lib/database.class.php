@@ -1266,11 +1266,13 @@ class whereClause
 	/**
 	 * Build and return query
 	 *
+     * @param string $tableName Insert table name as prefix to all query values
+     * @param bool $debug Show full data-filled queries for debugging purpose
 	 * @return array with query and values
 	 * @author Damian Kęska
 	 */
 
-	public function show($tableName='')
+	public function show($tableName='', $debug=False)
 	{
 	    $this -> SQL = '';
         
@@ -1291,6 +1293,9 @@ class whereClause
                     // if specified table name, then prefix the column
                     if ($tableName)
                         $q[1] = $tableName. '.' .str_replace('`', '', $q[1]);
+                    
+                    if ($debug)
+                        $q[3] = str_replace($q[3], "'".$this->vals[substr($q[3], 1, strlen($q[3]))]."'", $q[3]);
                 
                     $query .= $this -> buildQueryFromStatement($q);
                 }
