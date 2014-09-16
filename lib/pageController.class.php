@@ -21,6 +21,8 @@ abstract class pageController extends pantheraClass {
 
     // list of required modules
     protected $requirements = array();
+    
+    protected static $__cliServerHack = false;
 
     // list of required configuration overlays
     protected $overlays = array();
@@ -546,7 +548,7 @@ abstract class pageController extends pantheraClass {
     public static function runFrontController($file, $className)
     {
         $routingMatches = panthera::getInstance() -> routing -> lastMatched;
-        $scriptName = $_SERVER['SCRIPT_NAME'];
+        $scriptName = '/' .basename($_SERVER['SCRIPT_NAME']);
         
         if ($routingMatches && isset($routingMatches['target']['front']))
             $scriptName = '/' .$routingMatches['target']['front'];
@@ -558,13 +560,26 @@ abstract class pageController extends pantheraClass {
             $run = true;
         else {
             // if cannot detect if it's a symlink or not try with reflection
-            $root = $_SERVER['DOCUMENT_ROOT'].str_replace('/' .basename($_SERVER['PHP_SELF']), '', $_SERVER['PHP_SELF']);
+            $baseName = basename($_SERVER['PHP_SELF']);
+            $root = $_SERVER['DOCUMENT_ROOT'].str_replace('/' .$baseName, '', $_SERVER['PHP_SELF']);
+            
+            if (PHP_SAPI == 'cli-server')
+            {
+                $root = str_replace('index.php', '', $root);
+                
+                if ((!static::$__cliServerHack && substr($baseName, -4) != '.php') || (!static::$__cliServerHack && $_SERVER['REQUEST_URI'] == '/'))
+                {
+                    $scriptName = '/route.php';
+                    static::$__cliServerHack = true;
+                }
+            }
+            
             $reflection = new ReflectionClass($className);
             
             if (realpath($root.$scriptName) == $reflection -> getFileName())
                 $run = true;
         }
-
+        
         if ($run)
         {
             $object = new $className();
