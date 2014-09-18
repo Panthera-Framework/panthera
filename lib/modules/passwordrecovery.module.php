@@ -19,26 +19,38 @@ class pantheraRecovery extends pantheraFetchDB
      * the message body and topic can be both configured in Panthera configuration keys: "recovery_password_title" and "recovery_password_content"
      *
      * @param string $login
+     * @param bool|null $sendMail Send recovery mail
      * @return bool
      * @author Damian Kęska
      */
     
-    public static function recoveryCreate($login)
+    public static function recoveryCreate($login, $type='recovery', $sendMail=true)
     {
         $panthera = pantheraCore::getInstance();
+        $panthera -> config -> loadSection('paswordrecovery');
     
         $user = new pantheraUser('login', $login);
     
         if (!$user -> exists())
             return False;
-    
-        $SQL = $panthera -> db -> query('SELECT `id` FROM `{$db_prefix}password_recovery` WHERE `user_login` = :login AND `type` = "recovery"', array('login' => $login));
-    
-        if ($SQL -> rowCount() > 0)
-            return False;
-    
-        $panthera -> config -> loadSection('paswordrecovery');
+        
         $language = $user -> language;
+        $whereClause = new whereClause;
+        $whereClause -> add('AND', 'user_login', '=', $login);
+        $whereClause -> add('AND', 'type', '=', $type);
+        
+        $search = pantheraRecovery::fetchOne($whereClause);
+    
+        if ($search)
+        {
+            $panthera -> logging -> output('Activation code of type "' .$type. '" already created for user "' .$login. '"', 'pantheraRecovery');
+            return false;
+        }
+
+        /**
+         * Generate random password of fixed length
+         * 
+         */        
     
         // default password length
         if ($panthera->config->getKey('recovery.passwd.length', 16, 'int', 'passwordrecovery') < 3)
@@ -47,83 +59,74 @@ class pantheraRecovery extends pantheraFetchDB
         // default recovery key length
         if ($panthera->config->getKey('recovery.key.length', 32, 'int', 'passwordrecovery') < 16)
             $panthera -> config -> setKey('recovery.key.length', 32, 'int', 'passwordrecovery');
-    
-        $newPassword = generateRandomString($panthera->config->getKey('recovery.passwd.length'));
+        
+        $newPassword = '';
+        
+        // generate password only when recovering password
+        if ($type == 'recovery')
+            $newPassword = generateRandomString($panthera->config->getKey('recovery.passwd.length'));
+        
+        
+        /**
+         * Generate unique recovery key
+         * 
+         */
+        
         $recoveryKey = generateRandomString($panthera->config->getKey('recovery.key.length'));
-    
+        
         // check if selected key is unique, if not generate a new one until it isnt unique
-        $SQL = $panthera -> db -> query('SELECT `id` FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key AND `type` = "recovery"', array('key' => $recoveryKey));
-    
-        while ($SQL -> rowCount() > 0)
+        $search = pantheraRecovery::fetchOne(array(
+            'recovery_key' => $recoveryKey,
+        ), false);
+
+        while ($search)
         {
             $recoveryKey = generateRandomString($panthera->config->getKey('recovery.key.length'));
-            $SQL = $panthera -> db -> query('SELECT `id` FROM `{$db_prefix}password_recovery` WHERE `recovery_key` = :key AND `type` = "recovery"', array('key' => $recoveryKey));
+            
+            $search = pantheraRecovery::fetchOne(array(
+                'recovery_key' => $recoveryKey,
+            ), false);
         }
-    
+        
         $values = array(
             'recovery_key' => $recoveryKey,
-            'login' => $login,
-            'passwd' => $newPassword
+            'user_login' => $login,
+            'new_passwd' => $newPassword,
+            'type' => $type,
         );
     
         // plugins support
         $values = $panthera -> get_filters('recovery.values', $values);
-    
-        $SQL = $panthera -> db -> query('INSERT INTO `{$db_prefix}password_recovery` (`id`, `recovery_key`, `user_login`, `date`, `new_passwd`, `type`) VALUES (NULL, :recovery_key, :login, NOW(), :passwd, "recovery")', $values);
-    
-        $messages = $panthera->config->getKey('recovery.mail.content');
-        $titles = $panthera->config->getKey('recovery.mail.title');
-    
-        if (isset($messages[$language]))
-        {
-            $message = $messages[$language];
-            $title = $titles[$language];
-        } elseif (isset($messages['english'])) {
-            $message = $messages['english'];
-            $title = $titles['english'];
-        } else {
-            $message = end($messages);
-            $title = end($titles);
-        }
+        $createResult = pantheraRecovery::create($values);
+
+        if ($sendMail === false)
+            return $recoveryKey;
         
+        /**
+         * Send mail
+         * 
+         */
+         
         $recoveryURL = pantheraUrl('{$PANTHERA_URL}/pa-login.php?key=' .$recoveryKey);
         
         try {
             $recoveryURL = panthera::getInstance() -> routing -> generate('login.recovery', array(
                 'recoveryKey' => $recoveryKey,
             ));
-            
+
         } catch (Exception $e) {}
-    
-        $message = str_replace('{$recovery_url}', $recoveryURL, 
-                   str_replace('{$recovery_key}', $recoveryKey,
-                   str_replace('{$recovery_passwd}', $newPassword,
-                   str_replace('{$userName}', $user->getName(),
-                   str_replace('{$userID}', $user->id, pantheraUrl($message))))));
-    
-        $title = str_replace('{$recovery_url}', $recoveryURL, 
-                   str_replace('{$recovery_key}', $recoveryKey,
-                   str_replace('{$recovery_passwd}', $newPassword,
-                   str_replace('{$userName}', $user->getName(),
-                   str_replace('{$userID}', $user->id, pantheraUrl($title))))));
-    
-        if (!$message)
-            throw new Exception('No recovery message set for this language', 1);
         
-        if (!$title)
-            throw new Exception('No recovery message title set for this language', 2);
-                   
-        // send a mail
-        $panthera -> importModule('mailing');
-        $mailRecovery = new mailMessage();
-        $mailRecovery -> setSubject($title);
-        $mailRecovery -> addRecipient($user->mail);
-        $mailRecovery -> send($message, 'html');
+        $variables = array(
+            'link' => $recoveryURL,
+            'recovery_url' => $recoveryURL,
+            'recovery_key' => $recoveryKey,
+            'recovery_passwd' => $newPassword,
+            'userName' => $user->getName(),
+            'userID' => $user->id,
+        );
         
-        if ($SQL -> rowCount() > 0)
-            return True;
-    
-        return False;
+        mailMessage::sendMail('passwordRecovery', true, null, $user->mail, $variables, null, null, $user->language);
+        return True;
     }
     
     /**

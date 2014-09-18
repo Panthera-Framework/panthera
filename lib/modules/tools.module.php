@@ -367,4 +367,54 @@ class Tools
         
         return $array;
     }
+    
+    /**
+     * Validate full name and surname
+     * 
+     * @param string $input Input full name
+     * @author Damian Kęska
+     * @return bool
+     */
+    
+    public static function validateFullname($input)
+    {
+        $input = trim($input);
+        $exp = explode(' ', $input);
+        
+        if (count($exp) < 2 || !static::beignsLowercase($exp[0]) || !static::beignsLowercase($exp[1]))
+            return false;
+        
+        return true;
+    }
+    
+    /**
+     * Check if first character is lowercase
+     * 
+     * @param string $str Input string
+     * @author Artefacto <http://stackoverflow.com/questions/2814880/how-to-check-if-letter-is-upper-or-lower-in-php>
+     * @author Damian Kęska
+     * @return bool
+     */
+    
+    public static function beignsLowercase($str)
+    {
+        $chr = mb_substr($str, 0, 1, "UTF-8");
+        return (mb_strtolower($chr, "UTF-8") != $chr);
+    }
+    
+    /**
+     * Return first non-null, non-zero, non-empty value from array
+     * 
+     * @param mixed ...
+     * @return mixed
+     */
+    
+    public static function selectFirstValue()
+    {
+        foreach (func_get_args() as $arg)
+        {
+            if ($arg)
+                return $arg;
+        }
+    }
 }
