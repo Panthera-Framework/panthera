@@ -825,6 +825,10 @@ class pantheraDB extends pantheraClass
             
             $sqlLimit = ' LIMIT ' .$offset. ',' .$limit;
         }
+
+        // validate ORDER BY direction
+        if ($order != 'DESC' && $order != 'ASC')
+            $order = 'ASC';
         
         $whereClause = '';
         $q = array('', '');
