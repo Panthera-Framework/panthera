@@ -85,7 +85,18 @@ class varCache_files extends pantheraClass
                         continue;
 
                     if (filemtime($file) < intval($exp[1]))
+                    {
+                        if (!is_writable($file))
+                        {
+                            if ($panthera && $panthera -> logging)
+                                $panthera -> logging -> output('Cannot delete cached file "' .$file. '"', 'varCache');
+                            
+                            continue;
+                        }
+                        
+                        
                         unlink($file);
+                    }
                 }
             }
         }
