@@ -1,0 +1,1 @@
+a:4:{s:35:"Cannot generate hash, unknown error";s:45:"Nie można wygenerować hash, nieznany błąd";s:8:"Generate";s:9:"Wygeneruj";s:6:"Length";s:10:"Długość";s:8:"Password";s:6:"Hasło";}

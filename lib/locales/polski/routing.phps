@@ -1,0 +1,1 @@
+a:5:{s:20:"SEO links management";s:24:"Zarządzanie linkami SEO";s:27:"Cannot find specified route";s:38:"Nie można znaleźć podanego kierunku";s:43:"There is no any rule that matches %s %s URL";s:49:"Nie ma żadnego prawa, które pasuje do %s %s URL";s:19:"Please input a name";s:22:"Proszę wpisać nazwę";s:25:"Please input a route path";s:31:"Proszę wpisać nazwę kierunku";}
