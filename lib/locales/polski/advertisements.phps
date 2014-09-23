@@ -1,0 +1,1 @@
+a:4:{s:23:"Advertisement not found";s:22:"Nie znaleziono reklamy";s:21:"Editing advertisement";s:14:"Edycja reklamy";s:26:"Creating new advertisement";s:23:"Tworzenie nowej reklamy";s:8:"Position";s:7:"Pozycja";}
