@@ -41,6 +41,7 @@ class mailvalidationModule extends pageController
         if (isset($_GET['ckey']))
         {
             $validation = userRegistration::checkEmailValidation($_GET['ckey'], True);
+            
             list($_GET['ckey'], $validation) = $this -> getFeature('login.registration.checkemail', array($_GET['ckey'], $validation));
 
             if ($validation)

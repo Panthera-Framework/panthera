@@ -90,6 +90,10 @@
 	                </th>
 	                
 	                <th>
+                        <b>{function="localize('Notes', 'premium')"}</b>
+                    </th>
+	                
+	                <th>
 	                	<b>{function="localize('Options')"}</b>
 	                </th>
 	            </tr>
@@ -102,7 +106,7 @@
 	           		<td>
 	           			<a style="cursor: pointer;" onclick="panthera.popup.toggle('?display=premium&cat=admin&action=edit&objectID={$value->id}', 'premiumAccountEdit');">
 	           				{$value->getUser()->getName()}
-	           			</a>
+	           			</a> {if="$value->awaiting_activation"}<span style="color: red;"><b>(!)</b></span>{/if}
 	           		</td>
 	           		
 	           		<td>
@@ -133,7 +137,7 @@
 	           			{if="$value->additionalfield1"}
 	           				<i><b>{$value->additionalfield1}</b></i>
 	           			{else}
-	           				{function="localize('No card number assigned', 'premium')"}
+	           				<span style="color: red;">{function="localize('No card number assigned', 'premium')"}</span>
 	           			{/if}
 	           		</td>
 	           		
@@ -143,6 +147,10 @@
 	           			{else}
 	           				{$value->starts}
 	           			{/if}
+	           		</td>
+	           		
+	           		<td>
+	           		   {if="$value->awaiting_activation"}<b>{$value->notes|nl2br}</b>{else}{$value->notes|nl2br}{/if} 
 	           		</td>
 	           			
 	           		<td>

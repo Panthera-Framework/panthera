@@ -102,7 +102,7 @@ class userPremiumAccount extends pantheraFetchDB
      * @return string Returns date of latest package or object if $returnObject = true
      */
     
-    public static function getLastPackageExpirationDate($user, $premium, $match='groupid', $returnObject=False)
+    public static function getLastPackageExpirationDate($user, $premium, $match='groupid', $returnObject=false, $active=true)
     {
         if (!is_numeric($user))
         {
@@ -129,7 +129,8 @@ class userPremiumAccount extends pantheraFetchDB
         else
             $filter -> add('AND', 'premiumid', '=', $premium -> premiumid);
         
-        $filter -> add('AND', 'active', '=', 1);
+        if ($active)
+            $filter -> add('AND', 'active', '=', 1);
         
         $premiums = userPremiumAccount::fetchAll($filter, 0, 1, 'expires', 'DESC');
         
@@ -207,6 +208,9 @@ class userPremiumAccount extends pantheraFetchDB
         // if we want to activate and we cannot, return to old value || if we want to deactivate and we cannot, let's return to old value
         if (($input and !$this -> activate()) || (!$input and !$this -> deactivate()))
             $input = $oldValue;
+        
+        if ($input)
+            $this->awaiting_activation = false;
     }
     
     /**

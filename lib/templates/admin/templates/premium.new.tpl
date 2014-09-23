@@ -80,6 +80,13 @@
             {/if}
             
             <tr>
+                <th>{function="localize('Notes', 'premium')"}:</th>
+                <td>
+                    <textarea name="object_notes" style="width: 300px; height: 50px;">{if="$dataObject"}{$dataObject->notes|strip_tags}{/if}</textarea>
+                </td>
+            </tr>
+            
+            <tr>
                 <th title="{function="localize('Physical card number', 'premium')"}">{function="localize('Card number', 'premium')"}:</th>
                 <td class="tableRightColumn">
                 	<input type="text" name="object_additionalfield1" id="object_additionalfield1" style="width: 300px;" {if="$dataObject"} value="{$dataObject->additionalfield1}"{/if}>
