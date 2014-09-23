@@ -150,4 +150,40 @@ class category extends pantheraFetchDB
 
         return $result;
     }
+    
+    /**
+     * Get parent category if exists
+     * 
+     * @author Damian Kęska
+     * @return category|null
+     */
+    
+    public function getParentCategory()
+    {
+        if ($this->parentid)
+        {
+            $parent = new category('categoryid', $this->parentid);
+            
+            if ($parent->exists())
+                return $parent;
+        }
+    }
+    
+    /**
+     * Get children categories
+     * 
+     * @param whereClause $whereClause (Optional) whereClause object
+     * @return array
+     */
+    
+    public function getChildCategories($whereClause='')
+    {
+        if (!is_object($whereClause) || !($whereClause instanceof whereClause))
+            $whereClause = new whereClause;
+        
+        
+        $whereClause -> add('', 'parentid', '=', $this->categoryid);
+        
+        return category::fetchAll($whereClause);
+    }
 }
