@@ -70,14 +70,15 @@ class pa_loginControllerSystem extends pageController
             'facebook',
             'lastloginhistory',
             'passwordrecovery',
+            'mailvalidation',
         ), 'array', 'pa-login');
-
+        
         foreach ($extensions as $extension)
         {
             if ($this -> panthera -> moduleExists('login/' .$extension))
             {
                 $object = $this -> panthera -> importModule('login/' .$extension, true);
-
+                
                 if (is_object($object) and method_exists($object, 'initialize'))
                     $object -> initialize($this);
             }
