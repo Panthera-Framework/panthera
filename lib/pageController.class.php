@@ -765,6 +765,10 @@ abstract class dataModelManagementController extends pageController
             
             if ($object -> exists())
             {
+                /**
+                 * If any data was posted then it means we have to edit object
+                 */
+                
                 if (isset($_POST['postData']) and $_POST['postData'])
                 {
                     $this -> getFeature('datamodel.' .$hookName. '.preedit', $object);
@@ -798,8 +802,11 @@ abstract class dataModelManagementController extends pageController
                     ));
                 }
 
-
-                // display a edit template form
+                /**
+                 * Display edit element form
+                 */
+                 
+                $this -> getFeature('datamodel.' .$hookName. '.editform', $object);
                 $this -> template -> push(array(
                     'action' => 'edit',
                     'fields' => $this -> __fields,
@@ -811,7 +818,11 @@ abstract class dataModelManagementController extends pageController
             }
 
         } else {
-            // creating a new object
+            
+            /**
+             * Creating a new object
+             */
+            
             if (isset($_POST['postData']) and $_POST['postData'])
             {
                 $values = array(
@@ -851,7 +862,11 @@ abstract class dataModelManagementController extends pageController
                 ));
             }
 
-            // display a new object form
+            /**
+             * Displaying form that should allow to create a new element
+             */
+            
+            $this -> getFeature('datamodel.' .$hookName. '.newform', $object);
             $this -> template -> push('action', 'edit');
             $this -> template -> display($this -> __newTemplate);
             pa_exit();
