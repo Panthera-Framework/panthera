@@ -866,7 +866,7 @@ abstract class dataModelManagementController extends pageController
              * Displaying form that should allow to create a new element
              */
             
-            $this -> getFeature('datamodel.' .$hookName. '.newform', $object);
+            $this -> getFeature('datamodel.' .$hookName. '.newform', $this);
             $this -> template -> push('action', 'edit');
             $this -> template -> display($this -> __newTemplate);
             pa_exit();
