@@ -133,8 +133,8 @@ class pantheraAutoloader
 
         //$panthera -> config -> setKey('autoloader', $autoload, 'array');
         
-        if (!is_writable(SITE_DIR. '/content/tmp/autoloader.php'))
-            throw new Exception(SITE_DIR. '/content/tmp/autoloader.php'. ' is not writable! Cannot update autoloader cache', 1);
+        if (!is_writable(SITE_DIR. '/content/tmp/') && !is_writable(SITE_DIR. '/content/tmp/autoloader.php'))
+            throw new Exception(SITE_DIR. '/content/tmp/'. ' is not writable! Cannot update autoloader cache', 1);
         
         $fp = fopen(SITE_DIR. '/content/tmp/autoloader.php', 'w');
         fwrite($fp, "<?php\n\$autoloader = " .var_export($autoload, true). ";\n");
