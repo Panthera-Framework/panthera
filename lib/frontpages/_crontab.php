@@ -172,6 +172,9 @@ class _crontabControllerSystem extends pageController
 
         // close crontab session
         run::closeSocket('crontab', intval(getmypid()));
+
+        // destroy session to prevent storing milions of empty session files
+        $this -> panthera -> session -> removeSession(true);
     }
 
     /**
@@ -179,7 +182,6 @@ class _crontabControllerSystem extends pageController
      *
      * @return null
      */
-
     public function checkCrontabKey()
     {
         if (PANTHERA_MODE == 'CLI')

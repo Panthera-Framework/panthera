@@ -141,7 +141,6 @@ class pantheraAutoloader
         fclose($fp);
 
         $panthera -> autoloader = $autoload;
-
         $panthera -> logging -> output ('Updated autoloader cache, counting ' .count($autoload). ' elements', 'pantheraAutoLoader');
 
         return $autoload;
