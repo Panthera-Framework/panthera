@@ -406,7 +406,7 @@ class usersAjaxControllerCore extends pageController
             $u->jabber = $_POST['jabber'];
         
         
-        if ($_POST['gender'] == 'male' or $_POST['gender'] == 'female')
+        if (in_array($_POST['gender'], pantheraUser::$genders))
             $u->gender = $_POST['gender'];
 
         if (strlen($_POST['address']) > 3)
@@ -494,12 +494,14 @@ class usersAjaxControllerCore extends pageController
     /**
      * Add new user
      *
+     * @input POST
      * @author Mateusz Warzyński
      * @return null
      */
-
     public function addUserAction()
     {
+        $error = null;
+
         if (strlen($_POST['login']) > 2)
             $login = $_POST['login'];
         else
@@ -508,8 +510,8 @@ class usersAjaxControllerCore extends pageController
                 'message' => localize('Login is too short!', 'users'),
             ));
 
-        if (strlen($_POST['passwd']) > 6) {
-
+        if (strlen($_POST['passwd']) > 6)
+        {
             $password = $_POST['passwd'];
             $passwordEncoded = encodePassword($password);
 
@@ -539,17 +541,40 @@ class usersAjaxControllerCore extends pageController
         else
             $avatar = '{$PANTHERA_URL}/images/default_avatar.png';
 
+
         $gender = $_POST['gender'];
-        $address = $_POST['address'];
-        $city = $_POST['city'];
-        $postal_code = $_POST['postal_code'];
+        $address = filterInput($_POST['address'], 'strip');
+        $city = filterInput($_POST['city'], 'strip');
+        $postal_code = filterInput($_POST['postal_code'], 'strip');
         $mail = $_POST['email'];
         $jabber = $_POST['jabber'];
-
         $language = $_POST['language'];
-        $primary_group = $_POST['primary_group'];
+
+        // group
+        $group = new pantheraGroup('name', $_POST['primary_group']);
+        $primary_group = $group->groupid;
+
+        if (!in_array($_POST['gender'], pantheraUser::$genders))
+            $error = localize('Please select a valid gender', 'users');
+
+        if (!$group -> exists())
+            $error = localize('Please specify a valid user group', 'users');
+
+        if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
+            $error = localize('Please provide a valid e-mail address', 'users');
+
+        if (isset($_POST['jabber']) && $_POST['jabber'] && !filter_var($_POST['jabber'], FILTER_VALIDATE_EMAIL))
+            $error = localize('Please provide a valid jabber address', 'users');
 
         $attributes = array();
+
+        if ($error)
+        {
+            ajax_exit(array(
+                'status' => 'failed',
+                'message' => $error,
+            ));
+        }
 
         if (createNewUser($login, $password, $full_name, $primary_group, $attributes, $language, $gender, $address, $city, $postal_code, $mail, $jabber, $avatar))
         {
@@ -560,7 +585,7 @@ class usersAjaxControllerCore extends pageController
         } else {
             ajax_exit(array(
                 'status' => 'failed',
-                'message' => localize('Error while adding user!', 'users'),
+                'message' => localize('Cannot add new user: Unknown error', 'users'),
             ));
         }
     }
