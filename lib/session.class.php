@@ -166,13 +166,15 @@ class pantheraSession
     /**
      * Remove all user session variables
      *
+     * @param bool $forceDestroy Force destroy session (uses session_destroy() and can affect other web applications on same domain)
      * @return bool
      * @author Damian Kęska
      */
-
-
-    public function removeSession()
+    public function removeSession($forceDestroy=false)
     {
+        if ($forceDestroy)
+            session_destroy();
+
         unset($_SESSION[$this->sessionKey]);
         return True;
     }
@@ -183,7 +185,6 @@ class pantheraSession
      * @return bool
      * @author Damian Kęska
      */
-
     public function lifetimeCheck()
     {
         $max = (int)$this->panthera->config->getKey('session_lifetime', 86400, 'int');
@@ -200,7 +201,6 @@ class pantheraSession
      * @return bool
      * @author Damian Kęska
      */
-
     public function browserCheck()
     {
         if ($this->exists('browser'))
