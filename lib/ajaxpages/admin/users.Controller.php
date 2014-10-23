@@ -546,8 +546,8 @@ class usersAjaxControllerCore extends pageController
         $address = filterInput($_POST['address'], 'strip');
         $city = filterInput($_POST['city'], 'strip');
         $postal_code = filterInput($_POST['postal_code'], 'strip');
-        $mail = $_POST['email'];
-        $jabber = $_POST['jabber'];
+        $mail = trim($_POST['email']);
+        $jabber = trim($_POST['jabber']);
         $language = $_POST['language'];
 
         // group
@@ -560,11 +560,29 @@ class usersAjaxControllerCore extends pageController
         if (!$group -> exists())
             $error = localize('Please specify a valid user group', 'users');
 
-        if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
+        if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
             $error = localize('Please provide a valid e-mail address', 'users');
 
-        if (isset($_POST['jabber']) && $_POST['jabber'] && !filter_var($_POST['jabber'], FILTER_VALIDATE_EMAIL))
+        if (isset($jabber) && $jabber && !filter_var($jabber, FILTER_VALIDATE_EMAIL))
             $error = localize('Please provide a valid jabber address', 'users');
+
+        /**
+         * Check if there are already users with that e-mail or jabber address
+         */
+        $where = new whereClause;
+        $where -> add('AND', 'mail', '=', $mail);
+        $where -> add('AND', 'jabber', '=', $jabber);
+
+        $testUser = pantheraUser::fetchOne($where, 0, 1);
+
+        if ($testUser)
+        {
+            if ($testUser -> mail == $mail)
+                $error = localize('This e-mail address is already in use', 'users');
+
+            if ($testUser -> jabber == $jabber)
+                $error = localize('This jabber address is already in use', 'users');
+        }
 
         $attributes = array();
 
@@ -576,7 +594,8 @@ class usersAjaxControllerCore extends pageController
             ));
         }
 
-        if (createNewUser($login, $password, $full_name, $primary_group, $attributes, $language, $gender, $address, $city, $postal_code, $mail, $jabber, $avatar))
+        // $login, $passwd, $full_name, $primary_group='', $attributes, $language, $mail='', $jabber='', $profile_picture='{$PANTHERA_URL}/images/default_avatar.png', $ip='', $requiresConfirmation=False, $gender='', $address='', $city='', $postal_code=''
+        if (createNewUser($login, $password, $full_name, $primary_group, $attributes, $language, $mail, $jabber, $avatar, '', true, $gender, $address, $city, $postal_code))
         {
             ajax_exit(array(
                 'status' => 'success',

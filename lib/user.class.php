@@ -637,7 +637,7 @@ function createNewUser($login, $passwd, $full_name, $primary_group='', $attribut
     }
 
     if ($jabber) {
-        if (!filver_var($jabber, FILTER_VALIDATE_EMAIL))
+        if (!filter_var($jabber, FILTER_VALIDATE_EMAIL))
             throw new Exception('Incorrect jabber address', 867);
     }
 
