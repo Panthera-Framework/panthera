@@ -20,7 +20,6 @@ require_once PANTHERA_DIR. '/share/phpmailer/class.smtp.php';
  * @package Panthera\modules\mailing
  * @author Damian Kęska
  */
-
 class mailMessage
 {
     public $mailer;
@@ -242,6 +241,17 @@ class mailMessage
             if (!is_array($variables))
                 $variables = array();
 
+            // get default subject if no subject was specified in a parameter
+            if (!$subject and $obj -> default_subject)
+            {
+                $unserialized = @unserialize($obj -> default_subject);
+
+                if (isset($unserialized[$language]))
+                    $subject = $unserialized[$language];
+                else
+                    $subject = $panthera -> locale -> localizeFromArray(pantheraLocale::selectStringFromArray($unserialized));
+            }
+
             $variables = array_merge($panthera -> template -> vars, $variables, array(
                 'from' => $from,
                 'to' => $to,
@@ -268,15 +278,6 @@ class mailMessage
                 $plainBody = strip_tags($htmlBody);
             }
 
-            if (!$subject and $obj -> default_subject)
-            {
-                $unserialized = @unserialize($obj -> default_subject);
-
-                if (isset($unserialized[$language]))
-                    $subject = $unserialized[$language];
-                else
-                    $subject = $panthera -> locale -> localizeFromArray(pantheraLocale::selectStringFromArray($unserialized));
-            }
         } else {
             $htmlBody = $dataOrTemplate;
             $plainBody = strip_tags($htmlBody);
@@ -327,7 +328,6 @@ class mailMessage
  * @package Panthera\modules\mailing
  * @author Damian Kęska
  */
-
 class mailTemplate extends pantheraFetchDB
 {
     protected $_tableName = 'mails';
@@ -337,6 +337,7 @@ class mailTemplate extends pantheraFetchDB
     );
     protected $_meta;
     protected $_unsetColumns = array();
+    protected $_templateParseCache = array();
 
     /**
      * Get list of translations of single mail template
@@ -425,7 +426,6 @@ class mailTemplate extends pantheraFetchDB
      * @param string $value
      * @author Damian Kęska
      */
-
     public function __construct()
     {
         call_user_func_array(array($this, 'parent::__construct'), func_get_args());
@@ -439,12 +439,32 @@ class mailTemplate extends pantheraFetchDB
             {
                 $this -> panthera -> logging -> output('Adding "' .$templateName. '" to database', 'mailTemplate');
 
-                $this -> panthera -> db -> insert('mails', array(
+                $this->_data = array(
                     'template' => $templateName,
                     'enabled' => 0,
                     'default_subject' => '',
                     'fallback_language' => 'english',
-                ));
+                );
+
+                $titles = array();
+
+                foreach ($this->panthera->locale->getLocales() as $localeName => $enabled)
+                {
+                    // try html version
+                    $parsed = $this->getContent($localeName);
+
+                    // next try plaintext version
+                    if (!$parsed or !isset($parsed['headers']['title']))
+                        $parsed = $this->getContent($localeName, 'plain');
+
+                    if ($parsed and isset($parsed['headers']['title']))
+                    {
+                        $titles[$localeName] = $parsed['headers']['title'];
+                    }
+                }
+
+                $this->_data['default_subject'] = serialize($titles);
+                $this -> panthera -> db -> insert('mails', $this->_data);
 
                 // construct object second time after adding new row to table
                 call_user_func_array(array($this, 'parent::__construct'), func_get_args());
@@ -473,7 +493,57 @@ class mailTemplate extends pantheraFetchDB
         if (!$path)
             return false;
 
-        return file_get_contents($path);
+        // return unmodified file from cache
+        if (isset($this->_templateParseCache[$language.$format]) && hash('md4', filemtime($path).filesize($path)) == $this->_templateParseCache[$language.$format]['__hash'])
+        {
+            $tmp = $this->_templateParseCache[$language.$format]; unset($tmp['__hash']);
+            return $tmp;
+        }
+
+        $this -> panthera -> logging -> output('Parsing mail template from '.$path, 'mailing');
+
+        $contents = $content = file_get_contents($path);
+        $header = explode("\n\n", $contents);
+        $parsedHeaders = array();
+
+        // if header exists
+        if (count($header) > 1)
+        {
+            $content = str_replace($header[0]."\n\n", '', $content);
+            $wrongParsedHeader = '';
+            $lines = explode("\n", $header[0]);
+
+            foreach ($lines as $line)
+            {
+                $delimiter = strpos($line, ': ');
+
+                if ($delimiter !== false)
+                    $parsedHeaders[strtolower(substr($line, 0, $delimiter))] = substr($line, ($delimiter+2), strlen($line));
+                else
+                    $wrongParsedHeader .= $line . "\n";
+            }
+
+            $content = $wrongParsedHeader . "\n" . $content;
+
+            if (!isset($parsedHeaders['title']))
+                panthera::getInstance() -> logging -> output('Warning, no "title" header found in "' .$language. '/'  .$this->template.'" mail template', 'mailing');
+
+            $output = array(
+                'headers' => $parsedHeaders,
+                'contents' => $content,
+            );
+
+        } else
+            $output = array(
+                'headers' => array(),
+                'content' => $contents,
+            );
+
+        $output['__hash'] = hash('md4', filemtime($path).filesize($path));
+        $this->_templateParseCache[$language.$format] = $output;
+
+        unset($output['__hash']);
+        return $output;
     }
 
     /**
@@ -486,7 +556,7 @@ class mailTemplate extends pantheraFetchDB
      * @return bool
      */
 
-    public function setContent($content, $language, $format='html')
+    public function setContent($content, $language, $format='html', $headers=array())
     {
         $extension = '.txt.tpl';
 
@@ -504,6 +574,27 @@ class mailTemplate extends pantheraFetchDB
 
         if (!is_dir($savePath))
             mkdir($savePath);
+
+        // add headers from existing file if got empty array in $headers and file exists
+        if (is_array($headers) && !$headers)
+        {
+            $parsed = $this->getContent($language, $content);
+
+            if ($parsed)
+                $headers = $parsed['headers'];
+        }
+
+        if (is_array($headers) && $headers)
+        {
+            $headerString = '';
+
+            foreach ($headers as $key => $value)
+            {
+                $headerString .= $key. ": ".$value."\n";
+            }
+
+            $content = $headerString . "\n" . $content;
+        }
 
         $fp = @fopen($savePath. '/' .$this -> template.$extension, 'w');
         @fwrite($fp, $content);

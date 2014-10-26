@@ -427,6 +427,93 @@ class pantheraUser extends pantheraFetchDB
 
         return True;
     }
+
+    public static function create($array)
+    {
+        $panthera = pantheraCore::getInstance();
+
+        if (!isset($array['lastip']) && !$array['lastip'])
+            $array['lastip'] = $_SERVER['REMOTE_ADDR'];
+
+        // groups check
+        if (!isset($array['primary_group']) && !$array['primary_group'])
+            $array['primary_group'] = 'users';
+
+        if (!$panthera -> locale -> exists($array['language']))
+        {
+            throw new Exception('Selected locale does not exists', 864);
+            return False;
+        }
+
+        $test = new pantheraGroup('name', $array['primary_group']);
+
+        if (!$test -> exists())
+        {
+            throw new Exception('Selected group does not exists', 865);
+            return False;
+        }
+
+        $array['primary_group'] = $test->group_id;
+
+        if (isset($array['mail']) && $array['mail'])
+        {
+            if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
+                throw new Exception('Incorrect e-mail address', 866);
+        }
+
+        if (isset($array['jabber']) && $array['jabber'])
+        {
+            if (!filter_var($array['jabber'], FILTER_VALIDATE_EMAIL))
+                throw new Exception('Incorrect jabber address', 867);
+        }
+
+        // validate login
+        $test = new pantheraUser('login', $array['login']);
+
+        if ($test -> exists())
+        {
+            throw new Exception('User already exists', 863);
+            return False;
+        }
+
+        $array['login'] = trim($array['login']);
+        $regexp = $panthera -> get_filters('createNewUser.loginRegexp', '/^[a-zA-Z0-9\-\.\,\+\!]+_?[a-zA-Z0-9\-\.\,\+\!]+$/D');
+
+        if (!preg_match($regexp, $array['login']))
+            throw new Exception('Login contains invalid characters', 868);
+
+        // ip address (if entered)
+        if ($array['lastip'])
+        {
+            if (!filter_var($array['lastip'], FILTER_VALIDATE_IP))
+                throw new Exception('Invalid IP address, leave empty if not required', 878);
+        }
+
+        /*$array = array(
+            'login' => strip_tags($login),
+            'passwd' => encodePassword($passwd),
+            'full_name' => strip_tags($full_name),
+            'primary_group' => $primary_group,
+            'attributes' => $attributes,
+            'language' => $language,
+            'gender' => $gender,
+            'address' => $address,
+            'city' => $city,
+            'postal_code' => $postal_code,
+            'mail' => $mail,
+            'jabber' => $jabber,
+            'profile_picture' => $profile_picture,
+            'ip' => $ip
+        );*/
+
+
+        if (isset($array['@requiresActivation']) && $array['@requiresActivation'])
+        {
+            pantheraRecovery::recoveryCreate($array['login'], 'newAccount', true);
+        }
+
+        return parent::create($array);
+    }
 }
 
 /**
@@ -595,148 +682,6 @@ class pantheraGroup extends pantheraFetchDB
         
         return pantheraUser::fetchAll($filter, $limit, $offset);
     }
-}
-
-/**
- * Create new user in {$db_prefix}users
- *
- * @return bool
- * @package Panthera\core\system\user
- * @author Mateusz Warzyński
- * @author Damian Kęska
- */
-
-function createNewUser($login, $passwd, $full_name, $primary_group='', $attributes, $language, $mail='', $jabber='', $profile_picture='{$PANTHERA_URL}/images/default_avatar.png', $ip='', $requiresConfirmation=False, $gender='', $address='', $city='', $postal_code='')
-{
-    $panthera = pantheraCore::getInstance();
-
-    if ($ip == '')
-        $ip = $_SERVER['REMOTE_ADDR'];
-
-    // groups check
-    if (!$primary_group)
-        $primary_group = 'users';
-
-    if (!$panthera -> locale -> exists($language)) {
-        throw new Exception('Selected locale does not exists', 864);
-        return False;
-    }
-
-    $test = new pantheraGroup('name', $primary_group);
-
-    if (!$test -> exists()) {
-        throw new Exception('Selected group does not exists', 865);
-        return False;
-    }
-
-    $primary_group = $test->group_id;
-
-    if ($mail) {
-        if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
-            throw new Exception('Incorrect e-mail address', 866);
-    }
-
-    if ($jabber) {
-        if (!filter_var($jabber, FILTER_VALIDATE_EMAIL))
-            throw new Exception('Incorrect jabber address', 867);
-    }
-
-    // validate login
-    $test = new pantheraUser('login', $login);
-
-    if ($test -> exists()) {
-        throw new Exception('User already exists', 863);
-        return False;
-    }
-
-    $login = trim($login);
-    $regexp = $panthera -> get_filters('createNewUser.loginRegexp', '/^[a-zA-Z0-9\-\.\,\+\!]+_?[a-zA-Z0-9\-\.\,\+\!]+$/D');
-
-    if (!preg_match($regexp, $login))
-        throw new Exception('Login contains invalid characters', 868);
-
-    // ip address (if entered)
-    if ($ip)
-    {
-        if (!filter_var($ip, FILTER_VALIDATE_IP))
-            throw new Exception('Invalid IP address, leave empty if not required', 878);
-    }
-
-    $array = array(
-        'login' => strip_tags($login),
-        'passwd' => encodePassword($passwd),
-        'full_name' => strip_tags($full_name),
-        'primary_group' => $primary_group,
-        'attributes' => $attributes,
-        'language' => $language,
-        'gender' => $gender,
-        'address' => $address,
-        'city' => $city,
-        'postal_code' => $postal_code,
-        'mail' => $mail,
-        'jabber' => $jabber,
-        'profile_picture' => $profile_picture,
-        'ip' => $ip
-    );
-
-
-    $SQL = true;
-
-    if ($requiresConfirmation)
-    {
-        $confirmationKey = generateRandomString(16);
-
-        $details = array(
-            'confirmationKey' => $confirmationKey,
-            'login' => $array['login']
-        );
-
-        $SQL = $panthera -> db -> query ('INSERT INTO `{$db_prefix}password_recovery` (`id`, `recovery_key`, `user_login`, `date`, `new_passwd`, `type`) VALUES (NULL, :confirmationKey, :login, NOW(), " ", "confirmation");', $details);
-
-        if (!$SQL) {
-            $panthera -> logging -> output('Cannot insert confirmation key to database, details: ' .$SQL->errorInfo(), 'users');
-            return False;
-        }
-
-        $panthera -> config -> loadSection('register');
-        $messages = $panthera->config->getKey('register.verification.message', array('english' => 'Hello {$userName}, here is a link to confirm your account '.pantheraUrl('{$PANTHERA_URL}/pa-login.php?ckey=', False, 'frontend').'{$key}&login={$userName}'), 'array', 'register');
-        $titles = $panthera->config->getKey('register.verification.title', array('english' => 'Account confirmation'), 'array', 'register');
-
-        if (isset($messages[$language]))
-        {
-            $message = $messages[$language];
-            $title = $titles[$language];
-        } elseif (isset($messages['english'])) {
-            $message = $messages['english'];
-            $title = $titles['english'];
-        } else {
-            $message = end($messages);
-            $title = end($titles);
-        }
-
-        $message = str_replace('{$key}', $confirmationKey,
-                   str_replace('{$userName}', $array['login'],
-                   str_replace('{$userID}', $user->id, pantheraUrl($message))));
-
-        $title =   str_replace('{$key}', $confirmationKey,
-                   str_replace('{$userName}', $array['login'],
-                   str_replace('{$userID}', $user->id, pantheraUrl($title))));
-
-        $panthera -> importModule('mailing');
-        $mailRecovery = new mailMessage();
-        $mailRecovery -> setSubject($title);
-        $mailRecovery -> addRecipient($array['mail']);
-        $mailRecovery -> send($message, 'html');
-    }
-
-    $SQL = $panthera->db->query('INSERT INTO `{$db_prefix}users` (`id`, `login`, `passwd`, `full_name`, `primary_group`, `joined`, `attributes`, `language`, `mail`, `jabber`, `profile_picture`, `lastlogin`, `lastip`, `gender`, `city`, `address`, `postal_code`) VALUES (NULL, :login, :passwd, :full_name, :primary_group, NOW(), :attributes, :language, :mail, :jabber, :profile_picture, NOW(), :ip, :gender, :city, :address, :postal_code);', $array);
-
-    if (!$SQL) {
-        $panthera -> logging -> output('Cannot insert new user to users table, details: ' .$SQL->errorInfo(), 'users');
-        return False;
-    }
-
-    return True;
 }
 
 /**

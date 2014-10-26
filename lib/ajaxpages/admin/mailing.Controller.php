@@ -277,13 +277,13 @@ class mailingAjaxControllerCore extends pageController
             $html = $tpl -> getContent($language, 'html');
 
             // convert to string in case getContent would return false
-            if (!$plain) $plain = '';
-            if (!$html) $html = '';
+            if (!$plain) $plain = array('headers' => array(), 'content' => '');
+            if (!$html) $html = array('headers' => array(), 'content' => '');
 
             $this -> panthera -> template -> push(array(
                 'versions' => array(
-                    'text' => $plain,
-                    'html' => $html,
+                    'text' => $plain['content'],
+                    'html' => $html['content'],
                 ),
                 'mailTemplate' => $tpl,
                 'lang' => $language,

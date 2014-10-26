@@ -1,3 +1,6 @@
+Title: Zmiana hasła
+
+
 Witaj {$userName},
 
 Poproszono o zmianę hasła, aby dokonać aktywacji nowo wygenerowanego hasła odwiedź poniższy link, jeśli nie Ty prosiłeś(aś) o zmianę hasła - zignoruj tą wiadomość.
