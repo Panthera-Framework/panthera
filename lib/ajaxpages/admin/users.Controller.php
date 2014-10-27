@@ -560,12 +560,6 @@ class usersAjaxControllerCore extends pageController
         if (!$group -> exists())
             $error = localize('Please specify a valid user group', 'users');
 
-        if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
-            $error = localize('Please provide a valid e-mail address', 'users');
-
-        if (isset($jabber) && $jabber && !filter_var($jabber, FILTER_VALIDATE_EMAIL))
-            $error = localize('Please provide a valid jabber address', 'users');
-
         /**
          * Check if there are already users with that e-mail or jabber address
          */
@@ -594,8 +588,24 @@ class usersAjaxControllerCore extends pageController
             ));
         }
 
-        // $login, $passwd, $full_name, $primary_group='', $attributes, $language, $mail='', $jabber='', $profile_picture='{$PANTHERA_URL}/images/default_avatar.png', $ip='', $requiresConfirmation=False, $gender='', $address='', $city='', $postal_code=''
-        if (createNewUser($login, $password, $full_name, $primary_group, $attributes, $language, $mail, $jabber, $avatar, '', true, $gender, $address, $city, $postal_code))
+        $insertConditions = array(
+            'login' => $login,
+            'passwd' => $password,
+            'full_name' => $full_name,
+            'primary_group' => $primary_group,
+            'attributes' => $attributes,
+            'language' => $language,
+            'mail' => $mail,
+            'jabber' => $jabber,
+            'profile_picture' => $avatar,
+            '@requiresActivation' => true,
+            'gender' => $gender,
+            'address' => $address,
+            'city' => $city,
+            'postal_code' => $postal_code,
+        );
+
+        if (user::create($insertConditions))
         {
             ajax_exit(array(
                 'status' => 'success',

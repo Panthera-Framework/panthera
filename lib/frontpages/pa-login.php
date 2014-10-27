@@ -30,7 +30,7 @@ include_once getContentDir('pageController.class.php');
 class pa_loginControllerSystem extends pageController
 {
     protected $requirements = array(
-        'userregistration', 'passwordrecovery',
+        'userregistration', 'login/passwordrecovery',
     );
     
     /**

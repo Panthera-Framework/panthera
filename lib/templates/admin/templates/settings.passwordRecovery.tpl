@@ -92,7 +92,7 @@ function initEditor()
                 <tr>
                     <td valign="top">{$variables['recovery_-_mail_-_content']['label']}:</td>
                     <td>
-                        <b>{function="localize('Avaliable tags', 'passwordrecovery')"}:</b> {&#36;recovery_key}, {&#36;recovery_url}, {&#36;recovery_passwd}, {&#36;PANTHERA_URL}, {&#36;userName}, {&#36;userID}<br><br>
+                        <b>{function="localize('Avaliable tags', 'passwordrecovery')"}:</b> {&#36;key}, {&#36;recovery_url}, {&#36;passwd}, {&#36;PANTHERA_URL}, {&#36;userName}, {&#36;userID}<br><br>
                         <textarea name="recovery_-_mail_-_content" id="recovery_mail_content" style="width: 95%; height: 250px;">{function="htmlspecialchars(Tools::stripNewLines($variables['recovery_-_mail_-_content']['value']))"}</textarea>
                     </td>
                 </tr>

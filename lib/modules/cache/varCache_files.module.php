@@ -50,7 +50,7 @@ class varCache_files extends pantheraClass
         if (!is_dir($this -> cacheDir) && !mkdir($this->cacheDir))
             throw new Exception('Cannot create cache directory in "' .$this -> cacheDir. '"', 31381);
 
-        if (!is_writable($this->cacheDir) || !chmod($this->cacheDir, 0755))
+        if (!is_writable($this->cacheDir) || !@chmod($this->cacheDir, 0775))
             throw new Exception('Cache directory "' .$this->cacheDir. '" is not writable!', 31382);
 
         // cleanup indexed files

@@ -270,19 +270,23 @@ class userRegistration extends validableForm
     {
         $this -> panthera -> logging -> output('Creating new user', 'register');
 
-        createNewUser(
-            $this->source['login'],
-            $this->source['passwd'],
-            $this->source['fullname'],
-            $this->panthera->config->getKey('register.group', 'users', 'string', 'register'),
-            '',
-            $this->panthera->locale->getActive(),
-            $this->source['mail'],
-            '',
-            $this->panthera->config->getKey('register.avatar', '{$PANTHERA_URL}/images/default_avatar.png', 'string', 'register'),
-            $_SERVER['REMOTE_ADDR'],
-            (bool)$this -> panthera -> config -> getKey('register.confirmation.required', 1, 'bool', 'register')
-        );
+        user::create(array(
+            'login' => $this->source['login'],
+            'passwd' => $this->source['passwd'],
+            'full_name' => $this->source['fullname'],
+            'primary_group' => $this->panthera->config->getKey('register.group', 'users', 'string', 'register'),
+            'attributes' => '',
+            'language' => $this->panthera->locale->getActive(),
+            'mail' => $this->source['mail'],
+            'jabber' => '',
+            'profile_picture' => $this->panthera->config->getKey('register.avatar', '{$PANTHERA_URL}/images/default_avatar.png', 'string', 'register'),
+            '@requiresActivation' => $this -> panthera -> config -> getKey('register.confirmation.required', 1, 'bool', 'register'),
+            'gender' => $gender,
+            'address' => $address,
+            'city' => $city,
+            'postal_code' => $postal_code,
+            'last_ip' => $_SERVER['REMOTE_ADDR'],
+        ));
 
         $u = new pantheraUser('login', $this->source['login']);
 

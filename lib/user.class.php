@@ -422,26 +422,37 @@ class pantheraUser extends pantheraFetchDB
 
     public function delete()
     {
-        $this -> acl -> deleteAll();
+        if ($this -> acl)
+            $this -> acl -> deleteAll();
+
         parent::delete();
 
         return True;
     }
 
+    /**
+     * Create a new user account
+     *
+     * @param array $array List of database columns of users table
+     * @return bool|mixed
+     * @author Damian Kęska
+     * @throws Exception
+     */
+
     public static function create($array)
     {
         $panthera = pantheraCore::getInstance();
 
-        if (!isset($array['lastip']) && !$array['lastip'])
+        if (!isset($array['lastip']) || !$array['lastip'])
             $array['lastip'] = $_SERVER['REMOTE_ADDR'];
 
         // groups check
-        if (!isset($array['primary_group']) && !$array['primary_group'])
+        if (!isset($array['primary_group']) || !$array['primary_group'])
             $array['primary_group'] = 'users';
 
         if (!$panthera -> locale -> exists($array['language']))
         {
-            throw new Exception('Selected locale does not exists', 864);
+            throw new validationException('Selected locale does not exists', 864);
             return False;
         }
 
@@ -449,7 +460,7 @@ class pantheraUser extends pantheraFetchDB
 
         if (!$test -> exists())
         {
-            throw new Exception('Selected group does not exists', 865);
+            throw new validationException('Selected group does not exists', 865);
             return False;
         }
 
@@ -457,14 +468,14 @@ class pantheraUser extends pantheraFetchDB
 
         if (isset($array['mail']) && $array['mail'])
         {
-            if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
-                throw new Exception('Incorrect e-mail address', 866);
+            if (!filter_var($array['mail'], FILTER_VALIDATE_EMAIL))
+                throw new validationException('Incorrect e-mail address', 866);
         }
 
         if (isset($array['jabber']) && $array['jabber'])
         {
             if (!filter_var($array['jabber'], FILTER_VALIDATE_EMAIL))
-                throw new Exception('Incorrect jabber address', 867);
+                throw new validationException('Incorrect jabber address', 867);
         }
 
         // validate login
@@ -480,14 +491,20 @@ class pantheraUser extends pantheraFetchDB
         $regexp = $panthera -> get_filters('createNewUser.loginRegexp', '/^[a-zA-Z0-9\-\.\,\+\!]+_?[a-zA-Z0-9\-\.\,\+\!]+$/D');
 
         if (!preg_match($regexp, $array['login']))
-            throw new Exception('Login contains invalid characters', 868);
+            throw new validationException('Login contains invalid characters', 868);
 
         // ip address (if entered)
         if ($array['lastip'])
         {
             if (!filter_var($array['lastip'], FILTER_VALIDATE_IP))
-                throw new Exception('Invalid IP address, leave empty if not required', 878);
-        }
+                throw new validationException('Invalid IP address, leave empty if not required', 878);
+        } else
+            $array['lastip'] = '0.0.0.0';
+
+        if (!$array['passwd'])
+            $array['passwd'] = generateRandomString(10);
+
+        $array['passwd'] = encodePassword($array['passwd']);
 
         /*$array = array(
             'login' => strip_tags($login),
@@ -507,9 +524,12 @@ class pantheraUser extends pantheraFetchDB
         );*/
 
 
-        if (isset($array['@requiresActivation']) && $array['@requiresActivation'])
+        if (isset($array['@requiresActivation']))
         {
-            pantheraRecovery::recoveryCreate($array['login'], 'newAccount', true);
+            if ($array['@requiresActivation'])
+                activation::newActivation($array['login'], 'newAccount', true);
+
+            unset($array['@requiresActivation']); // this cannot go to database ;-)
         }
 
         return parent::create($array);
@@ -517,11 +537,11 @@ class pantheraUser extends pantheraFetchDB
 }
 
 /**
-  * Panthera groups management
-  *
-  * @package Panthera\core\system\user
-  * @author Damian Kęska
-  */
+ * Panthera groups management
+ *
+ * @package Panthera\core\system\user
+ * @author Damian Kęska
+ */
 
 class pantheraGroup extends pantheraFetchDB
 {
@@ -1163,3 +1183,6 @@ class groupJoinHistory extends pantheraFetchDB
     );
     protected $_idColumn = 'joinid';
 }
+
+class_alias('pantheraUser', 'user');
+class_alias('pantheraGroup', 'group');

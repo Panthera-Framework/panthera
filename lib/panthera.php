@@ -146,6 +146,9 @@ function pantheraErrorHandler($errno=0, $errstr='unknown', $errfile='unknown', $
 {
     $panthera = pantheraCore::getInstance();
 
+    if (!error_reporting())
+        return True;
+
     if (error_get_last() or $errno)
     {
         $details = error_get_last();
@@ -2954,3 +2957,5 @@ if (!function_exists('cal_days_in_month'))
         return intval(date('t', mktime(0, 0, 0, $month+1, 0, $year))); 
     }
 }
+
+class validationException extends Exception {}

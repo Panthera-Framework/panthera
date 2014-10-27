@@ -1,117 +1,136 @@
 <?php
 /**
- * Lost password recovery module
+ * Key activation module
+ * Provides a feature to generate a random, unique string that will be sent to mail or jabber to confirm action
  *
  * @package Panthera\core\components\user
  * @author Damian Kęska
  * @license LGPLv3
  */
 
-class pantheraRecovery extends pantheraFetchDB
+class activation extends pantheraFetchDB
 {
     protected $_tableName = 'password_recovery';
     protected $_constructBy = array(
         'id', 'recovery_key', 'array',
     );
+
+    /**
+     * Get user activation of selected type
+     *
+     * @param $login Login
+     * @param string $type Type of activation (eg. recovery, newAccount)
+     * @return bool|object
+     */
+
+    public static function getActivation($login, $type='recovery')
+    {
+        $where = new whereClause;
+        $where -> add('AND', 'user_login', '=', $login);
+        $where -> add('AND', 'type', '=', $type);
+
+        return self::fetchOne($where);
+    }
     
     /**
-     * Create a recovery record and send a message with key
-     * the message body and topic can be both configured in Panthera configuration keys: "recovery_password_title" and "recovery_password_content"
+     * Create an activation record and send a message with key
      *
      * @param string $login
-     * @param bool|null $sendMail Send recovery mail
+     * @param string $type Defaults to recovery, but from here can be also generated other keys that should be activated from mail/jabber
+     * @param bool|null $sendMail Send a mail?
+     * @param bool $skipUserCheck Skip checking for user? (used in registration)
      * @return bool
      * @author Damian Kęska
      */
     
-    public static function recoveryCreate($login, $type='recovery', $sendMail=true)
+    public static function newActivation($login, $type='recovery', $sendMail=true, $skipUserCheck=False)
     {
         $panthera = pantheraCore::getInstance();
-        $panthera -> config -> loadSection('paswordrecovery');
-    
-        $user = new pantheraUser('login', $login);
-    
-        if (!$user -> exists())
-            return False;
+        $panthera -> config -> loadSection('activation');
+
+        if (!$skipUserCheck)
+        {
+            $user = new pantheraUser('login', $login);
+
+            if (!$user->exists())
+                return False;
+        }
         
-        $language = $user -> language;
         $whereClause = new whereClause;
         $whereClause -> add('AND', 'user_login', '=', $login);
         $whereClause -> add('AND', 'type', '=', $type);
         
-        $search = pantheraRecovery::fetchOne($whereClause);
+        $search = self::fetchOne($whereClause);
     
         if ($search)
         {
-            $panthera -> logging -> output('Activation code of type "' .$type. '" already created for user "' .$login. '"', 'pantheraRecovery');
-            return false;
+            $panthera -> logging -> output('Activation code of type "' .$type. '" already created for user "' .$login. '"', 'activation');
+            throw new Exception('Activation code of type "' .$type. '" already created for user "' .$login. '"', 331);
         }
 
         /**
          * Generate random password of fixed length
          * 
-         */        
+         */
     
         // default password length
-        if ($panthera->config->getKey('recovery.passwd.length', 16, 'int', 'passwordrecovery') < 3)
-            $panthera -> config -> setKey('recovery.passwd.length', 16, 'int', 'passwordrecovery');
+        if ($panthera-> config ->getKey('activation.passwd.length', 16, 'int', 'activation') < 3)
+            $panthera -> config -> setKey('activation.passwd.length', 16, 'int', 'activation');
     
         // default recovery key length
-        if ($panthera->config->getKey('recovery.key.length', 32, 'int', 'passwordrecovery') < 16)
-            $panthera -> config -> setKey('recovery.key.length', 32, 'int', 'passwordrecovery');
-        
+        if ($panthera-> config ->getKey('activation.key.length', 32, 'int', 'activation') < 16)
+            $panthera -> config -> setKey('activation.key.length', 32, 'int', 'activation');
+
         $newPassword = '';
         
         // generate password only when recovering password
         if ($type == 'recovery')
-            $newPassword = generateRandomString($panthera->config->getKey('recovery.passwd.length'));
+            $newPassword = generateRandomString($panthera->config->getKey('activation.passwd.length'));
         
         
         /**
          * Generate unique recovery key
-         * 
          */
         
-        $recoveryKey = generateRandomString($panthera->config->getKey('recovery.key.length'));
+        $key = generateRandomString($panthera->config->getKey('activation.key.length'));
         
         // check if selected key is unique, if not generate a new one until it isnt unique
-        $search = pantheraRecovery::fetchOne(array(
-            'recovery_key' => $recoveryKey,
+        $search = self::fetchOne(array(
+            'recovery_key' => $key,
         ), false);
 
         while ($search)
         {
-            $recoveryKey = generateRandomString($panthera->config->getKey('recovery.key.length'));
+            $key = generateRandomString($panthera->config->getKey('activation.key.length'));
             
-            $search = pantheraRecovery::fetchOne(array(
-                'recovery_key' => $recoveryKey,
+            $search = self::fetchOne(array(
+                'recovery_key' => $key,
             ), false);
         }
         
         $values = array(
-            'recovery_key' => $recoveryKey,
+            'recovery_key' => $key,
             'user_login' => $login,
             'new_passwd' => $newPassword,
             'type' => $type,
         );
     
         // plugins support
-        $values = $panthera -> get_filters('recovery.values', $values);
-        $createResult = pantheraRecovery::create($values);
+        $values = $panthera -> get_filters('activation.values', $values);
+        $createResult = self::create($values);
 
         if ($sendMail === false)
-            return $recoveryKey;
+            return $key;
         
         /**
          * Send mail
-         * 
          */
-         
-        $recoveryURL = pantheraUrl('{$PANTHERA_URL}/pa-login.php?key=' .$recoveryKey);
+
+        $recoveryURL = pantheraUrl('{$PANTHERA_URL}/pa-login.php?key=' .$key);
         
         try {
             $recoveryURL = panthera::getInstance() -> routing -> generate('login.recovery', array(
-                'recoveryKey' => $recoveryKey,
+                'recoveryKey' => $key,
             ));
 
         } catch (Exception $e) {}
@@ -119,13 +138,13 @@ class pantheraRecovery extends pantheraFetchDB
         $variables = array(
             'link' => $recoveryURL,
             'recovery_url' => $recoveryURL,
-            'recovery_key' => $recoveryKey,
-            'recovery_passwd' => $newPassword,
+            'key' => $key,
+            'passwd' => $newPassword,
             'userName' => $user->getName(),
             'userID' => $user->id,
         );
         
-        mailMessage::sendMail('passwordRecovery', true, null, $user->mail, $variables, null, null, $user->language);
+        mailMessage::sendMail($type, true, null, $user->mail, $variables, null, null, $user->language);
         return True;
     }
     
@@ -137,7 +156,7 @@ class pantheraRecovery extends pantheraFetchDB
      * @author Damian Kęska
      */
     
-    public static function recoveryChangePassword($key)
+    public static function activateNewPassword($key)
     {
         $panthera = pantheraCore::getInstance();
     
@@ -147,7 +166,7 @@ class pantheraRecovery extends pantheraFetchDB
         $whereClause -> add('AND', 'type', '=', 'recovery', 2);
         $whereClause -> add('OR', 'type', '=', 'confirmation', 2);
         
-        $search = pantheraRecovery::fetchOne($whereClause);
+        $search = self::fetchOne($whereClause);
         
         if ($search)
         {
@@ -162,14 +181,13 @@ class pantheraRecovery extends pantheraFetchDB
             {
                 // maybe any plugin will use this data
                 $panthera -> get_options('recovery.done', array($key, $search -> user_login, $search -> new_passwd));
-            } elseif ($search -> type == 'confirmation') {
+
+            } elseif ($search -> type == 'confirmation')
                 $panthera -> get_options('confirmation.done', array($key, $search -> user_login));
-            }
-    
+
             // remove recovery option
             $search -> delete();
             return True;
        }
     }
 }
-  

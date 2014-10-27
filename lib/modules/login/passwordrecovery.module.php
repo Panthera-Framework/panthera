@@ -21,6 +21,7 @@ class passwordrecoveryModule extends pageController
     /**
      * Initialize module
      *
+     * @param $controllerObject pa-login controller object
      * @return null
      */
 
@@ -36,6 +37,9 @@ class passwordrecoveryModule extends pageController
     /**
      * Password recovery functions
      *
+     * @param $continueChecking
+     * @param $u
+     * @throws Exception
      * @return null
      */
 
@@ -45,8 +49,8 @@ class passwordrecoveryModule extends pageController
         {
             if (isset($_GET['key']))
             {
-                $recovery = new pantheraRecovery('recovery_key', $_GET['key']);
-                $result = pantheraRecovery::recoveryChangePassword($_GET['key']);
+                $recovery = new activation('recovery_key', $_GET['key']);
+                $result = activation::activateNewPassword($_GET['key']);
                 
                 // notify template that we are activating an account
                 if ($recovery -> type == 'confirmation')
@@ -71,7 +75,7 @@ class passwordrecoveryModule extends pageController
 
             } else {
                 // send an e-mail with new password
-                $result = pantheraRecovery::recoveryCreate($_POST['log']);
+                $result = activation::newActivation($_POST['log'], 'recovery');
                 
                 if ($result)
                     $continueChecking = localize('New password was sent in a e-mail message to you', 'messages');

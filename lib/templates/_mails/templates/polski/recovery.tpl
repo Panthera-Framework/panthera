@@ -9,4 +9,4 @@ Link:
 {$recovery_url}
 
 Hasło:
-{$recovery_passwd}
+{$passwd}
