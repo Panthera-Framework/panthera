@@ -444,6 +444,10 @@ class httplib
             curl_setopt($curl, CURLOPT_COOKIEFILE, $this->getTempFile());
             curl_setopt($curl, CURLOPT_COOKIEJAR, $this->getTempFile());
         }
+        
+        if (is_array($headers) and $headers)
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        
 
         $data = curl_exec($curl);
 
