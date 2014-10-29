@@ -141,6 +141,11 @@ function getAvatar(link, id)
                        <input type="password" name="retyped_passwd" placeholder="{function="localize('Retype password', 'users')"}" style="margin-top:5px;" id="retype_passwd">
                   </th>
                 </tr>
+
+                <tr>
+                    <th>{function="localize('Active', 'users')"}</th>
+                    <th><input type="checkbox" name="active" value="1"{if="$user->active"} checked{/if}"></th>
+                </tr>
                 
                 <tr>
                   <th>{function="localize('Avatar', 'users')"}</th>
@@ -225,7 +230,7 @@ function getAvatar(link, id)
                   <th>{function="localize('Jabber', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
                   <th><input type="text" name="jabber" placeholder="user@jabber.org" value="{$user->jabber}"></th>
                 </tr>
-                
+
                 {if="$permissions.canEditOthers"}
                 <tr>
                   <th>{function="localize('Facebook ID', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>

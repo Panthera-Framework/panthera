@@ -221,12 +221,12 @@ class pantheraUser extends pantheraFetchDB
     }
 
     /**
-      * Ban, unban or check ban status
-      *
-      * @param bool $value Set this value to True or False to ban or unban user
-      * @return bool
-      * @author Damian Kęska
-      */
+     * Ban, unban or check ban status
+     *
+     * @param bool $value Set this value to True or False to ban or unban user
+     * @return bool
+     * @author Damian Kęska
+     */
 
     public function isBanned($value='')
     {
@@ -237,12 +237,12 @@ class pantheraUser extends pantheraFetchDB
     }
 
     /**
-      * Return user's login or full name depends on if full name is provided in user profile
-      *
-      * @param string $getLogin Get user login instead of full name
-      * @return string
-      * @author Damian Kęska
-      */
+     * Return user's login or full name depends on if full name is provided in user profile
+     *
+     * @param string $getLogin Get user login instead of full name
+     * @return string
+     * @author Damian Kęska
+     */
 
     public function getName($getLogin=False)
     {
@@ -255,20 +255,56 @@ class pantheraUser extends pantheraFetchDB
     // user attributes will be avaliable via $self->attribute
     public function __get($var)
     {
-        if($var == 'attributes')
-            return $this->attributes;
+        switch ($var)
+        {
+            case 'acl':
+                return $this->acl;
+            break;
 
-        if($var == 'acl')
-            return $this->acl;
+            case 'attributes':
+            case 'meta':
+                return $this->attributes;
+            break;
 
-        if($var == 'meta')
-            return $this->acl;
+            case 'active':
+                $where = new whereClause;
+                $where -> add('AND', 'type', 'in', array('confirmation', 'newAccount', 'deactivated'));
+                return !($this -> isBanned() or is_object(activation::fetchOne($where)));
+            break;
+        }
 
         return parent::__get($var);
     }
 
     public function __set($var, $value)
     {
+        switch ($var)
+        {
+            case 'id':
+                return false;
+            break;
+
+            case 'active':
+                if (!$value)
+                {
+                    $where = new whereClause;
+                    $where -> add('AND', 'user_login', '=', $this->login);
+                    $where -> add('AND', 'type', '=', 'deactivated');
+                    return activation::removeObjects($where);
+                }
+
+                if ($this->active and !$value)
+                {
+                    return activation::create(array(
+                        'recovery_key' => null,
+                        'user_login' => $this->login,
+                        'new_passwd' => null,
+                        'type' => 'deactivated',
+                    ));
+                }
+            break;
+        }
+
         if ($var == 'id')
             return False;
 
@@ -276,11 +312,11 @@ class pantheraUser extends pantheraFetchDB
     }
 
     /**
-      * Save all data back to database, including user attributes
-      *
-      * @return void
-      * @author Damian Kęska
-      */
+     * Save all data back to database, including user attributes
+     *
+     * @return void
+     * @author Damian Kęska
+     */
 
     public function save()
     {

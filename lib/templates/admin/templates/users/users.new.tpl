@@ -125,7 +125,7 @@
         </tr>
 
         <tr>
-            <th>{function="localize('Jabber', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+            <th>{function="localize('Jabber', 'users')"}<small>({function="localize('optionally', 'users')"})</small></th>
             <th><input type="text" name="jabber" placeholder="user@jabber.org"></th>
         </tr>
 
