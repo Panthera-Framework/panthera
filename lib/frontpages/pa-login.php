@@ -198,6 +198,12 @@ class pa_loginControllerSystem extends pageController
 
         $result = userTools::userCreateSession($_POST['log'], $_POST['pwd']);
 
+        // if user has no active account
+        if (!$result->active)
+        {
+            $result = false;
+        }
+
         /**
          * Successful login
          *
