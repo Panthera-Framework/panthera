@@ -305,9 +305,6 @@ class pantheraUser extends pantheraFetchDB
             break;
         }
 
-        if ($var == 'id')
-            return False;
-
         return parent::__set($var, $value);
     }
 
