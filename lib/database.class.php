@@ -1076,6 +1076,7 @@ class whereClause
         '<=',
         '>=',
         'LIKE',
+        'in',
     );
     
     public $tableName = '';
@@ -1213,8 +1214,28 @@ class whereClause
             $mark = 'NOW()';
         else {
             $mark = ':' .$columnTmp;
-            $this -> vals[(string)$columnTmp] = $Value; // helper
-            $this -> groups[$group]['keys'][(string)$columnTmp] = true;
+
+            if ($equals == 'in')
+            {
+                $mark = '(';
+                $i = 0;
+
+                foreach ($Value as $key)
+                {
+                    $i++;
+                    $mark .= ':' .$columnTmp.$i. ', ';
+                    $this->vals[(string)$columnTmp.$i] = $key;
+                    $this->groups[$group]['keys'][(string)$columnTmp.$i] = true;
+                }
+
+                $mark = rtrim($mark, ', ');
+                $mark .= ')';
+
+            } else {
+                $this->vals[(string)$columnTmp] = $Value; // helper
+                $this->groups[$group]['keys'][(string)$columnTmp] = true;
+            }
+
         }
         
         if (empty($this->groups[$group]['query']))
@@ -1784,6 +1805,22 @@ abstract class pantheraFetchDB extends pantheraClass
         }
         
         return $panthera -> db -> insert($info['tableName'], $args);
+    }
+
+    /**
+     * Remove group of objects described by where clause
+     *
+     * @param whereClause|array $where
+     * @param null $orderBy
+     * @param string $orderDirection
+     * @param null $limit
+     * @return mixed
+     */
+
+    public static function removeObjects($where, $orderBy=null, $orderDirection='ASC', $limit=null)
+    {
+        $info = static::_getClassInfoStatic();
+        return pantheraCore::getInstance() -> db -> delete($info['tableName'], $where, $orderBy, $orderDirection, $limit);
     }
 
     /**
