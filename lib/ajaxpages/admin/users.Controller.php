@@ -418,7 +418,7 @@ class usersAjaxControllerCore extends pageController
         if (strlen($_POST['postal_code']) > 3)
             $u->postal_code = $_POST['postal_code'];
 
-
+        $u -> active = (isset($_POST['active']) and $_POST['active']);
         $languages = $this->panthera->locale->getLocales();
 
         if (isset($languages[$_POST['language']]))

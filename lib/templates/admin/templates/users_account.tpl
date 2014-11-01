@@ -5,17 +5,15 @@
 var editUser = new panthera.ajaxLoader($('#editPopup'));
 
 /**
-  * Get link to avatar from upload
-  *
-  * @author Mateusz Warzyński
-  */
-
+ * Get link to avatar from upload
+ *
+ * @author Mateusz Warzyński
+ */
 function getAvatar(link, id)
 {
     $('#avatar_image').attr('src', link);
     $("#avatar_link").attr('value', link);
 }
-
 </script>
 
 {include="ui.titlebar"}
@@ -35,11 +33,10 @@ function getAvatar(link, id)
 <div id="banUser" style="display: none;">
     <script type="text/javascript">
     /**
-      * Toggle value of ban in user attributes
-      *
-      * @author Mateusz Warzyński
-      */
-    
+     * Toggle value of ban in user attributes
+     *
+     * @author Mateusz Warzyński
+     */
     function toggleBan()
     {
         panthera.jsonPOST({ url: '?display=users&cat=admin&action=ban&uid={$user->id}', data: '', success: function (response) {
@@ -84,13 +81,11 @@ function getAvatar(link, id)
       <script type="text/javascript">
       
         $(document).ready(function () {
-
             /**
-              * Edit existing user
-              *
-              * @author Mateusz Warzyński
-              */
-        
+             * Edit existing user
+             *
+             * @author Mateusz Warzyński
+             */
             $('#editUserForm').submit(function () {
                 panthera.jsonPOST( { data: '#editUserForm', spinner: editUser, success: function (response) {
         
@@ -127,12 +122,12 @@ function getAvatar(link, id)
              <tbody>
                 <tr>
                     <input type="text" name="uid" value="{$user->id}" style="display: none;">
-                    <th>{function="localize('Login', 'users')"}</th>
+                    <th>{function="localize('Login', 'users')"}:</th>
                     <th><input type="text" name="login" value="{$user->login}" disabled></th>
                 </tr>
 
                 <tr>
-                  <th>{function="localize('Password', 'users')"}</th>
+                  <th>{function="localize('Password', 'users')"}:</th>
                   <th>
                      {if="!isset($dontRequireOld)"}
                        <input type="password" name="old_passwd" placeholder="{function="localize('Old password', 'users')"}"><br>
@@ -143,12 +138,12 @@ function getAvatar(link, id)
                 </tr>
 
                 <tr>
-                    <th>{function="localize('Active', 'users')"}</th>
-                    <th><input type="checkbox" name="active" value="1"{if="$user->active"} checked{/if}"></th>
+                    <th>{function="localize('Active', 'users')"}:</th>
+                    <th><input type="checkbox" name="active" value="1"{if="$user->active"} checked{/if}></th>
                 </tr>
                 
                 <tr>
-                  <th>{function="localize('Avatar', 'users')"}</th>
+                  <th>{function="localize('Avatar', 'users')"}:</th>
                   <th>
                       <input type="button" value="{function="localize('Change avatar', 'users')"}" onclick="panthera.popup.toggle('?display=avatars&cat=admin&action=displayAvatars&callback=getAvatar', 'avatarPopup');" style="width: 160px;">
                       <div class="galleryImageFrame" style="margin-top: 7px;">
@@ -162,13 +157,13 @@ function getAvatar(link, id)
                 </tr>
 
                 <tr>
-                  <th>{function="localize('Full name', 'users')"}</th>
+                  <th>{function="localize('Full name', 'users')"}:</th>
                   <th><input type="text" name="full_name" value="{$user->full_name}"></th>
                 </tr>
                 
                 {if="$permissions.canEditOthers"}
                 <tr>
-                  <th>{function="localize('Primary group', 'users')"}</th>
+                  <th>{function="localize('Primary group', 'users')"}:</th>
                   <th>
                     <div class="select" style="margin-top: 14px; margin-left: 3px; width: 208px;">
                      <select name="primary_group" style="width: 210px;">
@@ -182,7 +177,7 @@ function getAvatar(link, id)
                 {/if}
                 
                 <tr>
-                  <th>{function="localize('Language', 'users')"}</th>
+                  <th>{function="localize('Language', 'users')"}:</th>
                   <th>
                     <div class="select" style="margin-top: 14px; margin-left: 3px; width: 208px;">
                      <select name="language" style="width: 210px;">
@@ -195,7 +190,7 @@ function getAvatar(link, id)
                 </tr>
                 
                 <tr>
-                  <th>{function="localize('Gender', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+                  <th>{function="localize('Gender', 'users')"}: <small>({function="localize('optionally', 'users')"})</small></th>
                   <th>
                     <div class="select" style="margin-top: 14px; margin-left: 3px; width: 208px;">
                      <select name="gender" style="width: 210px;">
@@ -207,33 +202,33 @@ function getAvatar(link, id)
                 </tr>
                 
                 <tr>
-                  <th>{function="localize('Address', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+                  <th>{function="localize('Address', 'users')"}: <small>({function="localize('optionally', 'users')"})</small></th>
                   <th><input type="text" name="address" placeholder="" value="{$user->address}"></th>
                 </tr>
                 
                 <tr>
-                  <th>{function="localize('City', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+                  <th>{function="localize('City', 'users')"}: <small>({function="localize('optionally', 'users')"})</small></th>
                   <th><input type="text" name="city" placeholder="Warsaw" value="{$user->city}"></th>
                 </tr>
                 
                 <tr>
-                  <th>{function="localize('Postal code', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+                  <th>{function="localize('Postal code', 'users')"}: <small>({function="localize('optionally', 'users')"})</small></th>
                   <th><input type="text" name="postal_code" placeholder="10-200" value="{$user->postal_code}"></th>
                 </tr>
                 
                 <tr>
-                  <th>{function="localize('E-mail', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+                  <th>{function="localize('E-mail', 'users')"}: <small>({function="localize('optionally', 'users')"})</small></th>
                   <th><input type="text" name="email" placeholder="user@gmail.com" value="{$user->email}"></th>
                 </tr>
 
                 <tr>
-                  <th>{function="localize('Jabber', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+                  <th>{function="localize('Jabber', 'users')"}: <small>({function="localize('optionally', 'users')"})</small></th>
                   <th><input type="text" name="jabber" placeholder="user@jabber.org" value="{$user->jabber}"></th>
                 </tr>
 
                 {if="$permissions.canEditOthers"}
                 <tr>
-                  <th>{function="localize('Facebook ID', 'users')"} <small>({function="localize('optionally', 'users')"})</small></th>
+                  <th>{function="localize('Facebook ID', 'users')"}: <small>({function="localize('optionally', 'users')"})</small></th>
                   <th><input type="text" name="facebookID" placeholder="100000000000000" value="{$facebookID}"></th>
                 </tr>
                 {/if}
@@ -313,12 +308,13 @@ function getAvatar(link, id)
 
              <tbody class="hovered">
                 <tr>
-                    <td>{function="localize('Login', 'users')"}</td>
+                    <td>{function="localize('Login', 'users')"}:</td>
                     <td><p>{$user->login}</p></td>
                 </tr>
-                
+
+                {if="$profile_picture"}
                 <tr>
-                  <td>{function="localize('Avatar', 'users')"}</td>
+                  <td>{function="localize('Avatar', 'users')"}:</td>
                   <td>
                       <div class="galleryImageFrame" style="margin-top: 7px; margin-bottom: 7px;">
                         <div class="paGalleryFrameContent" style="background: none; height: inherit; width: inherit;">
@@ -327,77 +323,78 @@ function getAvatar(link, id)
                       </div>
                   </td>
                 </tr>
+                {/if}
 
                 <tr>
-                  <td>{function="localize('Full name', 'users')"}</td>
+                  <td>{function="localize('Full name', 'users')"}:</td>
                   <td><p>{$user->full_name}</p></td>
                 </tr>
 
                 <tr>
-                  <td>{function="localize('Primary group', 'users')"}</td>
+                  <td>{function="localize('Primary group', 'users')"}:</td>
                   <td><p>{$user->group_name}</p></td>
                 </tr>
 
                 <tr>
-                  <td>{function="localize('Language', 'users')"}</td>
+                  <td>{function="localize('Language', 'users')"}:</td>
                   <td><p>{$user->language|ucfirst}</p></td>
                 </tr>
                 
                 <tr>
-                  <td>{function="localize('Joined', 'users')"}</td>
+                  <td>{function="localize('Joined', 'users')"}:</td>
                   <td><p>{$user->joined}</p></td>
                 </tr>
                 
                 <tr>
-                  <td>{function="localize('Status', 'users')"}</td>
+                  <td>{function="localize('Status', 'users')"}:</td>
                   <td><p>{if="!$user->isBanned()"}<span style="color: green;"> {function="localize('Normal', 'users')"} </span> {else} <span style="color: red;"> {function="localize('Blocked  ', 'users')"} </span> {/if} </p></td>
                 </tr>
                 
               {if="$user->gender"}
                 <tr>
-                  <td>{function="localize('Gender', 'users')"} <small>({function="localize('optionally', 'users')"})</small></td>
+                  <td>{function="localize('Gender', 'users')"} <small>({function="localize('optionally', 'users')"})</small>:</td>
                   <td><p>{$user->gender}</p></td>
                 </tr>
               {/if}
               
               {if="$user->address"}
                 <tr>
-                  <td>{function="localize('Address', 'users')"} <small>({function="localize('optionally', 'users')"})</small></td>
+                  <td>{function="localize('Address', 'users')"}: <small>({function="localize('optionally', 'users')"})</small></td>
                   <td><p>{$user->address}</p></td>
                 </tr>
               {/if}
               
               {if="$user->city"}
                 <tr>
-                  <td>{function="localize('City', 'users')"} <small>({function="localize('optionally', 'users')"})</small></td>
+                  <td>{function="localize('City', 'users')"}: <small>({function="localize('optionally', 'users')"})</small></td>
                   <td><p>{$user->city}</p></td>
                 </tr>
               {/if}
               
               {if="$user->postal_code"}
                 <tr>
-                  <td>{function="localize('Postal code', 'users')"} <small>({function="localize('optionally', 'users')"})</small></td>
+                  <td>{function="localize('Postal code', 'users')"}: <small>({function="localize('optionally', 'users')"})</small></td>
                   <td><p>{$user->postal_code}</p></td>
                 </tr>
               {/if}
 
               {if="$user->email"}
                 <tr>
-                  <td>{function="localize('E-mail', 'users')"} <small>({function="localize('optionally', 'users')"})</small></td>
+                  <td>{function="localize('E-mail', 'users')"}: <small>({function="localize('optionally', 'users')"})</small></td>
                   <td><p>{$user->email}</p></td>
                 </tr>
               {/if}
 
               {if="$user->jabber"}
                 <tr>
-                  <td>{function="localize('Jabber', 'users')"} <small>({function="localize('optionally', 'users')"})</small></td>
+                  <td>{function="localize('Jabber', 'users')"}: <small>({function="localize('optionally', 'users')"})</small></td>
                   <td><p>{$user->jabber}</p></td>
                 </tr>
               {/if}
               
               {if="$facebookID"}
                 <tr>
-                  <td>{function="localize('Facebook ID', 'users')"} <small>({function="localize('optionally', 'users')"})</small></td>
+                  <td>{function="localize('Facebook ID', 'users')"}: <small>({function="localize('optionally', 'users')"})</small></td>
                   <td><p>{$facebookID}</p></td>
                 </tr>
               {/if}

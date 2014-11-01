@@ -285,16 +285,13 @@ class pantheraUser extends pantheraFetchDB
             break;
 
             case 'active':
-                if (!$value)
-                {
+                if ($value) {
                     $where = new whereClause;
-                    $where -> add('AND', 'user_login', '=', $this->login);
-                    $where -> add('AND', 'type', '=', 'deactivated');
-                    return activation::removeObjects($where);
-                }
+                    $where->add('AND', 'user_login', '=', $this->login);
+                    $where->add('AND', 'type', 'in', array('confirmation', 'newAccount', 'deactivated'));
 
-                if ($this->active and !$value)
-                {
+                    return activation::removeObjects($where);
+                } else {
                     return activation::create(array(
                         'recovery_key' => null,
                         'user_login' => $this->login,
