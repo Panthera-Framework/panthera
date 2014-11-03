@@ -1809,18 +1809,55 @@ abstract class pantheraFetchDB extends pantheraClass
 
     /**
      * Remove group of objects described by where clause
+     * Warning: This function will not trigger delete() on every object until $triggerDelete is not true
      *
      * @param whereClause|array $where
      * @param null|string $orderBy
      * @param string $orderDirection (Optional) ASC or DESC
      * @param null|int $limit (Optional) How much objects to delete
-     * @return mixed
+     * @param bool $triggerDelete (Optional) Construct objects and trigger delete() on every object (could be very slowly)
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return int|bool
      */
 
-    public static function removeObjects($where, $orderBy=null, $orderDirection='ASC', $limit=null)
+    public static function removeObjects($where, $orderBy=null, $orderDirection='ASC', $limit=null, $triggerDelete=False)
     {
         $info = static::_getClassInfoStatic();
+
+        if ($triggerDelete)
+        {
+            $objects = self::getObjects($where, 0, $limit, $orderBy, $orderDirection);
+
+            if ($objects)
+            {
+                foreach ($objects as $object)
+                    $object -> delete();
+
+                return count($objects);
+            }
+
+            return false;
+        }
+
         return pantheraCore::getInstance() -> db -> delete($info['tableName'], $where, $orderBy, $orderDirection, $limit);
+    }
+
+    /**
+     * Get list of objects
+     *
+     * @param whereClause|array $where
+     * @param string $orderDirection (Optional) ASC or DESC
+     * @param null|int $limit (Optional) How much objects to delete
+     * @param null|string $orderBy
+     * @param string $orderDirection (Optional) ASC or DESC
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return static[]
+     */
+
+    public static function getObjects($where, $offset=null, $limit=null, $orderBy=null, $orderDirection='ASC')
+    {
+        $info = static::_getClassInfoStatic();
+        return pantheraCore::getInstance()->db->getRows($info['tableName'], $where, $limit, $offset, get_called_class(), $orderBy, $orderDirection);
     }
 
     /**

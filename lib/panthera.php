@@ -941,6 +941,11 @@ class pantheraCore
 
     public $config;
     public $debugger = null;
+
+    /**
+     * @var pantheraDB $db
+     */
+
     public $db;
     public $user;
     public $template;
