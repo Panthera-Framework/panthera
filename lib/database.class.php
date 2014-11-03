@@ -1811,9 +1811,9 @@ abstract class pantheraFetchDB extends pantheraClass
      * Remove group of objects described by where clause
      *
      * @param whereClause|array $where
-     * @param null $orderBy
-     * @param string $orderDirection
-     * @param null $limit
+     * @param null|string $orderBy
+     * @param string $orderDirection (Optional) ASC or DESC
+     * @param null|int $limit (Optional) How much objects to delete
      * @return mixed
      */
 
