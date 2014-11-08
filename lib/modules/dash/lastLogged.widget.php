@@ -2,12 +2,11 @@
 /**
  * Last logged users dash widget
  *
- * @package Panthera\core\users
- * @license GNU Lesser General Public License 3, see license.txt
+ * @package Panthera\core\system\user
+ * @license LGPLv3
  * @author Mateusz Warzyński
  * @author Damian Kęska
  */
-
 
 if (!defined('IN_PANTHERA'))
     exit;
@@ -33,12 +32,15 @@ class lastLogged_dashWidget extends pantheraClass
 
         foreach ($u as $key => $value)
         {
-            if ($value->attributes->superuser)
+            // skip user when is a root (superuser) or never logged in (invalid lastlogin date)
+            if ($value->attributes->superuser || strtotime($value->lastlogin) < 0)
                 continue;
+
+            $dateDiff = date_calc_diff(strtotime($value->lastlogin), time());
 
             $users[] = array(
                 'login' => $value->getName(),
-                'time' => date_calc_diff(strtotime($value->lastlogin), time()),
+                'time' => $dateDiff,
                 'avatar' => pantheraUrl($value->profile_picture),
                 'uid' => $value->id,
             );
