@@ -266,6 +266,8 @@ class galleryAjaxControllerCore extends pageController
         ajax_exit(array('status' => 'success', 'visible' => $item -> visibility));
     }
 
+
+
     /**
      * Toggle visibility of categories (for more than one)
      *
@@ -545,7 +547,6 @@ class galleryAjaxControllerCore extends pageController
 
 
 
-
     /**
      * Creating new category
      *
@@ -563,6 +564,8 @@ class galleryAjaxControllerCore extends pageController
             ajax_exit(array('status' => 'failed', 'error' => localize('Title cannot be empty', 'gallery')));
         }
     }
+
+
 
     /**
      * Setting gallery thumbnail from gallery image
@@ -588,6 +591,8 @@ class galleryAjaxControllerCore extends pageController
              ajax_exit(array('status' => 'failed', 'error' => localize('Error with changing gallery thumbnail!', 'gallery')));
         }
     }
+
+
 
     /**
      * Edit category, save variables to database
@@ -643,6 +648,8 @@ class galleryAjaxControllerCore extends pageController
 
         pa_exit();
     }
+
+
 
     /**
      * Edit item form
@@ -736,6 +743,8 @@ class galleryAjaxControllerCore extends pageController
         pa_exit();
     }
 
+
+
     /**
      * Adding item form
      *
@@ -809,7 +818,6 @@ class galleryAjaxControllerCore extends pageController
         $this -> panthera -> template -> display('gallery_additem.tpl');
         pa_exit();
     }
-
 
 
 
@@ -921,6 +929,7 @@ class galleryAjaxControllerCore extends pageController
 
         ajax_exit(array('status' => 'success', 'visible' => $item -> visibility));
     }
+
 
 
     /**
