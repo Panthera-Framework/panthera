@@ -1826,7 +1826,7 @@ abstract class pantheraFetchDB extends pantheraClass
 
         if ($triggerDelete)
         {
-            $objects = self::getObjects($where, 0, $limit, $orderBy, $orderDirection);
+            $objects = self::fetchAll($where, $limit, 0, $ordetBy, $orderDirection);
 
             if ($objects)
             {
@@ -1840,24 +1840,6 @@ abstract class pantheraFetchDB extends pantheraClass
         }
 
         return pantheraCore::getInstance() -> db -> delete($info['tableName'], $where, $orderBy, $orderDirection, $limit);
-    }
-
-    /**
-     * Get list of objects
-     *
-     * @param whereClause|array $where
-     * @param string $orderDirection (Optional) ASC or DESC
-     * @param null|int $limit (Optional) How much objects to delete
-     * @param null|string $orderBy
-     * @param string $orderDirection (Optional) ASC or DESC
-     * @author Damian Kęska <webnull.www@gmail.com>
-     * @return static[]
-     */
-
-    public static function getObjects($where, $offset=null, $limit=null, $orderBy=null, $orderDirection='ASC')
-    {
-        $info = static::_getClassInfoStatic();
-        return pantheraCore::getInstance()->db->getRows($info['tableName'], $where, $limit, $offset, get_called_class(), $orderBy, $orderDirection);
     }
 
     /**
@@ -2060,17 +2042,6 @@ abstract class pantheraFetchDB extends pantheraClass
             return False;
         }
 
-        /*if (!$index)
-        {
-            $index = $this -> panthera -> cache -> get ($this -> panthera->db->prefix.$this->_tableName. '.index.' .$this->__get($this->_idColumn));
-        }
-
-        foreach ($index as $key)
-        {
-            $this -> panthera -> cache -> remove ($key);
-            $this -> panthera -> logging -> output ('Clearing cache record, id=' .$key, 'pantheraFetchDB');
-        }*/
-
         $index = $this -> panthera -> get_filters('pantheraFetchDB.' .get_class($this). '.clearCache', $index, True, $this);
 
         foreach ($this->_constructBy as $column)
@@ -2078,10 +2049,6 @@ abstract class pantheraFetchDB extends pantheraClass
             if ($this->__get($column))
             {
                 $cacheID = $this -> panthera->db->prefix.$this->_tableName. '.' .serialize($column). '.' .$this->__get($column);
-
-                //if (in_array($cacheID, $index))
-                //    continue;
-
                 $this -> panthera -> cache -> remove($cacheID);
                 $this -> panthera -> logging -> output ('Clearing cache record, id=' .$cacheID, $this->cacheGroup);
             }
@@ -2099,24 +2066,6 @@ abstract class pantheraFetchDB extends pantheraClass
 
     public function updateCache()
     {
-        // list of all cached versions of this item
-        /*$cacheIndex = $this -> panthera->db->prefix.$this->_tableName. '.index.' .$this->__get($this->_idColumn);
-
-        if (!$this->panthera->cache->exists($cacheIndex))
-        {
-            $index = array($this->cacheID);
-            $this -> panthera->cache->set($cacheIndex, $index, $this->panthera->db->cache);
-        } else {
-
-            $index = $this -> panthera -> cache -> get ($cacheIndex);
-
-            if (!in_array($this->cacheID, $index))
-            {
-                $index[] = array($this->cacheID);
-                $this -> panthera->cache->set($cacheIndex, $index, $this->panthera->db->cache);
-            }
-        }*/
-
         if (!$this->cacheID)
             return False;
 
