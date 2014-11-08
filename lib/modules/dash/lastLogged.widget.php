@@ -14,7 +14,9 @@ if (!defined('IN_PANTHERA'))
 /**
  * Gallery dash widget class
  *
- * @package Panthera\core\users
+ * @author Mateusz Warzyński
+ * @author Damian Kęska
+ * @package Panthera\core\system\user
  */
 
 class lastLogged_dashWidget extends pantheraClass
