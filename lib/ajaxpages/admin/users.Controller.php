@@ -18,6 +18,18 @@
 
 class usersAjaxControllerCore extends pageController
 {
+    // allow multiple selection for users list
+    use multipleSelectionControllerExtension;
+
+    protected $mSelectionFields = [
+        'users' => [
+            'className' => 'user',
+            'idField' => 'id',
+            'useIterator' => true,
+        ]
+    ];
+
+
     protected $uiTitlebar = array(
         'All registered users on this website', 'users'
     );
@@ -45,6 +57,27 @@ class usersAjaxControllerCore extends pageController
     protected $actionuiTitlebar = array(
         'account' => array('Panel with informations about user.', 'users'),
     );
+
+    /**
+     * Multiple users/groups delete function
+     *
+     * @param $object
+     * @param $i
+     * @param $count
+     * @param $objects
+     * @param $options
+     * @param $fieldName
+     * @return bool
+     */
+
+    protected function mSelectionRemove($object, $i, $count, $objects, $options, $fieldName)
+    {
+        if (method_exists($object, 'delete'))
+        {
+            $object -> delete();
+            return true;
+        }
+    }
 
     /**
      * User account details
@@ -630,28 +663,37 @@ class usersAjaxControllerCore extends pageController
 
     public function display()
     {
-        $this -> checkPermissions('admin');
+        /**
+         * Permissions
+         */
 
-        $this -> panthera -> locale -> loadDomain('users');
-        $this -> panthera -> template -> push('action', '');
-        $this -> panthera -> template -> push('user_uid', '');
-        $this -> panthera -> template -> push('locales', $this -> panthera -> locale -> getLocales());
-        $this -> panthera -> template -> push('locale', $this -> panthera -> locale -> getActive());
-
+        $this -> checkPermissions(array('admin', 'can_see_users_table'));
         $this->tempPermissions = array(
             'canBlockUser' => $this->checkPermissions('admin.users.ban', True),
             'canSeePermissions' => $this->checkPermissions('admin.users.permissions', True),
             'canEditOthers' => $this->checkPermissions('admin.users.seeothers', True)
         );
 
-        $this -> panthera -> template -> push('permissions', $this->tempPermissions);
+        /**
+         * Locale and templates
+         */
 
+        //$this -> panthera -> locale -> loadDomain('users'); // deprecated due to autoload
+        //$this -> panthera -> locale -> loadDomain('search');
+        $this -> panthera -> template -> push(array(
+            'user_uid' => '',
+            'locales' => $this -> panthera -> locale -> getLocales(),
+            'locale' => $this -> panthera -> locale -> getActive(),
+            'action' => '',
+            'permissions' => $this->tempPermissions,
+        ));
+
+        $this -> handleMSelectionSubmit('users', $_POST['mSelectionAction']);
         $this -> dispatchAction();
 
-
-        $this -> checkPermissions('can_see_users_table');
-
-        $this -> panthera -> locale -> loadDomain('search');
+        /**
+         * Search on page
+         */
 
         $sBar = new uiSearchbar('uiTop');
         $sBar -> setQuery($_GET['query']);
@@ -688,7 +730,7 @@ class usersAjaxControllerCore extends pageController
             $this->panthera->config->setKey('paging_users_max', 25);
         }
 
-        $w = new whereClause();
+        $w = new whereClause;
 
         if ($_GET['query'])
         {
@@ -719,7 +761,6 @@ class usersAjaxControllerCore extends pageController
 
         foreach ($groups as $group)
         {
-
             $groupsTpl[$group->group_id] = array(
                 'name' => $group->name,
                 'description' => $group->description,
@@ -761,17 +802,6 @@ class usersAjaxControllerCore extends pageController
             $this -> panthera -> locale -> loadDomain('acl');
             $this -> panthera -> template -> push('groups', $groupsTpl);
         }
-
-        // find all recent 1-10 users
-        // var_dump(pantheraUser::fetchAll('', 10, 0));
-
-        // find all recent 1-10 users with default language set to "polski"
-        // var_dump(pantheraUser::fetchAll(array('language' => 'polski'), 10, 0));
-
-        /*for ($i=0; $i<100; $i++)
-        {
-            $users[] = array('login' => 'test', 'full_name' => 'Testowy, nie istniejący user', 'primary_group' => 'non_existing', 'joined' => 'today', 'language' => 'Marsjański', 'id' => 1);
-        }*/
 
         $this -> panthera -> template -> push('avatar_dimensions', explode('x', $this -> panthera -> config -> getKey('avatar_dimensions', '80x80', 'string')));
         $this -> panthera -> template -> push('locales_added', $this->panthera->locale->getLocales());

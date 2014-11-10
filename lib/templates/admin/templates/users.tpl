@@ -67,8 +67,8 @@ function removeUser(id)
     <div class="separatorHorizontal"></div>
     
     <div class="searchBarButtonArea">
-        <input type="button" value="{function="localize('Create user', 'users')"}" onclick="panthera.popup.toggle('element:#newUserPopup')">
         <input type="button" value="{function="localize('Create group', 'users')"}" onclick="panthera.popup.toggle('element:#newGroupPopup')">
+        <input type="button" value="{function="localize('Create user', 'users')"}" onclick="panthera.popup.toggle('element:#newUserPopup')">
     </div>
 </div>
 
@@ -180,51 +180,84 @@ function removeUser(id)
                 </form>
             </tbody>
         </table>
-        
-        
-      <!-- Users -->   
-        <table style="display: inline-block; position: relative;" id="usersTable">
-            <thead>
-                 <tr>
-                     <th></th>
-                     <th>{function="localize('Name', 'users')"}</th>
-                     <th>{function="localize('Primary group', 'users')"}</th>
-                     <th colspan="2">{function="localize('Default language', 'users')"}</th>
-                 </tr>
-            </thead>
-            
-            <tfoot style="background-color: transparent;">
-               <tr>
-                 <td colspan="7" class="pager">{$uiPagerName="users"}
-                   {include="ui.pager"}
-                 </td>
-               </tr>
-            </tfoot>
-            
-            <tbody>
-              {if="$users_list"}
-              {loop="$users_list"}
-                 <tr id="user_{$value.login}"}>
-                    <td style="padding-left: 15px; padding-right: 15px;"><img src="{$value.avatar}" style="max-height: 30px; max-width: 23px;"></td>
-                    <td {if="$value.banned"}style="text-decoration: line-through;"{/if}>{if="$view_users == True"}<a href='?display=users&cat=admin&action=account&uid={$value.id}' class='ajax_link'>{$value.name}</a>{else}{$value.name}{/if}</td>
-                    <td><a href="?display=acl&cat=admin&action=listGroup&group={$value.primary_group}" class="ajax_link">{$value.primary_group}</a></td>
-                    <td>{$value.language|ucfirst}</td>
-                    <td>
-                        <a href="#" onclick="removeUser('{$value.login}');">
-                            <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
-                        </a>
-                    </td>
-                 </tr>
-              {/loop}
-              {else}
-              <tr id="noUsersOnList">
-                  <td colspan="5">{function="localize('No users found matching current query', 'users')"}</td>
-              </tr>
-              {/if}
-            </tbody>
-       </table>
-       
+
+        {* DISPLAY LIST OF USERS *}
+      <!-- Users -->
+        <form action="?{function="Tools::getQueryString('GET')"}" method="POST" id="mSelectionUsers" style="display: inline;">
+            <table style="display: inline-block; position: relative;" id="usersTable">
+                <thead>
+                     <tr>
+                         <th colspan="2">{function="localize('Name', 'users')"}</th>
+                         <th>{function="localize('Primary group', 'users')"}</th>
+                         <th colspan="3">{function="localize('Default language', 'users')"}</th>
+                     </tr>
+                </thead>
+
+                <tbody>
+                  {if="$users_list"}
+                  {loop="$users_list"}
+                     <tr id="user_{$value.login}"}>
+                        <td style="padding-left: 15px; padding-right: 15px;">
+                            <img src="{$value.avatar}" style="max-height: 30px; max-width: 23px;">
+                        </td>
+
+                        <td {if="$value.banned"}style="text-decoration: line-through;"{/if}>
+                            {if="$view_users == True"}
+                                <a href='?display=users&cat=admin&action=account&uid={$value.id}' class='ajax_link'>{$value.name}</a>
+                            {else}
+                                {$value.name}
+                            {/if}
+                        </td>
+
+                        <td>
+                            <a href="?display=acl&cat=admin&action=listGroup&group={$value.primary_group}" class="ajax_link">{$value.primary_group}</a></td>
+                        <td>
+                            {$value.language|ucfirst}</td>
+                        <td>
+                            <input type="checkbox" name="users[]" value="{$value.id}">
+                        </td>
+
+                        <td>
+                            <a href="#" onclick="removeUser('{$value.login}');">
+                                <img src="{$PANTHERA_URL}/images/admin/ui/delete.png" style="max-height: 22px;" alt="{function="localize('Remove')"}">
+                            </a>
+                        </td>
+                     </tr>
+                  {/loop}
+                  {else}
+                  <tr id="noUsersOnList">
+                      <td colspan="5">{function="localize('No users found matching current query', 'users')"}</td>
+                  </tr>
+                  {/if}
+                </tbody>
+
+                <tfoot style="background-color: transparent;">
+                    <tr>
+                        <td colspan="7" class="pager">{$uiPagerName="users"}
+                            {$mSelection=array('remove' => localize('Remove selected', 'mSelection')/*, 'ban' => localize('Ban selected', 'users')*/)}
+                            {include="ui.pager"}
+                    </tr>
+                </tfoot>
+           </table>
+       </form>
       </div>
     </div>
-        
-<br><br>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#mSelectionAction_users').change(function () {
+                texts = {
+                  'remove': '{function="localize('Are you sure you want to remove selected items?', 'mSelection')"}',
+                  'ban': '{function="localize('Are you sure you want to ban selected users?', 'users')"}'
+                };
+
+                if (confirm(texts[$('#mSelectionAction_users').val()]))
+                {
+                    panthera.htmlPOST({
+                       data: '#mSelectionUsers',
+                       success: function (response) { $('#ajax_content').html(response); }
+                    });
+                }
+            });
+        });
+    </script>

@@ -59,12 +59,12 @@ trait multipleSelectionControllerExtension
             $method = '';
 
             // check for method eg. $this -> mSelectionDelete_pantheraUser
-            if (method_exists($this, 'mSelection' .$action. '_' .$this->mSelectionFields[$fieldName]['className']))
-                $method = 'mSelection' .$action. '_' .$this->mSelectionFields[$fieldName]['className'];
+            if (method_exists($this, 'mSelection' .ucfirst($action). '_' .$this->mSelectionFields[$fieldName]['className']))
+                $method = 'mSelection' .ucfirst($action). '_' .$this->mSelectionFields[$fieldName]['className'];
 
             // check for generic method eg. $this->mSelectionDelete
-            elseif (method_exists($this, 'mSelection' .mSelectionFields))
-                $method = 'mSelection' .$action;
+            elseif (method_exists($this, 'mSelection' .$action))
+                $method = 'mSelection' .ucfirst($action);
 
             if (!$method)
             {
@@ -143,7 +143,7 @@ trait multipleSelectionControllerExtension
             $i++;
             $object = new $this->mSelectionFields[$fieldName]['className']($this->mSelectionFields[$fieldName]['idField'], $objectId);
 
-            if ($his->$callback($object, $i, $count, $objects, $options, $fieldName))
+            if ($this->$callback($object, $i, $count, $objects, $options, $fieldName))
             {
                 $affected++;
             }

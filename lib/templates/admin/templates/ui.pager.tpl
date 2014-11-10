@@ -9,3 +9,12 @@
     {/loop}
 
     {if="$pager.nextBtn"}&nbsp;<a href="{$pager.nextBtn.link}"{if="$pager.nextBtn.onclick"} onclick="{$pager.nextBtn.onclick}"{/if}>>></a>{/if}{function="localize('Total')"}: {$pager.total},&nbsp; {function="localize('Total pages')"}: {$pager.pages}
+
+    {if="$mSelection"}
+        <select name="mSelectionAction" id="mSelectionAction_{$uiPagerName}" style="float: right;">
+            <option value=""></option>
+            {loop="$mSelection"}
+                <option value="{$key}">{$value}</option>
+            {/loop}
+        </select>
+    {/if}
