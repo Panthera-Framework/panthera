@@ -214,7 +214,7 @@ function removeUser(id)
                         <td>
                             {$value.language|ucfirst}</td>
                         <td>
-                            <input type="checkbox" name="users[]" value="{$value.id}">
+                            <input type="checkbox" name="users[]" value="{$value.id}" class="mSelectionCheckbox" id="mSelection_users_{$value.id}" data-mselection-id="{$value.id}" data-mselection-name="users">
                         </td>
 
                         <td>
@@ -234,7 +234,7 @@ function removeUser(id)
                 <tfoot style="background-color: transparent;">
                     <tr>
                         <td colspan="7" class="pager">{$uiPagerName="users"}
-                            {$mSelection=array('remove' => localize('Remove selected', 'mSelection')/*, 'ban' => localize('Ban selected', 'users')*/)}
+                            {$mSelection=array('remove' => localize('Remove selected', 'mSelection'), 'ban' => localize('Ban selected', 'users'), 'unban' => localize('Unban selected', 'users'))}
                             {include="ui.pager"}
                     </tr>
                 </tfoot>
@@ -245,11 +245,23 @@ function removeUser(id)
 
     <script type="text/javascript">
         $(document).ready(function () {
+            panthera.mSelection('.mSelectionCheckbox');
+
+            /**
+             * Handle multiple selection field action in users management
+             *
+             * @author Damian Kęska
+             */
+
             $('#mSelectionAction_users').change(function () {
                 texts = {
                   'remove': '{function="localize('Are you sure you want to remove selected items?', 'mSelection')"}',
-                  'ban': '{function="localize('Are you sure you want to ban selected users?', 'users')"}'
+                  'ban': '{function="localize('Are you sure you want to ban selected users?', 'users')"}',
+                  'unban': '{function="localize('Are you sure you want to unban selected users?', 'users')"}'
                 };
+
+                if (!$('#mSelectionAction_users').val())
+                    return false;
 
                 if (confirm(texts[$('#mSelectionAction_users').val()]))
                 {

@@ -67,6 +67,7 @@ class usersAjaxControllerCore extends pageController
      * @param $objects
      * @param $options
      * @param $fieldName
+     * @author Damian Kęska <webnull.www@gmail.com>
      * @return bool
      */
 
@@ -77,6 +78,52 @@ class usersAjaxControllerCore extends pageController
             $object -> delete();
             return true;
         }
+    }
+
+    /**
+     * Ban selected group of users
+     *
+     * @param $object
+     * @param $i
+     * @param $count
+     * @param $objects
+     * @param $options
+     * @param $fieldName
+     * @param bool $ban
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return bool
+     */
+
+    protected function mSelectionBan($object, $i, $count, $objects, $options, $fieldName, $ban=True)
+    {
+        if (method_exists($object, 'isBanned'))
+        {
+            // cannot ban self
+            if ($object -> id == $this -> panthera -> user -> id)
+                return false;
+
+            $object -> isBanned($ban);
+            $object -> save();
+            return true;
+        }
+    }
+
+    /**
+     * Unban selected users
+     *
+     * @param $object
+     * @param $i
+     * @param $count
+     * @param $objects
+     * @param $options
+     * @param $fieldName
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return bool
+     */
+
+    protected function mSelectionUnban($object, $i, $count, $objects, $options, $fieldName)
+    {
+        return $this->mSelectionBan($object, $i, $count, $objects, $options, $fieldName, false);
     }
 
     /**
