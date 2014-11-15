@@ -8,7 +8,7 @@ if (!defined('IN_PANTHERA'))
         <title>Error - developer informations</title>
         <meta charset="utf-8">
         <META NAME="ROBOTS" CONTENT="NOINDEX">
-        <script type="text/javascript" src="{$PANTHERA_URL}/js/panthera.js"></script>
+        <script type="text/javascript" src="{$PANTHERA_URL}/js/admin/panthera.js"></script>
         <?php include getContentDir('templates/error.css.php'); ?>
     </head>
     <?php
