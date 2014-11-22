@@ -107,10 +107,10 @@ class accountInstallerControllerSystem extends installerController
                     'attributes' => array('admin' => True),
                     'language' => $this->locale->getActive(),
                     'mail' => $_POST['email'],
-                    'jabber' => 'root',
+                    'jabber' => '',
                     'profile_picture' => $this->panthera->config->getKey('register.avatar', '{$PANTHERA_URL}/images/default_avatar.png', 'string', 'register'),
                     '@requiresActivation' => false,
-                    'last_ip' => $_SERVER['REMOTE_ADDR'],
+                    'lastip' => $_SERVER['REMOTE_ADDR'],
                 ));
 
                 $u = new pantheraUser('login', $_POST['login']);
