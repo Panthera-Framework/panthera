@@ -109,7 +109,7 @@ class indexFrontControllerSystem extends pageController
             pantheraCore::raiseError('notfound');
         }
         
-        $template -> display();
+        $this -> template -> display();
         pa_exit();
     }
 }
