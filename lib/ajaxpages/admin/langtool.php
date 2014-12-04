@@ -7,128 +7,171 @@
  * @license GNU Affero General Public License 3, see license.txt
  */
 
-if (!defined('IN_PANTHERA'))
-    exit;
-
 /**
  * Update missing strings cache
  *
- * @package Panthera\core\system\locale
+ * @package Panthera\core\system\langtool
  * @return array
  * @author Damian Kęska
+ * @author Mateusz Warzyński
  */
 
-function updateMissingStringsCache($locale)
+class langtoolAjaxControllerCore extends pageController
 {
-    global $panthera;
 
-    $missingStrings = array_merge(
-        localesManagement::scanForMissingStrings(PANTHERA_DIR, $locale),
-        localesManagement::scanForMissingStrings(SITE_DIR. '/content/templates', $locale),
-        localesManagement::scanForMissingStrings(SITE_DIR. '/content/ajaxpages', $locale),
-        localesManagement::scanForMissingStrings(SITE_DIR. '/content/pages', $locale),
-        localesManagement::scanForMissingStrings(SITE_DIR. '/content/plugins', $locale),
-        localesManagement::scanForMissingStrings(SITE_DIR. '/content/frontpages', $locale)
-    );
-    
-    $panthera -> logging -> output('Creating new missing strings cache in "langtool.scan.missing.' .$locale. '"', 'langtool');
-    $panthera -> varCache -> remove('langtool.scan.missing.' .$locale);
-    $panthera -> varCache -> set('langtool.scan.missing.' .$locale, $missingStrings, 360);
+    protected $userPermissions;
 
-    return $missingStrings;
-}
+    protected $uiTitlebar = array();
 
-function langtoolLimitArray($array, $limit)
-{
-    $newArray = array();
+    protected $permissions = '';
 
-    $offset = $limit[0];
-    $stops = $limit[0] + $limit[1];
-    $i = 0;
+    /*
+    $permissions = array(
+        'management' => getUserRightAttribute($panthera->user, 'langtool_management'),
+        'admin' => checkUserPermissions($panthera->user, True)
+    );*/
 
-    foreach ($array as $section => $keys)
+
+    public function updateMissingStringsCache($locale)
     {
-        foreach ($keys as $key => $value)
-        {
-            $i++;
-            
-            if ($i < $offset)
-                continue;
-            
-            if (!isset($newArray[$section]))
-                $newArray[$section] = array();
-            
-            $newArray[$section][$key] = $value;
-            
-            if ($i >= $stops)
-                return $newArray;
-        }
+        $missingStrings = array_merge(
+            localesManagement::scanForMissingStrings(PANTHERA_DIR, $locale),
+            localesManagement::scanForMissingStrings(SITE_DIR . '/content/templates', $locale),
+            localesManagement::scanForMissingStrings(SITE_DIR . '/content/ajaxpages', $locale),
+            localesManagement::scanForMissingStrings(SITE_DIR . '/content/pages', $locale),
+            localesManagement::scanForMissingStrings(SITE_DIR . '/content/plugins', $locale),
+            localesManagement::scanForMissingStrings(SITE_DIR . '/content/frontpages', $locale)
+        );
+
+        $this->panthera->logging->output('Creating new missing strings cache in "langtool.scan.missing.' . $locale . '"', 'langtool');
+        $this->panthera->varCache->remove('langtool.scan.missing.' . $locale);
+        $this->panthera->varCache->set('langtool.scan.missing.' . $locale, $missingStrings, 360);
+
+        return $missingStrings;
     }
-    
-    return $newArray;
-}
 
-$permissions = array(
-    'management' => getUserRightAttribute($panthera->user, 'langtool_management'),
-    'admin' => checkUserPermissions($panthera->user, True)
-);
 
-$panthera -> template -> push('permissions', $permissions);
-$panthera -> template -> push('domain', $_GET['domain']);
+    public function langtoolLimitArray($array, $limit)
+    {
+        $newArray = array();
 
-if (@$_GET['display'] == 'langtool')
-{
-    $panthera -> locale -> loadDomain('langtool');
+        $offset = $limit[0];
+        $stops = $limit[0] + $limit[1];
+        $i = 0;
 
-    // we need to operate on langauge files, so we include some functions here
-    $panthera -> importModule('liblangtool');
+        foreach ($array as $section => $keys) {
+            foreach ($keys as $key => $value) {
+                $i++;
 
-    /**
-      * Refreshing list of missing templates for current locale
-      *
-      * @author Damian Kęska
-      */
+                if ($i < $offset)
+                    continue;
 
-    if ($_GET['action'] == 'domains' or $_GET['action'] == 'view_domain')
+                if (!isset($newArray[$section]))
+                    $newArray[$section] = array();
+
+                $newArray[$section][$key] = $value;
+
+                if ($i >= $stops)
+                    return $newArray;
+            }
+        }
+
+        return $newArray;
+    }
+
+
+    public function getMissingStrings()
     {
         $locale = $_GET['locale'];
 
         if (!localesManagement::getLocaleDir($locale))
             ajax_exit(array('status' => 'failed', 'message' => localize('Locale does not exist')));
 
-        if ($panthera->varCache)
-        {
-            if (!$panthera->varCache->exists('langtool.scan.missing.' .$locale))
+        if ($this->panthera->varCache) {
+            if (!$this->panthera->varCache->exists('langtool.scan.missing.' . $locale))
                 $missingStrings = updateMissingStringsCache($locale);
             else
-                $missingStrings = $panthera -> varCache -> get('langtool.scan.missing.' .$locale);
+                $missingStrings = $this->panthera->varCache->get('langtool.scan.missing.' . $locale);
 
             // remove domains user don't have permissions to write to
-            foreach ($missingStrings as $domainName => $domain)
-            {
+            foreach ($missingStrings as $domainName => $domain) {
                 // search results also for missing translation strings
                 if (@$_GET['query'] and stripos($domainName, $_GET['query']) === False)
                     unset($missingStrings[$domainName]);
 
-                if (!getUserRightAttribute($panthera->user, 'langtool_' .$locale. '_' .$domainName) and !$permissions['management'] and !getUserRightAttribute($panthera->user, 'langtool_locale_' .$locale))
+                if (!getUserRightAttribute($this->panthera->user, 'langtool_' . $locale . '_' . $domainName) and !$permissions['management'] and !getUserRightAttribute($this->panthera->user, 'langtool_locale_' . $locale))
                     unset($missingStrings[$domainName]);
             }
-        }       
-
-        if ($_GET['action'] == 'domains')
-        {
-            $uiPager = new uiPager('adminMissingTranslations', count($missingStrings), 'adminMissingTranslations', 15);
-            $uiPager -> setActive(intval($_GET['page']));
-            $uiPager -> setLinkTemplatesFromConfig('langtool_domains.tpl');
-
-            $d = langtoolLimitArray($missingStrings, $uiPager->getPageLimit());
-
-            $panthera -> template -> push('missingTranslations', $d); // limit array results to satisfy current page
-        } else {
-            if (isset($missingStrings[$_GET['domain']]))
-                $panthera -> template -> push ('missingTranslations', $missingStrings[$_GET['domain']]);
         }
+
+        return $missingStrings;
     }
+
+
+
+    /**
+     * Refreshing list of missing templates for current locale
+     *
+     * @author Damian Kęska
+     * @author Mateusz Warzyński
+     */
+
+    public function domainsAction()
+    {
+        $missingStrings = self::getMissingStrings();
+
+        $uiPager = new uiPager('adminMissingTranslations', count($missingStrings), 'adminMissingTranslations', 15);
+        $uiPager -> setActive(intval($_GET['page']));
+        $uiPager -> setLinkTemplatesFromConfig('langtool_domains.tpl');
+
+        $d = self::langtoolLimitArray($missingStrings, $uiPager->getPageLimit());
+
+        $this -> panthera -> template -> push('missingTranslations', $d); // limit array results to satisfy current page
+    }
+
+
+
+    /**
+     * Refreshing list of missing templates for current locale
+     *
+     * @author Damian Kęska
+     * @author Mateusz Warzyński
+     */
+
+    public function view_domainAction()
+    {
+        $missingStrings = self::getMissingStrings();
+
+        if (isset($missingStrings[$_GET['domain']]))
+            $this -> panthera -> template -> push('missingTranslations', $missingStrings[$_GET['domain']]);
+    }
+
+
+
+    public function display()
+    {
+        // we need to operate on langauge files, so we include some functions here
+        $this->panthera->importModule('liblangtool');
+
+        $this->locales = $this->panthera->locale->getLocales();
+        $this->panthera->locale->loadDomain('langtool');
+
+        #$this -> panthera -> template -> push('permissions', $permissions);
+        $this->panthera->template->push('domain', $_GET['domain']);
+
+        $this->dispatchAction();
+
+
+        $this->panthera->template->display('langtool.tpl');
+    }
+}
+
+if (@$_GET['display'] == 'langtool')
+{
+
+
+
+
 
     /**
       * Domains management
@@ -601,7 +644,5 @@ if (@$_GET['display'] == 'langtool')
 
 	$titlebar = new uiTitlebar(localize('Manage languages', 'langtool'));
 	$titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/langtool.png', 'left');
-
-	$panthera -> template -> display('langtool.tpl');
 	pa_exit();
 }

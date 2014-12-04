@@ -28,7 +28,7 @@ class contactAjaxControllerSystem extends pageController
     protected $fieldName = 'contact.lang.all';
 
     protected $uiTitlebar = array(
-        'Street adress, phone number, location etc.', 'contactpage',
+        'Street address, phone number, location etc.', 'contactpage',
     );
 
     /**
@@ -37,7 +37,7 @@ class contactAjaxControllerSystem extends pageController
      * @feature admin.contact.language &$language Contact page language
      * @feature admin.contact.beforedisplay &$controllerObject Before template display
      * @author Damian Kęska
-     * @return null
+     * @return string
      */
 
     public function display()
@@ -116,7 +116,7 @@ class contactAjaxControllerSystem extends pageController
         $this -> dispatchAction();
 
         // titlebar
-        $this -> uiTitlebarObject -> setTitle(localize('Street adress, phone number, location etc.', 'contactpage') ." (".$this->language.")");
+        $this -> uiTitlebarObject -> setTitle(localize('Street address, phone number, location etc.', 'contactpage') ." (".$this->language.")");
         $this -> uiTitlebarObject -> addIcon('{$PANTHERA_URL}/images/admin/menu/contact.png', 'left');
 
         // push all variables to template
