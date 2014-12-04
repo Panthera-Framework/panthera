@@ -283,14 +283,14 @@ class galleryAjaxControllerCore extends pageController
             foreach ($ids as $i) {
                 // check special permissions
                 if (!$this -> checkPermissions(array('can_manage_galleries', 'can_manage_gallery_'.$i), True))
-                    ajax_exit(array('status' => 'failed', 'message' => localize(), 'id' => $i));
+                    ajax_exit(array('status' => 'failed', 'message' => localize("You are not allowed to perform this action."), 'id' => $i));
             }
         }
 
         /* This function was created to set visibility for categories of the same unique key */
 
         // get represent category object
-        $item = new galleryCategory('id', $id[0]);
+        $item = new galleryCategory('id', $ids[0]);
 
         // in case if first id is invalid
         if (!$item -> exists())
@@ -304,10 +304,10 @@ class galleryAjaxControllerCore extends pageController
         $item -> save();
 
         // prevent doing the same action in loop
-        unset($id[0]);
+        unset($ids[0]);
 
         // set the same visibility for all categories
-        foreach ($id as $i) {
+        foreach ($ids as $i) {
             // get category
             $item = new galleryCategory('id', $i);
 
@@ -668,7 +668,7 @@ class galleryAjaxControllerCore extends pageController
 
             // check permissions
             if (!$this -> userPermissions['manageAll'])
-                $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gimage_'.$id, 'can_manage_gallery_'.$item->getGalleryID()));
+                $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gimage_'.$item->id, 'can_manage_gallery_'.$item->getGalleryID()));
 
             // check if image exists
             if (!$item -> exists())
@@ -713,7 +713,7 @@ class galleryAjaxControllerCore extends pageController
 
         // check permissions
         if (!$this -> userPermissions['manageAll'])
-            $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gimage_'.$id, 'can_manage_gallery_'.$item->getGalleryID()));
+            $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gimage_'.$item->id, 'can_manage_gallery_'.$item->getGalleryID()));
 
         // send information about image to template
         $this -> panthera -> template -> push('id', $item -> id);
@@ -921,7 +921,7 @@ class galleryAjaxControllerCore extends pageController
         // check general permissions
         if (!$this -> userPermissions['manageAll'])
             // check special permissions
-            $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gallery_'.$item->getGalleryID(), 'can_manage_gimage_'.$id));
+            $this -> checkPermissions(array('can_manage_galleries', 'can_manage_gallery_'.$item->getGalleryID(), 'can_manage_gimage_'.$item->id));
 
         // toggle image visibility and save
         $item -> visibility = !(bool)$item -> visibility;
