@@ -445,6 +445,8 @@ class usersAjaxControllerCore extends pageController
                 $u = $this->panthera->user;
             elseif ($this->checkPermissions('admin'))
                 $u = new pantheraUser('id', $_POST['uid']);
+        } else {
+            ajax_exit(array('status' => 'failed', 'message' => localize('Cannot find UID in request', 'users')));
         }
 
         if (!$u -> exists())
