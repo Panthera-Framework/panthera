@@ -54,10 +54,10 @@ class contactAjaxControllerSystem extends pageController
         }
         
         // plugins
-        $this -> getFeatureRef('admin.contact.language', $this -> language);
+        $this -> getFeatureRef('admin.contact.language', $this->language);
 
         $this -> panthera -> template -> push ('languages', $locales);
-        $this -> panthera -> template -> push ('selected_language', $language);
+        $this -> panthera -> template -> push ('selected_language', $this->language);
 
         // set contact page to be one for all languages
         $this -> panthera -> config -> setKey('contact.generic', isset($_POST['all_langs']), 'bool', 'contact');
@@ -184,7 +184,7 @@ class contactAjaxControllerSystem extends pageController
 
         ajax_exit(array(
             'status' => 'success',
-            'field' => $fieldName,
+            'field' => $this->fieldName,
         ));
     }
 }
