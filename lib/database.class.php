@@ -1370,6 +1370,10 @@ abstract class pantheraFetchDB extends pantheraClass
     
     protected $__meta = null;
 
+    protected $connections = array(
+        /*array('postsClassName' => array('local' => 'userid', 'remote' => 'post_author_id')*/
+    );
+
     /**
      * used by userFetchAll() eg. "upload.view.{$var}" where {$var} => object's value of $__viewPermissionColumn attribute ($this->__get($this->__viewPermissionColumn))
      * @author Damian Kęska
@@ -1494,9 +1498,9 @@ abstract class pantheraFetchDB extends pantheraClass
                         $w -> add( 'AND', $k, '=', $v);
 
                     $q = $w -> show();
-                    $SQL = $panthera->db->query($this->getQuery(). ' WHERE '.$q[0]. ' ORDER BY `id` DESC LIMIT 0,1', $q[1]);
+                    $SQL = $panthera->db->query($this->getQuery(). ' WHERE '.$q[0]. ' ORDER BY `' .$this->_idColumn. '` DESC LIMIT 0,1', $q[1]);
                 } else
-                    $SQL = $panthera->db->query($this->getQuery(). ' ORDER BY `id`');
+                    $SQL = $panthera->db->query($this->getQuery(). ' ORDER BY `' .$this->_idColumn. '`');
             }
 
             /**
@@ -1595,6 +1599,7 @@ abstract class pantheraFetchDB extends pantheraClass
     public static function _getClassInfoStatic()
     {
         $c = get_called_class();
+
         $obj = new $c(null, null);
         return $obj->_getClassInfo();
     }
@@ -1768,6 +1773,9 @@ abstract class pantheraFetchDB extends pantheraClass
         if (!$this->exists())
             return false;
 
+        ## Remove all dependencies first
+        $this->__executeOnChilds('delete');
+
         $this -> panthera -> db -> query('DELETE FROM `{$db_prefix}' .$this->_tableName. '` WHERE `' .$this->_idColumn. '` = :idColumnValue;', array('idColumnValue' => $this -> __get($this->_idColumn)));
         $this -> panthera -> logging -> output('Removed object "' .$this -> __get($this->_idColumn). '"', get_called_class());
         $this -> getMeta();
@@ -1777,6 +1785,43 @@ abstract class pantheraFetchDB extends pantheraClass
         $this -> _data = null;
 
         return true;
+    }
+
+    /**
+     * Execute action on children items
+     *
+     * @param string|array $function Function name, could be multiple eg. array(0 => array('delete', array('param1', 'param2')), 1 => array('updateCacheIndex', null))
+     * @param array $params (Optional) Parameters list when passing a single function call
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return int Count of affected objects
+     */
+
+    protected function __executeOnChilds($function, $params = array())
+    {
+        $i = 0;
+
+        if ($this -> connections)
+        {
+            foreach ($this -> connections as $className => $meta)
+            {
+                if (!class_exists($className))
+                    continue;
+
+                $obj = new $className($meta['remote'], $this->__get($meta['local']));
+
+                if (is_array($function))
+                {
+                    foreach ($function as $param)
+                        call_user_func_array(array($obj, $param[0]), $param[1]);
+
+                } else
+                    call_user_func_array(array($obj, $function), $params);
+
+                $i++;
+            }
+        }
+
+        return $i;
     }
 
     /**
@@ -1858,7 +1903,7 @@ abstract class pantheraFetchDB extends pantheraClass
     {
         $panthera = panthera::getInstance();
 
-        $info = static::_getClassInfoStatic();
+        $info = self::_getClassInfoStatic();
 
         if ($order == 'id' and $info['idColumn'])
             $order = $info['idColumn'];
@@ -1874,7 +1919,7 @@ abstract class pantheraFetchDB extends pantheraClass
             } else
                 throw new InvalidArgumentException('In $limit argument got object that does not have getPageLimit() method', 4);
         }
-        
+
         return $panthera->db->getRows($info['tableName'], $by, $limit, $limitFrom, get_called_class(), $order, $direction);
     }
     
