@@ -2464,6 +2464,9 @@ function pa_redirect($url, $code=null)
 
     $url = $base. '/' .$url;
 
+    if ($panthera->config->getKey('ssl'))
+        $url = str_ireplace('http', 'https', $url);
+
     if (is_int($code))
         header('Location: ' .$url, TRUE, $code);
     else
@@ -2510,6 +2513,7 @@ function pantheraUrl($url, $reverse=False, $type='')
         foreach ($var as $key => $value)
             $url = str_ireplace($key, $value, $url);
     }
+
 
     return $url;
 }
