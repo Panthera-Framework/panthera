@@ -2464,7 +2464,7 @@ function pa_redirect($url, $code=null)
 
     $url = $base. '/' .$url;
 
-    if ($panthera->config->getKey('ssl'))
+    if ($panthera->config->getKey('ssl', 0, 'bool'))
         $url = str_ireplace('http', 'https', $url);
 
     if (is_int($code))
