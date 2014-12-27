@@ -44,7 +44,7 @@ class sqldumpAjaxControllerSystem extends pageController
         if ($this->panthera->db->getSocketType() == 'mysql')
             $name = $this->panthera->config->getKey('db_name'). '-' .date('Y.m.d_H:i:s'). '.sql';
         else
-            $name = date('Y.m.d_H:i:s'). '-' .$panthera->config->getKey('db_file'). '.sql';
+            $name = date('Y.m.d_H:i:s'). '-' .$this->panthera->config->getKey('db_file'). '.sql';
 
         $dump = SQLDump::make();
 
@@ -100,11 +100,19 @@ class sqldumpAjaxControllerSystem extends pageController
       * Display page template
       *
       * @author Damian Kęska
+      * @author Mateusz Warzyński
       * @return string
       */
 
     public function display()
     {
+        // check if folder with possible database backups exists
+        if (!SQLDump::checkDatabaseFolder())
+        {
+            $this -> panthera -> template -> push('error', slocalize('Folder "content/backup/db" does not exist.', 'database'));
+            return $this -> panthera -> template -> compile('sqldump.tpl');
+        }
+
         if (isset($_GET['get']))
         {
             $file = addslashes(str_replace('../', '', $_GET['get']));
