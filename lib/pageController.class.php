@@ -141,6 +141,8 @@ abstract class pageController extends pantheraClass {
 
     protected function runModules()
     {
+        $cache = null;
+
         if ($this -> panthera -> cache)
             $cache = $this -> panthera -> cache;
         elseif ($this -> panthera -> varCache)
@@ -151,7 +153,7 @@ abstract class pageController extends pantheraClass {
 
         $this -> panthera -> logging -> output('Looking for modules in /modules/frontside/' .$this -> controllerName. 'controller/ directory', get_called_class());
 
-        if ($cache and $cache -> exists($cacheID))
+        if ($cache && $cache -> exists($cacheID))
         {
             $files = $cache -> get($cacheID);
             $this -> panthera -> logging -> output('Loaded "' .count($files). '" items from cache "' .$cacheID. '"', get_called_class());
