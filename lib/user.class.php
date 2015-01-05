@@ -268,6 +268,7 @@ class pantheraUser extends pantheraFetchDB
 
             case 'active':
                 $where = new whereClause;
+                $where -> add('AND', 'user_login', '=', $this -> login);
                 $where -> add('AND', 'type', 'in', array('confirmation', 'newAccount', 'deactivated'));
                 return !($this -> isBanned() or is_object(activation::fetchOne($where)));
             break;

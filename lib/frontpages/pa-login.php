@@ -157,6 +157,7 @@ class pa_loginControllerSystem extends pageController
     /**
      * Check authorization data
      *
+     * @feature login.success $pantheraUser On successful login
      * @return null
      */
 
@@ -196,13 +197,13 @@ class pa_loginControllerSystem extends pageController
             }
         }
 
-        $result = userTools::userCreateSession($_POST['log'], $_POST['pwd']);
+        $result = userTools::userCreateSession($_POST['log'], $_POST['pwd'], False, True);
 
         // if user has no active account
-        if (!$result->active)
-        {
+        if (!$result -> active)
             $result = false;
-        }
+        else
+            $result = userTools::userCreateSession($_POST['log'], $_POST['pwd']);
 
         /**
          * Successful login

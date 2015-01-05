@@ -29,7 +29,7 @@ class userTools
      * @author Damian Kęska
      */
 
-    public static function userCreateSession($user, $passwd, $forceWithoutPassword=False, $onlyCheck=False)
+    public static function userCreateSession($user, $passwd, $forceWithoutPassword = False, $onlyCheck = False)
     {
         $panthera = pantheraCore::getInstance();
         $usr = new pantheraUser('login', $user);
@@ -97,7 +97,6 @@ class userTools
     public static function userCreateSessionById($id)
     {
         $panthera = pantheraCore::getInstance();
-
         $user = new pantheraUser('id', $id);
 
         if ($user -> exists())
