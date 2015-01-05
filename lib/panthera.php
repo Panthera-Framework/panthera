@@ -652,8 +652,8 @@ class pantheraConfig
     /**
      * Load configuration overlay from database
      *
-     * @return int
      * @author Damian Kęska
+     * @return int
      */
 
     public function loadOverlay($section='')
@@ -730,8 +730,8 @@ class pantheraConfig
     /**
      * Save cached changes to database
      *
-     * @return void
      * @author Damian Kęska
+     * @return void
      */
 
     public function save()
@@ -804,7 +804,7 @@ class pantheraConfig
                     }
 
                 /**
-                 * Upading existing variable
+                 * Updating existing variable
                  *
                  * @author Damian Kęska
                  */
@@ -816,7 +816,7 @@ class pantheraConfig
                         'value' => $value[1],
                         'key' => $key,
                         'type' => $value[0],
-                        'section' => @$value[2]
+                        'section' => @$value[2],
                     ));
                 }
             }
@@ -847,8 +847,8 @@ class pantheraConfig
     /**
      * Get all configuration variables from app.php
      *
-     * @return array
      * @author Damian Kęska
+     * @return array
      */
 
     public function getConfig($overlay=False)
@@ -875,7 +875,7 @@ class pantheraConfig
             if ($overlay)
                 $this -> overlay = $array;
             else
-                $this->config = $array;
+                $this -> config = $array;
         }
     }
 }
@@ -983,6 +983,7 @@ class pantheraCore
         if (!defined('SKIP_TEMPLATE'))
             $c = _PANTHERA_CORE_OUTPUT_CONTROL_; $this->outputControl = new $c($this);
 
+        /** Initialize cache force defined in app.php **/
         if ((isset($config['varCache']) and isset($config['cache'])) and !defined('SKIP_CACHE'))
         {
             $this->logging -> output('Initializing cache configured in app.php', 'pantheraCore');
@@ -1044,7 +1045,19 @@ class pantheraCore
             $varCacheType = $this->config->getKey('varcache_type', 'db', 'string');
             $cacheType = $this->config->getKey('cache_type', '', 'string');
 
-            $this->loadCache($varCacheType, $cacheType);
+            $this->loadCache($varCacheType, $cacheType, array(
+                'varCache' => true,
+            ));
+
+            /*if ($cacheType != str_replace('cache', '', get_class($this->cache)))
+            {
+                $this->config->setKey('cache_type', str_replace('varCache_', '', get_class($this->cache)));
+            }*/
+
+            if ($varCacheType != str_replace('varCache_', '', get_class($this->varCache)))
+            {
+                $this->config->setKey('varcache_type', str_replace('varCache_', '', get_class($this->varCache)));
+            }
         }
         /** END OF CACHE SYSTEM **/
 
@@ -1221,39 +1234,45 @@ class pantheraCore
     }
 
     /**
-      * Load caching modules
-      *
-      * @param string $varCacheType
-      * @param string $cacheType
-      * @return void
-      * @author Damian Kęska
-      */
+     * Load caching modules
+     *
+     * @param string $varCacheType
+     * @param string $cacheType
+     * @param bool[] $force Force find a replacement caching method when selected method fails
+     * @return void
+     * @author Damian Kęska
+     */
 
-    public function loadCache($varCacheType, $cacheType, $sessionKey='')
+    public function loadCache($varCacheType, $cacheType, $force = false, $sessionKey = '')
     {
         // primary cache (variables cache)
-        if ($dir = getContentDir('modules/cache/varCache_' .$varCacheType. '.module.php'))
-            require_once $dir;
-
-        if (class_exists('varCache_' .$varCacheType))
+        if ($varCacheType)
         {
-            try {
-                $n = 'varCache_' .$varCacheType;
-                $this->varCache = new $n($this, $sessionKey);
-                $this->logging->output('varCache initialized, using ' .$varCacheType, 'pantheraCore');
-            } catch (Exception $e) {
-                $this->logging->output('Disabling varCache due to exception: ' .$e->getMessage(), 'pantheraCore');
-                $this->varCache = false;
+            if ($dir = getContentDir('modules/cache/varCache_' . $varCacheType . '.module.php'))
+                require_once $dir;
+
+            if (class_exists('varCache_' . $varCacheType))
+            {
+                try
+                {
+                    $n = 'varCache_' . $varCacheType;
+                    $this->varCache = new $n($this, $sessionKey);
+                    $this->logging->output('varCache initialized, using ' . $varCacheType, 'pantheraCore');
+                } catch (Exception $e) {
+                    $this->logging->output('Disabling varCache due to exception: ' . $e->getMessage(), 'pantheraCore');
+                    $this->varCache = false;
+                }
             }
         }
 
-        if ($cacheType != '')
+        if ($cacheType)
         {
             // if secondary cache type is same as primary, link both
             if ($cacheType == $varCacheType)
+            {
                 $this->cache = $this->varCache;
-            else {
 
+            } else {
                 $dir = null;
 
                 if ($dir = getContentDir('modules/cache/varCache_' .$cacheType. '.module.php'))
@@ -1271,7 +1290,51 @@ class pantheraCore
                         $this->cache = false;
                     }
                 }
+            }
+        }
 
+        if ($force && (!$this->cache || !$this->varCache))
+        {
+            $cacheTypes = glob(getContentDir('modules/cache/'). 'varCache_*.module.php');
+
+            if (isset($force['cache']) && !$this->cache)
+            {
+                foreach ($cacheTypes as $type)
+                {
+                    $type = str_replace(array('varCache_', '.module.php'), '', basename($type));
+
+                    if ($cacheType == $type)
+                    {
+                        continue;
+                    }
+
+                    $this->loadCache(null, $type);
+
+                    if ($this->cache)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (isset($force['varCache']) && !$this->varCache)
+            {
+                foreach ($cacheTypes as $type)
+                {
+                    $type = str_replace(array('varCache_', '.module.php'), '', basename($type));
+
+                    if ($varCacheType == $type)
+                    {
+                        continue;
+                    }
+
+                    $this->loadCache($type, null);
+
+                    if ($this->varCache)
+                    {
+                        break;
+                    }
+                }
             }
         }
     }

@@ -61,7 +61,7 @@ class cacheAjaxControllerSystem extends pageController {
 		}
 
 		// refresh cache
-		$this -> panthera -> loadCache($varcache, $cache, $this -> panthera -> config -> getKey('session_key'));
+		$this -> panthera -> loadCache($varcache, $cache);
 
 		// and again...
 		if ($cache != $this -> panthera -> config -> getKey("cache_type")) {
