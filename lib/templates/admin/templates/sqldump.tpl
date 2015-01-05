@@ -60,20 +60,28 @@
             </thead>
             
             <tbody>
-                {if="!count($dumps)"}
-                <tr>
-                    <td colspan="5">
-                        <p style="text-align: center;">{function="localize('There are no any backups created yet', 'database')"}</p>
-                    </td>
-                </tr>
+                {if="isset($error)"}
+                    <tr>
+                        <td colspan="5">
+                            <p style="text-align: center;">{$error}</p>
+                        </td>
+                    </tr>
                 {else}
-                {loop="$dumps"}
-                <tr>
-                    <td><a href="?display=sqldump&cat=admin&get={$value.name}&_bypass_x_requested_with">{$value.name}</a></th>
-                    <td>{$value.size}</th>
-                    <td>{$value.date}</td>
-                </tr>
-                {/loop}
+                    {if="!count($dumps)"}
+                    <tr>
+                        <td colspan="5">
+                            <p style="text-align: center;">{function="localize('There are no any backups created yet', 'database')"}</p>
+                        </td>
+                    </tr>
+                    {else}
+                    {loop="$dumps"}
+                    <tr>
+                        <td><a href="?display=sqldump&cat=admin&get={$value.name}&_bypass_x_requested_with">{$value.name}</a></th>
+                        <td>{$value.size}</th>
+                        <td>{$value.date}</td>
+                    </tr>
+                    {/loop}
+                    {/if}
                 {/if}
             </tbody>
         </table>

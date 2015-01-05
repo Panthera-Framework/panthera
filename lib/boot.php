@@ -245,8 +245,21 @@ if (!defined('SKIP_TEMPLATE'))
     $c = _PANTHERA_CORE_TEMPLATE_;
     $template = new $c($panthera);
     $panthera -> template = $template;
-    $template -> push('PANTHERA_URL', $panthera->config->getKey('url'));
-    $template -> push('AJAX_URL', $panthera->config->getKey('ajax_url'));
+
+    $url = $panthera->config->getKey('url');
+
+    if ($_SERVER['HTTPS'] == 'on' and strpos($url, 'https') === false)
+        $template -> push('PANTHERA_URL', str_ireplace('http', 'https', $url));
+    else
+        $template -> push('PANTHERA_URL', $url);
+
+    $ajaxUrl = $panthera->config->getKey('ajax_url');
+
+    if ($_SERVER['HTTPS'] == 'on' and strpos($ajaxUrl, 'https') === false)
+        $template -> push('AJAX_URL', str_ireplace('http', 'https', $ajaxUrl));
+    else
+        $template -> push('AJAX_URL', $ajaxUrl);
+
     $template -> push('site_template_css', $panthera->config->getKey('main_css'));
     $template -> push('PANTHERA_VERSION', PANTHERA_VERSION);
 }

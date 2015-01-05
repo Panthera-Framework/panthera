@@ -45,6 +45,7 @@ class settings_sessionAjaxControllerSystem extends pageController
 
         // some defaults
         $this -> panthera -> config -> getKey('cookie_encrypt', 0, 'bool');
+        $this -> panthera -> config -> getKey('ssl', 0, 'bool');
         $this -> panthera -> config -> getKey('session_lifetime', (86400*30), 'int');
         $this -> panthera -> config -> getKey('session_useragent', 1, 'bool');
         $this -> panthera -> config -> getKey('gzip_compression', 0, 'bool');
@@ -63,6 +64,9 @@ class settings_sessionAjaxControllerSystem extends pageController
 
         $config -> add('cookie_encrypt', localize('Encrypt cookies', 'installer'), new integerRange(0, 1));
         $config -> setFieldType('cookie_encrypt', 'bool');
+
+        $config -> add('ssl', localize('Secure Sockets Layer', 'session'), new integerRange(0, 1));
+        $config -> setFieldType('ssl', 'bool');
 
         $config -> add('gzip_compression', localize('GZip compression', 'session'), new integerRange(0, 1));
         $config -> setFieldType('gzip_compression', 'bool');
@@ -91,6 +95,7 @@ class settings_sessionAjaxControllerSystem extends pageController
         $config -> setDescription('header_xssprot', localize('Tell\'s Internet Explorer to turn on XSS-Protection mechanism', 'installer'));
         $config -> setDescription('session_useragent', localize('Useragent strict check', 'installer'));
         $config -> setDescription('cookie_encrypt', localize('Cookies can be encrypted with strong algorithm, so the user wont be able to read contents', 'installer'));
+        $config -> setDescription('ssl', localize('Standard security technology for establishing an encrypted link between a server and a client.', 'session'));
         $config -> setDescription('session_lifetime', localize('Maximum time user can be idle (in seconds)', 'installer'));
         $config -> setDescription('header_framing', localize('Allow your website to be framed using iframe tag', 'installer'));
         $config -> setDescription('header_maskphp', localize('Force HTTP server to show false informations about PHP version', 'installer'));

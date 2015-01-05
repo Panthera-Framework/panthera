@@ -121,6 +121,9 @@ class pa_loginControllerSystem extends pageController
             pa_redirect('pa-admin.php');
         }
 
+        if ($this->panthera->config->getKey('ssl') and $_SERVER['SERVER_PORT'] != '443')
+            pa_redirect('pa-login.php');
+
         /**
          * Get list of all locales to display flags on page
          *

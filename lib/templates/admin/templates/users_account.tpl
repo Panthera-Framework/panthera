@@ -20,8 +20,8 @@ function getAvatar(link, id)
 
 <div id="topContent">
     <div class="searchBarButtonArea">
-    	{if="$userSwitchable"}<form action="?display=users&cat=admin&action=switchUser&uid={$user->id}&_bypass_x_requested_with" method="POST" style="float: right;"><input type="hidden" name="uid" value="{$user->id}"><input type="submit" value="{function="localize('Login as this user', 'users')"}"></form>{/if}
-        {if="$permissions.canBlockUser"}<input type="button" value="{function="localize('Ban', 'users')"}" onclick="panthera.popup.toggle('element:#banUser', 'banUser')">{/if}
+    	{if="$userSwitchable"}<form action="?display=users&cat=admin&action=switchUser&uid={$user->id}&_bypass_x_requested_with" method="POST" style="float: right; margin-left: 5px;"><input type="hidden" name="uid" value="{$user->id}"><input type="submit" value="{function="localize('Login as this user', 'users')"}"></form>{/if}
+        {if="$permissions.canBlockUser"}<input type="button" value="{function="localize('Ban', 'users')"}" onclick="panthera.popup.toggle('element:#banUser', 'banUser')" style="margin-right: 1px;">{/if}
         {if="$permissions.canSeePermissions"}<input type="button" value="{function="localize('Permissions', 'users')"}" onclick="panthera.popup.toggle('element:#managePermissions', 'managePermissions')">{/if}
         <input type="button" value="{function="localize('Edit', 'users')"}" onclick="panthera.popup.toggle('element:#editPopup', 'editUser')">
     </div>

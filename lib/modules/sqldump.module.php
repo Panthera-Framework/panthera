@@ -100,6 +100,7 @@ class SQLDump
     public static function getSQLDumps($limitFrom=0, $count=0)
     {
         static::validatePaths();
+
         $files = scandir(SITE_DIR. '/content/backups/db/'); // all files
         $rFiles = array(); // selected files
         $i = 0;
@@ -133,6 +134,25 @@ class SQLDump
             return $i;
 
         return $rFiles;
+    }
+
+
+
+    /**
+     * Check if folder with possible database backups exists.
+     *
+     * @author Mateusz Warzyński
+     * @return bool
+     */
+
+    public static function checkDatabaseFolder()
+    {
+        static::validatePaths();
+
+        if (file_exists(SITE_DIR. '/content/backups/db/'))
+            return True;
+
+        return False;
     }
     
     
