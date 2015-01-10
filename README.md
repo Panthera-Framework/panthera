@@ -64,15 +64,15 @@ $panthera -> db -> insert('cars', array(
 ));
 
 // list all cars
-foreach (car::fetchAll() as $car)
+foreach (Car::fetchAll() as $car)
     print($car -> name. " is " .$car -> color. " color<br>\n");
 
-$ferrari = new car('name', 'Ferrari X');
+$ferrari = new Car('name', 'Ferrari X');
 $ferrari -> color = 'white';
 $ferrari -> save(); // updates cache and database now, not at the end of script
 
 // list all cars again
-foreach (car::fetchAll() as $car)
+foreach (Car::fetchAll() as $car)
     print($car -> name. " is " .$car -> color. " color<br>\n");
     
 // delete row, associated meta tags, execute all triggers on this object removal and clear the cache
