@@ -37,7 +37,7 @@ Turn database records into objects
 ```php
 <?php
 // this class will represent a record from "cars" table (pa_ is a prefix)
-class car extends pantheraFetchDB
+class Car extends pantheraFetchDB
 {
     protected $_tableName = 'cars'; // table name without prefix
     protected $_idColumn = 'id';
