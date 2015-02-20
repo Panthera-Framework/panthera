@@ -55,11 +55,15 @@ class pantheraInstaller
         }
 
         // merge webroot if not merged
-        if (!is_dir(SITE_DIR. '/images') or (time()-filemtime(SITE_DIR. '/images') < 3600))
+        if (!is_dir(SITE_DIR. '/images') or (time()-filemtime(SITE_DIR. '/images') < 3600) or !isset($_COOKIE[md5(SITE_DIR). '_webroot']))
+        {
             libtemplate::webrootMerge(array(
                 'installer' => 1,
                 'admin' => 1,
             ));
+
+            setCookie(md5(SITE_DIR). '_webroot', time(), time() + 3600);
+        }
 
         // temporary database for installer
         $this -> config = (object)json_decode(file_get_contents($index));
@@ -69,7 +73,7 @@ class pantheraInstaller
 
         $this -> db = new writableJSON(SITE_DIR. '/content/installer/db.json', $this -> config);
 
-        $steps = $this->db->steps;
+        $steps = $this -> db -> steps;
 
         // set first step as current if no current step already set
         if (!$this -> db -> currentStep)
@@ -124,11 +128,11 @@ class pantheraInstaller
         switch ($button)
         {
             case 'back':
-                $this->panthera->template->push('installerBackBtn', (bool)$state);
+                $this -> panthera -> template -> push('installerBackBtn', (bool)$state);
             break;
 
             case 'next':
-                $this->panthera->template->push('installerNextBtn', (bool)$state);
+                $this -> panthera -> template -> push('installerNextBtn', (bool)$state);
             break;
 
             default:

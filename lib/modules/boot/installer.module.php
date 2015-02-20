@@ -1,12 +1,12 @@
 <?php
 /**
-  * Installer stuff at boot time
-  *
-  * @package Panthera\modules\boot
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Installer stuff at boot time
+ *
+ * @package Panthera\modules\boot
+ * @author Damian Kęska
+ * @author Mateusz Warzyński
+ * @license GNU Affero General Public License 3, see license.txt
+ */
 
 if (!defined('IN_PANTHERA'))
     exit;
