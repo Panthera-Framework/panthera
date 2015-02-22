@@ -27,8 +27,6 @@ class pantheraSession
      * @return void
      * @author Damian Kęska
      */
-
-
     public function __construct ($panthera)
     {
         $this->panthera = $panthera;
@@ -231,7 +229,6 @@ class pantheraSession
      * @return bool
      * @author Damian Kęska
      */
-
     public function exists($key)
     {
         if (@array_key_exists($key, $_SESSION[$this->sessionKey]))
@@ -248,8 +245,6 @@ class pantheraSession
      * @return mixed
      * @author Damian Kęska
      */
-
-
     public function __get($key)
     {
         if ($key == 'cookies')
@@ -268,8 +263,6 @@ class pantheraSession
      * @return mixed
      * @author Damian Kęska
      */
-
-
     public function getAll($key)
     {
         return $_SESSION[$this->sessionKey];
@@ -282,15 +275,10 @@ class pantheraSession
      * @return bool
      * @author Damian Kęska
      */
-
     public function remove($key)
     {
         unset($_SESSION[$this->sessionKey][$key]);
         return True;
-    }
-
-    public function __destruct()
-    {
     }
 
     /**
@@ -301,7 +289,6 @@ class pantheraSession
      * @return mixed
      * @author Damian Kęska
      */
-
     public function __set($key, $value)
     {
         if ($key == 'cookies')
@@ -326,7 +313,6 @@ class pantheraSession
      * @return string
      * @author Damian Kęska
      */
-
     public function dump()
     {
         return serialize($_SESSION[$this->sessionKey]);
@@ -338,7 +324,6 @@ class pantheraSession
      * @return bool
      * @author Damian Kęska
      */
-
     public function restore($dumpedArray)
     {
         $array = @unserialize($dumpedArray);
@@ -373,7 +358,6 @@ class pantheraSession
  * @package Panthera\core\system\session
  * @author Damian Kęska
  */
-
 class pantheraCookie
 {
     protected $cookieKey, $panthera, $encryption = False, $ivsize = 16, $encryptionVector = '', $encryptionKey = '';
