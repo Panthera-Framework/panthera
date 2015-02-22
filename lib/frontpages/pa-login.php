@@ -192,7 +192,7 @@ class pa_loginControllerSystem extends pageController
                     $u -> save();
 
                 } else {
-                    $this -> panthera -> execute('login.failures.exceeded', array('user' => $u, 'failures' => $u -> attributes -> get('loginFailures'), 'expiration' => $u -> attributes -> get('loginFailureExpiration')));
+                    $this -> panthera -> get_options('login.failures.exceeded', array('user' => $u, 'failures' => $u -> attributes -> get('loginFailures'), 'expiration' => $u -> attributes -> get('loginFailureExpiration')));
                     $this -> panthera -> template -> push('message', localize('Number of login failures exceeded, please wait a moment before next try', 'messages'));
                     $this -> displayTemplate();
                     pa_exit();

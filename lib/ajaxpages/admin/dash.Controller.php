@@ -155,7 +155,7 @@ class dashAjaxControllerSystem extends pageController
 
         // menu
         $this -> panthera -> template -> push ('dash_menu', $menu);
-        $this -> panthera -> template -> push ('dash_messages', $this -> panthera -> executeFilters('ajaxpages.dash.msg', array()));
+        $this -> panthera -> template -> push ('dash_messages', $this -> panthera -> get_filters('ajaxpages.dash.msg', array()));
 
         $this -> displayWidgets();
 

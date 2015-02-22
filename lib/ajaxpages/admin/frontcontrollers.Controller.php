@@ -60,7 +60,7 @@ class frontcontrollersAjaxControllerCore extends pageController
             );
         }
 
-        $controllers = $this->panthera->executeFilters('pa.frontcontrollers.list', $controllers);
+        $controllers = $this->panthera->get_filters('pa.frontcontrollers.list', $controllers);
         $this -> panthera -> template -> push('list', $controllers);
 
         return $this -> panthera -> template -> compile('frontcontrollers.tpl');

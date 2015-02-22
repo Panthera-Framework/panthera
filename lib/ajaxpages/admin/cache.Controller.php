@@ -548,7 +548,7 @@ class cacheAjaxControllerSystem extends pageController {
 			$this -> panthera -> template -> push('sessionHandler', localize('php default, on disk', 'cache'));
 
 		// allow plugins modyfing list
-		$this -> cacheList = $this -> panthera -> executeFilters('cache.list', $this -> cacheList);
+		$this -> cacheList = $this -> panthera -> get_filters('cache.list', $this -> cacheList);
 
 		$this -> panthera -> template -> push('sessionSerializer', ini_get('session.serialize_handler'));
 		$this -> panthera -> template -> push('cache', $this -> panthera -> config -> getKey('cache_type'));

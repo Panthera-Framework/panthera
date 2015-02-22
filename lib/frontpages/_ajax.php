@@ -72,7 +72,7 @@ if ($cat == 'admin/')
         $panthera -> template -> addStyle('{$PANTHERA_URL}/js/admin/custom/' .$display. '.js');
 }
 
-$panthera -> execute('ajaxpages.category', $_GET['cat']);
+$panthera -> get_options('ajaxpages.category', $_GET['cat']);
 
 // dont generate meta tags and keywords, allow only adding scripts and styles
 $panthera -> template -> generateMeta = False;
@@ -83,7 +83,7 @@ $tpl = 'no_page.tpl';
 $panthera -> addOption('page_load_ends', array('navigation', 'appendCurrentPage'));
 
 // execute plugins
-$panthera -> execute('ajax_page', False);
+$panthera -> get_options('ajax_page', False);
 
 // path to objective controller
 $pageFile = getContentDir('ajaxpages/' .$display. '.Controller.php');

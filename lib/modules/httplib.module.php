@@ -187,7 +187,7 @@ class httplib
         $this -> cleanup();
 
         $panthera = pantheraCore::getInstance();
-        $panthera -> executeRef('httplib.close', $this, $this -> instanceID);
+        $panthera -> get_options_ref('httplib.close', $this, $this -> instanceID);
     }
 
     /**

@@ -40,7 +40,7 @@ $menu -> add('users', localize('Users'), '?display=users&cat=admin', '', '{$PANT
 $menu -> loadFromDB('admin');
 
 // allow plugins modify admin menu
-$panthera -> execute('admin_menu', $menu);
+$panthera -> get_options('admin_menu', $menu);
 
 // set current active menu (optional)
 $menu -> setActive(@$_GET['display']);

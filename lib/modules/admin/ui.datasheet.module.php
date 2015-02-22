@@ -131,7 +131,7 @@ class uiDatasheet extends pantheraClass
                 $_POST['id'] = base64_decode($_POST['id']);
             }
 
-            return $this -> panthera -> executeFilters('uidatasheet.' .$this->tableID. '.' .$_GET['action'], '');
+            return $this -> panthera -> get_filters('uidatasheet.' .$this->tableID. '.' .$_GET['action'], '');
         }
     }
 

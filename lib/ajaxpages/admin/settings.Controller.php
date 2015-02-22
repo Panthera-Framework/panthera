@@ -121,7 +121,7 @@ class settingsAjaxControllerSystem extends pageController
         $const = get_defined_constants(true);
         $this -> panthera -> template -> push('const', $const['user']);
 
-        $options = $this -> panthera -> executeFilters('admin.ajaxpages.settings.options', $options);
+        $options = $this -> panthera -> get_filters('admin.ajaxpages.settings.options', $options);
 
         if (!defined('DISABLE_BROWSER_DETECTION'))
             $this -> panthera -> template -> push ('clientInfo', (array)$this -> panthera -> session -> get('clientInfo'));
@@ -154,7 +154,7 @@ class settingsAjaxControllerSystem extends pageController
         // searchbar
         $sBar = new uiSearchbar('uiTop');
         $sBar -> navigate(True);
-        $sBar = $this -> panthera -> executeFilters('ajaxpages.' .$this -> controllerName. '.searchbar', $sBar);
+        $sBar = $this -> panthera -> get_filters('ajaxpages.' .$this -> controllerName. '.searchbar', $sBar);
 
         $this -> panthera -> logging -> startTimer();
 
