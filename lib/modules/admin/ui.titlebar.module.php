@@ -143,7 +143,7 @@ class uiTitlebar
 
     public function applyToTemplate()
     {
-        list($_a, $this->settings, $moveToPageTitle) = $this->panthera->get_filters('ui.titlebar.applyToTemplate', array($this, $this->settings, True));
+        list($_a, $this->settings, $moveToPageTitle) = $this->panthera->executeFilters('ui.titlebar.applyToTemplate', array($this, $this->settings, True));
 
         if ($this->settings['title'] and $moveToPageTitle)
         {

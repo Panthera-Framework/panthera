@@ -557,7 +557,7 @@ class newsletter extends pantheraFetchDB
         $values = array('nid' => $this->nid, 'address' => $address, 'type' => strtolower($type), 'cookieid' => $cookieid, 'userid' => intval($userid), 'unsubscribe_id' => $unsubscribe_id, 'activate_id' => $activate_id);
         $SQL = $this->panthera->db->query('INSERT INTO `{$db_prefix}newsletter_users` (`id`, `nid`, `address`, `type`, `added`, `cookieid`, `userid`, `unsubscribe_id`, `activate_id`) VALUES (NULL, :nid, :address, :type, NOW(), :cookieid, :userid, :unsubscribe_id, :activate_id)', $values);
 
-        $this->panthera->get_options('newsletter_registered', array('address' => $address, 'nid' => $this->nid, 'type' => $type));
+        $this->panthera->execute('newsletter_registered', array('address' => $address, 'nid' => $this->nid, 'type' => $type));
 
         if (!$dontSendConfirmation)
         {

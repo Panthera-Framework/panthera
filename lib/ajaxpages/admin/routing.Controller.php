@@ -41,7 +41,7 @@ class routingAjaxControllerSystem extends pageController
 
     public function getRoutingCache()
     {
-        return $this -> panthera -> get_filters('admin.routing.cache', $this -> panthera -> routing -> getCache(), True);
+        return $this -> panthera -> executeFilters('admin.routing.cache', $this -> panthera -> routing -> getCache(), True);
     }
 
     /**
@@ -83,7 +83,7 @@ class routingAjaxControllerSystem extends pageController
             }
         }
 
-        return $this -> panthera -> get_filters('admin.routing.data', $dataTpl, True);
+        return $this -> panthera -> executeFilters('admin.routing.data', $dataTpl, True);
     }
 
     /**
@@ -312,7 +312,7 @@ class routingAjaxControllerSystem extends pageController
             $this -> data = $sBar -> orderBy($this -> data, $filters['order'], $filters['direction']);
 
         // hooking
-        $this -> table = $this -> panthera -> get_filters('admin.routing.table', $this -> table, True);
+        $this -> table = $this -> panthera -> executeFilters('admin.routing.table', $this -> table, True);
 
         // append data to pager
         $this -> data = $this -> page($this -> data);

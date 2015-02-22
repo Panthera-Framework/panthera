@@ -51,7 +51,7 @@ class uiMce
             SITE_DIR. '/content/modules/mce'
         );
 
-        $dirs = $panthera->get_filters('ui.mce.getAvaliableEditors', $dirs);
+        $dirs = $panthera->executeFilters('ui.mce.getAvaliableEditors', $dirs);
 
         foreach ($dirs as $dir)
         {

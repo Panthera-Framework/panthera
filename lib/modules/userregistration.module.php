@@ -82,7 +82,7 @@ class userRegistration extends validableForm
                 );
             }
 
-            $regexp = $this -> panthera -> get_filters('createNewUser.loginRegexp', '/^[a-zA-Z0-9\-\.\,\+\!]+_?[a-zA-Z0-9\-\.\,\+\!]+$/D');
+            $regexp = $this -> panthera -> executeFilters('createNewUser.loginRegexp', '/^[a-zA-Z0-9\-\.\,\+\!]+_?[a-zA-Z0-9\-\.\,\+\!]+$/D');
 
             if (!preg_match($regexp, $this->source['login']))
             {
@@ -297,7 +297,7 @@ class userRegistration extends validableForm
             $u -> acl -> save();
         }
         
-        $this -> panthera -> get_options_ref('register.created.userObject', $u);
+        $this -> panthera -> executeRef('register.created.userObject', $u);
         
         $u -> save();
 

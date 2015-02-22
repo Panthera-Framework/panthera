@@ -227,7 +227,7 @@ class fwconsole extends cliApp
                 $array[$key] = array($value[0], $value[1]);
             }
 
-            $array = $this -> panthera -> get_filters('conftool_array', $array);
+            $array = $this -> panthera -> executeFilters('conftool_array', $array);
 
             foreach ($array as $key => $value)
             {

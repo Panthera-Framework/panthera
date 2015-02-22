@@ -642,7 +642,7 @@ class leopard
         $SQL = $panthera -> db -> query ('SELECT * FROM `{$db_prefix}leopard_packages`');
         $fetch = $SQL -> fetchAll(PDO::FETCH_ASSOC);
 
-        $fetch = $panthera -> get_filters('leopard.rebuilddb.packages', $fetch);
+        $fetch = $panthera -> executeFilters('leopard.rebuilddb.packages', $fetch);
 
         $panthera -> logging -> output ('Read ' .count($fetch). ' packages from database', 'leopard');
 
@@ -885,8 +885,8 @@ class leopard
 
         // pre-installation hooks
         $panthera -> logging -> output ('Running pre-installation hooks', 'leopard');
-        $package = $panthera -> get_filters('leopard.preinstall', $package);
-        $panthera -> get_options('leopard.preinstall.' .$packageName, '');
+        $package = $panthera -> executeFilters('leopard.preinstall', $package);
+        $panthera -> execute('leopard.preinstall.' .$packageName, '');
 
         // TODO: Dependency support
 
@@ -979,8 +979,8 @@ class leopard
         $panthera -> importModule('autoloader.tools');
         pantheraAutoloader::updateCache();
 
-        $panthera -> get_options('leopard.postinstall', $packageName);
-        $panthera -> get_options('leopard.postinstall.' .$packageName, '');
+        $panthera -> execute('leopard.postinstall', $packageName);
+        $panthera -> execute('leopard.postinstall.' .$packageName, '');
 
         // rebuild local database
         $panthera -> logging -> output ('Rebuiliding local database', 'leopard');
@@ -1034,8 +1034,8 @@ class leopard
 
         // pre-remove hooks
         $panthera -> logging -> output('Running pre-remove hooks', 'leopard');
-        $package = $panthera -> get_filters('leopard.preremove', $package);
-        $package = $panthera -> get_filters('leopard.preremove.' .$packageName, $package);
+        $package = $panthera -> executeFilters('leopard.preremove', $package);
+        $package = $panthera -> executeFilters('leopard.preremove.' .$packageName, $package);
 
         foreach ((array)$package->files as $file => $sum)
         {
@@ -1075,8 +1075,8 @@ class leopard
         $panthera -> importModule('autoloader.tools');
         pantheraAutoloader::updateCache();
 
-        $package = $panthera -> get_filters('leopard.postremove', $package);
-        $package = $panthera -> get_filters('leopard.postremove.' .$packageName, $package);
+        $package = $panthera -> executeFilters('leopard.postremove', $package);
+        $package = $panthera -> executeFilters('leopard.postremove.' .$packageName, $package);
 
         // clean up
         $panthera -> logging -> output ('Cleaning up backup directory', 'leopard');

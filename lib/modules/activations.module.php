@@ -116,7 +116,7 @@ class activation extends pantheraFetchDB
         );
     
         // plugins support
-        $values = $panthera -> get_filters('activation.values', $values);
+        $values = $panthera -> executeFilters('activation.values', $values);
         $createResult = self::create($values);
 
         if ($sendMail === false)
@@ -180,10 +180,10 @@ class activation extends pantheraFetchDB
             if ($search -> type == 'recovery')
             {
                 // maybe any plugin will use this data
-                $panthera -> get_options('recovery.done', array($key, $search -> user_login, $search -> new_passwd));
+                $panthera -> execute('recovery.done', array($key, $search -> user_login, $search -> new_passwd));
 
             } elseif ($search -> type == 'confirmation')
-                $panthera -> get_options('confirmation.done', array($key, $search -> user_login));
+                $panthera -> execute('confirmation.done', array($key, $search -> user_login));
 
             // remove recovery option
             $search -> delete();

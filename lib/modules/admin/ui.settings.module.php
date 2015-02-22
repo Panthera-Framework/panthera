@@ -35,7 +35,7 @@ class uiSettings
         global $panthera;
         $this->panthera = $panthera;
 
-        list($_a, $section) = $this->panthera->get_filters('ui.settings.construct', array($this, $section));
+        list($_a, $section) = $this->panthera->executeFilters('ui.settings.construct', array($this, $section));
 
         if ($section)
         {
@@ -62,7 +62,7 @@ class uiSettings
         if ($value == null)
             $value = $this->panthera->config->getKey($setting);
 
-        list($_a, $fKey, $setting, $label, $validator, $value) = $this->panthera->get_filters('ui.settings.add', array($this, $fKey, $setting, $label, $validator, $value));
+        list($_a, $fKey, $setting, $label, $validator, $value) = $this->panthera->executeFilters('ui.settings.add', array($this, $fKey, $setting, $label, $validator, $value));
 
         if (!$_a or !$fKey or !$setting)
         {
@@ -110,7 +110,7 @@ class uiSettings
 
     public function setFieldType ($field, $type)
     {
-        list($a_, $field, $type) = $this->panthera->get_filters('ui.settings.setFieldType', array($this, $field, $type));
+        list($a_, $field, $type) = $this->panthera->executeFilters('ui.settings.setFieldType', array($this, $field, $type));
 
         if (!isset($this->settingsList[$this->filter($field)]))
         {
@@ -189,7 +189,7 @@ class uiSettings
 
     public function setDescription($field, $description)
     {
-        list($a_, $field, $description) = $this->panthera->get_filters('ui.settings.setDescription', array($this, $field, $description));
+        list($a_, $field, $description) = $this->panthera->executeFilters('ui.settings.setDescription', array($this, $field, $description));
 
         if (isset($this->settingsList[$this->filter($field)]))
         {
@@ -218,7 +218,7 @@ class uiSettings
 
         $packaged = array();
 
-        list($a_, $input) = $this->panthera->get_filters('ui.settings.handleInput', array($this, $input));
+        list($a_, $input) = $this->panthera->executeFilters('ui.settings.handleInput', array($this, $input));
 
         //if (isset($input[key($this->settingsList)]))
         //{
@@ -233,7 +233,7 @@ class uiSettings
 
                 $rKey = $this->filter($key, True);
 
-                list($a_, $key, $rKey, $value) = $this->panthera->get_filters('ui.settings.handleInput.item', array($this, $key, $rKey, $value));
+                list($a_, $key, $rKey, $value) = $this->panthera->executeFilters('ui.settings.handleInput.item', array($this, $key, $rKey, $value));
 
                 if ($this->settingsList[$key]['customSaveHandler'])
                 {
@@ -341,7 +341,7 @@ class uiSettings
 
     public function applyToTemplate()
     {
-        $this->panthera->get_options('ui.settings.applyToTemplate', array($this));
+        $this->panthera->execute('ui.settings.applyToTemplate', array($this));
         $this->panthera->template->push('uiSettings', $this->options);
         $this->panthera->template->push('variables', $this->settingsList);
     }

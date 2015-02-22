@@ -1478,7 +1478,7 @@ abstract class pantheraFetchDB extends pantheraClass
                 $panthera -> logging -> output(get_class($this). '::Creating object from array ' .json_encode($value), $this->cacheGroup);
 
             // hooking
-            $panthera -> get_options('pantheraFetchDB.' .get_class($this). '__construct', $this, $by);
+            $panthera -> execute('pantheraFetchDB.' .get_class($this). '__construct', $this, $by);
 
             $this->_data = $value;
             $panthera -> addOption('session_save', array($this, 'save'));
@@ -1552,7 +1552,7 @@ abstract class pantheraFetchDB extends pantheraClass
                 }
             }
 
-            $panthera -> get_options('pantheraFetchDB.' .get_class($this). '__construct', $this, $by);
+            $panthera -> execute('pantheraFetchDB.' .get_class($this). '__construct', $this, $by);
         }
     }
 
@@ -2087,7 +2087,7 @@ abstract class pantheraFetchDB extends pantheraClass
             return False;
         }
 
-        $index = $this -> panthera -> get_filters('pantheraFetchDB.' .get_class($this). '.clearCache', $index, True, $this);
+        $index = $this -> panthera -> executeFilters('pantheraFetchDB.' .get_class($this). '.clearCache', $index, True, $this);
 
         foreach ($this->_constructBy as $column)
         {
@@ -2238,7 +2238,7 @@ abstract class pantheraFetchDB extends pantheraClass
         if ($panthera->logging->debug)
             $panthera -> logging -> output ('Panthera Fetch DB class=' .get_class($this). ', changed data=' .print_r($this->_dataModified, True), $this->cacheGroup);
 
-        $panthera -> get_options('pantheraFetchDB.' .get_class($this). '.save', $this);
+        $panthera -> execute('pantheraFetchDB.' .get_class($this). '.save', $this);
 
         // check if any data was modified
         if($this->_dataModified and $this->_tableName)

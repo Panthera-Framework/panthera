@@ -104,7 +104,7 @@ class contactFrontpage
                 $this -> canSend = False;
         }
 
-        $this->canSend = $panthera->get_filters('contact.checkCanSend.canSend', $this->canSend);
+        $this->canSend = $panthera->executeFilters('contact.checkCanSend.canSend', $this->canSend);
     }
 
     /**
@@ -125,7 +125,7 @@ class contactFrontpage
             $panthera -> session -> cookies -> set($this->protection['cookie']['name'], 'yes', (time()+$this->protection['cookie']['time']));
         }
 
-        $panthera -> get_options('contact.executeProtection');
+        $panthera -> execute('contact.executeProtection');
     }
 
     /**
@@ -184,7 +184,7 @@ $this->canSend = true;
             return array('error' => localize('The mailing form is not avaliable at this time', 'contactpage'), 'messageid' => 'PROTECTION_CANNOT_SEND');
 
         // plugins support
-        list($array, $valid) = $panthera -> get_filters('contact.handledata', array($array, True));
+        list($array, $valid) = $panthera -> executeFilters('contact.handledata', array($array, True));
 
         if ($valid !== True)
             return $valid;

@@ -12,7 +12,7 @@ global $panthera;
 
 if (isset($_GET['__switchdevice']) and !defined('DISABLE_DEVICES_SWITCH'))
 {
-    $devices = $panthera -> get_filters('boot.devices', array('mobile', 'tablet', 'desktop'));
+    $devices = $panthera -> executeFilters('boot.devices', array('mobile', 'tablet', 'desktop'));
 
     // check if device exists on list
     if (in_array($_GET['__switchdevice'], $devices))

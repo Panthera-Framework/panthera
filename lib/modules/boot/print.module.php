@@ -47,7 +47,7 @@ class printingModule
 
         if (libtemplate::exists($panthera -> template -> name, 'printable/' .$name))
         {
-            $panthera -> get_options('printing.plain', $name, $details);
+            $panthera -> execute('printing.plain', $name, $details);
             $panthera -> logging -> output('Preparing print template "printable/' .$name. '" from ' .$panthera -> template -> name, 'printingModule');
             return 'printable/' .$name;
         } else {
@@ -74,7 +74,7 @@ class printingModule
 
         if (libtemplate::exists($panthera -> template -> name, 'printable-pdf/' .$name))
         {
-            $panthera -> get_options('printing.pdf', $name, $details);
+            $panthera -> execute('printing.pdf', $name, $details);
             $panthera -> logging -> output('Preparing print PDF template "printable-pdf/' .$name. '" from ' .$panthera -> template -> name, 'printingModule');
 
             // check if template is embedded (only rendered, not displayed) if yes redirect to printable version

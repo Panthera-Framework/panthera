@@ -96,7 +96,7 @@ class galleryAjaxControllerCore extends pageController
             $gallery -> meta('unique') -> set('all_langs', False);
 
         // hook - plugins are able to change gallery variables
-        $gallery = $this -> panthera -> get_filters('admin.gallery.save', $gallery, true);
+        $gallery = $this -> panthera -> executeFilters('admin.gallery.save', $gallery, true);
 
         // save changes
         $gallery -> meta('unique') -> save();

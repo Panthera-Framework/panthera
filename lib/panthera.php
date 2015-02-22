@@ -1558,8 +1558,7 @@ class pantheraCore
       * @return bool
       * @author Damian Kęska
       */
-
-    public function get_options($hookName, $args='', $additionalInfo=null)
+    public function execute($hookName, $args='', $additionalInfo=null)
     {
         if(!isset($this->hooks[$hookName]))
             return false;
@@ -1588,7 +1587,7 @@ class pantheraCore
       * @author Damian Kęska
       */
 
-    public function get_options_ref($hookName, &$args, $additionalInfo=null)
+    public function executeRef($hookName, &$args, $additionalInfo=null)
     {
         if(!isset($this->hooks[$hookName]))
             return false;
@@ -1630,7 +1629,7 @@ class pantheraCore
       * @author Damian Kęska
       */
 
-    public function get_filters($hookName, $args='', $fixOnFail=False, $additionalInfo=null)
+    public function executeFilters($hookName, $args='', $fixOnFail=False, $additionalInfo=null)
     {
         if(!isset($this->hooks[$hookName]))
             return $args;
@@ -1694,16 +1693,15 @@ class pantheraCore
     }
 
     /**
-      * Execute all hooks and return results from all hooks in an array
-      *
-      * @param string $hookName
-      * @param mixed $args Args to pass to hook
-      * @param mixed $additionalInfo Additional information to pass to function as a second argument
-      * @return array
-      * @author Damian Kęska
-      */
-
-    public function get_filters_array($hookName, $args='', $additionalInfo=null)
+     * Execute all hooks and return results from all hooks in an array
+     *
+     * @param string $hookName
+     * @param mixed $args Args to pass to hook
+     * @param mixed $additionalInfo Additional information to pass to function as a second argument
+     * @return array
+     * @author Damian Kęska
+     */
+    public function executeFiltersArray($hookName, $args='', $additionalInfo=null)
     {
         if(!isset($this->hooks[$hookName]))
             return array();
@@ -1995,7 +1993,7 @@ class pantheraCore
     public function __destruct()
     {
         if(!$this -> _savedSession)
-            $this -> get_options('session_save', False);
+            $this -> execute('session_save', False);
         
         $this -> _savedSession = True;
     }
@@ -2027,7 +2025,7 @@ abstract class pantheraClass
     
     /**
      * Execute hooks and defined functions with name $featureName
-     * Example: $featureName = 'custompages.add' will execute $this->custompages_addFeature($args, $additionalInfo) and $this->panthera->get_filters($featureName, $args, $additionalInfo)
+     * Example: $featureName = 'custompages.add' will execute $this->custompages_addFeature($args, $additionalInfo) and $this->panthera->executeFilters($featureName, $args, $additionalInfo)
      *
      * @param string $featureName Hook and function name
      * @param mixed $args Args to pass to function and/or hook
@@ -2045,7 +2043,7 @@ abstract class pantheraClass
         if (method_exists($this, $f))
             $args = $this->$f($args, $additionalInfo);
 
-        return $this -> panthera -> get_filters($featureName, $args, $fixOnFail, $additionalInfo);
+        return $this -> panthera -> executeFilters($featureName, $args, $fixOnFail, $additionalInfo);
     }
 
     /**
@@ -2067,7 +2065,7 @@ abstract class pantheraClass
         if (method_exists($this, $f))
             $this->$f($args, $additionalInfo);
 
-        return $this -> panthera -> get_options_ref($featureName, $args, $additionalInfo);
+        return $this -> panthera -> executeRef($featureName, $args, $additionalInfo);
     }
     
     /**
@@ -2466,7 +2464,7 @@ function ajax_exit($array)
     }
 
     // allow plugins to modify output
-    $array = $panthera -> get_filters('panthera.ajax_exit', $array);
+    $array = $panthera -> executeFilters('panthera.ajax_exit', $array);
 
     print(json_encode($array));
     pa_exit('', True);
@@ -2489,7 +2487,7 @@ function pa_exit($string='', $ajaxExit=False)
     $panthera -> logging -> output('Called pa_exit, goodbye.', 'pantheraCore');
 
     // execute all hooks to save data
-    $panthera -> get_options('page_load_ends', $ajaxExit);
+    $panthera -> execute('page_load_ends', $ajaxExit);
     $panthera -> __destruct();
     ob_start();
 

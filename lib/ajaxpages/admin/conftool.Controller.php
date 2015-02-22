@@ -69,7 +69,7 @@
         if ($type == 'array')
             $value = unserialize( $value );
 
-        $modified = $this->panthera->get_filters('conftool_change' , array($key, $value));
+        $modified = $this->panthera->executeFilters('conftool_change' , array($key, $value));
 
         if (!is_array( $modified ) ) {
             ajax_exit(array('status' => 'failed', 'message' => $modified));
@@ -171,7 +171,7 @@
             }
         }
 
-        $array = $this->panthera->get_filters('conftool_array', $array);
+        $array = $this->panthera->executeFilters('conftool_array', $array);
         $this -> panthera -> template -> push('a', $array);
         return $this -> panthera -> template -> compile('conftool.tpl');
     }

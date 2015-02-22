@@ -190,7 +190,7 @@ class debpopupPlugin extends pantheraPlugin
         $tables['hooks'] = $this->getHooks();
 
         // allow other plugins to modify this list
-        $tables = $panthera -> get_filters('debpopup.tables', $tables);
+        $tables = $panthera -> executeFilters('debpopup.tables', $tables);
 
         $panthera -> template -> push('debugTables', $tables);
         $panthera -> template -> push('debugMessages', $debugMessages);

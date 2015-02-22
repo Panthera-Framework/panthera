@@ -519,7 +519,7 @@ class pantheraUser extends pantheraFetchDB
         }
 
         $array['login'] = trim($array['login']);
-        $regexp = $panthera -> get_filters('createNewUser.loginRegexp', '/^[a-zA-Z0-9\-\.\,\+\!]+_?[a-zA-Z0-9\-\.\,\+\!]+$/D');
+        $regexp = $panthera -> executeFilters('createNewUser.loginRegexp', '/^[a-zA-Z0-9\-\.\,\+\!]+_?[a-zA-Z0-9\-\.\,\+\!]+$/D');
 
         if (!preg_match($regexp, $array['login']))
             throw new validationException('Login contains invalid characters', 868);

@@ -533,7 +533,7 @@ class cliColor {
 function cliSignal($signal)
 {
     global $panthera;
-    $panthera -> get_options('cliSignal', $signal);
+    $panthera -> execute('cliSignal', $signal);
     pa_exit();
 }
 

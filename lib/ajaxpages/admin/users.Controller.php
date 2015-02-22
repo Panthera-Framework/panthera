@@ -151,7 +151,7 @@ class usersAjaxControllerCore extends pageController
 
         if ($u->id == $this->panthera->user->id) {
             $permissions['canBlockUser'] = False;
-            $this -> panthera -> template -> push('user_fields', $this->panthera->get_filters('user.fields', array())); // custom fields
+            $this -> panthera -> template -> push('user_fields', $this->panthera->executeFilters('user.fields', array())); // custom fields
         }
 
         if ($u != $this->panthera->user)

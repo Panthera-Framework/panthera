@@ -40,7 +40,7 @@ class ajaxpagesAjaxControllerCore extends pageController
 
     protected function scanDirectories()
     {
-        return $this -> panthera -> get_filters('ajaxpages.admin', array_merge(
+        return $this -> panthera -> executeFilters('ajaxpages.admin', array_merge(
             filesystem::scandirDeeply(SITE_DIR. '/content/pages'),
             filesystem::scandirDeeply(SITE_DIR. '/content/ajaxpages/admin'),
             filesystem::scandirDeeply(PANTHERA_DIR. '/pages'),
@@ -379,7 +379,7 @@ class ajaxpagesAjaxControllerCore extends pageController
             );*/
         }
 
-        $this -> pages = $this -> panthera -> get_filters('ajaxpages_list.raw', $this -> pages, True);
+        $this -> pages = $this -> panthera -> executeFilters('ajaxpages_list.raw', $this -> pages, True);
 
         // ui.Searchbar integration
         $sBar = new uiSearchbar('uiTop');
@@ -390,7 +390,7 @@ class ajaxpagesAjaxControllerCore extends pageController
             $this -> pages = $sBar -> filterData($this -> pages, $sBar -> getQuery());
         }
 
-        $this -> pages = $this -> panthera -> get_filters('ajaxpages_list', $this -> pages, True);
+        $this -> pages = $this -> panthera -> executeFilters('ajaxpages_list', $this -> pages, True);
         $this -> panthera -> template -> push('pages', $this -> pages);
 
         return $this -> panthera -> template -> compile('ajaxpages.tpl');
