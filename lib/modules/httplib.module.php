@@ -62,7 +62,7 @@ class httplib
     {
         $panthera = pantheraCore::getInstance();
 		$this -> instanceID = generateRandomString(64);
-        $panthera -> addOption('page_load_ends', array($this, 'close'));
+        $panthera -> add_option('page_load_ends', array($this, 'close'));
     }
 
     /**

@@ -27,7 +27,7 @@ class passwordrecoveryModule extends pageController
 
     public function initialize($controllerObject)
     {
-        $this -> panthera -> addOption('login.checkauth', array($this, 'passwordRecovery'));
+        $this -> panthera -> add_option('login.checkauth', array($this, 'passwordRecovery'));
         $this -> template -> push('recoveryOption', False);
         
         if (isset($_GET['action']) and $_GET['action'] == 'recovery')

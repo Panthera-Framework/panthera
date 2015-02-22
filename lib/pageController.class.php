@@ -397,7 +397,7 @@ abstract class pageController extends pantheraClass {
     public function run()
     {
         if (checkUserPermissions(null, true))
-            $this -> panthera -> addOption('template.display', array($this, '__uiTitlebarAddPermissions'), 1);
+            $this -> panthera -> add_option('template.display', array($this, '__uiTitlebarAddPermissions'), 1);
 
         $this -> getFeature('controller.run');
         return $this -> display();

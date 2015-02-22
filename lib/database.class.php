@@ -1481,7 +1481,7 @@ abstract class pantheraFetchDB extends pantheraClass
             $panthera -> get_options('pantheraFetchDB.' .get_class($this). '__construct', $this, $by);
 
             $this->_data = $value;
-            $panthera -> addOption('session_save', array($this, 'save'));
+            $panthera -> add_option('session_save', array($this, 'save'));
             return False;
         } else {
             $SQL = NuLL;
@@ -1544,7 +1544,7 @@ abstract class pantheraFetchDB extends pantheraClass
                     if($panthera->logging->debug == True)
                         $panthera->logging->output(get_class($this). '::Found a record by "' .json_encode($by). '" (value=' .json_encode($value). ')', $this->cacheGroup);
 
-                    $panthera -> addOption('session_save', array($this, 'save'));
+                    $panthera -> add_option('session_save', array($this, 'save'));
 
                 } else {
                     if($panthera->logging->debug == True)

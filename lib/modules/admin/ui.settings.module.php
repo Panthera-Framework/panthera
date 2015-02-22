@@ -42,7 +42,7 @@ class uiSettings
             $panthera -> config -> loadOverlay($section);
         }
 
-        $panthera -> addOption('template.display', array($this, 'applyToTemplate'));
+        $panthera -> add_option('template.display', array($this, 'applyToTemplate'));
     }
 
     /**

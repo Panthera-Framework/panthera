@@ -86,7 +86,7 @@ class ptopUpdater extends pantheraPlugin
     {
         global $panthera;
 
-        $panthera -> addOption('page_load_starts', array('ptopUpdater', 'startDigging'));
-        $panthera -> addOption('page_load_ends', array('ptopUpdater', 'finish'));
+        $panthera -> add_option('page_load_starts', array('ptopUpdater', 'startDigging'));
+        $panthera -> add_option('page_load_ends', array('ptopUpdater', 'finish'));
     }
 }

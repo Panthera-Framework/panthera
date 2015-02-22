@@ -222,7 +222,7 @@ abstract class cliApp
         $this -> argv = CommandLine::parseArgs($argv);
 
         // signal handler
-        $panthera->addOption('cliSignal', array($this, 'signalHandler'));
+        $panthera->add_option('cliSignal', array($this, 'signalHandler'));
 
         // automaticaly include selected toolkit
         if ($this->toolkit == 'texttable')

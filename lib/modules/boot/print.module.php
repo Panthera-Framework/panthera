@@ -24,11 +24,11 @@ class printingModule
 
         if ($_GET['__print'] == 'pdf')
         {
-            $panthera -> addOption('template.display', array('printingModule', 'printPDF'));
+            $panthera -> add_option('template.display', array('printingModule', 'printPDF'));
             return True;
         }
 
-        $panthera -> addOption('template.display', array('printingModule', 'printPlain'));
+        $panthera -> add_option('template.display', array('printingModule', 'printPlain'));
     }
 
     /*

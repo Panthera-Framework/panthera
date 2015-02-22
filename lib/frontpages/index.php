@@ -64,12 +64,8 @@ class indexFrontControllerSystem extends pageController
         
         if (isset($config['indexDisplayVar']))
             $displayVar = $config['indexDisplayVar'];
-
-        $display = '';
-
-        if (isset($_GET[$displayVar]))
-            $display = str_replace('/', '', addslashes($_GET[$displayVar]));
-
+        
+        $display = str_replace('/', '', addslashes($_GET[$displayVar]));
         $this -> template -> setTemplate($this -> panthera -> config -> getKey('template')); 
         $path = False;
         

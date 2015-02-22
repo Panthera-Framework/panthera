@@ -55,7 +55,7 @@ class niceComment extends pantheraFetchDB
             // loading data from array (not from SQL query)
             case 'array':
                 $this->_data = $value;
-                $panthera -> addOption('session_save', array($this, 'save'));
+                $panthera -> add_option('session_save', array($this, 'save'));
                 return True;
             break;
 
@@ -72,7 +72,7 @@ class niceComment extends pantheraFetchDB
             return false;
         }
 
-        $panthera -> addOption('session_save', array($this, 'save'));
+        $panthera -> add_option('session_save', array($this, 'save'));
     }
 
     public function save()
@@ -324,6 +324,6 @@ function nCommentsAjax()
 
 // Add 'comments' item to admin menu
 function commentsToAdminMenu($menu) { $menu -> add('comments', localize('Comments'), '?display=comments', '', '', ''); return $menu;}
-$panthera -> addOption('admin_menu', 'commentsToAdminMenu');
+$panthera -> add_option('admin_menu', 'commentsToAdminMenu');
 
-$panthera -> addOption('ajax_page', 'nCommentsAjax');
+$panthera -> add_option('ajax_page', 'nCommentsAjax');

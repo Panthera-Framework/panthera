@@ -177,9 +177,9 @@ class pantheraFirePHP extends pantheraPlugin
                 if (!in_array($_SERVER['REMOTE_ADDR'], $list))
                     $enabled = False;
 
-                $panthera -> addOption('ajaxpages.dash.msg', array($obj, 'info'));
+                $panthera -> add_option('ajaxpages.dash.msg', array($obj, 'info'));
             } else
-                $panthera -> addOption('ajaxpages.dash.msg', array($obj, 'warning'));
+                $panthera -> add_option('ajaxpages.dash.msg', array($obj, 'warning'));
 
             // enable firephp
             if ($enabled == True)
@@ -188,12 +188,12 @@ class pantheraFirePHP extends pantheraPlugin
                 $firephp = FirePHP::getInstance(true);
                 $firephp->fb($panthera->logging->getOutput());
 
-                $panthera -> addOption('template.display', array($obj, 'stop'));
-                $panthera -> addOption('logging.output', array($obj, 'log'));
+                $panthera -> add_option('template.display', array($obj, 'stop'));
+                $panthera -> add_option('logging.output', array($obj, 'log'));
             }
 
-            $panthera -> addOption('ajax_page', array($obj, 'displaySettings'));
-            $panthera -> addOption('ajaxpages.debug.tools', array($obj, 'addToDebuggingCenter'));
+            $panthera -> add_option('ajax_page', array($obj, 'displaySettings'));
+            $panthera -> add_option('ajaxpages.debug.tools', array($obj, 'addToDebuggingCenter'));
         }
     }
 }

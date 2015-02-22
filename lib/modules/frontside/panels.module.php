@@ -196,7 +196,7 @@ class frontsidePanels
 
         if (!self::$init)
         {
-            $panthera -> addOption('template.display', array('frontsidePanels', 'display'));
+            $panthera -> add_option('template.display', array('frontsidePanels', 'display'));
 
             if ($loadModules)
                 self::loadModules();
