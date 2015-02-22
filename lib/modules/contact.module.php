@@ -77,7 +77,7 @@ class contactFrontpage
         );
 
         $this->settings = $panthera->config->getKey($fieldName, $contactDefaults, 'array', 'contact');
-        $panthera -> add_option('template.display', array($this, 'applyToTemplate'));
+        $panthera -> addOption('template.display', array($this, 'applyToTemplate'));
         $this -> checkCanSend();
         
         $this -> captcha = captcha::createInstance();

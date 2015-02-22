@@ -31,7 +31,7 @@ class pantheraWorker extends cliApp
     public function main()
     {
         $this -> panthera -> logging -> printOutput = $this->logging;
-        $this -> panthera -> add_option('page_load_ends', array($this, 'closeThreads'));
+        $this -> panthera -> addOption('page_load_ends', array($this, 'closeThreads'));
 
         if (isset($this->argv['long']['master']))
         {

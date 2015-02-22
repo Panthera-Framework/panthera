@@ -76,7 +76,7 @@ class facebookWrapper
         if (!$skipGetUser)
             $this -> sdk -> getUser();
 
-        $panthera -> add_option('session_save', array($this, 'saveAccessToken'));
+        $panthera -> addOption('session_save', array($this, 'saveAccessToken'));
     }
 
     /**

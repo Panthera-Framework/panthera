@@ -868,7 +868,7 @@ class metaAttributes
         if ($this->_metas == null)
             $this->_metas = array();
 
-        $panthera -> add_option('session_save', array($this, 'save'));
+        $panthera -> addOption('session_save', array($this, 'save'));
     }
 
     /**

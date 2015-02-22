@@ -26,7 +26,7 @@ class lastloginhistoryModule extends pageController
 
     public function initialize($controllerObject)
     {
-        $this -> panthera -> add_option('login.success', array($this, 'checkLastLogin'));
+        $this -> panthera -> addOption('login.success', array($this, 'checkLastLogin'));
     }
 
     /**

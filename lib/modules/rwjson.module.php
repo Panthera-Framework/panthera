@@ -57,7 +57,7 @@ class writableJSON
         }
 
         $this -> db = array_merge($this -> db, (array)json_decode(file_get_contents($file), true));
-        $panthera -> add_option('session_save', array($this, 'save'));
+        $panthera -> addOption('session_save', array($this, 'save'));
     }
 
     /**

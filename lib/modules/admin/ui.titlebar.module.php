@@ -36,7 +36,7 @@ class uiTitlebar
         $this -> panthera = $panthera;
 
         $this->settings['title'] = $title;
-        $panthera -> add_option('template.display', array($this, 'applyToTemplate'), 600);
+        $panthera -> addOption('template.display', array($this, 'applyToTemplate'), 600);
     }
 
     /**

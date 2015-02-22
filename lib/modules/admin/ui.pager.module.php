@@ -44,7 +44,7 @@ class uiPager extends pantheraClass
             'defaultOnPage' => intval($defaultOnPage),
         );
 
-        $this -> panthera -> add_option('template.display', array($this, 'applyToTemplate'));
+        $this -> panthera -> addOption('template.display', array($this, 'applyToTemplate'));
     }
 
     /**

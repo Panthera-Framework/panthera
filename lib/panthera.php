@@ -1350,7 +1350,6 @@ class pantheraCore
 	 * @return bool|object
 	 * @author Damian Kęska
 	 */
-
     public function importModule($module, $constructModule=False, $forceReload=False)
     {
         //$module = strtolower($module);
@@ -1402,7 +1401,6 @@ class pantheraCore
       * @return array
       * @author Damian Kęska
       */
-
     public function listModules()
     {
         return $this->modules;
@@ -1415,7 +1413,6 @@ class pantheraCore
 	 * @return string (path)
 	 * @author Damian Kęska
 	 */
-
     public function moduleExists($module)
     {
         if (is_file(SITE_DIR. '/content/modules/' .$module. '.module.php'))
@@ -1434,7 +1431,6 @@ class pantheraCore
 	 * @return bool
 	 * @author Damian Kęska
 	 */
-
     public function moduleImported($module)
     {
         return isset($this->modules[$module]);
@@ -1446,7 +1442,6 @@ class pantheraCore
      * @param string $name Permissions name
      * @return null|string|array
      */
-
     public function getPermission($name, $dontLocalize=False)
     {
         if (!$this->permissionsTable)
@@ -1466,7 +1461,6 @@ class pantheraCore
      *
      * @return array
      */
-
     public function listPermissions()
     {
         if (!$this->permissionsTable)
@@ -1476,13 +1470,12 @@ class pantheraCore
     }
 
     /**
-      * Return cache type
-      *
-      * @param string $cacheType Cache type can be cache or varCache
-      * @return string|null
-      * @author Damian Kęska
-      */
-
+     * Return cache type
+     *
+     * @param string $cacheType Cache type can be cache or varCache
+     * @return string|null
+     * @author Damian Kęska
+     */
     public function cacheType($cache)
     {
         if ($cache == 'cache')
@@ -1512,9 +1505,10 @@ class pantheraCore
      * @param string $hookName Hooking slot name
      * @param string|array $function Function address eg. "var_dump" or "array($object, 'method')"
      * @param int $priority Priority on execution (this can be used to execute function before or after other hooked function) If there is already any other hook with same priority defined it will be increased.
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return bool
      */
-
-    public function add_option($hookName, $function, $priority=null)
+    public function addOption($hookName, $function, $priority=null)
     {
         // create array with hooks group
 
@@ -1526,7 +1520,7 @@ class pantheraCore
         {
             if(count($function) != 2)
             {
-                $this->logging->output("Invalid function array specified to add_option, requires to be first argument a class type and second a function name of that class", 'pantheraCore');
+                $this->logging->output("Invalid function array specified to addOption, requires to be first argument a class type and second a function name of that class", 'pantheraCore');
                 return False;
             }
 

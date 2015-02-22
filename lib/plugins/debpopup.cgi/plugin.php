@@ -321,7 +321,7 @@ class debpopupPlugin extends pantheraPlugin
     {
         global $panthera;
         $obj = new debpopupPlugin;
-        $panthera -> add_option('template.display.rendered', array($obj, 'display'), 4);
-        $panthera -> add_option('panthera.ajax_exit', array($obj, 'displayAjaxExit'), 4);
+        $panthera -> addOption('template.display.rendered', array($obj, 'display'), 4);
+        $panthera -> addOption('panthera.ajax_exit', array($obj, 'displayAjaxExit'), 4);
     }
 }

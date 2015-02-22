@@ -26,7 +26,7 @@ class mailvalidationModule extends pageController
 
     public function initialize($controllerObject)
     {
-        $this -> panthera -> add_option('login.checkauth', array($this, 'checkEmail'));
+        $this -> panthera -> addOption('login.checkauth', array($this, 'checkEmail'));
     }
 
     /**

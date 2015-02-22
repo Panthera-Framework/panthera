@@ -80,7 +80,7 @@ $panthera -> template -> generateKeywords = False;
 $tpl = 'no_page.tpl';
 
 // navigation
-$panthera -> add_option('page_load_ends', array('navigation', 'appendCurrentPage'));
+$panthera -> addOption('page_load_ends', array('navigation', 'appendCurrentPage'));
 
 // execute plugins
 $panthera -> get_options('ajax_page', False);

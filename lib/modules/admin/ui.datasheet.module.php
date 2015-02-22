@@ -147,7 +147,7 @@ class uiDatasheet extends pantheraClass
     {
         if (in_array($action, $this->actions))
         {
-            $this -> panthera -> add_option('uidatasheet.' .$this->tableID. '.' .$action, $callback);
+            $this -> panthera -> addOption('uidatasheet.' .$this->tableID. '.' .$action, $callback);
             return TRUE;
         }
     }
