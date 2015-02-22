@@ -54,7 +54,13 @@ class pantheraSession
         ini_set("session.gc_probability", "1");
         ini_set('session.gc_maxlifetime', (int)$panthera->config->getKey('session_lifetime', '3600', 'int'));
         ini_set('session.cookie_lifetime', (int)$panthera->config->getKey('session_lifetime', '3600', 'int'));
-        @session_start();
+        session_name('PFW-' .$this->sessionKey);
+        session_start();
+
+        if (is_numeric($this->sessionKey))
+        {
+            throw new UnexpectedValueException('Invalid "session_key" configuration variable value, cannot be numeric - expecting [A-Z], [a-z]', 'CONFIG.SESSION_KEY.INVALID_VALUE');
+        }
 
         // Security: Check session life-time (default is 1 hour = 3600 seconds)
         if ((int)$panthera->config->getKey('session_lifetime', '3600', 'int') > 0 and $this->exists('time'))
@@ -82,14 +88,16 @@ class pantheraSession
 
         // Browser detection check
         if (!$this->get('clientInfo'))
-            $this -> set('clientInfo', $this->detectBrowser());
-        
+            $this -> set('clientInfo', (array)$this->detectBrowser());
+
         // extending session life-time on some server configurations
         if (!$this -> exists('__lifetime'))
         {
             setcookie(session_name(), session_id(), (time()+(int)$panthera->config->getKey('session_lifetime', '3600', 'int'))); 
             $this -> set('__lifetime', true);
-        } 
+        }
+
+        $this->panthera->add_option('page_load_ends', array($this, 'close'));
     }
 
     /**
@@ -108,7 +116,7 @@ class pantheraSession
         if (!class_exists('Mobile_Detect'))
         {
             $this -> panthera -> logging -> output('Warning: Mobile Detect library not installed', 'pantheraSession');
-            return (object)array();
+            return array();
         }
         
         $info = array(
@@ -160,7 +168,7 @@ class pantheraSession
         elseif ($detect->isbadaOS()) { $info['os'] = 'Bada OS'; }
         elseif ($detect->isBlackBerryOS()) { $info['os'] = 'Blackberry OS'; }
 
-        return (object)$info;
+        return $info;
     }
 
     /**
@@ -281,6 +289,10 @@ class pantheraSession
         return True;
     }
 
+    public function __destruct()
+    {
+    }
+
     /**
      * Set session variable
      *
@@ -298,9 +310,13 @@ class pantheraSession
         // dont accept integers, arrays or objects
         if (!is_string($key))
             return False;
+
+        if (!isset($_SESSION[$this->sessionKey]))
+        {
+            $_SESSION[$this->sessionKey] = array();
+        }
         
         $_SESSION[$this->sessionKey][$key] = $value;
-
         return True;
     }
 
@@ -334,6 +350,16 @@ class pantheraSession
         }
 
         return False;
+    }
+
+    /**
+     * Write session data and close
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function close()
+    {
+        return session_write_close();
     }
 
     // aliases

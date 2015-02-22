@@ -203,7 +203,7 @@ class pa_loginControllerSystem extends pageController
         $result = userTools::userCreateSession($_POST['log'], $_POST['pwd'], False, True);
 
         // if user has no active account
-        if (!$result -> active)
+        if (!$result instanceOf user || !$result -> active)
             $result = false;
         else
             $result = userTools::userCreateSession($_POST['log'], $_POST['pwd']);
@@ -214,7 +214,7 @@ class pa_loginControllerSystem extends pageController
          * @author Damian Kęska
          */
 
-        if($result and is_object($result))
+        if($result and $result instanceOf user)
         {
             $this -> getFeature('login.success', $u);
 
