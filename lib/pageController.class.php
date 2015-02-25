@@ -77,7 +77,7 @@ abstract class pageController extends pantheraClass {
      * @return object
      */
 
-    public function __construct ()
+    public function __construct ($runModules = true)
     {
         $this -> controllerName = substr(get_called_class(), 0, strpos(get_called_class(), 'Controller'));
 
@@ -130,7 +130,8 @@ abstract class pageController extends pantheraClass {
                 $this -> useuiNoAccess = true;
         }
 
-        $this -> runModules();
+        if ($runModules)
+            $this -> runModules();
     }
 
     /**

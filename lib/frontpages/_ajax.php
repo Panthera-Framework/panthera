@@ -1,119 +1,166 @@
 <?php
 /**
-  * Ajax front controller
-  *
-  * @package Panthera\core
-  * @author Damian Kęska
-  * @author Mateusz Warzyński
-  * @license GNU Affero General Public License 3, see license.txt
-  */
+ * Ajax front controller
+ *
+ * @package Panthera\core\frontcontrollers
+ * @author Damian Kęska <damian@pantheraframework.org>
+ * @author Mateusz Warzyński
+ * @license LGPLv3
+ */
 
+// framework
 require_once 'content/app.php';
 
 // front controllers utils
 include_once PANTHERA_DIR. '/pageController.class.php';
 
-$cat = '';
-
-// if we are using ajaxpage from selected category
-if (isset($_GET['cat']))
+class _ajaxControllerSystem extends pageController
 {
-    $cat = str_replace('/', '', str_replace('.', '', $_GET['cat']));
+    protected $category = '';
+    protected $page = '';
 
-    if (!getContentDir('ajaxpages/' .$cat))
-        $cat = '';
+    /**
+     * Let any hook or module be able to modify this value
+     *
+     * @var bool
+     */
+    public $stop = false;
 
-    $cat .= '/';
-}
-
-// automatic system login based on login key
-if (isset($_GET['_system_loginkey']) and $panthera -> varCache)
-{
-    if (!$panthera -> varCache -> exists('pa-login.system.loginkey'))
-        die('No loginkey present.');
-
-    $loginKey = $panthera -> varCache -> get('pa-login.system.loginkey');
-
-    // login keys are only 128 char length
-    if (strlen($_GET['_system_loginkey']) != 128)
-        die('Invalid length.');
-
-    if ($_GET['_system_loginkey'] == $loginKey['key'])
+    /**
+     * Select a controller category (sub-directory) eg. "admin" and check if selected controller is avaliable
+     *
+     * @input string $_GET['cat']
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return bool
+     */
+    protected function selectPageAndCategory()
     {
-        $panthera -> user = new pantheraUser('id', $loginKey['userID']);
-        $panthera -> varCache -> remove('pa-login.system.loginkey');
-        userTools::userCreateSessionById($loginKey['userID']);
+        // if we are using ajaxpage from selected category
+        if (isset($_GET['cat']) && $_GET['cat'])
+        {
+            $this -> category = str_replace('/', '', str_replace('.', '', $_GET['cat']));
+
+            if (!getContentDir('ajaxpages/' .$this -> category))
+                $this -> category = '';
+
+            $this -> category .= '/';
+        }
+
+        $this -> page = $this -> category . str_replace('/', '', addslashes($_GET['display']));
+
+        // admin category is built-in
+        if ($this -> category == 'admin/')
+        {
+            $this -> template -> setTemplate('admin');
+
+            // check user permissions
+            if (!getUserRightAttribute($this -> user, 'admin.accesspanel'))
+            {
+                $this -> template -> display('no_access.tpl');
+                pa_exit();
+            }
+
+            // check if requested using ajax (browser is mostly sending a header HTTP_X_REQUESTED_WITH)
+            if(empty($_SERVER['HTTP_X_REQUESTED_WITH']) and !isset($_GET['_bypass_x_requested_with']))
+                pa_redirect('pa-admin.php?'.$_SERVER['QUERY_STRING']);
+
+            // set main template
+            $this -> template -> push ('username', $this -> user ->login);
+
+            if (is_file(SITE_DIR. '/css/admin/custom/' .$this -> page. '.css'))
+                $this -> template -> addStyle('{$PANTHERA_URL}/css/admin/custom/' .$this -> page. '.css');
+
+            if (is_file(SITE_DIR. '/js/admin/custom/' .$this -> page. '.js'))
+                $this -> template -> addStyle('{$PANTHERA_URL}/js/admin/custom/' .$this -> page. '.js');
+        }
+
+        return true;
     }
-}
 
-$display = $cat.str_replace('/', '', addslashes($_GET['display']));
+    /**
+     * Setup template functions
+     * By default it disables generating meta tags and keywords, as we are going to only display ajax content
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return bool
+     */
+    protected function setupTemplate()
+    {
+        // dont generate meta tags and keywords, allow only adding scripts and styles
+        $this -> panthera -> template -> generateMeta = False;
+        $this -> panthera -> template -> generateKeywords = False;
 
-// admin category is built-in
-if ($cat == 'admin/')
-{
-    $panthera -> template -> setTemplate('admin');
+        return true;
+    }
 
-    // check user permissions
-    if (!getUserRightAttribute($panthera->user, 'admin.accesspanel')) {
-        $panthera -> template->display('no_access.tpl');
+    /**
+     * Select and run a page controller
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return null|void
+     */
+    public function runController()
+    {
+        $tpl = 'no_page.tpl';
+
+        // path to objective controller
+        $pageFile = getContentDir('ajaxpages/' .$this -> page. '.Controller.php');
+
+        // try structural controller if there is no objective one
+        if (!$pageFile)
+            $pageFile = getContentDir('ajaxpages/' .$this -> page. '.php');
+
+        // find page and load it
+        if ($pageFile)
+        {
+            include $pageFile;
+            $name = str_replace($this -> category, '', $this -> page);
+
+            // try to run objective controller
+            $controller = pageController::getController($name);
+
+            if ($controller)
+            {
+                print($controller -> run());
+                pa_exit();
+            }
+        }
+
+        // set default template if none selected
+        if (!$this -> template -> name)
+        {
+            $this -> template -> setTemplate($this -> panthera -> config -> getKey('template'));
+        }
+
+        $this -> template -> display($tpl);
         pa_exit();
     }
 
-    if(empty($_SERVER['HTTP_X_REQUESTED_WITH']) and !isset($_GET['_bypass_x_requested_with']))
-        pa_redirect('pa-admin.php?'.$_SERVER['QUERY_STRING']);
-
-    // set main template
-    $panthera -> template -> push ('username', $user->login);
-
-    if (is_file(SITE_DIR. '/css/admin/custom/' .$display. '.css'))
-        $panthera -> template -> addStyle('{$PANTHERA_URL}/css/admin/custom/' .$display. '.css');
-
-    if (is_file(SITE_DIR. '/js/admin/custom/' .$display. '.js'))
-        $panthera -> template -> addStyle('{$PANTHERA_URL}/js/admin/custom/' .$display. '.js');
-}
-
-$panthera -> get_options('ajaxpages.category', $_GET['cat']);
-
-// dont generate meta tags and keywords, allow only adding scripts and styles
-$panthera -> template -> generateMeta = False;
-$panthera -> template -> generateKeywords = False;
-$tpl = 'no_page.tpl';
-
-// navigation
-$panthera -> add_option('page_load_ends', array('navigation', 'appendCurrentPage'));
-
-// execute plugins
-$panthera -> get_options('ajax_page', False);
-
-// path to objective controller
-$pageFile = getContentDir('ajaxpages/' .$display. '.Controller.php');
-
-// try structural controller if there is no objective one
-if (!$pageFile)
-    $pageFile = getContentDir('ajaxpages/' .$display. '.php');
-
-
-// find page and load it
-if ($pageFile)
-{
-    include $pageFile;
-    $name = str_replace($cat, '', $display);
-
-    // try to run objective controller
-    $controller = pageController::getController($name);
-
-    if ($controller)
+    /**
+     * Run all actions and display
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return null|void
+     */
+    public function display()
     {
-        print($controller -> run());
-        pa_exit();
+        $this -> selectPageAndCategory();
+
+        // hooks, navigation
+        $this -> panthera -> add_option('page_load_ends', array('navigation', 'appendCurrentPage'));
+        $this -> panthera -> get_options('ajaxpages.category', $this -> category);
+        $this -> panthera -> get_options('ajax_page', False);
+
+        $this -> setupTemplate();
+        $this -> runModules();
+
+        if ($this -> stop)
+            return false;
+
+        $this -> runController();
     }
 }
 
-// set default template if none selected
-if (!$panthera->template->name)
-{
-    $panthera -> template -> setTemplate($panthera->config->getKey('template'));
-}
-
-$template -> display($tpl);
-pa_exit();
+// this code will run this controller only if this file is executed directly, not included
+pageController::runFrontController(__FILE__, '_ajaxControllerSystem');

@@ -168,7 +168,7 @@ class templatesAjaxControllerSystem extends pageController
             break;
 
             case 'clear_cache':
-                $panthera -> template -> clearCache();
+                $this -> panthera -> template -> clearCache();
                 ajax_exit(array('status' => 'success', 'message' => localize('Done')));
             break;
 
