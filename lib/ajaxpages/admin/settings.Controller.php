@@ -168,7 +168,7 @@ class settingsAjaxControllerSystem extends pageController
             {
                 if (isset($value['hidden']))
                 {
-                    if ($value['hidden'])
+                    if ($value['hidden'] || ($value['hiddenWhenDebuggingDisabled'] && $this -> panthera -> logging -> debug))
                         unset($defaults[$sectionName][$key]);
                 }
             }
@@ -293,7 +293,8 @@ class settingsAjaxControllerSystem extends pageController
             'name' => localize('Package management', 'settings'),
             'description' => localize('Install or remove Panthera packages', 'settings'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/package.png' ,
-            'linkType' => 'ajax'
+            'linkType' => 'ajax',
+            'hiddenWhenDebuggingDisabled' => true,
         );
 
         $defaults['system']['mailing'] = array(
@@ -444,7 +445,7 @@ class settingsAjaxControllerSystem extends pageController
             'name' => localize('Upload management', 'settings'),
             'description' => localize('Manage upload categories, files', 'settings'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/uploads.png',
-            'linkType' => 'ajax'
+            'linkType' => 'ajax',
         );
 
         $defaults['content']['sitesettings'] = array(
@@ -452,7 +453,7 @@ class settingsAjaxControllerSystem extends pageController
             'name' => localize('Site configuration', 'settings'),
             'description' => localize('Website URL address, title', 'settings'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/site-settings.png',
-            'linkType' => 'ajax'
+            'linkType' => 'ajax',
         );
 
         $defaults['content']['comments'] = array(
@@ -460,7 +461,8 @@ class settingsAjaxControllerSystem extends pageController
             'name' => localize('Comments management', 'settings'),
             'description' => localize('Delete, edit, hold', 'settings'),
             'icon' => '{$PANTHERA_URL}/images/admin/menu/Newsletter.png',
-            'linkType' => 'ajax'
+            'linkType' => 'ajax',
+            'hiddenWhenDebuggingDisabled' => true,
         );
 
         $defaults['content']['routing'] = array(
