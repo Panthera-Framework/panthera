@@ -563,6 +563,8 @@ class pantheraUser extends pantheraFetchDB
             unset($array['@requiresActivation']); // this cannot go to database ;-)
         }
 
+        $array['lastlogin'] = DB_TIME_NOW;
+
         return parent::create($array);
     }
 }
