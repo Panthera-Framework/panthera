@@ -6,7 +6,9 @@
 <script type="text/javascript" src="{$PANTHERA_URL}/js/admin/jquery.dropdown.js"></script>
 
 <script type="text/javascript">
-    panthera.locale.add({'Yes': '{function="localize('Yes')"}', 'No': '{function="localize('No')"}', 'Close': '{function="localize('Close')"}'});
+    panthera.locale.add({
+        'Yes': '{function="localize('Yes')"}', 'No': '{function="localize('No')"}', 'Close': '{function="localize('Close')"}'
+    });
   
     customNextBtn = false;
   

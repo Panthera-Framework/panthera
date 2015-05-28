@@ -58,9 +58,9 @@ rm -rf lib/share/minify/min_unit_tests
 rm -rf lib/share/minify/min_extras
 
 # This is temporary while waiting for RainTPLv3 author to merge pull requests with fixes required Panthera to work
-echo "Cloning Panthera-Framework/raintpl3 fork of RainTPLv3"
+echo "Cloning Panthera-Framework/raintpl3 fork of RainTPLv4"
 rm -rf lib/share/raintpl3
-git clone https://github.com/Panthera-Framework/raintpl3.git -b split_parser lib/share/raintpl3
+git clone https://github.com/Panthera-Framework/raintpl4.git lib/share/raintpl3
 
 # clean up
 echo "Cleaning up..."
