@@ -184,7 +184,7 @@ jQuery(document).ready(function() {
                 <th><input type="checkbox" value="1" name="all_langs"{if="$oneContactPage"} checked{/if} id="oneContactCheckbox"></th>
             </tr>
             
-            <!-- <tr{if="$oneContactPage == True} style='display: none;'{/if"} id="contactLanguage">
+            <!-- <tr{if $oneContactPage} style='display: none;'{/if} id="contactLanguage">
                 <th style="border-right: 0px; border-bottom: 0px;">{function="localize('Save this contact page in', 'contactpage')"}: </th>
                 <th style="border-right: 0px; border-bottom: 0px;">
                     <select name="save_as_language">
