@@ -1317,7 +1317,7 @@ class whereClause
                 {
                     // if specified table name, then prefix the column
                     if ($tableName)
-                        $q[1] = $tableName. '.' .str_replace('`', '', $q[1]);
+                        $q[1] = $tableName. '.`' .str_replace('`', '', $q[1]). '`';
                     
                     if ($debug)
                         $q[3] = str_replace($q[3], "'".$this->vals[substr($q[3], 1, strlen($q[3]))]."'", $q[3]);
