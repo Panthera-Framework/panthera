@@ -18,6 +18,8 @@ if (!defined('IN_PANTHERA'))
  * @author Damian Kęska
  */
 
+$panthera = pantheraCore::getInstance();
+
 function updateMissingStringsCache($locale)
 {
     global $panthera;
@@ -266,13 +268,13 @@ if (@$_GET['display'] == 'langtool')
             }
 
 
-            $template -> push('locale', $_GET['locale']);
-            $template -> push('domains', $domains);
+            $panthera -> template -> push('locale', $_GET['locale']);
+            $panthera -> template -> push('domains', $domains);
 
             $titlebar = new uiTitlebar(localize('Manage domains', 'langtool'));
             $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/langtool.png', 'left');
 
-            $template -> display('langtool_domains.tpl');
+            $panthera -> template -> display('langtool_domains.tpl');
             pa_exit();
         }
     }
@@ -525,7 +527,7 @@ if (@$_GET['display'] == 'langtool')
         $panthera -> template -> push('currentLanguage', $locale);
 
         // send data to template
-        $template -> push('locale', $locale);
+        $panthera -> template -> push('locale', $locale);
 
         // get translated string in other languages
         $translates = array();
@@ -575,12 +577,12 @@ if (@$_GET['display'] == 'langtool')
         $i = null; // clean memory
 
         // send data to template
-        $template -> push('translates', $translates);
+        $panthera -> template -> push('translates', $translates);
 
         $titlebar = new uiTitlebar(localize('Translates for', 'langtool')." ".$_GET['domain']);
         $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/langtool.png', 'left');
 
-        $template -> display('langtool_viewdomain.tpl');
+        $panthera -> template -> display('langtool_viewdomain.tpl');
         pa_exit();
     }
 
@@ -597,7 +599,7 @@ if (@$_GET['display'] == 'langtool')
         $locales[$name] = array('icon' => pantheraUrl('{$PANTHERA_URL}/images/admin/flags/unknown.png'), 'place' => $dir);
     }
 
-    $template -> push('locales', $locales);
+    $panthera -> template -> push('locales', $locales);
 
     $titlebar = new uiTitlebar(localize('Manage languages', 'langtool'));
     $titlebar -> addIcon('{$PANTHERA_URL}/images/admin/menu/langtool.png', 'left');

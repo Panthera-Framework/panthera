@@ -2,16 +2,17 @@ DROP TABLE IF EXISTS `{$db_prefix}uploads`;
 
 CREATE TABLE "{$db_prefix}uploads" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
-  "category" TEXT NOT NULL,
-  "location" TEXT NOT NULL,
-  "description" TEXT NOT NULL,
-  "icon" TEXT NOT NULL,
-  "mime" TEXT NOT NULL,
+  "category" TEXT,
+  "location" TEXT,
+  "description" TEXT,
+  "icon" TEXT,
+  "mime" TEXT,
   "uploader_id" INTEGER NOT NULL,
-  "uploader_login" TEXT NOT NULL,
-  "protected" INTEGER NOT NULL,
-  "public" INTEGER NOT NULL,
-  "title" TEXT NOT NULL,
-  "maxfilesize" INTEGER NOT NULL,
+  "uploader_login" TEXT,
+  "protected" INTEGER,
+  "public" INTEGER,
+  "title" TEXT,
+  "maxfilesize" INTEGER,
+  "filename" TEXT,
   "created" datetime NOT NULL
 );

@@ -213,44 +213,5 @@ function addOtherString(j, locale, domain, id)
                 {/loop}
             </tbody>
         </table>
-
-    {*}
-    {$j=0}
-    {loop="$translates"}
-    {$k=$key}
-    {$j=$j+1}
-    <table style="width: 100%; margin-bottom: 60px;" id="translate_{$j}">
-        <thead>
-            <th colspan="2"><img src="{$PANTHERA_URL}/images/admin/flags/english.png" style="padding-right: 10px; margin-left: 1px;">"{$k}" <small><i>(english)</i></small></th>
-        </thead>
-        
-        <tbody>
-            {loop="$value"}
-            {if="$key == $locale"}
-            <tr style="height: 60px;">
-                <td>
-                    <form action="#" method="POST" class="translationForm">
-                        <!-- Original string -->
-                        <input type="hidden" name="original" value="{$k}" id="original_{$j}">
-                        
-                        <!-- Translation language -->
-                        <input type="hidden" name="language" value="{$language}">
-                        <img src="{$flag}" style="margin-right: 25px;">
-                        
-                        <input type="hidden" name="domain" value="{$domain}">
-                        
-                        <!-- translation string --> 
-                        <input type="text" name="translation" value="{$value}" style="width: 50%;"> 
-                        <input type="button" value="{function="localize('Remove')"}" style="float: right;" onclick="removeString('{$j}', '{$locale}', '{$domain}');">
-                    </form>
-                </td>
-            </tr>
-            {/if}
-            {/loop}
-        </tbody>
-    </table>
-    {/loop}
-    {/*}
-    
     <div id="newTableAppendPoint"></div>
 </div>

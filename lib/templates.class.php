@@ -134,10 +134,7 @@ class pantheraTemplate extends pantheraClass
         $this -> template = $tpl;
         $this -> name = $template;
 
-        //Rain\Tpl::configure('allow_compile', False);
-
-        // reconfiguring RainTPL
-        Rain\Tpl::configure('include_path', array(
+        $this->tpl->setConfigurationKey('include_path', array(
             SITE_DIR. '/content/templates/' .$template. '/templates/',
             PANTHERA_DIR. '/templates/' .$template. '/templates/',
         ));
@@ -169,22 +166,19 @@ class pantheraTemplate extends pantheraClass
         $cacheDir = SITE_DIR. '/content/tmp/templates_c/';
 
         // TODO: Add support for include_dir
+        $this->tpl = new \Rain\RainTPL4();
 
-        // configure RainTPL engine
-        Rain\Tpl::configure(array(
-            "base_url" => null,
-            "tpl_dir"	=> '/',
+        $this->tpl->setConfiguration(array(
+            'base_url' => null,
+            'tpl_dir'	=> '/',
             'include_path' => array(),
-            "cache_dir"	=> $cacheDir,
-            "tpl_ext" => 'tpl',
-            "debug" => $this->debugging,
+            'cache_dir'	=> $cacheDir,
+            'tpl_ext' => 'tpl',
+            'debug' => $this->debugging,
             'auto_escape' => false,
             'php_enabled' => true,
             'sandbox' => false
         ));
-
-        $this->tpl = new Rain\Tpl;
-        #\Rain\Tpl::registerTag('stringModifier', '{"([^}"]+)"|([a-zA-Z\"]+):?([A-Za-z0-9\"]+)?:?([A-Za-z0-9\"]+)?:?([A-Za-z0-9\"]+)?}', function( $params, $b ){ var_dump($params); } );
 
         // Force keep default template
         if ($panthera->session->get('tpl_forceKeepTemplate'))

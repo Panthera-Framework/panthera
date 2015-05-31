@@ -13,7 +13,12 @@ CREATE TABLE "{$db_prefix}users" (
   "jabber" TEXT NOT NULL,
   "profile_picture" TEXT NOT NULL,
   "lastlogin" datetime NOT NULL,
-  "lastip" TEXT NOT NULL
+  "lastip" TEXT NOT NULL,
+  "groups" TEXT,
+  "gender" TEXT,
+  "city" TEXT,
+  "address" TEXT,
+  "postal_code" TEXT
 );
 
 CREATE INDEX "{$db_prefix}users_login" ON "{$db_prefix}users" ("login");

@@ -1219,30 +1219,31 @@ class pantheraCore
             return 120;
         }
 
-        $array = $this -> config -> getKey('cache_timing', array(
+        $array = $this -> config -> getKey('cache.lifetime', array(
             'usersTable' => 60
         ), 'array');
 
-        if (isset($array[$cacheObjectType]))
-            return $array[$cacheObjectType];
-        else {
+        // set default time - 120 seconds if entry does not exists
+        if (!isset($array[$cacheObjectType]))
+        {
             $array[$cacheObjectType] = 120;
-            $this -> config -> setKey('cache_timing', $array, 'array');
+            $this -> config -> setKey('cache.lifetime', $array, 'array');
             $this -> config -> save();
-            return 120; // default is 120 seconds if not found
         }
+
+        return $array[$cacheObjectType];
     }
 
     /**
      * Load caching modules
      *
-     * @param string $varCacheType
-     * @param string $cacheType
-     * @param bool[] $force Force find a replacement caching method when selected method fails
+     * @param string $varCacheType Handler name for varCache
+     * @param string $cacheType Handler name for cache
+     * @param bool[]|bool $force Force find a replacement caching method when selected method fails
+     * @param string $sessionKey
      * @return void
      * @author Damian Kęska
      */
-
     public function loadCache($varCacheType, $cacheType, $force = false, $sessionKey = '')
     {
         // primary cache (variables cache)
@@ -1350,7 +1351,6 @@ class pantheraCore
 	 * @return bool|object
 	 * @author Damian Kęska
 	 */
-
     public function importModule($module, $constructModule=False, $forceReload=False)
     {
         //$module = strtolower($module);
@@ -1397,12 +1397,11 @@ class pantheraCore
     }
 
     /**
-      * Simply list all modules
-      *
-      * @return array
-      * @author Damian Kęska
-      */
-
+     * Simply list all modules
+     *
+     * @return array
+     * @author Damian Kęska
+     */
     public function listModules()
     {
         return $this->modules;
@@ -1415,7 +1414,6 @@ class pantheraCore
 	 * @return string (path)
 	 * @author Damian Kęska
 	 */
-
     public function moduleExists($module)
     {
         if (is_file(SITE_DIR. '/content/modules/' .$module. '.module.php'))
@@ -1434,7 +1432,6 @@ class pantheraCore
 	 * @return bool
 	 * @author Damian Kęska
 	 */
-
     public function moduleImported($module)
     {
         return isset($this->modules[$module]);
@@ -1446,7 +1443,6 @@ class pantheraCore
      * @param string $name Permissions name
      * @return null|string|array
      */
-
     public function getPermission($name, $dontLocalize=False)
     {
         if (!$this->permissionsTable)
@@ -1466,7 +1462,6 @@ class pantheraCore
      *
      * @return array
      */
-
     public function listPermissions()
     {
         if (!$this->permissionsTable)
@@ -1482,7 +1477,6 @@ class pantheraCore
       * @return string|null
       * @author Damian Kęska
       */
-
     public function cacheType($cache)
     {
         if ($cache == 'cache')

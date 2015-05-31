@@ -1328,9 +1328,9 @@ class whereClause
     	        $this->SQL .= ' ' .$group['statement']. ' (' .$query. ')';
             }
         }
-        
+
 	    $this -> SQL = ltrim($this -> SQL, 'AND OR');
-        
+
 		return array($this -> SQL, $this -> vals);
 	}
 }
@@ -1529,7 +1529,7 @@ abstract class pantheraFetchDB extends pantheraClass
 
             // if we dont have array to take fetched data we must fetch it by our own
             if (in_array($by, $this->_constructBy) and $SQL == NULL)
-                $SQL = $panthera->db->query($this->getQuery(). ' WHERE ' .$this -> _tableName. '.' .$by. ' = :' .$by. ' LIMIT 0,1', array($by => $value));
+                $SQL = $panthera->db->query($this->getQuery(). ' WHERE ' .$this -> _tableName. '.`' .$by. '` = :' .$by. ' LIMIT 0,1', array($by => $value));
 
             // getting results and building a object
             if ($SQL)

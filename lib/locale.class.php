@@ -1,40 +1,52 @@
 <?php
+if (!defined('IN_PANTHERA'))
+    exit;
+
 /**
- * Panthera localisation class
+ * Panthera localization class
  * Provides simple strings translation from serialized array files
  *
  * @package Panthera\core\locale
  *
  * @author Damian Kęska
  */
-
-if (!defined('IN_PANTHERA'))
-    exit;
-
 class pantheraLocale
 {
-    protected $panthera, $locale, $defaultLocale = 'english', $defaultDomain = 'messages', $currentDomain = 'messages', $domains = array();
+    protected $panthera;
+    protected $locale;
+    protected $defaultLocale = 'english';
+    protected $defaultDomain = 'messages';
+    protected $currentDomain = 'messages';
+    protected $domains = array();
 
     // cache expiration time in seconds (set 0 to disable cache)
     protected $cache = 0;
     protected $invalidDomains = array(); // list of domains failed to load
 
     /**
-     * Constructor, creates default values if any doesnt exists yet
+     * Constructor, creates default values if any doesn't exists yet
      *
-     * @return void
+     * @param \pantheraCore $panthera
      * @author Damian Kęska
+     * @return \locales
      */
-
     public function __construct($panthera)
     {
         $this->panthera = $panthera;
-        $panthera->config->getKey('languages', array('polski' => True, 'english' => True), 'array');
-        $this->defaultLocale = $panthera->config->getKey('language_default', 'english', 'string');
+
+        // those languages are provided with Panthera Framework by default
+        $this->panthera->config->getKey('languages', array(
+            'polski' => True,
+            'english' => True,
+        ), 'array');
+
+        $this->defaultLocale = $panthera->config->getKey('locale.default', 'english', 'string');
 
         // cache support
         if ($this->panthera->cache)
-            $this->cache = $panthera->getCacheTime('locales');
+        {
+            $this->cache = $this->panthera->getCacheTime('locales');
+        }
     }
 
     /**
@@ -43,8 +55,7 @@ class pantheraLocale
      * @return array
      * @author Damian Kęska
      */
-
-    public function getLocales() { return $this->panthera->config->getKey('languages'); }
+    public function getLocales() { return $this->panthera->config->getKey('locale.languages'); }
 
     /**
      * Get all loaded domains
@@ -52,7 +63,6 @@ class pantheraLocale
      * @return array
      * @author Damian Kęska
      */
-
     public function getLoadedDomains() { return $this->domains; }
 
     /**
@@ -61,7 +71,6 @@ class pantheraLocale
      * @return string
      * @author Damian Kęska
      */
-
     public function getActive() { return $this->locale; }
 
     /**
@@ -70,17 +79,15 @@ class pantheraLocale
      * @return string
      * @author Damian Kęska
      */
-
     public function getSystemDefault() { return $this->defaultLocale; }
 
     /**
-      * Check if locale exists
-      *
-      * @param string $localeName
-      * @return bool
-      * @author Damian Kęska
-      */
-
+     * Check if locale exists
+     *
+     * @param string $localeName
+     * @return bool
+     * @author Damian Kęska
+     */
     public function exists($localeName) { return array_key_exists($localeName, $this->getLocales()); }
     
     /**
@@ -89,7 +96,6 @@ class pantheraLocale
      * @param string $domainName Domain name
      * @return array|bool
      */
-    
     public function getDomain($domainName)
     {
         if (!isset($this -> memory[$domainName]))
@@ -110,11 +116,11 @@ class pantheraLocale
 
     public function setSystemDefault($locale)
     {
-        $locales = $this->panthera->config->getKey('languages');
+        $locales = $this->panthera->config->getKey('locale.languages');
 
         if(array_key_exists($locale, $locales))
         {
-            $this->panthera->config->setKey('language_default', $locale, 'string');
+            $this->panthera->config->setKey('locale.default', $locale, 'string');
             $this->defaultLocale = $locale;
             $this->locale = $locale;
             return True;
@@ -134,9 +140,9 @@ class pantheraLocale
     {
         if(getContentDir('locales/' .$locale. '/') or $locale == 'english' and $locale) // english should be hardcoded
         {
-            $locales = $this->panthera->config->getKey('languages');
+            $locales = $this->panthera->config->getKey('locale.languages');
             $locales[$locale] = False;
-            $this->panthera->config->setKey('languages', $locales);
+            $this->panthera->config->setKey('locale.languages', $locales);
             return True;
         }
 
@@ -152,12 +158,12 @@ class pantheraLocale
 
     public function removeLocale($locale)
     {
-        $locales = $this->panthera->config->getKey('languages');
+        $locales = $this->panthera->config->getKey('locale.languages');
 
         if(array_key_exists($locale, $locales) and $locale != 'english') // english will be hardcoded, we must have any default
         {
             unset($locales[$locale]);
-            $this->panthera->config->setKey('languages', $locales);
+            $this->panthera->config->setKey('locale.languages', $locales);
             return True;
         }
 
@@ -173,12 +179,12 @@ class pantheraLocale
 
     public function toggleLocale($locale, $value)
     {
-        $locales = $this->panthera->config->getKey('languages');
+        $locales = $this->panthera->config->getKey('locale.languages');
 
         if (isset($locales[$locale]) or $locale == 'english')
         {
             $locales[$locale] = (bool)$value;
-            $this->panthera->config->setKey('languages', $locales);
+            $this->panthera->config->setKey('locale.languages', $locales);
             return True;
         }
     }
@@ -194,7 +200,7 @@ class pantheraLocale
     {
         $this->locale = $this->defaultLocale;
 
-        if(array_key_exists($locale, $this->panthera->config->getKey('languages')) or $locale == 'english')
+        if(array_key_exists($locale, $this->panthera->config->getKey('locale.languages')) or $locale == 'english')
             $this->locale = $locale;
 
         $this->panthera->logging->output('setLocale(' .$locale. ')', 'pantheraLocale');
@@ -203,7 +209,9 @@ class pantheraLocale
         $this->loadDomain('messages');
 
         if ($this -> panthera -> session)
-            $this -> panthera -> session -> set('language', $locale);
+        {
+            $this->panthera->session->set('language', $locale);
+        }
 
         return $this->locale;
     }
@@ -214,7 +222,6 @@ class pantheraLocale
      * @return string
      * @author Damian Kęska
      */
-
     public function _($string, $domain='')
     {
         if ($domain == '')
@@ -248,7 +255,6 @@ class pantheraLocale
      * @return string
      * @author Damian Kęska
      */
-
     public function f_($string, $domain, $variables)
     {
         return vsprintf($this->_($string, $domain), $variables);
@@ -260,7 +266,6 @@ class pantheraLocale
      * @return bool
      * @author Damian Kęska
      */
-
     public function setDomain($domain)
     {
         if (is_file(SITE_DIR. '/content/locales/' .$this->locale. '/' .$domain. '.phps'))
@@ -271,13 +276,12 @@ class pantheraLocale
     }
 
     /**
-      * Load specified domain
-      *
-      * @param string $domain Domain name
-      * @return bool
-      * @author Damian Kęska
-      */
-
+     * Load specified domain
+     *
+     * @param string $domain Domain name
+     * @return bool
+     * @author Damian Kęska
+     */
     public function loadDomain($domain, $force=False)
     {
         // dont load same domains multiple times
@@ -329,12 +333,11 @@ class pantheraLocale
     }
 
     /**
-      * Try to detect browser's language
-      *
-      * @return void
-      * @author Damian Kęska
-      */
-
+     * Try to detect browser's language
+     *
+     * @return void
+     * @author Damian Kęska
+     */
     public function fromHeader()
     {
         if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
@@ -357,7 +360,6 @@ class pantheraLocale
      * @return bool
      * @author Damian Kęska
      */
-
     public function fromSession()
     {
         if (defined('SKIP_SESSION'))

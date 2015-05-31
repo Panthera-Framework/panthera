@@ -84,8 +84,8 @@
                 {/loop}
                 </select>
                 {else}
-                {if="is_bool($value.value) or $value['type'] == 'bool'"}
-                <input type="radio" name="{$key}" value="1"{if="$value.value"} checked{/if}> {function="localize('True')"} &nbsp;<input type="radio" name="{$key}" value="0"{if="!$value.value"} checked{/if}> {function="localize('False')"}
+                {if is_bool($value['value']) or $value['type'] == 'bool'}
+                <input type="radio" name="{$key}" value="1"{if $value['value']} checked{/if}> {function="localize('True')"} &nbsp;<input type="radio" name="{$key}" value="0"{if="!$value.value"} checked{/if}> {function="localize('False')"}
                 {else}
                 {if="$value.type == 'multipleboolselect'"}
                 <select name="{$key}[]" id="{$key}" multiple style="width: 95%;">

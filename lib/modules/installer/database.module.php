@@ -305,7 +305,7 @@ class databaseInstallerControllerSystem extends installerController
         $this -> panthera -> config -> getKey('site_title', array('english' => 'Panthera Framework'), 'array');
         $this -> panthera -> config -> getKey('site_description', array('english' => 'Another site based on Panthera Framework'), 'array');
         $this -> panthera -> config -> getKey('site_metas', array('english' => 'another, panthera, framework, based, site'), 'array');
-        $this -> panthera -> config -> getKey('language_default', 'english', 'string');
+        $this -> panthera -> config -> getKey('locale.default', 'english', 'string');
         $this -> panthera -> config -> getKey('template', 'example', 'string');
         $this -> panthera -> config -> getKey('debug', true, 'bool');
         $this -> panthera -> config -> getKey('salt', md5(generateRandomString(8096)), 'string');

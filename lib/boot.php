@@ -210,11 +210,9 @@ if (PANTHERA_MODE == 'CLI') {
         navigation::loadHistoryFromSession();
 }
 
-
 /**
  * Debugging mode
  */
-
 // debugging
 if ($panthera->config->getKey('debug', False, 'bool') == True)
 {
@@ -225,7 +223,6 @@ if ($panthera->config->getKey('debug', False, 'bool') == True)
 /**
  * Locale and timezone
  */
-
 date_default_timezone_set($panthera->config->getKey('timezone', 'Europe/Warsaw'));
 
 // localisations
@@ -235,10 +232,9 @@ if (!defined('SKIP_LOCALE'))
     $panthera -> locale -> fromHeader(); // detect language from Accept-Language HTTP header
 }
 
-/*
+/**
  * Templates
  */
-
 // template system
 if (!defined('SKIP_TEMPLATE'))
 {
@@ -267,7 +263,6 @@ if (!defined('SKIP_TEMPLATE'))
 /**
  * User and session
  */
-
 if (!defined('SKIP_USER') and !defined('SKIP_SESSION'))
 {
     // get current user
