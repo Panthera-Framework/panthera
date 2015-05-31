@@ -1210,7 +1210,6 @@ class pantheraCore
       * @return int
       * @author Damian Kęska
       */
-
     public function getCacheTime($cacheObjectType)
     {
         if (!$cacheObjectType)

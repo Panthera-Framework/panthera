@@ -84,13 +84,12 @@ class uiSettings
     }
 
     /**
-      * Enable or disable language selector
-      *
-      * @param bool $value
-      * @return void
-      * @author Damian Kęska
-      */
-
+     * Enable or disable language selector
+     *
+     * @param bool $value
+     * @return void
+     * @author Damian Kęska
+     */
     public function languageSelector($value=False)
     {
         $this->options['defaultLanguage'] = pantheraLocale::getFromOverride(@$_GET['language']);

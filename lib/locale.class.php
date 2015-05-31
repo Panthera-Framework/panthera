@@ -35,7 +35,7 @@ class pantheraLocale
         $this->panthera = $panthera;
 
         // those languages are provided with Panthera Framework by default
-        $this->panthera->config->getKey('languages', array(
+        $this->panthera->config->getKey('locale.languages', array(
             'polski' => True,
             'english' => True,
         ), 'array');
