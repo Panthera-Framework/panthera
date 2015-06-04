@@ -540,7 +540,7 @@ class color
  */
 function cliSignal($signal)
 {
-    $panthera::getInstance()->get_options('cliSignal', $signal);
+    pantheraCore::getInstance()->get_options('cliSignal', $signal);
     pa_exit();
 }
 

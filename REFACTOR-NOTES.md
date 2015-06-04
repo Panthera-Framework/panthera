@@ -1,0 +1,1 @@
+- global $panthera       =>  pantheraCore::getInstance()
