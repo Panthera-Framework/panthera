@@ -1,6 +1,0 @@
-{
-    "steps": [
-        "index", "environment", "database", "simpleconfiguration", "crontab", "templates", "locales", "cache", "upload", "routing", "groups", "account", "finish"
-    ]
-
-}

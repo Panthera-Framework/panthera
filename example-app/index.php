@@ -1,1 +1,0 @@
-../lib/frontpages/index.php

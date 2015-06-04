@@ -1,1 +1,0 @@
-a:5:{s:39:"Result of your request is on the chart.";s:52:"Rezultat Twojego zapytania znajduje się na wykresie";s:25:"Given domain is too short";s:31:"Podana domena jest zbyt krótka";s:21:"Check Google PageRank";s:24:"Sprawdź Google PageRank";s:6:"Domain";s:6:"Domena";s:9:"Page rank";s:8:"PageRank";}

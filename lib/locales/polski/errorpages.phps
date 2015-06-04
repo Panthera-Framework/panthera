@@ -1,1 +1,0 @@
-a:5:{s:18:"System error pages";s:28:"Strony błędów systemowych";s:36:"Test system error pages in one place";s:49:"Testowanie błędów systemowych w jednym miejscu";s:11:"Error pages";s:16:"Strony błędów";s:20:"Please create a file";s:21:"Proszę, stwórz plik";s:12:"Trigger test";s:12:"Wykonaj test";}

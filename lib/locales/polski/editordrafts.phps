@@ -1,1 +1,0 @@
-a:2:{s:12:"Saved drafts";s:15:"Zapisane szkice";s:35:"Editing message draft created by %s";s:49:"Edytowanie szkicu wiadomości stworzonej przez %s";}

@@ -1,1 +1,0 @@
-<textarea style="width: 840px; height: 480px;">{$msg}</textarea>

@@ -1,1 +1,0 @@
-a:5:{s:6:"Search";s:6:"Szukaj";s:8:"Order by";s:8:"Szukaj w";s:9:"Ascending";s:8:"Rosnąco";s:10:"Descending";s:9:"Malejąco";s:9:"Direction";s:8:"Kierunek";}

@@ -1,4 +1,0 @@
-{
-    "pagerLink": "#",
-    "pagerOnClick": "navigateTo('?{$queryString}')"
-}
