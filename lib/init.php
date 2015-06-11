@@ -7,6 +7,7 @@
  */
 
 require __DIR__. '/modules/pantheraCore.class.php';
+spl_autoload_register('__pantheraAutoloader');
 
 /**
  * Set the environment

@@ -8,7 +8,7 @@ namespace Panthera;
  * @Package Panthera
  * @author Damian Kęska
  */
-class pantheraLogging
+class logging
 {
     public $debug = False;
     public $tofile = True;
@@ -28,7 +28,7 @@ class pantheraLogging
      *
      * @param pantheraCore $panthera
      * @author Damian Kęska
-     * @return \Panthera\pantheraLogging
+     * @return \Panthera\logging
      */
     public function __construct($panthera)
     {

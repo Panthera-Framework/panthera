@@ -1,0 +1,6 @@
+name: Dashboard
+category: Administration Panel
+routes:
+  '/admin': controllers/index.Controller.php
+signals:
+  framework.test.signal: modules/attachTestSignal
