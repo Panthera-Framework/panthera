@@ -1,7 +1,8 @@
-name: Dashboard
-category: Administration Panel
-author: Damian Kęska
+name: 'Dashboard'
+category: 'Administration Panel'
+author: 'Damian Kęska'
 url: https://github.com/webnull
+requires: [login]
 
 routes:
   '/admin': [999, controllers/index.Controller.php]
