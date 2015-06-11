@@ -122,22 +122,47 @@ function __pantheraAutoloader($class)
 class pantheraCore
 {
     /**
-     * @var Panthera\template null
+     * @var Panthera\template $template
      */
     public $template = null;
 
     /**
-     * @var Panthera\locale null
+     * @var Panthera\locale $locale
      */
     public $locale = null;
 
     /**
-     * @var Panthera\logging null
+     * @var Panthera\logging $logging
      */
     public $logging = null;
 
+    /**
+     * @var Panthera\signalHandler $signals
+     */
+    public $signals = null;
+
+    /**
+     * @var Panthera\database $database
+     */
+    public $database = null;
+
+    /**
+     * @var Panthera\cache $cache
+     */
+    public $cache = null;
+
+    /**
+     * Constructor
+     *
+     * Pre-builds all base objects
+     *
+     * @author Damian Kęska <webnull.www@gmail.com>
+     */
     public function __construct()
     {
-
+        $this->template = new \Panthera\template;
+        $this->locale   = new \Panthera\locale;
+        $this->logging  = new \Panthera\logging;
+        $this->signals  = new \Panthera\signals;
     }
 }

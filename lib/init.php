@@ -18,3 +18,11 @@ if (PHP_SAPI == 'CLI')
 {
     require __DIR__. '/modules/cli.class.php';
 }
+
+if (!isset($defaultConfig))
+{
+    throw new Panthera\InvalidConfigurationException('Cannot find $defaultConfig variable', 1);
+}
+
+$app = new pantheraCore;
+$app->configure($defaultConfig);
