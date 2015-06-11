@@ -152,6 +152,11 @@ class pantheraCore
     public $cache = null;
 
     /**
+     * @var Panthera\configuration $config
+     */
+    public $config = null;
+
+    /**
      * Constructor
      *
      * Pre-builds all base objects
@@ -160,9 +165,18 @@ class pantheraCore
      */
     public function __construct()
     {
-        $this->template = new \Panthera\template;
-        $this->locale   = new \Panthera\locale;
         $this->logging  = new \Panthera\logging;
         $this->signals  = new \Panthera\signals;
+        $this->config   = new \Panthera\configuration;
+        $this->cache    = \Panthera\cache::getCache();
+        $this->database = new \Panthera\database;
+        $this->locale   = new \Panthera\locale;
+        $this->template = new \Panthera\template;
+        $this->routing  = new \Panthera\routing;
+    }
+
+    public function configure($config)
+    {
+        $this->config->data = $this->signals->get('framework.configuration.post.init', $config);
     }
 }

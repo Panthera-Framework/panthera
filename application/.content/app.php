@@ -6,7 +6,18 @@
  */
 
 $defaultConfig = array(
+    'database' => array(
+        'type' => 'sqlite3',
 
+        // read-write user
+        'host' => null,
+        'user' => null,
+        'password' => null,
+
+        // read-only user
+        'readOnlyUser' => null,
+        'readOnlyPassword' => null,
+    ),
 );
 
 require __DIR__. '/../../lib/init.php';
