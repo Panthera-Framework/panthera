@@ -1,6 +1,13 @@
 name: Dashboard
 category: Administration Panel
+author: Damian Kęska
+url: https://github.com/webnull
+
 routes:
-  '/admin': controllers/index.Controller.php
-signals:
-  framework.test.signal: modules/attachTestSignal
+  '/admin': [999, controllers/index.Controller.php]
+
+usedSignals:
+  'framework.test.signal': 'modules/attachTestSignal'
+
+registeredSignals:
+  'framework.adminUI.dashboard.entries': 'controllers/index.Controller.php'
