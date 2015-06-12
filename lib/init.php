@@ -6,8 +6,11 @@
  * @author Damian Kęska <damian@pantheraframework.org>
  */
 
-require __DIR__. '/modules/pantheraCore.class.php';
-spl_autoload_register('__pantheraAutoloader');
+$bTrace = debug_backtrace(false, 4);
+$controllerPath = $bTrace[count($bTrace)-1]['file'];
+
+require __DIR__. '/modules/framework.class.php';
+spl_autoload_register('Panthera\__pantheraAutoloader');
 
 /**
  * Set the environment
@@ -24,5 +27,5 @@ if (!isset($defaultConfig))
     throw new Panthera\InvalidConfigurationException('Cannot find $defaultConfig variable', 1);
 }
 
-$app = new pantheraCore;
+$app = new Panthera\framework($controllerPath);
 $app->configure($defaultConfig);

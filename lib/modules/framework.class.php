@@ -36,7 +36,7 @@ abstract class baseClass
      */
     public function __construct()
     {
-        $this->app = pantheraCore::getInstance();
+        $this->app = framework::getInstance();
         self::$instance = $this;
     }
 
@@ -79,7 +79,7 @@ abstract class baseClass
 
         foreach ($reflection->getProperties() as $property)
         {
-            if ($property->getName() == 'panthera')
+            if ($property->getName() == 'app')
                 continue;
 
             $properties[] = $property->getName();
@@ -95,7 +95,7 @@ abstract class baseClass
      */
     public function __wakeup()
     {
-        $this->panthera = panthera::getInstance();
+        $this->panthera = framework::getInstance();
     }
 }
 
@@ -110,7 +110,19 @@ abstract class baseClass
  */
 function __pantheraAutoloader($class)
 {
+    // skip the namespace
+    if (strpos($class, '\\') !== false)
+    {
+        $class = substr($class, (strpos($class, '\\') + 1), strlen($class));
+    }
 
+    $app = framework::getInstance();
+    $path = $app->getPath('/modules/' .$class. '.class.php');
+
+    if ($path)
+    {
+        require $path;
+    }
 }
 
 /**
@@ -119,7 +131,7 @@ function __pantheraAutoloader($class)
  * @package Panthera
  * @author Damian Kęska <damian@pantheraframework.org>
  */
-class pantheraCore
+class framework
 {
     /**
      * @var Panthera\template $template
@@ -157,26 +169,89 @@ class pantheraCore
     public $config = null;
 
     /**
-     * Constructor
+     * @var $instance null
+     */
+    public static $instance = null;
+
+    /**
+     * Absolute path to application root directory
      *
+     * @var string $appPath
+     */
+    public $appPath = '';
+
+    /**
+     * Framework path
+     *
+     * @var string $frameworkPath
+     */
+    public $frameworkPath = '';
+
+    /**
+     * Are we in debugging mode?
+     *
+     * @var bool $isDebugging
+     */
+    public $isDebugging = false;
+
+    /**
+     * Constructor
      * Pre-builds all base objects
+     *
+     * @param string $controllerPath Path to controller that constructed this method
      *
      * @author Damian Kęska <webnull.www@gmail.com>
      */
-    public function __construct()
+    public function __construct($controllerPath)
     {
-        $this->logging  = new \Panthera\logging;
+        // setup base settings, like the place where we are
+        self::$instance = $this;
+        $this->appPath = pathinfo($controllerPath, PATHINFO_DIRNAME);
+        $this->frameworkPath = realpath(__DIR__. '/../');
+
+        $this->logging  = new \Panthera\logging($this);
         $this->signals  = new \Panthera\signals;
-        $this->config   = new \Panthera\configuration;
-        $this->cache    = \Panthera\cache::getCache();
-        $this->database = new \Panthera\database;
-        $this->locale   = new \Panthera\locale;
-        $this->template = new \Panthera\template;
-        $this->routing  = new \Panthera\routing;
+        //$this->config   = new \Panthera\configuration;
+        //$this->cache    = \Panthera\cache::getCache();
+        //$this->database = new \Panthera\database;
+        //$this->locale   = new \Panthera\locale;
+        //$this->template = new \Panthera\template;
+        //$this->routing  = new \Panthera\routing;
     }
 
     public function configure($config)
     {
-        $this->config->data = $this->signals->get('framework.configuration.post.init', $config);
+        //$this->config->data = $this->signals->get('framework.configuration.post.init', $config);
+    }
+
+    /**
+     * Get framework's instance
+     *
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return null|framework
+     */
+    public static function getInstance()
+    {
+        return self::$instance;
+    }
+
+    /**
+     * Returns an absolute path to a resource
+     *
+     * @param string $path Relative path to resource
+     *
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return string|null
+     */
+    public function getPath($path)
+    {
+        if (file_exists($this->appPath . $path))
+        {
+            return $this->appPath . $path;
+        } elseif (file_exists($path)) {
+            return $path;
+        } elseif (file_exists($this->frameworkPath . $path)) {
+            return $this->frameworkPath . $path;
+        }
     }
 }
