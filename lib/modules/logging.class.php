@@ -8,36 +8,48 @@ namespace Panthera;
  * @Package Panthera
  * @author Damian Kęska
  */
-class logging
+class logging extends baseClass
 {
-    public $debug = False;
-    public $tofile = True;
-    public $toVarCache=True;
+    /**
+     * Print output directly to console/browser
+     *
+     * @var bool
+     */
     public $printOutput = False;
-    public $filterMode = '';
-    public $filter = array();
-    private $_output = array();
-    private $panthera;
-    protected $timer = 0;
-    public $isRealMemUsage = False;
-    public $strict = False;
 
     /**
-     * Constructor
-     * Its just adding an event to hook session_save to allow saving data on application exit
+     * Messages filtering
      *
-     * @param pantheraCore $panthera
-     * @author Damian Kęska
-     * @return \Panthera\logging
+     * @var string {blacklist|whitelist}
      */
-    public function __construct($panthera)
-    {
-        $this->panthera = $panthera;
-        $this->panthera -> add_option('session_save', array($this, 'saveLog'));
+    public $filterMode = '';
 
-        if (defined('PANTHERA_FORCE_DEBUGGING'))
-            $this->debug = True;
-    }
+    /**
+     * List of message types
+     *
+     * @var String[]
+     */
+    public $filter = array();
+
+    /**
+     * @var array
+     */
+    private $_output = array();
+
+    /**
+     * Timer that counts time between two messages
+     *
+     * @var int
+     */
+    protected $timer = 0;
+
+    /**
+     * Show real memory usage?
+     *
+     * @var bool
+     */
+    public $isRealMemUsage = False;
+
 
     /**
      * Add a line to messages log
@@ -51,7 +63,7 @@ class logging
      */
     public function output($msg, $type='', $dontResetTimer=False)
     {
-        if(!$this->debug and !$this->printOutput)
+        if(!$this->app->isDebugging and !$this->printOutput)
             return False;
 
         // filter
@@ -68,9 +80,6 @@ class logging
 
         if ($this->printOutput)
             print($msg. "\n");
-
-        // plugins support eg. firebug
-        $this->panthera->get_options('logging.output', $msg);
 
         $this->_output[] = array($msg, $type, $time, $this->timer, memory_get_usage($this->isRealMemUsage));
 
@@ -110,8 +119,6 @@ class logging
      */
     public function getOutput($array=False)
     {
-        $this -> panthera -> importModule('filesystem');
-
         if ($array === True)
             return $this->_output;
 
@@ -140,11 +147,11 @@ class logging
                 $executionTime = ($time-$lastTime)*1000;
             }
 
-            $msg .= "[".substr($time, 0, 9).", ".substr($executionTime, 0, 9)."ms".$real."] [".filesystem::bytesToSize($line[4])."] [".$line[1]."] ".$line[0]. "\n";
+            $msg .= "[".substr($time, 0, 9).", ".substr($executionTime, 0, 9)."ms".$real."] [".fileutils::bytesToSize($line[4])."] [".$line[1]."] ".$line[0]. "\n";
             $lastTime = $time;
         }
 
-        $msg .= "[".substr(microtime(true)-$_SERVER['REQUEST_TIME_FLOAT'], 0, 9).", ".substr((microtime(true)-$_SERVER['REQUEST_TIME_FLOAT']-$lastTime)*1000, 0, 9)."ms] [".filesystem::bytesToSize(memory_get_usage($this->isRealMemUsage))."]  [pantheraLogging] Done\n";
+        $msg .= "[".substr(microtime(true)-$_SERVER['REQUEST_TIME_FLOAT'], 0, 9).", ".substr((microtime(true)-$_SERVER['REQUEST_TIME_FLOAT']-$lastTime)*1000, 0, 9)."ms] [".fileutils::bytesToSize(memory_get_usage($this->isRealMemUsage))."]  [pantheraLogging] Done\n";
 
         return $defaults.$msg;
     }
@@ -166,25 +173,6 @@ class logging
             @fclose($fp);
         }
 
-        if ($this->toVarCache and $this->panthera->varCache)
-            $this->panthera->varCache->set('debug.log', base64_encode($output), 864000);
-    }
-
-    /**
-     * Read log from cache or from file
-     *
-     * @author Damian Kęska
-     * @return string|bool
-     */
-
-    public function readSavedLog()
-    {
-        if ($this->toVarCache and $this->panthera->varCache and $this->panthera->varCache->exists('debug.log'))
-            return base64_decode($this->panthera->varCache->get('debug.log'));
-
-        if ($this->tofile and is_file(SITE_DIR. '/content/tmp/debug.log'))
-            return @file_get_contents(SITE_DIR. '/content/tmp/debug.log');
-
-        return False;
+        $this->app->cache->set('debug.log', base64_encode($output), 864000);
     }
 }
