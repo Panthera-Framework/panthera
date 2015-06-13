@@ -44,16 +44,16 @@ abstract class baseClass
      * Execute hooks and defined functions with name $featureName
      *
      * Example:
-     *  $featureName = 'custompages.add' will execute $this->custompages_addFeature($args, $additionalInfo) and $this->panthera->get_filters($featureName, $args, $additionalInfo)
+     *  $featureName = 'custompages.add' will execute $this->custompages_addFeature($args, $additionalInfo) and $this->app->execute($featureName, $args, $additionalInfo)
      *
      * @param string $featureName Hook and function name
-     * @param mixed $args Args to pass to function and/or hook
+     * @param mixed|null $args Args to pass to function and/or hook
      * @param mixed $additionalInfo Additional informations
      * @param bool $fixOnFail Don't loose arguments data if any hook will fail (return false or null)
      *
      * @return $args Mixed arguments
      */
-    public function getFeature($featureName, $args='', $additionalInfo=null, $fixOnFail=True)
+    public function getFeature($featureName, $args = null, $additionalInfo = null)
     {
         $f = preg_replace('/[^\da-zA-Z0-9]/i', '_', $featureName). 'Feature';
 
@@ -62,7 +62,7 @@ abstract class baseClass
         if (method_exists($this, $f))
             $args = $this->$f($args, $additionalInfo);
 
-        return $this->app->signals->get($featureName, $args, $fixOnFail, $additionalInfo);
+        return $this->app->signals->execute($featureName, $args);
     }
 
     /**
@@ -95,7 +95,7 @@ abstract class baseClass
      */
     public function __wakeup()
     {
-        $this->panthera = framework::getInstance();
+        $this->app = framework::getInstance();
     }
 }
 
@@ -219,9 +219,15 @@ class framework
         //$this->routing  = new \Panthera\routing;
     }
 
+    /**
+     * Pre-configure Panthera Framework 2 environment
+     *
+     * @param array $config
+     * @author Damian Kęska <webnull.www@gmail.com>
+     */
     public function configure($config)
     {
-        //$this->config->data = $this->signals->get('framework.configuration.post.init', $config);
+        $this->config->data = $this->signals->execute('framework.configuration.post.init', $config);
     }
 
     /**
