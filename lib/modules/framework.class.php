@@ -2,7 +2,7 @@
 namespace Panthera;
 
 /**
- * Abstract Panthera class with Panthera object stored in $this->panthera
+ * Abstract Panthera class with Panthera object stored in $this->app
  *
  * @package Panthera
  * @author Damian Kęska
@@ -134,37 +134,37 @@ function __pantheraAutoloader($class)
 class framework
 {
     /**
-     * @var Panthera\template $template
+     * @var \Panthera\template $template
      */
     public $template = null;
 
     /**
-     * @var Panthera\locale $locale
+     * @var \Panthera\locale $locale
      */
     public $locale = null;
 
     /**
-     * @var Panthera\logging $logging
+     * @var \Panthera\logging $logging
      */
     public $logging = null;
 
     /**
-     * @var Panthera\signalHandler $signals
+     * @var \Panthera\signalHandler $signals
      */
     public $signals = null;
 
     /**
-     * @var Panthera\database $database
+     * @var \Panthera\database $database
      */
     public $database = null;
 
     /**
-     * @var Panthera\cache $cache
+     * @var \Panthera\cache $cache
      */
     public $cache = null;
 
     /**
-     * @var Panthera\configuration $config
+     * @var \Panthera\configuration $config
      */
     public $config = null;
 
@@ -211,7 +211,7 @@ class framework
 
         $this->logging  = new \Panthera\logging($this);
         $this->signals  = new \Panthera\signals;
-        //$this->config   = new \Panthera\configuration;
+        $this->config   = new \Panthera\configuration;
         //$this->cache    = \Panthera\cache::getCache();
         //$this->database = new \Panthera\database;
         //$this->locale   = new \Panthera\locale;

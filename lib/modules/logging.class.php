@@ -8,48 +8,36 @@ namespace Panthera;
  * @Package Panthera
  * @author Damian Kęska
  */
-class logging extends baseClass
+class logging
 {
-    /**
-     * Print output directly to console/browser
-     *
-     * @var bool
-     */
+    public $debug = False;
+    public $tofile = True;
+    public $toVarCache=True;
     public $printOutput = False;
-
-    /**
-     * Messages filtering
-     *
-     * @var string {blacklist|whitelist}
-     */
     public $filterMode = '';
-
-    /**
-     * List of message types
-     *
-     * @var String[]
-     */
     public $filter = array();
-
-    /**
-     * @var array
-     */
     private $_output = array();
-
-    /**
-     * Timer that counts time between two messages
-     *
-     * @var int
-     */
+    private $panthera;
     protected $timer = 0;
+    public $isRealMemUsage = False;
+    public $strict = False;
 
     /**
-     * Show real memory usage?
+     * Constructor
+     * Its just adding an event to hook session_save to allow saving data on application exit
      *
-     * @var bool
+     * @param pantheraCore $panthera
+     * @author Damian Kęska
+     * @return \Panthera\logging
      */
-    public $isRealMemUsage = False;
+    public function __construct($panthera)
+    {
+        $this->panthera = $panthera;
+        $this->panthera -> add_option('session_save', array($this, 'saveLog'));
 
+        if (defined('PANTHERA_FORCE_DEBUGGING'))
+            $this->debug = True;
+    }
 
     /**
      * Add a line to messages log
@@ -63,7 +51,7 @@ class logging extends baseClass
      */
     public function output($msg, $type='', $dontResetTimer=False)
     {
-        if(!$this->app->isDebugging and !$this->printOutput)
+        if(!$this->debug and !$this->printOutput)
             return False;
 
         // filter
@@ -80,6 +68,9 @@ class logging extends baseClass
 
         if ($this->printOutput)
             print($msg. "\n");
+
+        // plugins support eg. firebug
+        $this->panthera->signals->get('framework.logging.output', $msg);
 
         $this->_output[] = array($msg, $type, $time, $this->timer, memory_get_usage($this->isRealMemUsage));
 
@@ -147,11 +138,11 @@ class logging extends baseClass
                 $executionTime = ($time-$lastTime)*1000;
             }
 
-            $msg .= "[".substr($time, 0, 9).", ".substr($executionTime, 0, 9)."ms".$real."] [".fileutils::bytesToSize($line[4])."] [".$line[1]."] ".$line[0]. "\n";
+            $msg .= "[".substr($time, 0, 9).", ".substr($executionTime, 0, 9)."ms".$real."] [".filesystem::bytesToSize($line[4])."] [".$line[1]."] ".$line[0]. "\n";
             $lastTime = $time;
         }
 
-        $msg .= "[".substr(microtime(true)-$_SERVER['REQUEST_TIME_FLOAT'], 0, 9).", ".substr((microtime(true)-$_SERVER['REQUEST_TIME_FLOAT']-$lastTime)*1000, 0, 9)."ms] [".fileutils::bytesToSize(memory_get_usage($this->isRealMemUsage))."]  [pantheraLogging] Done\n";
+        $msg .= "[".substr(microtime(true)-$_SERVER['REQUEST_TIME_FLOAT'], 0, 9).", ".substr((microtime(true)-$_SERVER['REQUEST_TIME_FLOAT']-$lastTime)*1000, 0, 9)."ms] [".filesystem::bytesToSize(memory_get_usage($this->isRealMemUsage))."]  [pantheraLogging] Done\n";
 
         return $defaults.$msg;
     }
@@ -173,6 +164,25 @@ class logging extends baseClass
             @fclose($fp);
         }
 
-        $this->app->cache->set('debug.log', base64_encode($output), 864000);
+        if ($this->toVarCache and $this->panthera->varCache)
+            $this->panthera->varCache->set('debug.log', base64_encode($output), 864000);
+    }
+
+    /**
+     * Read log from cache or from file
+     *
+     * @author Damian Kęska
+     * @return string|bool
+     */
+
+    public function readSavedLog()
+    {
+        if ($this->toVarCache and $this->panthera->varCache and $this->panthera->varCache->exists('debug.log'))
+            return base64_decode($this->panthera->varCache->get('debug.log'));
+
+        if ($this->tofile and is_file(SITE_DIR. '/content/tmp/debug.log'))
+            return @file_get_contents(SITE_DIR. '/content/tmp/debug.log');
+
+        return False;
     }
 }
