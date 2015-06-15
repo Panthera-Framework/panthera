@@ -2,11 +2,12 @@ name: 'Dashboard'
 category: 'Administration Panel'
 author: 'Damian Kęska'
 url: https://github.com/webnull
-requires: [login]
+provides: ['dashboard']
+requires: ['login']
 description: 'Simple dashboard that is showing links to all important modules in the system, displaying statistics and diagnostic'
 
 routes:
-  '/admin': [999, controllers/index.Controller.php]
+  '/admin': [999, 'controllers/index.Controller.php']
 
 usedSignals:
   'framework.test.signal': 'modules/attachTestSignal'
