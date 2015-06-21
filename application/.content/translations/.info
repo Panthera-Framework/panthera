@@ -1,0 +1,5 @@
+-- To create translations create folders with locale names and put CSV files inside of it
+
+CSV syntax:
+"Original string", "Translation"
+"Other original string", "Other translation"
