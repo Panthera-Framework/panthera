@@ -62,7 +62,7 @@ class cache
 /**
  * Interface for cache handlers
  *
- * @package Panthera
+ * @package Panthera\cache
  */
 interface cacheInterface
 {
