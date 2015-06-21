@@ -9,9 +9,24 @@ namespace Panthera;
  */
 class SQLite3Cache extends baseClass implements cacheInterface
 {
+    /**
+     * @const int typeSerialized Value of pf2_simple_cache.type that means we have serialized data in a row
+     */
     const typeSerialized = 1;
+
+    /**
+     * @const int typePlain Plain data type
+     */
     const typePlain      = 0;
+
+    /**
+     * @var SQLite3|null $connection
+     */
     public $connection   = null;
+
+    /**
+     * @var int $queries Pure statistics
+     */
     public $queries      = 0;
 
     /**
