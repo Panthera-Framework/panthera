@@ -225,7 +225,7 @@ class framework
         $this->logging  = new \Panthera\logging;
         $this->signals  = new \Panthera\signals;
         $this->config   = new \Panthera\configuration;
-        //$this->cache    = \Panthera\cache::getCache();
+        $this->cache    = \Panthera\cache::getCache();
         //$this->database = new \Panthera\database;
         $this->locale   = new \Panthera\locale;
         //$this->template = new \Panthera\template;
@@ -306,13 +306,13 @@ class framework
             throw new PantheraFrameworkException('Application index cache not found, it should be updated automatically as a periodic or real time job, please investigate why cache regeneration is not running up', 'FW_APPLICATION_INDEX_NOT_FOUND');
         }
 
-        if (file_exists($this->appPath . $path))
+        if (file_exists($this->appPath . '/' . $path))
         {
-            return $this->appPath . $path;
+            return $this->appPath . '/' . $path;
         } elseif (file_exists($path)) {
             return $path;
-        } elseif (file_exists($this->frameworkPath . $path)) {
-            return $this->frameworkPath . $path;
+        } elseif (file_exists($this->frameworkPath . '/' . $path)) {
+            return $this->frameworkPath . '/' . $path;
         }
 
         /**

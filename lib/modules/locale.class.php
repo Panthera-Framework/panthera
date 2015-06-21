@@ -98,6 +98,11 @@ class locale extends baseClass
             $fp = fopen($compiledPath, 'w');
             fwrite($fp, '<?php $__list = ' .var_export($this->translationStrings[$domain], true). ';');
             fclose($fp);
+
+            if (function_exists('opcache_compile_file'))
+            {
+                opcache_compile_file($compiledPath);
+            }
         }
 
         require $compiledPath;
