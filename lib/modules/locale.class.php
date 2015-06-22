@@ -4,9 +4,9 @@ namespace Panthera;
 /**
  * Panthera Framework 2 localization class
  *
- *
- *
  * @package Panthera
+ * @author Damian Kęska <webnull.www@gmail.com>
+ * @author Mateusz Warzyński <lxnmen@gmail.com>
  */
 class locale extends baseClass
 {
@@ -15,7 +15,7 @@ class locale extends baseClass
      *
      * @var string
      */
-    public $activeLanguage = 'en';
+    public $activeLanguage = 'original';
 
     public $translationStrings = array(
 
@@ -26,6 +26,8 @@ class locale extends baseClass
      *
      * @param string $localeString Original text string
      * @param string $domain Domain name
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
      * @return string
      */
     public function get($localeString, $domain)
@@ -62,6 +64,7 @@ class locale extends baseClass
      * @throws FileNotFoundException
      * @throws PantheraFrameworkException
      * @throws SyntaxException
+     * @author Damian Kęska <webnull.www@gmail.com>
      * @return bool
      */
     public function loadTranslationDomain($domain)
@@ -122,7 +125,7 @@ class locale extends baseClass
      * @param string $body Input text, CSV file content
      *
      * @throws SyntaxException
-     * @author Damian Kęska <damian@pantheraframework.org>
+     * @author Damian Kęska <webnull.www@gmail.com>
      * @return array
      */
     public function compileCSV($body)
