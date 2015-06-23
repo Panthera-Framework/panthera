@@ -55,10 +55,13 @@ class locale extends baseClass
     /**
      * Load a translation domain
      *
-     * @param $domain
+     * @param string $domain Domain to load
+     *
      * @throws FileNotFoundException
      * @throws PantheraFrameworkException
      * @throws SyntaxException
+     *
+     * @return bool
      */
     public function loadTranslationDomain($domain)
     {
