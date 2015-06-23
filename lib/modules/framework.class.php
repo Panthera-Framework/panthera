@@ -226,7 +226,7 @@ class framework
         $this->signals  = new \Panthera\signals;
         $this->config   = new \Panthera\configuration;
         $this->cache    = \Panthera\cache::getCache();
-        //$this->database = new \Panthera\database;
+        $this->database = \Panthera\database::getDatabaseInstance($this->config->get('database.type', 'SQLite3'));
         $this->locale   = new \Panthera\locale;
         //$this->template = new \Panthera\template;
         //$this->routing  = new \Panthera\routing;
