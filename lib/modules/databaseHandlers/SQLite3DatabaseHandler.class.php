@@ -4,10 +4,30 @@ namespace Panthera;
 class SQLite3DatabaseHandler extends \Panthera\database implements databaseHandlerInterface
 {
     /**
+     * PDO object
+     *
      * @var \PDO $socket
      */
     public $socket = null;
 
+    /**
+     * List of translated SQL functions
+     *
+     * @var array
+     */
+    public $functions = array(
+        'count' => 'COUNT',
+        'avg'   => 'AVG',
+        'max'   => 'MAX',
+        'min'   => 'MIN',
+        'sum'   => 'SUM',
+    );
+
+    /**
+     * List of operators translated to SQL syntax
+     *
+     * @var array
+     */
     public $comparisonOperators = array(
         '=' => '=',
         '!' => '<>',
@@ -42,9 +62,11 @@ class SQLite3DatabaseHandler extends \Panthera\database implements databaseHandl
      * @param null|array $what Null means '*' (all columns), example array of columns: array('userId', 'userName', 'userLogin')
      * @param null|array $where Where statement, an array, @see \Panthera\database::parseWhereConditionBlock() for example
      * @param null|string|array $order Order by statement
+     * @param null|string|array $group Group by those columns
      * @param null|Pagination $limit
      *
      * @throws PantheraFrameworkException
+     * @author Damian Kęska <damian@pantheraframework.org>
      * @return string
      */
     public function select($tableName, $what = null, $where = null, $order = null, $group = null, $limit = null, $values = array(), $joins = array())
@@ -96,6 +118,16 @@ class SQLite3DatabaseHandler extends \Panthera\database implements databaseHandl
         if ($order)
         {
             $query .= ' ORDER BY ' .$this->parseOrderByBlock($order, 's1');
+        }
+
+        /**
+         * Group by
+         *
+         * @see \Panthera\database::parseGroupByBlock()
+         */
+        if ($group)
+        {
+            $query .= ' GROUP BY ' .$this->parseGroupByBlock($group, 's1');
         }
 
         return $query;

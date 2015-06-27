@@ -5,6 +5,10 @@ class database extends baseClass
 {
     public $object = null;
 
+    public $functions = array(
+
+    );
+
     public static function getDatabaseInstance($databaseType)
     {
         $framework = framework::getInstance();
@@ -157,9 +161,13 @@ class database extends baseClass
      *
      * eg. array('userName DESC', 'userId ASC')
      *
-     * @param $orderBy
+     * @param array $orderBy List of columns and sorting directions
+     * @param string|null $columnNamePrefix Optional column name prefix
+     *
+     * @throws PantheraFrameworkException
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return string
      */
-
     public function parseOrderByBlock($orderBy, $columnNamePrefix = null)
     {
         $result = '';
@@ -197,6 +205,62 @@ class database extends baseClass
             }
 
             $result .= $exp[0]. ' ' .$exp[1]. ', ';
+        }
+
+        return rtrim($result, ', ');
+    }
+
+    /**
+     * Parse array into "GROUP BY" statement (common for SQLite3 and MySQL database types)
+     *
+     * Example:
+     *   array(
+     *      'userName',
+     *      'count(userId)',
+     *   );
+     *
+     * @param array|string $columnsList List of columns, see example
+     * @param string|null $columnNamePrefix Optional column name prefix
+     *
+     * @throws PantheraFrameworkException
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return string
+     */
+    public function parseGroupByBlock($columnsList, $columnNamePrefix = null)
+    {
+        $result = '';
+
+        if (is_string($columnsList))
+        {
+            $columnsList = array($columnsList);
+        }
+
+        foreach ($columnsList as $column)
+        {
+            // GROUP BY count(name)
+            if (strpos($column, '(') !== false)
+            {
+                $exp = explode('(', $column);
+
+                if (!isset($this->functions[strtolower($exp[0])]))
+                {
+                    throw new PantheraFrameworkException('Parser error: Unrecognized SQL function "' .$exp[0]. '" for used database handler', 'FW_SQL_UNRECOGNIZED_FUNCTION');
+                }
+
+                if ($columnNamePrefix && strpos($exp[1], '.') === false)
+                {
+                    $exp[1] = $columnNamePrefix. '.' .$exp[1];
+                }
+
+                $column = implode('(', $exp);
+            } else {
+                if ($columnNamePrefix && strpos($column, '.') === false)
+                {
+                    $column = $columnNamePrefix. '.' .$column;
+                }
+            }
+
+            $result .= $column. ', ';
         }
 
         return rtrim($result, ', ');
