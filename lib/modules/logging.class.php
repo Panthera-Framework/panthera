@@ -81,6 +81,7 @@ class logging extends baseClass
 
         $backtrace = debug_backtrace();
         $backtrace = end($backtrace);
+        $formattedMessage = $this->format;
 
         $formatting = array(
             '%date'          => date($this->dateFormat),
@@ -96,7 +97,7 @@ class logging extends baseClass
 
         foreach ($formatting as $key => $value)
         {
-            $this->format = str_replace($key, $value, $this->format);
+            $formattedMessage = str_replace($key, $value, $formattedMessage);
         }
 
         $this->messages[] = $this->format;
@@ -104,7 +105,7 @@ class logging extends baseClass
         // reset the timer
         $this->timer = null;
 
-        return $this->format;
+        return $formattedMessage;
     }
 
     /**
