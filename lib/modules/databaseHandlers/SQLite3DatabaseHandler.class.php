@@ -1,7 +1,7 @@
 <?php
-namespace Panthera;
+namespace Panthera\database;
 
-class SQLite3DatabaseHandler extends \Panthera\database implements databaseHandlerInterface
+class SQLite3DatabaseHandler extends \Panthera\database\driver implements databaseHandlerInterface
 {
     /**
      * PDO object

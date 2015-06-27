@@ -1,6 +1,7 @@
 <?php
 namespace Panthera;
 require __DIR__. '/BaseExceptions.php';
+require __DIR__. '/database.class.php';
 
 /**
  * Abstract Panthera class with Panthera object stored in $this->app
@@ -155,7 +156,7 @@ class framework
     public $signals = null;
 
     /**
-     * @var \Panthera\database $database
+     * @var \Panthera\database\driver|\panthera\database\SQLite3DatabaseHandler $database
      */
     public $database = null;
 
@@ -226,7 +227,7 @@ class framework
         $this->config   = new \Panthera\configuration;
         $this->logging  = new \Panthera\logging;
         $this->cache    = \Panthera\cache::getCache();
-        $this->database = \Panthera\database::getDatabaseInstance($this->config->get('database.type', 'SQLite3'));
+        $this->database = \Panthera\database\driver::getDatabaseInstance($this->config->get('database.type', 'SQLite3'));
         $this->locale   = new \Panthera\locale;
         //$this->template = new \Panthera\template;
         //$this->routing  = new \Panthera\routing;

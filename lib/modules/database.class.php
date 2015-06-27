@@ -1,31 +1,48 @@
 <?php
-namespace Panthera;
+namespace Panthera\database;
 
-class database extends baseClass
+class driver extends \Panthera\baseClass
 {
-    public $object = null;
+    public static $object = null;
 
     public $functions = array(
 
     );
 
-    public static function getDatabaseInstance($databaseType)
+    /**
+     * Get database driver singleton instance
+     *
+     * @param string $databaseType Database handler name
+     * @param bool|false $force Force create new object, or use existing
+     *
+     * @throws \Panthera\FileNotFoundException
+     * @throws \Panthera\PantheraFrameworkException
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return object
+     */
+    public static function getDatabaseInstance($databaseType, $force = false)
     {
-        $framework = framework::getInstance();
+        if (is_object(self::$object) && !$force)
+        {
+            return self::$object;
+        }
+
+        $framework = \Panthera\framework::getInstance();
         $path = $framework->getPath('modules/databaseHandlers/' .$databaseType. 'DatabaseHandler.class.php');
-        $className = '\\Panthera\\' .$databaseType. 'DatabaseHandler';
+        $className = '\\Panthera\\database\\' .$databaseType. 'DatabaseHandler';
 
-        require $path;
+        require_once $path;
 
-        if (!in_array('Panthera\databaseHandlerInterface', class_implements($className)))
+        if (!in_array('Panthera\database\databaseHandlerInterface', class_implements($className)))
         {
             throw new \Panthera\PantheraFrameworkException('Database handler "' .$className. '" have to implement "databaseHandlerInterface" interface', 'FW_INVALID_DRIVER');
         }
 
-        $object = new $className;
-        $object->connect();
+        self::$object = new $className;
+        self::$object->connect();
 
-        return $object;
+        return self::$object;
     }
 
     /**
@@ -54,8 +71,9 @@ class database extends baseClass
      *
      * @param array $whereCondition The condition
      * @param string|null $columnNamePrefix Optional prefix to add to every column name (in case column don't have any)
-     * @return array
+     *
      * @throws PantheraFrameworkException
+     * @return array
      */
 
     public function parseWhereConditionBlock($whereCondition, $columnNamePrefix = null)
@@ -165,6 +183,7 @@ class database extends baseClass
      * @param string|null $columnNamePrefix Optional column name prefix
      *
      * @throws PantheraFrameworkException
+     *
      * @author Damian Kęska <damian@pantheraframework.org>
      * @return string
      */
@@ -222,7 +241,8 @@ class database extends baseClass
      * @param array|string $columnsList List of columns, see example
      * @param string|null $columnNamePrefix Optional column name prefix
      *
-     * @throws PantheraFrameworkException
+     * @throws \Panthera\PantheraFrameworkException
+     *
      * @author Damian Kęska <damian@pantheraframework.org>
      * @return string
      */
@@ -244,7 +264,7 @@ class database extends baseClass
 
                 if (!isset($this->functions[strtolower($exp[0])]))
                 {
-                    throw new PantheraFrameworkException('Parser error: Unrecognized SQL function "' .$exp[0]. '" for used database handler', 'FW_SQL_UNRECOGNIZED_FUNCTION');
+                    throw new \Panthera\PantheraFrameworkException('Parser error: Unrecognized SQL function "' .$exp[0]. '" for used database handler', 'FW_SQL_UNRECOGNIZED_FUNCTION');
                 }
 
                 if ($columnNamePrefix && strpos($exp[1], '.') === false)
@@ -264,6 +284,65 @@ class database extends baseClass
         }
 
         return rtrim($result, ', ');
+    }
+}
+
+/**
+ * A wrapper for creating SELECT database queries
+ *
+ * @package Panthera\database
+ * @author Damian Kęska <damian@pantheraframework.org>
+ */
+class select
+{
+    public $what = null;
+
+    public $table = null;
+
+    public $where = null;
+
+    public $joins = array();
+
+    public $order = null;
+
+    public $group = null;
+
+    public $limit = null;
+
+    public $values = array();
+
+    /**
+     * Constructor
+     *
+     * @param string $table Table name
+     * @param string|array $what List of columns, or null to insert '*'
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function __construct($table, $what = null)
+    {
+        $this->what = $what;
+        $this->table = $table;
+    }
+
+    /**
+     * Execute prepared query
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return string
+     */
+    public function execute()
+    {
+        $fw = \Panthera\framework::getInstance();
+        return $fw->database->select(
+            $this->table,
+            $this->what,
+            $this->where,
+            $this->order,
+            $this->group,
+            $this->limit,
+            $this->values,
+            $this->joins
+        );
     }
 }
 
