@@ -222,9 +222,9 @@ class framework
         // load application indexing cache
         $this->loadApplicationIndex();
 
-        $this->logging  = new \Panthera\logging;
         $this->signals  = new \Panthera\signals;
         $this->config   = new \Panthera\configuration;
+        $this->logging  = new \Panthera\logging;
         $this->cache    = \Panthera\cache::getCache();
         $this->database = \Panthera\database::getDatabaseInstance($this->config->get('database.type', 'SQLite3'));
         $this->locale   = new \Panthera\locale;
