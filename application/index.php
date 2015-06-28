@@ -54,7 +54,9 @@ $select->group = array(
 	'count(userId)',
 );
 
-$select->execute();
+$select->limit = new \Panthera\database\Pagination(5, 3); // 5 items per page, 3rd page
+
+var_dump($select->execute());
 
 print $app->logging->output('SQL query in objective-mode done');
 var_dump(microtime(true) - $t);

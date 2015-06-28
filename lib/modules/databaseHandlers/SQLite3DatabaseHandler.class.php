@@ -130,6 +130,17 @@ class SQLite3DatabaseHandler extends \Panthera\database\driver implements databa
             $query .= ' GROUP BY ' .$this->parseGroupByBlock($group, 's1');
         }
 
+        /**
+         * Pagination - LIMIT and OFFSET
+         *
+         * @see \Panthera\database\Pagination
+         */
+        if ($limit && $limit instanceOf \Panthera\database\Pagination)
+        {
+            $limit = $limit->getSQLData();
+            $query .= ' LIMIT ' .$limit[1]. ' OFFSET ' .$limit[0]. ' ';
+        }
+
         return $query;
     }
 }
