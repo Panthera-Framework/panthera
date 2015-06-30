@@ -112,6 +112,12 @@ abstract class baseClass
  */
 function __pantheraAutoloader($class)
 {
+    // todo: improve auto loading external libraries
+    if (strpos($class, 'Panthera') === false)
+    {
+        return false;
+    }
+
     // skip the namespace
     if (strpos($class, '\\') !== false)
     {
@@ -229,7 +235,7 @@ class framework
         $this->cache    = \Panthera\cache::getCache();
         $this->database = \Panthera\database\driver::getDatabaseInstance($this->config->get('database.type', 'SQLite3'));
         $this->locale   = new \Panthera\locale;
-        //$this->template = new \Panthera\template;
+        $this->template = new \Panthera\template;
         //$this->routing  = new \Panthera\routing;
     }
 
