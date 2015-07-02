@@ -1,0 +1,1 @@
+Panthera Framework 2 template test

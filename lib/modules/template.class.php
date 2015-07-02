@@ -62,8 +62,8 @@ class template extends baseClass
 
         $this->rain->setConfiguration(array(
             'base_url'            => null,
-            'tpl_dir'             => '/../../templates/',
-            'cache_dir'           => 'cache/',
+            'tpl_dir'             => '.content/templates/',
+            'cache_dir'           => '.content/cache/RainTPL4/',
             'remove_comments'     => $this->removeComments,
             'debug'               => $this->debug,
             'ignore_unknown_tags' => $this->ignoreUnknownTags,

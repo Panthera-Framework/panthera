@@ -1,4 +1,6 @@
 <?php
+ini_set('display_errors', 'on');
+error_reporting(E_ALL);
 require __DIR__. '/.content/app.php';
 $app->logging->enabled = true;
 $app->locale->activeLanguage = 'pl';
@@ -60,3 +62,5 @@ var_dump($select->execute());
 
 print $app->logging->output('SQL query in objective-mode done');
 var_dump(microtime(true) - $t);
+
+$app->template->display('index.tpl');
