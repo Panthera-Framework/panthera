@@ -7,7 +7,7 @@
 class InterfaceTest extends PantheraFrameworkTestCase
 {
     /**
-     * Simple interface test
+     * Check displaying sites.
      *
      * @author Mateusz Warzyński <lxnmen@gmail.com>
      * @return void
