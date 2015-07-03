@@ -1,11 +1,6 @@
 <?php
 namespace Panthera;
-
-// Load RainTPL4
-// todo: improve including RainTPL4 with in-built class
-include 'path-to-raintpl4';
-
-use Rain\RainTPL4;
+include __DIR__. '/../vendor/pantheraframework/raintpl4/library/Rain/autoload.php';
 
 /**
  * Panthera Framework 2 template management class - displaying, compiling,
@@ -58,12 +53,12 @@ class template extends baseClass
         $this->removeComments = $this->app->config->get('template.remove_comments', true);
         $this->ignoreUnknownTags = $this->app->config->get('template.ignore_unknown_tags', true);
 
-        $this->rain = new RainTPL4();
+        $this->rain = new \Rain\RainTPL4();
 
         $this->rain->setConfiguration(array(
             'base_url'            => null,
-            'tpl_dir'             => '.content/templates/',
-            'cache_dir'           => '.content/cache/RainTPL4/',
+            'tpl_dir'             => $this->app->appPath. '/.content/templates/',
+            'cache_dir'           => $this->app->appPath. '/.content/cache/RainTPL4/',
             'remove_comments'     => $this->removeComments,
             'debug'               => $this->debug,
             'ignore_unknown_tags' => $this->ignoreUnknownTags,

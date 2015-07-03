@@ -1,4 +1,4 @@
 application/.content/cache/translations/
-composer.lock
-composer.phar
-vendor
+lib/composer.lock
+lib/composer.phar
+lib/vendor
