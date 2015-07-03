@@ -12,7 +12,7 @@ require __DIR__. '/database.class.php';
 abstract class baseClass
 {
     /**
-     * @var pantheraCore
+     * @var framework $app
      */
     protected $app = null;
 
@@ -51,7 +51,6 @@ abstract class baseClass
      * @param string $featureName Hook and function name
      * @param mixed|null $args Args to pass to function and/or hook
      * @param mixed $additionalInfo Additional informations
-     * @param bool $fixOnFail Don't loose arguments data if any hook will fail (return false or null)
      *
      * @return $args Mixed arguments
      */
@@ -107,13 +106,13 @@ abstract class baseClass
  * @package Panthera
  * @param string $class name
  *
- * @author Damian Kęska
+ * @author Damian Kęska <webnull.www@gmail.com>
  * @return mixed
  */
 function __pantheraAutoloader($class)
 {
     // todo: improve auto loading external libraries
-    if (strpos($class, 'Panthera') === false)
+    if (strpos($class, 'Panthera\\') === false) // check if namespace belongs to Panthera Framework
     {
         return false;
     }
@@ -229,13 +228,13 @@ class framework
         // load application indexing cache
         $this->loadApplicationIndex();
 
-        $this->signals  = new \Panthera\signals;
-        $this->config   = new \Panthera\configuration;
-        $this->logging  = new \Panthera\logging;
-        $this->cache    = \Panthera\cache::getCache();
-        $this->database = \Panthera\database\driver::getDatabaseInstance($this->config->get('database.type', 'SQLite3'));
-        $this->locale   = new \Panthera\locale;
-        $this->template = new \Panthera\template;
+        $this->signals  = new signals;
+        $this->config   = new configuration;
+        $this->logging  = new logging;
+        $this->cache    = cache::getCache();
+        $this->database = database\driver::getDatabaseInstance($this->config->get('database.type', 'SQLite3'));
+        $this->locale   = new locale;
+        $this->template = new template;
         //$this->routing  = new \Panthera\routing;
     }
 
