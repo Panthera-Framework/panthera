@@ -9,7 +9,7 @@
 $bTrace = debug_backtrace(false, 4);
 $controllerPath = $bTrace[count($bTrace)-1]['file'];
 
-require __DIR__. '/modules/framework.class.php';
+require_once __DIR__. '/modules/framework.class.php';
 spl_autoload_register('Panthera\__pantheraAutoloader');
 
 /**
