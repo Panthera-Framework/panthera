@@ -1,5 +1,8 @@
 language: php
 
+/home/travis/.phpenv/versions/5.4/bin/composer self-update
+/home/travis/.phpenv/versions/5.4/bin/composer /home/travis/build/Panthera-Framework/panthera/lib/composer.json install
+
 php:
   - 5.4
   - 5.5
