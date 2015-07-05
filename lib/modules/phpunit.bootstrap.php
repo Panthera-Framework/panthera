@@ -2,6 +2,9 @@
 
 class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var \Panthera\framework
+     */
     public $app = null;
 
     public function setup()

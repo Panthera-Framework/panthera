@@ -79,12 +79,13 @@ class template extends baseClass
     /**
      * Assign value for template
      *
-     * @param $variable array with template variables
+     * @param mixed $variable Name of template variable or associative array name/value
+     * @param mixed $value value assigned to this variable. Not set if variable_name is an associative array
      * @author Mateusz Warzyński <lxnmen@gmail.com>
      */
-    public function assign($variable)
+    public function assign($variable, $value)
     {
-        $this->rain->assign($variable);
+        $this->rain->assign($variable, $value);
     }
 
     /**
@@ -97,5 +98,10 @@ class template extends baseClass
     public function display($templateFile)
     {
         return $this->rain->draw($templateFile);
+    }
+
+    public function compileString($code)
+    {
+        return $this->rain->drawString($code, true);
     }
 }

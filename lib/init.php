@@ -7,7 +7,10 @@
  */
 
 $bTrace = debug_backtrace(false, 4);
-$controllerPath = $bTrace[count($bTrace)-1]['file'];
+if (array_key_exists('file', $bTrace[count($bTrace)-1]))
+{
+    $controllerPath = $bTrace[count($bTrace)-1]['file'];
+}
 
 // in case of PHPUnit test we must change $controllerPath to appPath
 if (stripos($_SERVER['SCRIPT_FILENAME'], 'phpunit') !== false)
@@ -28,7 +31,10 @@ spl_autoload_register('Panthera\__pantheraAutoloader');
 /**
  * Set the environment
  */
-define('PANTHERA_MODE', (PHP_SAPI == 'cli' ? 'CLI' : 'CGI'));
+if (!defined('PANTHERA_MODE'))
+{
+    define('PANTHERA_MODE', (PHP_SAPI == 'cli' ? 'CLI' : 'CGI'));
+}
 
 if (PHP_SAPI == 'CLI')
 {
