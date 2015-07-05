@@ -92,16 +92,13 @@ class template extends baseClass
      * Draw template with assigned variables
      *
      * @param string $templateFile path to template
+     * @param bool $toString if the method should return a string
+     * @param bool $isString if input is a string, not a file path or echo the output
      * @author Mateusz Warzyński <lxnmen@gmail.com>
      * @return string
      */
-    public function display($templateFile)
+    public function display($templateFile, $toString = FALSE, $isString = FALSE)
     {
-        return $this->rain->draw($templateFile);
-    }
-
-    public function compileString($code)
-    {
-        return $this->rain->drawString($code, true);
+        return $this->rain->draw($templateFile, $toString, $isString);
     }
 }
