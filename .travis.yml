@@ -6,5 +6,4 @@ php:
   - 5.6
 
 before_install:
-  - /home/travis/.phpenv/versions/5.4/bin/composer self-update
-  - /home/travis/.phpenv/versions/5.4/bin/composer /home/travis/build/Panthera-Framework/panthera/lib/composer.json install
+  - cd lib && composer install
