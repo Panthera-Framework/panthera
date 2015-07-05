@@ -1,4 +1,5 @@
 application/.content/cache/translations/
+application/.content/cache/RainTPL4/
 lib/composer.lock
 lib/composer.phar
 lib/vendor
