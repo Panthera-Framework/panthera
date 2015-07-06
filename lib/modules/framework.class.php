@@ -188,6 +188,13 @@ class framework
     public $appPath = '';
 
     /**
+     * Absolute path to lib root directory
+     *
+     * @var string $libPath
+     */
+    public $libPath = '';
+
+    /**
      * Framework path
      *
      * @var string $frameworkPath
@@ -222,7 +229,8 @@ class framework
     {
         // setup base settings, like the place where we are
         self::$instance = $this;
-        $this->appPath = pathinfo($controllerPath, PATHINFO_DIRNAME);
+        $this->appPath = pathinfo($controllerPath, PATHINFO_DIRNAME). '/';
+        $this->libPath = __DIR__. '/../';
         $this->frameworkPath = realpath(__DIR__. '/../');
 
         // load application indexing cache
