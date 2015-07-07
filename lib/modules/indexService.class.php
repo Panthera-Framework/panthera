@@ -11,21 +11,82 @@ namespace Panthera;
  */
 class indexService extends baseClass
 {
+    /**
+     * Store lib files index
+     *
+     * @var array
+     */
     public $libIndex = array();
-    public $appIndex = array();
-
-    public $parser = null;
 
     /**
-     * Main function indexing files from lib and application directory.
+     * Store application files index
      *
-     * @author Mateusz Warzyński
+     * @var array
+     */
+    public $appIndex = array();
+
+    /**
+     * Main function which indexes files in lib and application root directory
+     *
+     * @param bool $lib if you want to index lib root directory set true
+     * @param bool $app if you want to index application root directory set true
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     * @return void
+     */
+    public function indexFiles($lib = true, $app = true)
+    {
+        if ($lib)
+        {
+            $this->libIndex = $this->listFiles($this->app->libPath, '', $this->app->libPath);
+        }
+
+        if ($app)
+        {
+            $this->appIndex = $this->listFiles($this->app->appPath, '', $this->app->appPath);
+        }
+    }
+
+    /**
+     * Get classes from indexed files in lib root directory, required in autoloader
+     *
+     * @param bool $lib
+     * @param bool $app
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
      * @return array
      */
-    public function indexDirectoriesAndFiles()
+    public function indexClasses($lib = true, $app = true)
     {
-        $this->libIndex = $this->listIn($this->app->libPath, '', $this->app->libPath);
-        $this->appIndex = $this->listIn($this->app->appPath, '', $this->app->appPath);
+        $result = array();
+        $arrayFiles = array();
+
+        if (empty($this->libIndex) || empty($this->appIndex))
+        {
+            $this->indexFiles(true, true);
+        }
+
+        if ($lib && $app)
+        {
+            $arrayFiles = array_merge($this->libIndex, $this->appIndex);
+        } elseif ($lib) {
+            $arrayFiles = $this->libIndex;
+        } elseif ($app) {
+            $arrayFiles = $this->appIndex;
+        }
+
+        foreach ($arrayFiles as $filePath => $none)
+        {
+            if (strpos(basename($filePath), '.class.php') !== false)
+            {
+                $classContent = file_get_contents($filePath);
+
+                if ($classContent !== false)
+                {
+                    $result[$filePath] = $this->getClassesFromCode($classContent);
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -34,10 +95,10 @@ class indexService extends baseClass
      * @param string $dir root directory to list files
      * @param string $prefix
      * @param string $mainDir constant root directory needed to validate path
-     * @author Mateusz Warzyński
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
      * @return array
      */
-    public function listIn($dir, $prefix = '', $mainDir = '')
+    public function listFiles($dir, $prefix = '', $mainDir = '')
     {
         $dir = rtrim($dir, '\\/');
         $result = array();
@@ -48,7 +109,7 @@ class indexService extends baseClass
             {
                 if (is_dir("$dir/$f"))
                 {
-                    $result = array_merge($result, $this->listIn($dir. "/" .$f, $prefix.$f. "/", $mainDir));
+                    $result = array_merge($result, $this->listFiles($dir. "/" .$f, $prefix.$f. "/", $mainDir));
                 } else {
                     $result[realpath($mainDir. $prefix. $f)] = '';
                 }
@@ -68,45 +129,15 @@ class indexService extends baseClass
     }
 
     /**
-     * Get classes from indexed files in lib root directory, required in autoloader
-     *
-     * @return array
-     */
-    public function indexClasses()
-    {
-        $result = array();
-
-        if (empty($this->libIndex))
-        {
-            $this->indexDirectoriesAndFiles();
-        }
-
-        foreach (array_merge($this->libIndex, $this->appIndex) as $filePath => $none)
-        {
-            if (strpos(basename($filePath), '.class.php') !== false)
-            {
-                $classContent = file_get_contents($filePath);
-
-                if ($classContent !== false)
-                {
-                    $result[$filePath] = $this->fileGetClasses($classContent);
-                }
-            }
-        }
-
-        return $result;
-    }
-
-    /**
      * Get list of declared class in PHP file (without including it)
      *
      * @param string $php_code
-     * @author Damian Kęska
-     * @author Mateusz Warzyński
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
      * @author AbiusX <http://stackoverflow.com/questions/7153000/get-class-name-from-file>
      * @return array
      */
-    public static function fileGetClasses($php_code)
+    public static function getClassesFromCode($php_code)
     {
         $classes = array();
         $namespace = '';
