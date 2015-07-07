@@ -64,3 +64,6 @@ print $app->logging->output('SQL query in objective-mode done');
 var_dump(microtime(true) - $t);
 
 $app->template->display('index.tpl');
+
+$indexService = new \Panthera\indexService;
+var_dump($indexService->indexClasses());

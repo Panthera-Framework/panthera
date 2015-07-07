@@ -37,14 +37,18 @@ class indexService extends baseClass
      * @author Mateusz Warzyński
      * @return array
      */
-    public function listIn($dir, $prefix = '', $mainDir = '') {
+    public function listIn($dir, $prefix = '', $mainDir = '')
+    {
         $dir = rtrim($dir, '\\/');
         $result = array();
 
-        foreach (scandir($dir) as $f) {
-            if ($f !== '.' and $f !== '..') {
-                if (is_dir("$dir/$f")) {
-                    $result = array_merge($result, $this->listIn("$dir/$f", "$prefix$f/", $mainDir));
+        foreach (scandir($dir) as $f)
+        {
+            if ($f !== '.' and $f !== '..')
+            {
+                if (is_dir("$dir/$f"))
+                {
+                    $result = array_merge($result, $this->listIn($dir. "/" .$f, $prefix.$f. "/", $mainDir));
                 } else {
                     $result[realpath($mainDir. $prefix. $f)] = '';
                 }
@@ -64,7 +68,7 @@ class indexService extends baseClass
     }
 
     /**
-     * Get classes from indexed files in lib root directory, needed in autoloader
+     * Get classes from indexed files in lib root directory, required in autoloader
      *
      * @return array
      */
@@ -77,7 +81,7 @@ class indexService extends baseClass
             $this->indexDirectoriesAndFiles();
         }
 
-        foreach ($this->libIndex as $filePath => $none)
+        foreach (array_merge($this->libIndex, $this->appIndex) as $filePath => $none)
         {
             if (strpos(basename($filePath), '.class.php') !== false)
             {
@@ -108,6 +112,7 @@ class indexService extends baseClass
         $namespace = '';
         $tokens = token_get_all($php_code);
         $count = count($tokens);
+
         for ($i=0; $i < $count; $i++)
         {
             if ($tokens[$i][0] === T_NAMESPACE)
@@ -115,21 +120,26 @@ class indexService extends baseClass
                 for ($j=$i+1; $j<$count; ++$j)
                 {
                     if ($tokens[$j][0]===T_STRING)
-                        $namespace .= "\\".$tokens[$j][1];
-                    elseif ($tokens[$j] === '{' || $tokens[$j] === ';')
+                    {
+                        $namespace .= "\\" . $tokens[$j][1];
+
+                    } elseif ($tokens[$j] === '{' || $tokens[$j] === ';') {
                         break;
+                    }
                 }
             }
             if ($tokens[$i][0] === T_CLASS || $tokens[$i][0] === T_TRAIT)
             {
                 for ($j=$i+1; $j<$count; ++$j)
                 {
-                    if ($tokens[$j] === '{')
-                        $classes[] = $namespace."\\".$tokens[$i+2][1];
+                    if ($tokens[$j] === '{' && !isset($classes[$namespace . "\\" . $tokens[$i + 2][1]]))
+                    {
+                        $classes[$namespace . "\\" . $tokens[$i + 2][1]] = true;
+                    }
                 }
             }
         }
 
-        return $classes;
+        return array_keys($classes);
     }
 }
