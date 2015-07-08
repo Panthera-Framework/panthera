@@ -26,6 +26,13 @@ class indexService extends baseClass
     public $appIndex = array();
 
     /**
+     * Store classes for autoloader
+     *
+     * @var array
+     */
+    public $classIndex = array();
+
+    /**
      * Main function which indexes files in lib and application root directory
      *
      * @param bool $lib if you want to index lib root directory set true
@@ -131,17 +138,17 @@ class indexService extends baseClass
     /**
      * Get list of declared class in PHP file (without including it)
      *
-     * @param string $php_code
+     * @param string $phpCode
      * @author Damian Kęska <damian@pantheraframework.org>
      * @author Mateusz Warzyński <lxnmen@gmail.com>
      * @author AbiusX <http://stackoverflow.com/questions/7153000/get-class-name-from-file>
      * @return array
      */
-    public static function getClassesFromCode($php_code)
+    public static function getClassesFromCode($phpCode)
     {
         $classes = array();
         $namespace = '';
-        $tokens = token_get_all($php_code);
+        $tokens = token_get_all($phpCode);
         $count = count($tokens);
 
         for ($i=0; $i < $count; $i++)
