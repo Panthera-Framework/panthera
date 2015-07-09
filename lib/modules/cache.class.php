@@ -6,9 +6,16 @@ namespace Panthera;
  * Loads, and validates cache handlers
  *
  * @package Panthera\cache
+ * @author Damian Kęska <damian@pantheraframework.org>
+ * @author Mateusz Warzyński <lxnmen@gmail.com>
  */
 class cache
 {
+    /**
+     * Cache instance
+     *
+     * @var null
+     */
     public static $cacheInstance = null;
 
     /**
@@ -17,7 +24,8 @@ class cache
      * @throws FileNotFoundException
      * @throws InvalidConfigurationException
      * @throws PantheraFrameworkException
-     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @author Mateusz Warzyńśki <lxnmen@gmail.com>
      * @return object
      */
     public static function getCache()
@@ -63,6 +71,8 @@ class cache
  * Interface for cache handlers
  *
  * @package Panthera\cache
+ * @author Damian Kęska <damian@pantheraframework.org>
+ * @author Mateusz Warzyńśki <lxnmen@gmail.com>
  */
 interface cacheInterface
 {
