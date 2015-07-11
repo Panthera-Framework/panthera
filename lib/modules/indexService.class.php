@@ -33,27 +33,6 @@ class indexService extends baseClass
     public $classIndex = array();
 
     /**
-     * Initialize index module
-     *      check if cache contains indexed files
-     *
-     * @author Mateusz Warzyński <lxnmen@gmail.com>
-     */
-    public function __construct()
-    {
-        parent::__construct();
-
-        if ($this->app->cache->get('indexFiles.lib') === null)
-        {
-            $this->indexFiles(true, false);
-        }
-
-        if ($this->app->cache->get('indexFiles.app') === null)
-        {
-            $this->indexFiles(false, true);
-        }
-    }
-
-    /**
      * Main function which indexes files in lib and application root directory
      *
      * @param bool $lib if you want to index lib root directory set true
@@ -66,13 +45,11 @@ class indexService extends baseClass
         if ($lib)
         {
             $this->libIndex = $this->listFiles($this->app->libPath, '', $this->app->libPath);
-            $this->app->cache->set('indexFiles.lib', $this->libIndex);
         }
 
         if ($app)
         {
             $this->appIndex = $this->listFiles($this->app->appPath, '', $this->app->appPath);
-            $this->app->cache->set('indexFiles.app', $this->appIndex);
         }
     }
 
@@ -167,7 +144,7 @@ class indexService extends baseClass
      * @author AbiusX <http://stackoverflow.com/questions/7153000/get-class-name-from-file>
      * @return array
      */
-    public function getClassesFromCode($phpCode)
+    public static function getClassesFromCode($phpCode)
     {
         $classes = array();
         $namespace = '';
@@ -200,8 +177,6 @@ class indexService extends baseClass
                 }
             }
         }
-
-        $this->app->cache->set('indexFiles.classes', $classes);
 
         return array_keys($classes);
     }
