@@ -35,22 +35,27 @@ class indexService extends baseClass
     /**
      * Main function which indexes files in lib and application root directory
      *
-     * @param bool $lib if you want to index lib root directory set true
+     * @param bool $lib if you want to index Panthera Framework libraries root directory set true
      * @param bool $app if you want to index application root directory set true
      * @author Mateusz Warzyński <lxnmen@gmail.com>
-     * @return void
+     * @return array
      */
     public function indexFiles($lib = true, $app = true)
     {
         if ($lib)
         {
-            $this->libIndex = $this->listFiles($this->app->libPath, '', $this->app->libPath);
+            $this->libIndex = static::listFiles($this->app->libPath, '', $this->app->libPath);
         }
 
         if ($app)
         {
-            $this->appIndex = $this->listFiles($this->app->appPath, '', $this->app->appPath);
+            $this->appIndex = static::listFiles($this->app->appPath, '', $this->app->appPath);
         }
+
+        return array(
+            'pantheraLibraries' => $this->libIndex,
+            'application' => $this->appIndex,
+        );
     }
 
     /**
@@ -105,7 +110,7 @@ class indexService extends baseClass
      * @author Mateusz Warzyński <lxnmen@gmail.com>
      * @return array
      */
-    public function listFiles($dir, $prefix = '', $mainDir = '')
+    public static function listFiles($dir, $prefix = '', $mainDir = '')
     {
         $dir = rtrim($dir, '\\/');
         $result = array();
@@ -116,7 +121,7 @@ class indexService extends baseClass
             {
                 if (is_dir("$dir/$f"))
                 {
-                    $result = array_merge($result, $this->listFiles($dir. "/" .$f, $prefix.$f. "/", $mainDir));
+                    $result = array_merge($result, static::listFiles($dir. "/" .$f, $prefix.$f. "/", $mainDir));
                 } else {
                     $result[realpath($mainDir. $prefix. $f)] = '';
                 }
