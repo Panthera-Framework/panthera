@@ -20,4 +20,7 @@ $defaultConfig = array(
     ),
 );
 
-require __DIR__. '/../../lib/init.php';
+if (!defined('PANTHERA_FRAMEWORK_2'))
+{
+    require __DIR__ . '/../../lib/init.php';
+}
