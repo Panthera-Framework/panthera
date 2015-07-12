@@ -117,10 +117,19 @@ function __pantheraAutoloader($class)
         return false;
     }
 
-    // skip the namespace
+    // namespace support (eg. Panthera\cli\application would be mapped to /modules/cli/application.class.php)
     if (strpos($class, '\\') !== false)
     {
-        $class = substr($class, (strpos($class, '\\') + 1), strlen($class));
+        $exp = explode('\\', $class);
+
+        if (count($exp) > 2)
+        {
+            unset($exp[0]);
+            $class = implode('/', $exp);
+
+        } else {
+            $class = substr($class, (strpos($class, '\\') + 1), strlen($class));
+        }
     }
 
     $app = framework::getInstance();
@@ -300,6 +309,31 @@ class framework
     public static function getInstance()
     {
         return self::$instance;
+    }
+
+    /**
+     * Determine if run a shell application or not (depends on if we are including the class or running it from shell directly)
+     */
+    public static function runShellApplication($appName)
+    {
+        $appName = '\\Panthera\\cli\\' .$appName. 'Application';
+
+        if (isset($_SERVER['argv']) && $_SERVER['argv'][0])
+        {
+            $reflection = new \ReflectionClass($appName);
+
+            if (realpath($reflection->getFileName()) == realpath($_SERVER['argv'][0]))
+            {
+                $app = new $appName;
+
+                if (method_exists($app, 'execute'))
+                {
+                    $app->execute();
+                }
+
+                return $app;
+            }
+        }
     }
 
     /**

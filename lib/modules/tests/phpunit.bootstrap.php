@@ -9,7 +9,7 @@ class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
 
     public function setup()
     {
-        require __DIR__. "/../../application/.content/app.php";
+        require __DIR__ . '/../../../application/.content/app.php';
         $this->app = $app;
     }
 }

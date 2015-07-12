@@ -9,8 +9,10 @@ namespace Panthera;
  * @author Mateusz Warzyński <lxnmen@gmail.com>
  * @author Damian Kęska <damian@pantheraframework.org>
  */
-class deploy extends baseClass
+class deployment extends baseClass
 {
+    public $tasksList = array();
+
     /**
      * Initialization of deployment module
      *
@@ -19,5 +21,12 @@ class deploy extends baseClass
     public function __construct()
     {
         parent::__construct();
+        $this->indexTasks();
+    }
+
+    public function indexTasks()
+    {
+        $indexService = new indexService;
+        var_dump($indexService->indexFiles());
     }
 }

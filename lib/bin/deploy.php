@@ -1,4 +1,7 @@
 <?php
+namespace Panthera\cli;
+use \Panthera\framework;
+
 /**
  * Panthera Framework 2 Core deployment
  *
@@ -8,7 +11,9 @@
 
 require __DIR__. '/../init.php';
 
-class deploymentApplication extends Panthera\cli\application
+class deploymentApplication extends application
 {
 
 }
+
+framework::runShellApplication('deployment');

@@ -9,7 +9,7 @@
          processIsolation="false"
          stopOnFailure="false"
          syntaxCheck="false"
-         bootstrap="./lib/modules/phpunit.bootstrap.php"
+         bootstrap="./lib/modules/tests/phpunit.bootstrap.php"
         >
     <testsuites>
         <testsuite name="\Panthera Test">
