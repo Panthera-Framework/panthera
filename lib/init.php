@@ -6,24 +6,37 @@
  * @author Damian Kęska <damian@pantheraframework.org>
  */
 
+define('PANTHERA_FRAMEWORK_2', true);
+
+/**
+ * Detect application path
+ */
 $bTrace = debug_backtrace(false, 4);
 if (array_key_exists('file', $bTrace[count($bTrace)-1]))
 {
     $controllerPath = $bTrace[count($bTrace)-1]['file'];
 }
 
+// support for CLI applications runned from Panthera Framework "/bin" directory
+if (strtolower(PHP_SAPI) == 'cli' && strpos($controllerPath, __DIR__. '/bin/') === 0)
+{
+    $controllerPath = getcwd(). '/index.php';
+    require_once getcwd(). '/.content/app.php';
+}
+
 // in case of PHPUnit test we must change $controllerPath to appPath
-if (stripos($_SERVER['SCRIPT_FILENAME'], 'phpunit') !== false)
+elseif (stripos($_SERVER['SCRIPT_FILENAME'], 'phpunit') !== false)
 {
     foreach ($bTrace as $array)
     {
         if (basename($array['file']) == 'app.php')
         {
-            $controllerPath = str_replace('/app.php', '', $array['file']);
+            $controllerPath = str_replace('/.content/app.php', '/index.php', $array['file']);
             break;
         }
     }
 }
+
 
 require_once __DIR__. '/modules/framework.class.php';
 spl_autoload_register('Panthera\__pantheraAutoloader');
