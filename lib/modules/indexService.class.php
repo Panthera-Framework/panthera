@@ -26,6 +26,13 @@ class indexService extends baseClass
     public $appIndex = array();
 
     /**
+     * Store mixed structure of $libIndex and $appIndex
+     *
+     * @var array
+     */
+    public $mixedFilesStructure = array();
+
+    /**
      * Store classes for autoloader
      *
      * @var array
@@ -44,17 +51,24 @@ class indexService extends baseClass
     {
         if ($lib)
         {
-            $this->libIndex = static::listFiles($this->app->libPath, '', $this->app->libPath);
+            $this->libIndex = array();
+            static::listFiles($this->app->libPath, '', $this->app->libPath, $this->libIndex);
+            ksort($this->libIndex);
         }
 
         if ($app)
         {
-            $this->appIndex = static::listFiles($this->app->appPath, '', $this->app->appPath);
+            $this->appIndex = array();
+            static::listFiles($this->app->appPath. '/.content/', '', $this->app->appPath. '/.content/', $this->appIndex);
+            ksort($this->appIndex);
         }
+
+        $this->mixedFilesStructure = array_merge_recursive($this->libIndex, $this->appIndex);
 
         return array(
             'pantheraLibraries' => $this->libIndex,
             'application' => $this->appIndex,
+            'mixed' => $this->mixedFilesStructure,
         );
     }
 
@@ -110,30 +124,34 @@ class indexService extends baseClass
      * @author Mateusz Warzyński <lxnmen@gmail.com>
      * @return array
      */
-    public static function listFiles($dir, $prefix = '', $mainDir = '')
+    public static function listFiles($dir, $prefix = '', $mainDir = '', &$flatArray)
     {
+        $mainDir = realpath($mainDir);
         $dir = rtrim($dir, '\\/');
         $result = array();
 
         foreach (scandir($dir) as $f)
         {
-            if ($f !== '.' and $f !== '..')
+            if ($f == '.' || $f == '..')
             {
-                if (is_dir("$dir/$f"))
-                {
-                    $result = array_merge($result, static::listFiles($dir. "/" .$f, $prefix.$f. "/", $mainDir));
-                } else {
-                    $result[realpath($mainDir. $prefix. $f)] = '';
-                }
+                continue;
             }
-        }
 
-        // remove unnecessary files from result
-        foreach ($result as $filePath => $none)
-        {
-            if (strpos($filePath, '/.git/') !== false || strpos($filePath, '/.idea/') !== false || strpos($filePath, '/.gitignore') !== false || strpos($filePath, '/vendor/'))
+            $rPath = realpath($mainDir. "/" .$prefix. "/" .$f);
+            $relativePath = substr($rPath, strlen($mainDir));
+            $rDirPath = dirname($rPath);
+
+            if (strpos($rPath, '/.git/') !== false || strpos($rPath, '/.idea/') !== false || strpos($rPath, '/.gitignore') !== false || strpos($rPath, '/vendor/'))
             {
-                unset($result[$filePath]);
+                continue;
+            }
+
+            if (is_dir($rPath))
+            {
+                $flatArray[substr($rPath, strlen($mainDir))] = static::listFiles($dir. "/" .$f, $prefix.$f. "/", $mainDir, $flatArray);
+
+            } else {
+                $result[substr($rPath, strlen($mainDir))] = '';
             }
         }
 

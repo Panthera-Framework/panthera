@@ -1,6 +1,7 @@
 <?php
 namespace Panthera\cli;
 use \Panthera\framework;
+use Panthera\indexService;
 
 require __DIR__. '/../init.php';
 
@@ -12,7 +13,23 @@ require __DIR__. '/../init.php';
  */
 class deploymentApplication extends application
 {
+    /**
+     * @var null|indexService
+     */
+    public $indexService = null;
 
+    public function __construct()
+    {
+        $this->indexService = new indexService;
+        $this->indexService->indexFiles();
+
+        parent::__construct();
+    }
+
+    public function cliArgumentsHelpText($text)
+    {
+        var_dump($this->indexService->mixedFilesStructure);
+    }
 }
 
 framework::runShellApplication('deployment');

@@ -90,6 +90,11 @@ class application extends Panthera\baseClass
             }
         }
 
+        if (method_exists($this, 'cliArgumentsHelpText'))
+        {
+            $text .= $this->cliArgumentsHelpText($text);
+        }
+
         // list of application authors
         $text .= "\n\nAuthors:\n" . implode("\n", array_keys($authors));
 
@@ -129,11 +134,11 @@ class application extends Panthera\baseClass
                 unset($_SERVER['argv'][$i + 1]);
             }
 
-            $this->$function($value);
+            print($this->$function($value));
 
         } else {
             // raise a custom error
-            $this->cliArgumentNotFound($function);
+            print($this->cliArgumentNotFound($function));
         }
     }
 
