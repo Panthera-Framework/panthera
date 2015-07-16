@@ -21,6 +21,13 @@ class application extends Panthera\baseClass
     );
 
     /**
+     * Collected opts from commandline
+     *
+     * @var string[]
+     */
+    public $opts = array();
+
+    /**
      * Constructor
      *
      * @author Damian Kęska <damian@pantheraframework.org>
@@ -75,7 +82,7 @@ class application extends Panthera\baseClass
                 }
 
                 $comment = explode("\n", $method->getDocComment());
-                $text .= "\t" . ltrim($comment[1], ' * ');
+                $text .= "\t" . ltrim($comment[1], ' * ') . "\n";
 
                 foreach ($comment as $line)
                 {
@@ -117,21 +124,22 @@ class application extends Panthera\baseClass
      * Call a method for shell argument
      *
      * @param string $function Function name eg. "help" or "list"
-     * @param int $i Index in $_SERVER['argv']
+     * @param int $i Index in $args
+     * @param array $args
      *
      * @author Damian Kęska <damian@pantheraframework.org>
      */
-    public function cliArgumentsCallFunction($function, $i)
+    public function cliArgumentsCallFunction($function, $i, &$args)
     {
         $function = str_replace('-', '_', $function). '_cliArgument';
         $value = '';
 
         if (method_exists($this, $function))
         {
-            if (isset($_SERVER['argv'][$i + 1]) && substr($_SERVER['argv'][$i + 1], 0, 1) !== '-')
+            if (isset($args[$i + 1]) && substr($args[$i + 1], 0, 1) !== '-')
             {
-                $value = $_SERVER['argv'][$i + 1];
-                unset($_SERVER['argv'][$i + 1]);
+                $value = $args[$i + 1];
+                unset($args[$i + 1]);
             }
 
             print($this->$function($value));
@@ -166,15 +174,12 @@ class application extends Panthera\baseClass
             return $this->cliArgumentsNoArgumentSpecified();
         }
 
-        // go through all expressions in shell command eg. "deploy.php unit-tests --arg1 value" would be: ['deploy.php', 'unit-tests', '--arg1', 'value']
-        foreach ($_SERVER['argv'] as $i => $arg)
-        {
-            // don't parse our command path/basename
-            if ($i === 0)
-            {
-                continue;
-            }
+        $args = $_SERVER['argv'];
+        unset($args[0]);
 
+        // go through all expressions in shell command eg. "deploy.php unit-tests --arg1 value" would be: ['deploy.php', 'unit-tests', '--arg1', 'value']
+        foreach ($args as $i => $arg)
+        {
             /**
              * Long arguments name support
              *
@@ -182,22 +187,43 @@ class application extends Panthera\baseClass
              *     --help
              *     --set value
              */
-            if (substr($arg, 0, 2) === '--')
-            {
-                $this->cliArgumentsCallFunction(substr($arg, 2), $i);
-            }
-            elseif (substr($arg, 0, 1) === '-') {
-                $argShortName = substr($arg, 1);
 
-                if (isset($this->argumentsShort[$argShortName]))
+            if (substr($arg, 0, 1) === '-')
+            {
+                if (substr($arg, 0, 2) === '--')
                 {
-                    $this->cliArgumentsCallFunction($this->argumentsShort[$argShortName], $i);
+                    $this->cliArgumentsCallFunction(substr($arg, 2), $i, $args);
+
                 } else {
-                    $this->cliArgumentNotFound($argShortName);
+                    $argShortName = substr($arg, 1);
+
+                    if (isset($this->argumentsShort[$argShortName]))
+                    {
+                        $this->cliArgumentsCallFunction($this->argumentsShort[$argShortName], $i, $args);
+                    } else {
+                        $this->cliArgumentNotFound($argShortName);
+                    }
                 }
+
+                unset($args[$i]);
             }
         }
 
+        $this->opts = $args;
+        $this->parseOpts($args);
+
+        return null;
+    }
+
+    /**
+     * Dummy function for parsing opts
+     *
+     * @param string[] $args
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return null;
+     */
+    public function parseOpts($args)
+    {
         return null;
     }
 }
