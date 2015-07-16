@@ -6,7 +6,7 @@ use Panthera;
  * Panthera Framework 2 shell application skeleton
  *
  *
- * @author Damian Kęska <damian.keska@fingo.pl>
+ * @author Damian Kęska <damian@pantheraframework.org>
  * @package Panthera\cli
  */
 class application extends Panthera\baseClass
@@ -23,7 +23,7 @@ class application extends Panthera\baseClass
     /**
      * Constructor
      *
-     * @author Damian Kęska <damian.keska@fingo.pl>
+     * @author Damian Kęska <damian@pantheraframework.org>
      */
     public function __construct()
     {
@@ -50,10 +50,9 @@ class application extends Panthera\baseClass
      * @todo Optional and non-optional arguments support
      * @cli optional
      *
-     * @param string $value Optional value
      * @author Damian Kęska <damian@pantheraframework.org>
      */
-    public function help_cliArgument($value)
+    public function help_cliArgument()
     {
         $text = "Usage: " .basename($_SERVER['argv'][0]) . " [OPTIONS] [--ARGUMENTS]\n\n";
         $reflection = new \ReflectionClass(get_called_class());
@@ -105,6 +104,7 @@ class application extends Panthera\baseClass
     /**
      * Case when cli argument was not recognized eg. --test but it's not recognized by application
      *
+     * @author Damian Kęska <damian@pantheraframework.org>
      * @param string $argumentName
      */
     public function cliArgumentNotFound($argumentName)
@@ -138,7 +138,7 @@ class application extends Panthera\baseClass
 
         } else {
             // raise a custom error
-            print($this->cliArgumentNotFound($function));
+            $this->cliArgumentNotFound($function);
         }
     }
 
@@ -151,14 +151,13 @@ class application extends Panthera\baseClass
      */
     public function cliArgumentsNoArgumentSpecified()
     {
-        return $this->help_cliArgument(null);
+        return $this->help_cliArgument();
     }
 
     /**
      * Parse shell arguments and execute proper commands eg. --help will execute $this->help_cliArgument()
      *
      * @author Damian Kęska <damian@pantheraframework.org>
-     * @return null
      */
     public function readArguments()
     {
@@ -175,8 +174,6 @@ class application extends Panthera\baseClass
             {
                 continue;
             }
-
-            $value = '';
 
             /**
              * Long arguments name support
@@ -200,6 +197,8 @@ class application extends Panthera\baseClass
                 }
             }
         }
+
+        return null;
     }
 }
 
@@ -210,7 +209,7 @@ class application extends Panthera\baseClass
  *
  * @package Panthera\cli
  * @author Damian Kęska <damian@pantheraframework.org>
- * @return null
+ * @return void
  */
 function cliSignal($signal)
 {
