@@ -11,7 +11,7 @@ require __DIR__. '/../init.php';
  * @package Panthera\Deployment
  * @author Damian Kęska <damian@pantheraframework.org>
  */
-class deploymentApplication extends application
+class deploymentApplication extends Application
 {
     /**
      * @var null|indexService
@@ -26,7 +26,7 @@ class deploymentApplication extends application
         parent::__construct();
     }
 
-    public function cliArgumentsHelpText($text)
+    public function cliArgumentsHelpText()
     {
         var_dump($this->indexService->mixedFilesStructure);
     }

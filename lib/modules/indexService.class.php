@@ -45,6 +45,7 @@ class indexService extends baseClass
      * @param bool $lib if you want to index Panthera Framework libraries root directory set true
      * @param bool $app if you want to index application root directory set true
      * @author Mateusz Warzyński <lxnmen@gmail.com>
+     * @author Damian Kęska <damian@pantheraframework.org>
      * @return array
      */
     public function indexFiles($lib = true, $app = true)
