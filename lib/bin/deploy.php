@@ -11,7 +11,7 @@ require __DIR__. '/../init.php';
  * @package Panthera\Deployment
  * @author Damian Kęska <damian@pantheraframework.org>
  */
-class deploymentApplication extends Application
+class deploymentApplication extends application
 {
     /**
      * @var null|indexService
