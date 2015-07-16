@@ -25,11 +25,6 @@ class deploymentApplication extends application
 
         parent::__construct();
     }
-
-    public function cliArgumentsHelpText()
-    {
-        var_dump($this->indexService->mixedFilesStructure);
-    }
 }
 
 framework::runShellApplication('deployment');
