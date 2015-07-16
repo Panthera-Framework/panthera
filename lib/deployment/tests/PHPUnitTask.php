@@ -12,6 +12,7 @@ class PHPUnitTask extends \Panthera\deployment\task
      * Execute external unit testing command
      *
      * @param \Panthera\cli\deploymentApplication $deployment
+     *
      * @author Damian Kęska <damian@pantheraframework.org>
      */
     public function execute()
