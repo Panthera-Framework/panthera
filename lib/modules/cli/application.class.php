@@ -58,10 +58,11 @@ class application extends Panthera\baseClass
      * @cli optional
      *
      * @author Damian Kęska <damian@pantheraframework.org>
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
      */
     public function help_cliArgument()
     {
-        $text = "Usage: " .basename($_SERVER['argv'][0]) . " [OPTIONS] [--ARGUMENTS]\n\n";
+        $text = "Usage: " .basename($_SERVER['argv'][0]) . " [OPTIONS] [--ARGUMENTS]\n";
         $reflection = new \ReflectionClass(get_called_class());
         $authors = array();
 
@@ -70,7 +71,7 @@ class application extends Panthera\baseClass
             if (strpos($method->getName(), '_cliArgument') !== false)
             {
                 $commandName = str_replace('_cliArgument', '', $method->getName());
-                $text .= "\t--" .$commandName;
+                $text .= "\n\t--" .$commandName;
 
                 foreach ($this->argumentsShort as $shortArg => $longArg)
                 {
@@ -94,11 +95,6 @@ class application extends Panthera\baseClass
                     }
                 }
             }
-        }
-
-        if (method_exists($this, 'cliArgumentsHelpText'))
-        {
-            $text .= $this->cliArgumentsHelpText($text);
         }
 
         // list of application authors
