@@ -34,6 +34,13 @@ class deploymentApplication extends application
     public $runnedTasks = array();
 
     /**
+     * Mode to only check if all dependencies are at its place
+     *
+     * @var bool
+     */
+    public $onlyVerifyDependencies = false;
+
+    /**
      * Constructor
      * Prepare a list of deployment services
      *
@@ -68,6 +75,17 @@ class deploymentApplication extends application
     {
         print(implode("\n", array_keys($this->modules)));
         print("\n");
+    }
+
+    /**
+     * Only verify dependencies instead of running the deployment
+     *
+     * @cli optional no-value
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function check__dependencies_cliArgument()
+    {
+        $this->onlyVerifyDependencies = true;
     }
 
     /**
@@ -145,6 +163,11 @@ class deploymentApplication extends application
     {
         $checked = array();
         $this->verifyTasksDependencies($opts, $checked);
+
+        if ($this->onlyVerifyDependencies)
+        {
+            exit;
+        }
 
         foreach ($opts as $moduleName)
         {
