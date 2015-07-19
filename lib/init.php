@@ -6,7 +6,11 @@
  * @author Damian Kęska <damian@pantheraframework.org>
  */
 
-define('PANTHERA_FRAMEWORK_2', true);
+// condition prevents from getting error about already defined constant while loading PHPUnit tests
+if (!defined('PHPUNIT'))
+{
+    define('PANTHERA_FRAMEWORK_2', true);
+}
 
 /**
  * Detect application path
@@ -15,6 +19,14 @@ $bTrace = debug_backtrace(false, 4);
 if (array_key_exists('file', $bTrace[count($bTrace)-1]))
 {
     $controllerPath = $bTrace[count($bTrace)-1]['file'];
+} else {
+    $controllerPath = "";
+}
+
+// PHPUnit, change $controllerPath to application directory to make Panthera Framework 2 usable
+if (strpos($controllerPath, 'vendor/phpunit/phpunit') !== false)
+{
+    $controllerPath = realpath(__DIR__. "/../application/");
 }
 
 // support for CLI applications runned from Panthera Framework "/bin" directory

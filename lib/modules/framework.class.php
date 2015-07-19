@@ -233,13 +233,21 @@ class framework
      * @param string $controllerPath Path to controller that constructed this method
      *
      * @author Damian Kęska <webnull.www@gmail.com>
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
      */
     public function __construct($controllerPath)
     {
         // setup base settings, like the place where we are
         self::$instance = $this;
         $this->appPath = pathinfo($controllerPath, PATHINFO_DIRNAME). '/';
-        $this->libPath = __DIR__. '/../';
+
+        // set correctly appPath in case of running PHPUnit
+        if (defined('PHPUNIT') && strpos($this->appPath, 'application') === false)
+        {
+            $this->appPath = realpath(__DIR__. '/../../application/'). "/";
+        }
+
+        $this->libPath = realpath(__DIR__. '/../');
         $this->frameworkPath = realpath(__DIR__. '/../');
 
         // load application indexing cache
@@ -318,7 +326,7 @@ class framework
     {
         $appName = '\\Panthera\\cli\\' .$appName. 'Application';
 
-        if (isset($_SERVER['argv']) && $_SERVER['argv'][0])
+        if (isset($_SERVER['argv']) && $_SERVER['argv'][0] && !defined('PHPUNIT'))
         {
             $reflection = new \ReflectionClass($appName);
 

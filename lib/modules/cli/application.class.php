@@ -52,6 +52,25 @@ class application extends Panthera\baseClass
     }
 
     /**
+     * Deploy PHPUnit tests from code.
+     *
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     */
+    public function tests_cliArgument()
+    {
+        // load PHPUnit and other dependencies
+        require_once $this->app->frameworkPath. "/vendor/autoload.php";
+
+        // load Panthera Framework 2 implementation for PHPUnit tests
+        require_once $this->app->frameworkPath. "/modules/tests/phpunit.bootstrap.php";
+
+        $PHPUnit = new \PHPUnit_TextUI_TestRunner;
+        $PHPUnit->doRun($PHPUnit->getTest($this->app->frameworkPath."/tests/", '', 'Test.php'));
+
+        exit;
+    }
+
+    /**
      * Display help
      *
      * @todo Optional and non-optional arguments support
@@ -162,6 +181,7 @@ class application extends Panthera\baseClass
      * Parse shell arguments and execute proper commands eg. --help will execute $this->help_cliArgument()
      *
      * @author Damian Kęska <damian@pantheraframework.org>
+     * @return null
      */
     public function readArguments()
     {
