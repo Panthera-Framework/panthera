@@ -89,7 +89,7 @@ class application extends Panthera\baseClass
         {
             if (strpos($method->getName(), '_cliArgument') !== false)
             {
-                $commandName = str_replace('_cliArgument', '', $method->getName());
+                $commandName = str_replace('_cliArgument', '', str_replace('__', '-', $method->getName()));
                 $text .= "\n\t--" .$commandName;
 
                 foreach ($this->argumentsShort as $shortArg => $longArg)
@@ -126,6 +126,7 @@ class application extends Panthera\baseClass
     /**
      * Case when cli argument was not recognized eg. --test but it's not recognized by application
      *
+     * @override
      * @author Damian Kęska <damian@pantheraframework.org>
      * @param string $argumentName
      */
@@ -133,6 +134,33 @@ class application extends Panthera\baseClass
     {
         print("Unsupported argument: " .$argumentName. "\n");
         exit;
+    }
+
+    /**
+     * Check if in PHPDoc comment there is a line that begins with $attributeName and has text $oneOfValues eg. "@return" and "bool"
+     *
+     * @param string $doc PHPDoc comment text content
+     * @param string $attributeName Attribute tag name
+     * @param string $oneOfValues One of tag values
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return bool
+     */
+    public function checkPHPDocAttribute($doc, $attributeName, $oneOfValues)
+    {
+        $splitted = explode("\n", $doc);
+
+        foreach ($splitted as $line)
+        {
+            $line = ltrim(' * ', $line);
+
+            if (strpos($line, $attributeName) === 0 && strpos($line, $oneOfValues) !== false)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -146,12 +174,15 @@ class application extends Panthera\baseClass
      */
     public function cliArgumentsCallFunction($function, $i, &$args)
     {
-        $function = str_replace('-', '_', $function). '_cliArgument';
+        $function = str_replace('-', '__', $function). '_cliArgument';
         $value = '';
 
         if (method_exists($this, $function))
         {
-            if (isset($args[$i + 1]) && substr($args[$i + 1], 0, 1) !== '-')
+            $reflection = new \ReflectionMethod($this, $function);
+            $comment = $reflection->getDocComment();
+
+            if (isset($args[$i + 1]) && !$this->checkPHPDocAttribute($comment, '@cli', 'no-value') && substr($args[$i + 1], 0, 1) !== '-')
             {
                 $value = $args[$i + 1];
                 unset($args[$i + 1]);
