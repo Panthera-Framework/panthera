@@ -1,8 +1,4 @@
 <?php
-
-// allow app.php to recognise tests and execute init.php what makes a new instance of Panthera Framework 2
-define('PHPUNIT', true);
-
 /**
  * Class PantheraFrameworkTestCase as to provide access to $app for PHPUnit tests.
  *

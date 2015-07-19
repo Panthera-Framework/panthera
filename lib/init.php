@@ -6,11 +6,8 @@
  * @author Damian Kęska <damian@pantheraframework.org>
  */
 
-// condition prevents from getting error about already defined constant while loading PHPUnit tests
-if (!defined('PHPUNIT'))
-{
-    define('PANTHERA_FRAMEWORK_2', true);
-}
+define('PANTHERA_FRAMEWORK_2', true);
+define('PANTHERA_FRAMEWORK_PATH', __DIR__);
 
 /**
  * Detect application path

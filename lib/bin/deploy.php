@@ -178,7 +178,7 @@ class deploymentApplication extends application
             exit;
         }
 
-        return new $taskClass;
+        return new $taskClass($this);
     }
 
     /**
