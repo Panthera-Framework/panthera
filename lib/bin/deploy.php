@@ -50,14 +50,40 @@ class deploymentApplication extends application
     {
         $this->indexService = new indexService;
         $this->indexService->indexFiles();
+        $app = framework::getInstance();
 
         foreach ($this->indexService->mixedFilesStructure as $folder => $files)
         {
             if (strpos($folder, '/deployment') === 0)
             {
+                // check if directory has it's "index" eg. tests/testsTask.php - this one would execute group of tasks in selected order
+                try
+                {
+                    $groupTask = $app->getPath('.' .$folder . '/' . basename($folder) . 'Task.php');
+
+                    if ($groupTask)
+                    {
+                        $tmp = explode('/', $folder);
+                        unset($tmp[0]); unset($tmp[1]);
+
+                        $this->modules[implode('/', $tmp)] = $groupTask;
+                    }
+
+                } catch (\Panthera\FileNotFoundException $e) { };
+
                 foreach ($files as $filePath => $value)
                 {
-                    $this->modules[substr(str_replace('Task.php', '', $filePath), 12)] = $filePath;
+                    $moduleName = substr(str_replace('Task.php', '', $filePath), 12);
+
+                    // don't add "index" task to the list twice
+                    if (dirname($moduleName) == basename($moduleName))
+                    {
+                        continue;
+                    }
+
+                    try {
+                        $this->modules[$moduleName] = $app->getPath($filePath);
+                    } catch (Exception $e) {};
                 }
             }
         }
@@ -143,8 +169,15 @@ class deploymentApplication extends application
      */
     protected function loadTaskModule($taskName)
     {
-        require_once $this->app->getPath($this->modules[$taskName]);
+        require_once $this->modules[$taskName];
         $taskClass = "\\Panthera\\deployment\\" .basename($taskName). "Task";
+
+        if (!class_exists($taskClass, false))
+        {
+            print('Error: Class "' .$taskClass. '" does not exists for module "' .$taskName. "\"\n");
+            exit;
+        }
+
         return new $taskClass;
     }
 
