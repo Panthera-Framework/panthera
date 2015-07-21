@@ -16,16 +16,23 @@ class application extends Panthera\baseClass
      *
      * @var array
      */
-    protected $argumentsShort = array(
+    protected $argumentsShort = [
         'h' => 'help',
-    );
+    ];
 
     /**
      * Collected opts from commandline
      *
      * @var string[]
      */
-    public $opts = array();
+    public $opts = [];
+
+    /**
+     * List of CLI arguments that was not recognized
+     *
+     * @var string[]
+     */
+    public $notFoundArguments = [];
 
     /**
      * Constructor
@@ -49,25 +56,6 @@ class application extends Panthera\baseClass
         }
 
         $this->readArguments();
-    }
-
-    /**
-     * Deploy PHPUnit tests from code.
-     *
-     * @author Mateusz Warzyński <lxnmen@gmail.com>
-     */
-    public function tests_cliArgument()
-    {
-        // load PHPUnit and other dependencies
-        require_once $this->app->frameworkPath. "/vendor/autoload.php";
-
-        // load Panthera Framework 2 implementation for PHPUnit tests
-        require_once $this->app->frameworkPath. "/modules/tests/phpunit.bootstrap.php";
-
-        $PHPUnit = new \PHPUnit_TextUI_TestRunner;
-        $PHPUnit->doRun($PHPUnit->getTest($this->app->frameworkPath."/tests/", '', 'Test.php'));
-
-        exit;
     }
 
     /**
@@ -102,19 +90,25 @@ class application extends Panthera\baseClass
                 }
 
                 $comment = explode("\n", $method->getDocComment());
-                $text .= "\t" . ltrim($comment[1], ' * ') . "\n";
 
-                foreach ($comment as $line)
+                if (count($comment) > 1)
                 {
-                    $line = ltrim($line, ' * ');
+                    $text .= "\t" . ltrim($comment[1], ' * ') . "\n";
 
-                    if (strpos($line, '@author') === 0)
+                    foreach ($comment as $line)
                     {
-                        $authors[substr($line, 7)] = substr($line, 7);
+                        $line = ltrim($line, ' * ');
+
+                        if (strpos($line, '@author') === 0)
+                        {
+                            $authors[substr($line, 7)] = substr($line, 7);
+                        }
                     }
                 }
             }
         }
+
+        $text .= $this->__helpText();
 
         // list of application authors
         $text .= "\n\nAuthors:\n" . implode("\n", array_keys($authors));
@@ -124,16 +118,31 @@ class application extends Panthera\baseClass
     }
 
     /**
-     * Case when cli argument was not recognized eg. --test but it's not recognized by application
+     * Dummy function to be extended
      *
      * @override
      * @author Damian Kęska <damian@pantheraframework.org>
-     * @param string $argumentName
+     * @return string
      */
-    public function cliArgumentNotFound($argumentName)
+    public function __helpText()
     {
-        print("Unsupported argument: " .$argumentName. "\n");
-        exit;
+        return '';
+    }
+
+    /**
+     * Case when cli argument was not recognized eg. --test but it's not recognized by application
+     *
+     * @param string $argumentName CLI argument name
+     * @param bool $exit Exit after displaying message
+     *
+     * @override
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return null
+     */
+    public function cliArgumentNotFound($argumentName, $exit = true)
+    {
+        print("Unsupported argument: " .str_replace('_cliArgument', '', $argumentName). "\n");
+        if ($exit) exit;
     }
 
     /**
@@ -192,7 +201,7 @@ class application extends Panthera\baseClass
 
         } else {
             // raise a custom error
-            $this->cliArgumentNotFound($function);
+            $this->notFoundArguments[] = $function;
         }
     }
 
@@ -216,6 +225,8 @@ class application extends Panthera\baseClass
      */
     public function readArguments()
     {
+        $helpInvoked = false;
+
         if (count($_SERVER['argv']) === 1)
         {
             return $this->cliArgumentsNoArgumentSpecified();
@@ -224,41 +235,67 @@ class application extends Panthera\baseClass
         $args = $_SERVER['argv'];
         unset($args[0]);
 
-        // go through all expressions in shell command eg. "deploy.php unit-tests --arg1 value" would be: ['deploy.php', 'unit-tests', '--arg1', 'value']
-        foreach ($args as $i => $arg)
+        if (in_array('--help', $args))
         {
-            /**
-             * Long arguments name support
-             *
-             * Examples:
-             *     --help
-             *     --set value
-             */
+            $helpInvoked = true;
+            unset($args[array_search('--help', $args)]);
 
-            if (substr($arg, 0, 1) === '-')
+        } elseif (in_array('-h', $args)) {
+            $helpInvoked = true;
+            unset($args[array_search('-h', $args)]);
+
+        } else {
+            // go through all expressions in shell command eg. "deploy.php unit-tests --arg1 value" would be: ['deploy.php', 'unit-tests', '--arg1', 'value']
+            foreach ($args as $i => $arg)
             {
-                if (substr($arg, 0, 2) === '--')
+                /**
+                 * Long arguments name support
+                 *
+                 * Examples:
+                 *     --help
+                 *     --set value
+                 */
+                if (substr($arg, 0, 1) === '-')
                 {
-                    $this->cliArgumentsCallFunction(substr($arg, 2), $i, $args);
-
-                } else {
-                    $argShortName = substr($arg, 1);
-
-                    if (isset($this->argumentsShort[$argShortName]))
+                    if (substr($arg, 0, 2) === '--')
                     {
-                        $this->cliArgumentsCallFunction($this->argumentsShort[$argShortName], $i, $args);
-                    } else {
-                        $this->cliArgumentNotFound($argShortName);
-                    }
-                }
+                        $this->cliArgumentsCallFunction(substr($arg, 2), $i, $args);
 
-                unset($args[$i]);
+                    } else {
+                        $argShortName = substr($arg, 1);
+
+                        if (isset($this->argumentsShort[$argShortName]))
+                        {
+                            $this->cliArgumentsCallFunction($this->argumentsShort[$argShortName], $i, $args);
+                        } else {
+                            $this->notFoundArguments[] = $argShortName;
+                        }
+                    }
+
+                    unset($args[$i]);
+                }
             }
         }
 
         $this->opts = $args;
         $this->parseOpts($args);
 
+        if ($this->notFoundArguments)
+        {
+            foreach ($this->notFoundArguments as $argument)
+            {
+                $this->cliArgumentNotFound($argument, false);
+            }
+
+            exit;
+        }
+
+        if ($helpInvoked)
+        {
+            $this->help_cliArgument();
+        }
+
+        $this->executeOpts($args);
         return null;
     }
 
@@ -270,6 +307,18 @@ class application extends Panthera\baseClass
      * @return null;
      */
     public function parseOpts($args)
+    {
+        return null;
+    }
+
+    /**
+     * Dummy function for executing post parsing actions
+     *
+     * @param string[] $args
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return null;
+     */
+    public function executeOpts($args)
     {
         return null;
     }

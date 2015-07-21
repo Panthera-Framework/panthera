@@ -12,6 +12,13 @@ class task extends baseClass
     public $deployApp = null;
 
     /**
+     * List of shell arguments that deployment application could take, but will be passed to proper tasks
+     *
+     * @var array
+     */
+    public $shellArguments = [];
+
+    /**
      * Constructor
      *
      * @param \Panthera\cli\deploymentApplication $deployApp

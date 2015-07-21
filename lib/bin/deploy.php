@@ -41,6 +41,14 @@ class deploymentApplication extends application
     public $onlyVerifyDependencies = false;
 
     /**
+     * Arguments handled by tasks
+     * Here will appear any argument that was registered by any task and was already called from cli
+     *
+     * @var string[]
+     */
+    public $tasksArguments = [];
+
+    /**
      * Constructor
      * Prepare a list of deployment services
      *
@@ -149,11 +157,47 @@ class deploymentApplication extends application
             $object = $this->loadTaskModule($task);
             $checked[] = $task;
 
+            if ($object->shellArguments)
+            {
+                foreach ($object->shellArguments as $argument => $description)
+                {
+                    $this->tasksArguments[$argument] = [
+                        'taskName' => $task,
+                        'description' => $description
+                    ];
+                    $argument = str_replace('--', '', $argument). '_cliArgument';
+
+                    if (in_array($argument, $this->notFoundArguments))
+                    {
+                        unset($this->notFoundArguments[array_search($argument, $this->notFoundArguments)]);
+                    }
+                }
+            }
+
             if ($object->dependencies)
             {
                 $this->verifyTasksDependencies($object->dependencies, $checked, $task);
             }
         }
+    }
+
+    /**
+     * Additional block in --help that is displaying options for current selected tasks
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return string
+     */
+    public function __helpText()
+    {
+        if (!$this->tasksArguments) return '';
+        $text = "\n\nArguments defined by current tasks:\n\n";
+
+        foreach ($this->tasksArguments as $argument => $meta)
+        {
+            $text .= "\t(" .$meta['taskName']. ") --" .$argument. "\t" .$meta['description']. "\n";
+        }
+
+        return $text;
     }
 
     /**
@@ -201,7 +245,16 @@ class deploymentApplication extends application
         {
             exit;
         }
+    }
 
+    /**
+     * Execute post-parsing opts actions
+     *
+     * @param \string[] $opts
+     * @return null|void
+     */
+    public function executeOpts($opts)
+    {
         foreach ($opts as $moduleName)
         {
             // don't run same task again

@@ -1,26 +1,27 @@
 {
-  "name": "pantheraframework/panthera",
-  "type": "library",
-  "description": "framework",
-  "homepage":"http://pantheraframework.org",
-  "version": "2.0",
-  "license": "LGPLv3",
-  "authors": [
-    {
-      "name":  "Damian Kęska",
-      "email": "damian@pantheraframework.org"
+    "name": "pantheraframework/panthera",
+    "type": "library",
+    "description": "framework",
+    "homepage": "http://pantheraframework.org",
+    "version": "2.0",
+    "license": "LGPLv3",
+    "authors": [
+        {
+            "name": "Damian Kęska",
+            "email": "damian@pantheraframework.org"
+        },
+        {
+            "name": "Mateusz Warzyński",
+            "email": "lxnmen@gmail.com"
+        }
+    ],
+    "require": {
+        "pantheraframework/raintpl4": "master",
+        "psy/psysh": "master"
     },
-    {
-      "name":  "Mateusz Warzyński",
-      "email": "lxnmen@gmail.com"
-    }
-  ],
-  "require": {
-    "pantheraframework/raintpl4": "master",
-    "psy/psysh": "master"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "4.4.*"
-  },
-  "minimum-stability": "dev"
+    "require-dev": {
+        "phpunit/phpunit": "4.4.*",
+        "codeclimate/php-test-reporter": "dev-master"
+    },
+    "minimum-stability": "dev"
 }
