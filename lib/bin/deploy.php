@@ -272,7 +272,7 @@ class deploymentApplication extends application
 
             if ($currentTask->dependencies)
             {
-                $this->parseOpts($currentTask->dependencies);
+                $this->executeOpts($currentTask->dependencies);
             }
 
             if (!method_exists($currentTask, 'execute') && !$currentTask->dependencies)
