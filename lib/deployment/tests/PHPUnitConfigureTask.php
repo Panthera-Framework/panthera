@@ -24,6 +24,7 @@ class PHPUnitConfigureTask extends \Panthera\deployment\task
 
     public $shellArguments = array(
         'coverage' => 'Configure a code coverage',
+        'travisci' => 'TravisCI integration',
     );
 
     /**
@@ -57,7 +58,15 @@ class PHPUnitConfigureTask extends \Panthera\deployment\task
             // coverage tests
             $log = $logging->addChild('log');
             $log->addAttribute('type', 'coverage-clover');
-            $log->addAttribute('target', $this->app->appPath. '/.content/cache/clover.xml');
+
+            if (in_array('--travisci', $_SERVER['argv']))
+            {
+                @mkdir($this->app->appPath. '/../lib/build/');
+                @mkdir($this->app->appPath. '/../lib/build/logs/');
+                $log->addAttribute('target', $this->app->appPath. '/../lib/build/logs/clover.xml');
+            } else {
+                $log->addAttribute('target', $this->app->appPath . '/.content/cache/clover.xml');
+            }
         }
 
         return $xml;
