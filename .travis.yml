@@ -10,9 +10,7 @@ addons:
   code_climate:
     repo_token: a31320388fb4f4b9b96fd2a271bce301c6365c4104dd3ee05db0334309fd3469
 
-script:
-  - cd application
-  - php ../lib/bin/deploy.php tests/PHPUnit
+script: cd application && php ../lib/bin/deploy.php tests/PHPUnit
 
 before_install:
   - cd lib && composer install --dev
