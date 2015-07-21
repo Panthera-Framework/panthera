@@ -1,6 +1,10 @@
 Panthera Framework 2
 ========
 
+[![Code Climate](https://codeclimate.com/github/Panthera-Framework/panthera/badges/gpa.svg)](https://codeclimate.com/github/Panthera-Framework/panthera)
+[![Test Coverage](https://codeclimate.com/github/Panthera-Framework/panthera/badges/coverage.svg)](https://codeclimate.com/github/Panthera-Framework/panthera/coverage)
+[![Unit testing](https://travis-ci.org/Panthera-Framework/panthera.svg)](https://travis-ci.org/Panthera-Framework/panthera)
+
 Assumptions for second version:
 
 - Deployment
