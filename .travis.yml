@@ -14,7 +14,7 @@ before_install:
   - cd lib && composer install --dev
   - cd ..
 
-script: cd application && php ../lib/bin/deploy.php tests/PHPUnit
+script: cd application && php ../lib/bin/deploy.php tests/PHPUnit --coverage --travisci
 
 after_script:
   - php vendor/bin/test-reporter
