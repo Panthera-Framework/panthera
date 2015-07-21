@@ -53,6 +53,11 @@ class template extends baseClass
         $this->removeComments = $this->app->config->get('template.remove_comments', true);
         $this->ignoreUnknownTags = $this->app->config->get('template.ignore_unknown_tags', true);
 
+        if (!is_dir($this->app->appPath. '/.content/cache/RainTPL4/'))
+        {
+            mkdir($this->app->appPath. '/.content/cache/RainTPL4');
+        }
+
         $this->rain = new \Rain\RainTPL4();
 
         $this->rain->setConfiguration(array(
