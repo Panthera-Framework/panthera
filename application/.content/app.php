@@ -21,7 +21,4 @@ $defaultConfig = array(
 );
 
 // if defined PHPUnit, initialize Panthera Framework 2 once again for test purposes
-if (!defined('PANTHERA_FRAMEWORK_2') || defined('PHPUNIT'))
-{
-    require __DIR__ . '/../../lib/init.php';
-}
+require_once __DIR__ . '/../../lib/init.php';

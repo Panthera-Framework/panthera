@@ -23,6 +23,12 @@ class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
     public function setup()
     {
         require __DIR__ . '/../../../application/.content/app.php';
+
+        if (!isset($app))
+        {
+            $app = \Panthera\framework::getInstance();
+        }
+
         $this->app = $app;
     }
 }
