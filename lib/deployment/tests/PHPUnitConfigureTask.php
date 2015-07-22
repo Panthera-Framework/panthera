@@ -5,6 +5,10 @@ namespace Panthera\deployment;
  * This task is generating a configuration file for PHPUnit testing framework
  * Result of this task will be used in "tests/PHPUnit" task.
  *
+ * Additional arguments:
+ *   --coverage
+ *   --travisci (to be used with --coverage)
+ *
  * @author Damian Kęska <damian@pantheraframework.org>
  * @package Panthera\deployment\unitTesting\PHPUnit
  */
