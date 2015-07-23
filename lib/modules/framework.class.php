@@ -111,8 +111,20 @@ abstract class baseClass
  */
 function __pantheraAutoloader($class)
 {
-    // todo: improve auto loading external libraries
-    if (strpos($class, 'Panthera\\') === false) // check if namespace belongs to Panthera Framework
+    $app = framework::getInstance();
+
+    // use cache list of classes
+    if ($app->applicationIndex)
+    {
+        if (in_array($class, $app->applicationIndex['autoloader']))
+        {
+            require $app->applicationIndex['autoloader'][$class];
+            return true;
+        }
+    }
+
+    // check if namespace belongs to Panthera Framework
+    if (strpos($class, 'Panthera\\') === false)
     {
         return false;
     }
@@ -132,7 +144,6 @@ function __pantheraAutoloader($class)
         }
     }
 
-    $app = framework::getInstance();
     $path = $app->getPath('/modules/' .$class. '.class.php');
 
     if ($path)
@@ -253,6 +264,8 @@ class framework
         // load application indexing cache
         $this->loadApplicationIndex();
 
+        $aa = new \test;
+
         $this->signals  = new signals;
         $this->config   = new configuration;
         $this->logging  = new logging;
@@ -365,8 +378,13 @@ class framework
         if (file_exists($this->appPath . '/' . $path))
         {
             return $this->appPath . '/' . $path;
+
+        } elseif (file_exists($this->appPath. '/.content/' .$path)) {
+            return $this->appPath. '/.content/' .$path;
+
         } elseif (file_exists($path)) {
             return $path;
+
         } elseif (file_exists($this->frameworkPath . '/' . $path)) {
             return $this->frameworkPath . '/' . $path;
         }

@@ -204,4 +204,32 @@ class indexService extends baseClass
 
         return array_keys($classes);
     }
+
+    /**
+     * Write to applicationIndex.php cache file
+     *
+     * @param string $entry Array index name
+     * @param mixed $value Value to put
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return array
+     */
+    public function writeIndexFile($entry, $value)
+    {
+        if (is_file($this->app->appPath. '/.content/cache/applicationIndex.php'))
+        {
+            require $this->app->appPath . '/.content/cache/applicationIndex.php';
+
+        } else {
+            $appIndex = array();
+        }
+
+        $appIndex[$entry] = $value;
+
+        $fp = fopen($this->app->appPath. '/.content/cache/applicationIndex.php', 'w');
+        fwrite($fp, "<?php\n\$appIndex = " .var_export($appIndex, true). ";");
+        fclose($fp);
+
+        return $appIndex;
+    }
 }
