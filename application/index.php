@@ -73,3 +73,13 @@ $app->template->display('index.tpl');
 
 $indexService = new \Panthera\indexService;
 var_dump($indexService->indexClasses());
+
+$testUser = new \Panthera\model\user(array(
+	'user_id' => 1,
+	'user_login' => 'webnull',
+));
+var_dump($testUser->userLogin);
+
+var_dump(\Panthera\model\user::fetch(array(
+	'|=|user_id' => 1,
+)));

@@ -78,7 +78,7 @@ class SQLite3DatabaseHandler extends \Panthera\database\driver implements databa
         /**
          * What
          */
-        if ($what === null)
+        if ($what === null || $what == '*')
         {
             $query .= ' * ';
 
@@ -154,6 +154,31 @@ class SQLite3DatabaseHandler extends \Panthera\database\driver implements databa
             $query .= ' LIMIT ' .$limit[1]. ' OFFSET ' .$limit[0]. ' ';
         }
 
-        return $query;
+        return array($query, $values);
+    }
+
+    /**
+     * Make a SQL query and return resultset
+     *
+     * @param string $query
+     * @param array $values
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return bool
+     */
+    public function query($query, $values)
+    {
+        $sth = $this->socket->prepare($query);
+
+        foreach ($values as $k => $v)
+        {
+            $sth->bindParam(':' .$k, $v);
+        }
+
+        $sth->execute();
+        $fetch = $sth->fetch(PDO::FETCH_ASSOC);
+        $sth->closeCursor();
+
+        return $fetch;
     }
 }
