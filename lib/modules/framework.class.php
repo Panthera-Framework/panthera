@@ -250,14 +250,8 @@ class framework
     {
         // setup base settings, like the place where we are
         self::$instance = $this;
+
         $this->appPath = pathinfo($controllerPath, PATHINFO_DIRNAME). '/';
-
-        // set correctly appPath in case of running PHPUnit
-        if (defined('PHPUNIT') && strpos($this->appPath, 'application') === false)
-        {
-            $this->appPath = realpath(__DIR__. '/../../application/'). "/";
-        }
-
         $this->libPath = realpath(__DIR__. '/../');
         $this->frameworkPath = realpath(__DIR__. '/../');
 
