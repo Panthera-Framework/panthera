@@ -116,9 +116,9 @@ function __pantheraAutoloader($class)
     // use cache list of classes
     if ($app->applicationIndex)
     {
-        if (in_array($class, $app->applicationIndex['autoloader']))
+        if (isset($app->applicationIndex['autoloader']['\\' .$class]))
         {
-            require $app->applicationIndex['autoloader'][$class];
+            require str_replace('$LIB$', PANTHERA_FRAMEWORK_PATH, str_replace('$APP$', $app->appPath, $app->applicationIndex['autoloader']['\\' .$class]));
             return true;
         }
     }
@@ -263,8 +263,6 @@ class framework
 
         // load application indexing cache
         $this->loadApplicationIndex();
-
-        $aa = new \test;
 
         $this->signals  = new signals;
         $this->config   = new configuration;

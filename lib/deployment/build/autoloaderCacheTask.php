@@ -64,6 +64,7 @@ class autoloaderCacheTask extends \Panthera\deployment\task
             {
                 print("\t" .$class. "\n");
                 $this->indexedClasses[$class] = str_replace('//', '/', str_replace(PANTHERA_FRAMEWORK_PATH, '$LIB$', $file));
+                $this->indexedClasses[$class] = str_replace($this->app->appPath, '$APP$', $this->indexedClasses[$class]);
             }
         }
     }
