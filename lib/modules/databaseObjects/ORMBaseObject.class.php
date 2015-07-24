@@ -161,19 +161,19 @@ abstract class ORMBaseObject extends \Panthera\baseClass
 	 */
 	public static function fetch($where = null, $order = null, $what = '*', $group = null, $limit = null, $values = array())
 	{
-		$db = framework::getInstance()->database;
-		$select = $db->select(static::$__orm_Table, $what, $where, $order, $group, $limit, $values , static::$__orm_Joins);
-		$query = $db->query($select[0], $select[1]);
+		$database = framework::getInstance()->database;
+		$select = $database->select(static::$__orm_Table, $what, $where, $order, $group, $limit, $values , static::$__orm_Joins);
+		$query = $database->query($select[0], $select[1]);
 
 		$objects = array();
 
 		if (is_array($query) && count($query))
 		{
-			$g = get_called_class();
+			$currentClass = get_called_class();
 
 			foreach ($query as $row)
 			{
-				$objects[] = new $g($row);
+				$objects[] = new $currentClass($row);
 			}
 		}
 
