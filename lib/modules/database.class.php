@@ -71,12 +71,13 @@ class driver extends \Panthera\baseClass
      *
      * @param array $whereCondition The condition
      * @param string|null $columnNamePrefix Optional prefix to add to every column name (in case column don't have any)
+     * @param bool $isJoin Is this a where condition for JOIN clause?
      *
      * @throws PantheraFrameworkException
      * @return array
      */
 
-    public function parseWhereConditionBlock($whereCondition, $columnNamePrefix = null)
+    public function parseWhereConditionBlock($whereCondition, $columnNamePrefix = null, $isJoin = false)
     {
         $output = '';
         $values = array();
@@ -117,7 +118,7 @@ class driver extends \Panthera\baseClass
             // inherited conditions
             if ($len === 3 && substr($splitted[2], 0, 1) === '.' || is_numeric($condition))
             {
-                $subCondition = $this->parseWhereConditionBlock($value);
+                $subCondition = $this->parseWhereConditionBlock($value, $columnNamePrefix, $isJoin);
                 $output .= ' ' .$subCondition['sql']. ' ';
                 $values = array_merge($values, $subCondition['data']);
                 $logicOperatorAllowed = true;
@@ -125,7 +126,12 @@ class driver extends \Panthera\baseClass
             }
 
             $columnName = ($len === 4 ? $splitted[3] : $splitted[2]);
-            $columnId = $columnName . '_' . substr(hash('md4', rand(0, 9) . microtime(true)), 0, 8);
+            $columnId = '';
+
+            if (!is_string($value) || substr($value, 0, 1) == '#')
+            {
+                $columnId = $columnName . '_' . substr(hash('md4', rand(0, 9) . microtime(true)), 0, 8);
+            }
 
             // append a column name prefix on columns that don't have any
             if ($columnNamePrefix && strpos($columnName, '.') === false)
@@ -161,8 +167,15 @@ class driver extends \Panthera\baseClass
 
 
             } else {
-                $output .= ' ' .$columnName . ' ' .$comparisonOperator. ' :' .$columnId. ' ';
-                $values[$columnId] = $value;
+                $output .= ' ' . $columnName . ' ' . $comparisonOperator. ' ';
+
+                if (!$columnId)
+                {
+                    $output .= $columnNamePrefix . '.' . $value. ' ';
+                } else {
+                    $output .= ':' . $columnId . ' ';
+                    $values[$columnId] = $value;
+                }
             }
 
             $logicOperatorAllowed = true;
@@ -172,6 +185,30 @@ class driver extends \Panthera\baseClass
             'sql' => '(' .$output. ')',
             'data' => $values,
         );
+    }
+
+    /**
+     * Example:
+     *
+     * JOIN|group => WHERE CLAUSE
+     *
+     * @param array $joins List of joined tables
+     * @param string $mainTable
+     *
+     * @author Damian Kęska <damian.keska@fingo.pl>
+     * @return string
+     */
+    public function parseJoinConditionBlock(array $joins, $mainTable)
+    {
+        $SQL = '';
+
+        foreach ($joins as $joinedTable => $whereClause)
+        {
+            $exp = explode('|', $joinedTable);
+            $SQL .= $exp[0]. ' ' .$exp[1]. ' ON ' .$this->parseWhereConditionBlock($whereClause, $mainTable, true)['sql']. ' ';
+        }
+
+        return $SQL;
     }
 
     /**

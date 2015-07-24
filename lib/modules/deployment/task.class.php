@@ -2,9 +2,17 @@
 namespace Panthera\deployment;
 use Panthera\baseClass;
 
+/**
+ * Deployment task skeleton
+ *
+ * @package Panthera\deployment
+ */
 class task extends baseClass
 {
-    public $dependencies = array();
+    /**
+     * @var array
+     */
+    public $dependencies = [];
 
     /**
      * @var \Panthera\cli\deploymentApplication

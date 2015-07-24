@@ -64,6 +64,8 @@ class SQLite3DatabaseHandler extends \Panthera\database\driver implements databa
      * @param null|string|array $order Order by statement
      * @param null|string|array $group Group by those columns
      * @param null|Pagination $limit
+     * @param null|array $values Optional values
+     * @param null|array $joins Joined tables
      *
      * @throws PantheraFrameworkException
      * @author Damian Kęska <damian@pantheraframework.org>
@@ -79,6 +81,7 @@ class SQLite3DatabaseHandler extends \Panthera\database\driver implements databa
         if ($what === null)
         {
             $query .= ' * ';
+
         } else {
 
             foreach ($what as $item)
@@ -97,6 +100,16 @@ class SQLite3DatabaseHandler extends \Panthera\database\driver implements databa
         }
 
         $query .= ' FROM `' .$tableName. '` as s1 ';
+
+        /**
+         * SQL joins
+         *
+         * @see \Panthera\database::parseJoinConditionBlock()
+         */
+        if ($joins)
+        {
+            $query .= $this->parseJoinConditionBlock($joins, 's1');
+        }
 
         /**
          * Where

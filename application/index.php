@@ -56,6 +56,12 @@ $select->group = array(
 	'count(userId)',
 );
 
+$select->joins = array(
+	'JOIN|groups' => array(
+		'|=|groups.group_id' => 'user_group_id',
+	),
+);
+
 $select->limit = new \Panthera\database\Pagination(5, 3); // 5 items per page, 3rd page
 
 var_dump($select->execute());
