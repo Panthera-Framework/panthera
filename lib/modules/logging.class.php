@@ -100,7 +100,7 @@ class logging extends baseClass
             $formattedMessage = str_replace($key, $value, $formattedMessage);
         }
 
-        $this->messages[] = $this->format;
+        $this->messages[] = $formattedMessage;
 
         // reset the timer
         $this->timer = null;
