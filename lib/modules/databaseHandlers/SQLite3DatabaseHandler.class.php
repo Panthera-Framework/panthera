@@ -53,6 +53,7 @@ class SQLite3DatabaseHandler extends \Panthera\database\driver implements databa
         }
 
         $this->socket = new \PDO('sqlite:' .$this->app->appPath. '/.content/database.sqlite3');
+        $this->socket->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
 
     /**
@@ -176,7 +177,7 @@ class SQLite3DatabaseHandler extends \Panthera\database\driver implements databa
         }
 
         $sth->execute();
-        $fetch = $sth->fetch(PDO::FETCH_ASSOC);
+        $fetch = $sth->fetchAll(\PDO::FETCH_ASSOC);
         $sth->closeCursor();
 
         return $fetch;

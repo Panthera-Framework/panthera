@@ -26,4 +26,18 @@ class user extends \Panthera\database\ORMBaseObject
      * @var string
      */
     public $userFirstName   = null;
+
+    /**
+     * @orm
+     * @column user_last_name
+     * @var string
+     */
+    public $userLastName    = null;
+
+    /**
+     * @orm
+     * @column user_passwd
+     * @var string
+     */
+    public $userPassword    = null;
 }

@@ -71,9 +71,6 @@ var_dump(microtime(true) - $t);
 
 $app->template->display('index.tpl');
 
-$indexService = new \Panthera\indexService;
-var_dump($indexService->indexClasses());
-
 $testUser = new \Panthera\model\user(array(
 	'user_id' => 1,
 	'user_login' => 'webnull',

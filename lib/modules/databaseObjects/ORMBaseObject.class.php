@@ -159,10 +159,10 @@ abstract class ORMBaseObject extends \Panthera\baseClass
 	 * @author Damian Kęska <damian@pantheraframework.org>
 	 * @return static[]
 	 */
-	public static function fetch($where = null, $order = null, $what = '*', $group = null, $limit = null, $values = array())
+	public static function fetch($where = null, $order = null, $group = null, $limit = null, $values = array())
 	{
 		$database = framework::getInstance()->database;
-		$select = $database->select(static::$__orm_Table, $what, $where, $order, $group, $limit, $values , static::$__orm_Joins);
+		$select = $database->select(static::$__orm_Table, '*', $where, $order, $group, $limit, $values , static::$__orm_Joins);
 		$query = $database->query($select[0], $select[1]);
 
 		$objects = array();
