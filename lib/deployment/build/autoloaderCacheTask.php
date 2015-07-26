@@ -8,7 +8,7 @@ require_once PANTHERA_FRAMEWORK_PATH. '/vendor/autoload.php';
  * @author Damian Kęska <damian@pantheraframework.org>
  * @package Panthera\deployment\framework
  */
-class autoloaderCacheTask extends \Panthera\deployment\task
+class autoloaderCacheTask extends task
 {
     /**
      * List of indexed classes
