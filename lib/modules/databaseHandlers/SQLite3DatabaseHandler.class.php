@@ -1,6 +1,12 @@
 <?php
 namespace Panthera\database;
 
+/**
+ * SQLite3 database handler for Panthera Framework 2
+ *
+ * @author Damian Kęska <damian@pantheraframework.org>
+ * @package Panthera\database\sqlite3
+ */
 class SQLite3DatabaseHandler extends \Panthera\database\driver implements databaseHandlerInterface
 {
     /**
@@ -42,6 +48,7 @@ class SQLite3DatabaseHandler extends \Panthera\database\driver implements databa
 
     /**
      * Connect to a database
+     * Creates a /.content/database.sqlite3 file that will store tables
      *
      * @throws FileException
      */
@@ -49,7 +56,7 @@ class SQLite3DatabaseHandler extends \Panthera\database\driver implements databa
     {
         if (!is_writable($this->app->appPath. '/.content/'))
         {
-            throw new FileException('Path "' .$this->app->appPath. '/.content/" is not writable', 'FW_CONTENT_NOT_WRITABLE');
+            throw new \Panthera\FileException('Path "' .$this->app->appPath. '/.content/" is not writable', 'FW_CONTENT_NOT_WRITABLE');
         }
 
         $this->socket = new \PDO('sqlite:' .$this->app->appPath. '/.content/database.sqlite3');

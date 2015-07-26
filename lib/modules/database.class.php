@@ -450,6 +450,7 @@ class Pagination
 interface databaseHandlerInterface
 {
     public function connect();
+    public function query($query, $values);
     //public function select();
     //public function insert();
     //public function update();
