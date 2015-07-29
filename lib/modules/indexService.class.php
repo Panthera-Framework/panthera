@@ -226,9 +226,9 @@ class indexService extends baseClass
 
         $appIndex[$entry] = $value;
 
-        $fp = fopen($this->app->appPath. '/.content/cache/applicationIndex.php', 'w');
-        fwrite($fp, "<?php\n\$appIndex = " .var_export($appIndex, true). ";");
-        fclose($fp);
+        $filePointer = fopen($this->app->appPath. '/.content/cache/applicationIndex.php', 'w');
+        fwrite($filePointer, "<?php\n\$appIndex = " .var_export($appIndex, true). ";");
+        fclose($filePointer);
 
         return $appIndex;
     }
