@@ -151,7 +151,6 @@ abstract class ORMBaseObject extends \Panthera\baseClass
 	 *
 	 * @param null $where
 	 * @param null $order
-	 * @param string $what
 	 * @param null $group
 	 * @param null $limit
 	 * @param array $values

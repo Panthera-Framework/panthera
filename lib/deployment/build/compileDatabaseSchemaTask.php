@@ -1,5 +1,7 @@
 <?php
 namespace Panthera\deployment;
+use Panthera\FileException;
+use Panthera\PantheraFrameworkException;
 
 /**
  * Build create table schemas for all database types
@@ -34,8 +36,39 @@ class compileDatabaseSchemaTask extends task
      */
     public function execute()
     {
+        $this->createRequiredDirectories();
         $this->collectDatabaseSchemaParsers();
         $this->collectTables();
+    }
+
+    /**
+     * Create directories used by this deployment task
+     *
+     * @throws FileException
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return null|bool
+     */
+    protected function createRequiredDirectories()
+    {
+        $dirs = array(
+            $this->app->appPath. '/.content/cache/SQLSchemas',
+            $this->app->appPath. '/.content/cache/SQLSchemas/SQLite3',
+        );
+
+        foreach ($dirs as $dir)
+        {
+            if (!is_writable(pathinfo($dir, PATHINFO_DIRNAME)))
+            {
+                throw new FileException('"' .pathinfo($dir, PATHINFO_DIRNAME). '" path is not writable', 'FS_NOT_WRITABLE_PATH');
+            }
+
+            if (!is_dir($dir))
+            {
+                mkdir($dir);
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -85,7 +118,16 @@ class compileDatabaseSchemaTask extends task
                         foreach ($this->schemaParsers as $schemaParser)
                         {
                             $className = "\\Panthera\\database\\schemaParser\\" .$schemaParser;
-                            $this->tables[] = new $className(pathinfo($file, PATHINFO_FILENAME));
+
+                            /**
+                             * @var \Panthera\database\schemaParser\BaseDatabaseSchemaParser $object
+                             */
+                            $this->tables[] = $object = new $className(pathinfo($file, PATHINFO_FILENAME));
+                            $baseSchema = $object->generateInitialSchema();
+
+                            $filePointer = fopen($this->app->appPath. '/.content/cache/SQLSchemas/SQLite3/' .pathinfo($file, PATHINFO_FILENAME). '.sql', 'w');
+                            fwrite($filePointer, $baseSchema);
+                            fclose($filePointer);
                         }
                     }
                 }

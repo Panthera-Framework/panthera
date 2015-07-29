@@ -5,12 +5,24 @@ use Panthera\FileException;
 use Panthera\framework;
 use Panthera\PantheraFrameworkException;
 
+require_once PANTHERA_FRAMEWORK_PATH. '/vendor/autoload.php';
+use Symfony\Component\Yaml\Yaml;
+
 abstract class BaseDatabaseSchemaParser
 {
     /**
+     * Data in plaintext
+     *
      * @var string
      */
     protected $schemaText = '';
+
+    /**
+     * Parsed data
+     *
+     * @var array
+     */
+    protected $schema = [];
 
     /**
      * Constructor
@@ -39,14 +51,27 @@ abstract class BaseDatabaseSchemaParser
     }
 
     /**
+     * Parse source schema
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    protected function parse()
+    {
+        $this->schema = Yaml::parse($this->schemaText);
+    }
+
+    /**
      * Dummy parse schema to generate SQL code
      *
      * @override
      * @throws PantheraFrameworkException
      * @author Damian Kęska <damian@pantheraframework.org>
+     * @return string
      */
-    protected function parse()
+    public function generateInitialSchema()
     {
-        throw new PantheraFrameworkException('Method "parse" not found in ' .get_called_class(). ' class', 'METHOD_NOT_FOUND');
+        throw new PantheraFrameworkException('Method "generateInitialSchema" not implemented in ' .get_called_class(). ' class', 'METHOD_NOT_FOUND');
     }
 }
+
+class SchemaParsingException extends PantheraFrameworkException {};

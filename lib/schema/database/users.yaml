@@ -1,30 +1,31 @@
 users:
-  - user_id:
-    - type: 'integer'
-    - length: 9
-    - autoincrement: true
-    - null: true
-    - index: 'full'
+  user_id:
+    type: 'integer'
+    length: 9
+    autoincrement: true
+    isNull: true
+    index: 'full'
+    key: 'primary'
 
-  - user_login:
-    - type: 'text'
-    - length: 16
-    - null: true
-    - index: 'full'
+  user_login:
+    type: 'text'
+    length: 16
+    isNull: true
+    index: 'full'
 
-  - user_passwd:
-    - type: 'text'
-    - length: 64
-    - null: true
-    - index: 'full'
+  user_passwd:
+    type: 'text'
+    length: 64
+    isNull: true
+    index: 'full'
 
-  - user_active:
-    - type: 'boolean'
-    - null: true
-    - default: true
+  user_active:
+    type: 'boolean'
+    isNull: true
+    default: true
 
-  - user_email:
-    - type: 'text'
-    - length: 64
-    - null: true
-    - index: 'full'
+  user_email:
+    type: 'text'
+    length: 64
+    isNull: true
+    index: 'full'
