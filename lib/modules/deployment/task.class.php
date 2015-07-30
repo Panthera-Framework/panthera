@@ -37,4 +37,15 @@ class task extends baseClass
         parent::__construct();
         $this->deployApp = $deployApp;
     }
+
+    /**
+     * Output a message
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @param string $message
+     */
+    protected function output($message)
+    {
+        print($message. "\n");
+    }
 }

@@ -50,6 +50,8 @@ class compileDatabaseSchemaTask extends task
      */
     protected function createRequiredDirectories()
     {
+        $this->output('createRequiredDirectories: Performing a check for cache temporary directories');
+
         $dirs = array(
             $this->app->appPath. '/.content/cache/SQLSchemas',
             $this->app->appPath. '/.content/cache/SQLSchemas/SQLite3',
@@ -64,6 +66,7 @@ class compileDatabaseSchemaTask extends task
 
             if (!is_dir($dir))
             {
+                $this->output('mkdir ' .$dir);
                 mkdir($dir);
             }
         }
@@ -93,6 +96,7 @@ class compileDatabaseSchemaTask extends task
                         continue;
                     }
 
+                    $this->output('collectDatabaseSchemaParsers: Found "' .$file. '"');
                     $this->schemaParsers[] = $file;
                 }
             }
@@ -117,6 +121,7 @@ class compileDatabaseSchemaTask extends task
                     {
                         foreach ($this->schemaParsers as $schemaParser)
                         {
+                            $this->output('collectTables: Generating schema for "' .pathinfo($file, PATHINFO_FILENAME). '" table');
                             $className = "\\Panthera\\database\\schemaParser\\" .$schemaParser;
 
                             /**
