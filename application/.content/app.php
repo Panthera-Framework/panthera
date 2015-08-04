@@ -8,6 +8,7 @@
 $defaultConfig = array(
     'database' => array(
         'type' => 'sqlite3',
+        'name' => 'database',
 
         // read-write user
         'host' => null,

@@ -59,8 +59,33 @@ class SQLite3DatabaseHandler extends \Panthera\database\driver implements databa
             throw new \Panthera\FileException('Path "' .$this->app->appPath. '/.content/" is not writable', 'FW_CONTENT_NOT_WRITABLE');
         }
 
-        $this->socket = new \PDO('sqlite:' .$this->app->appPath. '/.content/database.sqlite3');
+        $this->socket = new \PDO('sqlite:' .$this->getDatabasePath(). '.sqlite3');
         $this->socket->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+    }
+
+    /**
+     * Returns database path
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return string
+     */
+    public function getDatabasePath()
+    {
+        // database configuration from app.php
+        $dbConfig = $this->app->config->get('database');
+
+        return $this->app->appPath. '/.content/' .(isset($dbConfig['name']) ? $dbConfig['name'] : 'database'). '.sqlite3';
+    }
+
+    /**
+     * Returns database type
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return string
+     */
+    public function getDatabaseType()
+    {
+        return 'sqlite3';
     }
 
     /**
