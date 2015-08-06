@@ -72,12 +72,16 @@ class migrateTask extends task
         $this->output('-> Phinx configuration test passed');
     }
 
+    /**
+     * Migrate up
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
     private function executeMigrations()
     {
         $this->output('-> Running migrations');
         $output = $this->executeCommand('migrate -vvv --no-interaction -c "' .$this->configurationPath. '"');
-
-        var_dump($output);
+        print($output);
     }
 
     /**

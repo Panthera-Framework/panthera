@@ -1,0 +1,63 @@
+#!/usr/bin/env php
+<?php
+namespace Panthera\cli;
+use \Panthera\framework;
+
+
+require __DIR__. '/../init.php';
+
+/**
+ * Phinx migrations proxy
+ *
+ * @package Panthera\migrations
+ * @author Damian Kęska <damian@pantheraframework.org>
+ */
+class migrationsApplication extends application
+{
+    /**
+     * Path to Phinx "binary"
+     *
+     * @var string
+     */
+    protected $phinxPath = '';
+
+    /**
+     * Path to configuration
+     *
+     * @var string
+     */
+    protected $configrationPath = '';
+
+    /**
+     * Configures paths at startup
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function __construct()
+    {
+        $app = framework::getInstance();
+        $this->phinxPath = PANTHERA_FRAMEWORK_PATH. '/vendor/bin/phinx';
+        $this->configrationPath = $app->appPath. '/.content/cache/phinx.yaml';
+
+        $this->parseInputArguments();
+    }
+
+    public function parseInputArguments()
+    {
+        $args = $_SERVER['argv'];
+
+        // replace script path with Phinx "binary" path
+        $args[0] = $this->phinxPath;
+
+        // inserts a "-c {$this->configurationPath}" right after a command
+        if (isset($args[1]) && $args[1][0] != '-')
+        {
+            array_splice($args, 2, 0, array('-c ' . $this->configrationPath));
+        }
+
+        $command = implode(' ', $args);
+        print(shell_exec($command));
+    }
+}
+
+framework::runShellApplication('migrations');
