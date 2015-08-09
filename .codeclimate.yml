@@ -5,3 +5,5 @@ languages:
 exclude_paths:
   - "application/index.php"
   - "application/.content/cache"
+  - "lib/modules/cli/application.class.php"
+  - "lib/modules/database.class.php"

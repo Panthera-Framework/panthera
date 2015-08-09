@@ -2,6 +2,7 @@
 /**
  * Panthera Framework interface test cases
  *
+ * @package Panthera\template\tests
  * @author Mateusz Warzyński <lxnmen@gmail.com>
  */
 class InterfaceTest extends PantheraFrameworkTestCase

@@ -20,7 +20,7 @@ before_install:
   - cd lib && composer install --dev
   - cd ..
 
-script: cd application && php ../lib/bin/deploy.php tests/PHPUnitConfigure --coverage --travisci && phpunit -c ./.content/cache/phpunit.xml.dist
+script: cd application && php ../lib/bin/deploy tests/PHPUnitConfigure --coverage --travisci && phpunit -c ./.content/cache/phpunit.xml.dist
 
 after_script:
   - cd ../lib && php vendor/bin/test-reporter
