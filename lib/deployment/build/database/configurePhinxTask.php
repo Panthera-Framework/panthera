@@ -39,7 +39,7 @@ class configurePhinxTask extends task
 
         if ($this->app->database->getDatabaseType() == 'sqlite3')
         {
-            $databaseName = $this->app->database->getDatabasePath();
+            $databaseName = str_replace('.sqlite3', '', realpath($this->app->database->getDatabasePath()));
         }
 
         $config = [
