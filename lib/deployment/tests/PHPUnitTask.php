@@ -1,12 +1,10 @@
 <?php
 namespace Panthera\deployment;
 
-class PHPUnitTask extends \Panthera\deployment\task
+class PHPUnitTask extends task
 {
     /**
      * Execute external unit testing command
-     *
-     * @param \Panthera\cli\deploymentApplication $deployment
      *
      * @author Damian Kęska <damian@pantheraframework.org>
      */
@@ -29,6 +27,6 @@ class PHPUnitTask extends \Panthera\deployment\task
         }
 
         chdir($this->app->appPath. '/../');
-        system("phpunit -c " .$configurationPath);
+        system("phpunit --configuration " .$configurationPath);
     }
 }
