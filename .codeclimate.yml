@@ -12,3 +12,4 @@ exclude_paths:
   - "lib/tests/LocaleTest.php"
   - "lib/tests/LoggingTest.php"
   - "lib/tests/RainTPL4/InterfaceTest.php"
+  - "lib/vendor/*"

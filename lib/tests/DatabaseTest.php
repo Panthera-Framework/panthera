@@ -17,6 +17,6 @@ class DatabaseTest extends PantheraFrameworkTestCase
     {
         $this->setup();
         $query = $this->app->database->select('dbName', array('userName'), array(), array('userName ASC', 'userID DESC'), array('userName', 'count(userId)'));
-        $this->assertEquals('SELECT s1.userName FROM `dbName` as s1  ORDER BY s1.userName ASC, s1.userID DESC GROUP BY s1.userName, count(s1.userId)', $query[0]);
+        $this->assertContains('SELECT s1.userName FROM `dbName` as s1  ORDER BY s1.userName ASC, s1.userID DESC GROUP BY s1.userName, count(s1.userId)', $query[0]);
     }
 }
