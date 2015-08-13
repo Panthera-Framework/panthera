@@ -7,3 +7,4 @@ exclude_paths:
   - "application/.content/cache"
   - "lib/modules/cli/application.class.php"
   - "lib/modules/database.class.php"
+  - "lib/tests"
