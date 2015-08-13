@@ -109,7 +109,7 @@ class locale extends baseClass
             fwrite($fp, '<?php $__list = ' .var_export($this->translationStrings[$domain], true). ';');
             fclose($fp);
 
-            if (function_exists('opcache_compile_file'))
+            if (function_exists('opcache_compile_file') && opcache_get_status()['opcache_enabled'])
             {
                 opcache_compile_file($compiledPath);
             }

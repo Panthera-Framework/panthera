@@ -7,7 +7,7 @@ namespace Panthera\database;
  * @author Damian Kęska <damian@pantheraframework.org>
  * @package Panthera\database\sqlite3
  */
-class SQLite3DatabaseHandler extends \Panthera\database\driver implements databaseHandlerInterface
+class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
 {
     /**
      * PDO object
@@ -50,7 +50,7 @@ class SQLite3DatabaseHandler extends \Panthera\database\driver implements databa
      * Connect to a database
      * Creates a /.content/database.sqlite3 file that will store tables
      *
-     * @throws FileException
+     * @throws \Panthera\FileException
      */
     public function connect()
     {
@@ -100,7 +100,7 @@ class SQLite3DatabaseHandler extends \Panthera\database\driver implements databa
      * @param null|array $values Optional values
      * @param null|array $joins Joined tables
      *
-     * @throws PantheraFrameworkException
+     * @throws \Panthera\PantheraFrameworkException
      * @author Damian Kęska <damian@pantheraframework.org>
      * @return string
      */
@@ -181,7 +181,7 @@ class SQLite3DatabaseHandler extends \Panthera\database\driver implements databa
          *
          * @see \Panthera\database\Pagination
          */
-        if ($limit && $limit instanceOf \Panthera\database\Pagination)
+        if ($limit && $limit instanceOf Pagination)
         {
             $limit = $limit->getSQLData();
             $query .= ' LIMIT ' .$limit[1]. ' OFFSET ' .$limit[0]. ' ';
