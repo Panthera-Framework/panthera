@@ -106,19 +106,6 @@ class PHPUnitConfigureTask extends \Panthera\deployment\task
         // paths to test suites
         $testsuites = $xml->addChild('testsuites');
 
-        // it does not matter which test is found, we execute them all, so directory should point to /lib/tests/
-        //      and not /lib/tests/aCategory , where category is for instance `RainTPL4`.
-
-        /*foreach ($this->deployApp->indexService->libIndex as $path => $files)
-        {
-            if (strpos($path, 'lib/tests/') === 0)
-            {
-                $libSuite = $testsuites->addChild('testsuite');
-                $libSuite->addAttribute('name', 'Panthera Framework 2 / ' .basename($path));
-                $libSuite->addChild('directory', PANTHERA_FRAMEWORK_PATH. '/' .$path);
-            }
-        }*/
-
         $libSuite = $testsuites->addChild('testsuite');
         $libSuite->addAttribute('name', 'Panthera Framework 2');
         $libSuite->addChild('directory', PANTHERA_FRAMEWORK_PATH. '/tests');
