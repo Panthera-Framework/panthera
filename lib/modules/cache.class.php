@@ -79,7 +79,7 @@ interface cacheInterface
     public function get($variable);
     public function set($variable, $value, $expirationTime = 60);
     public function delete($variable);
-    public function exists($vairalbe);
+    public function exists($variable);
     public function clear($maxTime = 86400);
     public function setup();
 }
