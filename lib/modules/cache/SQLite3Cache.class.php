@@ -62,7 +62,7 @@ class SQLite3Cache extends baseClass implements cacheInterface
      * @author Damian Kęska <damian@pantheraframework.org>
      * @return bool
      */
-    public function set($variable, $value, $expiration = 60)
+    public function set($variable, $value, $expiration = 3600)
     {
         $expiration += time();
         list($type, $value) = $this->getDataType($value);
