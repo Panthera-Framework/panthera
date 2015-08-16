@@ -21,6 +21,25 @@ class DatabaseTest extends PantheraFrameworkTestCase
     }
 
     /**
+     * Test building select query with OOP
+     *
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     */
+    public function testBuildingSelectQuery2()
+    {
+        $this->setup();
+        $select = new \Panthera\database\select('testTable');
+        $select->what = array(
+            'testKey1',
+            'testKey2',
+        );
+
+        $response = $select->execute();
+
+        $this->assertContains("testKey2 FROM `testTable` as ", $response[0]);
+    }
+
+    /**
      * Test creating where condition query
      *
      * @author Mateusz Warzyński <lxnmen@gmail.com>
@@ -41,5 +60,18 @@ class DatabaseTest extends PantheraFrameworkTestCase
     {
         $this->setup();
         $this->assertSame("JOIN group ON ( test = .testValue ) ", $this->app->database->parseJoinConditionBlock(array("JOIN|group" => array("|=|test" => 'testValue')), null));
+    }
+
+    public function testPagination()
+    {
+        $this->setup();
+
+        $select = new \Panthera\database\select('testTable');
+        $select->what = array('testKey');
+        $select->limit = new \Panthera\database\Pagination(5, 3);
+
+        $response = $select->execute();
+
+        $this->assertContains("LIMIT 5 OFFSET 10", $response[0]);
     }
 }
