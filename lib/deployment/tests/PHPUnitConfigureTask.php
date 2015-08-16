@@ -90,15 +90,18 @@ class PHPUnitConfigureTask extends \Panthera\deployment\task
         // blacklist
         $blacklist = $filter->addChild('blacklist');
 
-        $directory = $blacklist->addChild('directory', $this->app->libPath. "/tests/");
-        $directory->addAttribute('suffix', '.php');
+        $directoryBlacklist = $blacklist->addChild('directory', $this->app->libPath. "/tests/");
+        $directoryBlacklist->addAttribute('suffix', '.php');
+
+        $directoryBlacklist2 = $blacklist->addChild('directory', $this->app->libPath. "/vendor/");
+        $directoryBlacklist2->addAttribute('suffix', '.php');
 
         // whitelist
         $whitelist = $filter->addChild('whitelist');
         $whitelist->addAttribute('processUncoveredFilesFromWhitelist', 'true');
 
-        $directory = $whitelist->addChild('directory', $this->app->libPath. '/');
-        $directory->addAttribute('suffix', '.php');
+        $directoryWhitelist = $whitelist->addChild('directory', $this->app->libPath. '/');
+        $directoryWhitelist->addAttribute('suffix', '.php');
 
         return $xml;
     }
