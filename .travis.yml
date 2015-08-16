@@ -4,12 +4,10 @@ php:
   - 5.5
   - 5.6
   - 7.0
-  - hhvm
 
 matrix:
   fast_finish: true
   allow_failures:
-    - php: hhvm
     - php: 7.0
 
 addons:
@@ -20,7 +18,7 @@ before_install:
   - cd lib && composer install --dev
   - cd ..
 
-script: cd application && chmod 755 .content/cache/translations && php ../lib/bin/deploy tests/PHPUnitConfigure --coverage --travisci && phpunit -c ./.content/cache/phpunit.xml.dist
+script: cd application && php ../lib/bin/deploy tests/PHPUnitConfigure --coverage --travisci && phpunit -c ./.content/cache/phpunit.xml.dist
 
 after_script:
   - cd ../lib && php vendor/bin/test-reporter

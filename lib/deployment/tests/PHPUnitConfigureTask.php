@@ -77,6 +77,24 @@ class PHPUnitConfigureTask extends \Panthera\deployment\task
     }
 
     /**
+     * Add blacklist for test files to improve test coverage percent
+     *
+     * @param \SimpleXMLElement $xml
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     * @return \SimpleXMLElement
+     */
+    public function blacklistFiles($xml)
+    {
+        $filter = $xml->addChild('filter');
+        $blacklist = $filter->addChild('blacklist');
+
+        $directory = $blacklist->addChild('directory', $this->app->libPath. "/tests/");
+        $directory->addAttribute('suffix', '.php');
+
+        return $xml;
+    }
+
+    /**
      * This method will be executed after task will be verified by deployment management
      *
      * @throws \Panthera\FileNotFoundException
@@ -100,8 +118,9 @@ class PHPUnitConfigureTask extends \Panthera\deployment\task
         // add bootstrap
         $xml->addAttribute('bootstrap', $this->app->getPath('/modules/tests/phpunit.bootstrap.php'));
 
-        // add logging
+        // add logging and blacklist files
         $xml = $this->addLogging($xml);
+        $xml = $this->blacklistFiles($xml);
 
         // paths to test suites
         $testsuites = $xml->addChild('testsuites');
