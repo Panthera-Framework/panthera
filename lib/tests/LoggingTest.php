@@ -21,4 +21,35 @@ class LoggingTest extends PantheraFrameworkTestCase
         $this->app->logging->enabled = true;
         $this->assertEquals('testMessage', $this->app->logging->output('testMessage'));
     }
+
+    /**
+     * Test working clear() function
+     *
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     * @return void
+     */
+    public function testClear()
+    {
+        $this->setup();
+        $this->app->logging->enabled = true;
+        $this->app->logging->output('testMessage');
+        $this->app->logging->clear();
+        $this->assertSame(array(), $this->app->logging->messages);
+    }
+
+    /**
+     * Check if enabling logging works
+     *
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     * @return void
+     */
+    public function testEnabled()
+    {
+        $this->setup();
+        $this->app->logging->enabled = false;
+        $this->app->logging->output('testMessage');
+        $this->assertSame(array(), $this->app->logging->messages);
+    }
+
+
 }

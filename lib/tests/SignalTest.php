@@ -30,6 +30,8 @@ class SignalsTest extends PantheraFrameworkTestCase
         $this->setup();
         $this->app->logging->enabled = true;
         $this->app->logging->output("Signals test.");
+
+        $this->app->signals->attach("clearLogging", array($this->app->logging, 'clear'));
         $this->app->signals->execute("clearLogging");
 
         $this->assertSame(array(), $this->app->logging->messages);

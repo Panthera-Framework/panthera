@@ -18,6 +18,7 @@ class CacheTest extends PantheraFrameworkTestCase
         $this->setup();
         $this->app->cache->set('test', 'testValue', 5);
         $this->assertEquals('testValue', $this->app->cache->get('test'));
+        $this->app->cache->delete('test');
     }
 
     /**
@@ -31,6 +32,7 @@ class CacheTest extends PantheraFrameworkTestCase
         $testVariable = array(array('testValue1'), 'testValue2');
         $this->app->cache->set('test', $testVariable);
         $this->assertSame($testVariable, $this->app->cache->get('test'));
+        $this->app->cache->delete('test');
     }
 
     /**
@@ -43,6 +45,7 @@ class CacheTest extends PantheraFrameworkTestCase
         $this->setup();
         $this->app->cache->set('testExisting', true, 5);
         $this->assertTrue($this->app->cache->exists('testExisting'));
+        $this->app->cache->delete('testExisting');
     }
 
     /**

@@ -5,7 +5,7 @@
  * @package Panthera\template\tests
  * @author Mateusz Warzyński <lxnmen@gmail.com>
  */
-class InterfaceTest extends PantheraFrameworkTestCase
+class RainInterfaceTest extends PantheraFrameworkTestCase
 {
     /**
      * Check assigning variables

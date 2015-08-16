@@ -19,4 +19,16 @@ class LocaleTest extends PantheraFrameworkTestCase
         $this->app->locale->activeLanguage = 'pl';
         $this->assertEquals('Widok dewelopera', $this->app->locale->get('Developer view', 'dashboard'));
     }
+
+    /**
+     * Test getting unknown translation
+     *
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     * @return void
+     */
+    public function testGetUnknownTranslation()
+    {
+        $this->setup();
+        $this->assertEquals('qwertyTestUnknown', $this->app->locale->get('qwertyTestUnknown', 'dashboard'));
+    }
 }
