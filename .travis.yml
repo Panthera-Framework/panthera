@@ -22,3 +22,6 @@ script: cd application && php ../lib/bin/deploy tests/PHPUnitConfigure --coverag
 
 after_script:
   - cd ../lib && php vendor/bin/test-reporter
+
+notifications:
+  email: false
