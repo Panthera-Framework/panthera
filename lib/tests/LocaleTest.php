@@ -29,6 +29,7 @@ class LocaleTest extends PantheraFrameworkTestCase
     public function testGetUnknownTranslation()
     {
         $this->setup();
+        $this->setExpectedException('\Panthera\FileNotFoundException');
         $this->app->locale->activeLanguage = 'unknown';
         $this->assertEquals('qwertyTestUnknown', $this->app->locale->get('qwertyTestUnknown', 'dashboard'));
     }
