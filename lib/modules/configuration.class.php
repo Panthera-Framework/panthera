@@ -54,7 +54,7 @@ class configuration
      */
     public function set($key, $value)
     {
-        if (isset($this->data[$key]) && $this->data[$key] !== $value)
+        if ((isset($this->data[$key]) && $this->data[$key] !== $value) || !isset($this->data[$key]))
         {
             $this->modifiedElements[$key] = microtime(true);
         }
