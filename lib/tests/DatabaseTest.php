@@ -62,6 +62,11 @@ class DatabaseTest extends PantheraFrameworkTestCase
         $this->assertSame("JOIN group ON ( test = .testValue ) ", $this->app->database->parseJoinConditionBlock(array("JOIN|group" => array("|=|test" => 'testValue')), null));
     }
 
+    /**
+     * Test pagination with select query
+     *
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     */
     public function testPagination()
     {
         $this->setup();

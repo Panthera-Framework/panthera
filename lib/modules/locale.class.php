@@ -170,7 +170,10 @@ class locale extends baseClass
         foreach ($newLinesArray as &$line)
         {
             $line = str_getcsv($line);
-            $translations[$line[0]] = $line[1];
+            if ($line[0] !== null)
+            {
+                $translations[$line[0]] = $line[1];
+            }
         }
 
         return $translations;
