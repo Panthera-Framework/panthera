@@ -84,4 +84,15 @@ class CacheTest extends PantheraFrameworkTestCase
         $this->app->cache->clear(0);
         $this->assertNull($this->app->cache->get('test'));
     }
+
+    /**
+     * Test getCache() function
+     *
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     */
+    public function testGetInstance()
+    {
+        $this->setup();
+        $this->assertSame($this->app->cache, \Panthera\cache::getCache());
+    }
 }
