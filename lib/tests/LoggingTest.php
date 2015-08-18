@@ -17,9 +17,11 @@ class LoggingTest extends PantheraFrameworkTestCase
     {
         $this->setup();
         $this->app->logging->dateFormat = '';
+        $validFormat = $this->app->logging->format;
         $this->app->logging->format = '%message';
         $this->app->logging->enabled = true;
         $this->assertEquals('testMessage', $this->app->logging->output('testMessage'));
+        $this->app->logging->format = $validFormat;
     }
 
     /**
@@ -51,5 +53,17 @@ class LoggingTest extends PantheraFrameworkTestCase
         $this->assertSame(array(), $this->app->logging->messages);
     }
 
-
+    /**
+     * Test timer
+     *
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     * @return void
+     */
+    public function testTimer()
+    {
+        $this->setup();
+        $this->app->logging->enabled = true;
+        $this->app->logging->startTimer();
+        $this->assertContains('E-', $this->app->logging->output('testMessage'));
+    }
 }
