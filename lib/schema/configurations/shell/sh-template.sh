@@ -9,7 +9,7 @@
 export PF2_PATH="{$FRAMEWORK_PATH$}"
 export APP_PATH="{$APP_PATH$}"
 export PATH="$PATH:{$FRAMEWORK_PATH$}/bin/:{$APP_PATH$}/.content/bin/"
-export PS1="[\$(tput setaf 3)\u\$(tput sgr0)|{$PROJECT_NAME$}| \$(tput setaf 2)\W\$(tput sgr0)]\$ "
+export PS1="[\$(tput setaf 3)\u\$(tput sgr0)|{$PROJECT_NAME$}|\$(tput setaf 2)\W\$(tput sgr0)]\$ "
 
 # aliases
 reload()
