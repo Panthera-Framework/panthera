@@ -2,7 +2,7 @@
 /**
  * Panthera Framework 2 bootstrap
  *
- * @package Panthera
+ * @package Panthera\bootstrap
  * @author Damian Kęska <damian@pantheraframework.org>
  */
 
@@ -13,10 +13,13 @@ define('PANTHERA_FRAMEWORK_PATH', __DIR__);
  * Detect application path
  */
 $bTrace = debug_backtrace(false, 4);
+
 if (array_key_exists('file', $bTrace[count($bTrace)-1]))
 {
     $controllerPath = $bTrace[count($bTrace)-1]['file'];
-} else {
+}
+else
+{
     $controllerPath = "";
 }
 
@@ -26,11 +29,18 @@ if (strpos($controllerPath, 'vendor/phpunit/phpunit') !== false)
     $controllerPath = realpath(__DIR__. "/../application/");
 }
 
-// support for CLI applications runned from Panthera Framework "/bin" directory
+// support for CLI applications ran from Panthera Framework's "/bin" directory
 if (strtolower(PHP_SAPI) == 'cli' && strpos($controllerPath, __DIR__. '/bin/') === 0)
 {
-    $controllerPath = getcwd(). '/index.php';
-    require_once getcwd(). '/.content/app.php';
+    $cwd = getcwd();
+
+    if (isset($_SERVER['APP_PATH']))
+    {
+        $cwd = $_SERVER['APP_PATH'];
+    }
+
+    $controllerPath = $cwd. '/index.php';
+    require_once $cwd. '/.content/app.php';
 }
 
 // in case of PHPUnit test we must change $controllerPath to appPath

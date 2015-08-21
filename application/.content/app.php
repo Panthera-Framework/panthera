@@ -5,8 +5,8 @@
  * @author Damian Kęska <damian@pantheraframework.org>
  */
 
-$defaultConfig = array(
-    'database' => array(
+$defaultConfig = [
+    'database' => [
         'type' => 'sqlite3',
         'name' => 'database',
 
@@ -18,8 +18,14 @@ $defaultConfig = array(
         // read-only user
         'readOnlyUser' => null,
         'readOnlyPassword' => null,
-    ),
-);
+    ],
+
+    'application' => [
+        'name'          => 'Empty application',
+        'repository'    => 'http://localhost/application/repository',
+        'repositoryKey' => 'xxx',
+    ]
+];
 
 // if defined PHPUnit, initialize Panthera Framework 2 once again for test purposes
 require_once __DIR__ . '/../../lib/init.php';
