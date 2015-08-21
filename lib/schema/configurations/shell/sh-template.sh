@@ -1,4 +1,4 @@
-#!/bin/{$SH$}
+#!/bin/{$SH$} --init-file
 
 ######################################################
 # Panthera Framework 2 shell configuration file

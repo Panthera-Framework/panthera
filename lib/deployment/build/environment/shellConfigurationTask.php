@@ -50,11 +50,11 @@ class shellConfigurationTask extends task
         $this->output("# chmod +x " .$this->shellBinFile);
         system("chmod +x " .$this->shellBinFile);
 
-        $this->output("Please type source \"" .$this->shellBinFile. "\" in a shell to start a new session for your project");
+        $this->output("Please type \"" .$this->shellBinFile. "\" in a shell to start a new session for your project");
 
         if (in_array('--run', $_SERVER['argv']))
         {
-            system("source " .$this->shellBinFile);
+            system($this->shellBinFile);
         }
 
         return is_file($this->shellBinFile) && (file_get_contents($this->shellBinFile) == $this->template);
