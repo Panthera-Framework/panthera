@@ -22,6 +22,13 @@ reload()
     fi
 }
 
+# psysh/php_shell
+psysh()
+{
+    goto_app
+    "$PF2_PATH/vendor/bin/psysh" "$PF2_PATH/init.php"
+}
+
 goto_app()
 {
     cd "$APP_PATH"
@@ -40,7 +47,7 @@ commands()
     echo ""
     echo "$(tput setaf 2)Panthera Framework 2 builtin commands:$(tput setaf 3)"
     ls {$FRAMEWORK_PATH$}/bin/
-    echo "reload goto_app goto_fw welcome commands"
+    echo "reload goto_app goto_fw welcome commands psysh"
     echo "$(tput sgr0)"
 }
 

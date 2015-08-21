@@ -30,7 +30,7 @@ if (strpos($controllerPath, 'vendor/phpunit/phpunit') !== false)
 }
 
 // support for CLI applications ran from Panthera Framework's "/bin" directory
-if (strtolower(PHP_SAPI) == 'cli' && strpos($controllerPath, __DIR__. '/bin/') === 0)
+if (strtolower(PHP_SAPI) == 'cli' && (strpos($controllerPath, __DIR__. '/bin/') === 0 || isset($_SERVER['APP_PATH'])))
 {
     $cwd = getcwd();
 
@@ -39,8 +39,8 @@ if (strtolower(PHP_SAPI) == 'cli' && strpos($controllerPath, __DIR__. '/bin/') =
         $cwd = $_SERVER['APP_PATH'];
     }
 
-    $controllerPath = $cwd. '/index.php';
-    require_once $cwd. '/.content/app.php';
+    $controllerPath = getcwd(). '/index.php';
+    require_once getcwd(). '/.content/app.php';
 }
 
 // in case of PHPUnit test we must change $controllerPath to appPath
