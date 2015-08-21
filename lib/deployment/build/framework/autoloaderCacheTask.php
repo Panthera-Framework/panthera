@@ -1,12 +1,12 @@
 <?php
 namespace Panthera\deployment;
-require_once PANTHERA_FRAMEWORK_PATH. '/vendor/autoload.php';
+require_once PANTHERA_FRAMEWORK_PATH . '/vendor/autoload.php';
 
 /**
  * This task would index all classes, so the framework's autoloader could know which file to load on demand
  *
  * @author Damian Kęska <damian@pantheraframework.org>
- * @package Panthera\deployment\framework
+ * @package Panthera\deployment\build\framework
  */
 class autoloaderCacheTask extends task
 {

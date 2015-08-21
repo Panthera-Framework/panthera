@@ -42,6 +42,11 @@ class migrationsApplication extends application
         $this->parseInputArguments();
     }
 
+    /**
+     * Take input arguments and pass to phinx, adding a configuration option smartly
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
     public function parseInputArguments()
     {
         $args = $_SERVER['argv'];

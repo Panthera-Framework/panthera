@@ -72,6 +72,7 @@ abstract class ORMBaseObject extends \Panthera\baseClass
 
 		if (is_int($data))
 		{
+            // @todo: Implement me
 			self::selectObjectById($data);
 		} else {
 			$this->remapDatabaseResult($data);

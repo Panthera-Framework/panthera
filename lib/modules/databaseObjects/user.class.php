@@ -40,4 +40,25 @@ class user extends \Panthera\database\ORMBaseObject
      * @var string
      */
     public $userPassword    = null;
+
+    /**
+     * @orm
+     * @column user_email
+     * @var string
+     */
+    public $userEmail        = null;
+
+    /**
+     * @orm timestampOnCreate
+     * @column user_created
+     * @var string
+     */
+    public $userCreated      = null;
+
+    /**
+     * @orm timestampOnUpdate
+     * @column user_updated
+     * @var string
+     */
+    public $userUpdated      = null;
 }
