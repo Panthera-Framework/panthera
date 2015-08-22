@@ -39,8 +39,8 @@ if (strtolower(PHP_SAPI) == 'cli' && (strpos($controllerPath, __DIR__. '/bin/') 
         $cwd = $_SERVER['APP_PATH'];
     }
 
-    $controllerPath = getcwd(). '/index.php';
-    require_once getcwd(). '/.content/app.php';
+    $controllerPath = $cwd. '/index.php';
+    require_once $cwd. '/.content/app.php';
 }
 
 // in case of PHPUnit test we must change $controllerPath to appPath
