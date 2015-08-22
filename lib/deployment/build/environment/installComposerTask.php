@@ -17,6 +17,12 @@ class installComposerTask extends task
      */
     public function execute()
     {
+        // create a /bin directory in application
+        if (!is_dir($this->app->appPath. "/.content/bin/"))
+        {
+            mkdir($this->app->appPath. "/.content/bin/");
+        }
+
         // install a new copy of composer if not installed yet
         if (!is_file($this->app->appPath. "/.content/bin/composer"))
         {
