@@ -5,7 +5,6 @@
  * @package Panthera\ORM\tests
  * @author Damian Kęska <damian@pantheraframework.org>
  */
-
 class ModelTest extends PantheraFrameworkTestCase
 {
     public function testObjectFetchingById()
