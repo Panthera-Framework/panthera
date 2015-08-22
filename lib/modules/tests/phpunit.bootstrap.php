@@ -53,7 +53,7 @@ class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
         $databaseConfiguration['type'] = 'sqlite3';
         $this->app->config->set('database', $databaseConfiguration);
 
-        $this->app->database = Panthera\database\driver::getDatabaseInstance('SQLite3');
+        $this->app->database = Panthera\database\driver::getInstance('SQLite3');
         $this->temporaryDatabaseName = $this->app->database->getDatabasePath();
 
         if (!$withoutMigrations)

@@ -12,15 +12,12 @@ define('PANTHERA_FRAMEWORK_PATH', __DIR__);
 /**
  * Detect application path
  */
+$controllerPath = '';
 $bTrace = debug_backtrace(false, 4);
 
 if (array_key_exists('file', $bTrace[count($bTrace)-1]))
 {
     $controllerPath = $bTrace[count($bTrace)-1]['file'];
-}
-else
-{
-    $controllerPath = "";
 }
 
 // PHPUnit, change $controllerPath to application directory to make Panthera Framework 2 usable
@@ -78,5 +75,6 @@ if (!isset($defaultConfig))
     throw new Panthera\InvalidConfigurationException('Cannot find $defaultConfig variable', 1);
 }
 
-$app = new Panthera\framework($controllerPath);
+$app = Panthera\framework::getInstance();
+$app->setup($controllerPath);
 $app->configure($defaultConfig);

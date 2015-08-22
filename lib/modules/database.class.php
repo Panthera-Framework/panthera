@@ -1,48 +1,76 @@
 <?php
 namespace Panthera\database;
+use Panthera\coreSingleton;
 
-class driver extends \Panthera\baseClass
+/**
+ * Abstract driver class
+ *
+ * Note: It's not PHP's 'abstract class' because of a singleton
+ *
+ * @package Panthera\database
+ */
+class driver extends coreSingleton
 {
-    public static $object = null;
+    /**
+     * Directory where drivers/handlers are stored
+     *
+     * @var string
+     */
+    protected static $singletonPath   = 'modules/databaseHandlers/';
 
+    /**
+     * Class name suffix
+     *
+     * @var string
+     */
+    protected static $singletonClassSuffix = 'DatabaseHandler';
+
+    /**
+     * Namespace
+     *
+     * @var string
+     */
+    protected static $singletonClassNamespace = '\\Panthera\\database\\';
+
+    /**
+     * Required interface
+     *
+     * @var string|null
+     */
+    protected static $singletonInterface = 'Panthera\\database\\databaseHandlerInterface';
+
+    /**
+     * Configuration key that specifies default choice
+     *
+     * @var string
+     */
+    protected static $singletonTypeConfigKey = 'database.type';
+
+    /**
+     * Default configuration value
+     *
+     * @var string
+     */
+    protected static $singletonTypeConfigKeyDefault = 'SQLite3';
+
+    /**
+     * SQL functions mapped into universal names for translation
+     *
+     * @var array
+     */
     public $functions = array(
 
     );
 
     /**
-     * Get database driver singleton instance
+     * Action performed right after creating a first instance of object
      *
-     * @param string $databaseType Database handler name
-     * @param bool|false $force Force create new object, or use existing
-     *
-     * @throws \Panthera\FileNotFoundException
-     * @throws \Panthera\PantheraFrameworkException
-     *
+     * @param object $object
      * @author Damian Kęska <damian@pantheraframework.org>
-     * @return object
      */
-    public static function getDatabaseInstance($databaseType, $force = false)
+    public static function constructInstance($object)
     {
-        if (is_object(self::$object) && !$force)
-        {
-            return self::$object;
-        }
-
-        $framework = \Panthera\framework::getInstance();
-        $path = $framework->getPath('modules/databaseHandlers/' .$databaseType. 'DatabaseHandler.class.php');
-        $className = '\\Panthera\\database\\' .$databaseType. 'DatabaseHandler';
-
-        require_once $path;
-
-        if (!in_array('Panthera\database\databaseHandlerInterface', class_implements($className)))
-        {
-            throw new \Panthera\PantheraFrameworkException('Database handler "' .$className. '" have to implement "databaseHandlerInterface" interface', 'FW_INVALID_DRIVER');
-        }
-
-        self::$object = new $className;
-        self::$object->connect();
-
-        return self::$object;
+        $object->connect();
     }
 
     /**
@@ -73,10 +101,9 @@ class driver extends \Panthera\baseClass
      * @param string|null $columnNamePrefix Optional prefix to add to every column name (in case column don't have any)
      * @param bool $isJoin Is this a where condition for JOIN clause?
      *
-     * @throws PantheraFrameworkException
+     * @throws \Panthera\PantheraFrameworkException
      * @return array
      */
-
     public function parseWhereConditionBlock($whereCondition, $columnNamePrefix = null, $isJoin = false)
     {
         $output = '';
@@ -325,7 +352,7 @@ class driver extends \Panthera\baseClass
 }
 
 /**
- * A wrapper for creating SELECT database queries
+ * A objective wrapper for creating SELECT database queries
  *
  * @package Panthera\database
  * @author Damian Kęska <damian@pantheraframework.org>

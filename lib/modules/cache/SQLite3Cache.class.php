@@ -1,5 +1,5 @@
 <?php
-namespace Panthera;
+namespace Panthera\cache;
 
 /**
  * Panthera Framework 2
@@ -7,7 +7,7 @@ namespace Panthera;
  *
  * @package Panthera\cache
  */
-class SQLite3Cache extends baseClass implements cacheInterface
+class SQLite3Cache extends \Panthera\baseClass implements cacheInterface
 {
     /**
      * @const int typeSerialized Value of pf2_simple_cache.type that means we have serialized data in a row

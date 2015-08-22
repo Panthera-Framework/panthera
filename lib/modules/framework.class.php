@@ -1,12 +1,11 @@
 <?php
 namespace Panthera;
 require __DIR__. '/BaseExceptions.php';
-require __DIR__. '/database.class.php';
 
 /**
  * Abstract Panthera class with Panthera object stored in $this->app
  *
- * @package Panthera
+ * @package Panthera\modules\core
  * @author Damian Kęska
  */
 abstract class baseClass
@@ -26,7 +25,7 @@ abstract class baseClass
      *
      * @return null|baseClass
      */
-    public function getInstance()
+    public static function getInstance()
     {
         return self::$instance;
     }
@@ -155,7 +154,7 @@ function __pantheraAutoloader($class)
 /**
  * Panthera Framework 2 Core Library
  *
- * @package Panthera
+ * @package Panthera\modules\core
  * @author Damian Kęska <damian@pantheraframework.org>
  */
 class framework
@@ -186,7 +185,7 @@ class framework
     public $database = null;
 
     /**
-     * @var \Panthera\cache $cache
+     * @var \Panthera\cache\cache $cache
      */
     public $cache = null;
 
@@ -239,18 +238,25 @@ class framework
 
     /**
      * Constructor
-     * Pre-builds all base objects
-     *
-     * @param string $controllerPath Path to controller that constructed this method
      *
      * @author Damian Kęska <webnull.www@gmail.com>
      * @author Mateusz Warzyński <lxnmen@gmail.com>
      */
-    public function __construct($controllerPath)
+    public function __construct()
     {
-        // setup base settings, like the place where we are
-        self::$instance = $this;
+        // dummy
+    }
 
+    /**
+     * Pre-builds all base objects
+     *
+     * @param string $controllerPath Path to controller that constructed this method
+     *
+     * @throws InvalidConfigurationException
+     * @throws PantheraFrameworkException
+     */
+    public function setup($controllerPath)
+    {
         $this->appPath = pathinfo($controllerPath, PATHINFO_DIRNAME). '/';
         $this->libPath = realpath(__DIR__. '/../');
         $this->frameworkPath = realpath(__DIR__. '/../');
@@ -261,8 +267,8 @@ class framework
         $this->signals  = new signals;
         $this->config   = new configuration;
         $this->logging  = new logging;
-        $this->cache    = cache::getCache();
-        $this->database = database\driver::getDatabaseInstance($this->config->get('database.type', 'SQLite3'));
+        $this->cache    = cache\cache::getInstance();
+        $this->database = database\driver::getInstance();
         $this->locale   = new locale;
         $this->template = new template;
         //$this->routing  = new \Panthera\routing;
@@ -321,6 +327,11 @@ class framework
      */
     public static function getInstance()
     {
+        if (!self::$instance)
+        {
+            self::$instance = new framework;
+        }
+
         return self::$instance;
     }
 
