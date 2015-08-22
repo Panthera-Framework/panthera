@@ -4,7 +4,7 @@ use Phinx\Migration\AbstractMigration;
 /**
  * Class UsersTable
  *
- * @author Damian Kęska <damian.keska@fingo.pl>
+ * @author Damian Kęska <damian@pantheraframework.org>
  * @package Panthera\modules\usersManagement\migrations
  */
 class UsersTable extends AbstractMigration

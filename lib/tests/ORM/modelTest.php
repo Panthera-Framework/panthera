@@ -3,7 +3,7 @@
  * PF2 ORM tests
  *
  * @package Panthera\ORM\tests
- * @author Damian Kęska <damian.keska@fingo.pl>
+ * @author Damian Kęska <damian@pantheraframework.org>
  */
 
 class ModelTest extends PantheraFrameworkTestCase

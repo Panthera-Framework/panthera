@@ -222,7 +222,7 @@ class driver extends coreSingleton
      * @param array $joins List of joined tables
      * @param string $mainTable
      *
-     * @author Damian Kęska <damian.keska@fingo.pl>
+     * @author Damian Kęska <damian@pantheraframework.org>
      * @return string
      */
     public function parseJoinConditionBlock(array $joins, $mainTable)
