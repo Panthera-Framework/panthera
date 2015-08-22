@@ -32,7 +32,7 @@ cd ../application/
 ../lib/bin/deploy build/environment/developer
 
 # enter application's shell
-./content/bin/shell
+./.content/bin/shell
 ```
 
 ![screenshot](http://oi59.tinypic.com/2mypxr5.jpg)
