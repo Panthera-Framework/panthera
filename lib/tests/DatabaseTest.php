@@ -16,7 +16,7 @@ class DatabaseTest extends PantheraFrameworkTestCase
     public function testBuildingSelectQuery()
     {
         $this->setup();
-        $query = $this->app->database->select('dbName', array('userName'), array(), array('userName ASC', 'userID DESC'), array('userName', 'count(userId)'));
+        $query = $this->app->database->select('dbName', array('userName'), array(), array('userName ASC', 'userID DESC'), array('userName', 'count(userId)'), null, null, null, false);
         $this->assertContains('SELECT s1.userName FROM `dbName` as s1  ORDER BY s1.userName ASC, s1.userID DESC GROUP BY s1.userName, count(s1.userId)', $query[0]);
     }
 
@@ -34,7 +34,7 @@ class DatabaseTest extends PantheraFrameworkTestCase
             'testKey2',
         );
 
-        $response = $select->execute();
+        $response = $select->execute(false);
 
         $this->assertContains("testKey2 FROM `testTable` as ", $response[0]);
     }
@@ -75,7 +75,7 @@ class DatabaseTest extends PantheraFrameworkTestCase
         $select->what = array('testKey');
         $select->limit = new \Panthera\database\Pagination(5, 3);
 
-        $response = $select->execute();
+        $response = $select->execute(false);
 
         $this->assertContains("LIMIT 5 OFFSET 10", $response[0]);
     }

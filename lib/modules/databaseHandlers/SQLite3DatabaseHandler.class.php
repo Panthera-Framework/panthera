@@ -1,5 +1,6 @@
 <?php
 namespace Panthera\database;
+use Panthera\PantheraFrameworkException;
 
 /**
  * SQLite3 database handler for Panthera Framework 2
@@ -80,7 +81,7 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
      */
     public function commit()
     {
-        $this->socket->commit();
+        $this->socket->beginTransaction();
     }
 
     /**
@@ -119,12 +120,13 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
      * @param null|Pagination $limit
      * @param null|array $values Optional values
      * @param null|array $joins Joined tables
+     * @param null|bool $execute Execute query or just return generated query and values
      *
      * @throws \Panthera\PantheraFrameworkException
      * @author Damian Kęska <damian@pantheraframework.org>
      * @return string
      */
-    public function select($tableName, $what = null, $where = null, $order = null, $group = null, $limit = null, $values = array(), $joins = array())
+    public function select($tableName, $what = null, $where = null, $order = null, $group = null, $limit = null, $values = array(), $joins = array(), $execute = true)
     {
         $query = 'SELECT ';
 
@@ -207,6 +209,11 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
             $query .= ' LIMIT ' .$limit[1]. ' OFFSET ' .$limit[0]. ' ';
         }
 
+        if ($execute)
+        {
+            return $this->query($query, $values);
+        }
+
         return array($query, $values);
     }
 
@@ -216,21 +223,34 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
      * @param string $query
      * @param array $values
      *
+     * @throws PantheraFrameworkException
      * @author Damian Kęska <damian@pantheraframework.org>
      * @return array
      */
-    public function query($query, $values)
+    public function query($query, $values = array())
     {
+        $this->app->logging->output('Executing query ' .$query, 'debug');
         $sth = $this->socket->prepare($query);
 
-        foreach ($values as $k => $v)
+        if (is_array($values) && $values)
         {
-            $sth->bindParam(':' .$k, $v);
+            foreach ($values as $k => $v)
+            {
+                $sth->bindParam(':' . $k, $v);
+            }
         }
 
-        $sth->execute();
-        $fetch = $sth->fetchAll(\PDO::FETCH_ASSOC);
-        $sth->closeCursor();
+        try
+        {
+            $sth->execute();
+            $fetch = $sth->fetchAll(\PDO::FETCH_ASSOC);
+            $sth->closeCursor();
+        }
+        catch (\PDOException $e)
+        {
+            $this->app->logging->output('Got a PDO exception ' .serialize($e), 'debug');
+            throw new PantheraFrameworkException('Got a PDO exception: ' .$e->getMessage(). ', SQL: ' .$query, 'FW_DATABASE_QUERY_FAILED');
+        }
 
         return $fetch;
     }

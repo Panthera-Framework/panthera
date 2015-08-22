@@ -10,184 +10,210 @@ use Panthera\framework;
  */
 abstract class ORMBaseObject extends \Panthera\baseClass
 {
-	/**
-	 * Table name
-	 *
-	 * @var string
-	 */
-	protected static $__orm_Table = '';
+    /**
+     * Table name
+     *
+     * @var string
+     */
+    protected static $__orm_Table = '';
 
-	/**
-	 * What to select
-	 *
-	 * @var string|array
-	 */
-	protected static $__orm_What = '*';
+    /**
+     * What to select
+     *
+     * @var string|array
+     */
+    protected static $__orm_What = '*';
 
-	/**
-	 * Order by statement
-	 *
-	 * @var string
-	 */
-	protected static $__orm_Order = '';
+    /**
+     * Order by statement
+     *
+     * @var string
+     */
+    protected static $__orm_Order = '';
 
-	/**
-	 * Group by statement
-	 *
-	 * @var array
-	 */
-	protected static $__orm_Group = '';
+    /**
+     * Group by statement
+     *
+     * @var array
+     */
+    protected static $__orm_Group = '';
 
-	/**
-	 * Joined tables
-	 *
-	 * @var null|array
-	 */
-	protected static $__orm_Joins = null;
+    /**
+     * Joined tables
+     *
+     * @var null|array
+     */
+    protected static $__orm_Joins = null;
 
-	/**
-	 * Id column - table specific
-	 *
-	 * @var string
-	 */
-	protected static $__orm_IdColumn = 'id';
+    /**
+     * Id column - table specific
+     *
+     * @var string
+     */
+    protected static $__orm_IdColumn = 'id';
 
-	/**
-	 * Internal cache for columns mapping
-	 *
-	 * @var array
-	 */
-	private $__orm__meta__mapping = [];
+    /**
+     * Internal cache for columns mapping
+     *
+     * @var array
+     */
+    private $__orm__meta__mapping = [];
 
-	/**
-	 * Construct object by results from database
-	 *
-	 * @param array|int $data Result set of a SQL query or an object id
-	 * @author Damian Kęska <damian@pantheraframework.org>
-	 */
-	public function __construct($data)
-	{
-		/** @see \Panthera\baseClass::__construct **/
-		parent::__construct();
+    /**
+     * Construct object by results from database
+     *
+     * @param array|int $data Result set of a SQL query or an object id
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function __construct($data)
+    {
+        /** @see \Panthera\baseClass::__construct **/
+        parent::__construct();
 
-		if (is_int($data))
-		{
-            // @todo: Implement me
-			self::selectObjectById($data);
-		} else {
-			$this->remapDatabaseResult($data);
-		}
-	}
+        if (is_int($data))
+        {
+            $this->selectObjectById($data);
+        }
+        else
+        {
+            $this->remapDatabaseResult($data);
+        }
+    }
 
-	/**
-	 * Get columns mapping, store in cache
-	 *
-	 * @private
-	 * @author Damian Kęska <damian@pantheraframework.org>
-	 */
-	private function __rebuildColumnsMapping()
-	{
-		$reflection = new \ReflectionClass($this);
+    /**
+     * Construct object by id
+     *
+     * @param int|string $id Numerical id
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return bool
+     */
+    protected function selectObjectById($id)
+    {
+        $where = array(
+            '|=|' .static::$__orm_IdColumn. '' => $id,
+        );
 
-		foreach ($reflection->getProperties() as $property)
-		{
-			$phpDoc = $property->getDocComment();
-			$columnMetaPos = strpos($phpDoc, '@column ');
+        $result = $this->app->database->select(static::$__orm_Table, '*', $where, static::$__orm_IdColumn, null, new Pagination(1, 1), array(), static::$__orm_Joins);
 
-			if ($columnMetaPos !== false)
-			{
-				$column = substr($phpDoc, ($columnMetaPos + 8), (strpos($phpDoc, "\n", $columnMetaPos) - $columnMetaPos) - 8);
+        if (is_array($result))
+        {
+            $this->remapDatabaseResult($result[0]);
+            return true;
+        }
 
-				if ($column)
-				{
-					$this->__orm__meta__mapping[$column] = $property->getName();
-				}
-			}
-		}
-	}
+        return false;
+    }
 
-	/**
-	 * Push database result array into object properties
-	 *
-	 * Requires a valid "@column" tags in PHPDoc in class properties.
-	 *
-	 * eg. public $groupId; // PHPDoc: @column group_id
-	 *
-	 * @cache orm.mapping.`get_called_class()`
-	 * @param array $result Database result as array
-	 * @author Damian Kęska <damian@pantheraframework.org>
-	 */
-	protected function remapDatabaseResult($result)
-	{
-		// support caching, as the Reflection class is not enough fast
-		if (!$this->__orm__meta__mapping)
-		{
-			if ($this->app->cache)
-			{
-				$this->__orm__meta__mapping = $this->app->cache->get('orm.mapping.' .get_called_class());
-			}
+    /**
+     * Get columns mapping, store in cache
+     *
+     * @private
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    private function __rebuildColumnsMapping()
+    {
+        $reflection = new \ReflectionClass($this);
 
-			if (!$this->__orm__meta__mapping)
-			{
-				$this->__rebuildColumnsMapping();
+        foreach ($reflection->getProperties() as $property)
+        {
+            $phpDoc = $property->getDocComment();
+            $columnMetaPos = strpos($phpDoc, '@column ');
 
-				if ($this->app->cache)
-				{
-					$this->app->cache->set('orm.mapping.' .get_called_class(), $this->__orm__meta__mapping, 600);
-				}
-			}
-		}
+            if ($columnMetaPos !== false)
+            {
+                $column = substr($phpDoc, ($columnMetaPos + 8), (strpos($phpDoc, "\n", $columnMetaPos) - $columnMetaPos) - 8);
 
-		foreach ($result as $column => $value)
-		{
-			if (isset($this->__orm__meta__mapping[$column]))
-			{
-				$this->{$this->__orm__meta__mapping[$column]} = $value;
-			}
-		}
-	}
+                if ($column)
+                {
+                    $this->__orm__meta__mapping[$column] = $property->getName();
+                }
+            }
+        }
+    }
 
-	/**
-	 * Fetch objects from database
-	 *
-	 * @param null $where
-	 * @param null $order
-	 * @param null $group
-	 * @param null $limit
-	 * @param array $values
-	 *
-	 * @author Damian Kęska <damian@pantheraframework.org>
-	 * @return static[]
-	 */
-	public static function fetch($where = null, $order = null, $group = null, $limit = null, $values = array())
-	{
-		$database = framework::getInstance()->database;
-		$select = $database->select(static::$__orm_Table, '*', $where, $order, $group, $limit, $values , static::$__orm_Joins);
-		$query = $database->query($select[0], $select[1]);
+    /**
+     * Push database result array into object properties
+     *
+     * Requires a valid "@column" tags in PHPDoc in class properties.
+     *
+     * eg. public $groupId; // PHPDoc: @column group_id
+     *
+     * @cache orm.mapping.`get_called_class()`
+     * @param array $result Database result as array
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    protected function remapDatabaseResult($result)
+    {
+        // support caching, as the Reflection class is not enough fast
+        if (!$this->__orm__meta__mapping)
+        {
+            if ($this->app->cache)
+            {
+                $this->__orm__meta__mapping = $this->app->cache->get('orm.mapping.' .get_called_class());
+            }
 
-		$objects = array();
+            if (!$this->__orm__meta__mapping)
+            {
+                $this->__rebuildColumnsMapping();
 
-		if (is_array($query) && count($query))
-		{
-			$currentClass = get_called_class();
+                if ($this->app->cache)
+                {
+                    $this->app->cache->set('orm.mapping.' .get_called_class(), $this->__orm__meta__mapping, 600);
+                }
+            }
+        }
 
-			foreach ($query as $row)
-			{
-				$objects[] = new $currentClass($row);
-			}
-		}
+        foreach ($result as $column => $value)
+        {
+            if (isset($this->__orm__meta__mapping[$column]))
+            {
+                $this->{$this->__orm__meta__mapping[$column]} = $value;
+            }
+        }
+    }
 
-		return $objects;
-	}
+    /**
+     * Fetch objects from database
+     *
+     * @param null $where
+     * @param null $order
+     * @param null $group
+     * @param null $limit
+     * @param array $values
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return static[]
+     */
+    public static function fetch($where = null, $order = null, $group = null, $limit = null, $values = array())
+    {
+        $database = framework::getInstance()->database;
+        $select = $database->select(static::$__orm_Table, '*', $where, $order, $group, $limit, $values , static::$__orm_Joins);
+        $query = $database->query($select[0], $select[1]);
 
-	/**
-	 * Return an object id (if any)
-	 *
-	 * @author Damian Kęska <damian@pantheraframework.org>
-	 * @return mixed
-	 */
-	public function getId()
-	{
-		return $this->{static::$__orm_IdColumn};
-	}
+        $objects = array();
+
+        if (is_array($query) && count($query))
+        {
+            $currentClass = get_called_class();
+
+            foreach ($query as $row)
+            {
+                $objects[] = new $currentClass($row);
+            }
+        }
+
+        return $objects;
+    }
+
+    /**
+     * Return an object id (if any)
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->{static::$__orm_IdColumn};
+    }
 }

@@ -394,10 +394,11 @@ class select
     /**
      * Execute prepared query
      *
+     * @param $execute Execute query or simulate execution?
      * @author Damian Kęska <damian@pantheraframework.org>
      * @return string
      */
-    public function execute()
+    public function execute($execute = true)
     {
         $fw = \Panthera\framework::getInstance();
         return $fw->database->select(
@@ -408,7 +409,8 @@ class select
             $this->group,
             $this->limit,
             $this->values,
-            $this->joins
+            $this->joins,
+            $execute
         );
     }
 }
