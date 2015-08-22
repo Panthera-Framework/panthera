@@ -29,11 +29,11 @@ class shellConfigurationTask extends task
     );
 
     /**
-     * Write generated content to file
+     * Creates a /bin directory inside of application's data directory
      *
      * @author Damian Kęska <damian@pantheraframework.org>
      */
-    public function write()
+    public function createBinDirectory()
     {
         $binDir = pathinfo($this->shellBinFile, PATHINFO_DIRNAME);
 
@@ -41,6 +41,16 @@ class shellConfigurationTask extends task
         {
             mkdir($binDir);
         }
+    }
+
+    /**
+     * Write generated content to file
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function write()
+    {
+        $this->createBinDirectory();
 
         $this->output("Writing shell configuration file to " .$this->shellBinFile);
         $filePointer = fopen($this->shellBinFile, 'w');
@@ -49,9 +59,9 @@ class shellConfigurationTask extends task
 
         $this->output("# chmod +x " .$this->shellBinFile);
         system("chmod +x " .$this->shellBinFile);
-
         $this->output("Please type \"" .$this->shellBinFile. "\" in a shell to start a new session for your project");
 
+        // automatically run the generated file if "--run" shell argument was specified
         if (in_array('--run', $_SERVER['argv']))
         {
             system($this->shellBinFile);
