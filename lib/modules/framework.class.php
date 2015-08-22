@@ -175,7 +175,7 @@ class framework
     public $logging = null;
 
     /**
-     * @var \Panthera\signalHandler $signals
+     * @var \Panthera\signals $signals
      */
     public $signals = null;
 
@@ -251,11 +251,12 @@ class framework
      * Pre-builds all base objects
      *
      * @param string $controllerPath Path to controller that constructed this method
+     * @param array $configuration Default configuration
      *
      * @throws InvalidConfigurationException
      * @throws PantheraFrameworkException
      */
-    public function setup($controllerPath)
+    public function setup($controllerPath, $configuration = array())
     {
         $this->appPath = pathinfo($controllerPath, PATHINFO_DIRNAME). '/';
         $this->libPath = realpath(__DIR__. '/../');
@@ -265,7 +266,7 @@ class framework
         $this->loadApplicationIndex();
 
         $this->signals  = new signals;
-        $this->config   = new configuration;
+        $this->config   = new configuration($configuration);
         $this->logging  = new logging;
         $this->cache    = cache\cache::getInstance();
         $this->database = database\driver::getInstance();
@@ -300,23 +301,6 @@ class framework
         }
 
         throw new PantheraFrameworkException('Application index cache not found, it should be updated automatically as a periodic or real time job, please investigate why cache regeneration is not running up, a file should be created at "' .$this->appPath. '/.content/cache/applicationIndex.php"', 'FW_APPLICATION_INDEX_NOT_FOUND');
-    }
-
-    /**
-     * Pre-configure Panthera Framework 2 environment
-     *
-     * @param array $config
-     * @author Damian Kęska <webnull.www@gmail.com>
-     */
-    public function configure($config)
-    {
-        $this->config->data = array(
-            'packages.enabled' => array(
-                'dashboard',
-            ),
-        );
-
-        $this->config->data = array_merge($this->config->data, $this->signals->execute('framework.configuration.post.init', $config));
     }
 
     /**

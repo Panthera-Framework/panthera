@@ -93,6 +93,6 @@ class CacheTest extends PantheraFrameworkTestCase
     public function testGetInstance()
     {
         $this->setup();
-        $this->assertSame($this->app->cache, \Panthera\cache::getCache());
+        $this->assertSame($this->app->cache, \Panthera\cache\cache::getInstance());
     }
 }

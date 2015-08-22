@@ -54,7 +54,7 @@ class logging extends baseClass
     public function __construct()
     {
         parent::__construct();
-        $this->format = $this->app->config->get('logging.format', '[%date][%path:%line] %executionTime%message');
+        $this->format = $this->app->config->get('logging.format', '[%date][%path:%line] %executionTime%message %debug');
         $this->dateFormat = $this->app->config->get('logging.format.date', 'Y-m-d H:i');
         $this->enabled = $this->app->config->get('logging.enabled', false);
     }
@@ -62,12 +62,13 @@ class logging extends baseClass
     /**
      *  Function that prints message
      *
-     * @param string $message to print
+     * @param string $message Message to print
+     * @param string $type Type eg. debug, error, info
      *
      * @author Mateusz Warzyński <lxnmen@gmail.com>
      * @return bool|string
      */
-    public function output($message)
+    public function output($message, $type = 'info')
     {
         if (!$this->enabled)
         {
@@ -83,6 +84,11 @@ class logging extends baseClass
         $backtrace = end($backtrace);
         $formattedMessage = $this->format;
 
+        if ($type == 'debug')
+        {
+            $debug = json_encode(debug_backtrace());
+        }
+
         $formatting = array(
             '%date'          => date($this->dateFormat),
             '%fullPath'      => $backtrace['file'],
@@ -93,6 +99,7 @@ class logging extends baseClass
             '%class'         => isset($backtrace['class']) ? $backtrace['class'] : '',
             '%message'       => $message,
             '%executionTime' => (string)$this->timer. ' ',
+            '%debug'         => isset($debug) ? $debug : '',
         );
 
         foreach ($formatting as $key => $value)

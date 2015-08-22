@@ -4,10 +4,10 @@ namespace Panthera;
 /**
  * Panthera Framework 2 Base Configuration module
  *
- * @package Panthera
+ * @package Panthera\modules\configuration
  * @author Damian Kęska
  */
-class configuration
+class configuration extends baseClass
 {
     /**
      * Associative array of keys and values in mixed types
@@ -23,6 +23,29 @@ class configuration
      * @var array
      */
     public $modifiedElements = array();
+
+    /**
+     * Constructor
+     *
+     * @param array|null $data
+     *
+     * @attachSignal framework.database.connected
+     * @author Damian Kęska <webnull.www@gmail.com>
+     */
+    public function __construct($data = null)
+    {
+        parent::__construct();
+
+        if (is_array($data) && $data)
+        {
+            $this->data = $data;
+        }
+
+        if ($this->get('configuration.fromDatabase', true))
+        {
+            $this->app->signals->attach('framework.database.connected', array($this, 'loadFromDatabase'));
+        }
+    }
 
     /**
      * Get a configuration key value, if not then return defaults
@@ -56,10 +79,97 @@ class configuration
     {
         if ((isset($this->data[$key]) && $this->data[$key] !== $value) || !isset($this->data[$key]))
         {
-            $this->modifiedElements[$key] = microtime(true);
+            $this->modifiedElements[$key] = [
+                'modified' => microtime(true),
+                'created'  => !isset($this->data[$key]),
+                'section'  => null,
+            ];
         }
 
         $this->data[$key] = $value;
         return true;
+    }
+
+    /**
+     * Load configuration from database
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function loadFromDatabase()
+    {
+        try
+        {
+            $database = framework::getInstance()->database;
+            $results = $database->query('SELECT * FROM configuration WHERE section is null', array());
+        }
+        catch (\Exception $e)
+        {
+            $this->app->logging->output('"configuration" table is missing, configuration will not be loaded from database, please run migrations to fill this gap', 'error');
+            return false;
+        }
+
+        if (is_array($results) && $results)
+        {
+            foreach ($results as $row)
+            {
+                if (!isset($this->data[$row['configurationKey']]))
+                {
+                    $this->data[$row['configurationKey']] = $row['configurationValue'];
+                }
+            }
+        }
+        else
+        {
+            $this->app->logging->output('No additional configuration found in the database', 'info');
+        }
+
+        return true;
+    }
+
+    public function save()
+    {
+        // execute save only if we modified any element
+        if (!is_array($this->modifiedElements) || !$this->modifiedElements)
+        {
+            return false;
+        }
+
+        // create a SQL transaction
+        $this->app->database->createTransaction();
+
+        foreach ($this->modifiedElements as $key => $meta)
+        {
+            // raise a developer warning
+            if (!isset($this->data[$key]))
+            {
+                $this->app->logging->output('!!! Key present in $modifiedElements but not in $data', 'debug');
+                continue;
+            }
+
+            /**
+             * Insert a new key
+             */
+            if ($meta['created'] === true)
+            {
+                $this->app->database->query('INSERT INTO configuration (configurationId, configurationKey, configurationValue, configurationSection) VALUES (null, :key, :value, :section)', array(
+                    'key'     => $key,
+                    'value'   => $this->data[$key],
+                    'section' => $meta['section'],
+                ));
+            }
+
+            /**
+             * Update an existing key
+             */
+            else
+            {
+                $this->app->database->query('UPDATE configuration SET configurationValue = :value WHERE configurationKey = :key', array(
+                    'key'   => $key,
+                    'value' => $this->data[$key],
+                ));
+            }
+        }
+
+        $this->app->database->commit();
     }
 }

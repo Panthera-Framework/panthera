@@ -5,7 +5,6 @@
  * @package Panthera\bootstrap
  * @author Damian Kęska <damian@pantheraframework.org>
  */
-
 define('PANTHERA_FRAMEWORK_2', true);
 define('PANTHERA_FRAMEWORK_PATH', __DIR__);
 
@@ -63,5 +62,4 @@ if (!isset($defaultConfig))
 }
 
 $app = Panthera\framework::getInstance();
-$app->setup($controllerPath);
-$app->configure($defaultConfig);
+$app->setup($controllerPath, $defaultConfig);

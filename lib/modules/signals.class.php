@@ -8,7 +8,7 @@ namespace Panthera;
  * @author Damian Kęska <damian@pantheraframework.org>
  */
 
-class signals
+class signals extends baseClass
 {
     public $registeredSignals = array();
 
@@ -56,15 +56,15 @@ class signals
     {
         if (!is_callable($callback))
         {
-            throw new \InvalidArgumentException('Callback is not a function', 1);
+            throw new \InvalidArgumentException('Callback is not a function, but ' .json_encode($callback), 1);
         }
 
         if (!isset($this->registeredSignals[$signalName]))
         {
-            $this->registeredSignals[$signalName] = array(
+            $this->registeredSignals[$signalName] = [
                 'modified' => false,
-                'elements' => array(),
-            );
+                'elements' => [],
+            ];
         }
 
         /**
@@ -77,7 +77,9 @@ class signals
                 $priority++;
             }
 
-        } else {
+        }
+        else
+        {
             $priority = count($this->registeredSignals[$signalName]['elements']);
         }
 

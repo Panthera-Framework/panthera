@@ -10,7 +10,7 @@ use Phinx\Migration\AbstractMigration;
 class UsersTable extends AbstractMigration
 {
     /**
-     * Initialy create a users table
+     * Initially create a users table
      *
      * @author Damian Kęska <damian@pantheraframework.org>
      */

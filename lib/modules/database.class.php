@@ -1,6 +1,7 @@
 <?php
 namespace Panthera\database;
 use Panthera\coreSingleton;
+use Panthera\framework;
 
 /**
  * Abstract driver class
@@ -65,12 +66,14 @@ class driver extends coreSingleton
     /**
      * Action performed right after creating a first instance of object
      *
-     * @param object $object
+     * @param \Panthera\baseClass $object
      * @author Damian Kęska <damian@pantheraframework.org>
      */
     public static function constructInstance($object)
     {
+        $object->app->database = $object;
         $object->connect();
+        $object->app->signals->execute('framework.database.connected');
     }
 
     /**
@@ -101,7 +104,7 @@ class driver extends coreSingleton
      * @param string|null $columnNamePrefix Optional prefix to add to every column name (in case column don't have any)
      * @param bool $isJoin Is this a where condition for JOIN clause?
      *
-     * @throws \Panthera\PantheraFrameworkException
+     * @throws PantheraFrameworkException
      * @return array
      */
     public function parseWhereConditionBlock($whereCondition, $columnNamePrefix = null, $isJoin = false)

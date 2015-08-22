@@ -64,6 +64,26 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
     }
 
     /**
+     * Start database transaction, turn off autocommit
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function createTransaction()
+    {
+        $this->socket->beginTransaction();
+    }
+
+    /**
+     * Commit a transaction
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function commit()
+    {
+        $this->socket->commit();
+    }
+
+    /**
      * Returns database path
      *
      * @author Damian Kęska <damian@pantheraframework.org>
@@ -197,7 +217,7 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
      * @param array $values
      *
      * @author Damian Kęska <damian@pantheraframework.org>
-     * @return bool
+     * @return array
      */
     public function query($query, $values)
     {
