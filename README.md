@@ -17,3 +17,22 @@ Assumptions for second version:
 - Simpler admin panel
 - Simpler modules for creating pages like "business cards" eg. data automaticaly loaded from Excel or PDF and displayed on page
 that is formatted by a templating engine
+
+## How to setup a developer environment
+
+```
+git clone https://github.com/Panthera-Framework/panthera
+
+# install dependencies
+cd panthera/lib
+composer install
+
+# deploy a developer environment, build indexes, caches, configure tools etc.
+cd ../application/
+../lib/bin/deploy build/environment/developer
+
+# enter application's shell
+./content/bin/shell
+```
+
+![screenshot](http://oi59.tinypic.com/2mypxr5.jpg)
