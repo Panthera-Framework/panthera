@@ -57,22 +57,9 @@ elseif (stripos($_SERVER['SCRIPT_FILENAME'], 'phpunit') !== false)
 require_once __DIR__. '/modules/framework.class.php';
 spl_autoload_register('Panthera\__pantheraAutoloader');
 
-/**
- * Set the environment
- */
-if (!defined('PANTHERA_MODE'))
-{
-    define('PANTHERA_MODE', (PHP_SAPI == 'cli' ? 'CLI' : 'CGI'));
-}
-
-if (PHP_SAPI == 'CLI')
-{
-    require __DIR__. '/modules/cli.class.php';
-}
-
 if (!isset($defaultConfig))
 {
-    throw new Panthera\InvalidConfigurationException('Cannot find $defaultConfig variable', 1);
+    throw new Panthera\InvalidConfigurationException('Cannot find $defaultConfig variable', 'FW_CONFIG_NOT_FOUND');
 }
 
 $app = Panthera\framework::getInstance();
