@@ -16,6 +16,8 @@ class developerTask extends task
      */
     public $dependencies = array(
         'build/framework/autoloaderCache',
+        'build/environment/installComposer',
+        'build/framework/updateComposerPackages',
         'build/environment/shellConfiguration',
         'build/database/configurePhinx',
         'tests/PHPUnitConfigure',
