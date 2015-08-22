@@ -10,7 +10,7 @@ matrix:
   fast_finish: true
   allow_failures:
     - php: 7.0
-    - hhvm
+    - php: hhvm
 
 addons:
   code_climate:
