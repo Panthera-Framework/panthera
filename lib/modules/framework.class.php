@@ -56,12 +56,12 @@ abstract class baseClass
      */
     public function getFeature($featureName, $args = null, $additionalInfo = null)
     {
-        $f = preg_replace('/[^\da-zA-Z0-9]/i', '_', $featureName). 'Feature';
+        $functionName = preg_replace('/[^\da-zA-Z0-9]/i', '_', $featureName). 'Feature';
 
-        $this->app->logging->output('Looking for this->' .$f. '(args, additionalInfo)', get_called_class());
+        $this->app->logging->output('Looking for this->' .$functionName. '(args, additionalInfo)', get_called_class());
 
-        if (method_exists($this, $f))
-            $args = $this->$f($args, $additionalInfo);
+        if (method_exists($this, $functionName))
+            $args = $this->$functionName($args, $additionalInfo);
 
         return $this->app->signals->execute($featureName, $args);
     }
