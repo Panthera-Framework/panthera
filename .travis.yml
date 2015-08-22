@@ -19,7 +19,8 @@ addons:
 before_install:
   - cd lib && composer install --dev
   - cd ..
-  - chmod 775 ./application/.content/ -R
+  - mkdir ./application/.content/cache/translations/ -p
+  - chmod 777 ./application/.content/ -R
 
 script: cd application && php ../lib/bin/deploy build/environment/developer --coverage --travisci && phpunit -c ./.content/cache/phpunit.xml.dist
 
