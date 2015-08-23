@@ -156,9 +156,9 @@ class configuration extends baseClass
             /**
              * Insert a new key
              */
-            if ($meta['created'] === false)
+            if ($meta['created'] === true)
             {
-                $this->app->database->query('INSERT INTO configuration (configuration_id, configuration_key, configuration_value, configuration_section) VALUES (null, :key, :value, :section)', array(
+                $this->app->database->query('INSERT INTO configuration (configuration_key, configuration_value, configuration_section) VALUES (:key, :value, :section)', array(
                     'key'     => $key,
                     'value'   => $this->data[$key],
                     'section' => $meta['section'],
