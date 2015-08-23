@@ -74,4 +74,28 @@ class FrameworkTest extends PantheraFrameworkTestCase
         $this->setExpectedException('\Panthera\FileNotFoundException');
         $this->app->runShellApplication('notExistingShellApplication');
     }
+
+    /**
+     * Test baseClass __sleep() function
+     *      just for test coverage
+     *
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     */
+    public function testBaseClass__sleep()
+    {
+        $this->setup();
+        $this->assertNotNull($this->app->config->__sleep());
+    }
+
+    /**
+     * Test baseClass __wakeup() function
+     *      just for test coverage
+     *
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     */
+    public function testBaseClass__wakeup()
+    {
+        $this->setup();
+        $this->assertNull($this->app->config->__wakeup());
+    }
 }
