@@ -62,6 +62,7 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
 
         $this->socket = new \PDO('sqlite:' .$this->getDatabasePath());
         $this->socket->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->socket->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
     }
 
     /**
@@ -241,14 +242,14 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
                     $v = serialize($v);
                 }
 
-                $sth->bindParam(':' . $k, $v);
+                $sth->bindValue($k, $v);
             }
         }
 
         try
         {
             $sth->execute();
-            $fetch = $sth->fetchAll(\PDO::FETCH_ASSOC);
+            $fetch = $sth->fetchAll(\PDO::FETCH_ASSOC); // todo: separate function select/insert/update , we do not need fetchAll() here.
             $sth->closeCursor();
         }
         catch (\PDOException $e)
