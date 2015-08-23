@@ -17,6 +17,7 @@ class UsersTable extends AbstractMigration
     public function change()
     {
         $table = $this->table('users', array('id' => 'user_id'));
+
         $table->addColumn('user_login',   'string',   array('limit' => 32))
               ->addColumn('user_passwd',  'string',   array('limit' => 64))
               ->addColumn('user_email',   'string',   array('limit' => 32))
