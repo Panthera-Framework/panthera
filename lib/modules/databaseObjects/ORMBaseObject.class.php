@@ -98,6 +98,11 @@ abstract class ORMBaseObject extends \Panthera\baseClass
 
         if (is_array($result))
         {
+            if (empty($result))
+            {
+                throw new \Panthera\PantheraFrameworkException('Result is empty, validate given $id', 'FW_SQL_NO_RESULT');
+            }
+
             $this->remapDatabaseResult($result[0]);
             return true;
         }
@@ -188,7 +193,7 @@ abstract class ORMBaseObject extends \Panthera\baseClass
     public static function fetch($where = null, $order = null, $group = null, $limit = null, $values = array())
     {
         $database = framework::getInstance()->database;
-        $select = $database->select(static::$__orm_Table, '*', $where, $order, $group, $limit, $values , static::$__orm_Joins);
+        $select = $database->select(static::$__orm_Table, '*', $where, $order, $group, $limit, $values , static::$__orm_Joins, $execute=false);
         $query = $database->query($select[0], $select[1]);
 
         $objects = array();
@@ -214,6 +219,6 @@ abstract class ORMBaseObject extends \Panthera\baseClass
      */
     public function getId()
     {
-        return $this->{static::$__orm_IdColumn};
+        return $this->{$this->__orm__meta__mapping[static::$__orm_IdColumn]};
     }
 }
