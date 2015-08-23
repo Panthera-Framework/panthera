@@ -56,7 +56,9 @@ class ConfigurationTest extends PantheraFrameworkTestCase
         $this->setupDatabase();
         $this->app->config->set('testDatabase', 'HelloDatabase!');
         $this->app->config->save();
-        $data = $this->app->config->loadFromDatabase();
-        $this->assertSame('HelloDatabase!', $data['testDatabase']);
+        $this->app->config->data = array();
+        $this->app->config->modifiedElements = array();
+        $this->app->config->loadFromDatabase();
+        $this->assertSame('HelloDatabase!', $this->app->config->get('testDatabase'));
     }
 }
