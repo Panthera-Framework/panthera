@@ -81,7 +81,7 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
      */
     public function commit()
     {
-        $this->socket->beginTransaction();
+        $this->socket->commit();
     }
 
     /**
