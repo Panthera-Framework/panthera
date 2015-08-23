@@ -100,7 +100,7 @@ class configuration extends baseClass
         try
         {
             $database = framework::getInstance()->database;
-            $results = $database->query('SELECT * FROM configuration WHERE section is null', array());
+            $results = $database->query('SELECT * FROM configuration WHERE configuration_section is null', array());
         }
         catch (\Exception $e)
         {
@@ -112,9 +112,9 @@ class configuration extends baseClass
         {
             foreach ($results as $row)
             {
-                if (!isset($this->data[$row['configurationKey']]))
+                if (!isset($this->data[$row['configuration_key']]))
                 {
-                    $this->data[$row['configurationKey']] = $row['configurationValue'];
+                    $this->data[$row['configuration_key']] = $row['configuration_value'];
                 }
             }
         }
@@ -126,6 +126,13 @@ class configuration extends baseClass
         return true;
     }
 
+    /**
+     * Save modified configuration variables to database
+     *
+     * @throws PantheraFrameworkException
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return bool
+     */
     public function save()
     {
         // execute save only if we modified any element
@@ -142,16 +149,16 @@ class configuration extends baseClass
             // raise a developer warning
             if (!isset($this->data[$key]))
             {
-                $this->app->logging->output('!!! Key present in $modifiedElements but not in $data', 'debug');
+                $this->app->logging->output('Key present in $modifiedElements but not in $data.', 'debug');
                 continue;
             }
 
             /**
              * Insert a new key
              */
-            if ($meta['created'] === true)
+            if ($meta['created'] === false)
             {
-                $this->app->database->query('INSERT INTO configuration (configurationId, configurationKey, configurationValue, configurationSection) VALUES (null, :key, :value, :section)', array(
+                $this->app->database->query('INSERT INTO configuration (configuration_id, configuration_key, configuration_value, configuration_section) VALUES (null, :key, :value, :section)', array(
                     'key'     => $key,
                     'value'   => $this->data[$key],
                     'section' => $meta['section'],
@@ -163,7 +170,7 @@ class configuration extends baseClass
              */
             else
             {
-                $this->app->database->query('UPDATE configuration SET configurationValue = :value WHERE configurationKey = :key', array(
+                $this->app->database->query('UPDATE configuration SET configuration_value = :value WHERE configuration_key = :key', array(
                     'key'   => $key,
                     'value' => $this->data[$key],
                 ));
@@ -171,5 +178,7 @@ class configuration extends baseClass
         }
 
         $this->app->database->commit();
+
+        return true;
     }
 }
