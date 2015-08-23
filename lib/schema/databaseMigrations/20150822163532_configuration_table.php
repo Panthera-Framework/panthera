@@ -17,9 +17,10 @@ class ConfigurationTable extends AbstractMigration
     public function change()
     {
         $table = $this->table('configuration', array('id' => 'configuration_id'));
-        $table->addColumn('configuration_key', 'string', array('limit' => 32));
-        $table->addColumn('configuration_value', 'string', array('limit' => 4096));
-        $table->addColumn('configuration_section', 'string', array('limit' => 32));
-        $table->create();
+
+        $table->addColumn('configuration_key',     'string', array('limit' => 32))
+              ->addColumn('configuration_value',   'string', array('limit' => 4096))
+              ->addColumn('configuration_section', 'string', array('limit' => 32))
+              ->create();
     }
 }

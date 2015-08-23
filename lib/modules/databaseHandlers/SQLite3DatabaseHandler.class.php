@@ -236,6 +236,11 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
         {
             foreach ($values as $k => $v)
             {
+                if (is_array($v))
+                {
+                    $v = serialize($v);
+                }
+
                 $sth->bindParam(':' . $k, $v);
             }
         }
