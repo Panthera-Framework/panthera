@@ -50,3 +50,10 @@ class SyntaxException extends PantheraFrameworkException {};
  * @package Panthera
  */
 class FileException extends PantheraFrameworkException {};
+
+/**
+ * FileException
+ *
+ * @package Panthera
+ */
+class DatabaseException extends PantheraFrameworkException {};

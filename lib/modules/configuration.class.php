@@ -22,7 +22,7 @@ class configuration extends baseClass
      *
      * @var array
      */
-    public $modifiedElements = array();
+    protected $modifiedElements = array();
 
     /**
      * Constructor
@@ -67,6 +67,26 @@ class configuration extends baseClass
     }
 
     /**
+     * Remove a key from configuration
+     *
+     * @param string $key Name
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return bool
+     */
+    public function remove($key)
+    {
+        if (isset($this->data[$key]))
+        {
+            unset($this->data[$key]);
+            $this->modifiedElements[$key] = [
+                'removed' => microtime(true),
+            ];
+        }
+
+        return !isset($this->data[$key]);
+    }
+
+    /**
      * Set a configuration key
      *
      * @param string $key Name
@@ -80,6 +100,7 @@ class configuration extends baseClass
         if ((isset($this->data[$key]) && $this->data[$key] !== $value) || !isset($this->data[$key]))
         {
             $this->modifiedElements[$key] = [
+                'removed'  => false,
                 'modified' => microtime(true),
                 'created'  => !isset($this->data[$key]),
                 'section'  => null,
@@ -141,22 +162,35 @@ class configuration extends baseClass
             return false;
         }
 
+        // check database connection, as we could call this function from different contexts
+        if (!$this->app->database || !$this->app->database->isConnected())
+        {
+            throw new DatabaseException('configuration::save() requires a working database connection', 'FW_NO_DATABASE_CONNECTION');
+        }
+
+        $limit = '';
+
+        if ($this->app->database->deleteUpdateLimitsAvailable())
+        {
+            $limit = ' LIMIT 1';
+        }
+
         // create a SQL transaction
         $this->app->database->createTransaction();
 
         foreach ($this->modifiedElements as $key => $meta)
         {
             // raise a developer warning
-            if (!isset($this->data[$key]))
+            if (!isset($this->data[$key]) && !isset($meta['removed']) && !$meta['removed'])
             {
-                $this->app->logging->output('Key present in $modifiedElements but not in $data.', 'debug');
+                $this->app->logging->output('Key present in $modifiedElements but not in $data, also was not marked as removed', 'debug');
                 continue;
             }
 
             /**
              * Insert a new key
              */
-            if ($meta['created'] === true)
+            if (isset($meta['created']) && $meta['created'] === true)
             {
                 $this->app->database->query('INSERT INTO configuration (configuration_key, configuration_value, configuration_section) VALUES (:key, :value, :section)', array(
                     'key'     => $key,
@@ -166,15 +200,28 @@ class configuration extends baseClass
             }
 
             /**
+             * Remove a key
+             */
+            elseif (isset($meta['removed']) && $meta['removed'])
+            {
+                $this->app->database->query('DELETE FROM configuration WHERE configuration_key = :key' .$limit, array(
+                    'key' => $key,
+                ));
+            }
+
+            /**
              * Update an existing key
              */
             else
             {
-                $this->app->database->query('UPDATE configuration SET configuration_value = :value WHERE configuration_key = :key', array(
+                $this->app->database->query('UPDATE configuration SET configuration_value = :value WHERE configuration_key = :key' .$limit, array(
                     'key'   => $key,
                     'value' => $this->data[$key],
                 ));
             }
+
+            // reset state
+            unset($this->modifiedElements[$key]);
         }
 
         $this->app->database->commit();
