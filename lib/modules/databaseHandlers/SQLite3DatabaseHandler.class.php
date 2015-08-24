@@ -63,6 +63,48 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
         $this->socket = new \PDO('sqlite:' .$this->getDatabasePath());
         $this->socket->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $this->socket->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
+        $this->configureSocket();
+    }
+
+    /**
+     * Tell if we could use "LIMIT" statement when DELETING or UPDATING rows
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return bool
+     */
+    public function deleteUpdateLimitsAvailable()
+    {
+        return false;
+    }
+
+    /**
+     * Configure a database socket right after connection was successful
+     *
+     * @signal framework.database.pdo.configure [\PDO $socket]
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    protected function configureSocket()
+    {
+        $config = $this->app->config->get('pdo');
+
+        if ($config)
+        {
+            foreach ($config as $key => $value)
+                $this->socket->setAttribute($key, $value);
+        }
+
+        $this->app->signals->execute('framework.database.pdo.configure', $this->socket);
+    }
+
+    /**
+     * Check if connection to database was estabilished
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return bool
+     */
+    public function isConnected()
+    {
+        return ($this->socket instanceof \PDO); // weak check, but any idea?
     }
 
     /**

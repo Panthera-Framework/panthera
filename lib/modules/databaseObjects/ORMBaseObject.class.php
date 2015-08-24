@@ -84,6 +84,7 @@ abstract class ORMBaseObject extends \Panthera\baseClass
      * Construct object by id
      *
      * @param int|string $id Numerical id
+     * @throws \Panthera\PantheraFrameworkException
      *
      * @author Damian Kęska <damian@pantheraframework.org>
      * @return bool
