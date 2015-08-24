@@ -242,7 +242,7 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
                     $v = serialize($v);
                 }
 
-                $sth->bindValue($k, $v);
+                $sth->bindParam(':' .$k, $v);
             }
         }
 
