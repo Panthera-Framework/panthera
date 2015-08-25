@@ -19,6 +19,7 @@ class openDatabaseApplication extends application
 {
     /**
      * List of known applications
+     * Template variables: %user%, %host%, %database%, %password%
      *
      * @var array
      */
