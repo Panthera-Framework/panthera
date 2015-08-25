@@ -1,6 +1,7 @@
 <?php
 namespace Panthera\database;
 use Panthera\PantheraFrameworkException;
+use Rain\Tpl\Exception;
 
 /**
  * SQLite3 database handler for Panthera Framework 2
@@ -281,10 +282,10 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
             {
                 if (is_array($v))
                 {
-                    $v = serialize($v);
+                    throw new PantheraFrameworkException('Value must be a string, not array in configuration.', 'FW_DATABASE_QUERY_FAILED');
                 }
 
-                $sth->bindParam(':' .$k, $v);
+                $sth->bindValue($k, $v);
             }
         }
 
