@@ -1,0 +1,181 @@
+#!/usr/bin/env php
+<?php
+namespace Panthera\cli;
+use Panthera\DatabaseException;
+use \Panthera\framework;
+use Panthera\PantheraFrameworkException;
+use Symfony\Component\Yaml\Yaml;
+
+
+require __DIR__. '/../init.php';
+
+/**
+ * Phinx migrations proxy
+ *
+ * @package Panthera\migrations
+ * @author Damian Kęska <damian@pantheraframework.org>
+ */
+class openDatabaseApplication extends application
+{
+    /**
+     * List of known applications
+     *
+     * @var array
+     */
+    protected $applications = [
+        'sqlite3' => [
+            'sqlite3' => [
+                'command'   => 'sqlite3 %database%',
+                'available' => false,
+            ],
+
+            'sqliteman' => [
+                'command'   => 'sqliteman %database%',
+                'available' => false,
+            ],
+
+            'kosqlite' => [
+                'command'   => 'kosqlite %database%',
+                'available' => false,
+            ],
+        ],
+
+        'mysql' => [
+            'mysql' => [
+                'command'   => 'mysql -u %user% -p%password% %database%',
+                'available' => false,
+            ],
+        ],
+    ];
+
+    /**
+     * Constructor
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function __construct()
+    {
+        $this->app = framework::getInstance(); // a little bit hack here
+
+        $this->loadOverlay();
+        $this->verifyAvailableApplications();
+
+        parent::__construct();
+    }
+
+    /**
+     * This method allows overwriting supported applications database by creating file /schema/bin/open-database.yaml
+     * Selected file should be exactly in same format as $this->application array
+     *
+     * @see static::$application
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    protected function loadOverlay()
+    {
+        try
+        {
+            $overlayFile = $this->app->getPath('/schema/bin/open-database.yaml');
+            $yaml = Yaml::parse(file_get_contents($overlayFile));
+            $this->applications = array_merge($this->applications, $yaml);
+        }
+        catch (\Exception $e)
+        {
+            $this->app->logging->output('Cannot parse /schema/bin/open-database.yaml file as an overlay for open-database tool', 'info');
+        }
+    }
+
+    /**
+     * Verify all known applications if are available in current system
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    protected function verifyAvailableApplications()
+    {
+        foreach ($this->applications as &$dbType)
+        {
+            foreach ($dbType as $command => &$attributes)
+            {
+                if (strpos(shell_exec('whereis -b ' .$command), '/bin/' .$command) !== false)
+                {
+                    $attributes['available'] = true;
+                }
+            }
+        }
+    }
+
+    /**
+     * List all supported and available applications
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function list_cliArgument()
+    {
+        foreach ($this->applications as $dbType)
+        {
+            foreach ($dbType as $command => $attributes)
+            {
+                $available = ($attributes['available'] === true) ? '(AVAILABLE)' : '';
+                print("=> " .$command. " " .$available. " \n" .$attributes['command']. "\n\n");
+            }
+        }
+
+        exit;
+    }
+
+    /**
+     * Select application to use to browse the database
+     *
+     * @param array $choice
+     *
+     * @cli optional
+     * @throws DatabaseException
+     * @throws PantheraFrameworkException
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return null
+     */
+    public function parseOpts($choice)
+    {
+        $choice = $choice[1];
+        $database = $this->app->config->get('database');
+
+        // check if database type is supported by this tool
+        if (!isset($this->applications[$database['type']]))
+        {
+            throw new DatabaseException('Unsupported database type "' .$database['type']. '"', 'FW_DB_OPEN_DATABASE_NOT_SUPPORTED_DATABASE');
+        }
+
+        // check if tool is in our "database" of known tools
+        if (!isset($this->applications[$database['type']][$choice]))
+        {
+            throw new \InvalidArgumentException('Unsupported tool selected');
+        }
+
+        $tool = $this->applications[$database['type']][$choice];
+
+        // check if selected tool is available in the system
+        if ($tool['available'] === false)
+        {
+            throw new PantheraFrameworkException('This tool is not available in your system', 'FW_DB_OPEN_DATABASE_TOOL_NOT_AVAILABLE');
+        }
+
+        $command = 'exec ' .$tool['command'];
+        $variables = [
+            'user'     => $database['user'],
+            'password' => $database['password'],
+            'host'     => $database['host'],
+            'database' => ($this->app->database->getDatabasePath() ? $this->app->database->getDatabasePath() : $database['name']),
+        ];
+
+        foreach ($variables as $var => $value)
+        {
+            $command = str_replace('%' .$var. '%', $value, $command);
+        }
+
+        print("$ " .str_replace($variables['password'], 'xxxxxx', $command). "\n");
+        passthru($command);
+        exit;
+    }
+}
+
+framework::runShellApplication('openDatabase');
