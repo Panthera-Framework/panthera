@@ -213,6 +213,30 @@ abstract class ORMBaseObject extends \Panthera\baseClass
     }
 
     /**
+     * Delete a object
+     *
+     * @signal framework.orm.object-{#CLASS#}.delete [{#CLASS#}]
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return bool
+     */
+    public function delete()
+    {
+        $this->app->signals->execute('framework.orm.object-' .get_called_class(). '.delete', $this);
+
+        // add limit if driver supports it
+        $pagination = ($this->app->database->deleteUpdateLimitsAvailable() ? new Pagination(1, 1) : null);
+
+        // where conditions
+        $conditions = [
+            '|=|' .static::$__orm_IdColumn => $this->getId(),
+        ];
+
+        // @todo: Add dependencies support, but not at this development earlier stage
+        $this->app->database->delete(static::$__orm_Table, $conditions, null, null, $pagination, true);
+        return true;
+    }
+
+    /**
      * Return an object id (if any)
      *
      * @author Damian Kęska <damian@pantheraframework.org>

@@ -366,3 +366,14 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
         return $fetch;
     }
 }
+
+/**
+ * Class representing a column in a table
+ *
+ * @package Panthera\database
+ * @author Damian Kęska <damian.keska@fingo.pl>
+ */
+class column
+{
+    public $columnName;
+}

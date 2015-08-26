@@ -1,6 +1,7 @@
 <?php
 namespace Panthera\database;
 use Panthera\coreSingleton;
+use Panthera\database\column;
 use Panthera\framework;
 
 /**
@@ -120,7 +121,7 @@ class driver extends coreSingleton
 
             if ($len > 4 && !is_numeric($condition))
             {
-                throw new PantheraFrameworkException('Where conditions could have only maximum 3 blocks, given ' .count($splitted). ', details: "' .$condition. '"', 'FW_SQL_CONDITIONS_INVALID');
+                throw new \Panthera\PantheraFrameworkException('Where conditions could have only maximum 3 blocks, given ' .count($splitted). ', details: "' .$condition. '"', 'FW_SQL_CONDITIONS_INVALID');
             }
 
             /**
@@ -156,9 +157,12 @@ class driver extends coreSingleton
             }
 
             $columnName = ($len === 4 ? $splitted[3] : $splitted[2]);
-            $columnId = '';
 
-            if (!is_string($value) || substr($value, 0, 1) == '#')
+            if ($value instanceof column)
+            {
+                $columnId = $value->columnName;
+            }
+            else
             {
                 $columnId = $columnName . '_' . substr(hash('md4', rand(0, 9) . microtime(true)), 0, 8);
             }
