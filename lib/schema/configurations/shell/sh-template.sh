@@ -14,9 +14,9 @@ export PS1="[\$(tput setaf 3)\u\$(tput sgr0)|{$PROJECT_NAME$}|\$(tput setaf 2)\W
 # aliases
 reload()
 {
-    if [ $0 == "--help" ]
+    if [ "$1" == "--help" ]
     then
-        echo "Rebuild configuration and re-run shell again"
+        echo "Rebuilds configuration and re-run shell again"
     else
         deploy build/environment/shellConfiguration && source `whereis shell | cut -d':' -f2`
     fi
