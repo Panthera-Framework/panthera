@@ -1,5 +1,6 @@
 <?php
 namespace Panthera\database;
+use Panthera\DatabaseException;
 use Panthera\PantheraFrameworkException;
 use Rain\Tpl\Exception;
 
@@ -251,6 +252,62 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
         {
             $limit = $limit->getSQLData();
             $query .= ' LIMIT ' .$limit[1]. ' OFFSET ' .$limit[0]. ' ';
+        }
+
+        if ($execute)
+        {
+            return $this->query($query, $values);
+        }
+
+        return array($query, $values);
+    }
+
+    /**
+     * Make a "DELETE" operation
+     *
+     * @param string $fromTableName Table name to operate on
+     * @param null|array $where Where statement, an array, @see \Panthera\database::parseWhereConditionBlock() for example
+     * @param null|array $values Values to pass/override
+     * @param null|string|array $order Order by statement
+     * @param null|Pagination $limit Deletion limit
+     * @param bool $execute Execute or only return prepared SQL code?
+     * @throws PantheraFrameworkException
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return array
+     */
+    public function delete($fromTableName, $where = null, $values = null, $order = null, $limit = null, $execute = true)
+    {
+        $query = 'DELETE FROM ' .$fromTableName;
+
+        /**
+         * Where
+         *
+         * @see \Panthera\database::parseWhereConditionBlock()
+         */
+        if ($where)
+        {
+            $whereBlock = $this->parseWhereConditionBlock($where, 's1');
+            $values = array_merge($values, $whereBlock['data']);
+            $query .= 'WHERE ' .$whereBlock['sql'];
+        }
+
+        /**
+         * Order by
+         *
+         * @see \Panthera\database::parseOrderByBlock()
+         */
+        if ($order)
+        {
+            $query .= ' ORDER BY ' .$this->parseOrderByBlock($order, 's1');
+        }
+
+        /**
+         * Limit
+         */
+        if ($limit)
+        {
+            throw new DatabaseException('LIMIT in DELETE is not supported in SQLite3 driver', 'FW_DB_DELETE_LIMIT_NOT_SUPPORTED');
         }
 
         if ($execute)
