@@ -25,6 +25,14 @@ class configuration extends baseClass
     protected $modifiedElements = array();
 
     /**
+     * Store default config to check if value needs saving to database
+     *      config taken from app.php
+     *
+     * @var array
+     */
+    public $defaultConfig;
+
+    /**
      * Constructor
      *
      * @param array|null $data
@@ -39,6 +47,7 @@ class configuration extends baseClass
         if (is_array($data) && $data)
         {
             $this->data = $data;
+            $this->defaultConfig = $data;
         }
 
         if ($this->get('configuration.fromDatabase', true))
@@ -99,12 +108,14 @@ class configuration extends baseClass
     {
         if ((isset($this->data[$key]) && $this->data[$key] !== $value) || !isset($this->data[$key]))
         {
-            $this->modifiedElements[$key] = [
-                'removed'  => false,
-                'modified' => microtime(true),
-                'created'  => !isset($this->data[$key]),
-                'section'  => null,
-            ];
+
+                $this->modifiedElements[$key] = [
+                    'removed'  => false,
+                    'modified' => microtime(true),
+                    'created'  => !isset($this->data[$key]),
+                    'section'  => null,
+                ];
+
         }
 
         $this->data[$key] = $value;
@@ -180,6 +191,12 @@ class configuration extends baseClass
 
         foreach ($this->modifiedElements as $key => $meta)
         {
+            // do not save app.php config variables to database
+            if (array_key_exists($key, $this->defaultConfig))
+            {
+                continue;
+            }
+
             // raise a developer warning
             if (!isset($this->data[$key]) && !isset($meta['removed']) && !$meta['removed'])
             {

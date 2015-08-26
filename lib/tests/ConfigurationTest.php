@@ -33,19 +33,6 @@ class ConfigurationTest extends PantheraFrameworkTestCase
     }
 
     /**
-     * Check saving/reading array from configuration
-     *
-     * @author Mateusz Warzyński <lxnmen@gmail.com>
-     */
-    public function testGetArray()
-    {
-        $this->setup();
-        $simpleArray = array('test', array('test2' => 'value2'));
-        $this->app->config->set('testArray', $simpleArray);
-        $this->assertSame($simpleArray, $this->app->config->get('testArray'));
-    }
-
-    /**
      * Test loading configuration from database
      *
      * @author Mateusz Warzyński <lxnmen@gmail.com>
@@ -57,7 +44,6 @@ class ConfigurationTest extends PantheraFrameworkTestCase
         $this->app->config->set('testDatabase', 'HelloDatabase!');
         $this->app->config->save();
         $this->app->config->data = array();
-        $this->app->config->modifiedElements = array();
         $this->app->config->loadFromDatabase();
         $this->assertSame('HelloDatabase!', $this->app->config->get('testDatabase'));
     }
