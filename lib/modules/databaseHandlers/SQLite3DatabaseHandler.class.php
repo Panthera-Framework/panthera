@@ -278,7 +278,12 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
      */
     public function delete($fromTableName, $where = null, $values = null, $order = null, $limit = null, $execute = true)
     {
-        $query = 'DELETE FROM ' .$fromTableName;
+        if (!is_array($values))
+        {
+            $values = [];
+        }
+
+        $query = 'DELETE FROM ' .$fromTableName. ' ';
 
         /**
          * Where
@@ -289,7 +294,7 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
         {
             $whereBlock = $this->parseWhereConditionBlock($where, 's1');
             $values = array_merge($values, $whereBlock['data']);
-            $query .= 'WHERE ' .$whereBlock['sql'];
+            $query .= ' WHERE ' .$whereBlock['sql'];
         }
 
         /**
