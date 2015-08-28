@@ -88,6 +88,7 @@ class shellConfigurationTask extends task
             '{$APP_PATH$}'       => $this->app->appPath,
             '{$FRAMEWORK_PATH$}' => PANTHERA_FRAMEWORK_PATH,
             '{$PROJECT_NAME$}'   => isset($appInfo['name']) ? $appInfo['name'] : '{Please fill config key: application/name}',
+            '{$PSYSH_BOOTSTRAP$}'=> $this->app->getPath('/schema/configurations/shell/psysh.bootstrap.php'),
         ];
 
         $this->template = file_get_contents($this->app->getPath('/schema/configurations/shell/sh-template.sh'));

@@ -12,6 +12,13 @@ namespace Panthera;
 class logging extends baseClass
 {
     /**
+     * Allow printing logged messages to the screen, logging have to be enabled first
+     *
+     * @var bool
+     */
+    public $printMessages = false;
+
+    /**
      * Store all messages that has been printed
      *
      * @var array $messages
@@ -99,7 +106,7 @@ class logging extends baseClass
             '%class'         => isset($backtrace['class']) ? $backtrace['class'] : '',
             '%message'       => $message,
             '%executionTime' => (string)$this->timer. ' ',
-            '%debug'         => isset($debug) ? $debug : '',
+            '%debug'         => (isset($debug) && !$this->printMessages) ? $debug : '',
         );
 
         foreach ($formatting as $key => $value)
@@ -111,6 +118,12 @@ class logging extends baseClass
 
         // reset the timer
         $this->timer = null;
+
+        // print messages to the console/screen if turned on
+        if ($this->printMessages)
+        {
+            print($formattedMessage . "\n");
+        }
 
         return $formattedMessage;
     }

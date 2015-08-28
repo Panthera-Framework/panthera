@@ -26,7 +26,7 @@ reload()
 psysh()
 {
     goto_app
-    "$PF2_PATH/vendor/bin/psysh" "$PF2_PATH/init.php"
+    "$PF2_PATH/vendor/bin/psysh" "{$PSYSH_BOOTSTRAP$}"
 }
 
 goto_app()
