@@ -182,7 +182,9 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
         {
             $query .= ' * ';
 
-        } else {
+        }
+        else
+        {
 
             foreach ($what as $item)
             {
@@ -283,7 +285,7 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
             $values = [];
         }
 
-        $query = 'DELETE FROM ' .$fromTableName. ' ';
+        $query = 'DELETE FROM ' .$fromTableName;
 
         /**
          * Where
@@ -292,7 +294,7 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
          */
         if ($where)
         {
-            $whereBlock = $this->parseWhereConditionBlock($where, 's1');
+            $whereBlock = $this->parseWhereConditionBlock($where, $fromTableName);
             $values = array_merge($values, $whereBlock['data']);
             $query .= ' WHERE ' .$whereBlock['sql'];
         }
@@ -304,7 +306,7 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
          */
         if ($order)
         {
-            $query .= ' ORDER BY ' .$this->parseOrderByBlock($order, 's1');
+            $query .= ' ORDER BY ' .$this->parseOrderByBlock($order, $fromTableName);
         }
 
         /**
@@ -335,7 +337,14 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
      */
     public function query($query, $values = array())
     {
-        $this->app->logging->output('Executing query ' .$query, 'debug');
+        /**
+         * In debugging mode log all queries
+         */
+        if ($this->app->isDebugging)
+        {
+            $this->app->logging->output('Executing query: ' .$query. ', data: ' .json_encode($values), 'debug');
+        }
+
         $sth = $this->socket->prepare($query);
 
         if (is_array($values) && $values)
