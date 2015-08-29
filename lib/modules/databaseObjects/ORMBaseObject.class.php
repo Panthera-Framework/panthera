@@ -1,6 +1,8 @@
 <?php
 namespace Panthera\database;
 use Panthera\framework;
+use Panthera\utils\classUtils;
+use Panthera\ValidationException;
 
 /**
  * Basic abstract ORM model
@@ -62,10 +64,10 @@ abstract class ORMBaseObject extends \Panthera\baseClass
     /**
      * Construct object by results from database
      *
-     * @param array|int $data Result set of a SQL query or an object id
+     * @param array|int|null $data Result set of a SQL query or an object id
      * @author Damian Kęska <damian@pantheraframework.org>
      */
-    public function __construct($data)
+    public function __construct($data = null)
     {
         /** @see \Panthera\baseClass::__construct **/
         parent::__construct();
@@ -74,10 +76,14 @@ abstract class ORMBaseObject extends \Panthera\baseClass
         {
             $this->selectObjectById($data);
         }
-        else
+        elseif (is_array($data))
         {
             $this->remapDatabaseResult($data);
         }
+        /**
+         * else:
+         *  if null is passed then we are creating a new object
+         */
     }
 
     /**
@@ -233,6 +239,97 @@ abstract class ORMBaseObject extends \Panthera\baseClass
 
         // @todo: Add dependencies support, but not at this development earlier stage
         $this->app->database->delete(static::$__orm_Table, $conditions, null, null, $pagination, true);
+        return true;
+    }
+
+    /**
+     * Save a object
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function save()
+    {
+        $values = [];
+
+        foreach ($this->__orm__meta__mapping as $column => $propertyName)
+        {
+            $values[$column] = $this->{$propertyName};
+            $this->validateProperty($propertyName);
+        }
+
+        /**
+         * If id is null, then we are creating a new object (or duplicating an existing one)
+         */
+        if ($this->getId() === null)
+        {
+            $this->app->database->insert(static::$__orm_Table, $values);
+        }
+        else
+        {
+            $conditions = [
+                '|=|' .static::$__orm_IdColumn => $this->getId(),
+            ];
+
+            $this->app->database->update(static::$__orm_Table, $values, $conditions);
+        }
+    }
+
+    /**
+     * Validate column basing on PHPDoc comment
+     * PLEASE NOTE: You can create a custom validation for your field by creating a method named "validate{PROPERTY_NAME}Column" eg. "validateuserIdColumn"
+     *
+     * @param string $propertyName
+     *
+     * @throws ValidationException
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return bool
+     */
+    public function validateProperty($propertyName)
+    {
+        $value = $this->{$propertyName};
+        $isRequired = classUtils::getTag(get_called_class(). '::' .$propertyName, 'required');
+        $varType = classUtils::getTag(get_called_class(). '::' .$propertyName, 'var');
+
+        /**
+         * @required
+         */
+        if ($isRequired && !$value)
+        {
+            throw new ValidationException('Column ' .get_called_class(). '::' .$propertyName. ' is required, but not filled up', 'FW_ORM_VALIDATION_FAILED', get_called_class(), $propertyName);
+        }
+
+        /**
+         * @var
+         */
+        if ($varType)
+        {
+            $allowedTypes = explode('|', $varType);
+            $currentType = gettype($this->{$propertyName});
+
+            // cast numeric as int
+            if ($currentType == 'string' && is_numeric($currentType))
+            {
+                $currentType = 'int';
+            }
+
+            if (!in_array($currentType, $allowedTypes))
+            {
+                throw new ValidationException('Column ' . get_called_class() . '::' . $propertyName . ' has values of unexpected type', 'FW_ORM_UNEXPECTED_TYPE', get_called_class(), $propertyName);
+            }
+        }
+
+
+        /**
+         * Custom validation method
+         */
+        if (method_exists($this, 'validate' .$propertyName. 'Column'))
+        {
+            if (!$this->{'validate' .$propertyName. 'Column'})
+            {
+                throw new ValidationException('Custom validation returned a failure for column ' .get_called_class(). '::' .$propertyName, 'FW_ORM_CUSTOM_VALIDATION_FAILED', get_called_class(), $propertyName);
+            }
+        }
+
         return true;
     }
 

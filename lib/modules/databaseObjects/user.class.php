@@ -15,6 +15,7 @@ class user extends \Panthera\database\ORMBaseObject
 
     /**
      * @orm
+     * @required
      * @column user_login
      * @var string
      */
@@ -36,6 +37,7 @@ class user extends \Panthera\database\ORMBaseObject
 
     /**
      * @orm
+     * @required
      * @column user_passwd
      * @var string
      */
@@ -43,6 +45,7 @@ class user extends \Panthera\database\ORMBaseObject
 
     /**
      * @orm
+     * @required
      * @column user_email
      * @var string
      */

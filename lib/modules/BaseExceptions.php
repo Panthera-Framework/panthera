@@ -57,3 +57,22 @@ class FileException extends PantheraFrameworkException {};
  * @package Panthera
  */
 class DatabaseException extends PantheraFrameworkException {};
+
+/**
+ * ValidationException
+ *
+ * @package Panthera
+ */
+class ValidationException extends PantheraFrameworkException
+{
+    public $column = null;
+    public $class = null;
+
+    public function __construct($message, $code, $class = null, $column = null)
+    {
+        $this->message = $message;
+        $this->code = $code;
+        $this->class = $class;
+        $this->column = $column;
+    }
+};

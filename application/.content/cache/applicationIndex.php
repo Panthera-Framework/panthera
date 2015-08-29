@@ -7,11 +7,13 @@ $appIndex = array (
   'autoloader' => 
   array (
     '\\PantheraFrameworkTestCase' => '$LIB$/modules/tests/phpunit.bootstrap.php',
+    '\\Panthera\\DatabaseException' => '$LIB$/modules/BaseExceptions.php',
     '\\Panthera\\FileException' => '$LIB$/modules/BaseExceptions.php',
     '\\Panthera\\FileNotFoundException' => '$LIB$/modules/BaseExceptions.php',
     '\\Panthera\\InvalidConfigurationException' => '$LIB$/modules/BaseExceptions.php',
     '\\Panthera\\PantheraFrameworkException' => '$LIB$/modules/BaseExceptions.php',
     '\\Panthera\\SyntaxException' => '$LIB$/modules/BaseExceptions.php',
+    '\\Panthera\\ValidationException' => '$LIB$/modules/BaseExceptions.php',
     '\\Panthera\\applicationIndex' => '$LIB$/modules/applicationIndex.class.php',
     '\\Panthera\\baseClass' => '$LIB$/modules/framework.class.php',
     '\\Panthera\\cache\\SQLite3Cache' => '$LIB$/modules/cache/SQLite3Cache.class.php',
@@ -23,6 +25,7 @@ $appIndex = array (
     '\\Panthera\\database\\ORMBaseObject' => '$LIB$/modules/databaseObjects/ORMBaseObject.class.php',
     '\\Panthera\\database\\Pagination' => '$LIB$/modules/database.class.php',
     '\\Panthera\\database\\SQLite3DatabaseHandler' => '$LIB$/modules/databaseHandlers/SQLite3DatabaseHandler.class.php',
+    '\\Panthera\\database\\column' => '$LIB$/modules/databaseHandlers/SQLite3DatabaseHandler.class.php',
     '\\Panthera\\database\\driver' => '$LIB$/modules/database.class.php',
     '\\Panthera\\database\\select' => '$LIB$/modules/database.class.php',
     '\\Panthera\\deployment\\task' => '$LIB$/modules/deployment/task.class.php',
@@ -33,6 +36,7 @@ $appIndex = array (
     '\\Panthera\\model\\user' => '$LIB$/modules/databaseObjects/user.class.php',
     '\\Panthera\\signals' => '$LIB$/modules/signals.class.php',
     '\\Panthera\\template' => '$LIB$/modules/template.class.php',
+    '\\classUtils' => '$LIB$/modules/utils/classUtils.class.php',
     '\\test' => '$APP$.content/modules/test.class.php',
   ),
 );
