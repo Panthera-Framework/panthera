@@ -79,11 +79,12 @@ abstract class baseClass
 
         foreach ($reflection->getProperties() as $property)
         {
-            if ($property->getName() == 'app')
+            if ($property->getName() == 'app' || $property->isStatic())
                 continue;
 
             $properties[] = $property->getName();
         }
+
         return $properties;
     }
 

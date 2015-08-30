@@ -35,7 +35,6 @@ class DatabaseTest extends PantheraFrameworkTestCase
         );
 
         $response = $select->execute(false);
-
         $this->assertContains("testKey2 FROM `testTable` as ", $response[0]);
     }
 
@@ -48,18 +47,7 @@ class DatabaseTest extends PantheraFrameworkTestCase
     {
         $this->setup();
         $whereCondition = $this->app->database->parseWhereConditionBlock(array('|=|test' => 'testValue'));
-        $this->assertEquals('( test = .testValue )', $whereCondition['sql']);
-    }
-
-    /**
-     * Test creating join condition query
-     *
-     * @author Mateusz Warzyński <lxnmen@gmail.com>
-     */
-    public function testJoinConditionBlock()
-    {
-        $this->setup();
-        $this->assertSame("JOIN group ON ( test = .testValue ) ", $this->app->database->parseJoinConditionBlock(array("JOIN|group" => array("|=|test" => 'testValue')), null));
+        $this->assertContains('test = :test_', $whereCondition['sql']);
     }
 
     /**
