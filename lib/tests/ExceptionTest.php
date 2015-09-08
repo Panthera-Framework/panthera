@@ -19,4 +19,17 @@ class ExceptionsTest extends PantheraFrameworkTestCase
         $this->setup();
         throw new \Panthera\PantheraFrameworkException('Test Panthera Framework exception', 'test');
     }
+
+    /**
+     * Check ValidationException from BaseExceptions module
+     *
+     * @expectedException \Panthera\ValidationException
+     *
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     */
+    public function testValidationException()
+    {
+        $this->setup();
+        throw new \Panthera\ValidationException('Simple message', 'yay, this is code');
+    }
 }
