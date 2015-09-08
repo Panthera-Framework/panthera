@@ -115,7 +115,7 @@ class classUtils
             $class = $callable[0];
             $method = $callable[1];
 
-            $reflection = new ReflectionMethod($class, $method);
+            $reflection = new \ReflectionMethod($class, $method);
         }
         else
         {
@@ -125,11 +125,11 @@ class classUtils
 
                 if (substr($method, -2) == '()')
                 {
-                    $reflection = new ReflectionMethod($class, $method);
+                    $reflection = new \ReflectionMethod($class, $method);
                 }
                 else
                 {
-                    $reflection = new ReflectionClass($class);
+                    $reflection = new \ReflectionClass($class);
                     $reflection = $reflection->getProperty($method);
                 }
             }

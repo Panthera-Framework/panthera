@@ -44,7 +44,7 @@ class configurePhinxTask extends task
 
         $config = [
             'default_migration_table' => '_migrations_phinxlog',
-            'default_database'        => 'development',
+            'default_database'        => $this->app->config->get('migrations.defaultDatabase', 'development'),
             'paths' => [
                 'migrations' => PANTHERA_FRAMEWORK_PATH. '/schema/databaseMigrations/',
                 'migrations_app' => $this->app->appPath. '/.content/schema/databaseMigrations/',
@@ -58,6 +58,15 @@ class configurePhinxTask extends task
                     'host'    => $this->app->config->get('database')['host'],
                     'user'    => $this->app->config->get('database')['user'],
                     'password'=> $this->app->config->get('database')['password'],
+                ],
+
+                'integrationTesting' => [
+                    'adapter' => 'sqlite',
+                    'charset' => 'utf-8',
+                    'name'    => $this->app->appPath. '/.content/phpunit-testing.sqlite3',
+                    'host'    => null,
+                    'user'    => null,
+                    'password'=> null,
                 ],
             ]
         ];

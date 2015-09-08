@@ -35,6 +35,11 @@ class application extends Panthera\baseClass
     public $notFoundArguments = [];
 
     /**
+     * @var bool
+     */
+    protected $allowUnknownArguments = false;
+
+    /**
      * Constructor
      *
      * @author Damian Kęska <damian@pantheraframework.org>
@@ -199,9 +204,17 @@ class application extends Panthera\baseClass
 
             print($this->$function($value));
 
-        } else {
+        }
+        else
+        {
             // raise a custom error
             $this->notFoundArguments[] = $function;
+
+            // find a possible value and remove from iteration, so in parseOpts() it will not be parsed
+            if (isset($args[($i+1)]) && $args[($i+1)][0] !== '-')
+            {
+                unset($args[($i+1)]);
+            }
         }
     }
 
@@ -240,11 +253,15 @@ class application extends Panthera\baseClass
             $helpInvoked = true;
             unset($args[array_search('--help', $args)]);
 
-        } elseif (in_array('-h', $args)) {
+        }
+        elseif (in_array('-h', $args))
+        {
             $helpInvoked = true;
             unset($args[array_search('-h', $args)]);
 
-        } else {
+        }
+        else
+        {
             // go through all expressions in shell command eg. "deploy.php unit-tests --arg1 value" would be: ['deploy.php', 'unit-tests', '--arg1', 'value']
             foreach ($args as $i => $arg)
             {
@@ -260,15 +277,24 @@ class application extends Panthera\baseClass
                     if (substr($arg, 0, 2) === '--')
                     {
                         $this->cliArgumentsCallFunction(substr($arg, 2), $i, $args);
-
-                    } else {
+                    }
+                    else
+                    {
                         $argShortName = substr($arg, 1);
 
                         if (isset($this->argumentsShort[$argShortName]))
                         {
                             $this->cliArgumentsCallFunction($this->argumentsShort[$argShortName], $i, $args);
-                        } else {
+                        }
+                        else
+                        {
                             $this->notFoundArguments[] = $argShortName;
+
+                            // find a possible value and remove from iteration, so in parseOpts() it will not be parsed
+                            if (isset($args[($i+1)]) && $args[($i+1)][0] !== '-')
+                            {
+                                unset($args[($i+1)]);
+                            }
                         }
                     }
 
@@ -280,7 +306,7 @@ class application extends Panthera\baseClass
         $this->opts = $args;
         $this->parseOpts($args);
 
-        if ($this->notFoundArguments)
+        if ($this->notFoundArguments && !$this->allowUnknownArguments)
         {
             foreach ($this->notFoundArguments as $argument)
             {

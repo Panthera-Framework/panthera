@@ -144,10 +144,7 @@ class configuration extends baseClass
         {
             foreach ($results as $row)
             {
-                if (!isset($this->data[$row['configuration_key']]))
-                {
                     $this->data[$row['configuration_key']] = $row['configuration_value'];
-                }
             }
         }
         else

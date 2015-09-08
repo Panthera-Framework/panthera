@@ -18,6 +18,7 @@ class testsTask extends \Panthera\deployment\task
      * @var array
      */
     public $dependencies = array(
+        'tests/buildTestDatabase',
         'tests/PHPUnitConfigure',
         'tests/PHPUnit',
     );

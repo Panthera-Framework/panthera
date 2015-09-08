@@ -40,7 +40,6 @@ class ConfigurationTest extends PantheraFrameworkTestCase
     public function testDatabase()
     {
         $this->setup();
-        $this->setupDatabase();
         $this->app->config->set('testDatabase', 'HelloDatabase!');
         $this->app->config->save();
         $this->app->config->data = array();

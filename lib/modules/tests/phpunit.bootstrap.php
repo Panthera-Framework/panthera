@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__. '/../framework.class.php';
+require_once __DIR__. '/../databaseObjects/ORMBaseObject.class.php';
+
 /**
  * Class PantheraFrameworkTestCase as to provide access to $app for PHPUnit tests.
  *
@@ -18,7 +21,7 @@ class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
      *
      * @var string
      */
-    protected $temporaryDatabaseName = '';
+    public $temporaryDatabaseName = '';
 
     /**
      * Function initializes Panthera Framework for each test separately.
@@ -27,7 +30,7 @@ class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
      * @author Mateusz Warzyński <lxnmen@gmail.com>
      * @return void
      */
-    public function setup()
+    protected function setUp()
     {
         require __DIR__ . '/../../../application/.content/app.php';
 
@@ -37,33 +40,54 @@ class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
         }
 
         $this->app = $app;
+        $this->setupDatabase();
     }
 
     /**
      * Setup a temporary database, and reconnect using it
      *
-     * @param bool $withoutMigrations Use migrations?
      * @author Damian Kęska <damian@pantheraframework.org>
      */
-    public function setupDatabase($withoutMigrations = false)
+    protected function setupDatabase()
     {
-        $databaseConfiguration = $this->app->config->get('database');
+        // generate random database file name
+        $seed = md5(microtime(true) + rand(0, 99999));
+        copy($this->app->appPath. '/.content/phpunit-testing.sqlite3', $this->app->appPath. '/.content/phpunit-testing-' .$seed. '.sqlite3');
 
-        $databaseConfiguration['name'] = 'phpunit-' .md5(microtime(true) + rand(M_PI, (M_PI * microtime(true))));
+        $this->temporaryDatabaseName = 'phpunit-testing-' .$seed;
+
+        // reconfigure database connection
+        $databaseConfiguration = $this->app->config->get('database');
+        $databaseConfiguration['name'] = $this->temporaryDatabaseName;
         $databaseConfiguration['type'] = 'sqlite3';
         $this->app->config->set('database', $databaseConfiguration);
 
-        $this->app->database = Panthera\database\driver::getInstance('SQLite3');
-        $this->temporaryDatabaseName = $this->app->database->getDatabasePath();
+        // and reload
+        $this->app->database = Panthera\database\driver::getInstance('SQLite3', true);
+    }
 
-        if (!$withoutMigrations)
-        {
-            $command = 'cd ' .$this->app->appPath. ' && ' .PANTHERA_FRAMEWORK_PATH. '/bin/deploy  build/database/migrate';
-            $this->app->logging->output("phpunit.setupDatabase: `" .$command. "`\n" .shell_exec($command));
-        }
+    /**
+     * When test result was not a success
+     *
+     * @param Exception $e
+     * @throws Exception
+     *
+     * @author Damian Kęska <damian.keska@fingo.pl>
+     */
+    protected function onNotSuccessfulTest(Exception $e)
+    {
+        $this->removeTemporaryDatabase();
+        parent::onNotSuccessfulTest($e);
+    }
 
-        // register a shutdown function, so the database will be removed at the end of the script
-        register_shutdown_function(array($this, 'removeTemporaryDatabase'));
+    /**
+     * Remove temporary database connection after every test
+     *
+     * @author Damian Kęska <damian.keska@fingo.pl>
+     */
+    public function tearDown()
+    {
+        $this->removeTemporaryDatabase();
     }
 
     /**
@@ -71,11 +95,36 @@ class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
      *
      * @author Damian Kęska <damian@pantheraframework.org>
      */
-    public function removeTemporaryDatabase()
+    protected function removeTemporaryDatabase()
     {
-        if ($this->temporaryDatabaseName && is_file($this->temporaryDatabaseName))
+        if ($this->temporaryDatabaseName)
         {
-            unlink($this->temporaryDatabaseName);
+            // disconnect from database
+            unset($this->app->database);
+
+            // remove the file
+            $array = glob($this->app->appPath . '/.content/phpunit-testing-*.sqlite3');
+
+            if ($array)
+            {
+                foreach ($array as $path)
+                {
+                    unlink($path);
+                }
+            }
         }
     }
+}
+
+class testORMModel extends \Panthera\database\ORMBaseObject
+{
+    protected static $__orm_Table = 'phpunit_orm_test_table';
+    protected static $__orm_IdColumn = 'test_id';
+
+    /**
+     * @orm
+     * @column test_id
+     * @var int
+     */
+    public $testId          = null;
 }

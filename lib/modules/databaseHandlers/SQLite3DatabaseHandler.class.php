@@ -353,7 +353,7 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
             {
                 if (is_array($v))
                 {
-                    throw new PantheraFrameworkException('Value must be a string, not array in configuration.', 'FW_DATABASE_QUERY_FAILED');
+                    throw new DatabaseException('Value must be a string, not array in configuration.', 'FW_DATABASE_QUERY_FAILED');
                 }
 
                 $sth->bindValue($k, $v);

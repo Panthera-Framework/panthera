@@ -36,7 +36,8 @@ $appIndex = array (
     '\\Panthera\\model\\user' => '$LIB$/modules/databaseObjects/user.class.php',
     '\\Panthera\\signals' => '$LIB$/modules/signals.class.php',
     '\\Panthera\\template' => '$LIB$/modules/template.class.php',
-    '\\classUtils' => '$LIB$/modules/utils/classUtils.class.php',
+    '\\Panthera\\utils\\classUtils' => '$LIB$/modules/utils/classUtils.class.php',
     '\\test' => '$APP$.content/modules/test.class.php',
+    '\\testORMModel' => '$LIB$/modules/tests/phpunit.bootstrap.php',
   ),
 );

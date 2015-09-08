@@ -28,6 +28,18 @@ class migrateTask extends task
     protected $targetPath = null;
 
     /**
+     * @var string
+     */
+    protected $environment = '';
+
+    /**
+     * @var array
+     */
+    public $shellArguments = array(
+        'environment' => '(Optional) Selects environment to migrate',
+    );
+
+    /**
      * Execute a command
      *
      * @param string $arguments
@@ -85,6 +97,27 @@ class migrateTask extends task
     }
 
     /**
+     * Parse input application arguments
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    protected function parseArguments()
+    {
+        $envSearch = array_search('--environment', $_SERVER['argv']);
+
+        if ($envSearch !== false && isset($_SERVER['argv'][($envSearch + 1)]))
+        {
+            $this->environment = $_SERVER['argv'][($envSearch + 1)];
+        }
+
+        // validation
+        if (!in_array($this->environment, ['development', 'production', 'integrationTesting']))
+        {
+            $this->environment = '';
+        }
+    }
+
+    /**
      * This method will be executed after task will be verified by deployment management
      *
      * @throws \Panthera\FileNotFoundException
@@ -97,6 +130,7 @@ class migrateTask extends task
     {
         $this->detectPaths();
         $this->testConfiguration();
+        $this->parseArguments();
         $this->executeMigrations();
     }
 }

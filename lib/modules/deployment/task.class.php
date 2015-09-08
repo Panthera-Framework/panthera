@@ -27,6 +27,13 @@ class task extends baseClass
     public $shellArguments = [];
 
     /**
+     * Skip arguments strict checking, so unknown arguments could be passed
+     *
+     * @var bool
+     */
+    public $allowUnknownArguments = false;
+
+    /**
      * Constructor
      *
      * @param \Panthera\cli\deploymentApplication $deployApp

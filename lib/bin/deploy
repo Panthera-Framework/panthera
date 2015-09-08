@@ -158,6 +158,11 @@ class deploymentApplication extends application
             $object = $this->loadTaskModule($task);
             $checked[] = $task;
 
+            if ($object->allowUnknownArguments)
+            {
+                $this->allowUnknownArguments = $object->allowUnknownArguments;
+            }
+
             if ($object->shellArguments)
             {
                 foreach ($object->shellArguments as $argument => $description)
@@ -239,7 +244,7 @@ class deploymentApplication extends application
      */
     public function parseOpts($opts)
     {
-        $checked = array();
+        $checked = [];
         $this->verifyTasksDependencies($opts, $checked);
 
         if ($this->onlyVerifyDependencies)

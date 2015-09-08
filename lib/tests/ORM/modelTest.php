@@ -14,16 +14,7 @@ class ModelTest extends PantheraFrameworkTestCase
      */
     public function testObjectFetchingById()
     {
-        $this->setupDatabase();
-
-        try
-        {
-            $this->app->database->query('INSERT INTO `users` (user_id, user_login, user_email) VALUES (1, \'phpunit\', \'phpunit@localhost\');', array());
-        }
-        catch (\Exception $e)
-        {
-            // pass, as there is already this row in database
-        }
+        $this->createTestUser();
 
         $user = new \Panthera\model\user(1);
         $this->assertEquals(true, ($user instanceof \Panthera\model\user));
@@ -40,8 +31,6 @@ class ModelTest extends PantheraFrameworkTestCase
      */
     public function testObjectCreatingWithArray()
     {
-        $this->setupDatabase();
-
         $user = new \Panthera\model\user(array('user_id' => '2'));
         $this->assertEquals('2', $user->userId);
         unset($user);
@@ -54,7 +43,6 @@ class ModelTest extends PantheraFrameworkTestCase
      */
     public function testSelectObjectByInvalidId()
     {
-        $this->setupDatabase();
         $this->setExpectedException('\Panthera\PantheraFrameworkException');
         $user = new \Panthera\model\user(2);
         unset($user);
@@ -67,9 +55,27 @@ class ModelTest extends PantheraFrameworkTestCase
      */
     public function testFetchUserObject()
     {
-        $this->setupDatabase();
+        $this->createTestUser();
+
         $result = \Panthera\model\user::fetch(array('|=|user_id' => 1));
         $this->assertSame('phpunit@localhost', $result[0]->userEmail);
         unset($result);
+    }
+
+    /**
+     * Our "dataProvider"
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function createTestUser()
+    {
+        try
+        {
+            $this->app->database->query('INSERT INTO `users` (user_id, user_login, user_email) VALUES (1, \'phpunit\', \'phpunit@localhost\');', array());
+        }
+        catch (\Exception $e)
+        {
+            // pass, as there is already this row in database
+        }
     }
 }

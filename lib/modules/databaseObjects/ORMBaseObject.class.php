@@ -62,6 +62,19 @@ abstract class ORMBaseObject extends \Panthera\baseClass
     private $__orm__meta__mapping = [];
 
     /**
+     * PHPDoc types mapping to what @see gettype() function returns
+     *
+     * @var array
+     */
+    protected $phpTypes = [
+        'int'       => ['integer', 'numeric'],
+        'float'     => ['numeric', 'float'],
+        'bool'      => ['integer', 'string'],
+        'array'     => ['array'],
+        'resource'  => ['object', 'resource'],
+    ];
+
+    /**
      * Construct object by results from database
      *
      * @param array|int|null $data Result set of a SQL query or an object id
@@ -303,18 +316,33 @@ abstract class ORMBaseObject extends \Panthera\baseClass
          */
         if ($varType)
         {
-            $allowedTypes = explode('|', $varType);
+            $allowedTypes = explode('|', $varType[0]);
             $currentType = gettype($this->{$propertyName});
+            $found = false;
 
-            // cast numeric as int
-            if ($currentType == 'string' && is_numeric($currentType))
+            if ($currentType == 'string' && is_numeric($this->{$propertyName}))
             {
-                $currentType = 'int';
+                $currentType = 'numeric';
+            }
+            elseif (class_exists($this->{$propertyName}))
+            {
+                $currentType = $this->{$propertyName};
             }
 
-            if (!in_array($currentType, $allowedTypes))
+            foreach ($allowedTypes as $typeName)
             {
-                throw new ValidationException('Column ' . get_called_class() . '::' . $propertyName . ' has values of unexpected type', 'FW_ORM_UNEXPECTED_TYPE', get_called_class(), $propertyName);
+               if (isset($this->phpTypes[$typeName]) && in_array($currentType, $this->phpTypes[$typeName]))
+               {
+                   $found = true;
+                   break;
+               }
+            }
+
+            $this->app->logging->output('Type: ' .$currentType);
+
+            if (!$found)
+            {
+                throw new ValidationException('Column ' . get_called_class() . '::' . $propertyName . ' has values of unexpected type. Expected: ' .$varType[0], 'FW_ORM_UNEXPECTED_TYPE', get_called_class(), $propertyName);
             }
         }
 
