@@ -108,14 +108,12 @@ class configuration extends baseClass
     {
         if ((isset($this->data[$key]) && $this->data[$key] !== $value) || !isset($this->data[$key]))
         {
-
-                $this->modifiedElements[$key] = [
-                    'removed'  => false,
-                    'modified' => microtime(true),
-                    'created'  => !isset($this->data[$key]),
-                    'section'  => null,
-                ];
-
+            $this->modifiedElements[$key] = [
+                'removed'  => false,
+                'modified' => microtime(true),
+                'created'  => !isset($this->data[$key]),
+                'section'  => null,
+            ];
         }
 
         $this->data[$key] = $value;

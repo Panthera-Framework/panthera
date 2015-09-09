@@ -24,7 +24,29 @@ class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
     public $temporaryDatabaseName = '';
 
     /**
-     * Function initializes Panthera Framework for each test separately.
+     * Is this class (TestCase) a big integration test?
+     * If yes then database could be shared between tests inside it
+     *
+     * @var bool
+     */
+    public $integrationTestsForTestCase = false;
+
+    /**
+     * Will be set if any test would fail
+     *
+     * @var bool
+     */
+    public $testFailed = false;
+
+    /**
+     * Instance of this class
+     *
+     * @var static
+     */
+    protected static $instance = null;
+
+    /**
+     * Function initializes Panthera Framework for each Test or TestCase separately.
      *      Allows to use $this->app variable.
      *
      * @author Mateusz Warzyński <lxnmen@gmail.com>
@@ -32,15 +54,19 @@ class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        require __DIR__ . '/../../../application/.content/app.php';
-
-        if (!isset($app))
+        if (!$this->integrationTestsForTestCase || !$this->app)
         {
-            $app = \Panthera\framework::getInstance();
-        }
+            require __DIR__ . '/../../../application/.content/app.php';
 
-        $this->app = $app;
-        $this->setupDatabase();
+            if (!isset($app))
+            {
+                $app = \Panthera\framework::getInstance();
+            }
+
+            $this->app = $app;
+            $this->setupDatabase();
+            static::$instance = $this;
+        }
     }
 
     /**
@@ -51,8 +77,12 @@ class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
     protected function setupDatabase()
     {
         // generate random database file name
-        $seed = md5(microtime(true) + rand(0, 99999));
-        copy($this->app->appPath. '/.content/phpunit-testing.sqlite3', $this->app->appPath. '/.content/phpunit-testing-' .$seed. '.sqlite3');
+        $seed = get_called_class(). '::' .$this->getName(false);
+
+        if (!is_file($this->app->appPath. '/.content/phpunit-testing-' .$seed. '.sqlite3'))
+        {
+            copy($this->app->appPath . '/.content/phpunit-testing.sqlite3', $this->app->appPath . '/.content/phpunit-testing-' . $seed . '.sqlite3');
+        }
 
         $this->temporaryDatabaseName = 'phpunit-testing-' .$seed;
 
@@ -72,22 +102,39 @@ class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
      * @param Exception $e
      * @throws Exception
      *
-     * @author Damian Kęska <damian.keska@fingo.pl>
+     * @author Damian Kęska <damian@pantheraframework.org>
      */
     protected function onNotSuccessfulTest(Exception $e)
     {
-        $this->removeTemporaryDatabase();
+        $this->testFailed = true;
+        //$this->removeTemporaryDatabase();
         parent::onNotSuccessfulTest($e);
     }
 
     /**
      * Remove temporary database connection after every test
      *
-     * @author Damian Kęska <damian.keska@fingo.pl>
+     * @author Damian Kęska <damian@pantheraframework.org>
      */
     public function tearDown()
     {
-        $this->removeTemporaryDatabase();
+        if (!$this->integrationTestsForTestCase && !static::$instance->testFailed)
+        {
+            $this->removeTemporaryDatabase();
+        }
+    }
+
+    /**
+     * If database is shared for all Tests in TestCase then remove database after all test
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public static function tearDownAfterClass()
+    {
+        if (static::$instance && static::$instance->integrationTestsForTestCase && !static::$instance->testFailed)
+        {
+            static::$instance->removeTemporaryDatabase();
+        }
     }
 
     /**
@@ -103,14 +150,11 @@ class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
             unset($this->app->database);
 
             // remove the file
-            $array = glob($this->app->appPath . '/.content/phpunit-testing-*.sqlite3');
+            $path = $this->app->appPath. '/.content/' .$this->temporaryDatabaseName. '.sqlite3';
 
-            if ($array)
+            if (is_file($path))
             {
-                foreach ($array as $path)
-                {
-                    unlink($path);
-                }
+                unlink($path);
             }
         }
     }
