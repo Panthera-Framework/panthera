@@ -329,20 +329,29 @@ abstract class ORMBaseObject extends \Panthera\baseClass
                 $currentType = $this->{$propertyName};
             }
 
-            foreach ($allowedTypes as $typeName)
+            // single type check
+            if ($allowedTypes && $allowedTypes[0] == $currentType)
             {
-               if (isset($this->phpTypes[$typeName]) && in_array($currentType, $this->phpTypes[$typeName]))
-               {
-                   $found = true;
-                   break;
-               }
+                $found = true;
+            }
+
+            if (!$found)
+            {
+                foreach ($allowedTypes as $typeName)
+                {
+                    if (isset($this->phpTypes[$typeName]) && in_array($currentType, $this->phpTypes[$typeName]))
+                    {
+                        $found = true;
+                        break;
+                    }
+                }
             }
 
             $this->app->logging->output('Type: ' .$currentType);
 
             if (!$found)
             {
-                throw new ValidationException('Column ' . get_called_class() . '::' . $propertyName . ' has values of unexpected type. Expected: ' .$varType[0], 'FW_ORM_UNEXPECTED_TYPE', get_called_class(), $propertyName);
+                throw new ValidationException('Column ' . get_called_class() . '::' . $propertyName . ' has values of unexpected type "' .$currentType. '"". Expected: ' .$varType[0], 'FW_ORM_UNEXPECTED_TYPE', get_called_class(), $propertyName);
             }
         }
 
@@ -350,9 +359,9 @@ abstract class ORMBaseObject extends \Panthera\baseClass
         /**
          * Custom validation method
          */
-        if (method_exists($this, 'validate' .$propertyName. 'Column'))
+        if (method_exists($this, 'validate' .ucfirst($propertyName). 'Column'))
         {
-            if (!$this->{'validate' .$propertyName. 'Column'})
+            if (!$this->{'validate' .ucfirst($propertyName). 'Column'}())
             {
                 throw new ValidationException('Custom validation returned a failure for column ' .get_called_class(). '::' .$propertyName, 'FW_ORM_CUSTOM_VALIDATION_FAILED', get_called_class(), $propertyName);
             }

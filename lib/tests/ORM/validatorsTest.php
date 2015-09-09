@@ -20,6 +20,12 @@ class validatorsTest extends PantheraFrameworkTestCase
         $testObject->validateProperty('testId');
     }
 
+    /**
+     * Test validation for integers and numeric strings
+     *
+     * @throws \Panthera\ValidationException
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
     public function testValidatingDataTypeValid()
     {
         $testObject = new testORMModel;
@@ -28,5 +34,18 @@ class validatorsTest extends PantheraFrameworkTestCase
 
         $testObject->testId = 12357345;
         $this->assertTrue($testObject->validateProperty('testId'));
+    }
+
+    /**
+     * Test custom validation - @see testORMModel::validateTestNameColumn()
+     *
+     * @expectedException \Panthera\ValidationException
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function testCustomValidationFunction()
+    {
+        $testObject = new testORMModel;
+        $testObject->testName = 'fail-this-test';
+        $testObject->validateProperty('testName');
     }
 }

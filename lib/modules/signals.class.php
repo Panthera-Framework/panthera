@@ -4,13 +4,13 @@ namespace Panthera;
 /**
  * Standard signal-processing module for Panthera Framework 2
  *
- * @package Panthera
+ * @package Panthera\signals
  * @author Damian Kęska <damian@pantheraframework.org>
  */
 
 class signals extends baseClass
 {
-    public $registeredSignals = array();
+    public $registeredSignals = [];
 
     /**
      * Execute attached signals

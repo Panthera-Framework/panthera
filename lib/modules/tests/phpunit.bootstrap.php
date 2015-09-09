@@ -171,4 +171,25 @@ class testORMModel extends \Panthera\database\ORMBaseObject
      * @var int
      */
     public $testId          = null;
+
+    /**
+     * @orm
+     * @column test_name
+     * @var string
+     */
+    public $testName        = null;
+
+    /**
+     * @columnValidator testName
+     * @return bool
+     */
+    protected function validateTestNameColumn()
+    {
+        if ($this->testName == 'fail-this-test')
+        {
+            return false;
+        }
+
+        return true;
+    }
 }
