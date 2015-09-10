@@ -17,6 +17,13 @@ class installComposerTask extends task
      */
     public function execute()
     {
+        // don't double the composer installation on travis-ci.org build
+        if (in_array('--travisci', $_SERVER['argv']))
+        {
+            $this->output('=> Skipping composer installation on travis-ci.org');
+            return true;
+        }
+
         // create a /bin directory in application
         if (!is_dir($this->app->appPath. "/.content/bin/"))
         {
