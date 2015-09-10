@@ -77,7 +77,7 @@ class SignalsTest extends PantheraFrameworkTestCase
     }
 
     /**
-     * Test executing not defined signal
+     * Test executing a slot where was no any method attached to
      *
      * @author Mateusz Warzyński <lxnmen@gmail.com>
      */
