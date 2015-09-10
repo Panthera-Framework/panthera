@@ -28,6 +28,13 @@ class signals extends baseClass
             return $data;
         }
 
+        // sort elements by priority ascending
+        if ($this->registeredSignals[$signalName]['modified'])
+        {
+            ksort($this->registeredSignals[$signalName]['elements']);
+            $this->registeredSignals[$signalName]['modified'] = false;
+        }
+
         foreach ($this->registeredSignals[$signalName]['elements'] as $callback)
         {
             $tmpData = $callback($data);
@@ -72,15 +79,16 @@ class signals extends baseClass
          */
         if (is_numeric($priority))
         {
-            while (isset($this->registeredSignals[$signalName]['elements'][$priority]))
-            {
-                $priority++;
-            }
-
+            $priority = intval($priority);
         }
         else
         {
             $priority = count($this->registeredSignals[$signalName]['elements']);
+        }
+
+        while (isset($this->registeredSignals[$signalName]['elements'][$priority]))
+        {
+            $priority++;
         }
 
         $this->registeredSignals[$signalName]['modified'] = true;

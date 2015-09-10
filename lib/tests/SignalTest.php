@@ -38,15 +38,31 @@ class SignalsTest extends PantheraFrameworkTestCase
     }
 
     /**
-     * Test setting function's priority to signal.
+     * Attach some callbacks with custom priority number, but attach them in different order what is important
      *
-     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     * @author Damian Kęska <damian@pantheraframework.org>
      */
-    public function testSettingSignalPriority()
+    public function testSettingCustomSignalPriority()
     {
-        $this->setup();
-        $this->app->signals->attach("clearLogging", array($this->app->logging, 'clear'), 10);
-        $this->assertNotNull($this->app->signals->registeredSignals["clearLogging"]['elements'][10]);
+        $this->app->signals->attach('testSignal', function ($a) { return $a . '2'; /* test 1 */ }, 10);
+        $this->app->signals->attach('testSignal', function ($a) { return $a . '1'; /* test 2, before test 1 */ }, 6);
+        $this->app->signals->attach('testSignal', function ($a) { return $a . '3'; /* test 3, after all tests */ }, 12);
+
+        $this->assertSame('0123', $this->app->signals->execute('testSignal', '0'));
+    }
+
+    /**
+     * Test default priority assignment for registered signals
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function testDefaultSignalPriority()
+    {
+        $this->app->signals->attach('testSignalWithDefaultPriority', function ($a) { return $a . '1'; });
+        $this->app->signals->attach('testSignalWithDefaultPriority', function ($a) { return $a . '2'; });
+        $this->app->signals->attach('testSignalWithDefaultPriority', function ($a) { return $a . '3'; });
+
+        $this->assertSame('0123', $this->app->signals->execute('testSignalWithDefaultPriority', '0'));
     }
 
     /**
@@ -56,7 +72,6 @@ class SignalsTest extends PantheraFrameworkTestCase
      */
     public function testSettingNotCallableSignalFunction()
     {
-        $this->setup();
         $this->setExpectedException("\\InvalidArgumentException");
         $this->app->signals->attach('notCallable', 'tryToCallMe');
     }
