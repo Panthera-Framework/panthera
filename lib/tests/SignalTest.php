@@ -44,9 +44,9 @@ class SignalsTest extends PantheraFrameworkTestCase
      */
     public function testSettingCustomSignalPriority()
     {
-        $this->app->signals->attach('testSignal', function ($a) { return $a . '2'; /* test 1 */ }, 10);
-        $this->app->signals->attach('testSignal', function ($a) { return $a . '1'; /* test 2, before test 1 */ }, 6);
-        $this->app->signals->attach('testSignal', function ($a) { return $a . '3'; /* test 3, after all tests */ }, 12);
+        $this->app->signals->attach('testSignal', function ($a) { return $a . '2'; /* test 1 */ }, 100);
+        $this->app->signals->attach('testSignal', function ($a) { return $a . '1'; /* test 2, before test 1 */ }, 06);
+        $this->app->signals->attach('testSignal', function ($a) { return $a . '3'; /* test 3, after all tests */ }, 120);
 
         $this->assertSame('0123', $this->app->signals->execute('testSignal', '0'));
     }
