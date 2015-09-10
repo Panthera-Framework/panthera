@@ -71,6 +71,7 @@ class signals extends baseClass
             $this->registeredSignals[$signalName] = [
                 'modified' => false,
                 'elements' => [],
+                'highestPriority'  => 0,
             ];
         }
 
@@ -83,7 +84,8 @@ class signals extends baseClass
         }
         else
         {
-            $priority = count($this->registeredSignals[$signalName]['elements']);
+            // put at the end
+            $priority = $this->registeredSignals[$signalName]['highestPriority'] + 1;
         }
 
         while (isset($this->registeredSignals[$signalName]['elements'][$priority]))
@@ -93,6 +95,13 @@ class signals extends baseClass
 
         $this->registeredSignals[$signalName]['modified'] = true;
         $this->registeredSignals[$signalName]['elements'][$priority] = $callback;
+
+        // set the highest priority for this slot
+        if ($priority > $this->registeredSignals[$signalName]['highestPriority'])
+        {
+            $this->registeredSignals[$signalName]['highestPriority'] = $priority;
+        }
+
         return true;
     }
 }
