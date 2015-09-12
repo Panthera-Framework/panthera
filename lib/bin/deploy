@@ -269,6 +269,7 @@ class deploymentApplication extends application
                 continue;
             }
 
+            $timer = microtime(true);
             print("=======> Running task " .$moduleName. "\n");
 
             /**
@@ -294,6 +295,8 @@ class deploymentApplication extends application
             {
                 $currentTask->execute($this);
             }
+
+            print("\n++ Task finished in: " .(microtime(true) - $timer). "s\n");
         }
     }
 }
