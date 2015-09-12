@@ -3,7 +3,8 @@ Panthera Framework 2
 
 [![Code Climate](https://codeclimate.com/github/Panthera-Framework/panthera/badges/gpa.svg)](https://codeclimate.com/github/Panthera-Framework/panthera)
 [![Test Coverage](https://codeclimate.com/github/Panthera-Framework/panthera/badges/coverage.svg)](https://codeclimate.com/github/Panthera-Framework/panthera/coverage)
-[![Unit testing](https://travis-ci.org/Panthera-Framework/panthera.svg)](https://travis-ci.org/Panthera-Framework/panthera)
+[![Testing on Linux](https://travis-ci.org/Panthera-Framework/panthera.svg)](https://travis-ci.org/Panthera-Framework/panthera)
+[![Testing on Windows](https://ci.appveyor.com/api/projects/status/teku9sij735ivmhn?svg=true)](https://ci.appveyor.com/project/webnull/panthera)
 
 Assumptions for second version:
 
