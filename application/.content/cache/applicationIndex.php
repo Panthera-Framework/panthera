@@ -6,6 +6,7 @@ $appIndex = array (
   ),
   'autoloader' => 
   array (
+    '\\NodeVisitor_signalSearcher' => '$LIB$/modules/deployment/signalIndexing.class.php',
     '\\PantheraFrameworkTestCase' => '$LIB$/modules/tests/phpunit.bootstrap.php',
     '\\Panthera\\DatabaseException' => '$LIB$/modules/BaseExceptions.php',
     '\\Panthera\\FileException' => '$LIB$/modules/BaseExceptions.php',
@@ -37,7 +38,42 @@ $appIndex = array (
     '\\Panthera\\signals' => '$LIB$/modules/signals.class.php',
     '\\Panthera\\template' => '$LIB$/modules/template.class.php',
     '\\Panthera\\utils\\classUtils' => '$LIB$/modules/utils/classUtils.class.php',
+    '\\dashboardModule' => '$LIB$/packages/admin/dashboard/modules/dashboardModule.class.php',
+    '\\signalIndexing' => '$LIB$/modules/deployment/signalIndexing.class.php',
     '\\test' => '$APP$.content/modules/test.class.php',
     '\\testORMModel' => '$LIB$/modules/tests/phpunit.bootstrap.php',
+  ),
+  'signals' => 
+  array (
+    'framework.database.pdo.configure' => 
+    array (
+      0 => 
+      array (
+        'type' => 'slot',
+        'class' => 'SQLite3DatabaseHandler',
+        'function' => 'configureSocket',
+        'file' => '/var/www/pantheraframework2/panthera/lib/modules/databaseHandlers/SQLite3DatabaseHandler.class.php',
+      ),
+    ),
+    'framework.orm.object-{#CLASS#}.delete' => 
+    array (
+      0 => 
+      array (
+        'type' => 'slot',
+        'class' => 'ORMBaseObject',
+        'function' => 'delete',
+        'file' => '/var/www/pantheraframework2/panthera/lib/modules/databaseObjects/ORMBaseObject.class.php',
+      ),
+    ),
+    'UI.Admin.template.menu' => 
+    array (
+      0 => 
+      array (
+        'type' => 'signal',
+        'class' => 'dashboardModule',
+        'function' => 'attachToAdminMenu',
+        'file' => '/var/www/pantheraframework2/panthera/lib/packages/admin/dashboard/modules/dashboardModule.class.php',
+      ),
+    ),
   ),
 );

@@ -234,7 +234,7 @@ abstract class ORMBaseObject extends \Panthera\baseClass
     /**
      * Delete a object
      *
-     * @signal framework.orm.object-{#CLASS#}.delete [{#CLASS#}]
+     * @slot framework.orm.object-{#CLASS#}.delete
      * @author Damian Kęska <damian@pantheraframework.org>
      * @return bool
      */

@@ -16,6 +16,7 @@ class developerTask extends task
      */
     public $dependencies = array(
         'build/framework/autoloaderCache',
+        'build/framework/signals/updateSignalsIndex',
         'build/environment/installComposer',
         'build/framework/updateComposerPackages',
         'build/environment/shellConfiguration',

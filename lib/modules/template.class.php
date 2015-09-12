@@ -1,6 +1,5 @@
 <?php
 namespace Panthera;
-include __DIR__. '/../vendor/pantheraframework/raintpl4/library/Rain/autoload.php';
 
 /**
  * Panthera Framework 2 template management class - displaying, compiling,

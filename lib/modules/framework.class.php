@@ -259,6 +259,12 @@ class framework
      */
     public function setup($controllerPath, $configuration = array())
     {
+        // load composer's autoloader
+        if (is_file(PANTHERA_FRAMEWORK_PATH . '/vendor/autoload.php'))
+        {
+            require_once PANTHERA_FRAMEWORK_PATH . '/vendor/autoload.php';
+        }
+
         $this->appPath = pathinfo($controllerPath, PATHINFO_DIRNAME). '/';
         $this->libPath = realpath(__DIR__. '/../');
         $this->frameworkPath = realpath(__DIR__. '/../');
@@ -272,7 +278,11 @@ class framework
         $this->cache    = cache\cache::getInstance();
         $this->database = database\driver::getInstance();
         $this->locale   = new locale;
-        $this->template = new template;
+
+        if (strtolower(PHP_SAPI) != 'cli')
+        {
+            $this->template = new template;
+        }
         //$this->routing  = new \Panthera\routing;
     }
 

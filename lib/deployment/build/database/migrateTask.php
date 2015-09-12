@@ -2,8 +2,6 @@
 namespace Panthera\deployment;
 use Panthera\PantheraFrameworkException;
 
-require_once PANTHERA_FRAMEWORK_PATH . '/vendor/autoload.php';
-
 /**
  * Executes database migrations all in proper order
  *

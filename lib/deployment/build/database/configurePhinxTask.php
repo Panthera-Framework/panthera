@@ -3,8 +3,6 @@ namespace Panthera\deployment;
 use Panthera\FileException;
 use Symfony\Component\Yaml\Yaml;
 
-require_once PANTHERA_FRAMEWORK_PATH . '/vendor/autoload.php';
-
 /**
  * Generate configuration for Phinx migrations framework
  *

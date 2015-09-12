@@ -82,7 +82,7 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
     /**
      * Configure a database socket right after connection was successful
      *
-     * @signal framework.database.pdo.configure [\PDO $socket]
+     * @slot framework.database.pdo.configure
      * @author Damian Kęska <damian@pantheraframework.org>
      */
     protected function configureSocket()

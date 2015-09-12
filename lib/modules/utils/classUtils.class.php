@@ -44,6 +44,11 @@ class classUtils
 
         do
         {
+            if (strlen($phpDoc) <= $pos)
+            {
+                break;
+            }
+
             $pos = strpos($phpDoc, '* @' .$tagName, $pos + 1);
 
             if ($pos !== false)
