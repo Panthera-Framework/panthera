@@ -19,6 +19,13 @@ class updateComposerPackagesTask extends task
      */
     public function execute()
     {
+        // don't double the composer installation on travis-ci.org build
+        if (in_array('--travisci', $_SERVER['argv']))
+        {
+            $this->output('=> Skipping composer update on travis-ci.org');
+            return true;
+        }
+
         // install a new copy of composer if not installed yet
         if (!is_file($this->app->appPath. "/.content/bin/composer"))
         {
