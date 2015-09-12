@@ -5,8 +5,20 @@
  * @package Panthera\template\tests
  * @author Mateusz Warzyński <lxnmen@gmail.com>
  */
-class RainInterfaceTest extends PantheraFrameworkTestCase
+class RainInterfaceTest extends PantheraFrameworkTemplatingTestCase
 {
+    /**
+     * Setup a templating engine
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        require_once PANTHERA_FRAMEWORK_PATH. '/vendor/autoload.php';
+        $this->app->template = new \Panthera\template;
+    }
+
     /**
      * Check assigning variables
      *

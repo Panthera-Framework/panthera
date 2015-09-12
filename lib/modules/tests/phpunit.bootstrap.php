@@ -5,6 +5,7 @@ require_once __DIR__. '/../databaseObjects/ORMBaseObject.class.php';
 /**
  * Class PantheraFrameworkTestCase as to provide access to $app for PHPUnit tests.
  *
+ * @package Panthera\tests
  * @author Mateusz Warzyński <lxnmen@gmail.com>
  */
 class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
@@ -191,5 +192,26 @@ class testORMModel extends \Panthera\database\ORMBaseObject
         }
 
         return true;
+    }
+}
+
+/**
+ * Base class for unit testing of Panthera Framework 2 templating engine
+ *
+ * @package Panthera\template\tests
+ * @author Damian Kęska <damian@pantheraframework.org>
+ */
+class PantheraFrameworkTemplatingTestCase extends PantheraFrameworkTestCase
+{
+    /**
+     * Setup a templating engine
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        require_once PANTHERA_FRAMEWORK_PATH. '/vendor/autoload.php';
+        $this->app->template = new \Panthera\template;
     }
 }

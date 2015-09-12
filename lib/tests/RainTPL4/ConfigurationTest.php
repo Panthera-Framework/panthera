@@ -5,7 +5,7 @@
  * @package Panthera\template\tests
  * @author Mateusz Warzyński <lxnmen@gmail.com>
  */
-class RainConfigurationTest extends PantheraFrameworkTestCase
+class RainConfigurationTest extends PantheraFrameworkTemplatingTestCase
 {
     /**
      * Check assigning variables
@@ -15,7 +15,6 @@ class RainConfigurationTest extends PantheraFrameworkTestCase
      */
     public function testConfiguration()
     {
-        $this->setup();
         $this->app->template->setConfiguration(array('debug' => true));
         $this->assertTrue($this->app->template->rain->config['debug']);
     }
