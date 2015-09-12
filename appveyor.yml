@@ -13,11 +13,11 @@ install:
   - echo date.timezone="UTC" >> php.ini
   - echo extension_dir=ext >> php.ini
   - SET PATH=C:\tools\php;%PATH%
-  - cd C:\projects\phpmd
   - cd C:\pantheraframework2\lib
   - php -r "readfile('http://getcomposer.org/installer');" | php
   - php composer.phar install --prefer-source --no-interaction
 
 test_script:
-  - cd C:\pantheraframework2\lib
-  - vendor\bin\phpunit.bat
+  - cd C:\pantheraframework2\application
+  - ../lib/bin/deploy build/environment/developer
+  - ../lib/bin/deploy tests
