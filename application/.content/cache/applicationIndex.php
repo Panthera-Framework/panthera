@@ -46,24 +46,6 @@ $appIndex = array (
   ),
   'signals' => 
   array (
-    'framework.database.pdo.configure' => 
-    array (
-      0 => 
-      array (
-        'type' => 'slot',
-        'call' => '\\Panthera\\database\\SQLite3DatabaseHandler::configureSocket',
-        'file' => '$LIB$/modules/databaseHandlers/SQLite3DatabaseHandler.class.php',
-      ),
-    ),
-    'framework.orm.object-{#CLASS#}.delete' => 
-    array (
-      0 => 
-      array (
-        'type' => 'slot',
-        'call' => '\\Panthera\\database\\ORMBaseObject::delete',
-        'file' => '$LIB$/modules/databaseObjects/ORMBaseObject.class.php',
-      ),
-    ),
     'UI.Admin.template.menu' => 
     array (
       0 => 

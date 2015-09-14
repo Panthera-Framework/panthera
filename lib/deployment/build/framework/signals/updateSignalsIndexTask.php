@@ -9,6 +9,17 @@ namespace Panthera\deployment;
  */
 class updateSignalsIndexTask extends task
 {
+    /**
+     * Excluded paths from indexing
+     *
+     * @var array
+     */
+    protected $pathsExcluded = [
+        '/.content/cache/',
+        '/tests/',
+        '/schema/databaseMigrations/',
+    ];
+
 	/**
 	 * This method will be executed after task will be verified by deployment management
 	 *
@@ -31,7 +42,16 @@ class updateSignalsIndexTask extends task
 					continue;
 				}
 
-				$absolutePath = $this->app->getPath($file);
+                // exclude some paths eg. containing tests or libraries etc.
+				$absolutePath = realpath($this->app->getPath($file));
+
+                foreach ($this->pathsExcluded as $excludedPath)
+                {
+                    if (strpos($absolutePath, $excludedPath) !== false)
+                    {
+                        continue 2;
+                    }
+                }
 
 				$this->output('-> Parsing ' .$absolutePath);
 				$signals = \signalIndexing::loadFile($absolutePath);
