@@ -35,9 +35,13 @@ class signalIndexing
      */
     public static function loadString($code, $file = '')
     {
+        $framework = \Panthera\framework::getInstance();
+
         if ($file && is_file($file))
         {
             $file = realpath($file);
+            $file = str_replace(PANTHERA_FRAMEWORK_PATH, '$LIB$', $file);
+            $file = str_replace($framework->appPath, '$APP$/', $file);
         }
 
         $signalSearcher = new \NodeVisitor_signalSearcher;
@@ -74,6 +78,7 @@ class signalIndexing
 class NodeVisitor_signalSearcher extends PhpParser\NodeVisitorAbstract
 {
     public $found = array();
+    protected $namespace = '\\';
 
     /**
      * Iterate through nodes and collect data
@@ -82,9 +87,13 @@ class NodeVisitor_signalSearcher extends PhpParser\NodeVisitorAbstract
      * @author Damian Kęska <damian@pantheraframework.org>
      * @return string
      */
-    public function leaveNode(PhpParser\Node $node)
+    public function enterNode(PhpParser\Node $node)
     {
-        if ($node instanceof PhpParser\Node\Stmt\Class_)
+        if ($node instanceof PhpParser\Node\Stmt\Namespace_)
+        {
+            $this->namespace = '\\' .implode('\\', $node->name->parts). '\\';
+        }
+        elseif ($node instanceof PhpParser\Node\Stmt\Class_)
         {
             foreach ($node->stmts as $stmt)
             {
@@ -101,7 +110,7 @@ class NodeVisitor_signalSearcher extends PhpParser\NodeVisitorAbstract
                 }
 
                 $signals = \Panthera\utils\classUtils::getTag($phpDoc, 'signal');
-                $slots = \Panthera\utils\classUtils::getTag($phpDoc, 'slot');
+                //$slots = \Panthera\utils\classUtils::getTag($phpDoc, 'slot');
 
                 if ($signals)
                 {
@@ -114,15 +123,14 @@ class NodeVisitor_signalSearcher extends PhpParser\NodeVisitorAbstract
 
                         $this->found[$signal][] = [
                             'type'     => 'signal',
-                            'class'    => $node->name,
-                            'function' => $stmt->name,
+                            'call'     => $this->namespace . $node->name. '::' .$stmt->name,
                             'phpDoc'   => $phpDoc,
                             'file'     => '',
                         ];
                     }
                 }
 
-                if ($slots)
+                /*if ($slots)
                 {
                     foreach ($slots as $slot)
                     {
@@ -133,13 +141,12 @@ class NodeVisitor_signalSearcher extends PhpParser\NodeVisitorAbstract
 
                         $this->found[$slot][] = [
                             'type'     => 'slot',
-                            'class'    => $node->name,
-                            'function' => $stmt->name,
+                            'call'     => $this->namespace . $node->name. '::' .$stmt->name,
                             'phpDoc'   => $phpDoc,
                             'file'     => '',
                         ];
                     }
-                }
+                }*/
             }
         }
     }

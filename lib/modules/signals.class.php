@@ -7,10 +7,36 @@ namespace Panthera;
  * @package Panthera\signals
  * @author Damian Kęska <damian@pantheraframework.org>
  */
-
 class signals extends baseClass
 {
     public $registeredSignals = [];
+
+    /**
+     * Attach signals to slots basing on signalIndexing process
+     * Finds all @\signal and @\slot usage in code and attaches found class methods for selected slot
+     *
+     * @param string $slot Slot name
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return int Number of attached signals
+     */
+    protected function autoload($slot)
+    {
+        $count = 0;
+
+        if (isset($this->app->applicationIndex['signals'][$slot]) && $this->app->applicationIndex['signals'][$slot])
+        {
+            foreach ($this->app->applicationIndex['signals'][$slot] as $registered)
+            {
+                if (isset($registered['call']) && is_callable($registered['call']))
+                {
+                    $this->attach($slot, $registered['call']);
+                    $count++;
+                }
+            }
+        }
+
+        return $count;
+    }
 
     /**
      * Execute attached signals
@@ -23,19 +49,38 @@ class signals extends baseClass
      */
     public function execute($signalName, $data = null)
     {
+        // try to autoload events registered in code, case: there are no any existing signals attached
+        if (!isset($this->registeredSignals[$signalName]) || !$this->registeredSignals[$signalName]['elements'])
+        {
+            if ($this->autoload($signalName))
+            {
+                $this->registeredSignals[$signalName]['autoload'] = true;
+            }
+        }
+
+        // if still no results
         if (!isset($this->registeredSignals[$signalName]) || !$this->registeredSignals[$signalName]['elements'])
         {
             return $data;
         }
 
-        // sort elements by priority ascending
-        if ($this->registeredSignals[$signalName]['modified'])
+        $slot = &$this->registeredSignals[$signalName];
+
+        // autoload - case: there are existing signals attached
+        if (!$slot['autoload'])
         {
-            ksort($this->registeredSignals[$signalName]['elements']);
-            $this->registeredSignals[$signalName]['modified'] = false;
+            $this->autoload($signalName);
+            $slot['autoload'] = true;
         }
 
-        foreach ($this->registeredSignals[$signalName]['elements'] as $callback)
+        // sort elements by priority ascending
+        if ($slot['modified'])
+        {
+            ksort($slot['elements']);
+            $slot['modified'] = false;
+        }
+
+        foreach ($slot['elements'] as $callback)
         {
             $tmpData = $callback($data);
 
@@ -72,6 +117,7 @@ class signals extends baseClass
                 'modified' => false,
                 'elements' => [],
                 'highestPriority'  => 0,
+                'autoload' => false,
             ];
         }
 
