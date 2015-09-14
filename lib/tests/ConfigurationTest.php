@@ -33,6 +33,19 @@ class ConfigurationTest extends PantheraFrameworkTestCase
     }
 
     /**
+     * Check removing key from configuration
+     *
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     */
+    public function testRemove()
+    {
+        $this->setup();
+        $this->app->config->set('testKey', 'testValue');
+        $this->app->config->remove('testKey');
+        $this->assertArrayNotHasKey('testKey', $this->app->config->data);
+    }
+
+    /**
      * Test loading configuration from database
      *
      * @author Mateusz Warzyński <lxnmen@gmail.com>
