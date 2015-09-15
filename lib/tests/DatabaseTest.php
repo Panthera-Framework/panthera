@@ -11,23 +11,30 @@ class DatabaseTest extends PantheraFrameworkTestCase
      * Check building select query with PDO support
      *
      * @author Mateusz Warzyński <lxnmen@gmail.com>
+     * @author Damian Kęska <damian@pantheraframework.org>
      * @return void
      */
     public function testBuildingSelectQuery()
     {
-        $this->setup();
-        $query = $this->app->database->select('dbName', array('userName'), array(), array('userName ASC', 'userID DESC'), array('userName', 'count(userId)'), null, null, null, false);
-        $this->assertContains('SELECT s1.userName FROM `dbName` as s1  ORDER BY s1.userName ASC, s1.userID DESC GROUP BY s1.userName, count(s1.userId)', $query[0]);
+        $query = $this->app->database->select('dbName', [
+            'userName'
+        ], [], ['userName ASC', 'userID DESC'], ['userName', 'count(userId)'], null, null, null, false);
+
+        $this->assertRegExp('/SELECT(.*)userName FROM/i', $query[0]);
+        $this->assertRegExp('/ORDER BY([ A-Za-z0-9.]+?).userName ASC/i', $query[0]);
+        $this->assertRegExp('/([ A-Za-z0-9.]+?)userID DESC/i', $query[0]);
+        $this->assertRegExp('/GROUP BY([ A-Za-z0-9.]+?)userName/i', $query[0]);
+        $this->assertRegExp('/count\(([ A-Za-z0-9.]+?)userId\)/i', $query[0]);
     }
 
     /**
      * Test building select query with OOP
      *
      * @author Mateusz Warzyński <lxnmen@gmail.com>
+     * @author Damian Kęska <damian@pantheraframework.org>
      */
     public function testBuildingSelectQuery2()
     {
-        $this->setup();
         $select = new \Panthera\database\select('testTable');
         $select->what = array(
             'testKey1',
@@ -35,19 +42,21 @@ class DatabaseTest extends PantheraFrameworkTestCase
         );
 
         $response = $select->execute(false);
-        $this->assertContains("testKey2 FROM `testTable` as ", $response[0]);
+        $this->assertRegExp('/SELECT([ A-Za-z0-9.]+?)testKey1/i', $response[0], true);
+        $this->assertContains("testKey1,", $response[0], true);
+        $this->assertContains("testKey2 FROM `testTable` as ", $response[0], true);
     }
 
     /**
      * Test creating where condition query
      *
      * @author Mateusz Warzyński <lxnmen@gmail.com>
+     * @author Damian Kęska <damian@pantheraframework.org>
      */
     public function testWhereCondition()
     {
-        $this->setup();
         $whereCondition = $this->app->database->parseWhereConditionBlock(array('|=|test' => 'testValue'));
-        $this->assertContains('test = :test_', $whereCondition['sql']);
+        $this->assertContains('test = :test', $whereCondition['sql']);
     }
 
     /**
@@ -57,14 +66,34 @@ class DatabaseTest extends PantheraFrameworkTestCase
      */
     public function testPagination()
     {
-        $this->setup();
-
         $select = new \Panthera\database\select('testTable');
         $select->what = array('testKey');
         $select->limit = new \Panthera\database\Pagination(5, 3);
 
         $response = $select->execute(false);
 
-        $this->assertContains("LIMIT 5 OFFSET 10", $response[0]);
+        $this->assertContains("LIMIT 5 OFFSET 10", $response[0], '', true);
+    }
+
+    /**
+     * INSERT INTO syntax check, if contains passed columns, table name
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function testInsertSyntax()
+    {
+        $insert = $this->app->database->insert('people', [
+            'name'  => 'Anarchist',
+            'age'   => 34,
+            'chair' => 'long black-red'
+        ], true);
+
+        $this->assertContains('insert into', $insert['query'], '', true);
+        $this->assertContains('`people`', $insert['query'], '', true);
+        $this->assertContains('name', $insert['query'], '', true);
+        $this->assertContains('age', $insert['query'], '', true);
+        $this->assertContains('chair', $insert['query'], '', true);
+        $this->assertSame(3, count($insert['data']));
+        $this->assertArrayHasKey('name', $insert['data']);
     }
 }

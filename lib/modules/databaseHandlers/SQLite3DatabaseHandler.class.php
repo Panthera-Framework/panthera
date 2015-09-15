@@ -339,7 +339,7 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
      */
     public function insert($table, array $data, $simulate = false)
     {
-        $query = 'INSERT INTO ' .$table;
+        $query = 'INSERT INTO `' .$table. '`';
         $columns = ' (';
         $values = ' VALUES (';
 
