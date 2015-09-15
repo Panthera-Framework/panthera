@@ -326,6 +326,46 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
     }
 
     /**
+     * Insert a new row into the database
+     *
+     * @param string $table Table name
+     * @param array $data Columns and values array
+     * @param bool $simulate Simulate and return query string instead of executing
+     *
+     * @throws DatabaseException
+     * @throws PantheraFrameworkException
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return array
+     */
+    public function insert($table, array $data, $simulate = false)
+    {
+        $query = 'INSERT INTO ' .$table;
+        $columns = ' (';
+        $values = ' VALUES (';
+
+        foreach ($data as $key => $value)
+        {
+            $columns .= $key. ', ';
+            $values .= ':' .$key. ', ';
+        }
+
+        $columns = rtrim($columns, ', '). ')';
+        $values = rtrim($values, ', '). ')';
+
+        $query .= $columns . $values;
+
+        if ($simulate)
+        {
+            return [
+                'query' => $query,
+                'data'  => $data,
+            ];
+        }
+
+        return $this->query($query, $data);
+    }
+
+    /**
      * Make a SQL query and return resultset
      *
      * @param string $query

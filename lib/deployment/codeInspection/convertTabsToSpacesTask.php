@@ -46,6 +46,8 @@ class convertTabsToSpacesTask extends task
         if (is_writable($path) && is_readable($path))
         {
             $contents = file_get_contents($path);
+            $hash = md5($contents);
+        
             $contents = str_replace("\t", '    ', $contents);
             $contents = str_replace("\r\n", "\n", $contents);
             $contents = str_replace("\r", "\n",   $contents);
@@ -53,6 +55,11 @@ class convertTabsToSpacesTask extends task
             $filePointer = fopen($path, 'w');
             fwrite($filePointer, $contents);
             fclose($filePointer);
+            
+            if ($hash !== md5($contents))
+            {
+                $this->output('# ' .basename($path). ' was saved');
+            }
         }
         else
         {
