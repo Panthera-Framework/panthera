@@ -48,6 +48,30 @@ class DatabaseTest extends PantheraFrameworkTestCase
     }
 
     /**
+     * Testing update functions
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function testUpdate()
+    {
+        $this->setUp();
+
+        // create a test table
+        $this->app->database->query('CREATE TABLE `testUpdate` ( number INTEGER PRIMARY KEY ); ');
+
+        // insert a value
+        $this->app->database->insert('testUpdate', ['number' => 5]);
+
+        // update it
+        $this->app->database->update('testUpdate', ['number' => 10], ['|=|number' => 5]);
+
+        // check it's value
+        $fetch = $this->app->database->select('testUpdate', ['number']);
+
+        $this->assertSame('10', $fetch[0]['number']);
+    }
+
+    /**
      * Test creating where condition query
      *
      * @author Mateusz Warzyński <lxnmen@gmail.com>
