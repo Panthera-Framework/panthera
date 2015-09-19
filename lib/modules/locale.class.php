@@ -133,47 +133,39 @@ class locale extends baseClass
      */
     public function compileCSV($body)
     {
-        $lines = explode("\n", $body);
-        $translations = array();
-        $newLinesArray = array();
-        $newLine = 0;
-        $count = count($lines);
+        // escaping
+        $body = str_replace('\"', '\@DOUBLEQUOTE_ESCAPE', $body);
 
-        /** Join multiline translations */
-        foreach ($lines as $number => $line)
+        $tempTranslations = [];
+        $len = strlen($body);
+        $pos = 0;
+
+        do
         {
-            //if (!isset($lines[$number])) continue;
-            $occurrences = substr_count($line, '"');
+            $pos = strpos($body, '"', $pos);
 
-            if (!$occurrences || $occurrences % 2)
+            if ($pos === false)
             {
-                if ($number === $count)
-                {
-                    throw new SyntaxException('Syntax error in parsed CSV file, ending entry does not have a pair of double quotes present', 'FW_LOCALE_CSV_QUOTES');
-                }
-
-                if (!isset($newLinesArray[$newLine]))
-                {
-                    $newLinesArray[$newLine] = '';
-                } else {
-                    $newLinesArray[$newLine] .= "\n";
-                }
-
-                $newLinesArray[$newLine] .= $line;
-            } else {
-                $newLine++;
-                $newLinesArray[$newLine] = $line;
+                break;
             }
-        }
 
-        /** Finally parse CSV file using built-in function */
-        foreach ($newLinesArray as &$line)
+            $end = strpos($body, '",', $pos + 1);
+            $key = substr($body, $pos + 1, ($end - $pos - 1));
+
+            $translationStarts = strpos($body, '"', $end + 1);
+            $translationEnds   = strpos($body, '"', $translationStarts + 1);
+            $value = substr($body, $translationStarts + 1, ($translationEnds - $translationStarts - 1));
+
+            $tempTranslations[$key] = $value;
+            $pos = $translationEnds + 1;
+
+        } while ($pos !== false && $pos < $len);
+
+        $translations = [];
+
+        foreach ($tempTranslations as $key => $value)
         {
-            $line = str_getcsv($line);
-            if ($line[0] !== null)
-            {
-                $translations[$line[0]] = $line[1];
-            }
+            $translations[str_replace('\@DOUBLEQUOTE_ESCAPE', '\"', $key)] = str_replace('\@DOUBLEQUOTE_ESCAPE', '\"', $value);
         }
 
         return $translations;

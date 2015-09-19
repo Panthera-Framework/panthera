@@ -57,7 +57,7 @@ class LocaleTest extends PantheraFrameworkTestCase
     {
         $this->setup();
         $this->setExpectedException('\Panthera\FileNotFoundException');
-        $this->app->locale->activeLanguage ='unknown';
+        $this->app->locale->activeLanguage = 'unknown';
         $this->app->locale->get('testValue', '');
     }
 
@@ -69,8 +69,13 @@ class LocaleTest extends PantheraFrameworkTestCase
     public function testCompileCSV()
     {
         $this->setup();
-        $translations = $this->app->locale->compileCSV("key,value");
+        $translations = $this->app->locale->compileCSV('"key", "value"\n"key2", "value2"');
         $this->assertEquals('value', $translations['key']);
+        $this->assertEquals('value2', $translations['key2']);
+
+        // escaping
+        $translations = $this->app->locale->compileCSV('"key", "Escaped \"text\""');
+        $this->assertEquals('Escaped \"text\"', $translations['key']);
     }
 
     /**
