@@ -123,6 +123,8 @@ class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
         {
             $this->removeTemporaryDatabase();
         }
+
+        unset($this->app);
     }
 
     /**

@@ -54,8 +54,6 @@ class DatabaseTest extends PantheraFrameworkTestCase
      */
     public function testUpdate()
     {
-        $this->setUp();
-
         // create a test table
         $this->app->database->query('CREATE TABLE `testUpdate` ( number INTEGER PRIMARY KEY ); ');
 
