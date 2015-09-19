@@ -366,6 +366,63 @@ class SQLite3DatabaseHandler extends driver implements databaseHandlerInterface
     }
 
     /**
+     * Performs a row update
+     *
+     * @param string $table Table name
+     * @param array $values Columns and values to set
+     * @param null $where Optional where condition
+     * @param null $limit Optional limit
+     * @param bool $simulate Simulate and return query string instead of executing
+     *
+     * @throws DatabaseException
+     * @throws PantheraFrameworkException
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
+     * @return array
+     */
+    public function update($table, array $values, $where = null, $limit = null, $simulate = false)
+    {
+        $query = 'UPDATE `' .$table. '` SET ';
+
+        foreach ($values as $key => $value)
+        {
+            $query .= ' ' .$key. ' = :' .$key. ', ';
+        }
+
+        $query = rtrim($query, ', ');
+
+        /**
+         * Where
+         *
+         * @see \Panthera\database::parseWhereConditionBlock()
+         */
+        if ($where)
+        {
+            $whereBlock = $this->parseWhereConditionBlock($where, $table);
+            $values = array_merge($values, $whereBlock['data']);
+            $query .= ' WHERE ' .$whereBlock['sql'];
+        }
+
+        /**
+         * Limit
+         */
+        if ($limit)
+        {
+            throw new DatabaseException('LIMIT in UPDATE is not supported in SQLite3 driver', 'FW_DB_UPDATE_LIMIT_NOT_SUPPORTED');
+        }
+
+        if ($simulate)
+        {
+            return [
+                'query' => $query,
+                'data'  => $values,
+            ];
+        }
+
+        return $this->query($query, $values);
+    }
+
+    /**
      * Make a SQL query and return resultset
      *
      * @param string $query
