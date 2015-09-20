@@ -1,5 +1,6 @@
 <?php
 namespace Panthera;
+use Panthera\utils\arrayUtils;
 
 /**
  * Panthera Framework 2 Base Configuration module
@@ -22,7 +23,7 @@ class configuration extends baseClass
      *
      * @var array
      */
-    protected $modifiedElements = array();
+    public $modifiedElements = [];
 
     /**
      * Store default config to check if value needs saving to database
@@ -50,7 +51,7 @@ class configuration extends baseClass
             $this->defaultConfig = $data;
         }
 
-        if ($this->get('configuration.fromDatabase', true))
+        if ($this->get('configuration/fromDatabase', true))
         {
             $this->app->signals->attach('framework.database.connected', array($this, 'loadFromDatabase'));
         }
@@ -58,8 +59,9 @@ class configuration extends baseClass
 
     /**
      * Get a configuration key value, if not then return defaults
+     * Accepts XPath as key name
      *
-     * @param string $key Name
+     * @param string $key Key name, or XPath
      * @param null|mixed $defaults Default value to set in case the configuration key was not defined yet
      *
      * @author Damian Kęska <webnull.www@gmail.com>
@@ -67,10 +69,30 @@ class configuration extends baseClass
      */
     public function get($key, $defaults = null)
     {
+        // detect if it's an xpath
+        if (strpos($key, '/') !== false)
+        {
+            $value = arrayUtils::getByXPath($this->data, $key, null);
+
+            if ($value === null && $defaults !== null)
+            {
+                $this->set($key, $defaults);
+                return $defaults;
+            }
+
+            return $value;
+        }
+
         if (!isset($this->data[$key]))
         {
-            $this->data[$key] = $defaults;
+            if ($defaults === null)
+            {
+                return null;
+            }
+
+            $this->set($key, $defaults);
         }
+
 
         return $this->data[$key];
     }
@@ -84,6 +106,30 @@ class configuration extends baseClass
      */
     public function remove($key)
     {
+        if (strpos($key, '/') !== false)
+        {
+            $parts = explode('/', $key);
+
+            // remove leaf node to get parent node
+            $leafNode = $parts[count($parts) - 1];
+
+            unset($parts[count($parts) - 1]);
+            $parentNodePath = implode('/', $parts);
+
+            $parent = $this->get($parentNodePath);
+
+            // remove leaf node from parent node
+            if ($parent !== null && is_array($parent) && isset($parent[$leafNode]))
+            {
+                unset($parent[$leafNode]);
+                $this->set($parentNodePath, $parent);
+
+                return true;
+            }
+
+            return false;
+        }
+
         if (isset($this->data[$key]))
         {
             unset($this->data[$key]);
@@ -106,17 +152,46 @@ class configuration extends baseClass
      */
     public function set($key, $value)
     {
-        if ((isset($this->data[$key]) && $this->data[$key] !== $value) || !isset($this->data[$key]))
+        $isPathModified = false;
+        $isPath = false;
+
+        // detect xpath
+        if (strpos($key, '/') !== false)
         {
-            $this->modifiedElements[$key] = [
-                'removed'  => false,
-                'modified' => microtime(true),
-                'created'  => !isset($this->data[$key]),
-                'section'  => null,
-            ];
+            if (arrayUtils::getByXPath($this->data, $key) !== $value)
+            {
+                $isPathModified = true;
+            }
+
+            // mark first level key as modified
+            $path = $key;
+            $key = explode('/', $key)[0];
+            $isPath = true;
         }
 
-        $this->data[$key] = $value;
+        if ($isPathModified || ((isset($this->data[$key]) && $this->data[$key] !== $value) || !isset($this->data[$key])))
+        {
+            if (!isset($this->modifiedElements[$key]) || !$this->modifiedElements[$key]['created'])
+            {
+                $this->modifiedElements[$key] = [
+                    'removed' => false,
+                    'modified' => microtime(true),
+                    'created' => !isset($this->data[$key]),
+                    'section' => null,
+                ];
+            }
+        }
+
+        if ($isPath && $isPathModified)
+        {
+            $this->data = arrayUtils::setByXPath($this->data, $path, $value);
+        }
+
+        if (!$isPath)
+        {
+            $this->data[$key] = $value;
+        }
+
         return true;
     }
 
@@ -142,7 +217,20 @@ class configuration extends baseClass
         {
             foreach ($results as $row)
             {
-                    $this->data[$row['configuration_key']] = $row['configuration_value'];
+                $key = $row['configuration_key'];
+
+                if ($row['configuration_is_json'])
+                {
+                    $row['configuration_value'] = json_decode($row['configuration_value'], true);
+                }
+
+                $this->data[$key] = $row['configuration_value'];
+
+                // reset keys modification state
+                if (isset($this->modifiedElements[$key]))
+                {
+                    unset($this->modifiedElements[$key]);
+                }
             }
         }
         else
@@ -192,8 +280,18 @@ class configuration extends baseClass
                 continue;
             }
 
+            $isJson = false;
+            $value = $this->data[$key];
+
+            // this allow keeping multidimensional arrays in configuration
+            if (is_array($value))
+            {
+                $value = json_encode($value);
+                $isJson = true;
+            }
+
             // raise a developer warning
-            if (!isset($this->data[$key]) && !isset($meta['removed']) && !$meta['removed'])
+            if (!isset($value) && !isset($meta['removed']) && !$meta['removed'])
             {
                 $this->app->logging->output('Key present in $modifiedElements but not in $data, also was not marked as removed', 'debug');
                 continue;
@@ -204,10 +302,11 @@ class configuration extends baseClass
              */
             if (isset($meta['created']) && $meta['created'] === true)
             {
-                $this->app->database->query('INSERT INTO configuration (configuration_key, configuration_value, configuration_section) VALUES (:key, :value, :section)', array(
+                $this->app->database->query('INSERT INTO configuration (configuration_key, configuration_value, configuration_section, configuration_is_json) VALUES (:key, :value, :section, :isJson)', array(
                     'key'     => $key,
-                    'value'   => $this->data[$key],
+                    'value'   => $value,
                     'section' => $meta['section'],
+                    'isJson'  => intval($isJson),
                 ));
             }
 
@@ -226,9 +325,10 @@ class configuration extends baseClass
              */
             else
             {
-                $this->app->database->query('UPDATE configuration SET configuration_value = :value WHERE configuration_key = :key' .$limit, array(
-                    'key'   => $key,
-                    'value' => $this->data[$key],
+                $this->app->database->query('UPDATE configuration SET configuration_value = :value, configuration_is_json = :isJson WHERE configuration_key = :key' .$limit, array(
+                    'key'    => $key,
+                    'value'  => $value,
+                    'isJson' => intval($isJson),
                 ));
             }
 

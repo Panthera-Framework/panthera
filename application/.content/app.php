@@ -7,7 +7,7 @@
 
 $defaultConfig = [
     'database' => [
-        'type' => 'sqlite3',
+        'type' => 'SQLite3',
         'name' => 'database',
 
         // read-write user

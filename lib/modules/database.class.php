@@ -3,6 +3,7 @@ namespace Panthera\database;
 use Panthera\coreSingleton;
 use Panthera\database\column;
 use Panthera\framework;
+use Panthera\PantheraFrameworkException;
 
 /**
  * Abstract driver class
@@ -46,7 +47,7 @@ class driver extends coreSingleton
      *
      * @var string
      */
-    protected static $singletonTypeConfigKey = 'database.type';
+    protected static $singletonTypeConfigKey = 'database/type';
 
     /**
      * Default configuration value

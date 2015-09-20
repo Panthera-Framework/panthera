@@ -52,7 +52,7 @@ class cache extends coreSingleton
      *
      * @var string|null
      */
-    protected static $singletonTypeConfigKey = 'cache.type';
+    protected static $singletonTypeConfigKey = 'cache/type';
 
     /**
      * Default value for configuration key

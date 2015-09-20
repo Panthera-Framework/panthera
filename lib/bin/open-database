@@ -24,7 +24,7 @@ class openDatabaseApplication extends application
      * @var array
      */
     protected $applications = [
-        'sqlite3' => [
+        'SQLite3' => [
             'sqlite3' => [
                 'command'   => 'sqlite3 %database%',
                 'available' => false,

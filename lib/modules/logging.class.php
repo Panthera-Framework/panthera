@@ -61,9 +61,9 @@ class logging extends baseClass
     public function __construct()
     {
         parent::__construct();
-        $this->format = $this->app->config->get('logging.format', '[%date][%path:%line] %executionTime%message %debug');
-        $this->dateFormat = $this->app->config->get('logging.format.date', 'Y-m-d H:i');
-        $this->enabled = $this->app->config->get('logging.enabled', false);
+        $this->format = $this->app->config->get('logging/format', '[%date][%path:%line] %executionTime%message %debug');
+        $this->dateFormat = $this->app->config->get('logging/format.date', 'Y-m-d H:i');
+        $this->enabled = $this->app->config->get('logging/enabled', false);
     }
 
     /**

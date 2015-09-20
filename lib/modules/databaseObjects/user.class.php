@@ -1,6 +1,14 @@
 <?php
 namespace Panthera\model;
 
+/**
+ * User Entity class
+ * Allows creating, deleting, updating objects that are stored in users table in database
+ *
+ * @orm
+ * @package Panthera\modules\usersManagement
+ * @author Damian Kęska <damian@pantheraframework.org>
+ */
 class user extends \Panthera\database\ORMBaseObject
 {
     protected static $__orm_Table = 'users';
