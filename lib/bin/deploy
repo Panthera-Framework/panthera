@@ -152,7 +152,7 @@ class deploymentApplication extends application
                 }
 
                 print("\n");
-                exit;
+                exit(1);
             }
 
             $object = $this->loadTaskModule($task);
@@ -225,7 +225,7 @@ class deploymentApplication extends application
         if (!class_exists($taskClass, false))
         {
             print('Error: Class "' .$taskClass. '" does not exists for module "' .$taskName. "\"\n");
-            exit;
+            exit(1);
         }
 
         return new $taskClass($this);
@@ -249,7 +249,7 @@ class deploymentApplication extends application
 
         if ($this->onlyVerifyDependencies)
         {
-            exit;
+            exit(0);
         }
     }
 
@@ -285,7 +285,7 @@ class deploymentApplication extends application
             if (!method_exists($currentTask, 'execute') && !$currentTask->dependencies)
             {
                 print("Error: Method execute does not exists in \"" .$moduleName. "\", cannot start task that even dont have any dependencies defined\n");
-                exit;
+                exit(1);
             }
 
             /**

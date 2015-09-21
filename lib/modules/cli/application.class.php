@@ -348,6 +348,65 @@ class application extends Panthera\baseClass
     {
         return null;
     }
+
+    /**
+     * Execute an external command
+     *
+     * @param string $command
+     * @param string $function
+     * @param bool $printCommand
+     *
+     * @return string
+     */
+    protected function exec($command, $function = 'passthru', $printCommand = true)
+    {
+        // replace standard variables
+        $command = str_replace('%PF2_PATH%', PANTHERA_FRAMEWORK_PATH, $command);
+        $command = str_replace('%APP_PATH%', $this->app->appPath, $command);
+
+        if ($printCommand)
+        {
+            print("$ " .$command. "\n");
+        }
+
+        $result = 1;
+        $output = '';
+
+        switch ($function)
+        {
+            case 'passthru':
+            {
+                passthru($command, $result);
+                break;
+            }
+
+            case 'exec':
+            {
+                $tmp = [];
+                $output = exec($command, $tmp, $result);
+                break;
+            }
+
+            case 'shell_exec':
+            {
+                $output = shell_exec($command);
+
+                if ($output)
+                {
+                    $result = 0;
+                }
+
+                break;
+            }
+        }
+
+        if ($result)
+        {
+            throw new \RuntimeException('Child process returned with code ' .$result);
+        }
+
+        return $output;
+    }
 }
 
 /**
