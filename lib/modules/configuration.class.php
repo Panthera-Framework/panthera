@@ -205,7 +205,7 @@ class configuration extends baseClass
         try
         {
             $database = framework::getInstance()->database;
-            $results = $database->query('SELECT * FROM configuration WHERE configuration_section is null', array());
+            $results = $database->query('SELECT * FROM configuration WHERE configuration_section is null', []);
         }
         catch (\Exception $e)
         {
@@ -281,7 +281,7 @@ class configuration extends baseClass
             }
 
             $isJson = false;
-            $value = $this->data[$key];
+            $value = (isset($this->data[$key]) ? $this->data[$key] : null); // key could be deleted
 
             // this allow keeping multidimensional arrays in configuration
             if (is_array($value))

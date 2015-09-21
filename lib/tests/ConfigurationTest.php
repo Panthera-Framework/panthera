@@ -93,4 +93,49 @@ class ConfigurationTest extends PantheraFrameworkTestCase
         $this->assertNull($config->get('tv/SG-1'));
         $this->assertSame('S01E02', $config->get('tv/SG-A'));
     }
+
+    /**
+     * Test saving array configuration keys to database
+     *
+     * @throws \Panthera\DatabaseException
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function testArraysSave()
+    {
+        $config = $this->app->config;
+
+        // 1. put test data
+        $config->set('tv', []);
+        $config->set('tv/SG-1', 'S10E03');
+        $config->set('tv/SG-A', 'S01E02');
+        $config->save();
+
+        $config->data = [];
+        $config->loadFromDatabase();
+
+        // verify if data stays after reload
+        $this->assertSame('S10E03', $config->get('tv/SG-1'));
+        $this->assertSame('S01E02', $config->get('tv/SG-A'));
+
+        // 2. remove a a subkey
+        $config->remove('tv/SG-A');
+        $config->save();
+
+        $config->data = [];
+        $config->loadFromDatabase();
+
+        // verify changes
+        $this->assertNull($config->get('tv/SG-A'));
+        $this->assertSame('S10E03', $config->get('tv/SG-1'));
+
+        // 3. remove a key
+        $config->remove('tv');
+        $config->save();
+
+        $config->data = [];
+        $config->loadFromDatabase();
+
+        // verify
+        $this->assertNull($config->get('tv'));
+    }
 }
