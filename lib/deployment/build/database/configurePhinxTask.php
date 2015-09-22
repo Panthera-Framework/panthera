@@ -17,7 +17,7 @@ class configurePhinxTask extends task
      * @var array
      */
     private $adaptersMapping = [
-        'sqlite3'    => 'sqlite',
+        'SQLite3'    => 'sqlite',
         'mysql'      => 'mysql',
         'postgresql' => 'pgsql',
     ];
@@ -35,9 +35,9 @@ class configurePhinxTask extends task
     {
         $databaseName = $this->app->config->get('database')['name'];
 
-        if ($this->app->database->getDatabaseType() == 'sqlite3')
+        if ($this->app->database->getDatabaseType() == 'SQLite3')
         {
-            $databaseName = str_replace('.sqlite3', '', realpath($this->app->database->getDatabasePath()));
+            $databaseName = str_replace('.SQLite3', '', realpath($this->app->database->getDatabasePath()));
         }
 
         $config = [
@@ -61,7 +61,7 @@ class configurePhinxTask extends task
                 'integrationTesting' => [
                     'adapter' => 'sqlite',
                     'charset' => 'utf-8',
-                    'name'    => $this->app->appPath. '/.content/phpunit-testing.sqlite3',
+                    'name'    => $this->app->appPath. '/.content/phpunit-testing.SQLite3',
                     'host'    => null,
                     'user'    => null,
                     'password'=> null,
