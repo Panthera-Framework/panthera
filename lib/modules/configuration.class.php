@@ -219,7 +219,7 @@ class configuration extends baseClass
             {
                 $key = $row['configuration_key'];
 
-                if ($row['configuration_is_json'])
+                if (isset($row['configuration_is_json']) && $row['configuration_is_json'])
                 {
                     $row['configuration_value'] = json_decode($row['configuration_value'], true);
                 }

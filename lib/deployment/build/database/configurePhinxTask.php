@@ -37,7 +37,7 @@ class configurePhinxTask extends task
 
         if ($this->app->database->getDatabaseType() == 'SQLite3')
         {
-            $databaseName = str_replace('.SQLite3', '', realpath($this->app->database->getDatabasePath()));
+            $databaseName = str_replace('.sqlite3', '', realpath($this->app->database->getDatabasePath()));
         }
 
         $config = [
@@ -61,7 +61,7 @@ class configurePhinxTask extends task
                 'integrationTesting' => [
                     'adapter' => 'sqlite',
                     'charset' => 'utf-8',
-                    'name'    => $this->app->appPath. '/.content/phpunit-testing.SQLite3',
+                    'name'    => $this->app->appPath. '/.content/phpunit-testing.sqlite3',
                     'host'    => null,
                     'user'    => null,
                     'password'=> null,
