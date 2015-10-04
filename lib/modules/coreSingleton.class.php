@@ -8,7 +8,7 @@ namespace Panthera;
  * @package Panthera\modules\core
  * @author Damian Kęska <damian@pantheraframework.org>
  */
-class coreSingleton extends baseClass
+class coreSingleton extends BaseFrameworkClass
 {
     /**
      * This variable stores a class instance
@@ -70,7 +70,7 @@ class coreSingleton extends baseClass
      * @throws \Panthera\PantheraFrameworkException
      *
      * @author Damian Kęska <damian@pantheraframework.org>
-     * @return null|baseClass|void
+     * @return null|BaseFrameworkClass|void
      */
     public static function getInstance($type = null, $force = false)
     {

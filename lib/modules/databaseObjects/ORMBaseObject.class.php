@@ -10,7 +10,7 @@ use Panthera\ValidationException;
  * @author Damian Kęska <damian@pantheraframework.org>
  * @package Panthera\database
  */
-abstract class ORMBaseObject extends \Panthera\baseClass
+abstract class ORMBaseFrameworkObject extends \Panthera\BaseFrameworkClass
 {
     /**
      * Table name

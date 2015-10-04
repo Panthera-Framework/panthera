@@ -1,7 +1,7 @@
 <?php
 namespace Panthera;
 
-class applicationIndex extends baseClass
+class applicationIndex extends BaseFrameworkClass
 {
 
 }

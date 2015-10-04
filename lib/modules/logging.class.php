@@ -9,7 +9,7 @@ namespace Panthera;
  * @author Damian Kęska <damian@pantheraframework.org>
  * @author Mateusz Warzyński <lxnmen@gmail.com>
  */
-class logging extends baseClass
+class logging extends BaseFrameworkClass
 {
     /**
      * Allow printing logged messages to the screen, logging have to be enabled first

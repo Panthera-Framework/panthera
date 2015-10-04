@@ -76,3 +76,10 @@ class ValidationException extends PantheraFrameworkException
         $this->column = $column;
     }
 };
+
+/**
+ * Class ControllerException
+ *
+ * @package Panthera\core\controllers
+ */
+class ControllerException extends PantheraFrameworkException {};

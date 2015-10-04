@@ -9,7 +9,7 @@ use Panthera;
  * @author Damian Kęska <damian@pantheraframework.org>
  * @package Panthera\cli
  */
-class application extends Panthera\baseClass
+class application extends Panthera\BaseFrameworkClass
 {
     /**
      * List of CLI arguments, shortened eg. -h would equal --help

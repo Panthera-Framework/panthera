@@ -8,7 +8,7 @@ require __DIR__. '/BaseExceptions.php';
  * @package Panthera\modules\core
  * @author Damian Kęska
  */
-abstract class baseClass
+abstract class BaseFrameworkClass
 {
     /**
      * @var framework $app
@@ -16,14 +16,14 @@ abstract class baseClass
     protected $app = null;
 
     /**
-     * @var null|baseClass
+     * @var null|BaseFrameworkClass
      */
     protected static $instance = null;
 
     /**
      * Get self Singleton instance
      *
-     * @return null|baseClass
+     * @return static|BaseFrameworkClass
      */
     public static function getInstance()
     {
@@ -176,7 +176,7 @@ class framework
     public $logging = null;
 
     /**
-     * @var \Panthera\signals $signals
+     * @var \Panthera\Signals $signals
      */
     public $signals = null;
 
@@ -272,7 +272,7 @@ class framework
         // load application indexing cache
         $this->loadApplicationIndex();
 
-        $this->signals  = new signals;
+        $this->signals  = new Signals;
         $this->config   = new configuration($configuration);
         $this->logging  = new logging;
         $this->cache    = cache\cache::getInstance();

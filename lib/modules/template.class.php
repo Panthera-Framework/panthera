@@ -9,7 +9,7 @@ namespace Panthera;
  * @author Mateusz Warzyński <lxnmen@gmail.com>
  * @author Damian Kęska <damian@pantheraframework.org>
  */
-class template extends baseClass
+class template extends BaseFrameworkClass
 {
     /**
      * RainTPL4 object

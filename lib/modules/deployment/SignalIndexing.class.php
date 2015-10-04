@@ -5,7 +5,7 @@
  * @package Panthera\deployment\build\framework\signals
  * @author Damian Kęska <damian.keska@fingo.pl>
  */
-class signalIndexing
+class SignalIndexing
 {
     /**
      * Find all class methods that are registering or executing signals

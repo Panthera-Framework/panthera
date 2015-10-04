@@ -19,10 +19,10 @@ namespace Panthera;
  * See: https://pl.wikipedia.org/wiki/WTFPL
  * =============
  * 
- * @package Panthera\signals
+ * @package Panthera\modules\signals
  * @author Damian Kęska <damian@pantheraframework.org>
  */
-class signals extends baseClass
+class Signals extends BaseFrameworkClass
 {
     public $registeredSignals = [];
 

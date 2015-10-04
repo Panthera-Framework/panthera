@@ -8,7 +8,7 @@ namespace Panthera;
  * @package Panthera
  * @author Mateusz Warzyński <lxnmen@gmail.com>
  */
-class cron extends baseClass
+class cron extends BaseFrameworkClass
 {
     /**
      * Initialization cron module

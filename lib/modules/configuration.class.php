@@ -8,7 +8,7 @@ use Panthera\utils\arrayUtils;
  * @package Panthera\modules\configuration
  * @author Damian Kęska
  */
-class configuration extends baseClass
+class configuration extends BaseFrameworkClass
 {
     /**
      * Associative array of keys and values in mixed types

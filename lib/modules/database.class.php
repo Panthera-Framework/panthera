@@ -68,7 +68,7 @@ class driver extends coreSingleton
     /**
      * Action performed right after creating a first instance of object
      *
-     * @param \Panthera\baseClass $object
+     * @param \Panthera\BaseFrameworkClass $object
      * @author Damian Kęska <damian@pantheraframework.org>
      */
     public static function constructInstance($object)

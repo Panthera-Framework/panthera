@@ -5,11 +5,11 @@ namespace Panthera;
  * Panthera Framework 2 index service class - get all project files
  *   validate content, help autoloader find appropriate classes
  *
- * @Package Panthera
+ * @Package Panthera\deployment\framework\indexService
  * @author Mateusz Warzyński <lxnmen@gmail.com>
  * @author Damian Kęska <damian@pantheraframework.org>
  */
-class indexService extends baseClass
+class indexService extends BaseFrameworkClass
 {
     /**
      * Store lib files index

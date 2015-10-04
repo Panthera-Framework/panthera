@@ -7,7 +7,7 @@ namespace Panthera\cache;
  *
  * @package Panthera\cache
  */
-class SQLite3Cache extends \Panthera\baseClass implements cacheInterface
+class SQLite3Cache extends \Panthera\BaseFrameworkClass implements cacheInterface
 {
     /**
      * @const int typeSerialized Value of pf2_simple_cache.type that means we have serialized data in a row

@@ -9,7 +9,7 @@ namespace Panthera\model;
  * @package Panthera\modules\usersManagement
  * @author Damian Kęska <damian@pantheraframework.org>
  */
-class user extends \Panthera\database\ORMBaseObject
+class user extends \Panthera\database\ORMBaseFrameworkObject
 {
     protected static $__orm_Table = 'users';
     protected static $__orm_IdColumn = 'user_id';

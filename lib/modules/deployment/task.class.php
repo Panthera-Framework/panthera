@@ -1,13 +1,13 @@
 <?php
 namespace Panthera\deployment;
-use Panthera\baseClass;
+use Panthera\BaseFrameworkClass;
 
 /**
  * Deployment task skeleton
  *
  * @package Panthera\deployment
  */
-class task extends baseClass
+class task extends BaseFrameworkClass
 {
     /**
      * @var array

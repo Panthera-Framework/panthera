@@ -6,11 +6,11 @@ namespace Panthera;
  *
  *
  *
- * @package Panthera
+ * @package Panthera\modules\locale
  * @author Damian Kęska <webnull.www@gmail.com>
  * @author Mateusz Warzyński <lxnmen@gmail.com>
  */
-class locale extends baseClass
+class locale extends BaseFrameworkClass
 {
     /**
      * Current active language

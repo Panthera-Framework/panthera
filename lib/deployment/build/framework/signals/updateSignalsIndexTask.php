@@ -5,7 +5,7 @@ namespace Panthera\deployment;
  * Executes database migrations all in proper order
  *
  * @author Damian Kęska <damian@pantheraframework.org>
- * @package Panthera\deployment\framework
+ * @package Panthera\deployment\framework\indexService
  */
 class updateSignalsIndexTask extends task
 {
@@ -54,7 +54,7 @@ class updateSignalsIndexTask extends task
                 }
 
                 $this->output('-> Parsing ' .$absolutePath);
-                $signals = \signalIndexing::loadFile($absolutePath);
+                $signals = \SignalIndexing::loadFile($absolutePath);
 
                 if ($signals)
                 {
