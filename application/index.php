@@ -12,3 +12,6 @@ class IndexController extends BaseFrameworkController
 		]);
 	}
 }
+
+$test = new IndexController();
+$test->display();

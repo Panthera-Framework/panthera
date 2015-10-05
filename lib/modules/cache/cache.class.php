@@ -1,6 +1,6 @@
 <?php
 namespace Panthera\cache;
-use Panthera\coreSingleton;
+use Panthera\CoreSingleton;
 
 /**
  * Panthera Framework 2 - cache management class
@@ -10,7 +10,7 @@ use Panthera\coreSingleton;
  * @author Damian Kęska <damian@pantheraframework.org>
  * @author Mateusz Warzyński <lxnmen@gmail.com>
  */
-class cache extends coreSingleton
+class cache extends CoreSingleton
 {
     /**
      * This variable stores a class instance

@@ -1,6 +1,6 @@
 <?php
 namespace Panthera\database;
-use Panthera\coreSingleton;
+use Panthera\CoreSingleton;
 use Panthera\database\column;
 use Panthera\framework;
 use Panthera\PantheraFrameworkException;
@@ -12,7 +12,7 @@ use Panthera\PantheraFrameworkException;
  *
  * @package Panthera\database
  */
-class driver extends coreSingleton
+class driver extends CoreSingleton
 {
     /**
      * Directory where drivers/handlers are stored

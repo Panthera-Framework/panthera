@@ -83,11 +83,11 @@ class template extends BaseFrameworkClass
     /**
      * Assign value for template
      *
-     * @param mixed $variable Name of template variable or associative array name/value
+     * @param mixed|array $variable Name of template variable or associative array name/value
      * @param mixed $value value assigned to this variable. Not set if variable_name is an associative array
      * @author Mateusz Warzyński <lxnmen@gmail.com>
      */
-    public function assign($variable, $value)
+    public function assign($variable, $value = null)
     {
         $this->rain->assign($variable, $value);
     }

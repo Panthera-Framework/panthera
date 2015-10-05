@@ -16,9 +16,9 @@ abstract class BaseFrameworkClass
     protected $app = null;
 
     /**
-     * @var null|BaseFrameworkClass
+     * @var array
      */
-    protected static $instance = null;
+    protected static $instances = [];
 
     /**
      * Get self Singleton instance
@@ -27,7 +27,14 @@ abstract class BaseFrameworkClass
      */
     public static function getInstance()
     {
-        return self::$instance;
+        $class = get_called_class();
+
+        if (!isset(self::$instances[get_called_class()]))
+        {
+            new $class;
+        }
+
+        return self::$instances[$class];
     }
 
     /**
@@ -38,7 +45,7 @@ abstract class BaseFrameworkClass
     public function __construct()
     {
         $this->app = framework::getInstance();
-        self::$instance = $this;
+        self::$instances[get_called_class()] = $this;
     }
 
     /**

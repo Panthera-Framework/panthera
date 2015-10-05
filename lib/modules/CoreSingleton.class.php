@@ -8,7 +8,7 @@ namespace Panthera;
  * @package Panthera\modules\core
  * @author Damian Kęska <damian@pantheraframework.org>
  */
-class coreSingleton extends BaseFrameworkClass
+class CoreSingleton extends BaseFrameworkClass
 {
     /**
      * This variable stores a class instance
