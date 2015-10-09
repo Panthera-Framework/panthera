@@ -94,7 +94,7 @@ class classUtils
                 $value = true;
             }
 
-            $values[] = $value;
+            $values[] = trim($value);
         }
 
         return $values;
