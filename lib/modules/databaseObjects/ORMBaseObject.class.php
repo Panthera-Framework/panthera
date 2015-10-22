@@ -1,7 +1,7 @@
 <?php
 namespace Panthera\database;
 use Panthera\framework;
-use Panthera\utils\classUtils;
+use Panthera\utils\ClassUtils;
 use Panthera\ValidationException;
 
 /**
@@ -300,8 +300,8 @@ abstract class ORMBaseFrameworkObject extends \Panthera\BaseFrameworkClass
     public function validateProperty($propertyName)
     {
         $value = $this->{$propertyName};
-        $isRequired = classUtils::getTag(get_called_class(). '::' .$propertyName, 'required');
-        $varType = classUtils::getTag(get_called_class(). '::' .$propertyName, 'var');
+        $isRequired = ClassUtils::getTag(get_called_class(). '::' .$propertyName, 'required');
+        $varType = ClassUtils::getTag(get_called_class(). '::' .$propertyName, 'var');
 
         /**
          * @required

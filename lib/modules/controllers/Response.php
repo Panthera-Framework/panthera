@@ -42,6 +42,24 @@ class Response
     }
 
     /**
+     * Assign a variable to response
+     *
+     * @param array|string $variable Variable name or array of variables
+     * @param mixed|null $value Value if specified a single variable or null if passed array in first argument
+     */
+    public function assign($variable, $value = null)
+    {
+        if (!is_array($variable))
+        {
+            $variable = [
+                $variable => $value,
+            ];
+        }
+
+        $this->variables = array_merge($this->variables, $variable);
+    }
+
+    /**
      * Encode a output response that will be sent to a browser
      *
      * @param string $type json|yaml
@@ -66,7 +84,7 @@ class Response
         {
             case 'JSON':
             {
-                return json_encode($this->filterVariables($this->variables));
+                return json_encode($this->filterVariables($this->variables), JSON_PRETTY_PRINT | JSON_PARTIAL_OUTPUT_ON_ERROR);
             }
 
             case 'YAML':
@@ -102,8 +120,16 @@ class Response
 
             if (is_object($variable))
             {
-                (isset($variable->controllerPublic) && $variable->controllerPublic) ?: ($allowed = true);
-                method_exists($variable, '__exposePublic') ?: ($variable = $variable->__exposePublic());
+                if (isset($variable->controllerPublic))
+                {
+                    $allowed = true;
+                }
+
+                elseif (method_exists($variable, '__exposePublic'))
+                {
+                    $variable = $variable->__exposePublic();
+                    $allowed = true;
+                }
             }
             else
             {

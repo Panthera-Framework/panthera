@@ -72,4 +72,15 @@ class user extends \Panthera\database\ORMBaseFrameworkObject
      * @var string
      */
     public $userUpdated      = null;
+
+    /**
+     * Controller's magic method that exposes external interface to public
+     */
+    public function __exposePublic()
+    {
+        return [
+            'id'   => $this->userId,
+            'name' => $this->userFirstName. ' ' .$this->userLastName,
+        ];
+    }
 }

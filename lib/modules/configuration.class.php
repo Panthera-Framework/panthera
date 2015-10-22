@@ -1,6 +1,6 @@
 <?php
 namespace Panthera;
-use Panthera\utils\arrayUtils;
+use Panthera\utils\ArrayUtils;
 
 /**
  * Panthera Framework 2 Base Configuration module
@@ -72,7 +72,7 @@ class configuration extends BaseFrameworkClass
         // detect if it's an xpath
         if (strpos($key, '/') !== false)
         {
-            $value = arrayUtils::getByXPath($this->data, $key, null);
+            $value = ArrayUtils::getByXPath($this->data, $key, null);
 
             if ($value === null && $defaults !== null)
             {
@@ -158,7 +158,7 @@ class configuration extends BaseFrameworkClass
         // detect xpath
         if (strpos($key, '/') !== false)
         {
-            if (arrayUtils::getByXPath($this->data, $key) !== $value)
+            if (ArrayUtils::getByXPath($this->data, $key) !== $value)
             {
                 $isPathModified = true;
             }
@@ -184,7 +184,7 @@ class configuration extends BaseFrameworkClass
 
         if ($isPath && $isPathModified)
         {
-            $this->data = arrayUtils::setByXPath($this->data, $path, $value);
+            $this->data = ArrayUtils::setByXPath($this->data, $path, $value);
         }
 
         if (!$isPath)

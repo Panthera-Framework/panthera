@@ -109,7 +109,7 @@ class NodeVisitor_signalSearcher extends PhpParser\NodeVisitorAbstract
                     $phpDoc = $phpDoc[0]->getText();
                 }
 
-                $signals = \Panthera\utils\classUtils::getTag($phpDoc, 'signal');
+                $signals = \Panthera\utils\ClassUtils::getTag($phpDoc, 'signal');
                 //$slots = \Panthera\utils\classUtils::getTag($phpDoc, 'slot');
 
                 if ($signals)

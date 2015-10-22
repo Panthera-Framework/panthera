@@ -7,7 +7,7 @@ namespace Panthera\utils;
  * @author Damian Kęska <damian@pantheraframework.org>
  * @package Panthera\utils\classUtils
  */
-class classUtils
+class ClassUtils
 {
     /**
      * Check if method has a specified tag in it's PHPDoc
@@ -130,7 +130,7 @@ class classUtils
 
                 if (substr($method, -2) == '()')
                 {
-                    $reflection = new \ReflectionMethod($class, $method);
+                    $reflection = new \ReflectionMethod($class, substr($method, 0, strlen($method) - 2));
                 }
                 else
                 {

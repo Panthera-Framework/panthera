@@ -3,6 +3,7 @@ namespace Panthera\core\controllers;
 
 use Panthera\BaseFrameworkClass;
 use Panthera\ControllerException;
+use Panthera\utils\ClassUtils;
 
 /**
  * Base Framework Controller
@@ -25,7 +26,11 @@ class BaseFrameworkController extends BaseFrameworkClass
 
         if (method_exists($this, $actionMethodName))
         {
-            return call_user_func([$this, $actionMethodName]);
+            return [
+                'response' => call_user_func([$this, $actionMethodName]),
+                'action'   => $action,
+                'method'   => $actionMethodName,
+            ];
         }
         else
         {
@@ -40,19 +45,23 @@ class BaseFrameworkController extends BaseFrameworkClass
      */
     public function display()
     {
+        /** @var Response $response */
         $output = $this->selectAction();
+        $response = $output['response'];
 
-        if (!$output instanceof Response)
+        if (!is_array($output) || !isset($output['response']) || !$output['response'] instanceof Response)
         {
             throw new \RuntimeException('Controller not returned a valid response');
         }
 
-        if ($this->detectRequestType() != 'HTTP')
+        if (ClassUtils::getTag(get_called_class(). '::' .$output['method']. '()', 'API') && $this->detectRequestType() != 'HTTP')
         {
-            return $output->encode($this->detectRequestType());
+            print($response->encode($this->detectRequestType()));
         }
-
-        $output->display();
+        else
+        {
+            $response->display();
+        }
     }
 
     /**

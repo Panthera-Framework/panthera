@@ -6,7 +6,7 @@ namespace Panthera\utils;
  * @package Panthera\utils\arrayUtils
  * @author Damian Kęska <damian@pantheraframework.org>
  */
-class arrayUtils
+class ArrayUtils
 {
     /**
      * Get value from multidimensional array by path
