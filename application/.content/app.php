@@ -7,17 +7,33 @@
 
 $defaultConfig = [
     'database' => [
+
+        // sqlite
         'type' => 'SQLite3',
         'name' => 'database',
 
         // read-write user
-        'host' => null,
-        'user' => null,
+        'host'     => null,
+        'user'     => null,
         'password' => null,
 
         // read-only user
-        'readOnlyUser' => null,
+        'readOnlyUser'     => null,
         'readOnlyPassword' => null,
+
+        /*
+        // mysql
+
+        'type'     => 'MySQL',
+        'host'     => 'host',
+        'name'     => 'databaseName',
+        'username' => 'user',
+        'password' => 'password',
+
+        'mysql_buffered_queries' => 50,
+        'timeout'                => 60
+        */
+
     ],
 
     'application' => [
