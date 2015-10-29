@@ -314,7 +314,7 @@ abstract class ORMBaseFrameworkObject extends \Panthera\BaseFrameworkClass
         /**
          * @var
          */
-        if ($varType)
+        if ($varType && $value !== null)
         {
             $allowedTypes = explode('|', $varType[0]);
             $currentType = gettype($this->{$propertyName});
@@ -322,7 +322,7 @@ abstract class ORMBaseFrameworkObject extends \Panthera\BaseFrameworkClass
 
             if ($currentType == 'string' && is_numeric($this->{$propertyName}))
             {
-                $currentType = 'numeric';
+                $currentType = 'integer';
             }
             elseif (class_exists($this->{$propertyName}))
             {

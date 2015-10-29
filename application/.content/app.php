@@ -15,23 +15,26 @@ $defaultConfig = [
         // read-write user
         'host'     => null,
         'user'     => null,
-        'password' => null,
+        'pass'     => null,
 
         // read-only user
         'readOnlyUser'     => null,
         'readOnlyPassword' => null,
 
+        'charset'          => 'utf-8',
+
         /*
         // mysql
 
         'type'     => 'MySQL',
-        'host'     => 'host',
-        'name'     => 'databaseName',
-        'username' => 'user',
-        'password' => 'password',
+        'host'     => 'localhost',
+        'name'     => 'database',
+        'user'     => 'username',
+        'pass'     => 'password',
 
         'mysql_buffered_queries' => 50,
-        'timeout'                => 60
+        'timeout'                => 60,
+        'charset'                => 'utf8',
         */
 
     ],

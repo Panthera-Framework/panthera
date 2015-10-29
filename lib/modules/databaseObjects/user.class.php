@@ -17,7 +17,7 @@ class user extends \Panthera\database\ORMBaseFrameworkObject
     /**
      * @orm
      * @column user_id
-     * @var string
+     * @var integer
      */
     public $userId          = null;
 

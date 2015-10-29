@@ -18,7 +18,7 @@ class configurePhinxTask extends task
      */
     private $adaptersMapping = [
         'SQLite3'    => 'sqlite',
-        'mysql'      => 'mysql',
+        'MySQL'      => 'mysql',
         'postgresql' => 'pgsql',
     ];
 
@@ -29,13 +29,14 @@ class configurePhinxTask extends task
      * @throws \Panthera\PantheraFrameworkException
      *
      * @author Damian Kęska <damian@pantheraframework.org>
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
      * @return bool
      */
     public function execute()
     {
         $databaseName = $this->app->config->get('database')['name'];
 
-        if ($this->app->database->getDatabaseType() == 'SQLite3')
+        if ($this->app->database->getDatabaseType() == 'sqlite3')
         {
             $databaseName = str_replace('.sqlite3', '', realpath($this->app->database->getDatabasePath()));
         }
@@ -44,27 +45,27 @@ class configurePhinxTask extends task
             'default_migration_table' => '_migrations_phinxlog',
             'default_database'        => $this->app->config->get('migrations.defaultDatabase', 'development'),
             'paths' => [
-                'migrations' => PANTHERA_FRAMEWORK_PATH. '/schema/databaseMigrations/',
+                'migrations'     => PANTHERA_FRAMEWORK_PATH. '/schema/databaseMigrations/',
                 'migrations_app' => $this->app->appPath. '/.content/schema/databaseMigrations/',
             ],
 
             'environments' => [
                 'development' => [
                     'adapter' => $this->adaptersMapping[$this->app->config->get('database')['type']],
-                    'charset' => 'utf-8',
+                    'charset' => $this->app->config->get('database')['charset'],
                     'name'    => $databaseName,
                     'host'    => $this->app->config->get('database')['host'],
                     'user'    => $this->app->config->get('database')['user'],
-                    'password'=> $this->app->config->get('database')['password'],
+                    'pass'    => $this->app->config->get('database')['password'],
                 ],
 
                 'integrationTesting' => [
                     'adapter' => 'sqlite',
-                    'charset' => 'utf-8',
+                    'charset' => $this->app->config->get('database')['charset'],
                     'name'    => $this->app->appPath. '/.content/phpunit-testing.sqlite3',
                     'host'    => null,
                     'user'    => null,
-                    'password'=> null,
+                    'pass'    => null,
                 ],
             ]
         ];
