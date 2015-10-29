@@ -399,7 +399,8 @@ abstract class DatabaseHandler extends driver implements databaseHandlerInterfac
      * @throws PantheraFrameworkException
      * @throws DatabaseException
      * @author Damian Kęska <damian@pantheraframework.org>
-     * @return array
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     * @return bool|array
      */
     public function query($query, $values = array())
     {
@@ -428,8 +429,11 @@ abstract class DatabaseHandler extends driver implements databaseHandlerInterfac
 
         try
         {
-            $sth->execute();
-            $fetch = $sth->fetchAll(\PDO::FETCH_ASSOC); // todo: separate function select/insert/update , we do not need fetchAll() here.
+            $response = $sth->execute();
+
+            if (substr($query, 0, 6) == 'SELECT')
+                $response = $sth->fetchAll(\PDO::FETCH_ASSOC);
+
             $sth->closeCursor();
         }
         catch (\PDOException $e)
@@ -438,7 +442,7 @@ abstract class DatabaseHandler extends driver implements databaseHandlerInterfac
             throw new PantheraFrameworkException('Got a PDO exception: ' .$e->getMessage(). ', SQL: ' .$query, 'FW_DATABASE_QUERY_FAILED');
         }
 
-        return $fetch;
+        return $response;
     }
 }
 

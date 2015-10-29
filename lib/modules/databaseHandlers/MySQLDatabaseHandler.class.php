@@ -21,7 +21,7 @@ class MySQLDatabaseHandler extends DatabaseHandler
      */
     public function connect()
     {
-        $this->socket = @new \PDO('mysql:host='.$this->app->config->data['database']['host'].';encoding=utf8;charset=utf8;dbname='.$this->app->config->data['database']['name'], $this->app->config->data['database']['username'], $this->app->config->data['database']['password'],
+        $this->socket = @new \PDO('mysql:host='.$this->app->config->data['database']['host'].';encoding=utf8;charset=utf8;dbname='.$this->app->config->data['database']['name'], $this->app->config->data['database']['user'], $this->app->config->data['database']['password'],
             array(
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
                 \PDO::ATTR_TIMEOUT => intval($this->app->config->data['database']['timeout']),
