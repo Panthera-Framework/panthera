@@ -1,4 +1,5 @@
 <?php
+
 use Panthera\core\controllers\BaseFrameworkController;
 use Panthera\core\controllers\Response;
 require __DIR__. '/.content/app.php';
@@ -11,8 +12,10 @@ class IndexController extends BaseFrameworkController
      */
 	public function defaultAction()
 	{
-        $response = new Response('BaseView/index.tpl', [
-            'testText' => 'This is a test of a controller that supports @API calls - type ?__returnType=json or ?__returnType=yaml',
+        // todo: implement indexing templates from application and library
+        // todo: implement checking templatePath in indexed array
+        $response = new Response($this->app->appPath.'/.content/templates/index.tpl', [
+            'testText' => 'This is a test of a controller that supports @API calls - type ?__returnType=json or ?__returnType=yaml'
         ]);
 
         $response->assign([
