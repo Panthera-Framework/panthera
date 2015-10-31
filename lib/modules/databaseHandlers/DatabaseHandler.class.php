@@ -290,7 +290,10 @@ abstract class DatabaseHandler extends driver implements databaseHandlerInterfac
             return $this->query($query, $values);
         }
 
-        return array($query, $values);
+        return array(
+            'sql'    => $query,
+            'values' => $values
+        );
     }
 
     /**
