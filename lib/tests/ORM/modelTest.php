@@ -21,6 +21,7 @@ class ModelTest extends PantheraFrameworkTestCase
         $this->assertEquals('phpunit', $user->userLogin);
         $this->assertEquals('phpunit@localhost', $user->userEmail);
         $this->assertEquals(1, $user->getId());
+        $this->assertEquals(1, $user->__exposePublic()['id']);
         unset($user);
     }
 
