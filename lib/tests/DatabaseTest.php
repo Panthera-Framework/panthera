@@ -51,9 +51,13 @@ class DatabaseTest extends PantheraFrameworkTestCase
      * Testing update functions
      *
      * @author Damian Kęska <damian@pantheraframework.org>
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
      */
     public function testUpdate()
     {
+        // check printing debugging messages
+        $this->app->isDebugging = true;
+
         // create a test table
         $this->app->database->query('CREATE TABLE `testUpdate` ( number INTEGER PRIMARY KEY ); ');
 
@@ -65,8 +69,12 @@ class DatabaseTest extends PantheraFrameworkTestCase
 
         // check it's value
         $fetch = $this->app->database->select('testUpdate', ['number']);
-
         $this->assertSame('10', $fetch[0]['number']);
+
+        // check simulation
+        $simulation = $this->app->database->update('testUpdate', ['number' => 5], null, null, true);
+        $this->assertSame('UPDATE `testUpdate` SET  number = :number', $simulation['query']);
+        $this->assertEquals(5, $simulation['data']['number']);
     }
 
     /**
@@ -77,8 +85,10 @@ class DatabaseTest extends PantheraFrameworkTestCase
      */
     public function testWhereCondition()
     {
-        $whereCondition = $this->app->database->parseWhereConditionBlock(array('|=|test' => 'testValue'));
-        $this->assertContains('test = :test', $whereCondition['sql']);
+        $sql = $this->app->database->parseWhereConditionBlock(array('|=|test' => 'testValue', '|=|key' => 'value'));
+        $this->assertContains('key = :key', $sql['sql']);
+        $this->assertContains('AND', $sql['sql']);
+        $this->assertContains('test = :test', $this->app->database->parseWhereConditionBlock(array('|=|test' => 'testValue'))['sql']);
     }
 
     /**
@@ -117,5 +127,16 @@ class DatabaseTest extends PantheraFrameworkTestCase
         $this->assertContains('chair', $insert['query'], '', true);
         $this->assertSame(3, count($insert['data']));
         $this->assertArrayHasKey('name', $insert['data']);
+    }
+
+    /**
+     * DELETE FROM syntax check, if executes valid sql query
+     *
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     */
+    public function testDeleteSyntax()
+    {
+        $request = $this->app->database->delete('users', ['|=|user_id' => '1'], null, null, null, false);
+        $this->assertContains("DELETE FROM users WHERE ( users.user_id = :user_id", $request['sql']);
     }
 }
