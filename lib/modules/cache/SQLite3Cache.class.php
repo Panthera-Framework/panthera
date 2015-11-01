@@ -191,7 +191,7 @@ class SQLite3Cache extends \Panthera\BaseFrameworkClass implements cacheInterfac
     {
         if ($maxLifeTime > 0)
         {
-            $this->connection->exec('DELETE FROM `pf2_simple_cache` WHERE (' .time(). ' - expires) >= ' .intval($maxLifeTime));
+            $this->connection->exec('DELETE FROM `pf2_simple_cache` WHERE (' .time(). ' - ' .intval($maxLifeTime). ') >= expires');
             return true;
         }
 
