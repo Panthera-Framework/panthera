@@ -80,9 +80,14 @@ class CacheTest extends PantheraFrameworkTestCase
     public function testClearCache()
     {
         $this->setup();
+
         $this->app->cache->set('test', true, 5);
         $this->app->cache->clear(0);
         $this->assertNull($this->app->cache->get('test'));
+
+        $this->app->cache->set('test', true);
+        $this->app->cache->clear(1);
+        $this->assertTrue($this->app->cache->get('test'));
     }
 
     /**
