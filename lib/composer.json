@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "pantheraframework/raintpl4": "master",
+        "pantheraframework/raintpl4": "dev-master",
         "psy/psysh": "master",
         "robmorgan/phinx": "0.4.*",
         "nikic/php-parser": "1.3.*"
