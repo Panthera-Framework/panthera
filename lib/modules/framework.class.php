@@ -193,7 +193,7 @@ class framework
     public $database = null;
 
     /**
-     * @var \Panthera\cache\cache $cache
+     * @var \Panthera\cache\cache|\Panthera\cache\SQLite3Cache $cache
      */
     public $cache = null;
 
@@ -427,5 +427,29 @@ class framework
         }
 
         throw new FileNotFoundException('Could not find "' .$path. '" file in project\'s filesystem', 'FW_FILE_NOT_FOUND');
+    }
+
+    /**
+     * Get application's name, defaults to "PFApplication"
+     *
+     * @System Core.Config(key="AppName")
+     * @param bool $stripped
+     * @return string
+     */
+    public function getName($stripped = false)
+    {
+        $name = $this->config->get('AppName');
+
+        if ($stripped)
+        {
+            $name = preg_replace('/[^\da-z]/i', '', $name);
+        }
+
+        if (!$name)
+        {
+            $name = "PFApplication";
+        }
+
+        return $name;
     }
 }

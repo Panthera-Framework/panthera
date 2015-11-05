@@ -14,7 +14,6 @@ class FrameworkTest extends PantheraFrameworkTestCase
      */
     public function testGetInstance()
     {
-        $this->setup();
         $this->assertSame($this->app, $this->app->getInstance());
     }
 
@@ -27,7 +26,6 @@ class FrameworkTest extends PantheraFrameworkTestCase
      */
     public function testGetPathNotFound()
     {
-        $this->setup();
         $this->setExpectedException('\Panthera\FileNotFoundException');
         $this->app->getPath('notExistingPath');
     }
@@ -41,7 +39,6 @@ class FrameworkTest extends PantheraFrameworkTestCase
      */
     public function testNoApplicationIndex()
     {
-        $this->setup();
         $this->setExpectedException('\Panthera\PantheraFrameworkException');
         $this->app->applicationIndex = null;
         $this->app->getPath('noApplicationIndexHere');
@@ -56,7 +53,6 @@ class FrameworkTest extends PantheraFrameworkTestCase
      */
     public function testLoadApplicationIndex()
     {
-        $this->setup();
         $this->app->loadApplicationIndex();
         $this->assertNotNull($this->app->applicationIndex);
     }
@@ -70,7 +66,6 @@ class FrameworkTest extends PantheraFrameworkTestCase
      */
     public function testShellApplicationNotFound()
     {
-        $this->setup();
         $this->setExpectedException('\Panthera\FileNotFoundException');
         $this->app->runShellApplication('notExistingShellApplication');
     }
@@ -83,7 +78,6 @@ class FrameworkTest extends PantheraFrameworkTestCase
      */
     public function testBaseClass__sleep()
     {
-        $this->setup();
         $this->assertNotNull($this->app->config->__sleep());
     }
 
@@ -95,7 +89,18 @@ class FrameworkTest extends PantheraFrameworkTestCase
      */
     public function testBaseClass__wakeup()
     {
-        $this->setup();
         $this->assertNull($this->app->config->__wakeup());
+    }
+
+    /**
+     * @see \Panthera\framework::getName();
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function testGetName()
+    {
+        $this->app->config->set('AppName', 'My-Application');
+
+        $this->assertEquals('My-Application', $this->app->getName());
+        $this->assertEquals('MyApplication', $this->app->getName(true));
     }
 }
