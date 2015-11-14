@@ -1,0 +1,331 @@
+<?php
+namespace Panthera\Components\Kernel;
+
+use Panthera\Classes\BaseExceptions\FileNotFoundException;
+use Panthera\Classes\BaseExceptions\InvalidConfigurationException;
+use Panthera\Classes\BaseExceptions\PantheraFrameworkException;
+
+use Panthera\Components\Cache\Loader as CacheLoader;
+use Panthera\Components\Locale\Locale;
+use Panthera\Components\Templating\Loader as TemplatingLoader;
+use Panthera\Components\Templating\TemplatingInterface;
+use Panthera\Components\Configuration\Configuration;
+use Panthera\Components\Database\DatabaseDriverLoader;
+use Panthera\Components\Logging\Logger;
+use Panthera\Components\Signals\SignalsHandler;
+
+require __DIR__ . '/../../Classes/BaseExceptions.php';
+
+/**
+ * Panthera Framework 2 Core Library
+ *
+ * @package Panthera\Components\Kernel
+ * @author Damian Kęska <damian@pantheraframework.org>
+ */
+class Framework
+{
+    /**
+     * @var TemplatingInterface $template
+     */
+    public $template = null;
+
+    /**
+     * @var Locale $locale
+     */
+    public $locale = null;
+
+    /**
+     * @var \Panthera\Components\Logging\Logger $logging
+     */
+    public $logging = null;
+
+    /**
+     * @var \Panthera\Components\Signals\SignalsHandler $signals
+     */
+    public $signals = null;
+
+    /**
+     * @var \Panthera\Components\Database\Drivers\CommonPDODriver|\Panthera\Components\Database\DatabaseDriverInterface $database
+     */
+    public $database = null;
+
+    /**
+     * @var \Panthera\Components\Cache\CacheInterface $cache
+     */
+    public $cache = null;
+
+    /**
+     * @var \Panthera\Components\Configuration\Configuration $config
+     */
+    public $config = null;
+
+    /**
+     * @var $instance null
+     */
+    public static $instance = null;
+
+    /**
+     * Absolute path to application root directory
+     *
+     * @var string $appPath
+     */
+    public $appPath = '';
+
+    /**
+     * Absolute path to lib root directory
+     *
+     * @var string $libPath
+     */
+    public $libPath = '';
+
+    /**
+     * Framework path
+     *
+     * @var string $frameworkPath
+     */
+    public $frameworkPath = '';
+
+    /**
+     * Are we in debugging mode?
+     *
+     * @var bool $isDebugging
+     */
+    public $isDebugging = false;
+
+    /**
+     * List of all indexed elements eg. paths to directories that contains translation files, list of controllers
+     *
+     * @var array $applicationIndex
+     */
+    public $applicationIndex = array(
+
+    );
+
+    /**
+     * Constructor
+     *
+     * @param string $controllerPath
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @author Mateusz Warzyński <lxnmen@gmail.com>
+     */
+    public function __construct($controllerPath)
+    {
+        $this->appPath = pathinfo($controllerPath, PATHINFO_DIRNAME). '/';
+        $this->libPath = realpath(__DIR__. '/../../');
+        $this->frameworkPath = realpath(__DIR__. '/../../');
+    }
+
+    /**
+     * Pre-builds all base objects
+     *
+     * @param string $controllerPath Path to controller that constructed this method
+     * @param array $configuration Default configuration
+     *
+     * @throws InvalidConfigurationException
+     * @throws PantheraFrameworkException
+     */
+    public function setup($configuration = array())
+    {
+        // load composer's autoloader
+        if (is_file(PANTHERA_FRAMEWORK_PATH . '/vendor/autoload.php'))
+        {
+            require_once PANTHERA_FRAMEWORK_PATH . '/vendor/autoload.php';
+        }
+
+        // load application indexing cache
+        $this->loadApplicationIndex();
+
+        $this->signals  = new SignalsHandler();
+        $this->config   = new Configuration($configuration);
+        $this->logging  = new Logger();
+        $this->cache    = CacheLoader::getInstance();
+        $this->database = DatabaseDriverLoader::getInstance();
+        $this->locale   = new Locale();
+
+        if (strtolower(PHP_SAPI) != 'cli')
+        {
+            $this->template = new TemplatingLoader;
+        }
+    }
+
+    /**
+     * Load application index cache
+     *
+     * Application index cache contains lists of all collected useful items like paths where translation files found
+     * or list of controllers in installed packages
+     *
+     * @throws PantheraFrameworkException
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return bool
+     */
+    public function loadApplicationIndex()
+    {
+        if (is_file($this->appPath. '/.content/cache/applicationIndex.php'))
+        {
+            require $this->appPath. '/.content/cache/applicationIndex.php';
+
+            if (!isset($appIndex) || !is_array($appIndex))
+            {
+                throw new PantheraFrameworkException('Missing variable $appIndex or it\'s not an array in file "' .$this->appPath. '/.content/cache/applicationIndex.php"', 'FW_APP_INDEX_FILE_NOT_FOUND');
+            }
+
+            $this->applicationIndex = $appIndex;
+            return true;
+        }
+
+        throw new PantheraFrameworkException('Application index cache not found, it should be updated automatically as a periodic or real time job, please investigate why cache regeneration is not running up, a file should be created at "' .$this->appPath. '/.content/cache/applicationIndex.php"', 'FW_APPLICATION_INDEX_NOT_FOUND');
+    }
+
+    /**
+     * Get framework's instance
+     *
+     * @param string $controllerPath
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return null|framework
+     */
+    public static function getInstance($controllerPath = null)
+    {
+        if (!$controllerPath)
+        {
+            $controllerPath = isset($_SERVER['APP_PATH']) ? $_SERVER['APP_PATH'] . '/index.php' : null;
+        }
+
+        if (!self::$instance)
+        {
+            self::$instance = new self($controllerPath);
+        }
+
+        return self::$instance;
+    }
+
+    /**
+     * Determine if run a shell application or not (depends on if we are including the class or running it from shell directly)
+     */
+    public static function runShellApplication($appName)
+    {
+        $appName = '\\Panthera\\Binaries\\' .$appName. 'Application';
+
+        if (isset($_SERVER['argv']) && $_SERVER['argv'][0] && !defined('PHPUNIT'))
+        {
+            $reflection = new \ReflectionClass($appName);
+
+            if (realpath($reflection->getFileName()) == realpath($_SERVER['argv'][0]))
+            {
+                $app = new $appName;
+
+                if (method_exists($app, 'execute'))
+                {
+                    $app->execute();
+                }
+
+                return $app;
+            }
+        }
+    }
+
+    /**
+     * Returns an absolute path to a resource
+     *
+     * @param string $path Relative path to resource
+     * @param bool $packages Lookup packages too
+     *
+     * @throws FileNotFoundException
+     * @throws PantheraFrameworkException
+     * @author Damian Kęska <webnull.www@gmail.com>
+     * @return string|null
+     */
+    public function getPath($path, $packages = true)
+    {
+        if (!$this->applicationIndex)
+        {
+            throw new PantheraFrameworkException('Application index cache not found, it should be updated automatically as a periodic or real time job, please investigate why cache regeneration is not running up', 'FW_APPLICATION_INDEX_NOT_FOUND');
+        }
+
+        if (file_exists($this->appPath . '/' . $path))
+        {
+            return $this->appPath . '/' . $path;
+
+        } elseif (file_exists($this->appPath. '/.content/' .$path)) {
+            return $this->appPath. '/.content/' .$path;
+
+        } elseif (file_exists($path)) {
+            return $path;
+
+        } elseif (file_exists($this->frameworkPath . '/' . $path)) {
+            return $this->frameworkPath . '/' . $path;
+        }
+
+        /**
+         * Support path indexed in modules
+         *
+         * Basically every module has it's on directory structure.
+         * If the structure contains for example a "translations" folder then we could look into it when searching for a translation.
+         */
+        // get first "/" in the string
+        $firstLevelFolderPos = strpos($path, '/', 1);
+
+        if ($packages === true && $firstLevelFolderPos !== false)
+        {
+            // now we could pick root folder from this path by knowing where was first "/" occurence
+            $firstLevelFolder = substr($path, 0, $firstLevelFolderPos);
+
+            // this is the path without our root folder name
+            $chrootPath = substr($path, $firstLevelFolderPos, (strlen($path) - $firstLevelFolderPos));
+
+            // let's now look in every path in application index cache in group "path_{$rootFolderName}"
+            if (isset($this->applicationIndex['path_' .$firstLevelFolder]))
+            {
+                foreach ($this->applicationIndex['path_' .$firstLevelFolder] as $path)
+                {
+                    $found = $this->getPath('/' .$path . '/' .$chrootPath, false);
+
+                    if ($found)
+                    {
+                        return $found;
+                    }
+                }
+            }
+        }
+
+        throw new \Panthera\Classes\BaseExceptions\FileNotFoundException('Could not find "' .$path. '" file in project\'s filesystem', 'FW_FILE_NOT_FOUND');
+    }
+
+    /**
+     * Get application's name, defaults to "PFApplication"
+     *
+     * @System Core.Config(key="AppName")
+     * @param bool $stripped
+     * @return string
+     */
+    public function getName($stripped = false)
+    {
+        $name = null;
+
+        if ($this->config instanceof Configuration)
+        {
+            $name = $this->config->get('AppName');
+        }
+
+        if ($stripped)
+        {
+            $name = preg_replace('/[^\da-z]/i', '', $name);
+        }
+
+        if (!$name)
+        {
+            $name = "PFApplication";
+        }
+
+        return $name;
+    }
+
+    /**
+     * @System Core.Constant(key="PF2_NAMESPACE")
+     * @const PF2_NAMESPACE
+     * @return string
+     */
+    public function getNamespace()
+    {
+        return defined('PF2_NAMESPACE') ? PF2_NAMESPACE : 'PFApplication';
+    }
+}

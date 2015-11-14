@@ -5,6 +5,8 @@
  * @author Damian Kęska <damian@pantheraframework.org>
  */
 
+defined('PF2_NAMESPACE') ?: define('PF2_NAMESPACE', 'PFApplication');
+
 $defaultConfig = [
     'database' => [
 
