@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
-namespace Panthera\cli;
-use \Panthera\framework;
+namespace Panthera\Binaries;
+use Panthera\Components\Kernel\Framework;
 
 
 require __DIR__. '/../init.php';
@@ -12,7 +12,7 @@ require __DIR__. '/../init.php';
  * @package Panthera\migrations
  * @author Damian Kęska <damian@pantheraframework.org>
  */
-class migrationsApplication extends application
+class MigrationsApplication extends Application
 {
     /**
      * Path to Phinx "binary"
@@ -65,4 +65,4 @@ class migrationsApplication extends application
     }
 }
 
-framework::runShellApplication('migrations');
+framework::runShellApplication('Migrations');

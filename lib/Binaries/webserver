@@ -1,7 +1,9 @@
 #!/usr/bin/env php
 <?php
-namespace Panthera\cli;
-use \Panthera\framework;
+namespace Panthera\Binaries;
+
+use Panthera\Components\CommandLine\Application;
+use Panthera\Components\Kernel\Framework;
 
 require __DIR__. '/../init.php';
 
@@ -11,7 +13,7 @@ require __DIR__. '/../init.php';
  * @package Panthera\Modules\Deployment\Environment\WebServer
  * @author Damian Kęska <damian@pantheraframework.org>
  */
-class webserverApplication extends application
+class WebserverApplication extends Application
 {
     /**
      * List of supported web servers
@@ -121,4 +123,4 @@ class webserverApplication extends application
     }
 }
 
-framework::runShellApplication('webserver');
+framework::runShellApplication('Webserver');

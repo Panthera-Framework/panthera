@@ -1,9 +1,12 @@
 #!/usr/bin/env php
 <?php
-namespace Panthera\cli;
-use Panthera\DatabaseException;
-use \Panthera\framework;
-use Panthera\PantheraFrameworkException;
+namespace Panthera\Binaries;
+
+use Panthera\Classes\BaseExceptions\DatabaseException;
+use Panthera\Components\CommandLine\Application;
+use Panthera\Components\Kernel\Framework;
+use Panthera\Classes\BaseExceptions\PantheraFrameworkException;
+
 use Symfony\Component\Yaml\Yaml;
 
 
@@ -15,7 +18,7 @@ require __DIR__. '/../init.php';
  * @package Panthera\migrations
  * @author Damian Kęska <damian@pantheraframework.org>
  */
-class openDatabaseApplication extends application
+class OpenDatabaseApplication extends Application
 {
     /**
      * List of known applications
@@ -179,4 +182,4 @@ class openDatabaseApplication extends application
     }
 }
 
-framework::runShellApplication('openDatabase');
+framework::runShellApplication('OpenDatabase');
