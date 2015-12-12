@@ -17,14 +17,14 @@ class DeveloperTask extends Task
      * @var array
      */
     public $dependencies = array(
-        'build/framework/autoloaderCache',
-        'build/framework/signals/updateSignalsIndex',
-        'build/environment/installComposer',
-        'build/framework/updateComposerPackages',
-        'build/environment/shellConfiguration',
-        'build/database/configurePhinx',
-        'tests/PHPUnitConfigure',
-        'build/database/migrate',
-        'build/routing/cache',
+        'Build/Framework/AutoloaderCache',
+        'Build/Framework/Signals/UpdateSignalsIndex',
+        'Build/Environment/InstallComposer',
+        'Build/Framework/UpdateComposerPackages',
+        'Build/Environment/ShellConfiguration',
+        'Build/Database/ConfigurePhinx',
+        'Tests/PHPUnitConfigure',
+        'Build/Database/Migrate',
+        'Build/Routing/Cache',
     );
 }

@@ -90,6 +90,7 @@ abstract class ORMBaseFrameworkObject extends BaseFrameworkClass
     {
         /** @see \Panthera\baseClass::__construct **/
         parent::__construct();
+        $this->__rebuildColumnsMapping();
 
         if (is_int($data))
         {
@@ -181,7 +182,7 @@ abstract class ORMBaseFrameworkObject extends BaseFrameworkClass
         {
             if ($this->app->cache)
             {
-                $this->__orm__meta__mapping = $this->app->cache->get('orm.mapping.' .get_called_class());
+                $this->__orm__meta__mapping = $this->app->cache->get('orm.mapping.' . get_called_class());
             }
 
             if (!$this->__orm__meta__mapping)
@@ -190,7 +191,7 @@ abstract class ORMBaseFrameworkObject extends BaseFrameworkClass
 
                 if ($this->app->cache)
                 {
-                    $this->app->cache->set('orm.mapping.' .get_called_class(), $this->__orm__meta__mapping, 600);
+                    $this->app->cache->set('orm.mapping.' . get_called_class(), $this->__orm__meta__mapping, 600);
                 }
             }
         }
@@ -207,16 +208,16 @@ abstract class ORMBaseFrameworkObject extends BaseFrameworkClass
     /**
      * Fetch objects from database
      *
-     * @param null $where
-     * @param null $order
-     * @param null $group
-     * @param null $limit
-     * @param array $values
+     * @param null|array $where
+     * @param null|array $order
+     * @param null|array $group
+     * @param null|Pagination $limit
+     * @param array|array $values
      *
      * @author Damian Kęska <damian@pantheraframework.org>
-     * @return static[]
+     * @return $this[]
      */
-    public static function fetch($where = null, $order = null, $group = null, $limit = null, $values = array())
+    public static function fetch($where = null, $order = null, $group = null, $limit = null, $values = [])
     {
         $database = Framework::getInstance()->database;
         $select = $database->select(static::$__orm_Table, '*', $where, $order, $group, $limit, $values , static::$__orm_Joins, $execute=false);
@@ -235,6 +236,22 @@ abstract class ORMBaseFrameworkObject extends BaseFrameworkClass
         }
 
         return $objects;
+    }
+
+    /**
+     * Fetch only one record
+     *
+     * @param null|array $where
+     * @param null|array $order
+     * @param null|array $group
+     * @param array|array $values
+     *
+     * @return $this|null
+     */
+    public static function fetchOne($where = null, $order = null, $group = null, $values = [])
+    {
+        $results = static::fetch($where, $order, $group, new Pagination(1, 1), $values);
+        return isset($results[0]) ? $results[0] : null;
     }
 
     /**
@@ -384,6 +401,11 @@ abstract class ORMBaseFrameworkObject extends BaseFrameworkClass
      */
     public function getId()
     {
+        if (!isset($this->__orm__meta__mapping[static::$__orm_IdColumn]))
+        {
+            return null;
+        }
+
         return $this->{$this->__orm__meta__mapping[static::$__orm_IdColumn]};
     }
 }

@@ -40,6 +40,7 @@ class SQLite3CacheDriver extends BaseFrameworkClass implements CacheInterface
     {
         $this->connection = new \SQLite3($this->app->appPath. '/.content/cache/applicationCache.sqlite3');
         $query = $this->connection->query("SELECT name FROM sqlite_master WHERE type='table' AND name='pf2_simple_cache';"); $this->queries++;
+        $this->connection->exec("pragma synchronous = off;");
 
         if (!$query->fetchArray())
         {
@@ -75,7 +76,7 @@ class SQLite3CacheDriver extends BaseFrameworkClass implements CacheInterface
         if ($this->exists($variable))
         {
             $state = $this->connection->prepare('
-                UPDATE `pf2_simple_cache` SET value = :value, type = :type, expires = :expiration WHERE key = :key
+                UPDATE pf2_simple_cache SET value = :value, type = :type, expires = :expiration WHERE key = :key
             '); $this->queries++;
 
             $state->bindValue(':key', $variable, SQLITE3_TEXT);
@@ -89,7 +90,7 @@ class SQLite3CacheDriver extends BaseFrameworkClass implements CacheInterface
              */
 
             $state = $this->connection->prepare('
-              INSERT INTO `pf2_simple_cache` (key, value, expires, type)
+              INSERT INTO pf2_simple_cache (key, value, expires, type)
               VALUES (:key, :value, :expires, :type)'); $this->queries++;
 
             // bind params
@@ -97,8 +98,9 @@ class SQLite3CacheDriver extends BaseFrameworkClass implements CacheInterface
             $state->bindValue(':value', $value, SQLITE3_TEXT);
             $state->bindValue(':expires', $expiration, SQLITE3_INTEGER);
             $state->bindValue(':type', $type, SQLITE3_INTEGER);
-            $state->execute();
         }
+
+        return (bool)@$state->execute();
     }
 
     /**
@@ -165,9 +167,8 @@ class SQLite3CacheDriver extends BaseFrameworkClass implements CacheInterface
     {
         $statement = $this->connection->prepare('DELETE FROM `pf2_simple_cache` WHERE key = :key'); $this->queries++;
         $statement->bindValue(':key', $variable, SQLITE3_TEXT);
-        $statement->execute();
 
-        return true;
+        return (bool)@$statement->execute();
     }
 
     /**

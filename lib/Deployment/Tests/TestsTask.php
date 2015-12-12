@@ -19,9 +19,9 @@ class TestsTask extends Task
      *
      * @var array
      */
-    public $dependencies = array(
+    public $dependencies = [
         'Tests/BuildTestDatabase',
         'Tests/PHPUnitConfigure',
         'Tests/PHPUnit',
-    );
+    ];
 }

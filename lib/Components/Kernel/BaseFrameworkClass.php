@@ -10,7 +10,7 @@ namespace Panthera\Components\Kernel;
 abstract class BaseFrameworkClass
 {
     /**
-     * @var framework $app
+     * @var Framework $app
      */
     protected $app = null;
 
@@ -43,7 +43,7 @@ abstract class BaseFrameworkClass
      */
     public function __construct()
     {
-        $this->app = framework::getInstance();
+        $this->app = Framework::getInstance();
         self::$instances[get_called_class()] = $this;
     }
 
@@ -102,6 +102,15 @@ abstract class BaseFrameworkClass
      */
     public function __wakeup()
     {
-        $this->app = framework::getInstance();
+        $this->app = Framework::getInstance();
+    }
+
+    /**
+     * @param string $message Debug message
+     * @return bool|string
+     */
+    public function debug($message)
+    {
+        return $this->app->logging->output($message, 'debug', 1);
     }
 }

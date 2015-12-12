@@ -50,8 +50,7 @@ class configurePhinxTask extends Task
             'default_migration_table' => '_migrations_phinxlog',
             'default_database'        => $this->app->config->get('Migrations/DefaultDatabase', 'development'),
             'paths' => [
-                'migrations'     => PANTHERA_FRAMEWORK_PATH. '/Schema/DatabaseMigrations/',
-                'migrations_app' => $this->app->appPath. '/.content/Schema/DatabaseMigrations/',
+                'migrations' => $this->app->appPath. '/.content/Schema/DatabaseMigrations/',
             ],
 
             'environments' => [

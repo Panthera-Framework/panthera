@@ -12,6 +12,11 @@ use Symfony\Component\Yaml\Yaml;
 
 class CacheTask extends Task
 {
+    /** @var array $dependencies */
+    public $dependencies = [
+        'Build/Framework/AutoloaderCache',
+    ];
+
     /**
      * Indexed routes will be placed here
      *
@@ -37,7 +42,7 @@ class CacheTask extends Task
 
         foreach ($structure as $directoryName => $files)
         {
-            if ((strpos($directoryName, '/packages/') === 0 || strpos($directoryName, '/vendor/') === 0) && strpos($directoryName, '/controllers/') !== false)
+            if ((strpos($directoryName, '/Packages/') === 0 || strpos($directoryName, '/vendor/') === 0) && strpos($directoryName, '/Controllers/') !== false)
             {
                 foreach ($files as $fileName => $attributes)
                 {

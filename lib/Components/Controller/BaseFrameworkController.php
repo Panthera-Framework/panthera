@@ -1,9 +1,9 @@
 <?php
 namespace Panthera\Components\Controller;
 
-use Panthera\BaseFrameworkClass;
-use Panthera\ControllerException;
-use Panthera\utils\ClassUtils;
+use Panthera\Components\Kernel\BaseFrameworkClass;
+use Panthera\Classes\BaseExceptions\ControllerException;
+use Panthera\Classes\Utils\ClassUtils;
 
 /**
  * Base Framework Controller

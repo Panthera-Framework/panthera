@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
 namespace Panthera\Binaries;
+use Panthera\Components\CommandLine\Application;
 use Panthera\Components\Kernel\Framework;
 
 

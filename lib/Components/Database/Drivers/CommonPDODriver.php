@@ -417,7 +417,15 @@ abstract class CommonPDODriver extends BaseFrameworkClass implements DatabaseDri
             $this->app->logging->output('Executing query: ' .$query. ', data: ' .json_encode($values), 'debug');
         }
 
-        $sth = $this->socket->prepare($query);
+        try
+        {
+            $sth = $this->socket->prepare($query);
+        }
+        catch (\PDOException $e)
+        {
+            throw new DatabaseException($e->getMessage() . ', SQL: ' . $query, 'PDO_EXCEPTION');
+        }
+
 
         if (is_array($values) && $values)
         {

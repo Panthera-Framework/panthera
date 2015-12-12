@@ -73,11 +73,12 @@ class Logger extends BaseFrameworkClass
      *
      * @param string $message Message to print
      * @param string $type Type eg. debug, error, info
+     * @param int $backtraceOffset Number of steps to go back to get real class, function, line, file etc. defaults to 0
      *
      * @author Mateusz Warzyński <lxnmen@gmail.com>
      * @return bool|string
      */
-    public function output($message, $type = 'info')
+    public function output($message, $type = 'info', $backtraceOffset = 0)
     {
         if (!$this->enabled)
         {
@@ -90,7 +91,8 @@ class Logger extends BaseFrameworkClass
         }
 
         $backtrace = debug_backtrace();
-        $backtrace = end($backtrace);
+        end($backtrace);
+        $backtrace = $backtrace[key($backtrace) - intval($backtraceOffset)];
         $formattedMessage = $this->format;
 
         if ($type === 'debug')

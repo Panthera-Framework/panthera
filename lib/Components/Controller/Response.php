@@ -1,9 +1,10 @@
 <?php
 namespace Panthera\Components\Controller;
 
-use Panthera\ControllerException;
-use Panthera\framework;
-use Panthera\Signals;
+use Panthera\Classes\BaseExceptions\ControllerException;
+use Panthera\Components\Kernel\Framework;
+use Panthera\Components\Signals\SignalsHandler;
+
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -38,7 +39,7 @@ class Response
     {
         // @todo: Validation
         $this->template = $template;
-        $this->variables = $variables;
+        $this->variables = (array)$variables;
     }
 
     /**
@@ -46,6 +47,7 @@ class Response
      *
      * @param array|string $variable Variable name or array of variables
      * @param mixed|null $value Value if specified a single variable or null if passed array in first argument
+     * @return $this
      */
     public function assign($variable, $value = null)
     {
@@ -57,6 +59,16 @@ class Response
         }
 
         $this->variables = array_merge($this->variables, $variable);
+        return $this;
+    }
+
+    /**
+     * @param string $variable
+     * @return mixed
+     */
+    public function getVariable($variable)
+    {
+        return isset($this->variables[$variable]) ? $this->variables[$variable] : null;
     }
 
     /**
@@ -72,10 +84,10 @@ class Response
      */
     public function encode($type = null)
     {
-        $customEncoder = Signals::getInstance()->execute('Response.encode', $this);
+        $customEncoder = SignalsHandler::getInstance()->execute('Response.encode', $this);
 
         // @todo implement ResponseEncoder
-        if ($customEncoder instanceof ResponseEncoder)
+        if ($customEncoder instanceof ResponseEncoderInterface)
         {
             return $customEncoder->encode($this->filterVariables($this->variables), $this->variables, $this);
         }
@@ -131,6 +143,11 @@ class Response
                     $allowed = true;
                 }
             }
+            elseif (is_array($variable))
+            {
+                $allowed = true;
+                $variable = $this->filterVariables($variable);
+            }
             else
             {
                 $allowed = true;
@@ -152,12 +169,27 @@ class Response
      */
     public function display()
     {
-        $template = framework::getInstance()->template;
+        $template = Framework::getInstance()->template;
         $template->assign($this->variables);
 
         if (!$this->template)
         {
             return '';
+        }
+
+        // configure include paths
+        $includePaths = Framework::getInstance()->packageManager->getIncludePaths();
+
+        if ($includePaths)
+        {
+            $includePaths = array_map(function ($path) {
+                if (is_dir($path . '/Templates/'))
+                {
+                    return $path . '/Templates/';
+                }
+            }, $includePaths);
+
+            $template->setIncludePaths(array_filter($includePaths));
         }
 
         return $template->display($this->template);

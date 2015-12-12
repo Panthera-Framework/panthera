@@ -23,6 +23,7 @@ class RouteHandler extends BaseFrameworkClass
 
         $provider = new RouteProvider();
         $this->router->setRoutes(array_merge($this->router->getRoutes(), $provider->getRoutes()));
+        $this->app->startupComponent->afterRouterSetup($this);
     }
 
     /**
@@ -45,6 +46,17 @@ class RouteHandler extends BaseFrameworkClass
         return $this;
     }
 
+    /**
+     * @return string
+     */
+    public function getBaseLink()
+    {
+        return (empty($_SERVER['HTTPS']) ? 'http' : 'https') . '://' . $_SERVER['HTTP_HOST'] . (!$this->app->config->get('Routing/rootPath') ?: $this->app->config->get('Routing/rootPath')) . '/';
+    }
+
+    /**
+     * @throws PantheraFrameworkException
+     */
     public function handleRequest()
     {
         // http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']
@@ -57,6 +69,12 @@ class RouteHandler extends BaseFrameworkClass
                 '',
                 $url
             );
+        }
+
+        // pass application's base URL to the template
+        if ($this->app->template)
+        {
+            $this->app->template->assign('baseURL', $this->getBaseLink());
         }
 
         $routing = $this->router->resolve(
@@ -81,6 +99,8 @@ class RouteHandler extends BaseFrameworkClass
                 $target = $classes[$target];
             }
         }
+
+        $this->debug('Target resolution: ' . $target);
 
         if (class_exists($target))
         {

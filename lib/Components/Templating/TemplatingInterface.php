@@ -35,4 +35,12 @@ interface TemplatingInterface
      * @return string
      */
     public function display($templateFile, $toString = false, $isString = false);
+
+    /**
+     * Set include paths where to look for templates
+     *
+     * @param array $paths
+     * @return mixed
+     */
+    public function setIncludePaths(array $paths);
 }

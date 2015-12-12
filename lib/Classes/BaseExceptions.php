@@ -80,6 +80,28 @@ class ValidationException extends PantheraFrameworkException
 /**
  * Class ControllerException
  *
- * @package Panthera\core\controllers
+ * @package Panthera\Classes\BaseExceptions
  */
 class ControllerException extends PantheraFrameworkException {};
+
+
+/**
+ * Class PackageManagementException
+ *
+ * @package Panthera\Classes\BaseExceptions
+ */
+class PackageManagementException extends PantheraFrameworkException {};
+
+/**
+ * Class ConfigurationException
+ *
+ * @package Panthera\Classes\BaseExceptions
+ */
+class ConfigurationException extends PantheraFrameworkException {};
+
+/**
+ * Class InvalidArgumentException
+ *
+ * @package Panthera\Classes\BaseExceptions
+ */
+class InvalidArgumentException extends PantheraFrameworkException {};

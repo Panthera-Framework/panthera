@@ -61,7 +61,7 @@ class Autoloader
         }
 
         // check if namespace belongs to application or framework
-        if (strpos($class, 'Panthera\\') === false && strpos($class, $app->getName(true). '\\') === false)
+        if (strpos($class, 'Panthera\\') === false && strpos($class, $app->getNamespace()) === false)
         {
             return false;
         }
@@ -76,7 +76,7 @@ class Autoloader
             if ($path)
             {
                 ($app->logging) ? $app->logging->output('[Autoload] getForNameSpace returned ' . $path) : null;
-                require $path;
+                require_once $path;
                 return $path;
             }
             else
@@ -94,7 +94,7 @@ class Autoloader
         }
 
         ($app->logging) ? $app->logging->output('[Autoload] require ' . $class . '.php') : null;
-        require $app->getPath($class . '.php');
+        require_once $app->getPath($class . '.php');
     }
 
     /**
@@ -114,6 +114,7 @@ class Autoloader
             return false;
         }
 
+        $forceFrameworkPath = ($parts[key($parts)] === 'Panthera');
         unset($parts[key($parts)]);
 
         // build a fs path
@@ -127,6 +128,10 @@ class Autoloader
             $app->frameworkPath . '/' . $path . '.php',
         ];
 
+        if ($forceFrameworkPath)
+        {
+            unset($searchPaths[0]);
+        }
 
         // additional check if last element is not a PHP file
         end($parts);
@@ -137,6 +142,11 @@ class Autoloader
             $app->appPath . '/.content/' . $path . '.php',
             $app->frameworkPath . '/' . $path . '.php',
         ]);
+
+        if ($forceFrameworkPath)
+        {
+            unset($searchPaths[1]);
+        }
 
         foreach ($searchPaths as $path)
         {

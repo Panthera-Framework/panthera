@@ -7,6 +7,7 @@ use Panthera\Classes\BaseExceptions\PantheraFrameworkException;
 use Panthera\Components\Autoloader\Autoloader;
 use Panthera\Components\Deployment\Task;
 use Panthera\Components\Indexing\IndexService;
+use Phinx\Db\Table\Index;
 
 if (is_file(PANTHERA_FRAMEWORK_PATH . '/vendor/autoload.php'))
 {
@@ -41,15 +42,16 @@ class AutoloaderCacheTask extends Task
     {
         foreach ($this->deployApp->indexService->mixedFilesStructure as $directoryName => $files)
         {
-            if (strpos($directoryName, '/modules') !== false
-                || strpos($directoryName, '/controllers') !== false
-                || strpos($directoryName, '/Components') !== false)
+            if (strpos($directoryName, '/Packages') !== false)
             {
                 $this->indexDirectory($directoryName);
             }
         }
 
         ksort($this->indexedClasses);
+
+        // index list of packages
+        $this->indexPackages();
 
         // save to cache file
         $this->deployApp->indexService->writeIndexFile('autoloader', $this->indexedClasses);
@@ -76,8 +78,10 @@ class AutoloaderCacheTask extends Task
 
             foreach ($classes as $class)
             {
-                // don't index files with a valid structure
-                if (Autoloader::getForNamespace($class))
+                // don't index files with a valid structure, except controllers in packages
+                $isController = strpos($class, '\\Packages\\') !== false && strpos($class, '\\Controllers\\') !== false;
+
+                if (!$isController && Autoloader::getForNamespace($class))
                 {
                     continue;
                 }
@@ -89,5 +93,32 @@ class AutoloaderCacheTask extends Task
 
             $this->output("");
         }
+    }
+
+    public function indexPackages()
+    {
+        $this->output('========================');
+        $this->output('Indexing packages...');
+        $this->output('');
+
+        $packages = [];
+
+        foreach ($this->deployApp->indexService->mixedFilesStructure as $directoryName => $files)
+        {
+            foreach ($files as $file => $attributes)
+            {
+                $file = basename(strtolower($file));
+
+                if ($file == 'package.yml' || $file == 'packae.yaml')
+                {
+                    $packageName = substr($directoryName, strlen('/Package/') + 1);
+
+                    $packages[] = $packageName;
+                    $this->output('Found package: ' . $packageName);
+                }
+            }
+        }
+
+        $this->deployApp->indexService->writeIndexFile('packages', array_unique($packages));
     }
 }

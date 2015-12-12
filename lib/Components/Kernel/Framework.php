@@ -7,6 +7,7 @@ use Panthera\Classes\BaseExceptions\PantheraFrameworkException;
 
 use Panthera\Components\Cache\Loader as CacheLoader;
 use Panthera\Components\Locale\Locale;
+use Panthera\Components\PackageManagement\PackageManager;
 use Panthera\Components\Templating\Loader as TemplatingLoader;
 use Panthera\Components\Templating\TemplatingInterface;
 use Panthera\Components\Configuration\Configuration;
@@ -58,6 +59,17 @@ class Framework
      * @var \Panthera\Components\Configuration\Configuration $config
      */
     public $config = null;
+
+    /**
+     * @var PackageManager
+     */
+    public $packageManager = null;
+
+
+    /**
+     * @var \Panthera\Components\StartupComponent\StartupComponent
+     */
+    public $startupComponent = null;
 
     /**
      * @var $instance null
@@ -134,6 +146,7 @@ class Framework
 
         // load application indexing cache
         $this->loadApplicationIndex();
+        $this->isDebugging = isset($configuration['developerMode']) && $configuration['developerMode'];
 
         $this->signals  = new SignalsHandler();
         $this->config   = new Configuration($configuration);
@@ -141,10 +154,69 @@ class Framework
         $this->cache    = CacheLoader::getInstance();
         $this->database = DatabaseDriverLoader::getInstance();
         $this->locale   = new Locale();
+        $this->packageManager = new PackageManager();
+        $this->startupComponent = $this->getClassInstance('Components\\StartupComponent\\StartupComponent');
+        $this->template = TemplatingLoader::getInstance();
 
-        if (strtolower(PHP_SAPI) != 'cli')
+        $this->startupComponent->afterFrameworkSetup();
+    }
+
+    /**
+     * Get class name eg. Components\StartupComponent\StartupComponent
+     * could be resolved to:
+     * \Panthera\Components\StartupComponents if your application has not overwrite it
+     * else it will be resolved to eg.
+     * \YourAppName\Components\StartupComponents
+     *
+     * @param string $className
+     * @return string
+     */
+    public function getClassName($className)
+    {
+        $parts = explode('\\', $className);
+
+        if (isset($parts[1]) && ($parts[1] === 'Panthera' || $parts[1] === $this->getNamespace()))
         {
-            $this->template = new TemplatingLoader;
+            unset($parts[1]);
+        }
+
+        $className = join('\\', $parts);
+
+        if (class_exists('\\' . $this->getNamespace() . '\\' . $className))
+        {
+            return '\\' . $this->getNamespace() . '\\' . $className;
+        }
+
+        elseif (class_exists('\\Panthera\\' . $className))
+        {
+            return '\\Panthera\\' . $className;
+        }
+
+        throw new \InvalidArgumentException('"' . $className . '" is not a valid class name');
+    }
+
+    /**
+     * Get class instance
+     *
+     * @see getClassName
+     *
+     * @param string $className
+     * @param array $args
+     * @param bool $singleton
+     *
+     * @return mixed
+     */
+    public function getClassInstance($className, $args = [], $singleton = false)
+    {
+        $className = $this->getClassName($className);
+
+        if ($singleton)
+        {
+            return $className::getInstance(...$args);
+        }
+        else
+        {
+            return new $className(...$args);
         }
     }
 
@@ -258,7 +330,7 @@ class Framework
         /**
          * Support path indexed in modules
          *
-         * Basically every module has it's on directory structure.
+         * Basically every module has it's own directory structure.
          * If the structure contains for example a "translations" folder then we could look into it when searching for a translation.
          */
         // get first "/" in the string

@@ -43,11 +43,11 @@ goto_fw()
 commands()
 {
     echo "$(tput setaf 2)Your application commands:$(tput setaf 3)"
-    ls {$APP_PATH$}/.content/bin/
+    ls {$APP_PATH$}/.content/Binaries/
 
     echo ""
     echo "$(tput setaf 2)Panthera Framework 2 builtin commands:$(tput setaf 3)"
-    ls {$FRAMEWORK_PATH$}/bin/
+    ls {$FRAMEWORK_PATH$}/Binaries/
     echo "reload goto_app goto_fw welcome commands psysh"
     echo "$(tput sgr0)"
 }

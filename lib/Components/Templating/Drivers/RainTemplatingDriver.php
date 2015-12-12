@@ -62,14 +62,29 @@ class RainTemplatingDriver extends BaseFrameworkClass implements TemplatingInter
 
         $this->rain = new \Rain\RainTPL4();
 
-        $this->rain->setConfiguration(array(
+        $this->rain->setConfiguration([
             'base_url'            => null,
-            'tpl_dir'             => $this->app->appPath. '/.content/templates/',
-            'cache_dir'           => $this->app->appPath. '/.content/cache/RainTPL4/',
+            'tpl_dir'             => $this->app->appPath . '/.content/Templates/',
+            'cache_dir'           => $this->app->appPath . '/.content/cache/RainTPL4/',
             'remove_comments'     => $this->removeComments,
             'debug'               => $this->debug,
             'ignore_unknown_tags' => $this->ignoreUnknownTags,
-        ));
+        ]);
+    }
+
+    /**
+     * Set include paths to template files
+     *
+     * @param array $paths
+     * @return mixed|void
+     */
+    public function setIncludePaths(array $paths)
+    {
+        $paths[] = $this->app->appPath . '/.content/Templates/';
+
+        $this->rain->setConfiguration([
+            'tpl_dir' => $paths,
+        ], true);
     }
 
     /**
