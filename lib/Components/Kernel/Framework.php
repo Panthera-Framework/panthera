@@ -14,6 +14,7 @@ use Panthera\Components\Configuration\Configuration;
 use Panthera\Components\Database\DatabaseDriverLoader;
 use Panthera\Components\Logging\Logger;
 use Panthera\Components\Signals\SignalsHandler;
+use Panthera\Components\Session\Loader as SessionLoader;
 
 require __DIR__ . '/../../Classes/BaseExceptions.php';
 
@@ -43,22 +44,27 @@ class Framework
     /**
      * @var \Panthera\Components\Signals\SignalsHandler $signals
      */
-    public $signals = null;
+    public $signals;
 
     /**
      * @var \Panthera\Components\Database\Drivers\CommonPDODriver|\Panthera\Components\Database\DatabaseDriverInterface $database
      */
-    public $database = null;
+    public $database;
 
     /**
      * @var \Panthera\Components\Cache\CacheInterface $cache
      */
-    public $cache = null;
+    public $cache;
 
     /**
      * @var \Panthera\Components\Configuration\Configuration $config
      */
-    public $config = null;
+    public $config;
+
+    /**
+     * @var \Panthera\Components\Session\SessionDriverInterface
+     */
+    public $session;
 
     /**
      * @var PackageManager
@@ -69,7 +75,7 @@ class Framework
     /**
      * @var \Panthera\Components\StartupComponent\StartupComponent
      */
-    public $startupComponent = null;
+    public $component = null;
 
     /**
      * @var $instance null
@@ -154,11 +160,12 @@ class Framework
         $this->cache    = CacheLoader::getInstance();
         $this->database = DatabaseDriverLoader::getInstance();
         $this->locale   = new Locale();
+        $this->session  = SessionLoader::getInstance();
         $this->packageManager = new PackageManager();
-        $this->startupComponent = $this->getClassInstance('Components\\StartupComponent\\StartupComponent');
+        $this->component = $this->getClassInstance('Components\\StartupComponent\\StartupComponent');
         $this->template = TemplatingLoader::getInstance();
 
-        $this->startupComponent->afterFrameworkSetup();
+        $this->component->afterFrameworkSetup();
     }
 
     /**

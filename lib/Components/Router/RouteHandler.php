@@ -23,7 +23,7 @@ class RouteHandler extends BaseFrameworkClass
 
         $provider = new RouteProvider();
         $this->router->setRoutes(array_merge($this->router->getRoutes(), $provider->getRoutes()));
-        $this->app->startupComponent->afterRouterSetup($this);
+        $this->app->component->afterRouterSetup($this);
     }
 
     /**
