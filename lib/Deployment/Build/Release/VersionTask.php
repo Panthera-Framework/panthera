@@ -57,7 +57,7 @@ class VersionTask extends Task
 
         elseif ($arguments->get('dump'))
         {
-            $this->output(file_get_contents($this->app->appPath . '/.content/version.yml'));
+            $this->output(file_get_contents($this->getConfigPath()));
             return true;
         }
 
@@ -67,7 +67,7 @@ class VersionTask extends Task
             return $this->saveChanges();
         }
 
-        $this->output("No changes made to version, use --version and --maturity, see --help for more information\n\nIn --version you can use:\n %rev for commit hash\n %rev.short for short commit hash\n %commits for a commits count");
+        $this->output("No changes made to version, use --version and --maturity, see --help for more information\n\nIn --version you can use:\n %rev for commit hash\n %rev.short for short commit hash\n %commits for a commits count\n\nConfiguration path:\n " . $this->getConfigPath());
     }
 
     /**
@@ -125,7 +125,8 @@ class VersionTask extends Task
         $contents = Yaml::dump([
             'version' => $this->version,
             'maturity' => $this->maturity,
-            'template' => $this->versionTemplate
+            'template' => $this->versionTemplate,
+            'fullVersionString' => $this->version . ($this->maturity ? '-' . $this->maturity : ''),
         ]);
 
         $fp = @fopen($this->getConfigPath(), 'w');
@@ -174,6 +175,7 @@ class VersionTask extends Task
             $version = str_replace('%rev', $hashId, $version);
         }
 
+        $this->maturity = $maturity;
         $version = str_replace("\n", "", $version);
         $version = str_replace(" ", "", $version);
 

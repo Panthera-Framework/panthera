@@ -52,7 +52,7 @@ class Loader extends CoreSingleton
      *
      * @var string|null
      */
-    protected static $singletonTypeConfigKey = 'cache/type';
+    protected static $singletonTypeConfigKey = 'TemplatingSystem';
 
     /**
      * Default value for configuration key
