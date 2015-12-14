@@ -42,7 +42,7 @@ class UploadTask extends Task
             throw new InvalidConfigurationException('Invalid version generated, it\'s empty', 'INVALID_VERSION_GENERATED');
         }
 
-        $result = shell_exec('cd ' . $this->getConfigPath() . ' && git tag -a ' . $version . ' -m "Release: ' . $version . '"');
+        $result = shell_exec('cd ' . $this->getGitPath() . ' && git tag -a ' . $version . ' -m "Release: ' . $version . '"');
         $this->output($result);
 
         if (strpos(shell_exec('cd ' . $this->getGitPath() . ' && git tag'), $version . "\n") !== false)

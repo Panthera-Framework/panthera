@@ -51,7 +51,7 @@ class RouteHandler extends BaseFrameworkClass
      */
     public function getBaseLink()
     {
-        return (empty($_SERVER['HTTPS']) ? 'http' : 'https') . '://' . $_SERVER['HTTP_HOST'] . (!$this->app->config->get('Routing/rootPath') ?: $this->app->config->get('Routing/rootPath')) . '/';
+        return (empty($_SERVER['HTTPS']) ? 'http' : 'https') . '://' . $_SERVER['HTTP_HOST'] . ($this->app->config->get('Routing/rootPath') ? $this->app->config->get('Routing/rootPath') : '') . '/';
     }
 
     /**
