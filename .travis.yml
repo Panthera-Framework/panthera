@@ -22,8 +22,8 @@ before_install:
   - mkdir ./application/.content/cache/translations/ -p
   - chmod 777 ./application/.content/ -R
   - cd application
-  - php ../lib/bin/deploy build/environment/developer --coverage --travisci
-  - php ../lib/bin/deploy tests/buildTestDatabase
+  - php ../lib/Binaries/deploy Build/Environment/Developer --coverage --travisci
+  - php ../lib/Binaries/deploy Tests/BuildTestDatabase
 
 script: phpunit -c ./.content/cache/phpunit.xml.dist
 
