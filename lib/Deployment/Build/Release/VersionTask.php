@@ -31,6 +31,7 @@ class VersionTask extends Task
         'version'  => 'Manually set version',
         'maturity' => 'Application\'s maturity: stable|dev|testing|rc',
         'update'   => 'Automatically update version from saved template',
+        'dump' => 'Dump configuration',
     );
 
     /**
@@ -47,6 +48,12 @@ class VersionTask extends Task
         if ($arguments->get('update'))
         {
             return $this->update();
+        }
+
+        elseif ($arguments->get('dump'))
+        {
+            $this->output(file_get_contents($this->app->appPath . '/.content/version.yml'));
+            return true;
         }
 
         elseif ($arguments->get('version'))
