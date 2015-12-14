@@ -28,6 +28,13 @@ class Application extends BaseFrameworkClass
     public $opts = [];
 
     /**
+     * List of collected arguments
+     *
+     * @var string[]
+     */
+    public $parsedArguments = [];
+
+    /**
      * List of CLI arguments that was not recognized
      *
      * @var string[]
@@ -188,6 +195,9 @@ class Application extends BaseFrameworkClass
      */
     public function cliArgumentsCallFunction($function, $i, &$args)
     {
+        // put into parsed arguments, so it could be used again
+        $this->parsedArguments[$function] = isset($args[$i + 1]) ? $args[$i + 1] : true;
+
         $function = str_replace('-', '__', $function). '_cliArgument';
         $value = '';
 

@@ -55,7 +55,8 @@ class SignalIndexing
         $traverser->addVisitor($signalSearcher);
 
         // parse using a emulative lexer
-        $parser = new \PhpParser\Parser(new \PhpParser\Lexer\Emulative);
+        $factory = new \PhpParser\ParserFactory;
+        $parser = $factory->create(\PhpParser\ParserFactory::PREFER_PHP7);
         $statements = $parser->parse($code);
         $traverser->traverse($statements);
 

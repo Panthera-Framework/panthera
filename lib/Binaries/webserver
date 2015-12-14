@@ -22,12 +22,12 @@ class WebserverApplication extends Application
      */
     protected $webServers = [
         'nginx' => [
-            'deployment' => '%PF2_PATH%/bin/deploy build/environment/webserver/nginx',
+            'deployment' => '%PF2_PATH%/Binaries/deploy Build/Environment/Webserver/Nginx',
             'command'    => 'nginx -p %APP_PATH%/.content/configuration/nginx -c %APP_PATH/.content/configuration/nginx/default.conf',
         ],
 
         'PHP' => [
-            'deployment' => '%PF2_PATH%/bin/deploy build/environment/webserver/php',
+            'deployment' => '%PF2_PATH%/Binaries/deploy Build/Environment/Webserver/Php',
             'command'    => 'php -S localhost:8000 index.php',
         ]
     ];

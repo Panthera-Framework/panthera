@@ -3,6 +3,8 @@
 namespace Panthera\Binaries;
 
 use Panthera\Components\CommandLine\Application;
+use Panthera\Components\Deployment\ArgumentsCollection;
+use Panthera\Components\Deployment\Task;
 use Panthera\Components\Indexing\IndexService;
 use Panthera\Components\Kernel\Framework;
 
@@ -15,7 +17,7 @@ require __DIR__. '/../init.php';
 /**
  * Panthera Framework 2 Core deployment
  *
- * @package Panthera\Deployment
+ * @package Panthera\Binaries
  * @author Damian Kęska <damian@pantheraframework.org>
  */
 class DeploymentApplication extends Application
@@ -231,10 +233,15 @@ class DeploymentApplication extends Application
      * @throws FileNotFoundException
      *
      * @author Damian Kęska <damian@pantheraframework.org>
-     * @return \Panthera\deployment\task|object
+     * @return \Panthera\Components\Deployment\Task|object
      */
     protected function loadTaskModule($taskName)
     {
+        if (!is_file($this->modules[$taskName]))
+        {
+            return false;
+        }
+
         require_once $this->modules[$taskName];
         $appName = $this->app->getName();
 
@@ -277,6 +284,12 @@ class DeploymentApplication extends Application
      */
     public function parseOpts($opts)
     {
+        // limit task to only one to be executed, rest of parameters pass to it
+        if ($opts)
+        {
+            $opts = [$opts[1]];
+        }
+
         $checked = [];
         $this->verifyTasksDependencies($opts, $checked);
 
@@ -290,34 +303,46 @@ class DeploymentApplication extends Application
      * Execute post-parsing opts actions
      *
      * @param \string[] $opts
+     * @param bool $dependencies
+     *
      * @return null|void
      */
-    public function executeOpts($opts)
+    public function executeOpts($opts, $dependencies = false)
     {
+        if (!$opts)
+        {
+            return false;
+        }
+
+        if ($opts && !$dependencies)
+        {
+            $opts = [ $opts[1] ];
+        }
+
         foreach ($opts as $moduleName)
         {
             // don't run same task again
-            if (isset($this->runnedTasks[$moduleName]))
+            /*if (isset($this->runnedTasks[$moduleName]))
             {
-                continue;
-            }
+                return;
+            }*/
 
             $timer = microtime(true);
-            print("=======> Running task " .$moduleName. "\n");
+            print("=======> Running task " . $moduleName . "\n");
 
             /**
-             * @var \Panthera\deployment\task $currentTask
+             * @var \Panthera\Components\Deployment\Task $currentTask
              */
             $this->runnedTasks[$moduleName] = $currentTask = $this->loadTaskModule($moduleName);
 
             if ($currentTask->dependencies)
             {
-                $this->executeOpts($currentTask->dependencies);
+                $this->executeOpts($currentTask->dependencies, true);
             }
 
             if (!method_exists($currentTask, 'execute') && !$currentTask->dependencies)
             {
-                print("Error: Method execute does not exists in \"" .$moduleName. "\", cannot start task that even dont have any dependencies defined\n");
+                print("Error: Method execute does not exists in \"" . $moduleName . "\", cannot start task that even dont have any dependencies defined\n");
                 exit(1);
             }
 
@@ -326,10 +351,13 @@ class DeploymentApplication extends Application
              */
             if (method_exists($currentTask, 'execute'))
             {
-                $currentTask->execute($this);
+                $arguments = $opts;
+                unset($arguments[1]);
+
+                $currentTask->execute($this, array_values($arguments), new ArgumentsCollection($this->parsedArguments));
             }
 
-            print("\n++ Task finished in: " .(microtime(true) - $timer). "s\n");
+            print("\n++ Task finished in: " . (microtime(true) - $timer) . "s\n");
         }
     }
 }
