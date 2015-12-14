@@ -26,12 +26,16 @@ class VersionTask extends Task
     /** @var string $maturity */
     public $maturity = 'dev';
 
+    /** @var bool $developer */
+    public $developer = false;
+
     /** @var array $shellArguments */
     public $shellArguments = array(
         'version'  => 'Manually set version',
         'maturity' => 'Application\'s maturity: stable|dev|testing|rc',
         'update'   => 'Automatically update version from saved template',
-        'dump' => 'Dump configuration',
+        'dump'     => 'Dump configuration',
+        'framework'=> 'Change context to Panthera Framework 2 (for framework developers)',
     );
 
     /**
@@ -44,6 +48,7 @@ class VersionTask extends Task
     public function execute(DeploymentApplication $deployment, array $opts, ArgumentsCollection $arguments)
     {
         $this->readConfig();
+        $this->developer = (bool)$arguments->get('framework');
 
         if ($arguments->get('update'))
         {
@@ -66,19 +71,43 @@ class VersionTask extends Task
     }
 
     /**
+     * @return string
+     */
+    protected function getConfigPath()
+    {
+        if ($this->developer)
+        {
+            return $this->app->frameworkPath . '/version.yml';
+        }
+
+        return $this->app->appPath . '/.content/version.yml';
+    }
+
+    /**
+     * @return string
+     */
+    protected function getGitPath()
+    {
+        if ($this->developer)
+        {
+            return $this->app->frameworkPath;
+        }
+
+        return $this->app->appPath;
+    }
+
+    /**
      * Read and parse configuration file
      */
     protected function readConfig()
     {
-        $path = $this->app->appPath . '/.content/version.yml';
-
-        if (!is_file($path))
+        if (!is_file($this->getConfigPath()))
         {
             $this->output('Writing empty configuration file version.yml');
             $this->saveChanges();
         }
 
-        $data = Yaml::parse(file_get_contents($path));
+        $data = Yaml::parse(file_get_contents($this->getConfigPath()));
         $this->version = $data['version'];
         $this->maturity = isset($data['maturity']) ? $data['maturity'] : $this->maturity;
         $this->versionTemplate = isset($data['template']) ? $data['template'] : $this->versionTemplate;
@@ -91,14 +120,15 @@ class VersionTask extends Task
      */
     protected function saveChanges()
     {
-        $path = $this->app->appPath . '/.content/version.yml';
+        $this->output('Writing to ' . $this->getConfigPath());
+
         $contents = Yaml::dump([
             'version' => $this->version,
             'maturity' => $this->maturity,
             'template' => $this->versionTemplate
         ]);
 
-        $fp = @fopen($path, 'w');
+        $fp = @fopen($this->getConfigPath(), 'w');
         @fwrite($fp, $contents);
         @fclose($fp);
 
@@ -109,7 +139,7 @@ class VersionTask extends Task
             'object'   => $this,
         ]);
 
-        return md5($contents) === md5(file_get_contents($path));
+        return md5($contents) === md5(file_get_contents($this->getConfigPath()));
     }
 
     /**
@@ -132,14 +162,14 @@ class VersionTask extends Task
         // git commit hash id
         if (strpos($version, '%rev') !== false || strpos($version, '%commits') !== false)
         {
-            $hashId = shell_exec('git rev-parse HEAD');
+            $hashId = shell_exec('cd ' . $this->getGitPath() . ' && git rev-parse HEAD');
 
             if (!$hashId)
             {
                 throw new InvalidArgumentException('Used %rev, %commits or %rev.short in --version, but project is not in a git repository', 'NOT_IN_A_GIT_REPOSITORY');
             }
 
-            $version = str_replace('%commits', shell_exec('git rev-list --count HEAD'), $version);
+            $version = str_replace('%commits', shell_exec('cd ' . $this->getGitPath() . ' && git rev-list --count HEAD'), $version);
             $version = str_replace('%rev.short', substr($hashId, 0, 7), $version);
             $version = str_replace('%rev', $hashId, $version);
         }
