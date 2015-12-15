@@ -97,7 +97,7 @@ class PHPUnitConfigureTask extends Task
         $directoryBlacklist = $blacklist->addChild('directory', $this->app->libPath. "/tests/");
         $directoryBlacklist->addAttribute('suffix', '.php');
 
-        $directoryBlacklist2 = $blacklist->addChild('directory', $this->app->libPath. "/vendor/");
+        $directoryBlacklist2 = $blacklist->addChild('directory', __VENDOR_PATH__);
         $directoryBlacklist2->addAttribute('suffix', '.php');
 
         return $xml;

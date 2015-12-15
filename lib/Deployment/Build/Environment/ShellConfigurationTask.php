@@ -91,6 +91,7 @@ class ShellConfigurationTask extends Task
             '{$APP_PATH$}'       => $this->app->appPath,
             '{$FRAMEWORK_PATH$}' => PANTHERA_FRAMEWORK_PATH,
             '{$PROJECT_NAME$}'   => $this->app->getName(),
+            '{$VENDOR_PATH$}'    => __VENDOR_PATH__,
             '{$PSYSH_BOOTSTRAP$}'=> $this->app->getPath('/Schema/Configurations/Shell/psysh.bootstrap.php'),
         ];
 

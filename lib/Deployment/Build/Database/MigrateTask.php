@@ -62,7 +62,7 @@ class MigrateTask extends Task
      */
     private function detectPaths()
     {
-        $this->phinxBinary = PANTHERA_FRAMEWORK_PATH . '/vendor/bin/phinx';
+        $this->phinxBinary = __VENDOR_PATH__ . '/Binaries/phinx';
         $this->configurationPath = $this->app->appPath. '/.content/cache/phinx.yaml';
         $this->targetPath = $this->app->appPath. '/.content/cache/';
     }

@@ -37,7 +37,7 @@ class MigrationsApplication extends Application
     public function __construct()
     {
         $app = framework::getInstance();
-        $this->phinxPath = PANTHERA_FRAMEWORK_PATH. '/vendor/bin/phinx';
+        $this->phinxPath = __VENDOR_PATH__ . '/bin/phinx';
         $this->configrationPath = $app->appPath. '/.content/cache/phinx.yaml';
 
         $this->parseInputArguments();

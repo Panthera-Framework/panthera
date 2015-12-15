@@ -7,7 +7,7 @@ use Panthera\Classes\Utils\ClassUtils;
  * A visitor class that is used as a callback to PHP-Parser
  *
  * @package Panthera\deployment\build\framework\signals
- * @author Damian Kęska <damian.keska@fingo.pl>
+ * @author Damian Kęska <damian@pantheraframework.org>
  */
 class NodeVisitor_SignalSearcher extends \PhpParser\NodeVisitorAbstract
 {

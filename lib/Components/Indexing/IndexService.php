@@ -144,7 +144,7 @@ class IndexService extends BaseFrameworkClass
             $relativePath = substr($rPath, strlen($mainDir));
             $rDirPath = dirname($rPath);
 
-            if (strpos($rPath, '/.git/') !== false || strpos($rPath, '/.idea/') !== false || strpos($rPath, '/.gitignore') !== false || strpos($rPath, '/vendor/'))
+            if (strpos($rPath, '/.git/') !== false || strpos($rPath, '/.idea/') !== false || strpos($rPath, '/.gitignore') !== false)
             {
                 continue;
             }

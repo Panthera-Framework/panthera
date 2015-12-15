@@ -226,7 +226,7 @@ class PantheraFrameworkTemplatingTestCase extends PantheraFrameworkTestCase
     public function setUp()
     {
         parent::setUp();
-        require_once PANTHERA_FRAMEWORK_PATH . '/vendor/autoload.php';
+        require_once __VENDOR_PATH__ . '/autoload.php';
         $this->app->template = Panthera\Components\Templating\Loader::getInstance();
     }
 }
