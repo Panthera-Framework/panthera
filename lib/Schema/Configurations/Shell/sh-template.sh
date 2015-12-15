@@ -8,7 +8,7 @@
 
 export PF2_PATH="{$FRAMEWORK_PATH$}"
 export APP_PATH="{$APP_PATH$}"
-export PATH="$PATH:{$FRAMEWORK_PATH$}/Binaries/:{$APP_PATH$}/.content/Binaries/"
+export PATH="$PATH:{$FRAMEWORK_PATH$}/Binaries/:{$APP_PATH$}/.content/Binaries/:{$FRAMEWORK_PATH$}/vendor/bin"
 export PS1="[\$(tput setaf 3)\u\$(tput sgr0)|{$PROJECT_NAME$}|\$(tput setaf 2)\W\$(tput sgr0)]\$ "
 
 # aliases
@@ -18,7 +18,7 @@ reload()
     then
         echo "Rebuilds configuration and re-run shell again"
     else
-        deploy build/environment/shellConfiguration
+        deploy Build/Environment/ShellConfiguration
         source `whereis shell | cut -d':' -f2`
     fi
 }
@@ -49,6 +49,10 @@ commands()
     echo "$(tput setaf 2)Panthera Framework 2 builtin commands:$(tput setaf 3)"
     ls {$FRAMEWORK_PATH$}/Binaries/
     echo "reload goto_app goto_fw welcome commands psysh"
+    if [ -d {$FRAMEWORK_PATH$}/vendor/bin ];
+    then
+        ls {$FRAMEWORK_PATH$}/vendor/bin
+    fi
     echo "$(tput sgr0)"
 }
 

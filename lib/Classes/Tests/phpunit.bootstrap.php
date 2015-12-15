@@ -7,7 +7,7 @@ require_once __DIR__. '/../../Components/Kernel/Framework.php';
 require_once __DIR__. '/../../Components/Autoloader/Autoloader.php';
 spl_autoload_register('Panthera\Components\Autoloader\Autoloader::loadClass');
 
-require_once __DIR__. '/../../Components/Orm/ORMBaseObject.php';
+require_once __DIR__. '/../../Components/Orm/ORMBaseFrameworkObject.php';
 
 /**
  * Class PantheraFrameworkTestCase as to provide access to $app for PHPUnit tests.
