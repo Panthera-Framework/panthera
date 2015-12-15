@@ -145,9 +145,9 @@ class Framework
     public function setup($configuration = array())
     {
         // load composer's autoloader
-        if (is_file(PANTHERA_FRAMEWORK_PATH . '/vendor/autoload.php'))
+        if (is_file(__VENDOR_PATH__ . '/autoload.php'))
         {
-            require_once PANTHERA_FRAMEWORK_PATH . '/vendor/autoload.php';
+            require_once __VENDOR_PATH__ . '/autoload.php';
         }
 
         // load application indexing cache

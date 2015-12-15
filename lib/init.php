@@ -30,7 +30,6 @@ if (strtolower(PHP_SAPI) == 'cli' && (strpos($controllerPath, __DIR__. '/Binarie
     }
 
     $controllerPath = $cwd. '/index.php';
-    require_once $cwd. '/.content/app.php';
 }
 
 // in case of PHPUnit test we must change $controllerPath to appPath
@@ -46,7 +45,24 @@ elseif (stripos($_SERVER['SCRIPT_FILENAME'], 'phpunit') !== false)
     }
 }
 
+// detect vendor path
+$vendor = strpos(__DIR__, '/vendor/');
 
+if ($vendor !== false)
+{
+    $vendor = substr(__DIR__, 0, $vendor + 8);
+}
+elseif (is_dir(PANTHERA_FRAMEWORK_PATH . '/vendor/'))
+{
+    $vendor = PANTHERA_FRAMEWORK_PATH . '/vendor/';
+}
+else
+{
+    $vendor = dirname($controllerPath) . '/.content/vendor/';
+}
+
+define('__VENDOR_PATH__', $vendor);
+require_once str_replace('/index.php', '/.content/app.php', $controllerPath);
 require_once __DIR__. '/Components/Kernel/Framework.php';
 require_once __DIR__. '/Components/Autoloader/Autoloader.php';
 spl_autoload_register('Panthera\Components\Autoloader\Autoloader::loadClass');
