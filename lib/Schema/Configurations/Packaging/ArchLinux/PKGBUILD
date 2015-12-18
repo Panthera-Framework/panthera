@@ -1,0 +1,17 @@
+pkgname={$PACKAGE_NAME$}
+pkgver={$PACKAGE_VERSION$}
+pkgrel=1
+pkgdesc="Package built using PF2 Deployment script, change this text overriding a file Schema/Configurations/Packaging/ArchLinux/PKGBUILD"
+arch=('any')
+url="http://example.org"
+license=('LGPLv3')
+depends=('php')
+source=('sources.tar.gz')
+sha256sums=('{$ARCHIVE_CHECKSUM$}')
+
+package()
+{
+    _instdir=$pkgdir/usr/share/webapps/$pkgname
+    mkdir -p ${_instdir}
+    cp -R $srcdir/* $_instdir/
+}

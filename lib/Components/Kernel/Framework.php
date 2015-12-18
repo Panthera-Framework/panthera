@@ -15,6 +15,7 @@ use Panthera\Components\Database\DatabaseDriverLoader;
 use Panthera\Components\Logging\Logger;
 use Panthera\Components\Signals\SignalsHandler;
 use Panthera\Components\Session\Loader as SessionLoader;
+use Panthera\Components\Versioning\Version;
 
 require __DIR__ . '/../../Classes/BaseExceptions.php';
 
@@ -78,6 +79,11 @@ class Framework
     public $component = null;
 
     /**
+     * @var \Panthera\Components\Versioning\Version $version
+     */
+    protected $version;
+
+    /**
      * @var $instance null
      */
     public static $instance = null;
@@ -115,9 +121,9 @@ class Framework
      *
      * @var array $applicationIndex
      */
-    public $applicationIndex = array(
+    public $applicationIndex = [
 
-    );
+    ];
 
     /**
      * Constructor
@@ -406,5 +412,18 @@ class Framework
     public function getNamespace()
     {
         return defined('PF2_NAMESPACE') ? PF2_NAMESPACE : 'PFApplication';
+    }
+
+    /**
+     * @return Version
+     */
+    public function getVersionInformation()
+    {
+        if (!$this->version instanceof Version)
+        {
+            $this->version = new Version();
+        }
+
+        return $this->version;
     }
 }

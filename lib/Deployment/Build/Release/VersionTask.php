@@ -5,6 +5,7 @@ use Panthera\Binaries\DeploymentApplication;
 use Panthera\Classes\BaseExceptions\InvalidArgumentException;
 use Panthera\Components\Deployment\ArgumentsCollection;
 use Panthera\Components\Deployment\Task;
+use Panthera\Components\Versioning\Version;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -17,17 +18,14 @@ use Symfony\Component\Yaml\Yaml;
  */
 class VersionTask extends Task
 {
-    /** @var string $versionTemplate */
-    public $versionTemplate = '0.1.%commits-%rev.short';
-
-    /** @var string $version */
-    public $version = '0.1';
-
-    /** @var string $maturity */
-    public $maturity = 'dev';
-
     /** @var bool $developer */
     public $developer = false;
+
+    /** @var bool $updateComposer */
+    public $updateComposer = false;
+
+    /** @var Version $versionInformation */
+    public $versionInformation;
 
     /** @var array $shellArguments */
     public $shellArguments = array(
@@ -36,6 +34,7 @@ class VersionTask extends Task
         'update'   => 'Automatically update version from saved template',
         'dump'     => 'Dump configuration',
         'framework'=> 'Change context to Panthera Framework 2 (for framework developers)',
+        'composer' => 'Update composer.json file with new version',
     );
 
     /**
@@ -47,8 +46,22 @@ class VersionTask extends Task
      */
     public function execute(DeploymentApplication $deployment, array $opts, ArgumentsCollection $arguments)
     {
-        $this->readConfig();
+        if ($arguments->get('framework'))
+        {
+            $this->versionInformation = new Version(true);
+        }
+        else
+        {
+            $this->versionInformation = $deployment->app->getVersionInformation();
+        }
+
         $this->developer = (bool)$arguments->get('framework');
+
+        // composer support
+        if ((bool)$arguments->get('composer'))
+        {
+            $this->updateComposer = $this->developer ? $deployment->app->libPath . '/composer.json' : $this->app->appPath . '/composer.json';
+        }
 
         if ($arguments->get('update'))
         {
@@ -57,7 +70,7 @@ class VersionTask extends Task
 
         elseif ($arguments->get('dump'))
         {
-            $this->output(file_get_contents($this->getConfigPath()));
+            $this->output($this->versionInformation->dump());
             return true;
         }
 
@@ -67,20 +80,7 @@ class VersionTask extends Task
             return $this->saveChanges();
         }
 
-        $this->output("No changes made to version, use --version and --maturity, see --help for more information\n\nIn --version you can use:\n %rev for commit hash\n %rev.short for short commit hash\n %commits for a commits count\n\nConfiguration path:\n " . $this->getConfigPath());
-    }
-
-    /**
-     * @return string
-     */
-    protected function getConfigPath()
-    {
-        if ($this->developer)
-        {
-            return $this->app->frameworkPath . '/version.yml';
-        }
-
-        return $this->app->appPath . '/.content/version.yml';
+        $this->output("No changes made to version, use --version and --maturity, see --help for more information\n\nIn --version you can use:\n %rev for commit hash\n %rev.short for short commit hash\n %commits for a commits count\n\nConfiguration path:\n " . $this->versionInformation->getConfigPath());
     }
 
     /**
@@ -97,50 +97,31 @@ class VersionTask extends Task
     }
 
     /**
-     * Read and parse configuration file
-     */
-    protected function readConfig()
-    {
-        if (!is_file($this->getConfigPath()))
-        {
-            $this->output('Writing empty configuration file version.yml');
-            $this->saveChanges();
-        }
-
-        $data = Yaml::parse(file_get_contents($this->getConfigPath()));
-        $this->version = $data['version'];
-        $this->maturity = isset($data['maturity']) ? $data['maturity'] : $this->maturity;
-        $this->versionTemplate = isset($data['template']) ? $data['template'] : $this->versionTemplate;
-    }
-
-    /**
      * Save configuration to file
      *
      * @Signal Deployment.Version.Save
      */
     protected function saveChanges()
     {
-        $this->output('Writing to ' . $this->getConfigPath());
-
-        $contents = Yaml::dump([
-            'version' => $this->version,
-            'maturity' => $this->maturity,
-            'template' => $this->versionTemplate,
-            'fullVersionString' => $this->version . ($this->maturity ? '-' . $this->maturity : ''),
-        ]);
-
-        $fp = @fopen($this->getConfigPath(), 'w');
-        @fwrite($fp, $contents);
-        @fclose($fp);
+        $this->output('Writing version to file');
 
         $this->app->signals->execute('Deployment.Version.Save', [
-            'version'  => $this->version,
-            'maturity' => $this->maturity,
-            'template' => $this->versionTemplate,
-            'object'   => $this,
+            'version' => $this->versionInformation,
+            'task'    => $this,
         ]);
 
-        return md5($contents) === md5(file_get_contents($this->getConfigPath()));
+        // composer support
+        if ($this->updateComposer && is_file($this->updateComposer))
+        {
+            $content = json_decode(file_get_contents($this->updateComposer), true);
+            $content['version'] = $this->versionInformation->getVersion();
+
+            $fp = fopen($this->updateComposer, 'w');
+            fwrite($fp, json_encode($content, JSON_PRETTY_PRINT));
+            fclose($fp);
+        }
+
+        return $this->versionInformation->save();
     }
 
     /**
@@ -175,13 +156,12 @@ class VersionTask extends Task
             $version = str_replace('%rev', $hashId, $version);
         }
 
-        $this->maturity = $maturity;
+        $this->versionInformation->setMaturity($maturity);
         $version = str_replace("\n", "", $version);
         $version = str_replace(" ", "", $version);
 
-        $this->output('Setting version to ' . $version . ($this->maturity ? '-' . $this->maturity : ''));
-        $this->version = $version;
-        $this->versionTemplate = $template;
+        $this->output('Setting version to ' . $version . ($this->versionInformation->getVersion() ? '-' . $this->versionInformation->getMaturity() : ''));
+        $this->versionInformation->setVersion($version)->setVersionTemplate($template);
     }
 
     /**
@@ -193,12 +173,9 @@ class VersionTask extends Task
     protected function update()
     {
         $this->output('Running update...');
+        $this->app->signals->execute('Deployment.Version.Update', $this);
 
-        list($this->versionTemplate, $this->maturity) = $this->app->signals->execute('Deployment.Version.Update', [
-            $this->versionTemplate, $this->maturity,
-        ]);
-
-        $this->setVersion($this->versionTemplate, $this->maturity);
+        $this->setVersion($this->versionInformation->getVersionTemplate(), $this->versionInformation->getMaturity());
         $this->saveChanges();
     }
 }

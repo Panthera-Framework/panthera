@@ -27,7 +27,7 @@ reload()
 psysh()
 {
     goto_app
-    "$PF2_PATH/vendor/bin/psysh" "{$PSYSH_BOOTSTRAP$}"
+    "{$VENDOR_PATH$}/bin/psysh" "{$PSYSH_BOOTSTRAP$}"
 }
 
 goto_app()
