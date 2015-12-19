@@ -22,6 +22,19 @@ class PHPSessionDriver implements SessionDriverInterface
     {
         $this->appName = Framework::getInstance()->getName(true);
 
+        if (!is_writable(session_save_path()))
+        {
+            $savePath = Framework::getInstance()->appPath . '/.content/cache/sessions';
+
+            if (!is_dir($savePath))
+            {
+                mkdir($savePath);
+                file_put_contents($savePath . '/.htaccess', "deny from all\n");
+            }
+
+            session_save_path($savePath);
+        }
+
         session_name(strtoupper($this->appName));
         session_start();
 
