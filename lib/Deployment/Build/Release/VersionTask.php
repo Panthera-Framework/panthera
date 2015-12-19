@@ -114,7 +114,7 @@ class VersionTask extends Task
         if ($this->updateComposer && is_file($this->updateComposer))
         {
             $content = json_decode(file_get_contents($this->updateComposer), true);
-            $content['version'] = $this->versionInformation->getVersion();
+            $content['version'] = $this->versionInformation->getVersion(false);
 
             $fp = fopen($this->updateComposer, 'w');
             fwrite($fp, json_encode($content, JSON_PRETTY_PRINT));

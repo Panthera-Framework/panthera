@@ -52,9 +52,9 @@ if ($vendor !== false)
 {
     $vendor = substr(__DIR__, 0, $vendor + 8);
 }
-elseif (is_dir(PANTHERA_FRAMEWORK_PATH . '/vendor/'))
+elseif (is_dir(PANTHERA_FRAMEWORK_PATH . '/../vendor/'))
 {
-    $vendor = PANTHERA_FRAMEWORK_PATH . '/vendor/';
+    $vendor = PANTHERA_FRAMEWORK_PATH . '/../vendor/';
 }
 else
 {
