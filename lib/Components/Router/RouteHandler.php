@@ -2,6 +2,7 @@
 namespace Panthera\Components\Router;
 
 use Panthera\Components\Kernel\BaseFrameworkClass;
+use Panthera\Components\Kernel\Framework;
 use Panthera\Components\Router\Router;
 use Panthera\Classes\BaseExceptions\PantheraFrameworkException;
 
@@ -51,7 +52,14 @@ class RouteHandler extends BaseFrameworkClass
      */
     public function getBaseLink()
     {
-        return (empty($_SERVER['HTTPS']) ? 'http' : 'https') . '://' . $_SERVER['HTTP_HOST'] . ($this->app->config->get('Routing/rootPath') ? $this->app->config->get('Routing/rootPath') : '') . '/';
+        $path = (empty($_SERVER['HTTPS']) ? 'http' : 'https') . '://' . $_SERVER['HTTP_HOST'] . ($this->app->config->get('Routing/rootPath') ? $this->app->config->get('Routing/rootPath') : '');
+
+        if (substr($path, -1) !== '/')
+        {
+            $path .= '/';
+        }
+
+        return $path;
     }
 
     /**
@@ -64,11 +72,12 @@ class RouteHandler extends BaseFrameworkClass
 
         if ($this->app->config->get('Routing/rootPath'))
         {
-            $url = str_replace(
-                $this->app->config->get('Routing/rootPath'),
-                '',
-                $url
-            );
+            $url = '/' . substr($url, strlen($this->app->config->get('Routing/rootPath')));
+        }
+
+        if (strpos($url, '?') !== false)
+        {
+            $url = substr($url, 0, strpos($url, '?'));
         }
 
         // pass application's base URL to the template
@@ -88,15 +97,24 @@ class RouteHandler extends BaseFrameworkClass
         }
         else
         {
-            $target = isset($_GET['c']) ? $_GET['c'] . 'Controller' : 'ErrorNotFound';
-            $params = $_GET;
-
-            // get class full namespace
-            $classes = \Panthera\Components\Autoloader\Autoloader::getIndexedClasses(false);
-
-            if (isset($classes[$target]))
+            // support for default controller - index on main path "/"
+            if ($url === '/')
             {
-                $target = $classes[$target];
+                $target = Framework::getInstance()->getClassName('Packages\\BasePackage\\Controllers\\IndexController');
+                $params = $_GET;
+            }
+            else
+            {
+                $target = isset($_GET['c']) ? $_GET['c'] . 'Controller' : 'ErrorNotFound';
+                $params = $_GET;
+
+                // get class full namespace
+                $classes = \Panthera\Components\Autoloader\Autoloader::getIndexedClasses(false);
+
+                if (isset($classes[$target]))
+                {
+                    $target = $classes[$target];
+                }
             }
         }
 

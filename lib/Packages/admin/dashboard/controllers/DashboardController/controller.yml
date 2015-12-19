@@ -1,5 +1,0 @@
-"\\Panthera\\Packages\\admin\\dashboard\\DashboardController":
-  routes:
-    "/admin/dashboard":
-        methods: GET|POST
-        priority: 999
