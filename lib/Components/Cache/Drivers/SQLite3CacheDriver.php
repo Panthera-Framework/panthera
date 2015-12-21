@@ -42,6 +42,11 @@ class SQLite3CacheDriver extends BaseFrameworkClass implements CacheInterface
         $query = $this->connection->query("SELECT name FROM sqlite_master WHERE type='table' AND name='pf2_simple_cache';"); $this->queries++;
         $this->connection->exec("pragma synchronous = off;");
 
+        if ($query === false || $query === null)
+        {
+            throw new \Exception('Database is locked');
+        }
+
         if (!$query->fetchArray())
         {
             $this->connection->exec('CREATE TABLE pf2_simple_cache (

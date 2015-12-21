@@ -5,6 +5,13 @@ use Panthera\Components\Controller\BaseFrameworkController;
 use Panthera\Components\Controller\Response;
 use Panthera\Components\Controller\ResponseText;
 
+/**
+ * Panthera Framework 2
+ * --------------------
+ * Class IndexController
+ *
+ * @package Panthera\Packages\BasePackage\Controllers
+ */
 class IndexController extends BaseFrameworkController
 {
     /**

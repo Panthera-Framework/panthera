@@ -4,6 +4,7 @@ namespace Panthera\Components\Controller;
 use Panthera\Components\Kernel\BaseFrameworkClass;
 use Panthera\Classes\BaseExceptions\ControllerException;
 use Panthera\Classes\Utils\ClassUtils;
+use Panthera\Components\Router\Router;
 
 /**
  * Base Framework Controller
@@ -26,6 +27,18 @@ abstract class BaseFrameworkController extends BaseFrameworkClass implements Bas
     public function processRequest($params, $get, $post)
     {
         return $this->request = new Request($params, $get, $post);
+    }
+
+    /**
+     * Handle Router instance and url address
+     *
+     * @override
+     * @param Router $router
+     * @param string $url
+     */
+    public function processDebugDetails(Router $router, $url)
+    {
+        // dummy
     }
 
     /**

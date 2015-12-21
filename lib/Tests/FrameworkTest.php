@@ -94,7 +94,7 @@ class FrameworkTest extends PantheraFrameworkTestCase
      */
     public function testGetName()
     {
-        $this->app->config->set('AppName', 'My-Application');
+        $this->app->config->set('application/name', 'My-Application');
 
         $this->assertEquals('My-Application', $this->app->getName());
         $this->assertEquals('MyApplication', $this->app->getName(true));

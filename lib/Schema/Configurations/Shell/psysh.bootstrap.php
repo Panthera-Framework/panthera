@@ -13,6 +13,6 @@ $app = '';
 
 require __DIR__. '/../../../init.php';
 
-$app->isDebugging = true;
+$app->setDebugging(true);
 $app->logging->enabled = true;
 $app->logging->printMessages = true;

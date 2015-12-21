@@ -163,6 +163,52 @@ class Response
     }
 
     /**
+     * Set HTTP response code
+     *
+     * @param int $code
+     * @return bool
+     */
+    public function setCode($code = 200)
+    {
+        $codes = [
+            '100' => 'Continue',
+            '101' => 'Switching Protocols',
+            '200' => 'OK',
+            '201' => 'Created',
+            '202' => 'Accepted',
+            '300' => 'Multiple Choices',
+            '301' => 'Moved Permanently',
+            '302' => 'Found',
+            '303' => 'See Other',
+            '304' => 'Not Modified',
+            '305' => 'Use Proxy',
+            '307' => 'Temporary Redirect',
+            '400' => 'Bad Request',
+            '403' => 'Forbidden',
+            '404' => 'Not Found',
+            '405' => 'Method Not Allowed',
+            '406' => 'Not Acceptable',
+            '410' => 'Gone',
+            '411' => 'Length Required',
+            '414' => 'Request-URI Too Long',
+            '415' => 'Unsupported Media Type',
+            '416' => 'Requested Range Not Satisfiable',
+
+            '500' => 'Internal Server Error',
+            '501' => 'Not Implemented',
+            '502' => 'Bad Gateway',
+            '503' => 'Service Unavailable',
+            '504' => 'Gateway Timeout',
+        ];
+
+        if (isset($codes[$code]))
+        {
+            header('HTTP/1.1 ' . $code . ' ' . $codes[$code]);
+            return true;
+        }
+    }
+
+    /**
      * Display a template like a regular form
      *
      * @return string

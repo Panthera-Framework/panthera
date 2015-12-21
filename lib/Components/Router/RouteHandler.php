@@ -67,7 +67,7 @@ class RouteHandler extends BaseFrameworkClass
      */
     public function handleRequest()
     {
-        // http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']
+        $fw = Framework::getInstance();
         $url = $_SERVER['REQUEST_URI'];
 
         if ($this->app->config->get('Routing/rootPath'))
@@ -100,12 +100,12 @@ class RouteHandler extends BaseFrameworkClass
             // support for default controller - index on main path "/"
             if ($url === '/')
             {
-                $target = Framework::getInstance()->getClassName('Packages\\BasePackage\\Controllers\\IndexController');
+                $target = $fw->getClassName('Packages\\BasePackage\\Controllers\\IndexController');
                 $params = $_GET;
             }
             else
             {
-                $target = isset($_GET['c']) ? $_GET['c'] . 'Controller' : 'ErrorNotFound';
+                $target = isset($_GET['c']) ? $_GET['c'] . 'Controller' : $fw->getClassName('Packages\\BasePackage\\Controllers\\ErrorNotFoundController');
                 $params = $_GET;
 
                 // get class full namespace
@@ -118,14 +118,22 @@ class RouteHandler extends BaseFrameworkClass
             }
         }
 
+        // security check
+        if (substr($target, -10, 10) !== 'Controller')
+        {
+            throw new PantheraFrameworkException('Invalid controller class name', 'INVALID_CONTROLLER_NAME');
+        }
+
         $this->debug('Target resolution: ' . $target);
 
         if (class_exists($target))
         {
-            /** @var Panthera\Components\Controller\BaseFrameworkController $controller */
+            /** @var \Panthera\Components\Controller\BaseFrameworkController $controller */
             $controllerName = $target;
             $controller = new $controllerName();
             $controller->processRequest($params, $_GET, $_POST);
+            $controller->processDebugDetails($this->router, $url);
+
             $controller->display();
         }
         else

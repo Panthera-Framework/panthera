@@ -63,8 +63,8 @@ class Logger extends BaseFrameworkClass
     public function __construct()
     {
         parent::__construct();
-        $this->format = $this->app->config->get('logging/format', '[%date][%path:%line] %executionTime%message %debug');
-        $this->dateFormat = $this->app->config->get('logging/format.date', 'Y-m-d H:i');
+        $this->format = $this->app->config->get('logging/format', '[%date %msecs][%path:%line] %executionTime%message %debug');
+        $this->dateFormat = $this->app->config->get('logging/format.date', 'Y-m-d H:i:s');
         $this->enabled = $this->app->config->get('logging/enabled', false);
     }
 
@@ -111,6 +111,7 @@ class Logger extends BaseFrameworkClass
             '%message'       => $message,
             '%executionTime' => (string)$this->timer. ' ',
             '%debug'         => (isset($debug) && !$this->printMessages) ? $debug : '',
+            '%msecs'         => floatval(microtime(true)),
         );
 
         foreach ($formatting as $key => $value)
@@ -130,6 +131,14 @@ class Logger extends BaseFrameworkClass
         }
 
         return $formattedMessage;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getMessages()
+    {
+        return $this->messages;
     }
 
     /**

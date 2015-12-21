@@ -35,7 +35,7 @@ class PackageManager extends BaseFrameworkClass
     public function getEnabledPackages()
     {
         $packages = $this->getAvailablePackages();
-        $enabledPackages = $this->app->config->get('enabledPackages', []);
+        $enabledPackages = $this->app->config->get('enabledPackages', [ 'BasePackage' ]);
 
         if (!is_array($enabledPackages))
         {

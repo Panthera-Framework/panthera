@@ -114,7 +114,7 @@ class Framework
      *
      * @var bool $isDebugging
      */
-    public $isDebugging = false;
+    protected $isDebugging = false;
 
     /**
      * List of all indexed elements eg. paths to directories that contains translation files, list of controllers
@@ -206,6 +206,26 @@ class Framework
         }
 
         throw new \InvalidArgumentException('"' . $className . '" is not a valid class name');
+    }
+
+    /**
+     * Is developer mode turned on?
+     *
+     * @return bool
+     */
+    public function isDeveloperMode()
+    {
+        return $this->isDebugging;
+    }
+
+    /**
+     * @param bool $enabled
+     * @return $this
+     */
+    public function setDebugging($enabled)
+    {
+        $this->isDebugging = (bool)$enabled;
+        return $this;
     }
 
     /**
@@ -378,7 +398,7 @@ class Framework
     /**
      * Get application's name, defaults to "PFApplication"
      *
-     * @System Core.Config(key="AppName")
+     * @System Core.Config(key="application/name")
      * @param bool $stripped
      * @return string
      */
@@ -388,7 +408,7 @@ class Framework
 
         if ($this->config instanceof Configuration)
         {
-            $name = $this->config->get('AppName');
+            $name = $this->config->get('application/name');
         }
 
         if ($stripped)

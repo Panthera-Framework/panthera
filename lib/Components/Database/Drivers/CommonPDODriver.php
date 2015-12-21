@@ -412,9 +412,9 @@ abstract class CommonPDODriver extends BaseFrameworkClass implements DatabaseDri
         /**
          * In debugging mode log all queries
          */
-        if ($this->app->isDebugging)
+        if ($this->app->isDeveloperMode())
         {
-            $this->app->logging->output('Executing query: ' .$query. ', data: ' .json_encode($values), 'debug');
+            $this->app->logging->output('Executing query: ' .$query. ', data: ' .json_encode($values, JSON_PRETTY_PRINT), 'debug');
         }
 
         try

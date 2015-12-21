@@ -75,7 +75,7 @@ class Autoloader
 
             if ($path)
             {
-                ($app->logging) ? $app->logging->output('[Autoload] getForNameSpace returned ' . $path) : null;
+                ($app->logging) ? $app->logging->output('getForNameSpace(' . $class . '): ' . $path) : null;
                 require_once $path;
                 return $path;
             }
@@ -119,18 +119,22 @@ class Autoloader
 
         // build a fs path
         $path = implode('/', $parts);
+        end($parts);
 
         $searchPaths = [
             /** Application's directory */
             $app->appPath . '/.content/' . $path . '.php',
+            $app->appPath . '/.content/' . $path . '/' . $parts[key($parts)] . '.php',
 
             /** Framework's directory */
             $app->frameworkPath . '/' . $path . '.php',
+            $app->frameworkPath . '/' . $path . '/' . $parts[key($parts)] . '.php',
         ];
 
         if ($forceFrameworkPath)
         {
             unset($searchPaths[0]);
+            unset($searchPaths[1]);
         }
 
         // additional check if last element is not a PHP file
@@ -145,7 +149,7 @@ class Autoloader
 
         if ($forceFrameworkPath)
         {
-            unset($searchPaths[1]);
+            unset($searchPaths[2]);
         }
 
         foreach ($searchPaths as $path)
