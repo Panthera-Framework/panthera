@@ -6,10 +6,17 @@ use Panthera\Components\Kernel\BaseFrameworkClass;
 /**
  * Deployment task skeleton
  *
- * @package Panthera\deployment
+ * @package Panthera\Components\Deployment
  */
 class Task extends BaseFrameworkClass
 {
+    /**
+     * @var array $messageTypes
+     */
+    protected $messageTypes = [
+        'arrow' => "\e[38;5;85m==> \e[38;5;230m",
+    ];
+
     /**
      * @var array
      */
@@ -49,11 +56,33 @@ class Task extends BaseFrameworkClass
     /**
      * Output a message
      *
-     * @author Damian Kęska <damian@pantheraframework.org>
      * @param string $message
+     * @param string $type
+     * @param bool $newLine
+     *
+     * @author Damian Kęska <damian@pantheraframework.org>
      */
-    protected function output($message)
+    protected function output($message, $type = 'arrow', $newLine = true)
     {
-        print($message. "\n");
+        $type = isset($this->messageTypes[$type]) ? $this->messageTypes[$type] : '';
+        print($type . $message. "\e[0m");
+
+        if ($newLine)
+        {
+            print("\n");
+        }
+    }
+
+    /**
+     * @return string
+     */
+    protected function getInput($message, $type = '')
+    {
+        if ($message)
+        {
+            $this->output($message . ": ", $type, false);
+        }
+
+        return trim(fgets(STDIN));
     }
 }

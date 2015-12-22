@@ -14,7 +14,7 @@ use Symfony\Component\Yaml\Yaml;
  * @author Damian Kęska <damian@pantheraframework.org>
  * @package Panthera\Deployment\Build\Database
  */
-class configurePhinxTask extends Task
+class ConfigurePhinxTask extends Task
 {
     /**
      * PF2 to Phinx names translation

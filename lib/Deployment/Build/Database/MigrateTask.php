@@ -14,6 +14,15 @@ use Panthera\Components\Deployment\Task;
 class MigrateTask extends Task
 {
     /**
+     * List of dependencies this task is pulling
+     *
+     * @var array
+     */
+    public $dependencies = [
+        'Build/Database/UpdateSystemMigrations'
+    ];
+
+    /**
      * @var null|string
      */
     protected $phinxBinary = null;
