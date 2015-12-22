@@ -29,13 +29,13 @@ class updateComposerPackagesTask extends Task
         }
 
         // install a new copy of composer if not installed yet
-        if (!is_file($this->app->appPath. "/.content/bin/composer"))
+        if (!is_file($this->app->appPath . "/.content/Binaries/composer"))
         {
            throw new FileNotFoundException('Composer is not installed', 'NO_COMPOSER_INSTALLED');
         }
         else
         {
-            system("cd " .PANTHERA_FRAMEWORK_PATH. " && " . $this->app->appPath . "/.content/bin/composer update --no-interaction");
+            system("cd " .__VENDOR_PATH__. "/../ && " . $this->app->appPath . "/.content/bin/composer update --no-interaction");
         }
 
         return true;

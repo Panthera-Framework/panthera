@@ -21,7 +21,7 @@ class InstallComposerTask extends Task
         // don't double the composer installation on travis-ci.org build
         if (in_array('--travisci', $_SERVER['argv']))
         {
-            $this->output('=> Skipping composer installation on travis-ci.org');
+            $this->output('~> Skipping composer installation on travis-ci.org');
             return true;
         }
 
