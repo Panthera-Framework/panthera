@@ -341,11 +341,6 @@ class Framework
      */
     public function getPath($path, $packages = true)
     {
-        if (!$this->applicationIndex)
-        {
-            throw new PantheraFrameworkException('Application index cache not found, it should be updated automatically as a periodic or real time job, please investigate why cache regeneration is not running up', 'FW_APPLICATION_INDEX_NOT_FOUND');
-        }
-
         if (file_exists($this->appPath . '/' . $path))
         {
             return $this->appPath . '/' . $path;
