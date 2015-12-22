@@ -19,6 +19,7 @@
         <li><b>Server:</b> {$request.server}</li>
         <li><b>Panthera:</b> {$pfVersion}</li>
         <li><b>Application directory:</b> {$appPath}</li>
+        <li><b>Application public root address:</b>{$applicationRoot}</li>
     </ol>
 </div>
 
@@ -42,6 +43,23 @@
         <pre>{$log}{if !$log}Please enable configuration key "logging/enabled" to see log.
 From code or PHP shell you could use: `Framework::getInstance()->config->set('logging/enabled', true); Framework::getInstance()->config->save();`{/if}
         </pre>
+    </div>
+</div>
+
+<div class="lighter">
+    <h1>Troubleshooting</h1>
+    <div class="inner">
+        <ol>
+            <li>Make sure you have correct path entered in "Routing/rootPath" eg. your webserver public directory is /var/www, and your application is in /var/www/myapp then address would be http://mydoiman.org/myapp and also Routing/rootPath should be in this case "/myapp/", <b>please pay attention to "/" at beginning and end of string, try with or without it</b></li>
+            <li>If new controller is not recognized then make sure that:
+                <br/>a) Your package contains package.yml file (controller needs to be inside of a package)
+                <br/>b) Do your package contains a valid structure? /Packages/MyPackage/controller.yml, /Packages/MyPackage/Controllers/MyController/MyController.php and /Packages/MyPackage/Controllers/MyController/controller.yml?
+                <br/>c) Is controller.yml in a valid format? Try without "/" and with "/" at the beginning.
+                <br/>d) Did you enter a correct full namespace in controller.yml?
+                <br/>e) Is routing compiled after changes you made? If not then run `deploy Build/Routing/Cache`
+            </li>
+            <li>Is your webserver configured properly? Try `webserver start` to run application using PHP Built-in webserver</li>
+        </ol>
     </div>
 </div>
 

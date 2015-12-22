@@ -93,7 +93,7 @@ class MigrateTask extends Task
     private function executeMigrations()
     {
         $this->output('-> Running migrations');
-        $output = $this->executeCommand('migrate -vvv --no-interaction -c "' .$this->configurationPath. '"');
+        $output = $this->executeCommand('migrate -vvv --no-interaction -c "' . $this->configurationPath . '"');
         print($output);
     }
 

@@ -35,7 +35,7 @@ class updateComposerPackagesTask extends Task
         }
         else
         {
-            system("cd " .__VENDOR_PATH__. "/../ && " . $this->app->appPath . "/.content/bin/composer update --no-interaction");
+            system("cd " . __VENDOR_PATH__ . "/../ && " . $this->app->appPath . "/.content/bin/composer update --no-interaction");
         }
 
         return true;

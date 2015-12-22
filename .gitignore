@@ -1,3 +1,4 @@
+.idea/*
 application/.content/cache/RainTPL4/
 application/.content/cache/applicationIndex.php
 lib/composer.lock

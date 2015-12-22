@@ -39,6 +39,7 @@ class ErrorNotFoundController extends BaseFrameworkController
     public function defaultAction()
     {
         $suffix = $this->app->isDeveloperMode() ? '-debug' : '';
+        $rootPath = $this->app->config->get('Routing/rootPath') ? $this->app->config->get('Routing/rootPath') : '/';
         $versioning = new Version(true);
         $response = new Response([
             'request' => [
@@ -48,10 +49,11 @@ class ErrorNotFoundController extends BaseFrameworkController
                 'server'    => isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : '',
             ],
 
-            'routes'    => $this->router->getRoutes(),
-            'log'       => implode("\n", $this->app->logging->getMessages()),
-            'appPath'   => $this->app->appPath,
-            'pfVersion' => $versioning->getVersion(),
+            'applicationRoot'   => $rootPath,
+            'routes'            => $this->router->getRoutes(),
+            'log'               => implode("\n", $this->app->logging->getMessages()),
+            'appPath'           => $this->app->appPath,
+            'pfVersion'         => $versioning->getVersion(),
         ], 'Errors/404' . $suffix . '.tpl');
         $response->setCode(404);
 
