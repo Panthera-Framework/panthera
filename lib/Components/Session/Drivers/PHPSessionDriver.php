@@ -36,7 +36,11 @@ class PHPSessionDriver implements SessionDriverInterface
         }
 
         session_name(strtoupper($this->appName));
-        session_start();
+
+        if (PHP_SAPI !== 'cli')
+        {
+            session_start();
+        }
 
         if (!isset($_SESSION[$this->appName]))
         {

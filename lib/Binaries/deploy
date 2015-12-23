@@ -220,7 +220,7 @@ class DeploymentApplication extends Application
 
                 if ($this->onlyVerifyDependencies)
                 {
-                    print(Yaml::dump($object->dependencies));
+                    print(Yaml::dump(array_unique($object->dependencies)));
                 }
             }
         }
