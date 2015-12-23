@@ -18,7 +18,7 @@ class BuildTestDatabaseTask extends Task
      */
     public function execute()
     {
-        $command = 'cd ' .$this->app->appPath. ' && ' .PANTHERA_FRAMEWORK_PATH. '/bin/migrations migrate -e integrationTesting';
+        $command = 'cd ' .$this->app->appPath. ' && ' .PANTHERA_FRAMEWORK_PATH. '/Binaries/migrations migrate -e integrationTesting';
         $this->output($command);
         shell_exec($command);
     }
