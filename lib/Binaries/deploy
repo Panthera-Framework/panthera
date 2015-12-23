@@ -10,6 +10,7 @@ use Panthera\Components\Kernel\Framework;
 
 use Panthera\Classes\BaseExceptions\FileNotFoundException;
 use Panthera\Classes\BaseExceptions\PantheraFrameworkException;
+use Symfony\Component\Yaml\Yaml;
 
 
 require __DIR__. '/../init.php';
@@ -32,6 +33,9 @@ class DeploymentApplication extends Application
         'm' => 'modules',
         'c' => 'check-dependencies',
     ];
+
+    /** @var array $excludedDependencies List of excluded dependencies */
+    protected $excludedDependencies = [];
 
     /**
      * @var null|indexService
@@ -142,6 +146,18 @@ class DeploymentApplication extends Application
     }
 
     /**
+     * Exclude a dependent task
+     *
+     * @cli optional
+     * @author Damian Kęska <damian@pantheraframework.org>
+     */
+    public function exclude_cliArgument($value)
+    {
+        $value = str_replace(' ', '', $value);
+        $this->excludedDependencies = explode(',', $value);
+    }
+
+    /**
      * Verify task's dependencies recursively
      *
      * @param array $tasks List of tasks
@@ -155,7 +171,7 @@ class DeploymentApplication extends Application
     {
         foreach ($tasks as $task)
         {
-            if (in_array($task, $checked))
+            if (in_array($task, $checked) || in_array($task, $this->excludedDependencies))
             {
                 continue;
             }
@@ -166,7 +182,7 @@ class DeploymentApplication extends Application
 
                 if ($parentTask)
                 {
-                    print(", required by: \"" .$parentTask. "\"");
+                    print(", required by: \"" . $parentTask . "\"");
                 }
 
                 print("\n");
@@ -201,6 +217,11 @@ class DeploymentApplication extends Application
             if ($object->dependencies)
             {
                 $this->verifyTasksDependencies($object->dependencies, $checked, $task);
+
+                if ($this->onlyVerifyDependencies)
+                {
+                    print(Yaml::dump($object->dependencies));
+                }
             }
         }
     }
@@ -321,6 +342,11 @@ class DeploymentApplication extends Application
 
         foreach ($opts as $moduleName)
         {
+            if (in_array($moduleName, $this->excludedDependencies))
+            {
+                continue;
+            }
+
             // don't run same task again
             /*if (isset($this->runnedTasks[$moduleName]))
             {
