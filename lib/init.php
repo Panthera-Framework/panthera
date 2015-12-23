@@ -74,3 +74,10 @@ if (!isset($defaultConfig))
 
 $app = Panthera\Components\Kernel\framework::getInstance($controllerPath);
 $app->setup($defaultConfig);
+
+// PHP Built-in web server support
+// reset Routing/rootPath when using built-in webserver
+if (PHP_SAPI === 'cli-server')
+{
+    $app->config->set('Routing/rootPath', '/');
+}
