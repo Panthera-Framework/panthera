@@ -166,7 +166,7 @@ class Response
      * Set HTTP response code
      *
      * @param int $code
-     * @return bool
+     * @return $this
      */
     public function setCode($code = 200)
     {
@@ -204,8 +204,9 @@ class Response
         if (isset($codes[$code]))
         {
             header('HTTP/1.1 ' . $code . ' ' . $codes[$code]);
-            return true;
         }
+
+        return $this;
     }
 
     /**
