@@ -11,4 +11,4 @@ All of those executables are easily accessible from PF2 shell:
 ./.content/Binaries/shell
 ```
 
-***Note:** __if ./.content/Binaries/shell file does not exists you have to run `deploy Build/Environment/ShellConfiguration`__
+**Note:** if ./.content/Binaries/shell file does not exists you have to run `deploy Build/Environment/ShellConfiguration`
