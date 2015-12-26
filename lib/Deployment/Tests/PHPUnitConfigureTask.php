@@ -139,6 +139,7 @@ class PHPUnitConfigureTask extends Task
         $libSuite->addChild('directory', PANTHERA_FRAMEWORK_PATH. '/Tests');
         $this->output('Adding ' . PANTHERA_FRAMEWORK_PATH. '/Tests');
 
+        // add PF2 and application packages
         $this->addPackages($testsuites);
 
         $xml->saveXML($this->app->appPath. '/.content/cache/phpunit.xml.dist');
@@ -150,6 +151,11 @@ class PHPUnitConfigureTask extends Task
      */
     protected function addPackages(\SimpleXMLElement $xml)
     {
+        if (!is_dir($this->app->appPath . '/.content/Packages'))
+        {
+            mkdir($this->app->appPath . '/.content/Packages');
+        }
+
         $appPackages = scandir($this->app->appPath . '/.content/Packages');
         $libPackages = scandir(PANTHERA_FRAMEWORK_PATH . '/Packages');
 
@@ -163,6 +169,9 @@ class PHPUnitConfigureTask extends Task
 
         // and merge paths into a single array
         $packages = array_merge($appPackages, $libPackages);
+
+        // add main directory also
+        $packages[] = $this->app->appPath . '/.content/Tests';
 
         foreach ($packages as $packagePath)
         {
