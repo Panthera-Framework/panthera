@@ -107,7 +107,7 @@ class DeploymentApplication extends Application
                     $moduleName = substr(str_replace('Task.php', '', $filePath), 12);
 
                     // don't add "index" task to the list twice
-                    if (dirname($moduleName) == basename($moduleName))
+                    if (dirname($moduleName) == basename($moduleName) || pathinfo($filePath, PATHINFO_EXTENSION) !== 'php')
                     {
                         continue;
                     }
@@ -178,7 +178,7 @@ class DeploymentApplication extends Application
 
             if (!isset($this->modules[$task]))
             {
-                print("Error: Task \"" .$task. "\" does not exists");
+                print("Error: Task \"" . $task . "\" does not exists");
 
                 if ($parentTask)
                 {
@@ -377,10 +377,10 @@ class DeploymentApplication extends Application
              */
             if (method_exists($currentTask, 'execute'))
             {
-                $arguments = $opts;
-                unset($arguments[1]);
+                $taskOpts = array_values($this->opts);
+                unset($taskOpts[0]);
 
-                $currentTask->execute($this, array_values($arguments), new ArgumentsCollection($this->parsedArguments));
+                $currentTask->execute($this, array_values($taskOpts), new ArgumentsCollection($this->parsedArguments));
             }
 
             print("\n++ Task finished in: " . (microtime(true) - $timer) . "s\n");
