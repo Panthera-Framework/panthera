@@ -137,8 +137,43 @@ class PHPUnitConfigureTask extends Task
         $libSuite = $testsuites->addChild('testsuite');
         $libSuite->addAttribute('name', 'Panthera Framework 2');
         $libSuite->addChild('directory', PANTHERA_FRAMEWORK_PATH. '/Tests');
+        $this->output('Adding ' . PANTHERA_FRAMEWORK_PATH. '/Tests');
+
+        $this->addPackages($testsuites);
 
         $xml->saveXML($this->app->appPath. '/.content/cache/phpunit.xml.dist');
         return true;
+    }
+
+    /**
+     * @param \SimpleXMLElement $xml
+     */
+    protected function addPackages(\SimpleXMLElement $xml)
+    {
+        $appPackages = scandir($this->app->appPath . '/.content/Packages');
+        $libPackages = scandir(PANTHERA_FRAMEWORK_PATH . '/Packages');
+
+        // filter and remap arrays
+        $appPackages = array_filter($appPackages, function ($value) { return $value !== '..' && $value !== '.'; });
+        $appPackages = array_map(function ($value) { return $this->app->appPath . '/.content/Packages/' . $value; }, $appPackages);
+
+
+        $libPackages = array_filter($libPackages, function ($value) { return $value !== '..' && $value !== '.'; });
+        $libPackages = array_map(function ($value) { return PANTHERA_FRAMEWORK_PATH . '/Packages/' . $value; }, $libPackages);
+
+        // and merge paths into a single array
+        $packages = array_merge($appPackages, $libPackages);
+
+        foreach ($packages as $packagePath)
+        {
+            if (is_dir($packagePath . '/Tests'))
+            {
+                $testSuite = $xml->addChild('testsuite');
+                $testSuite->addAttribute('name', 'App/Package ' . basename($packagePath));
+                $testSuite->addChild('directory', $packagePath);
+
+                $this->output('Adding ' . $packagePath . '/Tests');
+            }
+        }
     }
 }

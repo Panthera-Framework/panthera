@@ -13,6 +13,9 @@ use Panthera\Components\Kernel\BaseFrameworkClass;
  */
 class Logger extends BaseFrameworkClass
 {
+    /** @var int $messageMaxSize */
+    protected $messageMaxSize = 2048;
+
     /**
      * Allow printing logged messages to the screen, logging have to be enabled first
      *
@@ -80,6 +83,11 @@ class Logger extends BaseFrameworkClass
      */
     public function output($message, $type = 'info', $backtraceOffset = 0)
     {
+        if (strlen($message) >= $this->messageMaxSize)
+        {
+            return false;
+        }
+
         if (!$this->enabled)
         {
             return false;
@@ -97,7 +105,7 @@ class Logger extends BaseFrameworkClass
 
         if ($type === 'debug')
         {
-            $debug = json_encode(debug_backtrace());
+            $debug = json_encode(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS));
         }
 
         $formatting = array(

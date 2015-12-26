@@ -69,7 +69,8 @@ class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
                 throw new InvalidArgumentException('Environment variable "APP_PATH" is not set');
             }
 
-            require $_SERVER['APP_PATH']. '/.content/app.php';
+            require_once __DIR__. '/../../init.php';
+            require $_SERVER['APP_PATH'] . '/.content/app.php';
 
             if (!isset($app))
             {
@@ -81,6 +82,9 @@ class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
             $this->setupDatabase();
             static::$instance = $this;
         }
+
+        // clear logger every test
+        $this->app->logging->clear();
     }
 
     /**

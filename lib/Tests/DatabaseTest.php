@@ -56,7 +56,7 @@ class DatabaseTest extends PantheraFrameworkTestCase
     public function testUpdate()
     {
         // check printing debugging messages
-        $this->app->isDebugging = true;
+        $this->app->setDebugging(true);
 
         // create a test table
         $this->app->database->query('CREATE TABLE `testUpdate` ( number INTEGER PRIMARY KEY ); ');

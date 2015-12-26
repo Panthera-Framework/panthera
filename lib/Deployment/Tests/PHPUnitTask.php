@@ -30,6 +30,6 @@ class PHPUnitTask extends Task
 
         putenv('APP_PATH=' .$this->app->appPath);
         chdir($this->app->appPath. '/../');
-        system("phpunit --configuration " .$configurationPath);
+        system(__VENDOR_PATH__ . "/bin/phpunit --configuration " .$configurationPath);
     }
 }

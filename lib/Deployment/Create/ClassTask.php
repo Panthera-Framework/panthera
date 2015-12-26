@@ -5,6 +5,13 @@ use Panthera\Components\Deployment\Task;
 use Panthera\Binaries\DeploymentApplication;
 use Panthera\Components\Deployment\ArgumentsCollection;
 
+/**
+ * Panthera Framework 2
+ * --------------------
+ * Class ClassTask
+ *
+ * @package Panthera\Deployment\Create
+ */
 class ClassTask extends Task
 {
     /**
