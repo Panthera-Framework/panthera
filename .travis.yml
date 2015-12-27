@@ -11,6 +11,7 @@ matrix:
   allow_failures:
     - php: 7.0
     - php: hhvm
+    - php: 5.5
 
 addons:
   code_climate:
@@ -23,7 +24,7 @@ before_install:
   - composer install --dev
   - mkdir .content/cache/translations/ -p
   - chmod 777 ./.content/ -R
-  - vendor/pantheraframework/panthera/lib/Binaries/deploy Build/Environment/Developer --coverage --travisci
+  - vendor/pantheraframework/panthera/lib/Binaries/deploy Build/Environment/Developer --coverage --travisci --yes
   - vendor/pantheraframework/panthera/lib/Binaries/deploy Tests/BuildTestDatabase
 
 script: phpunit -c ./.content/cache/phpunit.xml.dist
