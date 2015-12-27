@@ -17,13 +17,14 @@ addons:
     repo_token: a31320388fb4f4b9b96fd2a271bce301c6365c4104dd3ee05db0334309fd3469
 
 before_install:
-  - cd lib && composer install --dev
-  - cd ..
-  - mkdir ./application/.content/cache/translations/ -p
-  - chmod 777 ./application/.content/ -R
-  - cd application
-  - php ../lib/Binaries/deploy Build/Environment/Developer --coverage --travisci
-  - php ../lib/Binaries/deploy Tests/BuildTestDatabase
+  - git clone https://github.com/Panthera-Framework/example-panthera-application
+  - rm -rf lib
+  - cd example-panthera-application
+  - composer install --dev
+  - mkdir .content/cache/translations/ -p
+  - chmod 777 ./.content/ -R
+  - vendor/pantheraframework/panthera/lib/Binaries/deploy Build/Environment/Developer --coverage --travisci
+  - vendor/pantheraframework/panthera/lib/Binaries/deploy Tests/BuildTestDatabase
 
 script: phpunit -c ./.content/cache/phpunit.xml.dist
 
