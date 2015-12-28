@@ -319,9 +319,17 @@ abstract class ORMBaseFrameworkObject extends BaseFrameworkClass
 
         foreach ($this->__ORM_MetaMapping as $column => $propertyName)
         {
-            if (strpos(ClassUtils::getSingleTag(get_called_class() . '::' . $propertyName, 'orm'), 'virtualColumn') !== false)
+            $addr = get_called_class() . '::' . $propertyName;
+            $ormTag = ClassUtils::getSingleTag($addr, 'orm');
+
+            if (strpos($ormTag, 'virtualColumn') !== false)
             {
                 continue;
+            }
+
+            if ((!$this->{$propertyName} && strpos($ormTag, 'timestampOnCreate') !== false) || strpos($ormTag, 'timestampOnUpdate') !== false)
+            {
+                $this->{$propertyName} = date('Y-m-d H:i:s');
             }
 
             $values[$column] = $this->{$propertyName};

@@ -452,7 +452,7 @@ abstract class CommonPDODriver extends BaseFrameworkClass implements DatabaseDri
         {
             foreach ($values as $k => $v)
             {
-                if (is_array($v))
+                if (is_array($v) || is_object($v))
                 {
                     throw new DatabaseException('Value must be a string, not array in configuration.', 'FW_DATABASE_QUERY_FAILED');
                 }
@@ -472,7 +472,11 @@ abstract class CommonPDODriver extends BaseFrameworkClass implements DatabaseDri
         }
         catch (\PDOException $e)
         {
-            $this->app->logging->output('Got a PDO exception ' .serialize($e), 'debug');
+            if (isset($e->xdebug_message))
+            {
+                $this->app->logging->output('Got a PDO exception ' . $e->xdebug_message, 'debug');
+            }
+
             throw new PantheraFrameworkException('Got a PDO exception: ' .$e->getMessage(). ', SQL: ' .$query, 'FW_DATABASE_QUERY_FAILED');
         }
 

@@ -18,6 +18,11 @@ Todo:
 - @orm timestampOnUpdate
 - Deployment task for creating empty entities
 
+### @orm tag values:
+- "leftJoin", "outerJoin", "innerJoin", "leftOuterJoin" or "rightJoin"
+- timestampOnCreate (when field is null then current timestamp is inserted)
+- timestampOnUpdate (timestamp is inserted on every object save)
+
 ## Preparing class
 
 To link a database row into code we need to know what's the table name and it's id (primary index) column.
