@@ -105,3 +105,10 @@ class ConfigurationException extends PantheraFrameworkException {};
  * @package Panthera\Classes\BaseExceptions
  */
 class InvalidArgumentException extends PantheraFrameworkException {};
+
+/**
+ * Class InvalidDefinitionException
+ *
+ * @package Panthera\Classes\BaseExceptions
+ */
+class InvalidDefinitionException extends PantheraFrameworkException {};
