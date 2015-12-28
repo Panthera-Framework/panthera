@@ -2,9 +2,12 @@
 namespace Panthera\Components\Orm;
 
 use Panthera\Classes\BaseExceptions\DatabaseException;
+use Panthera\Classes\BaseExceptions\InvalidDefinitionException;
 use Panthera\Classes\BaseExceptions\ValidationException;
 
 use Panthera\Classes\Utils\ClassUtils;
+use Panthera\Classes\Utils\StringUtils;
+use Panthera\Components\Database\Column;
 use Panthera\Components\Database\Pagination;
 
 use Panthera\Components\Kernel\BaseFrameworkClass;
@@ -23,54 +26,69 @@ abstract class ORMBaseFrameworkObject extends BaseFrameworkClass
      *
      * @var string
      */
-    protected static $__orm_Table = '';
+    protected static $__ORM_Table = '';
 
     /**
      * What to select
      *
      * @var string|array
      */
-    protected static $__orm_What = '*';
+    protected static $__ORM_What = '*';
 
     /**
      * Order by statement
      *
      * @var string
      */
-    protected static $__orm_Order = '';
+    protected static $__ORM_Order = '';
 
     /**
      * Group by statement
      *
      * @var array
      */
-    protected static $__orm_Group = '';
+    protected static $__ORM_Group = '';
 
     /**
      * Joined tables
+     * Don't touch, it's a cache entry :-)
      *
-     * @var null|array
+     * @var array
      */
-    protected static $__orm_Joins = null;
+    protected static $__ORM_Joins = [];
+
+    /**
+     * List of columns to select on every fetch
+     *
+     * @var array
+     */
+    protected static $__ORM_SelectColumns = [];
+
+    /**
+     * List of joined column per table
+     *
+     * @var array
+     */
+    protected $__ORM_JoinedColumns = [];
 
     /**
      * Id column - table specific
      *
      * @var string
      */
-    protected static $__orm_IdColumn = 'id';
+    protected static $__ORM_IdColumn = 'id';
 
     /**
      * Internal cache for columns mapping
      *
      * @var array
      */
-    private $__orm__meta__mapping = [];
+    protected $__ORM_MetaMapping = [];
 
     /**
      * PHPDoc types mapping to what @see gettype() function returns
      *
-     * @var array
+     * @var array $phpTypes
      */
     protected $phpTypes = [
         'int'       => [ 'integer', 'numeric' ],
@@ -90,6 +108,7 @@ abstract class ORMBaseFrameworkObject extends BaseFrameworkClass
     {
         /** @see \Panthera\baseClass::__construct **/
         parent::__construct();
+        $this->__rebuildJoinsData();
         $this->__rebuildColumnsMapping();
 
         if (is_int($data))
@@ -117,17 +136,20 @@ abstract class ORMBaseFrameworkObject extends BaseFrameworkClass
      */
     protected function selectObjectById($id)
     {
+        $what = static::$__ORM_SelectColumns;
+        $what[] = '*';
+
         $where = array(
-            '|=|' .static::$__orm_IdColumn. '' => $id,
+            '|=|' .static::$__ORM_IdColumn. '' => $id,
         );
 
-        $result = $this->app->database->select(static::$__orm_Table, '*', $where, static::$__orm_IdColumn, null, new Pagination(1, 1), array(), static::$__orm_Joins);
+        $result = $this->app->database->select(static::$__ORM_Table, $what, $where, static::$__ORM_IdColumn, null, new Pagination(1, 1), array(), static::$__ORM_Joins);
 
         if (is_array($result))
         {
             if (empty($result))
             {
-                throw new DatabaseException('Record not found for id=' . $id, 'FW_SQL_NO_RESULT');
+                throw new DatabaseException('Record not found for id=' . $id, 'SQL_NO_RESULT');
             }
 
             $this->remapDatabaseResult($result[0]);
@@ -140,28 +162,28 @@ abstract class ORMBaseFrameworkObject extends BaseFrameworkClass
     /**
      * Get columns mapping, store in cache
      *
-     * @private
      * @author Damian Kęska <damian@pantheraframework.org>
      */
-    private function __rebuildColumnsMapping()
+    protected function __rebuildColumnsMapping()
     {
-        $reflection = new \ReflectionClass($this);
+        $this->__ORM_MetaMapping = array_merge($this->__ORM_MetaMapping, ORMMetaDataProvider::getColumnsMapping($this));
+    }
 
-        foreach ($reflection->getProperties() as $property)
+    /**
+     * Rebuilds information about used SQL joins for entity
+     *
+     * @throws InvalidDefinitionException
+     */
+    protected function __rebuildJoinsData()
+    {
+        // don't rebuild if joins was typed statically into class
+        if (static::$__ORM_Joins)
         {
-            $phpDoc = $property->getDocComment();
-            $columnMetaPos = strpos($phpDoc, '@column ');
-
-            if ($columnMetaPos !== false)
-            {
-                $column = substr($phpDoc, ($columnMetaPos + 8), (strpos($phpDoc, "\n", $columnMetaPos) - $columnMetaPos) - 8);
-
-                if ($column)
-                {
-                    $this->__orm__meta__mapping[$column] = $property->getName();
-                }
-            }
+            return;
         }
+
+        list(static::$__ORM_Joins, static::$__ORM_SelectColumns, $this->__ORM_JoinedColumns) = ORMMetaDataProvider::getJoinsData($this);
+
     }
 
     /**
@@ -178,29 +200,29 @@ abstract class ORMBaseFrameworkObject extends BaseFrameworkClass
     protected function remapDatabaseResult($result)
     {
         // support caching, as the Reflection class is not enough fast
-        if (!$this->__orm__meta__mapping)
+        if (!$this->__ORM_MetaMapping)
         {
             if ($this->app->cache)
             {
-                $this->__orm__meta__mapping = $this->app->cache->get('orm.mapping.' . get_called_class());
+                $this->__ORM_MetaMapping = $this->app->cache->get('orm.mapping.' . get_called_class());
             }
 
-            if (!$this->__orm__meta__mapping)
+            if (!$this->__ORM_MetaMapping)
             {
                 $this->__rebuildColumnsMapping();
 
                 if ($this->app->cache)
                 {
-                    $this->app->cache->set('orm.mapping.' . get_called_class(), $this->__orm__meta__mapping, 600);
+                    $this->app->cache->set('orm.mapping.' . get_called_class(), $this->__ORM_MetaMapping, 600);
                 }
             }
         }
 
         foreach ($result as $column => $value)
         {
-            if (isset($this->__orm__meta__mapping[$column]))
+            if (isset($this->__ORM_MetaMapping[$column]))
             {
-                $this->{$this->__orm__meta__mapping[$column]} = $value;
+                $this->{$this->__ORM_MetaMapping[$column]} = $value;
             }
         }
     }
@@ -219,8 +241,11 @@ abstract class ORMBaseFrameworkObject extends BaseFrameworkClass
      */
     public static function fetch($where = null, $order = null, $group = null, $limit = null, $values = [])
     {
+        $what = static::$__ORM_SelectColumns;
+        $what[] = '*';
+
         $database = Framework::getInstance()->database;
-        $select = $database->select(static::$__orm_Table, '*', $where, $order, $group, $limit, $values , static::$__orm_Joins, $execute=false);
+        $select = $database->select(static::$__ORM_Table, $what, $where, $order, $group, $limit, $values , static::$__ORM_Joins, $execute=false);
         $query = $database->query($select[0], $select[1]);
 
         $objects = array();
@@ -270,12 +295,17 @@ abstract class ORMBaseFrameworkObject extends BaseFrameworkClass
 
         // where conditions
         $conditions = [
-            '|=|' .static::$__orm_IdColumn => $this->getId(),
+            '|=|' .static::$__ORM_IdColumn => $this->getId(),
         ];
 
         // @todo: Add dependencies support, but not at this development earlier stage
-        $this->app->database->delete(static::$__orm_Table, $conditions, null, null, $pagination, true);
+        $this->app->database->delete(static::$__ORM_Table, $conditions, null, null, $pagination, true);
         return true;
+    }
+
+    public function getDependencies()
+    {
+        throw new \Exception('@todo');
     }
 
     /**
@@ -287,8 +317,13 @@ abstract class ORMBaseFrameworkObject extends BaseFrameworkClass
     {
         $values = [];
 
-        foreach ($this->__orm__meta__mapping as $column => $propertyName)
+        foreach ($this->__ORM_MetaMapping as $column => $propertyName)
         {
+            if (strpos(ClassUtils::getSingleTag(get_called_class() . '::' . $propertyName, 'orm'), 'virtualColumn') !== false)
+            {
+                continue;
+            }
+
             $values[$column] = $this->{$propertyName};
             $this->validateProperty($propertyName);
         }
@@ -298,15 +333,15 @@ abstract class ORMBaseFrameworkObject extends BaseFrameworkClass
          */
         if ($this->getId() === null)
         {
-            $this->app->database->insert(static::$__orm_Table, $values);
+            $this->app->database->insert(static::$__ORM_Table, $values);
         }
         else
         {
             $conditions = [
-                '|=|' .static::$__orm_IdColumn => $this->getId(),
+                '|=|' .static::$__ORM_IdColumn => $this->getId(),
             ];
 
-            $this->app->database->update(static::$__orm_Table, $values, $conditions);
+            $this->app->database->update(static::$__ORM_Table, $values, $conditions);
         }
     }
 
@@ -396,16 +431,22 @@ abstract class ORMBaseFrameworkObject extends BaseFrameworkClass
     /**
      * Return an object id (if any)
      *
+     * @param bool $getColumnName
      * @author Damian Kęska <damian@pantheraframework.org>
      * @return mixed
      */
-    public function getId()
+    public function getId($getColumnName = false)
     {
-        if (!isset($this->__orm__meta__mapping[static::$__orm_IdColumn]))
+        if ($getColumnName)
+        {
+            return static::$__ORM_IdColumn;
+        }
+
+        if (!isset($this->__ORM_MetaMapping[static::$__ORM_IdColumn]))
         {
             return null;
         }
 
-        return $this->{$this->__orm__meta__mapping[static::$__orm_IdColumn]};
+        return $this->{$this->__ORM_MetaMapping[static::$__ORM_IdColumn]};
     }
 }

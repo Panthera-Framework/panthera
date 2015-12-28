@@ -64,6 +64,26 @@ class ClassUtils
     }
 
     /**
+     * Get value from tag from first occurrence
+     *
+     * @param string $phpDoc
+     * @param string $tagName
+     *
+     * @return string
+     */
+    public static function getSingleTag($phpDoc, $tagName)
+    {
+        $tag = static::getTag($phpDoc, $tagName);
+
+        if ($tag)
+        {
+            return $tag[0];
+        }
+
+        return '';
+    }
+
+    /**
      * Get specified PHPDoc tag values
      *
      * @param string $phpDoc PHPDoc input text
@@ -110,7 +130,7 @@ class ClassUtils
      */
     public static function getPHPDoc($callable)
     {
-        if (substr($callable, 0, 3) == '/**')
+        if (is_string($callable) && substr($callable, 0, 3) == '/**')
         {
             return $callable;
         }

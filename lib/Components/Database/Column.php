@@ -9,5 +9,24 @@ namespace Panthera\Components\Database;
  */
 class Column
 {
+    /** @var string $columnName */
     public $columnName;
+
+    /** @var bool $isRawValue */
+    public $isRawValue = false;
+
+    /** @var string $value */
+    public $value;
+
+    /**
+     * @param string $columnName
+     * @param string $value
+     * @param bool $isRawValue
+     */
+    public function __construct($columnName, $value, $isRawValue = false)
+    {
+        $this->columnName   = $columnName;
+        $this->value        = $value;
+        $this->isRawValue   = (bool)$isRawValue;
+    }
 }

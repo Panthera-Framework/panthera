@@ -182,8 +182,8 @@ class PantheraFrameworkTestCase extends PHPUnit_Framework_TestCase
 
 class testORMModel extends ORMBaseFrameworkObject
 {
-    protected static $__orm_Table = 'phpunit_orm_test_table';
-    protected static $__orm_IdColumn = 'test_id';
+    protected static $__ORM_Table = 'phpunit_orm_test_table';
+    protected static $__ORM_IdColumn = 'test_id';
 
     /**
      * @orm

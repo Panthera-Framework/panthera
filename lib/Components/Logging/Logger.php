@@ -98,9 +98,16 @@ class Logger extends BaseFrameworkClass
             $this->timer = microtime(true) - $this->timer;
         }
 
-        $backtrace = debug_backtrace();
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         end($backtrace);
-        $backtrace = $backtrace[key($backtrace) - intval($backtraceOffset)];
+        $bOffset = key($backtrace) - intval($backtraceOffset);
+
+        // psysh fix
+        if (strpos($backtrace[$bOffset]['file'], '/psysh') !== false)
+            $backtrace = $backtrace[$bOffset-10];
+        else
+            $backtrace = $backtrace[$bOffset];
+
         $formattedMessage = $this->format;
 
         if ($type === 'debug')

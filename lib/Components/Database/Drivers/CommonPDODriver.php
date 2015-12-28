@@ -4,6 +4,7 @@ namespace Panthera\Components\Database\Drivers;
 use Panthera\Classes\BaseExceptions\PantheraFrameworkException;
 use Panthera\Classes\BaseExceptions\DatabaseException;
 
+use Panthera\Components\Database\Column;
 use Panthera\Components\Database\Pagination;
 use Panthera\Components\Kernel\BaseFrameworkClass;
 use Panthera\Components\Database\DatabaseDriverInterface;
@@ -150,22 +151,39 @@ abstract class CommonPDODriver extends BaseFrameworkClass implements DatabaseDri
          */
         if ($what === null || $what == '*')
         {
+            $query .= ' s1.* ';
+        }
+        elseif ($what === '.*')
+        {
             $query .= ' * ';
-
         }
         else
         {
+            // Handling list of columns from a list or dictionary
+            // eg. [ '*', 'test', 'bbb' ] - "*" means we are selecting all from main table, and "test", "bbb" will be also selected from main table
+            // [ '*', 'othertable.test' => 'aaa' ] - "*" like before, but "test" will be writed as "othertable.test as aaa" and accessible as "aaa" in results set
 
-            foreach ($what as $item)
+            foreach ($what as $col => $item)
             {
-                if (strpos($item, '.') === false)
+                $asString = '';
+
+                // if there is no alias then index is numeric like it would be added using syntax: $columns[] = 'name';
+                if (is_numeric($col))
+                    $col = $item;
+
+                // if we have key => value, which means aliasing in our context
+                elseif ($col !== $item) {
+                    $asString = ' as ' . $item;
+                }
+
+                if (strpos($col, '.') === false)
                 {
                     $prefix = 's1.';
                 } else {
                     $prefix = '';
                 }
 
-                $query .= $prefix . $item . ', ';
+                $query .= $prefix . $col . $asString . ', ';
             }
 
             $query = rtrim($query, ', ');
@@ -225,6 +243,9 @@ abstract class CommonPDODriver extends BaseFrameworkClass implements DatabaseDri
             $limit = $limit->getSQLData();
             $query .= ' LIMIT ' .$limit[1]. ' OFFSET ' .$limit[0]. ' ';
         }
+
+        // replace all query variables
+        $query = str_replace('$mainTable', 's1', $query);
 
         if ($execute)
         {
@@ -482,18 +503,27 @@ abstract class CommonPDODriver extends BaseFrameworkClass implements DatabaseDri
      *   ),
      * );
      *     *
-     * @param array $whereCondition The condition
+     * @param array|string $whereCondition The condition as array, or RAW SQL as string
      * @param string|null $columnNamePrefix Optional prefix to add to every column name (in case column don't have any)
      * @param bool $isJoin Is this a where condition for JOIN clause?
+     * @param array $values Optional values to pass, useful when using a RAW SQL query in $whereCondition
      *
      * @throws PantheraFrameworkException
      * @return array
      */
-    public function parseWhereConditionBlock($whereCondition, $columnNamePrefix = null, $isJoin = false)
+    public function parseWhereConditionBlock($whereCondition, $columnNamePrefix = null, $isJoin = false, $values = [])
     {
         $output = '';
-        $values = array();
         $logicOperatorAllowed = false;
+
+        // support for RAW SQL conditions
+        if (is_string($whereCondition))
+        {
+            return [
+                'sql'  => $whereCondition,
+                'data' => [],
+            ];
+        }
 
         foreach ($whereCondition as $condition => $value)
         {
@@ -548,6 +578,9 @@ abstract class CommonPDODriver extends BaseFrameworkClass implements DatabaseDri
                 $columnId = $columnName . '_' . substr(hash('md4', rand(0, 9) . microtime(true)), 0, 8);
             }
 
+            // strip out characters that could break our query
+            $columnId = str_replace('.', '_', $columnId);
+
             // append a column name prefix on columns that don't have any
             if ($columnNamePrefix && strpos($columnName, '.') === false)
             {
@@ -588,18 +621,24 @@ abstract class CommonPDODriver extends BaseFrameworkClass implements DatabaseDri
                 {
                     $output .= $columnNamePrefix . '.' . $value. ' ';
                 } else {
-                    $output .= ':' . $columnId . ' ';
-                    $values[$columnId] = $value;
+
+                    // allow to put a raw value instead of escaping
+                    if ($value instanceof Column && $value->isRawValue)
+                        $output .= $value->value;
+                    else {
+                        $output .= ':' . $columnId . ' ';
+                        $values[$columnId] = $value;
+                    }
                 }
             }
 
             $logicOperatorAllowed = true;
         }
 
-        return array(
+        return [
             'sql' => '(' .$output. ')',
             'data' => $values,
-        );
+        ];
     }
 
     /**
@@ -620,7 +659,7 @@ abstract class CommonPDODriver extends BaseFrameworkClass implements DatabaseDri
         foreach ($joins as $joinedTable => $whereClause)
         {
             $exp = explode('|', $joinedTable);
-            $SQL .= $exp[0]. ' ' .$exp[1]. ' ON ' .$this->parseWhereConditionBlock($whereClause, $mainTable, true)['sql']. ' ';
+            $SQL .= $exp[0] . ' ' . $exp[1] . ' ON ' . $this->parseWhereConditionBlock($whereClause, $mainTable, true)['sql'] . ' ';
         }
 
         return $SQL;

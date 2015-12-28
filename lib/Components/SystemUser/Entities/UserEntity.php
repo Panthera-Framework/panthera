@@ -13,8 +13,17 @@ use Panthera\Components\Orm\ORMBaseFrameworkObject;
  */
 class UserEntity extends ORMBaseFrameworkObject
 {
-    protected static $__orm_Table = 'users';
-    protected static $__orm_IdColumn = 'user_id';
+    protected static $__ORM_Table = 'users';
+    protected static $__ORM_IdColumn = 'user_id';
+
+    /**
+     * Here are put joined columns, rest of the mapping from main table is done automatic
+     *
+     * @var array $__ORM_MetaMapping
+     */
+    protected $__ORM_MetaMapping = [
+        'group_name' => 'userPrimaryGroupName',
+    ];
 
     /**
      * @orm
@@ -32,14 +41,14 @@ class UserEntity extends ORMBaseFrameworkObject
     public $userLogin       = null;
 
     /**
-     * @orm
+     * @orm virtualColumn
      * @column user_first_name
      * @var string
      */
     public $userFirstName   = null;
 
     /**
-     * @orm
+     * @orm virtualColumn
      * @column user_last_name
      * @var string
      */
@@ -76,6 +85,49 @@ class UserEntity extends ORMBaseFrameworkObject
     public $userUpdated      = null;
 
     /**
+     * @orm leftOuterJoin
+     * @join "groups.group_id" => "group_id as gid, group_name"
+     *
+     * @column user_primary_group
+     * @var int
+     */
+    public $userPrimaryGroup;
+
+    /**
+     * @orm virtualColumn
+     * @var string
+     */
+    protected $userPrimaryGroupName;
+
+    /**
+     * @return GroupEntity
+     */
+    public function getUserPrimaryGroup()
+    {
+        //return new GroupEntity($this->userPrimaryGroup);
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserPrimaryGroupName()
+    {
+        return $this->userPrimaryGroupName;
+    }
+
+    /**
+     * Allows to change group name (change will be for all users)
+     *
+     * @param string $newName
+     * @return $this
+     */
+    public function setPrimaryGroupName($newName)
+    {
+        $this->userPrimaryGroupName = $newName;
+        return $this;
+    }
+
+    /**
      * Change user's password, encrypt using a strong algorithm
      *
      * @param string $password
@@ -107,6 +159,24 @@ class UserEntity extends ORMBaseFrameworkObject
     public function getName()
     {
         return $this->userFirstName. ' ' .$this->userLastName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogin()
+    {
+        return $this->userLogin;
+    }
+
+    /**
+     * @param string $login
+     * @return $this
+     */
+    public function setLogin($login)
+    {
+        $this->userLogin = (string)$login;
+        return $this;
     }
 
     /**
