@@ -150,7 +150,7 @@ Results:
 
 ## Using Entities
 
-#### Finding entity by id:
+#### [Finding entity by id:](https://asciinema.org/a/bgfs01acete5yuqfjcruxs8k3)
 
 ```php
 >>> $u = new Panthera\Components\SystemUser\Entities\UserEntity(1);
@@ -169,7 +169,7 @@ Results:
 => "root"
 ```
 
-#### Fetching entities by conditions:
+#### [Fetching entities by conditions:](https://asciinema.org/a/599llshiggxwn9yq7oj1vt6ez)
 
 ```php
 >>> Panthera\Components\SystemUser\Entities\UserEntity::fetch(['|=|user_id' => 1])
@@ -209,7 +209,7 @@ $u = new Panthera\Components\SystemUser\Entities\UserEntity(1);
 >>> $u->getLogin(); // new-root
 ```
 
-#### Deleting entity
+#### [Deleting entity](https://asciinema.org/a/e262pl7bxlutem1mfuh4axb2b)
 ```php
 $u = new Panthera\Components\SystemUser\Entities\UserEntity(1);
 $u->delete();

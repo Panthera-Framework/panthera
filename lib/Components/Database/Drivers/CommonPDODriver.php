@@ -51,6 +51,10 @@ abstract class CommonPDODriver extends BaseFrameworkClass implements DatabaseDri
         '![]' => 'not in',
         '~' => 'like',
         'like' => 'like',
+        '>'    => '>',
+        '<'    => '<',
+        '>='   => '>=',
+        '<='   => '<=',
     );
 
     /**
