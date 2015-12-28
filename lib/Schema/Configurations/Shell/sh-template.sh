@@ -8,8 +8,14 @@
 
 export PF2_PATH="{$FRAMEWORK_PATH$}"
 export APP_PATH="{$APP_PATH$}"
-export PATH="$PATH:{$FRAMEWORK_PATH$}/Binaries/:{$APP_PATH$}/.content/Binaries/:{$VENDOR_PATH$}/vendor/bin"
+export PATH="$PATH:{$FRAMEWORK_PATH$}/Binaries/:{$APP_PATH$}/.content/Binaries/:{$VENDOR_PATH$}/bin"
 export PS1="[\$(tput setaf 3)\u\$(tput sgr0)|{$PROJECT_NAME$}|\$(tput setaf 2)\W\$(tput sgr0)]\$ "
+
+# execute custom scripts at startup
+if [ -e "{$APP_PATH$}/.content/Schema/Configurations/Shell/sh-startup.sh" ]
+then
+    source {$APP_PATH$}/.content/Schema/Configurations/Shell/sh-startup.sh
+fi
 
 # aliases
 reload()
@@ -27,7 +33,8 @@ reload()
 psysh()
 {
     goto_app
-    "{$VENDOR_PATH$}/bin/psysh" "{$PSYSH_BOOTSTRAP$}"
+    psyCMD="{$VENDOR_PATH$}/bin/psysh {$PSYSH_BOOTSTRAP$} $@"
+    eval $psyCMD
 }
 
 goto_app()
@@ -68,4 +75,10 @@ welcome()
     echo "$(tput setaf 2)Type \"$(tput setaf 1)commands$(tput setaf 2)\" to see list of available commands again any time$(tput sgr0)"
 }
 
+phinx()
+{
+    echo "Better please use command \"migrations\" for advanced operations on database"
+    echo "To securely migrate your database please use \"deploy Build/Database/Migrate\" as this command will include all Panthera Framework 2 and your application logic"
+    echo "To anyway use raw phinx you could still execute: \"{$VENDOR_PATH$}/bin/phinx\""
+}
 welcome
