@@ -12,7 +12,7 @@ use Panthera\Components\Deployment\ArgumentsCollection;
  *
  * @package Panthera\Deployment\Create
  */
-class ClassTask extends Task
+class ClassTask extends AbstractCreate
 {
     /**
      * @param DeploymentApplication $deployment
@@ -61,23 +61,12 @@ class ClassTask extends Task
         // parent class
         $extends = $this->app->config->get('Deployment/Create/Class/Extends', 'Panthera\\Components\\Kernel\\BaseFrameworkClass');
 
-        $template  = file_get_contents($this->deployApp->app->getPath('Schema/CodeGenerator/Class.phps'));
-        $variables = [
+        $this->writeFile($path . '/' . $classBaseName . '.php', $this->deployApp->app->getPath('Schema/CodeGenerator/Class.phps'), [
             'projectName' => $this->app->getName(),
             'className'   => $classBaseName,
             'namespace'   => $this->deployApp->app->getNamespace() . '\\Classes\\' . str_replace('/', '\\', $classPath),
             'extends'     => $extends,
             'baseNameExtends' => basename(str_replace('\\', '/', $extends)),
-        ];
-
-        foreach ($variables as $variable => $value)
-        {
-            $template = str_replace('{$' . $variable . '$}', $value, $template);
-        }
-
-        $this->output('Writing ' . $path . '/' . $classBaseName . '.php', 'arrow');
-        $filePointer = fopen($path . '/' . $classBaseName . '.php', 'w');
-        fwrite($filePointer, $template);
-        fclose($filePointer);
+        ]);
     }
 }

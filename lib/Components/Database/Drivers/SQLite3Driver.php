@@ -46,6 +46,25 @@ class SQLite3Driver extends CommonPDODriver
     }
 
     /**
+     * Checks if table exists
+     *
+     * @param string $table
+     *
+     * @throws \Panthera\Classes\BaseExceptions\DatabaseException
+     * @throws \Panthera\Classes\BaseExceptions\PantheraFrameworkException
+     *
+     * @return bool
+     */
+    public function hasTable($table)
+    {
+        $query = $this->query('SELECT name FROM sqlite_master WHERE type="table" AND name = :name;', [
+            'name' => $table,
+        ]);
+
+        return count($query) > 0;
+    }
+
+    /**
      * Returns database type
      *
      * @author Damian Kęska <damian@pantheraframework.org>

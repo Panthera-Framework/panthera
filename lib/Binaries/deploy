@@ -107,7 +107,7 @@ class DeploymentApplication extends Application
                     $moduleName = substr(str_replace('Task.php', '', $filePath), 12);
 
                     // don't add "index" task to the list twice
-                    if (dirname($moduleName) == basename($moduleName) || pathinfo($filePath, PATHINFO_EXTENSION) !== 'php')
+                    if (dirname($moduleName) == basename($moduleName) || pathinfo($filePath, PATHINFO_EXTENSION) !== 'php' || strpos($filePath, 'Task') === false)
                     {
                         continue;
                     }

@@ -29,4 +29,23 @@ class MySQLDriver extends CommonPDODriver
         if (isset($this->app->config->data['database']['mysql_buffered_queries']))
             $this->socket->setAttribute(\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, (bool)$this->app->config->data['database']['mysql_buffered_queries']);
     }
+
+    /**
+     * Checks if table exists
+     *
+     * @param string $table
+     *
+     * @throws \Panthera\Classes\BaseExceptions\DatabaseException
+     * @throws \Panthera\Classes\BaseExceptions\PantheraFrameworkException
+     *
+     * @return bool
+     */
+    public function hasTable($table)
+    {
+        $query = $this->query('SHOW TABLES LIKE :name', [
+            'name' => $table,
+        ]);
+
+        return count($query) > 0;
+    }
 }
