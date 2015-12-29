@@ -12,7 +12,7 @@ use Panthera\Components\Deployment\ArgumentsCollection;
  *
  * @package Panthera\Deployment\Create
  */
-class CreatePackageTask extends AbstractCreate
+class PackageTask extends AbstractCreate
 {
     /*public $shellArguments = [
         'version' => 'Sets package version',
