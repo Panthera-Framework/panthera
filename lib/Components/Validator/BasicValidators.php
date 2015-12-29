@@ -47,4 +47,16 @@ class BasicValidators
     {
         return ($str === true || $str == 'true' || intval($str) || $str === 't') ? 1 : 'Not a valid boolean';
     }
+
+    /**
+     * Validate e-mail address
+     *
+     * @param string $str
+     * @param string $attr
+     * @return bool
+     */
+    public static function emailValidator($str, $attr)
+    {
+        return filter_var($str, FILTER_VALIDATE_EMAIL) !== false;
+    }
 }

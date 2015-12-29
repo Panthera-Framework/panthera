@@ -2,6 +2,7 @@
 namespace Panthera\Components\Deployment;
 use Panthera\Binaries\DeploymentApplication;
 use Panthera\Components\Kernel\BaseFrameworkClass;
+use Panthera\Components\Validator\Validator;
 
 /**
  * Deployment task skeleton
@@ -84,5 +85,56 @@ class Task extends BaseFrameworkClass
         }
 
         return trim(fgets(STDIN));
+    }
+
+    /**
+     * Ask a question until user will not answer correctly
+     *
+     * @param string $message
+     * @param string $validatorString
+     * @param int $maxRetries
+     * @param string $type
+     * @param string $errMessage Message to show when input was invalid (validation failed)
+     *
+     * @throws \Panthera\Classes\BaseExceptions\ValidationException
+     *
+     * @return string
+     */
+    protected function ask($message, $validatorString, $maxRetries = 3, $type = 'question', $errMessage = 'Invalid input, please try again')
+    {
+        $retries = -1;
+        $validatorOutput = '';
+
+        do
+        {
+            if ($retries > -1)
+            {
+                $this->output($errMessage);
+            }
+
+            $input = $this->getInput($message, $type);
+            $retries++;
+
+            if ($retries === $maxRetries && $maxRetries !== 0)
+            {
+                $this->output('Maximum retries exceeded, exiting...', 'error');
+                exit;
+            }
+
+            if (!$input)
+            {
+                continue;
+            }
+
+            $validatorOutput = Validator::validate($input, $validatorString);
+
+            if (is_string($errMessage))
+            {
+                $errMessage = $validatorOutput;
+            }
+
+        } while ($validatorOutput !== true && $validatorOutput !== 1);
+
+        return $input;
     }
 }

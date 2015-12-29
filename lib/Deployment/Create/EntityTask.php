@@ -6,6 +6,16 @@ use Panthera\Components\Deployment\Task;
 use Panthera\Binaries\DeploymentApplication;
 use Panthera\Components\Deployment\ArgumentsCollection;
 
+/**
+ * Panthera Framework 2
+ * --------------------
+ * This task is allowing to create an ORM entity
+ *
+ * Example usage:
+ *   deploy Create/Entity --table groups --id group_id Components/Groups/Group
+ *
+ * @package Panthera\Deployment\Create
+ */
 class EntityTask extends AbstractCreate
 {
     /** @var array $shellArguments */
@@ -46,6 +56,7 @@ class EntityTask extends AbstractCreate
 
         if (!is_dir(dirname($path)))
         {
+            $this->output('mkdir ' . dirname($path));
             mkdir(dirname($path), 0775, true);
         }
 

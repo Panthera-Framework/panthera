@@ -17,13 +17,18 @@ class Validator
      * - C/InternetProtocol::IP@local => \\Components\\InternetProtocol::IPValidator($data, ['local'])
      *
      * @param mixed $data
-     * @param string $validator Validator data string
+     * @param string|callable $validator Validator data string
      *
      * @throws ValidationException
      * @return string|bool
      */
     public static function validate($data, $validator)
     {
+        if (is_callable($validator))
+        {
+            return $validator($data);
+        }
+
         if ($validator[0] === '!')
         {
             if (!$data)
