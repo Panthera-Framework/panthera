@@ -380,7 +380,28 @@ class DeploymentApplication extends Application
                 $taskOpts = array_values($this->opts);
                 unset($taskOpts[0]);
 
-                $currentTask->execute($this, array_values($taskOpts), new ArgumentsCollection($this->parsedArguments));
+                try
+                {
+                    $currentTask->execute($this, array_values($taskOpts), new ArgumentsCollection($this->parsedArguments));
+                }
+                catch (\Exception $e)
+                {
+                    if (posix_isatty(STDOUT) && is_file('/usr/bin/dialog'))
+                    {
+                        $backtrace = "";
+
+                        foreach (debug_backtrace(false) as $number => $stack)
+                        {
+                            $backtrace .= $stack['file'] . ":" . $stack['line'] . " " . $stack['class'] . $stack['type'] . $stack['function'] . "\n";
+                        }
+
+                        passthru("dialog --msgbox \"" . $e->getMessage() . "\n\nBacktrace:\n" . $backtrace . "\" 25 200");
+                    }
+                    else
+                    {
+                        throw $e;
+                    }
+                }
             }
 
             print("\n++ Task finished in: " . (microtime(true) - $timer) . "s\n");
