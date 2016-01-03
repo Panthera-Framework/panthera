@@ -76,5 +76,6 @@ class ControllerTask extends AbstractCreate
         ]);
 
         $this->output('Done, please run `deploy Build/Routing/Cache` to apply changes to routing', 'arrow');
+        $this->output('Please remember to add your package to "enabledPackages" in app.php, else it will be not active and may not work as expected', 'notice');
     }
 }

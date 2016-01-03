@@ -40,6 +40,36 @@ class Response
         // @todo: Validation
         $this->template = $template;
         $this->variables = (array)$variables;
+        $this->configureView();
+    }
+
+    /**
+     * Configure view
+     * Set up include paths for templating system
+     */
+    protected function configureView()
+    {
+        $template = Framework::getInstance()->template;
+
+        if (!$this->template)
+        {
+            return '';
+        }
+
+        // configure include paths
+        $includePaths = Framework::getInstance()->packageManager->getIncludePaths();
+
+        if ($includePaths)
+        {
+            $includePaths = array_map(function ($path) {
+                if (is_dir($path . '/Templates/'))
+                {
+                    return $path . '/Templates/';
+                }
+            }, $includePaths);
+
+            $template->setIncludePaths(array_filter($includePaths));
+        }
     }
 
     /**
@@ -218,26 +248,6 @@ class Response
     {
         $template = Framework::getInstance()->template;
         $template->assign($this->variables);
-
-        if (!$this->template)
-        {
-            return '';
-        }
-
-        // configure include paths
-        $includePaths = Framework::getInstance()->packageManager->getIncludePaths();
-
-        if ($includePaths)
-        {
-            $includePaths = array_map(function ($path) {
-                if (is_dir($path . '/Templates/'))
-                {
-                    return $path . '/Templates/';
-                }
-            }, $includePaths);
-
-            $template->setIncludePaths(array_filter($includePaths));
-        }
 
         return $template->display($this->template);
     }

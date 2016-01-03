@@ -55,5 +55,6 @@ class PackageTask extends AbstractCreate
         mkdir($path . '/Tests', 0755);
 
         $this->writeFile($path . '/README.md', null, "Write your short \"how to start\" here");
+        $this->output('Please remember to add your package to "enabledPackages" in app.php, else it will be not active and may not work as expected', 'notice');
     }
 }
