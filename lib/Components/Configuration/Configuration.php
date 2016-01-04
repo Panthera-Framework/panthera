@@ -243,6 +243,20 @@ class Configuration extends BaseFrameworkClass
             $this->app->logging->output('No additional configuration found in the database', 'info');
         }
 
+        // unix config support: allows to store configuration in a /etc/{$appname}/{$appname}.json file in json
+        $conf = '/etc/' . $this->app->getName(true) . '/' . $this->app->getName(true) . '.conf';
+
+        if (is_file($conf))
+        {
+            $unixConf = json_decode(file_get_contents($conf), true);
+
+            if (is_array($unixConf))
+            {
+                $this->defaultConfig = array_merge($this->defaultConfig, $unixConf);
+                $this->data = array_merge($this->data, $unixConf);
+            }
+        }
+
         return true;
     }
 
