@@ -13,7 +13,7 @@ Panthera Framework 2
 Because of it's simplicty, and Unix ideas implemented in elegant way.
 
 - "Microkernel structure", everything is connected through a kernel in $this->app
-- It doesn't matter if it's a shell or web browser launched code, everywhere is $this->app the same (unlike it's in Symfony2 for example)
+- It doesn't matter if it's a shell or web browser launched code, everywhere is $this->app the same (unlike it's in Symfony2 for example, so you don't need to swear "why there is no $this->getDoctrine() available?!")
 - Supports Unix-like configs in /etc which makes it a good framework for creating embedded applications
 - Easy to use ORM, no entity managers, complicated structure, it's more simple
 - Does not require to add components in different places to enable them (like it's in Symfony2)
