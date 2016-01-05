@@ -12,13 +12,14 @@ Panthera Framework 2
 
 Because of it's simplicty, and Unix ideas implemented in elegant way.
 
-- "Monolithic kernel", everything is connected through a kernel in $this->app
+- "Microkernel structure", everything is connected through a kernel in $this->app
 - It doesn't matter if it's a shell or web browser launched code, everywhere is $this->app the same (unlike it's in Symfony2 for example)
 - Supports Unix-like configs in /etc which makes it a good framework for creating embedded applications
 - Easy to use ORM, no entity managers, complicated structure, it's more simple
 - Does not require to add components in different places to enable them (like it's in Symfony2)
 - Easy mapping (eg. /Components/MyComponent/Class.php could be MyAppName\Components\MyComponent\Class)
 - Deployment system, group tasks, full automation, on deploying a new developer environment you don't have to do anything but execute `deploy Build/Environment/Developer`
+- Uses full potential of Unix environment, bases on powerful Unix tools executed from PHP code in deployment process (which makes requirement to install Cygwin/Bash on Windows)
 
 Simple and clear divide into:
 - Components (application's modules like "Translations", a group of classes)
