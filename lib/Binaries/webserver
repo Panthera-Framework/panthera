@@ -28,7 +28,7 @@ class WebserverApplication extends Application
 
         'PHP' => [
             'deployment' => '%PF2_PATH%/Binaries/deploy Build/Environment/Webserver/Php',
-            'command'    => 'php -S localhost:8000 index.php',
+            'command'    => 'php -S 0.0.0.0:8000 index.php',
         ]
     ];
 
