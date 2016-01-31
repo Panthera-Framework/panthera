@@ -32,8 +32,8 @@ Simple and clear divide into:
 **There is a `PF2 shell` with commands similar to `php app/console` in Symfony, but a little bit more flexible and more clear.**
 
 ```bash
-Welcome to RaspAP shell
-Your project is localized at path: /srv/http/raspap-webgui/raspap/
+Welcome to Panthera Framework shell
+Your project is localized at path: /path/to/project
 
 Your application commands:
 build-debian-package  install  shell
@@ -45,7 +45,7 @@ coveralls  phinx  php-parse  phpunit  psysh  test-reporter
 
 
 Type "commands" to see list of available commands again any time
-[damian|RaspAP|raspap-webgui]$ deploy -m
+[damian|Panthera Framework|example-panthera-framework]$ deploy -m
 Build/Database/ConfigurePhinx
 Build/Database/Migrate
 Build/Database/UpdateSystemMigrations
