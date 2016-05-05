@@ -1,3 +1,6 @@
+# This project is not maintained anymore, and there are no plans to maintain it
+# Dependent project "RaspAP" will be rewrited into Symfony2
+
 Panthera Framework 2
 ====================
 
